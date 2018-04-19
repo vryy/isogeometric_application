@@ -186,12 +186,12 @@ public:
 
     Geo3dBezier()
 //    : BaseType( PointsArrayType(), &msGeometryData )
-    : BaseType( PointsArrayType() )
+    : BaseType( PointsArrayType() ), mpBezierGeometryData(NULL)
     {}
 
     Geo3dBezier( const PointsArrayType& ThisPoints )
 //    : BaseType( ThisPoints, &msGeometryData )
-    : BaseType( ThisPoints )
+    : BaseType( ThisPoints ), mpBezierGeometryData(NULL)
     {
     }
 
@@ -205,9 +205,8 @@ public:
      * source geometry's points too.
      */
     Geo3dBezier( Geo3dBezier const& rOther )
-    : BaseType( rOther )
-    {
-    }
+    : BaseType( rOther ), mpBezierGeometryData(NULL)
+    {}
 
     /**
      * Copy constructor from a geometry with other point type.
@@ -221,9 +220,8 @@ public:
      * source geometry's points too.
      */
     template<class TOtherPointType> Geo3dBezier( Geo3dBezier<TOtherPointType> const& rOther )
-    : BaseType( rOther )
-    {
-    }
+    : BaseType( rOther ), mpBezierGeometryData(NULL)
+    {}
 
     /**
      * Destructor. Does nothing!!!
@@ -277,10 +275,13 @@ public:
     typename BaseType::BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const
     {
         Geo3dBezier::Pointer pNewGeom = Geo3dBezier::Pointer( new Geo3dBezier( ThisPoints ) );
-        ValuesContainerType DummyKnots;
-        pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
-            mCtrlWeights, mExtractionOperator, mOrder1, mOrder2, mOrder3,
-            static_cast<int>(mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
+        if (mpBezierGeometryData != NULL)
+        {
+            ValuesContainerType DummyKnots;
+            pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
+                mCtrlWeights, mExtractionOperator, mOrder1, mOrder2, mOrder3,
+                static_cast<int>(mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
+        }
         return pNewGeom;
     }
 

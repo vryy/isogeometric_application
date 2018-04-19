@@ -277,9 +277,12 @@ public:
     {
         Geo2dBezier3::Pointer pNewGeom = Geo2dBezier3::Pointer( new Geo2dBezier3( ThisPoints ) );
         ValuesContainerType DummyKnots;
-        pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
-            BaseType::mCtrlWeights, BaseType::mExtractionOperator, BaseType::mOrder1, BaseType::mOrder2, 0,
-            static_cast<int>(BaseType::mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
+        if (BaseType::mpBezierGeometryData != NULL)
+        {
+            pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
+                BaseType::mCtrlWeights, BaseType::mExtractionOperator, BaseType::mOrder1, BaseType::mOrder2, 0,
+                static_cast<int>(BaseType::mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
+        }
         return pNewGeom;
     }
 

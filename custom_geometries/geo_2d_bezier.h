@@ -188,12 +188,12 @@ public:
 
     Geo2dBezier()
 //    : BaseType( PointsArrayType(), &msGeometryData )
-    : BaseType( PointsArrayType() )
+    : BaseType( PointsArrayType() ), mpBezierGeometryData(NULL)
     {}
 
     Geo2dBezier( const PointsArrayType& ThisPoints )
 //    : BaseType( ThisPoints, &msGeometryData )
-    : BaseType( ThisPoints )
+    : BaseType( ThisPoints ), mpBezierGeometryData(NULL)
     {}
 
 //    Geo2dBezier( const PointsArrayType& ThisPoints, const GeometryData* pGeometryData )
@@ -210,7 +210,7 @@ public:
      * source geometry's points too.
      */
     Geo2dBezier( Geo2dBezier const& rOther )
-    : BaseType( rOther )
+    : BaseType( rOther ), mpBezierGeometryData(NULL)
     {}
 
     /**
@@ -225,9 +225,8 @@ public:
      * source geometry's points too.
      */
     template<class TOtherPointType> Geo2dBezier( Geo2dBezier<TOtherPointType> const& rOther )
-    : BaseType( rOther )
-    {
-    }
+    : BaseType( rOther ), mpBezierGeometryData(NULL)
+    {}
 
     /**
      * Destructor. Does nothing!!!
@@ -282,9 +281,12 @@ public:
     {
         Geo2dBezier::Pointer pNewGeom = Geo2dBezier::Pointer( new Geo2dBezier( ThisPoints ) );
         ValuesContainerType DummyKnots;
-        pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
-            mCtrlWeights, mExtractionOperator, mOrder1, mOrder2, 0,
-            static_cast<int>(mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
+        if (mpBezierGeometryData != NULL)
+        {
+            pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
+                mCtrlWeights, mExtractionOperator, mOrder1, mOrder2, 0,
+                static_cast<int>(mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
+        }
         return pNewGeom;
     }
 

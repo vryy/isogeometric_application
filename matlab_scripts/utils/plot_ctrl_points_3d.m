@@ -31,6 +31,10 @@ if ~isfield(params,'label')
     params.label = 'off';
 end
 
+if ~isfield(params,'legend')
+    params.legend = 'on';
+end
+
 if ~isfield(params,'axis')
     params.axis = 'off';
 end
@@ -57,9 +61,13 @@ for i = 1:w_dim
             cnt = cnt + 1;
             if k > 1
                 if k == 2
-                    L = quiver3(old_point_u(1),old_point_u(2),old_point_u(3),point(1)-old_point_u(1),point(2)-old_point_u(2),point(3)-old_point_u(3));
-%                    set(L, 'markersize', 10.0);
-                    u_plot_for_legend = L;
+                    if strcmp(params.legend,'on')
+                        L = quiver3(old_point_u(1),old_point_u(2),old_point_u(3),point(1)-old_point_u(1),point(2)-old_point_u(2),point(3)-old_point_u(3));
+    %                    set(L, 'markersize', 10.0);
+                        u_plot_for_legend = L;
+                    else
+                        L = line([old_point_u(1) point(1)], [old_point_u(2) point(2)], [old_point_u(3) point(3)]);
+                    end
                 else
                     L = line([old_point_u(1) point(1)], [old_point_u(2) point(2)], [old_point_u(3) point(3)]);
                 end
@@ -78,8 +86,12 @@ for i = 1:w_dim
             point(1:3) = point(1:3) / point(4);
             if j > 1
                 if j == 2
-                    L = quiver3(old_point_v(1),old_point_v(2),old_point_v(3),point(1)-old_point_v(1),point(2)-old_point_v(2),point(3)-old_point_v(3));
-                    v_plot_for_legend = L;
+                    if strcmp(params.legend,'on')
+                        L = quiver3(old_point_v(1),old_point_v(2),old_point_v(3),point(1)-old_point_v(1),point(2)-old_point_v(2),point(3)-old_point_v(3));
+                        v_plot_for_legend = L;
+                    else
+                        L = line([old_point_v(1) point(1)], [old_point_v(2) point(2)], [old_point_v(3) point(3)]);
+                    end
                 else
                     L = line([old_point_v(1) point(1)], [old_point_v(2) point(2)], [old_point_v(3) point(3)]);
                 end
@@ -98,8 +110,12 @@ for j = 1:v_dim
             point(1:3) = point(1:3) / point(4);
             if i > 1
                 if i == 2
-                    L = quiver3(old_point_w(1),old_point_w(2),old_point_w(3),point(1)-old_point_w(1),point(2)-old_point_w(2),point(3)-old_point_w(3));
-                    w_plot_for_legend = L;
+                    if strcmp(params.legend,'on')
+                        L = quiver3(old_point_w(1),old_point_w(2),old_point_w(3),point(1)-old_point_w(1),point(2)-old_point_w(2),point(3)-old_point_w(3));
+                        w_plot_for_legend = L;
+                    else
+                        L = line([old_point_w(1) point(1)], [old_point_w(2) point(2)], [old_point_w(3) point(3)]);
+                    end
                 else
                     L = line([old_point_w(1) point(1)], [old_point_w(2) point(2)], [old_point_w(3) point(3)]);
                 end
@@ -110,7 +126,9 @@ for j = 1:v_dim
     end
 end
 
-legend([u_plot_for_legend,v_plot_for_legend,w_plot_for_legend], 'u-dim', 'v-dim', 'w-dim');
+if strcmp(params.legend,'on')
+    legend([u_plot_for_legend,v_plot_for_legend,w_plot_for_legend], 'u-dim', 'v-dim', 'w-dim');
+end
 
 xlabel('x');
 ylabel('y');

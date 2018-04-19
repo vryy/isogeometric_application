@@ -27,6 +27,10 @@ if ~isfield(params,'axis')
     params.axis = 'off';
 end
 
+if ~isfield(params,'legend')
+    params.axis = 'on';
+end
+
 if ~isfield(params,'number')
     params.number = 1:(u_dim*v_dim);
 end
@@ -44,7 +48,12 @@ for j = 1:v_dim
         cnt = cnt + 1;
         if k > 1
             if k == 2
-                L = quiver3(old_point_u(1), old_point_u(2), old_point_u(3), point(1)-old_point_u(1), point(2)-old_point_u(2), point(3)-old_point_u(3));
+                if strcmp(params.legend,'on')
+                    L = quiver3(old_point_u(1), old_point_u(2), old_point_u(3), point(1)-old_point_u(1), point(2)-old_point_u(2), point(3)-old_point_u(3));
+                    u_plot_for_legend = L;
+                else
+                    L = line([old_point_u(1) point(1)], [old_point_u(2) point(2)], [old_point_u(3) point(3)]);
+                end
             else
                 L = line([old_point_u(1) point(1)], [old_point_u(2) point(2)], [old_point_u(3) point(3)]);
             end
@@ -62,7 +71,12 @@ for k = 1:u_dim
         point(1:3) = point(1:3) / point(4);
         if j > 1
             if j == 2
-                L = quiver3(old_point_v(1), old_point_v(2), old_point_v(3), point(1)-old_point_v(1), point(2)-old_point_v(2), point(3)-old_point_v(3));
+                if strcmp(params.legend,'on')
+                    L = quiver3(old_point_v(1), old_point_v(2), old_point_v(3), point(1)-old_point_v(1), point(2)-old_point_v(2), point(3)-old_point_v(3));
+                    v_plot_for_legend = L;
+                else
+                    L = line([old_point_v(1) point(1)], [old_point_v(2) point(2)], [old_point_v(3) point(3)]);
+                end
             else
                 L = line([old_point_v(1) point(1)], [old_point_v(2) point(2)], [old_point_v(3) point(3)]);
             end
@@ -72,9 +86,9 @@ for k = 1:u_dim
     end
 end
 
-u = plot(0,0,u_color);
-v = plot(0,0,v_color);
-legend([u,v], 'u-dim', 'v-dim');
+if strcmp(params.legend,'on')
+    legend([u_plot_for_legend,v_plot_for_legend], 'u-dim', 'v-dim');
+end
 
 xlabel('x');
 ylabel('y');

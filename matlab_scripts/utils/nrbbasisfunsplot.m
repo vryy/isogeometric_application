@@ -1,21 +1,6 @@
 function nrbbasisfunsplot(nurbs,num_points)
 if ~iscell(nurbs.knots) % curve
-    min_knot = min(nurbs.knots);
-    max_knot = max(nurbs.knots);
-    u = linspace(min_knot,max_knot,num_points);
-    [B,id] = nrbbasisfun(u,nurbs);
-
-    %rearrange to the correct sequence
-    numbasis = nurbs.number;
-    Bn = zeros(size(B,1),numbasis);
-    for i = 1:size(B,1)
-        for j = 1:size(B,2)
-            Bn(i,id(i,j)+1) = B(i,j);
-        end
-    end
-
-    plot(u,Bn);
-    title(['Basis function plot, n = ' num2str(nurbs.number) ', p = ' num2str(nurbs.order-1)]);
+    nrbbasisfunsplot1d(nurbs,num_points);
 else
     if size(nurbs.knots,2) == 2 % surface
         min_knot_1 = min(nurbs.knots{1});

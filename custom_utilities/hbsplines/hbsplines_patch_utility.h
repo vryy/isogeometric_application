@@ -22,6 +22,7 @@
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/multipatch.h"
 #include "custom_utilities/control_grid_utility.h"
 #include "isogeometric_application/isogeometric_application.h"
 

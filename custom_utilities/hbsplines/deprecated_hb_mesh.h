@@ -39,6 +39,7 @@
 #include "custom_utilities/nurbs/domain_manager_2d.h"
 #include "custom_utilities/nurbs/domain_manager_3d.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/multipatch.h"
 #include "custom_utilities/hbsplines/deprecated_basis_function_manager.h"
 #include "custom_utilities/hbsplines/deprecated_hb_basis_function.h"
 

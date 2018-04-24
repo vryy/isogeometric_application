@@ -20,6 +20,7 @@
 #include "includes/model_part.h"
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/multipatch.h"
 
 namespace Kratos
 {
@@ -131,6 +132,29 @@ public:
         std::cout << "1 condition of type " << sample_condition_name << " is created" << std::endl;
 
         return pNewCondition;
+    }
+
+    /// List the nodes, elements, conditions of a model_part
+    static void ListModelPart(ModelPart& r_model_part)
+    {
+        for(typename ModelPart::NodesContainerType::iterator it = r_model_part.Nodes().begin();
+                it != r_model_part.Nodes().end(); ++it)
+        {
+            std::cout << "Node #" << it->Id() << ": ("
+                      << it->X0() << ", " << it->Y0() << ", " << it->Z0() << ")" << std::endl;
+        }
+
+        for(typename ModelPart::ElementsContainerType::ptr_iterator it = r_model_part.Elements().ptr_begin();
+                it != r_model_part.Elements().ptr_end(); ++it)
+        {
+            std::cout << typeid(*(*it)).name() << ": " << (*it)->Id() << std::endl;
+        }
+
+        for(typename ModelPart::ConditionsContainerType::ptr_iterator it = r_model_part.Conditions().ptr_begin();
+                it != r_model_part.Conditions().ptr_end(); ++it)
+        {
+            std::cout << typeid(*(*it)).name() << ": " << (*it)->Id() << std::endl;
+        }
     }
 
     /// Information

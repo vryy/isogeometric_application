@@ -4,3 +4,5 @@ zmisc
 *.h.*
 *.pyc
 doc
+*.bak
+test_examples/*.m

@@ -18,7 +18,10 @@
 #include "includes/define.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
+#include "custom_utilities/fespace.h"
+#include "custom_utilities/nurbs/bsplines_fespace.h"
 #include "custom_utilities/unstructured_control_grid.h"
+#include "custom_utilities/nurbs/structured_control_grid.h"
 #include "custom_utilities/point_based_control_grid.h"
 
 namespace Kratos
@@ -168,6 +171,27 @@ public:
         for (std::size_t i = 0; i < indices.size(); ++i)
             pNewControlGrid->SetData(i, pControlGrid->GetData(indices[i]));
         return pNewControlGrid;
+    }
+
+
+    /// Helper function to extract some control values to a new control grid based on FESpace
+    /// If the sub-fespace is structured (e.g. b-splines fespace), the structured control grid will be generated
+    template<int TDim, typename TDataType>
+    static typename ControlGrid<TDataType>::Pointer ExtractSubGrid(typename ControlGrid<TDataType>::ConstPointer pControlGrid,
+            const FESpace<TDim>& rFESpace, const FESpace<TDim-1>& rSubFESpace)
+    {
+        std::vector<std::size_t> local_ids = rFESpace.LocalId(rSubFESpace.FunctionIndices());
+        typename ControlGrid<TDataType>::Pointer pTmpControlGrid = ExtractSubGrid<TDataType>(pControlGrid, local_ids);
+
+        if (typeid(rSubFESpace) == typeid(BSplinesFESpace<TDim-1>))
+        {
+            const BSplinesFESpace<TDim-1>& rSubFESpace_ = dynamic_cast<const BSplinesFESpace<TDim-1>& >(rSubFESpace);
+            typename StructuredControlGrid<TDim-1, TDataType>::Pointer pNewControlGrid = StructuredControlGrid<TDim-1, TDataType>::Create(rSubFESpace_.Numbers());
+            pNewControlGrid->CopyFrom(*pTmpControlGrid);
+            return pNewControlGrid;
+        }
+
+        return pTmpControlGrid;
     }
 
 

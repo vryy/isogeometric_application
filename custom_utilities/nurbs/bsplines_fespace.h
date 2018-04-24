@@ -67,6 +67,15 @@ public:
         else return mOrders[i];
     }
 
+    /// Get the number of control points of the BSplines in all direction
+    std::vector<std::size_t> Numbers() const
+    {
+        std::vector<std::size_t> numbers(TDim);
+        for (std::size_t dim = 0; dim < TDim; ++dim)
+            numbers[dim] = mNumbers[dim];
+        return numbers;
+    }
+
     /// Get the number of control points of the BSplines in specific direction
     const std::size_t Number(const std::size_t& i) const {return mNumbers[i];}
 
@@ -285,6 +294,119 @@ public:
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
                             = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))];
+            }
+        }
+
+        return func_indices;
+    }
+
+    /// Extract the index of the functions on the boundary down to some level
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side, const std::size_t& level) const
+    {
+        std::vector<std::size_t> func_indices;
+
+        if (side == _LEFT_)
+        {
+            if (TDim == 1)
+            {
+                func_indices.resize(1);
+                func_indices[0] = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index1D(1+level, this->Number(0))];
+            }
+            else if (TDim == 2)
+            {
+                func_indices.resize(this->Number(1));
+                for (std::size_t j = 0; j < this->Number(1); ++j)
+                    func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
+                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(1+level, j+1, this->Number(0), this->Number(1))];
+            }
+            else if (TDim == 3)
+            {
+                func_indices.resize(this->Number(1)*this->Number(2));
+                for (std::size_t j = 0; j < this->Number(1); ++j)
+                    for (std::size_t k = 0; k < this->Number(2); ++k)
+                        func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
+                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(1+level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+            }
+        }
+        else if (side == _RIGHT_)
+        {
+            if (TDim == 1)
+            {
+                func_indices.resize(1);
+                func_indices[0] = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0)-level, this->Number(0))];
+            }
+            else if (TDim == 2)
+            {
+                func_indices.resize(this->Number(1));
+                for (std::size_t j = 0; j < this->Number(1); ++j)
+                    func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
+                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0)-level, j+1, this->Number(0), this->Number(1))];
+            }
+            else if (TDim == 3)
+            {
+                func_indices.resize(this->Number(1)*this->Number(2));
+                for (std::size_t j = 0; j < this->Number(1); ++j)
+                    for (std::size_t k = 0; k < this->Number(2); ++k)
+                        func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
+                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0)-level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+            }
+        }
+        else if (side == _BOTTOM_)
+        {
+            if (TDim == 2)
+            {
+                func_indices.resize(this->Number(0));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
+                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1+level, this->Number(0), this->Number(1))];
+            }
+            else if (TDim == 3)
+            {
+                func_indices.resize(this->Number(0)*this->Number(1));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    for (std::size_t j = 0; j < this->Number(1); ++j)
+                        func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
+                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1+level, this->Number(0), this->Number(1), this->Number(2))];
+            }
+        }
+        else if (side == _TOP_)
+        {
+            if (TDim == 2)
+            {
+                func_indices.resize(this->Number(0));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
+                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1)-level, this->Number(0), this->Number(1))];
+            }
+            else if (TDim == 3)
+            {
+                func_indices.resize(this->Number(0)*this->Number(1));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    for (std::size_t j = 0; j < this->Number(1); ++j)
+                        func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
+                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2)-level, this->Number(0), this->Number(1), this->Number(2))];
+            }
+        }
+        else if (side == _FRONT_)
+        {
+            if (TDim == 3)
+            {
+                func_indices.resize(this->Number(0)*this->Number(2));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    for (std::size_t k = 0; k < this->Number(2); ++k)
+                        func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
+                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1+level, k+1, this->Number(0), this->Number(1), this->Number(2))];
+            }
+        }
+        else if (side == _BACK_)
+        {
+            if (TDim == 3)
+            {
+                func_indices.resize(this->Number(0)*this->Number(2));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    for (std::size_t k = 0; k < this->Number(2); ++k)
+                        func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
+                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1)-level, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
 
@@ -844,6 +966,9 @@ public:
     /// Get the order of the BSplines patch in specific direction
     virtual const std::size_t Order(const std::size_t& i) const {return 0;}
 
+    /// Get the number of basis functions defined over the BSplines BSplinesFESpace on one direction
+    virtual const std::size_t Number(const std::size_t& i) const {return 0;}
+
     /// Get the number of basis functions defined over the BSplines BSplinesFESpace
     virtual const std::size_t Number() const {return 0;}
 
@@ -862,6 +987,17 @@ public:
     /// Set the knot vector in direction i.
     void SetKnotVector(const std::size_t& i, const knot_container_t& p_knot_vector)
     {}
+
+    /// Get the knot vector in i-direction
+    const knot_container_t KnotVector(const std::size_t& i) const
+    {
+        return knot_container_t();
+    }
+
+    std::vector<std::size_t> Numbers() const
+    {
+        return std::vector<std::size_t>();
+    }
 
     /// Set the BSplines information in the direction i
     void SetInfo(const std::size_t& i, const std::size_t& Number, const std::size_t& Order)

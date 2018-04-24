@@ -16,6 +16,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/control_grid.h"
 
 namespace Kratos
@@ -87,17 +88,29 @@ public:
     /******** SUCCEED DOWNSTREAM ********/
     /************************************/
 
-    /// Copy the data the other grid function. The size of two grid functions must be equal.
-    virtual void CopyFrom(const ControlGrid<TDataType>& rOther) {}
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
+    {
+        BaseType::CopyFrom(rOther);
+    }
 
-    /// Copy the data the other grid function. The size of two grid functions must be equal.
-    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther) {}
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    {
+        BaseType::CopyFrom(pOther);
+    }
 
-    /// Copy the data the other grid function. In the case that the source has different size, the grid function is resized.
-    virtual void ResizeAndCopyFrom(ControlGrid<TDataType>& rOther) {}
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
+    virtual void ResizeAndCopyFrom(ControlGrid<TDataType>& rOther)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+    }
 
-    /// Copy the data the other grid function. In the case that the source has different size, the grid function is resized.
-    virtual void ResizeAndCopyFrom(const typename ControlGrid<TDataType>::Pointer pOther) {}
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
+    virtual void ResizeAndCopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+    }
 
 private:
 
@@ -111,6 +124,14 @@ Class for control value container by a regular grid
 template<int TDim, typename TDataType>
 class StructuredControlGrid : public BaseStructuredControlGrid<TDataType>
 {
+public:
+
+    /// Create a new control grid pointer
+    static typename StructuredControlGrid<TDim, TDataType>::Pointer Create(const std::vector<std::size_t>& sizes)
+    {
+        return typename StructuredControlGrid<TDim, TDataType>::Pointer(new StructuredControlGrid<TDim, TDataType>());
+    }
+
 };
 
 
@@ -152,7 +173,7 @@ public:
     /// Get the size of underlying data
     std::size_t Size() const {return BaseType::Data().size();}
 
-    /// Get the size of the grid function is specific dimension
+    /// Get the size of the grid is specific dimension
     const std::size_t& Size(const std::size_t& dim) const {return mSize;}
 
     /// Get the value at specific grid point
@@ -179,22 +200,34 @@ public:
     // overload operator ()
     const TDataType& operator() (const std::size_t& i) const {return BaseType::Data()[i];}
 
-    /// Copy the data the other grid function. The size of two grid functions must be equal.
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
+    {
+        BaseType::CopyFrom(rOther);
+    }
+
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    {
+        BaseType::CopyFrom(pOther);
+    }
+
+    /// Copy the data the other grid. The size of two grids must be equal.
     virtual void CopyFrom(const StructuredControlGrid<1, TDataType>& rOther)
     {
         if (rOther.Size() != this->Size())
-            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid function is incompatible", "")
+            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
         for (std::size_t i = 0; i < this->Size(); ++i)
             this->SetValue(i, rOther.GetValue(i));
     }
 
-    /// Copy the data the other grid function
+    /// Copy the data the other grid
     virtual void CopyFrom(const typename StructuredControlGrid<1, TDataType>::Pointer pOther)
     {
         this->CopyFrom(*pOther);
     }
 
-    /// Copy the data the other grid function. In the case that the source has different size, the grid function is resized.
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(const StructuredControlGrid<1, TDataType>& rOther)
     {
         if (rOther.Size() != this->Size())
@@ -203,13 +236,13 @@ public:
             this->SetValue(i, rOther.GetValue(i));
     }
 
-    /// Copy the data the other grid function. In the case that the source has different size, the grid function is resized.
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(const typename StructuredControlGrid<1, TDataType>::Pointer pOther)
     {
         this->ResizeAndCopyFrom(*pOther);
     }
 
-    /// Clone this grid function
+    /// Clone this grid
     virtual typename ControlGrid<TDataType>::Pointer Clone() const
     {
         typename StructuredControlGrid<1, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer(new StructuredControlGrid<1, TDataType>(mSize));
@@ -287,7 +320,7 @@ public:
     /// Get the size of underlying data
     std::size_t Size() const {return BaseType::Data().size();}
 
-    /// Get the size of the grid function is specific dimension
+    /// Get the size of the grid is specific dimension
     const std::size_t& Size(const std::size_t& dim) const {return mSize[dim];}
 
     /// Get the value at specific grid point
@@ -314,23 +347,54 @@ public:
     // overload operator ()
     const TDataType& operator() (const std::size_t& i, const std::size_t& j) const {return BaseType::Data()[j*mSize[0] + i];}
 
-    /// Copy the data the other grid function
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
+    {
+        BaseType::CopyFrom(rOther);
+    }
+
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    {
+        BaseType::CopyFrom(pOther);
+    }
+
+    /// Copy the data the other grid
     virtual void CopyFrom(const StructuredControlGrid<2, TDataType>& rOther)
     {
         if ( ( rOther.Size(0) != this->Size(1) ) || ( rOther.Size(1) != this->Size(1) ) )
-            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid function is incompatible", "")
+            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
         for (std::size_t i = 0; i < this->Size(0); ++i)
             for (std::size_t j = 0; j < this->Size(1); ++j)
                 this->SetValue(i, j, rOther.GetValue(i, j));
     }
 
-    /// Copy the data the other grid function
+    /// Copy the data the other grid
     virtual void CopyFrom(const typename StructuredControlGrid<2, TDataType>::Pointer pOther)
     {
         this->CopyFrom(*pOther);
     }
 
-    /// Copy the data the other grid function. In the case that the source has different size, the grid function is resized.
+    /// Copy the data from a column of structured control_grid in 1D
+    /// If dir==0, the column of grid will be copied in v-direction
+    /// If dir==1, the column of grid will be copied in u-direction
+    void CopyFrom(const int& dir, std::vector<typename StructuredControlGrid<1, TDataType>::Pointer> pOthers)
+    {
+        if (dir == 0)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    this->SetValue(i, j, pOthers[i]->GetValue(j));
+        }
+        else if (dir == 1)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    this->SetValue(i, j, pOthers[j]->GetValue(i));
+        }
+    }
+
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(const StructuredControlGrid<2, TDataType>& rOther)
     {
         if ( ( rOther.Size(0) != this->Size(1) ) || ( rOther.Size(1) != this->Size(1) ) )
@@ -342,13 +406,60 @@ public:
                 this->SetValue(i, j, rOther.GetValue(i, j));
     }
 
-    /// Copy the data the other grid function. In the case that the source has different size, the grid function is resized.
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(const typename StructuredControlGrid<2, TDataType>::Pointer pOther)
     {
         this->ResizeAndCopyFrom(*pOther);
     }
 
-    /// Clone this grid function
+    /// Get the layer of control grid from the boundary, if the level = 0, the control grid on the boundary will be extracted.
+    typename StructuredControlGrid<1, TDataType>::Pointer Get(const BoundarySide& side, const std::size_t& level)
+    {
+        typename StructuredControlGrid<1, TDataType>::Pointer pControlGrid;
+
+        if (side == _LEFT_)
+        {
+            pControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer( new StructuredControlGrid<1, TDataType>(this->Size(1)) );
+
+            for (std::size_t i = 0; i < this->Size(1); ++i)
+            {
+                pControlGrid->SetValue(i, this->GetValue(0+level, i));
+            }
+        }
+        else if (side == _RIGHT_)
+        {
+            pControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer( new StructuredControlGrid<1, TDataType>(this->Size(1)) );
+
+            for (std::size_t i = 0; i < this->Size(1); ++i)
+            {
+                pControlGrid->SetValue(i, this->GetValue(this->Size(0)-1-level, i));
+            }
+        }
+        else if (side == _TOP_)
+        {
+            pControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer( new StructuredControlGrid<1, TDataType>(this->Size(0)) );
+
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+            {
+                pControlGrid->SetValue(i, this->GetValue(i, this->Size(1)-1-level));
+            }
+        }
+        else if (side == _BOTTOM_)
+        {
+            pControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer( new StructuredControlGrid<1, TDataType>(this->Size(0)) );
+
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+            {
+                pControlGrid->SetValue(i, this->GetValue(i, 0+level));
+            }
+        }
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "Invalid side", side)
+
+        return pControlGrid;
+    }
+
+    /// Clone this grid
     virtual typename ControlGrid<TDataType>::Pointer Clone() const
     {
         typename StructuredControlGrid<2, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<2, TDataType>::Pointer(new StructuredControlGrid<2, TDataType>(mSize[0], mSize[1]));
@@ -434,7 +545,7 @@ public:
     /// Get the size of underlying data
     std::size_t Size() const {return BaseType::Data().size();}
 
-    /// Get the size of the grid function is specific dimension
+    /// Get the size of the grid is specific dimension
     const std::size_t& Size(const std::size_t& dim) const {return mSize[dim];}
 
     /// Get the value at specific grid point
@@ -467,26 +578,47 @@ public:
         return BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i];
     }
 
-    /// Copy the data the other grid function
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
+    {
+        BaseType::CopyFrom(rOther);
+    }
+
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    {
+        BaseType::CopyFrom(pOther);
+    }
+
+    /// Copy the data the other grid
     virtual void CopyFrom(const StructuredControlGrid<3, TDataType>& rOther)
     {
         if ( ( rOther.Size(0) != this->Size(0) )
           || ( rOther.Size(1) != this->Size(1) )
           || ( rOther.Size(2) != this->Size(2) ) )
-            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid function is incompatible", "")
+            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
         for (std::size_t i = 0; i < this->Size(0); ++i)
             for (std::size_t j = 0; j < this->Size(1); ++j)
                 for (std::size_t k = 0; k < this->Size(2); ++k)
                     this->SetValue(i, j, k, rOther.GetValue(i, j, k));
     }
 
-    /// Copy the data the other grid function
+    /// Copy the data the other grid
     virtual void CopyFrom(const typename StructuredControlGrid<3, TDataType>::Pointer pOther)
     {
         this->CopyFrom(*pOther);
     }
 
-    /// Copy the data the other grid function. In the case that the source has different size, the grid function is resized.
+    /// Copy the data from a column of structured control_grid in 1D
+    /// If dir==0, the column of grid will be copied in w-direction
+    /// If dir==1, the column of grid will be copied in v-direction
+    /// If dir==2, the column of grid will be copied in u-direction
+    void CopyFrom(const int& dir, std::vector<typename StructuredControlGrid<2, TDataType>::Pointer> pOthers)
+    {
+        // TODO
+    }
+
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(const StructuredControlGrid<3, TDataType>& rOther)
     {
         if ( ( rOther.Size(0) != this->Size(1) )
@@ -499,13 +631,47 @@ public:
                     this->SetValue(i, j, k, rOther.GetValue(i, j, k));
     }
 
-    /// Copy the data the other grid function. In the case that the source has different size, the grid function is resized.
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(const typename StructuredControlGrid<3, TDataType>::Pointer pOther)
     {
         this->ResizeAndCopyFrom(*pOther);
     }
 
-    /// Clone this grid function
+    /// Get the layer of control grid from the boundary, if the level = 0, the control grid on the boundary will be extracted.
+    typename StructuredControlGrid<2, TDataType>::Pointer Get(const BoundarySide& side, const unsigned int& level) const
+    {
+        // TODO
+        typename StructuredControlGrid<2, TDataType>::Pointer pControlGrid;
+
+        if (side == _LEFT_)
+        {
+            
+        }
+        else if (side == _RIGHT_)
+        {
+            
+        }
+        else if (side == _TOP_)
+        {
+        
+        }
+        else if (side == _BOTTOM_)
+        {
+        
+        }
+        else if (side == _FRONT_)
+        {
+        
+        }
+        else if (side == _BACK_)
+        {
+        
+        }
+
+        return pControlGrid;
+    }
+
+    /// Clone this grid
     virtual typename ControlGrid<TDataType>::Pointer Clone() const
     {
         typename StructuredControlGrid<3, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<3, TDataType>::Pointer(new StructuredControlGrid<3, TDataType>(mSize[0], mSize[1], mSize[2]));

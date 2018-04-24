@@ -64,7 +64,7 @@ public:
     /// Get the size of underlying data
     virtual std::size_t size() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        return this->Size();
     }
 
     /// Get the data at specific point
@@ -102,6 +102,33 @@ public:
     //     }
     //     return pSubControlGrid;
     // }
+
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
+    {
+        if (rOther.Size() != this->Size())
+            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
+        for (std::size_t i = 0; i < this->size(); ++i)
+            this->SetData(i, rOther.GetData(i));
+    }
+
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    {
+        this->CopyFrom(*pOther);
+    }
+
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
+    virtual void ResizeAndCopyFrom(ControlGrid<TDataType>& rOther)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+    }
+
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
+    virtual void ResizeAndCopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+    }
 
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const

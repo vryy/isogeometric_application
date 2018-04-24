@@ -18,23 +18,13 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/serializer.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/nurbs/cell.h"
 #include "custom_utilities/nurbs/cell_manager.h"
 
 
 namespace Kratos
 {
-
-enum BoundarySide
-{
-    _LEFT_   = 0,
-    _RIGHT_  = 1,
-    _TOP_    = 3,
-    _BOTTOM_ = 2,
-    _FRONT_  = 4,
-    _BACK_   = 5,
-    _NUMBER_OF_BOUNDARY_SIDE = 6
-};
 
 /**
 An FESpace is a collection of shape function defined over the parametric domain. An isogeometric FESpace can be a NURBS FESpace, a hierarchical NURBS FESpace, or a T-Splines FESpace.
@@ -225,6 +215,12 @@ public:
 
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
+
+    /// Extract the index of the functions on the boundary down to some level
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side, const std::size_t& level) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }

@@ -42,6 +42,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/nurbs/bsplines_fespace_library.h"
 #include "custom_utilities/nurbs/bsplines_patch_utility.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/bending_strip_patch.h"
+#include "custom_utilities/nurbs/bending_strip_nurbs_patch.h"
 #include "custom_utilities/multipatch_utility.h"
 #include "custom_utilities/multipatch_refinement_utility.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_geo_exporter.h"
@@ -688,6 +690,11 @@ Condition::Pointer MultiPatchUtility_CreateConditionFromElement(MultiPatchUtilit
     return rDummy.CreateConditionFromElement(sample_condition_name, lastConditionId, pElement, pProperties);
 }
 
+void MultiPatchUtility_ListModelPart(MultiPatchUtility& rDummy, ModelPart& r_model_part)
+{
+    rDummy.ListModelPart(r_model_part);
+}
+
 template<int TDim>
 void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy,
        typename Patch<TDim>::Pointer& pPatch,
@@ -1110,6 +1117,23 @@ void IsogeometricApplication_AddPatchesToPython()
     ;
 
     ss.str(std::string());
+    ss << "BendingStripPatch" << TDim << "D";
+    class_<BendingStripPatch<TDim>, bases<Patch<TDim> > >
+    // class_<BendingStripPatch<TDim>, typename BendingStripPatch<TDim>::Pointer >
+    (ss.str().c_str(), init<const std::size_t&, const int&>())
+    .def(self_ns::str(self))
+    ;
+
+    ss.str(std::string());
+    ss << "BendingStripNURBSPatch" << TDim << "D";
+    class_<BendingStripNURBSPatch<TDim>, bases<BendingStripPatch<TDim> > >
+    // class_<BendingStripNURBSPatch<TDim>, typename BendingStripNURBSPatch<TDim>::Pointer >
+    (ss.str().c_str(), init<const std::size_t&, const int&>())
+    .def(init<const std::size_t&, typename Patch<TDim>::Pointer, const BoundarySide&, typename Patch<TDim>::Pointer, const BoundarySide&, const int&>())
+    .def(self_ns::str(self))
+    ;
+
+    ss.str(std::string());
     ss << "MultiPatch" << TDim << "D";
     class_<MultiPatch<TDim>, typename MultiPatch<TDim>::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<>())
@@ -1180,7 +1204,7 @@ void IsogeometricApplication_AddImportToPython()
 
 }
 
-void IsogeometricApplication_AddCustomUtilities2ToPython()
+void IsogeometricApplication_AddNURBSToPython()
 {
     /////////////////////////////////////////////////////////////////
     ///////////////////////SUPPORT DOMAIN////////////////////////////
@@ -1285,6 +1309,7 @@ void IsogeometricApplication_AddCustomUtilities2ToPython()
     .def("GetLastElementId", &MultiPatchUtility_GetLastElementId)
     .def("GetLastConditionId", &MultiPatchUtility_GetLastConditionId)
     .def("CreateConditionFromElement", &MultiPatchUtility_CreateConditionFromElement)
+    .def("ListModelPart", &MultiPatchUtility_ListModelPart)
     ;
 
     class_<MultiPatchRefinementUtility, MultiPatchRefinementUtility::Pointer, boost::noncopyable>

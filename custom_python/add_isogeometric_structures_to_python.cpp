@@ -165,7 +165,7 @@ void IsogeometricApplication_AddModelPartToPython()
 }
 
 
-void IsogeometricApplication_AddCustomUtilities4ToPython()
+void IsogeometricApplication_AddIsogeometricStructuresToPython()
 {
 
     IsogeometricApplication_AddMeshToPython<2>();

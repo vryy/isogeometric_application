@@ -101,7 +101,7 @@ typename ControlGrid<TDataType>::Pointer ControlGridUtility_CreatePointBasedCont
 ////////////////////////////////////////
 
 template<int TDim>
-void IsogeometricApplication_AddHBSplinesToPython()
+void IsogeometricApplication_AddHBSplinesSpaceToPython()
 {
 
     std::stringstream ss;
@@ -168,7 +168,7 @@ void IsogeometricApplication_AddHBSplinesToPython()
 
 }
 
-void IsogeometricApplication_AddCustomUtilities3ToPython()
+void IsogeometricApplication_AddHBSplinesToPython()
 {
 
     /////////////////////////////////////////////////////////////////
@@ -194,8 +194,8 @@ void IsogeometricApplication_AddCustomUtilities3ToPython()
     ///////////////////////HIERARCHICAL BSplines/////////////////////
     /////////////////////////////////////////////////////////////////
 
-    IsogeometricApplication_AddHBSplinesToPython<2>();
-    IsogeometricApplication_AddHBSplinesToPython<3>();
+    IsogeometricApplication_AddHBSplinesSpaceToPython<2>();
+    IsogeometricApplication_AddHBSplinesSpaceToPython<3>();
 
     class_<ControlGridUtility, ControlGridUtility::Pointer, boost::noncopyable>
     ("PointBasedControlGridUtility", init<>())

@@ -38,10 +38,10 @@ TPatchType& GetReference(typename TPatchType::Pointer& dummy)
     return *dummy;
 }
 
-void  IsogeometricApplication_AddCustomUtilities1ToPython();
-void  IsogeometricApplication_AddCustomUtilities2ToPython();
-void  IsogeometricApplication_AddCustomUtilities3ToPython();
-void  IsogeometricApplication_AddCustomUtilities4ToPython();
+void  IsogeometricApplication_AddCustomUtilitiesToPython();
+void  IsogeometricApplication_AddNURBSToPython();
+void  IsogeometricApplication_AddHBSplinesToPython();
+void  IsogeometricApplication_AddIsogeometricStructuresToPython();
 
 }  // namespace Python.
 

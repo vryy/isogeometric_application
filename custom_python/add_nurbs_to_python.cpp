@@ -1134,6 +1134,14 @@ void IsogeometricApplication_AddPatchesToPython()
     ;
 
     ss.str(std::string());
+    ss << "BendingStripNURBSPatch" << TDim << "DPointer";
+    class_<typename BendingStripNURBSPatch<TDim>::Pointer>
+    (ss.str().c_str(), init<typename BendingStripNURBSPatch<TDim>::Pointer>())
+    .def("GetReference", GetReference<BendingStripNURBSPatch<TDim> >, return_value_policy<reference_existing_object>())
+    .def(self_ns::str(self))
+    ;
+
+    ss.str(std::string());
     ss << "MultiPatch" << TDim << "D";
     class_<MultiPatch<TDim>, typename MultiPatch<TDim>::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<>())

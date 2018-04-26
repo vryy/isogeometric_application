@@ -24,6 +24,7 @@ grid_lib = ControlGridLibrary()
 multipatch_util = MultiPatchUtility()
 mpatch_export1 = MultiNURBSPatchGeoExporter()
 mpatch_export2 = MultiNURBSPatchGLVisExporter()
+bending_strip_utility = BendingStripUtility()
 
 def CreateMultiPatch():
     mpatch = MultiPatch2D()
@@ -67,8 +68,8 @@ def CreateMultiPatch():
     print("############CREATE BENDING STRIP PATCH###############")
     strip_patch_id = 3
     strip_order = 2 # quadratic
-    bspatch = BendingStripNURBSPatch2D(strip_patch_id, patch1, BoundarySide.Right, patch2, BoundarySide.Left, strip_order)
-    mpatch.AddPatch(bspatch)
+    bspatch_ptr = bending_strip_utility.CreateBendingStripNURBSPatch(strip_patch_id, patch1, BoundarySide.Right, patch2, BoundarySide.Left, strip_order)
+    mpatch.AddPatch(bspatch_ptr)
 
     return mpatch
 
@@ -77,9 +78,13 @@ def CreateMultiPatch():
 def main():
     mpatch = CreateMultiPatch()
 
+    bsp_ptr = mpatch[3]
+    bsp = bsp_ptr.GetReference()
+    print(bsp)
+
     mpatch_export2.Export(mpatch, "mpatch.mesh")
 
-    print(mpatch)
+#    print(mpatch)
 
 if __name__ == "__main__":
     main()

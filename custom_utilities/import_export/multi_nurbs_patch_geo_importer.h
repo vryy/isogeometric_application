@@ -15,6 +15,7 @@
 #include <iomanip>
 
 // External includes
+#include <boost/algorithm/string.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -38,7 +39,7 @@ enum ReadMode
 
 
 /// Get the dimension of underlying NURBS in geo file
-int GetDimensionOfGeo(const std::string& fn)
+static int GetDimensionOfGeo(const std::string& fn)
 {
     std::ifstream infile(fn.c_str());
     if(!infile)

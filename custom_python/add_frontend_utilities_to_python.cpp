@@ -156,7 +156,7 @@ boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility
 //////////////////////////////////////////////////
 
 template<int TDim>
-typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch(
+typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch1(
         BendingStripUtility& rDummy,
         const std::size_t& Id,
         typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
@@ -164,6 +164,31 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch(
         const int& Order)
 {
     return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Order);
+}
+
+template<int TDim>
+typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
+        BendingStripUtility& rDummy,
+        const std::size_t& Id,
+        typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
+        typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
+        boost::python::list order_list)
+{
+    std::vector<int> Orders(TDim);
+
+    std::size_t dim = 0;
+
+    typedef boost::python::stl_input_iterator<int> iterator_value_type;
+    BOOST_FOREACH(const iterator_value_type::value_type& t,
+                std::make_pair(iterator_value_type(order_list), // begin
+                iterator_value_type() ) ) // end
+    {
+        Orders[dim++] = static_cast<int>(t);
+        if (dim == TDim)
+            break;
+    }
+
+    return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Orders);
 }
 
 //////////////////////////////////////////////////
@@ -204,8 +229,10 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
 
     class_<BendingStripUtility, BendingStripUtility::Pointer, boost::noncopyable>
     ("BendingStripUtility", init<>())
-    .def("CreateBendingStripNURBSPatch", &BendingStripUtility_CreateBendingStripNURBSPatch<2>)
-    .def("CreateBendingStripNURBSPatch", &BendingStripUtility_CreateBendingStripNURBSPatch<3>)
+    .def("CreateBendingStripNURBSPatch", &BendingStripUtility_CreateBendingStripNURBSPatch1<2>)
+    .def("CreateBendingStripNURBSPatch", &BendingStripUtility_CreateBendingStripNURBSPatch1<3>)
+    .def("CreateBendingStripNURBSPatch", &BendingStripUtility_CreateBendingStripNURBSPatch2<2>)
+    .def("CreateBendingStripNURBSPatch", &BendingStripUtility_CreateBendingStripNURBSPatch2<3>)
     ;
 
 }

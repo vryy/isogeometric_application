@@ -46,17 +46,18 @@ public:
     {
     }
 
-    /// Full Constructor with id
+    /// Full Constructor
     /// Note that the two patches must represent the NURBS patches
     /// Right now this constructor only support even order bending strip
+    /// In this constructor the knot vector on the boundary will be taken as the same as the original patch
     BendingStripNURBSPatch(const std::size_t& Id,
         typename PatchType::Pointer pPatch1, const BoundarySide& side1,
         typename PatchType::Pointer pPatch2, const BoundarySide& side2,
         const int& Order) : BaseType(Id, pPatch1, side1, pPatch2, side2, Order)
     {
         // check if the order is even
-        if (Order%2 != 0)
-            KRATOS_THROW_ERROR(std::logic_error, "The strip order is not even, but", Order)
+        if (this->NormalOrder()%2 != 0)
+            KRATOS_THROW_ERROR(std::logic_error, "The strip order is not even, but", this->NormalOrder())
 
         // get the boundary patches
         typename Patch<TDim-1>::Pointer pBPatch1 = pPatch1->ConstructBoundaryPatch(side1);
@@ -83,9 +84,9 @@ public:
             pFESpace->SetInfo(dim, pBFESpace->Number(dim), pBFESpace->Order(dim));
         }
 
-        knot_container_t w_knots = BSplinesFESpaceLibrary::CreatePrimitiveOpenKnotVector(this->Order());
+        knot_container_t w_knots = BSplinesFESpaceLibrary::CreatePrimitiveOpenKnotVector(this->NormalOrder());
         pFESpace->SetKnotVector(TDim-1, w_knots);
-        pFESpace->SetInfo(TDim-1, this->Order()+1, this->Order());
+        pFESpace->SetInfo(TDim-1, this->NormalOrder()+1, this->NormalOrder());
 
         pFESpace->ResetFunctionIndices();
 
@@ -97,26 +98,82 @@ public:
         std::vector<std::size_t> strip_sizes(TDim);
         for (std::size_t dim = 0; dim < TDim-1; ++dim)
             strip_sizes[dim] = pBControlPointGrid->Size(dim);
-        strip_sizes[TDim-1] = Order+1;
+        strip_sizes[TDim-1] = this->NormalOrder()+1;
 
         // construct the control point grid and assign the respective grid function
         std::vector<typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer> pSlicedControlPointGrids;
 
-//        typename StructuredControlGrid<TDim, ControlPointType>::Pointer pControlPointGrid1 = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >( pPatch1->ControlPointGridFunction().pControlGrid() );
-//        typename StructuredControlGrid<TDim, ControlPointType>::Pointer pControlPointGrid2 = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >( pPatch2->ControlPointGridFunction().pControlGrid() );
+        pSlicedControlPointGrids = this->ExtractSlicedControlGrids<ControlPointType>( pPatch1->ControlPointGridFunction().pControlGrid(), pPatch2->ControlPointGridFunction().pControlGrid(), pBPatch1->ControlPointGridFunction().pControlGrid() );
 
-//        for (std::size_t i = 0; i < Order/2; ++i)
-//        {
-//            pSlicedControlPointGrids.push_back(pControlPointGrid1->Get(side1, i+1));
-//        }
+        typename StructuredControlGrid<TDim, ControlPointType>::Pointer pStripControlPointGrid = typename StructuredControlGrid<TDim, ControlPointType>::Pointer( new StructuredControlGrid<TDim, ControlPointType>(strip_sizes) );
 
-//        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pBControlPointGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >( pBPatch1->ControlPointGridFunction().pControlGrid() );
-//        pSlicedControlPointGrids.push_back(pBControlPointGrid);
+        pStripControlPointGrid->CopyFrom(TDim-1, pSlicedControlPointGrids);
 
-//        for (std::size_t i = 0; i < Order/2; ++i)
-//        {
-//            pSlicedControlPointGrids.push_back(pControlPointGrid2->Get(side2, i+1));
-//        }
+        this->CreateControlPointGridFunction(pStripControlPointGrid);
+
+        //// TODO: transfer other control values
+
+        /**************set the indices from the parent**********************/
+        std::vector<std::size_t> parent_indices = GetIndicesFromParent();
+        pFESpace->ResetFunctionIndices(parent_indices);
+    }
+
+    /// Full Constructor
+    /// Note that the two patches must represent the NURBS patches
+    /// Right now this constructor only support even order bending strip
+    /// In this constructor the knot vector on the strip patch can be specified
+    BendingStripNURBSPatch(const std::size_t& Id,
+        typename PatchType::Pointer pPatch1, const BoundarySide& side1,
+        typename PatchType::Pointer pPatch2, const BoundarySide& side2,
+        const std::vector<int>& Orders) : BaseType(Id, pPatch1, side1, pPatch2, side2, Orders[TDim-1])
+    {
+        // check if the order is even
+        if (this->NormalOrder()%2 != 0)
+            KRATOS_THROW_ERROR(std::logic_error, "The strip order is not even, but", this->NormalOrder())
+
+        // get the boundary patches
+        typename Patch<TDim-1>::Pointer pBPatch1 = pPatch1->ConstructBoundaryPatch(side1);
+        typename Patch<TDim-1>::Pointer pBPatch2 = pPatch2->ConstructBoundaryPatch(side2);
+
+        // check if two patches are the same
+        if (!(pBPatch1->IsSame(*pBPatch2)))
+        {
+            KRATOS_WATCH(*pBPatch1)
+            KRATOS_WATCH(*pBPatch2)
+            KRATOS_THROW_ERROR(std::logic_error, "The two boundary patches are not the same", "")
+        }
+
+        // get the FESpace of boundary patch 1
+        typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pBPatch1->pFESpace());
+
+        // construct the FESpace
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
+
+        for (std::size_t dim = 0; dim < TDim-1; ++dim)
+        {
+            knot_container_t knot_vector = BSplinesFESpaceLibrary::CreateUniformOpenKnotVector(pBFESpace->Number(dim), Orders[dim]);
+            pFESpace->SetKnotVector(dim, knot_vector);
+            pFESpace->SetInfo(dim, pBFESpace->Number(dim), Orders[dim]);
+        }
+
+        knot_container_t w_knots = BSplinesFESpaceLibrary::CreatePrimitiveOpenKnotVector(this->NormalOrder());
+        pFESpace->SetKnotVector(TDim-1, w_knots);
+        pFESpace->SetInfo(TDim-1, this->NormalOrder()+1, this->NormalOrder());
+
+        pFESpace->ResetFunctionIndices();
+
+        /*****Set the FESpace*****/
+        this->SetFESpace(pFESpace);
+        /*************************/
+
+        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pBControlPointGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >( pBPatch1->ControlPointGridFunction().pControlGrid() );
+        std::vector<std::size_t> strip_sizes(TDim);
+        for (std::size_t dim = 0; dim < TDim-1; ++dim)
+            strip_sizes[dim] = pBControlPointGrid->Size(dim);
+        strip_sizes[TDim-1] = this->NormalOrder()+1;
+
+        // construct the control point grid and assign the respective grid function
+        std::vector<typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer> pSlicedControlPointGrids;
 
         pSlicedControlPointGrids = this->ExtractSlicedControlGrids<ControlPointType>( pPatch1->ControlPointGridFunction().pControlGrid(), pPatch2->ControlPointGridFunction().pControlGrid(), pBPatch1->ControlPointGridFunction().pControlGrid() );
 
@@ -160,7 +217,7 @@ public:
     {
         std::vector<std::size_t> func_indices;
 
-        for (std::size_t i = 0; i < this->Order()/2; ++i)
+        for (std::size_t i = 0; i < this->NormalOrder()/2; ++i)
         {
             std::vector<std::size_t> indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side1(), i+1);
             func_indices.insert(func_indices.end(), indices.begin(), indices.end());
@@ -169,7 +226,7 @@ public:
         std::vector<std::size_t> indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side1(), 0);
         func_indices.insert(func_indices.end(), indices.begin(), indices.end());
 
-        for (std::size_t i = 0; i < this->Order()/2; ++i)
+        for (std::size_t i = 0; i < this->NormalOrder()/2; ++i)
         {
             std::vector<std::size_t> indices = this->pPatch2()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side2(), i+1);
             func_indices.insert(func_indices.end(), indices.begin(), indices.end());
@@ -191,12 +248,12 @@ public:
         typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid2 = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid2 );
         typename StructuredControlGrid<TDim-1, TDataType>::Pointer psBControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, TDataType> >( pBControlGrid );
 
-        for (std::size_t i = 0; i < this->Order()/2; ++i)
+        for (std::size_t i = 0; i < this->NormalOrder()/2; ++i)
             pSlicedControlGrids.push_back(psControlGrid1->Get(this->Side1(), i+1));
 
         pSlicedControlGrids.push_back(psBControlGrid);
 
-        for (std::size_t i = 0; i < this->Order()/2; ++i)
+        for (std::size_t i = 0; i < this->NormalOrder()/2; ++i)
             pSlicedControlGrids.push_back(psControlGrid2->Get(this->Side2(), i+1));
 
         return pSlicedControlGrids;

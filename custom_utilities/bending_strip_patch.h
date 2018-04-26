@@ -35,7 +35,7 @@ public:
     typedef typename BaseType::ControlPointType ControlPointType;
 
     /// Default Constructor
-    BendingStripPatch(const std::size_t& Id, const int& Order) : BaseType(Id), mOrder(Order)
+    BendingStripPatch(const std::size_t& Id, const int& Order) : BaseType(Id), mNormalOrder(Order)
     {
     }
 
@@ -44,7 +44,7 @@ public:
         typename BaseType::Pointer pPatch1, const BoundarySide& side1,
         typename BaseType::Pointer pPatch2, const BoundarySide& side2,
         const int& Order)
-    : BaseType(Id), mOrder(Order), mpPatch1(pPatch1), mpPatch2(pPatch2), mSide1(side1), mSide2(side2)
+    : BaseType(Id), mNormalOrder(Order), mpPatch1(pPatch1), mpPatch2(pPatch2), mSide1(side1), mSide2(side2)
     {
     }
 
@@ -63,7 +63,7 @@ public:
     }
 
     /// Get the order of the strip patch in the orthogonal direction
-    const int& Order() const {return mOrder;}
+    const int& NormalOrder() const {return mNormalOrder;}
 
     /// Get the first patch
     typename BaseType::Pointer pPatch1() const {return mpPatch1;}
@@ -98,7 +98,8 @@ public:
     }
 
 private:
-    int mOrder; // this is the bending strip order in the normal direction to the boundary
+
+    int mNormalOrder; // this is the bending strip order in the normal direction to the boundary
 
     BoundarySide mSide1;
     BoundarySide mSide2;
@@ -106,38 +107,6 @@ private:
     typename BaseType::Pointer mpPatch1;
     typename BaseType::Pointer mpPatch2;
 };
-
-//template<>
-//class BendingStripPatch<1> : public Patch<1>
-//{
-//public:
-//    /// Pointer definition
-//    KRATOS_CLASS_POINTER_DEFINITION(BendingStripPatch);
-
-//    typedef Patch<1> BaseType;
-//    typedef typename BaseType::ControlPointType ControlPointType;
-
-//    /// Default Constructor
-//    BendingStripPatch(const std::size_t& Id, const int& Order) : BaseType(Id), mOrder(Order)
-//    {
-//    }
-
-//    /// Full Constructor
-//    BendingStripPatch(const std::size_t& Id,
-//        typename BaseType::Pointer pPatch1, const BoundarySide& side1,
-//        typename BaseType::Pointer pPatch2, const BoundarySide& side2,
-//        const int& Order) : BaseType(Id), mOrder(Order), mpPatch1(pPatch1), mpPatch2(pPatch2)
-//    {
-//    }
-
-//    /// Destructor
-//    virtual ~BendingStripPatch()
-//    {
-//        #ifdef DEBUG_DESTROY
-//        std::cout << Type() << ", Id = " << Id() << ", Addr = " << this << " is destroyed" << std::endl;
-//        #endif
-//    }
-//};
 
 /// output stream function
 template<int TDim>

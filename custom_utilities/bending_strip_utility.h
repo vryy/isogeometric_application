@@ -51,6 +51,16 @@ public:
         return typename Patch<TDim>::Pointer( new BendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Order) );
     }
 
+    template<int TDim>
+    static typename Patch<TDim>::Pointer CreateBendingStripNURBSPatch(
+        const std::size_t& Id,
+        typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
+        typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
+        const std::vector<int>& Orders)
+    {
+        return typename Patch<TDim>::Pointer( new BendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Orders) );
+    }
+
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {

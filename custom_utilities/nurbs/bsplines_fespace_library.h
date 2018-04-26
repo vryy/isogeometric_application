@@ -53,6 +53,20 @@ public:
         return knot_vector;
     }
 
+    /// Create the uniform open knot vector with order p and n basis functions
+    static knot_container_t CreateUniformOpenKnotVector(const std::size_t& number, const std::size_t& order)
+    {
+        knot_container_t knot_vector;
+        for (std::size_t i = 0; i < order+1; ++i)
+            knot_vector.pCreateKnot(0.0);
+        std::size_t m = number - order;
+        for (std::size_t i = 0; i < m-1; ++i)
+            knot_vector.pCreateKnot(((double)(i+1))/m);
+        for (std::size_t i = 0; i < order+1; ++i)
+            knot_vector.pCreateKnot(1.0);
+        return knot_vector;
+    }
+
     /// Generate regular BSplines patch. For 2D, it's rectangle and for 3D it's a cube.
     /// The knot vector only contains 0 and 1, i.e [0 0 0 ... 1 1 1].
     /// All the weights are 1.

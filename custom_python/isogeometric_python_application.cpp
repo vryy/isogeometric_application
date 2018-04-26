@@ -44,7 +44,8 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
            bases<KratosApplication>, boost::noncopyable > ("KratosIsogeometricApplication")
            ;
 
-    IsogeometricApplication_AddCustomUtilitiesToPython();
+    IsogeometricApplication_AddBackendUtilitiesToPython();
+    IsogeometricApplication_AddFrontendUtilitiesToPython();
     IsogeometricApplication_AddNURBSToPython();
     IsogeometricApplication_AddHBSplinesToPython();
     IsogeometricApplication_AddIsogeometricStructuresToPython();

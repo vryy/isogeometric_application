@@ -216,7 +216,7 @@ void BezierClassicalPostUtility_GenerateModelPart2(BezierClassicalPostUtility& d
     dummy.GenerateModelPart2(pModelPartPost, generate_for_condition);
 }
 
-void IsogeometricApplication_AddCustomUtilitiesToPython()
+void IsogeometricApplication_AddBackendUtilitiesToPython()
 {
     enum_<PostElementType>("PostElementType")
     .value("Triangle", _TRIANGLE_)

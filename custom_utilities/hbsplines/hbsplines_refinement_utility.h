@@ -412,7 +412,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     for (typename Patch<TDim>::DoubleGridFunctionContainerType::iterator it = DoubleGridFunctions_.begin();
             it != DoubleGridFunctions_.end(); ++it)
     {
-        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >(*it);
+        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
         pThisFESpace->SetWeights(Weights);
     }
 
@@ -420,7 +420,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     for (typename Patch<TDim>::Array1DGridFunctionContainerType::iterator it = Array1DGridFunctions_.begin();
             it != Array1DGridFunctions_.end(); ++it)
     {
-        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >(*it);
+        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
         pThisFESpace->SetWeights(Weights);
     }
 
@@ -428,7 +428,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     for (typename Patch<TDim>::VectorGridFunctionContainerType::iterator it = VectorGridFunctions_.begin();
             it != VectorGridFunctions_.end(); ++it)
     {
-        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >(*it);
+        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
         pThisFESpace->SetWeights(Weights);
     }
 

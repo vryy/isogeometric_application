@@ -40,14 +40,18 @@ public:
 
     /// Default constructor
     WeightedFESpace(typename BaseType::Pointer pFESpace, const std::vector<double>& weights)
-    : BaseType(), mpFESpace(pFESpace), mWeights(weights) {}
+    : BaseType(), mpFESpace(pFESpace)
+    {
+        mWeights.resize(weights.size());
+        std::copy(weights.begin(), weights.end(), mWeights.begin());
+    }
 
     /// Destructor
     virtual ~WeightedFESpace()
     {
     }
 
-    /// Helper to create new BSplinesWeightedFESpace pointer
+    /// Helper to create new WeightedFESpace pointer
     static WeightedFESpace<TDim>::Pointer Create(typename BaseType::Pointer pFESpace, const std::vector<double>& weights)
     {
         return WeightedFESpace<TDim>::Pointer(new WeightedFESpace(pFESpace, weights));
@@ -66,7 +70,12 @@ public:
     }
 
     /// Set the weight vector
-    void SetWeights(const std::vector<double>& Weights) {mWeights = Weights;}
+    void SetWeights(const std::vector<double>& weights)
+    {
+        if (mWeights.size() != weights.size())
+            mWeights.resize(weights.size());
+        std::copy(weights.begin(), weights.end(), mWeights.begin());
+    }
 
     /// Get the weight vector
     const std::vector<double>& Weights() const {return mWeights;}

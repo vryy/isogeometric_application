@@ -122,6 +122,12 @@ public:
 
     virtual void PrintData(std::ostream& rOStream) const
     {
+        rOStream << "<<<Listing of grid function " << mpControlGrid->Name() << ":" << std::endl;
+        rOStream << "-----FESPace:" << std::endl;
+        rOStream << *mpFESpace << std::endl;
+        rOStream << "-----Control point grid:" << std::endl;
+        rOStream << *mpControlGrid << std::endl;
+        rOStream << ">>>End Listing of grid function " << mpControlGrid->Name() << std::endl;
     }
 
 private:

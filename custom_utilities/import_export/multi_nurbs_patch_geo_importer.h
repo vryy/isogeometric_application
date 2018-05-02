@@ -39,7 +39,7 @@ enum ReadMode
 
 
 /// Get the dimension of underlying NURBS in geo file
-static int GetDimensionOfGeo(const std::string& fn)
+static int GetDimensionOfGeoHelper(const std::string& fn)
 {
     std::ifstream infile(fn.c_str());
     if(!infile)
@@ -106,7 +106,11 @@ public:
         boost::trim_if(firstline, boost::is_any_of("\t ")); // ignore trailing spaces
         boost::split(words, firstline, boost::is_any_of(" \t"), boost::token_compress_on);
 
-        if(words[3] == std::string("v.0.7"))
+        if(words[3] == std::string("v.0.6"))
+        {
+            ReadV06Single(infile, orders, numbers, knots, wcoords, weights);
+        }
+        else if(words[3] == std::string("v.0.7"))
         {
             ReadV07Single(infile, orders, numbers, knots, wcoords, weights);
         }
@@ -114,6 +118,8 @@ public:
         {
             ReadV21Single(infile, orders, numbers, knots, wcoords, weights);
         }
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "Unknown NURBS file format", words[3])
 
         infile.close();
 
@@ -173,6 +179,16 @@ public:
     }
 
 private:
+
+    void ReadV06Single(std::ifstream& infile, std::vector<std::size_t>& orders,
+        std::vector<std::size_t>& numbers,
+        std::vector<std::vector<double> >& knots,
+        std::vector<std::vector<double> >& wcoords,
+        std::vector<double>& weights)
+    {
+        // REMARK: i think the v.0.6 is the same as v.0.7, but we have to bear in mind that it's different
+        ReadV07Single(infile, orders, numbers, knots, wcoords, weights);
+    }
 
     void ReadV07Single(std::ifstream& infile, std::vector<std::size_t>& orders,
         std::vector<std::size_t>& numbers,

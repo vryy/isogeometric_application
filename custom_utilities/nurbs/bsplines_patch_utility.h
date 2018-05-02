@@ -115,7 +115,7 @@ public:
     /// Get the dimension of underlying NURBS in geo file
     static int GetDimensionOfGeo(const std::string& fn)
     {
-        return GetDimensionOfGeo(fn);
+        return GetDimensionOfGeoHelper(fn);
     }
 
     /// Create the B-Splines patch from geo file

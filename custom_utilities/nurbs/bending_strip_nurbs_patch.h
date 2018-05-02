@@ -28,6 +28,7 @@ namespace Kratos
 /**
 This class represents an isogeometric bending strip patch connecting two NURBS patches.
 REF: Kiendl et al, The bending strip method for isogeometric analysis of Kirchhoff–Love shell structures comprised of multiple patches.
+REMARK: User must create the bending strip patch after refinement, because bending strip patch is not refined automatically when the parent patches are refined.
  */
 template<int TDim>
 class BendingStripNURBSPatch : public BendingStripPatch<TDim>
@@ -94,28 +95,8 @@ public:
         this->SetFESpace(pFESpace);
         /*************************/
 
-        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pBControlPointGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >( pBPatch1->ControlPointGridFunction().pControlGrid() );
-        std::vector<std::size_t> strip_sizes(TDim);
-        for (std::size_t dim = 0; dim < TDim-1; ++dim)
-            strip_sizes[dim] = pBControlPointGrid->Size(dim);
-        strip_sizes[TDim-1] = this->NormalOrder()+1;
-
-        // construct the control point grid and assign the respective grid function
-        std::vector<typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer> pSlicedControlPointGrids;
-
-        pSlicedControlPointGrids = this->ExtractSlicedControlGrids<ControlPointType>( pPatch1->ControlPointGridFunction().pControlGrid(), pPatch2->ControlPointGridFunction().pControlGrid(), pBPatch1->ControlPointGridFunction().pControlGrid() );
-
-        typename StructuredControlGrid<TDim, ControlPointType>::Pointer pStripControlPointGrid = typename StructuredControlGrid<TDim, ControlPointType>::Pointer( new StructuredControlGrid<TDim, ControlPointType>(strip_sizes) );
-
-        pStripControlPointGrid->CopyFrom(TDim-1, pSlicedControlPointGrids);
-
-        this->CreateControlPointGridFunction(pStripControlPointGrid);
-
-        //// TODO: transfer other control values
-
-        /**************set the indices from the parent**********************/
-        std::vector<std::size_t> parent_indices = GetIndicesFromParent();
-        pFESpace->ResetFunctionIndices(parent_indices);
+        /*****Assign control values*****/
+        this->AssignControlValues(pBPatch1);
     }
 
     /// Full Constructor
@@ -166,28 +147,8 @@ public:
         this->SetFESpace(pFESpace);
         /*************************/
 
-        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pBControlPointGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >( pBPatch1->ControlPointGridFunction().pControlGrid() );
-        std::vector<std::size_t> strip_sizes(TDim);
-        for (std::size_t dim = 0; dim < TDim-1; ++dim)
-            strip_sizes[dim] = pBControlPointGrid->Size(dim);
-        strip_sizes[TDim-1] = this->NormalOrder()+1;
-
-        // construct the control point grid and assign the respective grid function
-        std::vector<typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer> pSlicedControlPointGrids;
-
-        pSlicedControlPointGrids = this->ExtractSlicedControlGrids<ControlPointType>( pPatch1->ControlPointGridFunction().pControlGrid(), pPatch2->ControlPointGridFunction().pControlGrid(), pBPatch1->ControlPointGridFunction().pControlGrid() );
-
-        typename StructuredControlGrid<TDim, ControlPointType>::Pointer pStripControlPointGrid = typename StructuredControlGrid<TDim, ControlPointType>::Pointer( new StructuredControlGrid<TDim, ControlPointType>(strip_sizes) );
-
-        pStripControlPointGrid->CopyFrom(TDim-1, pSlicedControlPointGrids);
-
-        this->CreateControlPointGridFunction(pStripControlPointGrid);
-
-        //// TODO: transfer other control values
-
-        /**************set the indices from the parent**********************/
-        std::vector<std::size_t> parent_indices = GetIndicesFromParent();
-        pFESpace->ResetFunctionIndices(parent_indices);
+        /*****Assign control values*****/
+        this->AssignControlValues(pBPatch1);
     }
 
     /// Destructor
@@ -235,6 +196,8 @@ public:
         return func_indices;        
     }
 
+private:
+
     template<typename TDataType>
     std::vector<typename StructuredControlGrid<TDim-1, TDataType>::Pointer> ExtractSlicedControlGrids(
         typename ControlGrid<TDataType>::Pointer pControlGrid1,
@@ -258,6 +221,33 @@ public:
 
         return pSlicedControlGrids;
     }
+
+    void AssignControlValues(typename Patch<TDim-1>::Pointer pBPatch)
+    {
+        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pBControlPointGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >( pBPatch->ControlPointGridFunction().pControlGrid() );
+        std::vector<std::size_t> strip_sizes(TDim);
+        for (std::size_t dim = 0; dim < TDim-1; ++dim)
+            strip_sizes[dim] = pBControlPointGrid->Size(dim);
+        strip_sizes[TDim-1] = this->NormalOrder()+1;
+
+        // construct the control point grid and assign the respective grid function
+        std::vector<typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer> pSlicedControlPointGrids;
+
+        pSlicedControlPointGrids = this->ExtractSlicedControlGrids<ControlPointType>( this->pPatch1()->ControlPointGridFunction().pControlGrid(), this->pPatch2()->ControlPointGridFunction().pControlGrid(), pBPatch->ControlPointGridFunction().pControlGrid() );
+
+        typename StructuredControlGrid<TDim, ControlPointType>::Pointer pStripControlPointGrid = typename StructuredControlGrid<TDim, ControlPointType>::Pointer( new StructuredControlGrid<TDim, ControlPointType>(strip_sizes) );
+
+        pStripControlPointGrid->CopyFrom(TDim-1, pSlicedControlPointGrids);
+
+        this->CreateControlPointGridFunction(pStripControlPointGrid);
+
+        //// TODO: transfer other control values
+
+        /**************set the indices from the parent**********************/
+        std::vector<std::size_t> parent_indices = GetIndicesFromParent();
+        this->pFESpace()->ResetFunctionIndices(parent_indices);
+    }
+
 };
 
 template<>

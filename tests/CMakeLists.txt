@@ -15,6 +15,7 @@ set(name_list
     test_bezier_extraction_2d_test_2
     test_bezier_extraction_3d
     test_bezier_extraction_local_1d
+    test_findspan_local_knots
     test_CreateRectangularControlPointGrid
 )
 

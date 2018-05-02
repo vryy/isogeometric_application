@@ -162,24 +162,24 @@ public:
 
     // implementation in GeoPde, low_level_functions.cc
     // Note: this implementation has linear, rather than log complexity
-//    template<class ValuesContainerType>
-//    static int FindSpan(
-//            const int rN,
-//            const int rP,
-//            const double rXi,
-//            const ValuesContainerType& rU
-//    )
-//    {
-//        int ret = 0;
+    template<class ValuesContainerType>
+    static int FindSpan2(
+            const int rN,
+            const int rP,
+            const double rXi,
+            const ValuesContainerType& rU
+    )
+    {
+        int ret = 0;
 //        KRATOS_WATCH(rN)
-//        while ((ret++ < rN) && (rU[ret] <= rXi))
-//        {
+        while ((ret++ < rN) && (rU[ret] <= rXi))
+        {
 //            KRATOS_WATCH(ret)
-//        }
-//        if(ret == rN+1) --ret;
+        }
+        if(ret == rN+1) --ret;
 //        std::cout << "--------" << std::endl;
-//        return (ret - 1);
-//    }
+        return (ret - 1);
+    }
 
     // Remark: this function only works correctly when rXi is in the knot span rI.
 //    static void BasisFuns(
@@ -398,6 +398,43 @@ public:
 //        end
         }
 
+    }
+
+    /// Compute the B-spline basis function based on Cox-de-Boor algorithm
+    //    % Input:
+    //    %   u       knot to be compute the function value
+    //    %   i       index of the basis function; for local knot vector, it must be 0
+    //    %   p       B-spline degree
+    //    %   knots   local knot vector, must be ascending
+    //    % Output: function value
+    template<class ValuesContainerType>
+    static double CoxDeBoor(const double& u, const int& i, const int& p, const ValuesContainerType& knots)
+    {
+        double y = 0.0;
+
+        if (p == 0)
+        {
+            if (u >= knots[i] && u < knots[i+1])
+                y = 1.0;
+            else
+                y = 0.0;
+
+            if (i+2 <= knots.size()-1)
+            {
+                if (u >= knots[i+1] && knots[i+2] == knots[i+1])
+                    y = 1.0;
+            }
+
+            return y;
+        }
+
+        if (knots[i+p] > knots[i])
+            y = y + (u - knots[i]) / (knots[i+p] - knots[i]) * CoxDeBoor(u, i, p-1, knots);
+
+        if (knots[i+p+1] > knots[i+1])
+            y = y + (knots[i+p+1] - u) / (knots[i+p+1] - knots[i+1]) * CoxDeBoor(u, i+1, p-1, knots);
+
+        return y;
     }
 
     /// Compute the refinement coefficients for one knot insertion B-Splines refinement in 1D

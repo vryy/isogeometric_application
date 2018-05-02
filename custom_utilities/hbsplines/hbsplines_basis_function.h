@@ -29,6 +29,7 @@
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
 #include "containers/data_value_container.h"
+#include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/bezier_utils.h"
 #include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
@@ -267,6 +268,24 @@ public:
         }
 
         return true;
+    }
+
+    /// Get the value of B-splines basis function
+    double GetValue(const std::vector<double>& xi) const
+    {
+        double res = 1.0;
+
+        for (std::size_t dim = 0; dim < TDim; ++dim)
+        {
+            std::vector<double> value(1);
+            std::vector<double> local_knots;
+            this->LocalKnots(dim, local_knots);
+            int order = this->Order(dim);
+            double v = BSplineUtils::CoxDeBoor(xi[dim], 0, order, local_knots);
+            res *= v;
+        }
+
+        return res;
     }
 
     /**************************************************************************

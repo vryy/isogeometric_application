@@ -194,13 +194,34 @@ public:
     /// Get the values of the basis function i at point xi
     virtual double GetValue(const std::size_t& i, const std::vector<double>& xi) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "GetValue is not implemented for dimension", TDim)
+        std::vector<double> weights = this->GetWeights();
+
+        double sum = 0.0;
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+            sum += weights[i]*(*it)->GetValue(xi);
+
+        return weights[i]/sum;
     }
 
     /// Get the values of the basis functions at point xi
     virtual std::vector<double> GetValue(const std::vector<double>& xi) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "GetValue is not implemented for dimension", TDim)
+        std::vector<double> values(this->TotalNumber());
+        std::vector<double> weights = this->GetWeights();
+
+        double sum = 0.0;
+        std::size_t i = 0;
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            values[i] = (*it)->GetValue(xi);
+            sum += weights[i]*values[i];
+            ++i;
+        }
+
+        for (i = 0; i < values.size(); ++i)
+            values[i] *= weights[i]/sum;
+
+        return values;
     }
 
     /// Compare between two BSplines patches in terms of parametric information

@@ -26,7 +26,8 @@ element_name = "KinematicLinearBezier2D"
 
 mpatch_mp = MultiPatchModelPart2D(mpatch)
 mpatch_mp.BeginModelPart()
-mpatch_mp.AddElement(patch1, element_name, 1, 1)
+mpatch_mp.CreateNodes()
+mpatch_mp.AddElements(patch1, element_name, 1, 1)
 mpatch_mp.EndModelPart()
 print(mpatch_mp)
 

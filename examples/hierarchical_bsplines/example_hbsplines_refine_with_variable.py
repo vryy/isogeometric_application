@@ -20,13 +20,18 @@ def main():
     for i in range(0, temp_ctrl_grid.Size()):
         temp_ctrl_grid[i] = 1.0
 #    print(temp_ctrl_grid)
-    temp_grid_func = patch.CreateGridFunction(temp_ctrl_grid)
-#    print(temp_grid_func)
-#    print(patch)
+    temperature_grid_func = patch.CreateGridFunction(temp_ctrl_grid)
+    print("temperature_grid_func:")
+    print(temperature_grid_func)
+    print("temperature_grid_func.GetValue(0.5, 0.5):", temperature_grid_func.GetValue([0.5, 0.5]))
+##    print(patch)
     echo_level = 1
     hbsplines_refinement_util.Refine(patch, 1, echo_level)
     patch.FESpace().Enumerate()
-    print(patch)
+    print("temperature_grid_func:")
+    print(temperature_grid_func)
+    print("temperature_grid_func.GetValue(0.5, 0.5):", temperature_grid_func.GetValue([0.5, 0.5]))
+#    print(patch)
 
 if __name__ == "__main__":
     main()

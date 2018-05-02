@@ -669,6 +669,30 @@ void MultiPatchExporter_Export(TExporter& rDummy,
 }
 
 //////////////////////////////////////////////////
+
+void DomainManager2D_AddCell(DomainManager2D& rDummy, const double& x1, const double& x2, const double& y1, const double& y2)
+{
+    std::vector<double> box(4);
+    box[0] = x1;
+    box[1] = x2;
+    box[2] = y1;
+    box[3] = y2;
+
+    rDummy.AddCell(box);
+}
+
+bool DomainManager2D_IsInside(DomainManager2D& rDummy, const double& x1, const double& x2, const double& y1, const double& y2)
+{
+    std::vector<double> box(4);
+    box[0] = x1;
+    box[1] = x2;
+    box[2] = y1;
+    box[3] = y2;
+
+    return rDummy.IsInside(box);
+}
+
+//////////////////////////////////////////////////
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
@@ -1117,8 +1141,8 @@ void IsogeometricApplication_AddNURBSToPython()
     ("DomainManager2D", init<std::size_t>())
     .def("AddXcoord", &DomainManager2D::AddXcoord)
     .def("AddYcoord", &DomainManager2D::AddYcoord)
-    .def("AddCell", &DomainManager2D::AddCell)
-    .def("IsInside", &DomainManager2D::IsInside)
+    .def("AddCell", &DomainManager2D_AddCell)
+    .def("IsInside", &DomainManager2D_IsInside)
     .def(self_ns::str(self))
     ;
 

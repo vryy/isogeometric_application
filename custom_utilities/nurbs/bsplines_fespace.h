@@ -187,6 +187,81 @@ public:
         return true;
     }
 
+    /// Reset all the dof numbers for each grid function to -1.
+    virtual void ResetFunctionIndices()
+    {
+        BaseType::mGlobalToLocal.clear();
+        if (mFunctionsIds.size() != this->TotalNumber())
+            mFunctionsIds.resize(this->TotalNumber());
+        std::fill(mFunctionsIds.begin(), mFunctionsIds.end(), -1);
+    }
+
+    /// Reset the function indices to a given values.
+    /// This is useful when assigning the id for the boundary patch.
+    virtual void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
+    {
+        if (func_indices.size() != this->TotalNumber())
+        {
+            KRATOS_WATCH(this->TotalNumber())
+            std::cout << "func_indices:";
+            for (std::size_t i = 0; i < func_indices.size(); ++i)
+                std::cout << " " << func_indices[i];
+            std::cout << std::endl;
+            KRATOS_THROW_ERROR(std::logic_error, "The func_indices vector does not have the same size as total number of basis functions", "")
+        }
+        if (mFunctionsIds.size() != this->TotalNumber())
+            mFunctionsIds.resize(this->TotalNumber());
+        // std::copy(func_indices.begin(), func_indices.end(), mFunctionsIds.begin());
+        for (std::size_t i = 0; i < func_indices.size(); ++i)
+        {
+            mFunctionsIds[i] = func_indices[i];
+            BaseType::mGlobalToLocal[mFunctionsIds[i]] = i;
+        }
+    }
+
+    /// Enumerate the dofs of each grid function. The enumeration algorithm is pretty straightforward.
+    /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
+    virtual std::size_t& Enumerate(std::size_t& start)
+    {
+        BaseType::mGlobalToLocal.clear();
+        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
+        {
+            if (mFunctionsIds[i] == -1) mFunctionsIds[i] = start++;
+            BaseType::mGlobalToLocal[mFunctionsIds[i]] = i;
+        }
+
+        return start;
+    }
+
+    /// Access the function indices (aka global ids)
+    virtual std::vector<std::size_t> FunctionIndices() const
+    {
+        return mFunctionsIds;
+    }
+
+    /// Update the function indices using a map. The map shall be the mapping from old index to new index.
+    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
+    {
+        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
+        {
+            std::map<std::size_t, std::size_t>::const_iterator it = indices_map.find(mFunctionsIds[i]);
+
+            if (it == indices_map.end())
+            {
+                std::cout << "WARNING!!! the indices_map does not contain " << mFunctionsIds[i] << std::endl;
+                continue;
+            }
+
+            mFunctionsIds[i] = it->second;
+        }
+
+        BaseType::mGlobalToLocal.clear();
+        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
+        {
+            BaseType::mGlobalToLocal[mFunctionsIds[i]] = i;
+        }
+    }
+
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
     {
@@ -197,14 +272,14 @@ public:
             if (TDim == 1)
             {
                 func_indices.resize(1);
-                func_indices[0] = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index1D(1, this->Number(0))];
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(1, this->Number(0))];
             }
             else if (TDim == 2)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
-                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(1, j+1, this->Number(0), this->Number(1))];
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(1, j+1, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
@@ -212,7 +287,7 @@ public:
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                         func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _RIGHT_)
@@ -220,14 +295,14 @@ public:
             if (TDim == 1)
             {
                 func_indices.resize(1);
-                func_indices[0] = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0), this->Number(0))];
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0), this->Number(0))];
             }
             else if (TDim == 2)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
-                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))];
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
@@ -235,7 +310,7 @@ public:
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                         func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BOTTOM_)
@@ -245,7 +320,7 @@ public:
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1, this->Number(0), this->Number(1))];
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
@@ -253,7 +328,7 @@ public:
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _TOP_)
@@ -263,7 +338,7 @@ public:
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))];
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
@@ -271,7 +346,7 @@ public:
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _FRONT_)
@@ -282,7 +357,7 @@ public:
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BACK_)
@@ -293,7 +368,7 @@ public:
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
 
@@ -310,14 +385,14 @@ public:
             if (TDim == 1)
             {
                 func_indices.resize(1);
-                func_indices[0] = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index1D(1+level, this->Number(0))];
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(1+level, this->Number(0))];
             }
             else if (TDim == 2)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
-                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(1+level, j+1, this->Number(0), this->Number(1))];
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(1+level, j+1, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
@@ -325,7 +400,7 @@ public:
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                         func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(1+level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(1+level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _RIGHT_)
@@ -333,14 +408,14 @@ public:
             if (TDim == 1)
             {
                 func_indices.resize(1);
-                func_indices[0] = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0)-level, this->Number(0))];
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0)-level, this->Number(0))];
             }
             else if (TDim == 2)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
-                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0)-level, j+1, this->Number(0), this->Number(1))];
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0)-level, j+1, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
@@ -348,7 +423,7 @@ public:
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                         func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0)-level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0)-level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BOTTOM_)
@@ -358,7 +433,7 @@ public:
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1+level, this->Number(0), this->Number(1))];
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1+level, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
@@ -366,7 +441,7 @@ public:
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1+level, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1+level, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _TOP_)
@@ -376,7 +451,7 @@ public:
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1)-level, this->Number(0), this->Number(1))];
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1)-level, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
@@ -384,7 +459,7 @@ public:
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2)-level, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2)-level, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _FRONT_)
@@ -395,7 +470,7 @@ public:
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1+level, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1+level, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BACK_)
@@ -406,7 +481,7 @@ public:
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1)-level, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1)-level, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
 
@@ -421,7 +496,7 @@ public:
             if (TDim == 1)
             {
                 if (func_indices[0] != -1)
-                    BaseType::mFunctionsIds[BSplinesIndexingUtility::Index1D(1, this->Number(0))] = func_indices[0];
+                    mFunctionsIds[BSplinesIndexingUtility::Index1D(1, this->Number(0))] = func_indices[0];
             }
             else if (TDim == 2)
             {
@@ -429,7 +504,7 @@ public:
                 {
                     const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))];
                     if (aux != -1)
-                        BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(1, j+1, this->Number(0), this->Number(1))] = aux;
+                        mFunctionsIds[BSplinesIndexingUtility::Index2D(1, j+1, this->Number(0), this->Number(1))] = aux;
                 }
             }
             else if (TDim == 3)
@@ -440,7 +515,7 @@ public:
                     {
                         const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
                         if (aux != -1)
-                            BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -450,7 +525,7 @@ public:
             if (TDim == 1)
             {
                 if (func_indices[0] != -1)
-                    BaseType::mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0), this->Number(0))] = func_indices[0];
+                    mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0), this->Number(0))] = func_indices[0];
             }
             else if (TDim == 2)
             {
@@ -458,7 +533,7 @@ public:
                 {
                     const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))];
                     if (aux != -1)
-                        BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))] = aux;
+                        mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))] = aux;
                 }
             }
             else if (TDim == 3)
@@ -469,7 +544,7 @@ public:
                     {
                         const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
                         if (aux != -1)
-                            BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -482,7 +557,7 @@ public:
                 {
                     const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))];
                     if (aux != -1)
-                        BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1, this->Number(0), this->Number(1))] = aux;
+                        mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1, this->Number(0), this->Number(1))] = aux;
                 }
             }
             else if (TDim == 3)
@@ -493,7 +568,7 @@ public:
                     {
                         const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
                         if (aux != -1)
-                            BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -506,7 +581,7 @@ public:
                 {
                     const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))];
                     if (aux != -1)
-                        BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))] = aux;
+                        mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))] = aux;
                 }
             }
             else if (TDim == 3)
@@ -517,7 +592,7 @@ public:
                     {
                         const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
                         if (aux != -1)
-                            BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -532,7 +607,7 @@ public:
                     {
                         const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
                         if (aux != -1)
-                            BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -547,7 +622,7 @@ public:
                     {
                         const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
                         if (aux != -1)
-                            BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -641,6 +716,8 @@ public:
     {
         typename cell_container_t::Pointer pCellManager;
 
+        std::vector<std::size_t> func_indices = this->FunctionIndices();
+
         if (TDim == 1)
         {
             pCellManager = typename cell_container_t::Pointer(new CellManager1D<Cell>());
@@ -687,7 +764,7 @@ public:
                 Cell::Pointer p_cell = Cell::Pointer(new Cell(cnt, std::get<0>(span1), std::get<1>(span1)));
                 double W = 1.0; // here we set to one because B-Splines space does not have weight
                 for (std::size_t r = 0; r < (p1+1); ++r)
-                    p_cell->AddAnchor(BaseType::FunctionIndices()[anchors[r]], W, row(C[cnt], r));
+                    p_cell->AddAnchor(func_indices[anchors[r]], W, row(C[cnt], r));
                 pCellManager->insert(p_cell);
                 ++cnt;
             }
@@ -757,7 +834,7 @@ public:
                     Cell::Pointer p_cell = Cell::Pointer(new Cell(cnt, std::get<0>(span1), std::get<1>(span1), std::get<0>(span2), std::get<1>(span2)));
                     double W = 1.0; // here we set to one because B-Splines space does not have weight
                     for (std::size_t r = 0; r < (p1+1)*(p2+1); ++r)
-                        p_cell->AddAnchor(BaseType::FunctionIndices()[anchors[r]], W, row(C[cnt], r));
+                        p_cell->AddAnchor(func_indices[anchors[r]], W, row(C[cnt], r));
                     pCellManager->insert(p_cell);
                     ++cnt;
                 }
@@ -847,7 +924,7 @@ public:
                                 std::get<0>(span2), std::get<1>(span2), std::get<0>(span3), std::get<1>(span3)));
                         double W = 1.0; // here we set to one because B-Splines space does not have weight
                         for (std::size_t r = 0; r < (p1+1)*(p2+1)*(p3+1); ++r)
-                            p_cell->AddAnchor(BaseType::FunctionIndices()[anchors[r]], W, row(C[cnt], r));
+                            p_cell->AddAnchor(func_indices[anchors[r]], W, row(C[cnt], r));
                         pCellManager->insert(p_cell);
                         ++cnt;
                     }
@@ -866,6 +943,7 @@ public:
             this->SetKnotVector(dim, rOther.KnotVector(dim));
             this->SetInfo(dim, rOther.Number(dim), rOther.Order(dim));
         }
+        this->mFunctionsIds = rOther.mFunctionsIds;
         BaseType::operator=(rOther);
         return *this;
     }
@@ -899,20 +977,20 @@ public:
                 rOStream << " " << mKnotVectors[i].pKnotAt(j)->Value();
             rOStream << std::endl;
         }
-        if (BaseType::mFunctionsIds.size() == this->TotalNumber())
+        if (mFunctionsIds.size() == this->TotalNumber())
         {
             rOStream << " Function Indices:";
             if (TDim == 1)
             {
-                for (std::size_t i = 0; i < BaseType::mFunctionsIds.size(); ++i)
-                    rOStream << " " << BaseType::mFunctionsIds[i];
+                for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
+                    rOStream << " " << mFunctionsIds[i];
             }
             else if (TDim == 2)
             {
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                 {
                     for (std::size_t i = 0; i < this->Number(0); ++i)
-                        rOStream << " " << BaseType::mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
+                        rOStream << " " << mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
                     rOStream << std::endl;
                 }
             }
@@ -923,7 +1001,7 @@ public:
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                     {
                         for (std::size_t i = 0; i < this->Number(0); ++i)
-                            rOStream << " " << BaseType::mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            rOStream << " " << mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
                         rOStream << std::endl;
                     }
                     rOStream << std::endl;
@@ -940,6 +1018,11 @@ private:
     boost::array<std::size_t, TDim> mOrders;
     boost::array<std::size_t, TDim> mNumbers;
     boost::array<knot_container_t, TDim> mKnotVectors;
+
+    /**
+     * data for grid function interpolation
+     */
+    std::vector<std::size_t> mFunctionsIds; // this is to store a unique number of the shape function over the forest of FESpace(s).
 };
 
 /**

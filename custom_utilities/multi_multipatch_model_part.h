@@ -280,7 +280,7 @@ public:
         for (typename MultiPatch<TDim>::PatchContainerType::iterator it = mpMultiPatches[ip]->begin();
                 it != mpMultiPatches[ip]->end(); ++it)
         {
-            const std::vector<std::size_t>& func_ids = it->pFESpace()->FunctionIndices();
+            std::vector<std::size_t> func_ids = it->pFESpace()->FunctionIndices();
 
             // check if the grid function existed in the patch
             if (!it->template HasGridFunction<TVariableType>(rVariable))

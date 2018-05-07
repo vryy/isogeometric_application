@@ -285,13 +285,11 @@ public:
     {
         // enumerate all basis functions
         BaseType::mGlobalToLocal.clear();
-        BaseType::mFunctionsIds.resize(this->TotalNumber());
         std::size_t cnt = 0;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            (*it)->SetId(start++);
-            BaseType::mFunctionsIds[cnt] = (*it)->Id();
-            BaseType::mGlobalToLocal[BaseType::mFunctionsIds[cnt]] = cnt;
+            (*it)->SetEquationId(start++);
+            BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt;
             ++cnt;
         }
 

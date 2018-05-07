@@ -112,6 +112,8 @@ inline Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSpline
     std::vector<Variable<array_1d<double, 3> >*> array1d_var_list = pPatch->ExtractVariables<Variable<array_1d<double, 3> > >();
     std::vector<Variable<Vector>*> vector_var_list = pPatch->ExtractVariables<Variable<Vector> >();
 
+    std::vector<std::size_t> func_indices = pFESpace->FunctionIndices();
+
     for(std::size_t j = 0; j < number_2; ++j)
     {
         // create and fill the local knot vector
@@ -130,7 +132,7 @@ inline Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSpline
             std::size_t i_func = j * number_1 + i;
             std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
 
-            std::size_t id = pFESpace->FunctionIndices()[i_func];
+            std::size_t id = func_indices[i_func];
             typename HBSplinesBasisFunction<2>::Pointer p_bf = pNewFESpace->CreateBf(id, level, pLocalKnots);
 
             // create the cells for the basis function
@@ -242,6 +244,8 @@ inline Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSpline
     std::size_t number_2 = pFESpace->KnotVector(1).size() - pFESpace->Order(1) - 1;
     std::size_t number_3 = pFESpace->KnotVector(2).size() - pFESpace->Order(2) - 1;
 
+    std::vector<std::size_t> func_indices = pFESpace->FunctionIndices();
+
     for(std::size_t l = 0; l < number_3; ++l)
     {
         // create and fill the local knot vector
@@ -267,7 +271,7 @@ inline Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSpline
                 std::size_t i_func = (l * number_2 + j) * number_1 + i;
                 std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2, pLocalKnots3};
 
-                std::size_t id = pFESpace->FunctionIndices()[i_func];
+                std::size_t id = func_indices[i_func];
                 typename HBSplinesBasisFunction<3>::Pointer p_bf = pNewFESpace->CreateBf(id, level, pLocalKnots);
 
                 // create the cells for the basis function

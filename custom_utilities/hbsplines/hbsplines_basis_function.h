@@ -97,7 +97,8 @@ public:
     typedef typename cell_container_t::const_iterator cell_const_iterator;
 
     /// Default constructor
-    HBSplinesBasisFunction(const std::size_t& Id, const std::size_t& Level) : mId(Id), mLevel(Level)
+    HBSplinesBasisFunction(const std::size_t& Id, const std::size_t& Level)
+    : mId(Id), mEquationId(-1), mLevel(Level)
     {}
 
     /// Destructor
@@ -178,11 +179,17 @@ public:
     cell_iterator cell_end() {return mpCells.end();}
     cell_const_iterator cell_end() const {return mpCells.end();}
 
-    /// Get the Id of this basis function. Each basis function should have unique Id
+    /// Get the Id of this basis function. Each basis function should have unique Id within a patch.
     const std::size_t& Id() const {return mId;}
 
     /// Set the Id for this basis function. One shall use this function only in the enumeration process.
     void SetId(const std::size_t& Id) {mId = Id;}
+
+    /// Get the equation Id of this basis function. Each basis function should have unique equation Id accross patches.
+    const std::size_t& EquationId() const {return mEquationId;}
+
+    /// Set the equation Id for this basis function. One shall use this function only in the enumeration process.
+    void SetEquationId(const std::size_t& EquationId) {mEquationId = EquationId;}
 
     /// Get the level of this basis function
     const std::size_t& Level() const {return mLevel;}
@@ -362,7 +369,7 @@ public:
     /// Print information of this basis function
     void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "Bf(id:" << Id() << "), p = (";
+        rOStream << "Bf(id: " << this->Id() << "), eq_id: " << this->EquationId() << ", p = (";
         for (int dim = 0; dim < TDim; ++dim)
             rOStream << " " << this->Order(dim);
         rOStream << ")";
@@ -404,6 +411,7 @@ public:
 private:
 
     std::size_t mId;
+    std::size_t mEquationId;
     std::size_t mLevel;
     boost::array<std::size_t, TDim> mOrders;
     bf_container_t mpChilds; // list of refined basis functions that constitute this basis function

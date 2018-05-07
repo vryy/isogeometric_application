@@ -96,75 +96,35 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Reset all the dof numbers for each grid function to -1.
-    void ResetFunctionIndices()
+    virtual void ResetFunctionIndices()
     {
-        mGlobalToLocal.clear();
-        if (mFunctionsIds.size() != this->TotalNumber())
-            mFunctionsIds.resize(this->TotalNumber());
-        std::fill(mFunctionsIds.begin(), mFunctionsIds.end(), -1);
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Reset the function indices to a given values.
     /// This is useful when assigning the id for the boundary patch.
-    void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
+    virtual void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
     {
-        if (func_indices.size() != this->TotalNumber())
-        {
-            KRATOS_WATCH(this->TotalNumber())
-            std::cout << "func_indices:";
-            for (std::size_t i = 0; i < func_indices.size(); ++i)
-                std::cout << " " << func_indices[i];
-            std::cout << std::endl;
-            KRATOS_THROW_ERROR(std::logic_error, "The func_indices vector does not have the same size as total number of basis functions", "")
-        }
-        if (mFunctionsIds.size() != this->TotalNumber())
-            mFunctionsIds.resize(this->TotalNumber());
-        // std::copy(func_indices.begin(), func_indices.end(), mFunctionsIds.begin());
-        for (std::size_t i = 0; i < func_indices.size(); ++i)
-        {
-            mFunctionsIds[i] = func_indices[i];
-            mGlobalToLocal[mFunctionsIds[i]] = i;
-        }
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Enumerate the dofs of each grid function. The enumeration algorithm is pretty straightforward.
     /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
     virtual std::size_t& Enumerate(std::size_t& start)
     {
-        mGlobalToLocal.clear();
-        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
-        {
-            if (mFunctionsIds[i] == -1) mFunctionsIds[i] = start++;
-            mGlobalToLocal[mFunctionsIds[i]] = i;
-        }
-
-        return start;
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Access the function indices (aka global ids)
-    const std::vector<std::size_t>& FunctionIndices() const {return mFunctionsIds;}
+    virtual std::vector<std::size_t> FunctionIndices() const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
 
     /// Update the function indices using a map. The map shall be the mapping from old index to new index.
-    void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
+    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
     {
-        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
-        {
-            std::map<std::size_t, std::size_t>::const_iterator it = indices_map.find(mFunctionsIds[i]);
-
-            if (it == indices_map.end())
-            {
-                std::cout << "WARNING!!! the indices_map does not contain " << mFunctionsIds[i] << std::endl;
-                continue;
-            }
-
-            mFunctionsIds[i] = it->second;
-        }
-
-        mGlobalToLocal.clear();
-        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
-        {
-            mGlobalToLocal[mFunctionsIds[i]] = i;
-        }
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Return the local id of a given global id
@@ -279,7 +239,6 @@ public:
     /// Overload assignment operator
     FESpace<TDim>& operator=(const FESpace<TDim>& rOther)
     {
-        this->mFunctionsIds = rOther.mFunctionsIds;
         return *this;
     }
 
@@ -302,16 +261,12 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         rOStream << " Function Indices:";
-        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
-            rOStream << " " << mFunctionsIds[i];
+        std::vector<std::size_t> func_indices = this->FunctionIndices();
+        for (std::size_t i = 0; i < func_indices.size(); ++i)
+            rOStream << " " << func_indices[i];
     }
 
 protected:
-
-    /**
-     * data for grid function interpolation
-     */
-    std::vector<std::size_t> mFunctionsIds; // this is to store a unique number of the shape function over the forest of FESpace(s).
 
     std::map<std::size_t, std::size_t> mGlobalToLocal;
 

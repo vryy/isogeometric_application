@@ -128,8 +128,9 @@ private:
         // rOStream << "zlabel('z');\n";
 
         rOStream << patch_name << "_number = [";
-        for (std::size_t i = 0; i < pPatch->pFESpace()->FunctionIndices().size(); ++i)
-            rOStream << " " << CONVERT_INDEX_IGA_TO_KRATOS(pPatch->pFESpace()->FunctionIndices()[i]);
+        std::vector<std::size_t> func_indices = pPatch->pFESpace()->FunctionIndices();
+        for (std::size_t i = 0; i < func_indices.size(); ++i)
+            rOStream << " " << CONVERT_INDEX_IGA_TO_KRATOS(func_indices[i]);
         rOStream << "];\n";
 
         rOStream << std::endl;

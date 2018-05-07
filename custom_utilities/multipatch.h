@@ -213,7 +213,8 @@ public:
         std::set<std::size_t> all_indices;
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
-            all_indices.insert((*it)->pFESpace()->FunctionIndices().begin(), (*it)->pFESpace()->FunctionIndices().end());
+            std::vector<std::size_t> func_indices = (*it)->pFESpace()->FunctionIndices();
+            all_indices.insert(func_indices.begin(), func_indices.end());
         }
         mEquationSystemSize = all_indices.size();
 
@@ -234,7 +235,7 @@ public:
         mGlobalToPatch.clear();
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
-            const std::vector<std::size_t>& global_indices = (*it)->pFESpace()->FunctionIndices();
+            std::vector<std::size_t> global_indices = (*it)->pFESpace()->FunctionIndices();
             for (std::size_t i = 0; i < global_indices.size(); ++i)
                 mGlobalToPatch[global_indices[i]] = (*it)->Id();
         }

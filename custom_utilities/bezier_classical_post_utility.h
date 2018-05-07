@@ -35,6 +35,7 @@
 #include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
 #include "utilities/auto_collapse_spatial_binning.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "isogeometric_application.h"
 
@@ -59,20 +60,6 @@ namespace Kratos
 ///@}
 ///@name  Enum's
 ///@{
-
-enum PreElementType
-{
-    _NURBS_ = 0,
-    _BEZIER_ = 1
-};
-
-enum PostElementType
-{
-    _TRIANGLE_ = 0,
-    _QUADRILATERAL_ = 1,
-    _TETRAHEDRA_ = 2,
-    _HEXAHEDRA_ = 3
-};
 
 ///@}
 ///@name  Functions

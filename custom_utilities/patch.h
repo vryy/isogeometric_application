@@ -22,6 +22,7 @@
 #include "includes/define.h"
 #include "includes/serializer.h"
 #include "containers/array_1d.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/weighted_fespace.h"
@@ -41,11 +42,6 @@ namespace Kratos
 template<int TDim> class Patch;
 template<int TDim> class MultiPatch;
 
-
-enum IsogeometricEchoFlags
-{
-    ECHO_REFIMENT   = 0b0000000000000001,
-};
 
 /**
 This class represents an isogeometric patch in parametric coordinates. An isogeometric patch can be a NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.

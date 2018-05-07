@@ -1,5 +1,5 @@
-%% plot the hierarchical NURBS sampling points using Cox-de-Boor formula
-function plot_sampling_hnurbs_cells(Xi,Eta,P,W,Id,S,C,N,params)
+%% plot the hierarchical B-Splines sampling points using Cox-de-Boor formula
+function plot_sampling_hbsplines_cells(Xi,Eta,P,W,Id,S,C,N,params)
 Pts = zeros(length(S),2);
 for c = 1:length(S)
     Pts(1,1) = S{c}(1,1);

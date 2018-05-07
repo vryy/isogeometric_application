@@ -1,5 +1,5 @@
-%% plot the hierarchical NURBS sampling points using Cox-de-Boor formula and Bezier discretization for comparison
-function Pip=plot_sampling_hnurbs_cdb_bezier(Xi,Eta,P,W,Id,S,C,N,params)
+%% plot the hierarchical B-Splines sampling points using Cox-de-Boor formula and Bezier discretization for comparison
+function Pip=plot_sampling_hbsplines_cdb_bezier(Xi,Eta,P,W,Id,S,C,N,params)
 clc
 close all
 hold on

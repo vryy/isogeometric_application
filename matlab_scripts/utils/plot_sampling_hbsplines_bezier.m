@@ -1,5 +1,5 @@
-%% plot the hierarchical NURBS sampling points using Bezier discretization
-function Pip=plot_sampling_hnurbs_bezier(P,W,Id,S,C,N,params)
+%% plot the hierarchical B-Splines sampling points using Bezier discretization
+function Pip=plot_sampling_hbsplines_bezier(P,W,Id,S,C,N,params)
 min_xi = params.min_xi;
 max_xi = params.max_xi;
 min_eta = params.min_eta;

@@ -1,5 +1,5 @@
-%% plot the hierarchical NURBS sampling points using Cox-de-Boor formula
-function Pip=plot_sampling_hnurbs_cdb(Xi,Eta,P,W,params)
+%% plot the hierarchical B-Splines sampling points using Cox-de-Boor formula
+function Pip=plot_sampling_hbsplines_cdb(Xi,Eta,P,W,params)
 min_xi = params.min_xi;
 max_xi = params.max_xi;
 min_eta = params.min_eta;

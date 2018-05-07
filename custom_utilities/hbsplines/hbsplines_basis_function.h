@@ -182,9 +182,6 @@ public:
     /// Get the Id of this basis function. Each basis function should have unique Id within a patch.
     const std::size_t& Id() const {return mId;}
 
-    /// Set the Id for this basis function. One shall use this function only in the enumeration process.
-    void SetId(const std::size_t& Id) {mId = Id;}
-
     /// Get the equation Id of this basis function. Each basis function should have unique equation Id accross patches.
     const std::size_t& EquationId() const {return mEquationId;}
 

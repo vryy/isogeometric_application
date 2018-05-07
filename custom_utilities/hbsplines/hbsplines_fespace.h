@@ -279,6 +279,39 @@ public:
         }
     }
 
+    /// Reset the function indices to a given values.
+    /// This is useful when assigning the id for the boundary patch.
+    virtual void ResetFunctionIndices()
+    {
+        BaseType::mGlobalToLocal.clear();
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            (*it)->SetEquationId(-1);
+        }
+    }
+
+    /// Reset the function indices to a given values.
+    /// This is useful when assigning the id for the boundary patch.
+    virtual void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
+    {
+        if (func_indices.size() != this->TotalNumber())
+        {
+            KRATOS_WATCH(this->TotalNumber())
+            std::cout << "func_indices:";
+            for (std::size_t i = 0; i < func_indices.size(); ++i)
+                std::cout << " " << func_indices[i];
+            std::cout << std::endl;
+            KRATOS_THROW_ERROR(std::logic_error, "The func_indices vector does not have the same size as total number of basis functions", "")
+        }
+        std::size_t cnt = 0;
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            (*it)->SetEquationId(func_indices[cnt]);
+            BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt;
+            ++cnt;
+        }
+    }
+
     /// Enumerate the dofs of each grid function. The enumeration algorithm is pretty straightforward.
     /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
     virtual std::size_t& Enumerate(std::size_t& start)
@@ -294,6 +327,40 @@ public:
         }
 
         return start;
+    }
+
+    /// Access the function indices (aka global ids)
+    virtual std::vector<std::size_t> FunctionIndices() const
+    {
+        std::vector<std::size_t> func_indices(this->TotalNumber());
+        std::size_t cnt = 0;
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            func_indices[cnt] = (*it)->EquationId();
+            ++cnt;
+        }
+        return func_indices;
+    }
+
+    /// Update the function indices using a map. The map shall be the mapping from old index to new index.
+    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
+    {
+        std::size_t cnt = 0;
+        BaseType::mGlobalToLocal.clear();
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            std::map<std::size_t, std::size_t>::const_iterator it = indices_map.find((*it)->EquationId());
+
+            if (it == indices_map.end())
+            {
+                std::cout << "WARNING!!! the indices_map does not contain " << (*it)->EquationId() << std::endl;
+                continue;
+            }
+
+            (*it)->SetEquationId(it->second);
+            BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt;
+            ++cnt;
+        }
     }
 
     /// Extract the index of the functions on the boundary

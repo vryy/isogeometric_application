@@ -32,6 +32,7 @@
 #include "custom_utilities/hbsplines/hbsplines_basis_function.h"
 
 #define DEBUG_GEN_CELL
+#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -81,7 +82,12 @@ public:
     }
 
     /// Destructor
-    virtual ~HBSplinesFESpace() {}
+    virtual ~HBSplinesFESpace()
+    {
+        #ifdef DEBUG_DESTROY
+        std::cout << Type() << ", Addr = " << this << " is destroyed" << std::endl;
+        #endif
+    }
 
     /// Helper to create new HBSplinesFESpace pointer
     static HBSplinesFESpace<TDim>::Pointer Create()
@@ -409,12 +415,12 @@ public:
     {
         typename HBSplinesFESpace<TDim-1>::Pointer pBFESpace = typename HBSplinesFESpace<TDim-1>::Pointer(new HBSplinesFESpace<TDim-1>());
 
-        // FIXME construct the basis function and cells on the boundary
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet supported")
+/*        // FIXME construct the basis function and cells on the boundary*/
+/*        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet supported")*/
 
-        // transfer the function indices
-        std::vector<std::size_t> b_func_indices = ExtractBoundaryFunctionIndices(side);
-        pBFESpace->ResetFunctionIndices(b_func_indices);
+/*        // transfer the function indices*/
+/*        std::vector<std::size_t> b_func_indices = ExtractBoundaryFunctionIndices(side);*/
+/*        pBFESpace->ResetFunctionIndices(b_func_indices);*/
 
         return pBFESpace;
     }
@@ -425,8 +431,8 @@ public:
     /// Get the underlying cell manager
     typename cell_container_t::ConstPointer pCellManager() const {return mpCellManager;}
 
-    /// Create the cell manager for all the cells in the support domain of the HBSplinesFESpace
-    virtual typename BaseType::cell_container_t::Pointer ConstructCellManager() const
+    /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
+    void UpdateCells()
     {
         // for each cell compute the extraction operator and add to the anchor
         Vector Crow;
@@ -439,7 +445,11 @@ public:
                 (*it_cell)->AddAnchor((*it_bf)->Id(), (*it_bf)->GetValue(CONTROL_POINT).W(), Crow);
             }
         }
+    }
 
+    /// Create the cell manager for all the cells in the support domain of the HBSplinesFESpace
+    virtual typename BaseType::cell_container_t::Pointer ConstructCellManager() const
+    {
         // create the compatible cell manager and add to the list
         typename BaseType::cell_container_t::Pointer pCompatCellManager;
         if (TDim == 2)
@@ -640,5 +650,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesFESpace<
 } // namespace Kratos.
 
 #undef DEBUG_GEN_CELL
+#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_FESPACE_H_INCLUDED defined

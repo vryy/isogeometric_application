@@ -41,7 +41,7 @@ mpatch_export1.Export(patch1, "line.txt")
 
 print("######AFTER REFINEMENT#######")
 mpatch = MultiPatch1D()
-mpatch.AddPatch(patch1)
+mpatch.AddPatch(patch1_ptr)
 
 multipatch_refine_util = MultiPatchRefinementUtility()
 multipatch_refine_util.InsertKnots(patch1_ptr, [[0.4, 0.5]])

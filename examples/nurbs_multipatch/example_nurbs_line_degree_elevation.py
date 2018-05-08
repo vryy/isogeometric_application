@@ -41,7 +41,7 @@ print(patch1)
 multipatch_util.ExportGeo(patch1, "line.txt")
 
 mpatch = MultiPatch1D()
-mpatch.AddPatch(patch1)
+mpatch.AddPatch(patch1_ptr)
 
 multipatch_refine_util = MultiPatchRefinementUtility()
 multipatch_refine_util.DegreeElevate(patch1_ptr, [1])

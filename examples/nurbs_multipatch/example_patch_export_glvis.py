@@ -32,7 +32,7 @@ patch1 = patch1_ptr.GetReference()
 patch1.CreateControlPointGridFunction(ctrl_grid_1)
 #print(patch1)
 
-mpatch.AddPatch(patch1)
+mpatch.AddPatch(patch1_ptr)
 
 print("############REFINEMENT###############")
 multipatch_refine_util = MultiPatchRefinementUtility()

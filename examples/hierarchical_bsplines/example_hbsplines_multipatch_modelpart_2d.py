@@ -19,7 +19,7 @@ patch1 = patch1_ptr.GetReference()
 #print(patch1)
 
 mpatch = MultiPatch2D()
-mpatch.AddPatch(patch1)
+mpatch.AddPatch(patch1_ptr)
 print(mpatch)
 
 element_name = "KinematicLinearBezier2D"

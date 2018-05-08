@@ -42,8 +42,8 @@ def CreateMultiPatch():
     patch2.CreateControlPointGridFunction(ctrl_grid_2)
     #print(patch2)
 
-    mpatch.AddPatch(patch1)
-    mpatch.AddPatch(patch2)
+    mpatch.AddPatch(patch1_ptr)
+    mpatch.AddPatch(patch2_ptr)
     mpatch.MakeNeighbor(patch1, BoundarySide.Top, patch2, BoundarySide.Bottom)
 
     print("############REFINEMENT###############")

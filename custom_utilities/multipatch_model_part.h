@@ -95,9 +95,9 @@ public:
         #endif
 
         // create new nodes from control points
-        for (std::size_t i = 0; i < mpMultiPatch->EquationSystemSize(); ++i)
+        for (std::size_t idof = 0; idof < mpMultiPatch->EquationSystemSize(); ++idof)
         {
-            std::tuple<std::size_t, std::size_t> loc = mpMultiPatch->EquationIdLocation(i);
+            std::tuple<std::size_t, std::size_t> loc = mpMultiPatch->EquationIdLocation(idof);
 
             const std::size_t& patch_id = std::get<0>(loc);
             const std::size_t& local_id = std::get<1>(loc);
@@ -107,7 +107,7 @@ public:
             const ControlPointType& point = mpMultiPatch->pGetPatch(patch_id)->pControlPointGridFunction()->pControlGrid()->GetData(local_id);
             // KRATOS_WATCH(point)
 
-            ModelPart::NodeType::Pointer pNewNode = mpModelPart->CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(i), point.X(), point.Y(), point.Z());
+            ModelPart::NodeType::Pointer pNewNode = mpModelPart->CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(idof), point.X(), point.Y(), point.Z());
         }
 
         #ifdef ENABLE_PROFILING
@@ -210,9 +210,9 @@ public:
         if (!IsReady()) return;
 
         // transfer data from from control points to nodes
-        for (std::size_t i = 0; i < mpMultiPatch->EquationSystemSize(); ++i)
+        for (std::size_t idof = 0; idof < mpMultiPatch->EquationSystemSize(); ++idof)
         {
-            std::tuple<std::size_t, std::size_t> loc = mpMultiPatch->EquationIdLocation(i);
+            std::tuple<std::size_t, std::size_t> loc = mpMultiPatch->EquationIdLocation(idof);
 
             const std::size_t& patch_id = std::get<0>(loc);
             const std::size_t& local_id = std::get<1>(loc);
@@ -222,7 +222,7 @@ public:
             const typename TVariableType::Type& value = mpMultiPatch->pGetPatch(patch_id)->pGetGridFunction(rVariable)->pControlGrid()->GetData(local_id);
             // KRATOS_WATCH(value)
 
-            ModelPart::NodeType::Pointer pNode = mpModelPart->pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(i));
+            ModelPart::NodeType::Pointer pNode = mpModelPart->pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(idof));
 
             pNode->GetSolutionStepValue(rVariable) = value;
         }

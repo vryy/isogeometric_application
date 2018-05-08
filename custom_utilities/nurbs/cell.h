@@ -228,15 +228,14 @@ public:
     void GetAnchorWeights(Vector& rWeights) const
     {
         if(rWeights.size() != mAnchorWeights.size())
-            rWeights.resize(mAnchorWeights.size());
+            rWeights.resize(mAnchorWeights.size(), false);
         std::copy(mAnchorWeights.begin(), mAnchorWeights.end(), rWeights.begin());
     }
 
     /// Get the extraction operator matrix
     Matrix GetExtractionOperator() const
     {
-        Matrix M;
-        M.resize(mCrows.size(), mCrows[0].size());
+        Matrix M(mCrows.size(), mCrows[0].size());
         for(std::size_t i = 0; i < mCrows.size(); ++i)
             noalias(row(M, i)) = mCrows[i];
         return M;
@@ -245,8 +244,7 @@ public:
     /// Get the extraction as compressed matrix
     CompressedMatrix GetCompressedExtractionOperator() const
     {
-        CompressedMatrix M;
-        M.resize(mCrows.size(), mCrows[0].size());
+        CompressedMatrix M(mCrows.size(), mCrows[0].size());
         // here we just naively copy the data. However we shall initialize the compressed matrix properly as in the kernel (TODO)
         for(std::size_t i = 0; i < mCrows.size(); ++i)
             noalias(row(M, i)) = mCrows[i];

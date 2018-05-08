@@ -78,16 +78,16 @@ public:
     typedef FESpace<TDim> FESpaceType;
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : mId(Id), mFESpace(NULL)
+    Patch(const std::size_t& Id) : mId(Id), mpFESpace(NULL)
     {
         mpNeighbors.resize(2*TDim);
     }
 
     /// Constructor with id and FESpace
-    Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace) : mId(Id), mFESpace(pFESpace)
+    Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace) : mId(Id), mpFESpace(pFESpace)
     {
         mpNeighbors.resize(2*TDim);
-        if (mFESpace == NULL)
+        if (mpFESpace == NULL)
             KRATOS_THROW_ERROR(std::logic_error, "Invalid FESpace is provided", "")
     }
 
@@ -95,7 +95,9 @@ public:
     virtual ~Patch()
     {
         #ifdef DEBUG_DESTROY
-        std::cout << Type() << ", Id = " << Id() << ", Addr = " << this << " is destroyed" << std::endl;
+        std::cout << Type() << ", Id = " << Id()
+                  << ", " << mpFESpace->Type()
+                  << ", Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
 
@@ -115,27 +117,27 @@ public:
     const std::size_t& Id() const {return mId;}
 
     /// Set the corresponding FESpace for the patch
-    void SetFESpace(typename FESpace<TDim>::Pointer pFESpace) {mFESpace = pFESpace;}
+    void SetFESpace(typename FESpace<TDim>::Pointer pFESpace) {mpFESpace = pFESpace;}
 
     /// Get the FESpace pointer
-    typename FESpace<TDim>::Pointer pFESpace() {return mFESpace;}
+    typename FESpace<TDim>::Pointer pFESpace() {return mpFESpace;}
 
     /// Get the FESpace pointer
-    typename FESpace<TDim>::ConstPointer pFESpace() const {return mFESpace;}
+    typename FESpace<TDim>::ConstPointer pFESpace() const {return mpFESpace;}
 
     /// Get the number of basis functions defined over the patch
     virtual const std::size_t TotalNumber() const
     {
-        assert(mFESpace == NULL);
-        return mFESpace->TotalNumber();
+        assert(mpFESpace == NULL);
+        return mpFESpace->TotalNumber();
     }
 
     /// Get the order of the patch in specific direction
     virtual const std::size_t Order(const std::size_t& i) const
     {
-        assert(mFESpace == NULL);
+        assert(mpFESpace == NULL);
         if (i >= TDim) return 0;
-        else return mFESpace->Order(i);
+        else return mpFESpace->Order(i);
     }
 
     /// Return true if this patch is a bending strip patch
@@ -165,7 +167,7 @@ public:
     {
         CheckSize(*pControlPointGrid, __FUNCTION__);
         pControlPointGrid->SetName("CONTROL_POINT");
-        typename GridFunction<TDim, ControlPointType>::Pointer pNewGridFunc = GridFunction<TDim, ControlPointType>::Create(mFESpace, pControlPointGrid);
+        typename GridFunction<TDim, ControlPointType>::Pointer pNewGridFunc = GridFunction<TDim, ControlPointType>::Create(mpFESpace, pControlPointGrid);
         mpGridFunctions.push_back(pNewGridFunc);
         return pNewGridFunc;
     }
@@ -207,7 +209,7 @@ public:
     typename GridFunction<TDim, TDataType>::Pointer CreateGridFunction(typename ControlGrid<TDataType>::Pointer pControlGrid)
     {
         CheckSize(*pControlGrid, __FUNCTION__);
-        typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mFESpace, this->GetControlWeights());
+        typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
         typename GridFunction<TDim, TDataType>::Pointer pNewGridFunc = GridFunction<TDim, TDataType>::Create(pNewFESpace, pControlGrid);
         mpGridFunctions.push_back(pNewGridFunc);
         return pNewGridFunc;
@@ -704,7 +706,7 @@ private:
 
     // FESpace contains the shape function information and various information with regards to the functional space.
     // Because the control point grid is in homogeneous coordinates, the FESpace shall be an unweighted spaces
-    typename FESpace<TDim>::Pointer mFESpace;
+    typename FESpace<TDim>::Pointer mpFESpace;
 
     // container to contain all the grid functions
     std::vector<boost::any> mpGridFunctions; // using boost::any so store pointers to grid function
@@ -720,7 +722,7 @@ private:
     typename MultiPatch<TDim>::WeakPointer mpParentMultiPatch;
 
     /// Empty Constructor for serializer
-    Patch() : mId(0), mFESpace(NULL) {}
+    Patch() : mId(0), mpFESpace(NULL) {}
 
     /// Serializer
     friend class Serializer;

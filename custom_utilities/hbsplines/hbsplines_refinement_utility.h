@@ -35,8 +35,12 @@ struct HBSplinesRefinementUtility_Helper
 {
     typedef KnotArray1D<double> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
+    typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
     static void Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& EchoLevel);
+
+    static std::pair<std::vector<std::size_t>, std::vector<bf_t> > Refine(typename Patch<TDim>::Pointer pPatch,
+            typename HBSplinesFESpace<TDim>::bf_t p_bf, std::set<std::size_t>& refined_patches, const int& EchoLevel);
 
     static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, const int& EchoLevel);
 
@@ -108,23 +112,14 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesRefineme
 template<int TDim>
 inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& EchoLevel)
 {
+    typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
+    typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
+
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
 
-    // Type definitions
-    typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
-    typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
-    typedef typename HBSplinesFESpace<TDim>::CellType CellType;
-    typedef typename HBSplinesFESpace<TDim>::cell_t cell_t;
-    typedef typename HBSplinesFESpace<TDim>::cell_container_t cell_container_t;
-    typedef typename Patch<TDim>::ControlPointType ControlPointType;
-
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
-
-    #ifdef ENABLE_PROFILING
-    double start = OpenMPUtils::GetCurrentTime();
-    #endif
 
     // get the correct basis function
     bf_t p_bf;
@@ -146,6 +141,72 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
         std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " is skipped" << std::endl;
         return;
     }
+
+    std::set<std::size_t> refined_patches;
+    std::size_t equation_id = p_bf->EquationId();
+    std::pair<std::vector<std::size_t>, std::vector<bf_t> > aux = Refine(pPatch, p_bf, refined_patches, EchoLevel);
+
+    const std::vector<std::size_t>& numbers = aux.first;
+    std::vector<bf_t>& pnew_bfs = aux.second;
+
+    if (pPatch->pNeighbor(_LEFT_) != NULL)
+    {
+        typename Patch<TDim>::Pointer pNeighborPatch = pPatch->pNeighbor(_LEFT_);
+
+        // extract the hierarchical B-Splines space
+        typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
+
+        // get the correct basis function
+        bf_t p_neighbor_bf;
+        bool found = false;
+        for(typename bf_container_t::iterator it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
+        {
+            if ((*it)->EquationId() == equation_id)
+            {
+                p_neighbor_bf = *it;
+                found = true;
+            }
+        }
+
+        if (found)
+        {
+            std::pair<std::vector<std::size_t>, std::vector<bf_t> > aux2 = Refine(pNeighborPatch, p_neighbor_bf, refined_patches, EchoLevel);
+
+            const std::vector<std::size_t>& neighbor_numbers = aux2.first;
+            std::vector<bf_t>& p_neighbor_bfs = aux2.second;
+
+
+        }
+    }
+}
+
+template<int TDim>
+std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>::bf_t> > HBSplinesRefinementUtility_Helper<TDim>::Refine(
+        typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf,
+        std::set<std::size_t>& refined_patches, const int& EchoLevel)
+{
+    // Type definitions
+    typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
+    typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
+    typedef typename HBSplinesFESpace<TDim>::CellType CellType;
+    typedef typename HBSplinesFESpace<TDim>::cell_t cell_t;
+    typedef typename HBSplinesFESpace<TDim>::cell_container_t cell_container_t;
+    typedef typename Patch<TDim>::ControlPointType ControlPointType;
+
+    if (std::find(refined_patches.begin(), refined_patches.end(), pPatch->Id()) == refined_patches.end())
+    {
+        std::vector<std::size_t> aux1;
+        std::vector<bf_t> aux2;
+
+        return std::make_pair(aux1, aux2);
+    }
+
+    #ifdef ENABLE_PROFILING
+    double start = OpenMPUtils::GetCurrentTime();
+    #endif
+
+    // extract the hierarchical B-Splines space
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
 
     // get the list of variables in the patch
     std::vector<Variable<double>*> double_variables = pPatch->template ExtractVariables<Variable<double> >();
@@ -219,20 +280,27 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     std::size_t last_id = pFESpace->LastId();
     typename cell_container_t::Pointer pnew_cells;
 
+    std::vector<std::size_t> numbers(TDim);
+    std::vector<bf_t> pnew_bfs;
+
+    // start to enumerate from the last equation id in the multipatch
+    std::size_t starting_id = pPatch->pParentMultiPatch()->EquationSystemSize();
+
     if (TDim == 2)
     {
         pnew_cells = typename cell_container_t::Pointer(new CellManager2D<CellType>());
 
-        std::size_t number_1 = pnew_local_knots[0].size() - pFESpace->Order(0) - 1;
-        std::size_t number_2 = pnew_local_knots[1].size() - pFESpace->Order(1) - 1;
-        for(std::size_t j = 0; j < number_2; ++j)
+        numbers[0] = pnew_local_knots[0].size() - pFESpace->Order(0) - 1;
+        numbers[1] = pnew_local_knots[1].size() - pFESpace->Order(1) - 1;
+
+        for(std::size_t j = 0; j < numbers[1]; ++j)
         {
             // create and fill the local knot vector
             std::vector<knot_t> pLocalKnots2;
             for(std::size_t k = 0; k < pFESpace->Order(1) + 2; ++k)
                 pLocalKnots2.push_back(pnew_local_knots[1][j + k]);
 
-            for(std::size_t i = 0; i < number_1; ++i)
+            for(std::size_t i = 0; i < numbers[0]; ++i)
             {
                 // create and fill the local knot vector
                 std::vector<knot_t> pLocalKnots1;
@@ -242,9 +310,30 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
                 // create the basis function object
                 std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
                 bf_t pnew_bf = pFESpace->CreateBf(last_id+1, next_level, pLocalKnots);
+                pnew_bfs.push_back(pnew_bf);
                 if (pnew_bf->Id() == last_id+1) ++last_id;
 
-                std::size_t i_func = j * number_1 + i;
+                std::size_t i_func = j * numbers[0] + i;
+
+                // set the boundary information
+                if (p_bf->IsOnLeft())
+                    if (i == 0)
+                        pnew_bfs[i_func]->AddBoundary(_LEFT_);
+
+                if (p_bf->IsOnRight())
+                    if (i == numbers[0]-1)
+                        pnew_bfs[i_func]->AddBoundary(_RIGHT_);
+
+                if (p_bf->IsOnBottom())
+                    if (j == 0)
+                        pnew_bfs[i_func]->AddBoundary(_BOTTOM_);
+
+                if (p_bf->IsOnTop())
+                    if (j == numbers[1]-1)
+                        pnew_bfs[i_func]->AddBoundary(_TOP_);
+
+                // assign new equation id
+                p_bf->SetEquationId(starting_id++);
 
                 // transfer the control point information
                 ControlPointType oldC = p_bf->GetValue(CONTROL_POINT);
@@ -307,24 +396,25 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     {
         pnew_cells = typename cell_container_t::Pointer(new CellManager3D<CellType>());
 
-        std::size_t number_1 = pnew_local_knots[0].size() - pFESpace->Order(0) - 1;
-        std::size_t number_2 = pnew_local_knots[1].size() - pFESpace->Order(1) - 1;
-        std::size_t number_3 = pnew_local_knots[2].size() - pFESpace->Order(2) - 1;
-        for(std::size_t l = 0; l < number_3; ++l)
+        numbers[0] = pnew_local_knots[0].size() - pFESpace->Order(0) - 1;
+        numbers[1] = pnew_local_knots[1].size() - pFESpace->Order(1) - 1;
+        numbers[2] = pnew_local_knots[2].size() - pFESpace->Order(2) - 1;
+
+        for(std::size_t l = 0; l < numbers[2]; ++l)
         {
             // create and fill the local knot vector
             std::vector<knot_t> pLocalKnots3;
             for(std::size_t k = 0; k < pFESpace->Order(2) + 2; ++k)
                 pLocalKnots3.push_back(pnew_local_knots[2][l + k]);
 
-            for(std::size_t j = 0; j < number_2; ++j)
+            for(std::size_t j = 0; j < numbers[1]; ++j)
             {
                 // create and fill the local knot vector
                 std::vector<knot_t> pLocalKnots2;
                 for(std::size_t k = 0; k < pFESpace->Order(1) + 2; ++k)
                     pLocalKnots2.push_back(pnew_local_knots[1][j + k]);
 
-                for(std::size_t i = 0; i < number_1; ++i)
+                for(std::size_t i = 0; i < numbers[0]; ++i)
                 {
                     // create and fill the local knot vector
                     std::vector<knot_t> pLocalKnots1;
@@ -334,10 +424,39 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
                     // create the basis function object
                     std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2, pLocalKnots3};
                     bf_t pnew_bf = pFESpace->CreateBf(last_id+1, next_level, pLocalKnots);
+                    pnew_bfs.push_back(pnew_bf);
                     if (pnew_bf->Id() == last_id+1) ++last_id;
 
                     // update the coordinates
-                    std::size_t i_func = (l * number_2 + j) * number_1 + i;
+                    std::size_t i_func = (l * numbers[1] + j) * numbers[0] + i;
+
+                    // set the boundary information
+                    if (p_bf->IsOnLeft())
+                        if (i == 0)
+                            pnew_bfs[i_func]->AddBoundary(_LEFT_);
+
+                    if (p_bf->IsOnRight())
+                        if (i == numbers[0]-1)
+                            pnew_bfs[i_func]->AddBoundary(_RIGHT_);
+
+                    if (p_bf->IsOnFront())
+                        if (j == 0)
+                            pnew_bfs[i_func]->AddBoundary(_FRONT_);
+
+                    if (p_bf->IsOnBack())
+                        if (j == numbers[1]-1)
+                            pnew_bfs[i_func]->AddBoundary(_BACK_);
+
+                    if (p_bf->IsOnBottom())
+                        if (l == 0)
+                            pnew_bfs[i_func]->AddBoundary(_BOTTOM_);
+
+                    if (p_bf->IsOnTop())
+                        if (l == numbers[2]-1)
+                            pnew_bfs[i_func]->AddBoundary(_TOP_);
+
+                    // assign new equation id
+                    p_bf->SetEquationId(starting_id++);
 
                     // transfer the control point information
                     ControlPointType oldC = p_bf->GetValue(CONTROL_POINT);
@@ -403,6 +522,8 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
                 }
             }
         }
+
+        return std::make_pair(numbers, pnew_bfs);
     }
 
     // update the weight information for all the grid functions (except the control point grid function)

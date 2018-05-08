@@ -349,15 +349,15 @@ public:
         BaseType::mGlobalToLocal.clear();
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            std::map<std::size_t, std::size_t>::const_iterator it = indices_map.find((*it)->EquationId());
+            std::map<std::size_t, std::size_t>::const_iterator it2 = indices_map.find((*it)->EquationId());
 
-            if (it == indices_map.end())
+            if (it2 == indices_map.end())
             {
                 std::cout << "WARNING!!! the indices_map does not contain " << (*it)->EquationId() << std::endl;
                 continue;
             }
 
-            (*it)->SetEquationId(it->second);
+            (*it)->SetEquationId(it2->second);
             BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt;
             ++cnt;
         }
@@ -368,7 +368,20 @@ public:
     {
         std::vector<std::size_t> func_indices;
 
-        // TODO
+        // firstly we organize the basis functions based on its equation_id
+        std::map<std::size_t, bf_t> map_bfs;
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            map_bfs[(*it)->EquationId()] = (*it);
+        }
+
+        // then we can extract the equation_id
+        func_indices.resize(map_bfs.size());
+        std::size_t cnt = 0;
+        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
+        {
+            func_indices[cnt++] = it->first;
+        }
 
         return func_indices;
     }
@@ -376,7 +389,19 @@ public:
     /// Assign the index for the functions on the boundary
     virtual void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices)
     {
-        // TODO
+        // firstly we organize the basis functions based on its equation_id
+        std::map<std::size_t, bf_t> map_bfs;
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            map_bfs[(*it)->EquationId()] = (*it);
+        }
+
+        // then we can assign the equation_id incrementally
+        std::size_t cnt = 0;
+        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
+        {
+            it->second->SetEquationId(func_indices[cnt++]);
+        }
     }
 
     /// Construct the boundary patch based on side
@@ -384,7 +409,8 @@ public:
     {
         typename HBSplinesFESpace<TDim-1>::Pointer pBFESpace = typename HBSplinesFESpace<TDim-1>::Pointer(new HBSplinesFESpace<TDim-1>());
 
-        // TODO construct the basis function and cells on the boundary
+        // FIXME construct the basis function and cells on the boundary
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet supported")
 
         // transfer the function indices
         std::vector<std::size_t> b_func_indices = ExtractBoundaryFunctionIndices(side);

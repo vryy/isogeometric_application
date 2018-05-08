@@ -114,6 +114,7 @@ inline Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSpline
 
     std::vector<std::size_t> func_indices = pFESpace->FunctionIndices();
 
+    std::size_t id = 0;
     for(std::size_t j = 0; j < number_2; ++j)
     {
         // create and fill the local knot vector
@@ -132,8 +133,16 @@ inline Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSpline
             std::size_t i_func = j * number_1 + i;
             std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
 
-            std::size_t id = func_indices[i_func];
-            typename HBSplinesBasisFunction<2>::Pointer p_bf = pNewFESpace->CreateBf(id, level, pLocalKnots);
+            const std::size_t& func_id = func_indices[i_func];
+            typename HBSplinesBasisFunction<2>::Pointer p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
+            p_bf->SetEquationId(func_id);
+
+            // set the boundary information
+            if (i == 0) p_bf->AddBoundary(_LEFT_);
+            else if (i == number_1-1) p_bf->AddBoundary(_RIGHT_);
+
+            if (j == 0) p_bf->AddBoundary(_BOTTOM_);
+            else if (j == number_2-1) p_bf->AddBoundary(_TOP_);
 
             // create the cells for the basis function
             for(std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
@@ -246,6 +255,7 @@ inline Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSpline
 
     std::vector<std::size_t> func_indices = pFESpace->FunctionIndices();
 
+    std::size_t id = 0;
     for(std::size_t l = 0; l < number_3; ++l)
     {
         // create and fill the local knot vector
@@ -271,8 +281,19 @@ inline Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSpline
                 std::size_t i_func = (l * number_2 + j) * number_1 + i;
                 std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2, pLocalKnots3};
 
-                std::size_t id = func_indices[i_func];
-                typename HBSplinesBasisFunction<3>::Pointer p_bf = pNewFESpace->CreateBf(id, level, pLocalKnots);
+                const std::size_t& func_id = func_indices[i_func];
+                typename HBSplinesBasisFunction<3>::Pointer p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
+                p_bf->SetEquationId(func_id);
+
+                // set the boundary information
+                if (i == 0) p_bf->AddBoundary(_LEFT_);
+                else if (i == number_1-1) p_bf->AddBoundary(_RIGHT_);
+
+                if (j == 0) p_bf->AddBoundary(_FRONT_);
+                else if (j == number_2-1) p_bf->AddBoundary(_BACK_);
+
+                if (l == 0) p_bf->AddBoundary(_BOTTOM_);
+                else if (l == number_3-1) p_bf->AddBoundary(_TOP_);
 
                 // create the cells for the basis function
                 for(std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)

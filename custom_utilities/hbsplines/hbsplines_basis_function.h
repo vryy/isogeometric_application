@@ -98,7 +98,7 @@ public:
 
     /// Default constructor
     HBSplinesBasisFunction(const std::size_t& Id, const std::size_t& Level)
-    : mId(Id), mEquationId(-1), mLevel(Level)
+    : mId(Id), mEquationId(-1), mBoundaryId(_INSIDE_), mLevel(Level)
     {}
 
     /// Destructor
@@ -179,14 +179,31 @@ public:
     cell_iterator cell_end() {return mpCells.end();}
     cell_const_iterator cell_end() const {return mpCells.end();}
 
-    /// Get the Id of this basis function. Each basis function should have unique Id within a patch.
+    /// Get the Id of this basis function. Each basis function should have unique Id within a patch
     const std::size_t& Id() const {return mId;}
 
-    /// Get the equation Id of this basis function. Each basis function should have unique equation Id accross patches.
+    /// Get the equation Id of this basis function. Each basis function should have unique equation Id accross patches
     const std::size_t& EquationId() const {return mEquationId;}
 
-    /// Set the equation Id for this basis function. One shall use this function only in the enumeration process.
+    /// Set the equation Id for this basis function. One shall use this function only in the enumeration process
     void SetEquationId(const std::size_t& EquationId) {mEquationId = EquationId;}
+
+    /// Get the boundary information of this basis function
+    const std::size_t& BoundaryId() const {return mBoundaryId;}
+
+    /// Add the boundary information to this basis function
+    void AddBoundary(const std::size_t& BoundaryInfo) {mBoundaryId |= BoundaryInfo;}
+
+    /// Remove the boundary information from this basis function
+    void RemoveBoundary(const std::size_t& BoundaryInfo) {mBoundaryId &= (0xff - BoundaryInfo);}
+
+    /// Function to identify the location of this basis function
+    bool IsOnLeft() const {return (this->BoundaryId() & _LEFT_) == _LEFT_;}
+    bool IsOnRight() const {return (this->BoundaryId() & _RIGHT_) == _RIGHT_;}
+    bool IsOnTop() const {return (this->BoundaryId() & _TOP_) == _TOP_;}
+    bool IsOnBottom() const {return (this->BoundaryId() & _BOTTOM_) == _BOTTOM_;}
+    bool IsOnFront() const {return (this->BoundaryId() & _FRONT_) == _FRONT_;}
+    bool IsOnBack() const {return (this->BoundaryId() & _BACK_) == _BACK_;}
 
     /// Get the level of this basis function
     const std::size_t& Level() const {return mLevel;}
@@ -408,8 +425,9 @@ public:
 private:
 
     std::size_t mId;
-    std::size_t mEquationId;
+    std::size_t mEquationId; // this variable stores the equation id of this basis function accross patches for the case of scalar PDE.
     std::size_t mLevel;
+    std::size_t mBoundaryId; // this variable embeddeds the boundary information associated with this basis function. By default, the new basis function is considerred inside of the patch.
     boost::array<std::size_t, TDim> mOrders;
     bf_container_t mpChilds; // list of refined basis functions that constitute this basis function
     std::map<int, double> mRefinedCoefficients; // store the coefficient of refined basis functions

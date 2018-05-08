@@ -47,6 +47,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/import_export/multi_nurbs_patch_geo_importer.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_matlab_exporter.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_glvis_exporter.h"
+#include "custom_python/add_import_export_to_python.h"
 
 
 namespace Kratos
@@ -455,6 +456,16 @@ std::size_t FESpace_Enumerate(FESpace<TDim>& rDummy)
 }
 
 template<int TDim>
+boost::python::list FESpace_FunctionIndices(FESpace<TDim>& rDummy)
+{
+    boost::python::list indices;
+    std::vector<std::size_t> all_indices = rDummy.FunctionIndices();
+    for (std::size_t i = 0; i < all_indices.size(); ++i)
+        indices.append<int>(static_cast<int>(all_indices[i]));
+    return indices;
+}
+
+template<int TDim>
 boost::python::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, const BoundarySide& side)
 {
     boost::python::list indices;
@@ -657,15 +668,6 @@ std::size_t MultiPatch_Enumerate2(MultiPatch<TDim>& rDummy, const std::size_t& s
 //    KRATOS_WATCH(system_size)
 
     return system_size;
-}
-
-//////////////////////////////////////////////////
-
-template<int TDim, class TExporter, class TPatchType>
-void MultiPatchExporter_Export(TExporter& rDummy,
-        typename TPatchType::Pointer pPatch, const std::string& filename)
-{
-    rDummy.template Export<TDim>(pPatch, filename);
 }
 
 //////////////////////////////////////////////////
@@ -920,6 +922,7 @@ void IsogeometricApplication_AddFESpacesToPython()
     .def("Order", &FESpace<TDim>::Order)
     .def("TotalNumber", &FESpace<TDim>::TotalNumber)
     .def("Enumerate", &FESpace_Enumerate<TDim>)
+    .def("FunctionIndices", &FESpace_FunctionIndices<TDim>)
     .def("BoundaryFunctionIndices", &FESpace_BoundaryFunctionIndices<TDim>)
     .def("BoundaryShiftedFunctionIndices", &FESpace_BoundaryShiftedFunctionIndices<TDim>)
     .def(self_ns::str(self))

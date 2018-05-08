@@ -46,29 +46,27 @@ public:
     virtual ~MultiNURBSPatchGLVisExporterWriter() {}
 
     /// Export a single patch
-    virtual void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename) const
+    virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const
     {
-        BaseType::Export(pPatch, filename);
+        BaseType::Export(pPatch, rOStream);
     }
 
     /// Export a multipatch
-    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const std::string& filename) const
+    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, std::ostream& rOStream) const
     {
-        std::ofstream outfile;
-        outfile.open(filename, std::ios::out);
-        outfile << std::setprecision(BaseType::Accuracy());
+        rOStream << std::setprecision(BaseType::Accuracy());
 
-        outfile << "MFEM NURBS mesh v1.0\n\n";
+        rOStream << "MFEM NURBS mesh v1.0\n\n";
 
-        outfile << "#\n";
-        outfile << "# MFEM Geometry Types (see mesh/geom.hpp):\n";
-        outfile << "#\n";
-        outfile << "# SEGMENT     = 1\n";
-        outfile << "# SQUARE      = 3\n";
-        outfile << "# CUBE        = 5\n";
-        outfile << "#\n\n";
+        rOStream << "#\n";
+        rOStream << "# MFEM Geometry Types (see mesh/geom.hpp):\n";
+        rOStream << "#\n";
+        rOStream << "# SEGMENT     = 1\n";
+        rOStream << "# SQUARE      = 3\n";
+        rOStream << "# CUBE        = 5\n";
+        rOStream << "#\n\n";
 
-        outfile << "dimension\n" << TDim << "\n\n";
+        rOStream << "dimension\n" << TDim << "\n\n";
 
         std::size_t nvertices;
         std::vector<std::vector<std::size_t> > elements;
@@ -83,51 +81,51 @@ public:
         this->GenerateCornerTopology(*pMultiPatch, nvertices, elements, boundary, edges, knotvec);
         // KRATOS_WATCH(__LINE__)
 
-        outfile << "elements\n" << elements.size() << "\n";
+        rOStream << "elements\n" << elements.size() << "\n";
         for (std::size_t i = 0; i < elements.size(); ++i)
         {
-            outfile << "1";
+            rOStream << "1";
             if (elements[i].size() == 4)
-                outfile << " 3";
+                rOStream << " 3";
             else if (elements[i].size() == 8)
-                outfile << " 5";
+                rOStream << " 5";
             else
                 KRATOS_THROW_ERROR(std::logic_error, "Invalid number of nodes for an element:", elements[i].size())
 
             for (std::size_t j = 0; j < elements[i].size(); ++j)
-                outfile << " " << elements[i][j];
-            outfile << "\n";
+                rOStream << " " << elements[i][j];
+            rOStream << "\n";
         }
-        outfile << "\n";
+        rOStream << "\n";
 
         std::size_t nboundary = 0;
         for (std::size_t i = 0; i < edges.size(); ++i)
             if (std::get<3>(edges[i]) != 0)
                 ++nboundary;
-        outfile << "boundary\n" << nboundary << "\n";
+        rOStream << "boundary\n" << nboundary << "\n";
         for (std::size_t i = 0; i < edges.size(); ++i)
         {
             if (std::get<3>(edges[i]) != 0)
-                outfile << "1 1 " << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]) << "\n";
+                rOStream << "1 1 " << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]) << "\n";
         }
-        outfile << "\n\n";
+        rOStream << "\n\n";
 
-        outfile << "edges\n" << edges.size() << "\n";
+        rOStream << "edges\n" << edges.size() << "\n";
         for (std::size_t i = 0; i < edges.size(); ++i)
         {
-            outfile << std::get<2>(edges[i]) << " "
+            rOStream << std::get<2>(edges[i]) << " "
                     << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]) << "\n";
         }
-        outfile << "\n\n";
+        rOStream << "\n\n";
 
-        outfile << "vertices\n" << nvertices << "\n\n";
+        rOStream << "vertices\n" << nvertices << "\n\n";
 
-        outfile << "patches\n\n";
+        rOStream << "patches\n\n";
         for (typename MultiPatch<TDim>::PatchContainerType::iterator it = pMultiPatch->Patches().begin();
                 it != pMultiPatch->Patches().end(); ++it)
         {
-            outfile << "# patch " << it->Id() << "\n\n";
-            outfile << "knotvectors\n" << TDim << "\n";
+            rOStream << "# patch " << it->Id() << "\n\n";
+            rOStream << "knotvectors\n" << TDim << "\n";
 
             if (it->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
                 KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
@@ -135,31 +133,27 @@ public:
             typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
             for (std::size_t dim = 0; dim < TDim; ++dim)
             {
-                outfile << pFESpace->Order(dim) << " " << pFESpace->Number(dim);
+                rOStream << pFESpace->Order(dim) << " " << pFESpace->Number(dim);
                 for (std::size_t i = 0; i < pFESpace->KnotVector(dim).size(); ++i)
-                    outfile << " " << pFESpace->KnotVector(dim)[i];
-                outfile << "\n";
+                    rOStream << " " << pFESpace->KnotVector(dim)[i];
+                rOStream << "\n";
             }
-            outfile << "\n";
+            rOStream << "\n";
 
-            outfile << "dimension\n" << TDim << "\n\n";
+            rOStream << "dimension\n" << TDim << "\n\n";
 
             typename ControlGrid<ControlPoint<double> >::Pointer pControlGrid = it->pControlPointGridFunction()->pControlGrid();
-            outfile << "controlpoints\n";
+            rOStream << "controlpoints\n";
             for (std::size_t i = 0; i < pControlGrid->size(); ++i)
             {
                 for (std::size_t dim = 0; dim < TDim; ++dim)
-                    outfile << " " << (*pControlGrid)[i][dim];
-                outfile << " " << (*pControlGrid)[i][3] << "\n";
+                    rOStream << " " << (*pControlGrid)[i][dim];
+                rOStream << " " << (*pControlGrid)[i][3] << "\n";
             }
-            outfile << "\n";
+            rOStream << "\n";
         }
 
-        outfile << std::endl;
-
-        outfile.close();
-
-        std::cout <<" Multipatch is exported to " << filename << " successfully" << std::endl;
+        rOStream << std::endl;
     }
 
 private:
@@ -598,15 +592,27 @@ public:
     template<int TDim>
     static void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename)
     {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
         MultiNURBSPatchGLVisExporterWriter<TDim> dummy;
-        dummy.Export(pPatch, filename);
+        dummy.Export(pPatch, outfile);
+
+        outfile.close();
+        std::cout <<" Patch " << pPatch->Id() << " is exported to " << filename << " successfully" << std::endl;
     }
 
     template<int TDim>
     static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const std::string& filename)
     {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
         MultiNURBSPatchGLVisExporterWriter<TDim> dummy;
-        dummy.Export(pMultiPatch, filename);
+        dummy.Export(pMultiPatch, outfile);
+
+        outfile.close();
+        std::cout <<" Multipatch is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Information

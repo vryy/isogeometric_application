@@ -49,13 +49,13 @@ public:
     const std::size_t& Accuracy() const {return mAccuracy;}
 
     /// Export a single patch
-    virtual void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename) const
+    virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Export a multipatch
-    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const std::string& filename) const
+    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, std::ostream& rOStream) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }

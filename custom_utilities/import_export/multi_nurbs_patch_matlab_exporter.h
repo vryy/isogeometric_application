@@ -57,34 +57,23 @@ public:
     virtual ~MultiNURBSPatchMatlabExporterWriter() {}
 
     /// Export a single patch
-    virtual void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename) const
+    virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const
     {
-        std::ofstream outfile;
-        outfile.open(filename, std::ios::out);
-        outfile << std::setprecision(BaseType::Accuracy());
-
-        this->ExportMatlab(outfile, pPatch, std::string("nurbs"));
-
-        outfile.close();
-        std::cout << pPatch->Type() << " " << pPatch->Id() << " is exported to " << filename << " successfully" << std::endl;
+        rOStream << std::setprecision(BaseType::Accuracy());
+        this->ExportMatlab(rOStream, pPatch, std::string("nurbs"));
     }
 
     /// Export a multipatch
-    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const std::string& filename) const
+    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, std::ostream& rOStream) const
     {
-        std::ofstream outfile;
-        outfile.open(filename, std::ios::out);
-        outfile << std::setprecision(BaseType::Accuracy());
+        rOStream << std::setprecision(BaseType::Accuracy());
 
         for (typename MultiPatch<TDim>::PatchContainerType::ptr_const_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
         {
             std::stringstream patch_name;
             patch_name << "patch" << (*it)->Id();
-            this->ExportMatlab(outfile, *it, patch_name.str());
+            this->ExportMatlab(rOStream, *it, patch_name.str());
         }
-
-        outfile.close();
-        std::cout << "Multipatch is exported to " << filename << " successfully" << std::endl;
     }
 
 private:
@@ -203,15 +192,27 @@ public:
     template<int TDim>
     static void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename)
     {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
         MultiNURBSPatchMatlabExporterWriter<TDim> dummy;
-        dummy.Export(pPatch, filename);
+        dummy.Export(pPatch, outfile);
+
+        outfile.close();
+        std::cout << pPatch->Type() << " " << pPatch->Id() << " is exported to " << filename << " successfully" << std::endl;
     }
 
     template<int TDim>
     static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const std::string& filename)
     {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
         MultiNURBSPatchMatlabExporterWriter<TDim> dummy;
-        dummy.Export(pMultiPatch, filename);
+        dummy.Export(pMultiPatch, outfile);
+
+        outfile.close();
+        std::cout << "Multipatch is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Information

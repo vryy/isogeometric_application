@@ -82,7 +82,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesPatchUti
 }
 
 template<>
-inline Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typename Patch<2>::Pointer pPatch)
+Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typename Patch<2>::Pointer pPatch)
 {
     // firstly read the FESpace
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<2>::StaticType())
@@ -229,7 +229,7 @@ inline Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSpline
 }
 
 template<>
-inline Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typename Patch<3>::Pointer pPatch)
+Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typename Patch<3>::Pointer pPatch)
 {
     // firstly read the FESpace
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<3>::StaticType())
@@ -252,6 +252,10 @@ inline Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSpline
     std::size_t number_1 = pFESpace->KnotVector(0).size() - pFESpace->Order(0) - 1;
     std::size_t number_2 = pFESpace->KnotVector(1).size() - pFESpace->Order(1) - 1;
     std::size_t number_3 = pFESpace->KnotVector(2).size() - pFESpace->Order(2) - 1;
+
+    std::vector<Variable<double>*> double_var_list = pPatch->ExtractVariables<Variable<double> >();
+    std::vector<Variable<array_1d<double, 3> >*> array1d_var_list = pPatch->ExtractVariables<Variable<array_1d<double, 3> > >();
+    std::vector<Variable<Vector>*> vector_var_list = pPatch->ExtractVariables<Variable<Vector> >();
 
     std::vector<std::size_t> func_indices = pFESpace->FunctionIndices();
 
@@ -335,7 +339,27 @@ inline Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSpline
         = ControlGridUtility::CreatePointBasedControlGrid<ControlPointType, HBSplinesFESpace<3> >(CONTROL_POINT, pNewFESpace);
     pNewPatch->CreateControlPointGridFunction(pControlPointGrid);
 
-    // TODO set other control grid
+    // set other control grid
+    for (std::size_t i = 0; i < double_var_list.size(); ++i)
+    {
+        typename ControlGrid<double>::Pointer pControlGrid
+            = ControlGridUtility::CreatePointBasedControlGrid<double, HBSplinesFESpace<3> >(*double_var_list[i], pNewFESpace);
+        pNewPatch->CreateGridFunction(*double_var_list[i], pControlGrid);
+    }
+
+    for (std::size_t i = 0; i < array1d_var_list.size(); ++i)
+    {
+        typename ControlGrid<array_1d<double, 3> >::Pointer pControlGrid
+            = ControlGridUtility::CreatePointBasedControlGrid<array_1d<double, 3>, HBSplinesFESpace<3> >(*array1d_var_list[i], pNewFESpace);
+        pNewPatch->CreateGridFunction(*array1d_var_list[i], pControlGrid);
+    }
+
+    for (std::size_t i = 0; i < vector_var_list.size(); ++i)
+    {
+        typename ControlGrid<Vector>::Pointer pControlGrid
+            = ControlGridUtility::CreatePointBasedControlGrid<Vector, HBSplinesFESpace<3> >(*vector_var_list[i], pNewFESpace);
+        pNewPatch->CreateGridFunction(*vector_var_list[i], pControlGrid);
+    }
 
     return pNewPatch;
 }

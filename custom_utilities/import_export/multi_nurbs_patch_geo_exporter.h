@@ -56,54 +56,48 @@ public:
     virtual ~MultiNURBSPatchGeoExporterWriter() {}
 
     /// Export a single patch
-    virtual void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename) const
+    virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ofstream& rOStream) const
     {
-        std::ofstream outfile;
-        outfile.open(filename, std::ios::out);
-        outfile << std::setprecision(BaseType::Accuracy());
+        rOStream << std::setprecision(BaseType::Accuracy());
 
         if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
             KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
 
         typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
 
-        outfile << "# nurbs mesh v.0.6\n";
-        outfile << "#\n";
-        outfile << "# BSplines representation for patch " << pPatch->Id() << "\n";
-        outfile << "#\n";
+        rOStream << "# nurbs mesh v.0.6\n";
+        rOStream << "#\n";
+        rOStream << "# BSplines representation for patch " << pPatch->Id() << "\n";
+        rOStream << "#\n";
 
-        outfile << "#dim\n";
-        outfile << TDim << " 1\n";
-        outfile << "#p\n";
+        rOStream << "#dim\n";
+        rOStream << TDim << " 1\n";
+        rOStream << "#p\n";
         for (std::size_t dim = 0; dim < TDim; ++dim)
-            outfile << " " << pFESpace->Order(dim);
-        outfile << "\n";
-        outfile << "#n\n";
+            rOStream << " " << pFESpace->Order(dim);
+        rOStream << "\n";
+        rOStream << "#n\n";
         for (std::size_t dim = 0; dim < TDim; ++dim)
-            outfile << " " << pFESpace->Number(dim);
-        outfile << "\n";
+            rOStream << " " << pFESpace->Number(dim);
+        rOStream << "\n";
 
-        outfile << "#knots\n";
+        rOStream << "#knots\n";
         for (std::size_t dim = 0; dim < TDim; ++dim)
         {
             for (std::size_t i = 0; i < pFESpace->KnotVector(dim).size(); ++i)
-                outfile << " " << pFESpace->KnotVector(dim)[i];
-            outfile << std::endl;
+                rOStream << " " << pFESpace->KnotVector(dim)[i];
+            rOStream << std::endl;
         }
 
-        MultiNURBSPatchGeoExporterHelper::WriteGeoControlPoints<TDim>(outfile, pPatch);
+        MultiNURBSPatchGeoExporterHelper::WriteGeoControlPoints<TDim>(rOStream, pPatch);
 
-        outfile << std::endl;
-
-        outfile.close();
-
-        std::cout << pPatch->Type() << " " << pPatch->Id() << " is exported to " << filename << " successfully" << std::endl;
+        rOStream << std::endl;
     }
 
     /// Export a single patch
-    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const std::string& filename) const
+    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, std::ostream& rOStream) const
     {
-        BaseType::Export(pMultiPatch, filename);
+        BaseType::Export(pMultiPatch, rOStream); // this will eventually throw an error
     }
 }; // end class MultiNURBSPatchGeoExporterWriter
 
@@ -182,15 +176,27 @@ public:
     template<int TDim>
     static void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename)
     {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
         MultiNURBSPatchGeoExporterWriter<TDim> dummy;
-        dummy.Export(pPatch, filename);
+        dummy.Export(pPatch, outfile);
+
+        outfile.close();
+        std::cout << pPatch->Type() << " " << pPatch->Id() << " is exported to " << filename << " successfully" << std::endl;
     }
 
     template<int TDim>
     static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const std::string& filename)
     {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
         MultiNURBSPatchGeoExporterWriter<TDim> dummy;
-        dummy.Export(pMultiPatch, filename);
+        dummy.Export(pMultiPatch, outfile);
+
+        outfile.close();
+        std::cout << "Multipatch is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Information

@@ -36,7 +36,7 @@ public:
     typedef typename Patch<TDim>::volume_t volume_t;
 
     /// Default constructor
-    MultiPatch() : mIsEnumerated(false) {}
+    MultiPatch() : mEquationSystemSize(0) {}
 
     /// Destructor
     virtual ~MultiPatch() {}
@@ -46,7 +46,6 @@ public:
     {
         mpPatches.push_back(pPatch);
         pPatch->pSetParentMultiPatch(this->shared_from_this());
-        mIsEnumerated = false;
     }
 
     /// Reset Id for all the patches
@@ -60,17 +59,18 @@ public:
     }
 
     /// Check the enumeration flag
-    const bool& IsEnumerated() const {return mIsEnumerated;}
+    bool IsEnumerated() const
+    {
+        return (this->EquationSystemSize() != 0) && ((this->GetLastEquationId() - this->GetFirstEquationId() + 1) == this->EquationSystemSize());
+    }
 
     /// Get the equation system size
     std::size_t EquationSystemSize() const {return mEquationSystemSize;}
 
     /// Locate the patch of the global equation id and the corresponding local id to determine the control value
+    /// IMPORTANT: user must make sure that the multipatch is fully enumerated by checking IsEnumerated()
     std::tuple<std::size_t, std::size_t> EquationIdLocation(const std::size_t& global_id) const
     {
-        if (!IsEnumerated())
-            KRATOS_THROW_ERROR(std::logic_error, "The multipatch is not enumerated", "")
-
         std::map<std::size_t, std::size_t>::const_iterator it = mGlobalToPatch.find(global_id);
         if (it == mGlobalToPatch.end())
         {
@@ -143,6 +143,48 @@ public:
     /// Get the number of patches
     std::size_t size() const {return mpPatches.size();}
 
+    /// Get the first equation_id accross all patches
+    std::size_t GetFirstEquationId() const
+    {
+        std::size_t first_id;
+
+        for (typename PatchContainerType::const_iterator it = this->begin(); it != this->end(); ++it)
+        {
+            if (it == this->begin())
+            {
+                first_id = it->pFESpace()->GetFirstEquationId();
+            }
+            else
+            {
+                if (it->pFESpace()->GetFirstEquationId() < first_id)
+                    first_id = it->pFESpace()->GetFirstEquationId();
+            }
+        }
+
+        return first_id;
+    }
+
+    /// Get the last equation_id accross all patches
+    std::size_t GetLastEquationId() const
+    {
+        std::size_t last_id;
+
+        for (typename PatchContainerType::const_iterator it = this->begin(); it != this->end(); ++it)
+        {
+            if (it == this->begin())
+            {
+                last_id = it->pFESpace()->GetLastEquationId();
+            }
+            else
+            {
+                if (it->pFESpace()->GetLastEquationId() > last_id)
+                    last_id = it->pFESpace()->GetLastEquationId();
+            }
+        }
+
+        return last_id;
+    }
+
     /// Enumerate all the patches, starting at 0
     std::size_t Enumerate()
     {
@@ -165,7 +207,7 @@ public:
             if ((*it)->IsBendingStrip() == false)
             {
                 last = (*it)->pFESpace()->Enumerate(last);
-                // KRATOS_WATCH(last)
+                //KRATOS_WATCH(last)
 
                 // transfer the enumeration to neighbor boundary
                 for (int i = _LEFT_; i <= _BACK_; ++i)
@@ -240,9 +282,6 @@ public:
                 mGlobalToPatch[global_indices[i]] = (*it)->Id();
         }
 
-        // turn on the enumerated flag
-        mIsEnumerated = true;
-
         return start + mEquationSystemSize;
     }
 
@@ -284,7 +323,6 @@ public:
 private:
 
     PatchContainerType mpPatches; // container for all the patches
-    bool mIsEnumerated;
     std::size_t mEquationSystemSize; // this is the number of equation id in this multipatch
     std::map<std::size_t, std::size_t> mGlobalToPatch; // this is to map each global id to a patch id
 

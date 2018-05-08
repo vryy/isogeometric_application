@@ -142,40 +142,36 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
         return;
     }
 
+    // refine the patch
     std::set<std::size_t> refined_patches;
     std::size_t equation_id = p_bf->EquationId();
-    std::pair<std::vector<std::size_t>, std::vector<bf_t> > aux = Refine(pPatch, p_bf, refined_patches, EchoLevel);
+    Refine(pPatch, p_bf, refined_patches, EchoLevel);
 
-    const std::vector<std::size_t>& numbers = aux.first;
-    std::vector<bf_t>& pnew_bfs = aux.second;
-
-    if (pPatch->pNeighbor(_LEFT_) != NULL)
+    // refine also the neighbors
+    for (int i = _LEFT_; i <= _BACK_; ++i)
     {
-        typename Patch<TDim>::Pointer pNeighborPatch = pPatch->pNeighbor(_LEFT_);
+        BoundarySide side = static_cast<BoundarySide>(i);
 
-        // extract the hierarchical B-Splines space
-        typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
-
-        // get the correct basis function
-        bf_t p_neighbor_bf;
-        bool found = false;
-        for(typename bf_container_t::iterator it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
+        if (pPatch->pNeighbor(side) != NULL)
         {
-            if ((*it)->EquationId() == equation_id)
+            typename Patch<TDim>::Pointer pNeighborPatch = pPatch->pNeighbor(side);
+
+            // extract the hierarchical B-Splines space
+            typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
+
+            // get the correct basis function
+            bf_t p_neighbor_bf;
+            bool found = false;
+            for(typename bf_container_t::iterator it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
             {
-                p_neighbor_bf = *it;
-                found = true;
+                if ((*it)->EquationId() == equation_id)
+                {
+                    p_neighbor_bf = *it;
+                    found = true;
+                }
             }
-        }
 
-        if (found)
-        {
-            std::pair<std::vector<std::size_t>, std::vector<bf_t> > aux2 = Refine(pNeighborPatch, p_neighbor_bf, refined_patches, EchoLevel);
-
-            const std::vector<std::size_t>& neighbor_numbers = aux2.first;
-            std::vector<bf_t>& p_neighbor_bfs = aux2.second;
-
-
+            if (found) Refine(pNeighborPatch, p_neighbor_bf, refined_patches, EchoLevel);
         }
     }
 }
@@ -284,7 +280,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     std::vector<bf_t> pnew_bfs;
 
     // start to enumerate from the last equation id in the multipatch
-    std::size_t starting_id = pPatch->pParentMultiPatch()->EquationSystemSize();
+    std::size_t starting_id = pPatch->pParentMultiPatch()->GetLastEquationId();
 
     if (TDim == 2)
     {

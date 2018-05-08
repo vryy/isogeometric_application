@@ -94,6 +94,9 @@ public:
         double start = OpenMPUtils::GetCurrentTime();
         #endif
 
+        if (!mpMultiPatch->IsEnumerated())
+            KRATOS_THROW_ERROR(std::logic_error, "The multipatch is not enumerated", "")
+
         // create new nodes from control points
         for (std::size_t idof = 0; idof < mpMultiPatch->EquationSystemSize(); ++idof)
         {
@@ -208,6 +211,9 @@ public:
     void SynchronizeForward(const TVariableType& rVariable)
     {
         if (!IsReady()) return;
+
+        if (!mpMultiPatch->IsEnumerated())
+            KRATOS_THROW_ERROR(std::logic_error, "The multipatch is not enumerated", "")
 
         // transfer data from from control points to nodes
         for (std::size_t idof = 0; idof < mpMultiPatch->EquationSystemSize(); ++idof)

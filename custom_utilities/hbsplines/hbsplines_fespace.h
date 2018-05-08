@@ -322,14 +322,37 @@ public:
     /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
     virtual std::size_t& Enumerate(std::size_t& start)
     {
-        // enumerate all basis functions
-        BaseType::mGlobalToLocal.clear();
-        std::size_t cnt = 0;
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        if (this->GetFirstEquationId() == this->GetLastEquationId())
         {
-            (*it)->SetEquationId(start++);
-            BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt;
-            ++cnt;
+            // enumerate all basis functions normally
+            BaseType::mGlobalToLocal.clear();
+            std::size_t cnt = 0;
+            for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+            {
+                (*it)->SetEquationId(start++);
+                BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt;
+                ++cnt;
+            }
+        }
+        else
+        {
+            // we try to enumerate in the way that preserve the order of the basis function based on equation_id
+            BaseType::mGlobalToLocal.clear();
+            std::set<std::size_t> old_indices;
+            for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+                old_indices.insert((*it)->EquationId());
+
+            std::map<std::size_t, std::size_t> map_old_to_new;
+            for (std::set<std::size_t>::iterator it = old_indices.begin(); it != old_indices.end(); ++it)
+                map_old_to_new[*it] = start++;
+
+            std::size_t cnt = 0;
+            for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+            {
+                (*it)->SetEquationId(map_old_to_new[(*it)->EquationId()]);
+                BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt;
+                ++cnt;
+            }
         }
 
         return start;
@@ -369,6 +392,48 @@ public:
         }
     }
 
+    /// Get the first equation_id in this space
+    virtual std::size_t GetFirstEquationId() const
+    {
+        std::size_t first_id;
+
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            if (it == bf_begin())
+            {
+                first_id = (*it)->EquationId();
+            }
+            else
+            {
+                if ((*it)->EquationId() < first_id)
+                    first_id = (*it)->EquationId();
+            }
+        }
+
+        return first_id;
+    }
+
+    /// Get the last equation_id in this space
+    virtual std::size_t GetLastEquationId() const
+    {
+        std::size_t last_id;
+
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            if (it == bf_begin())
+            {
+                last_id = (*it)->EquationId();
+            }
+            else
+            {
+                if ((*it)->EquationId() > last_id)
+                    last_id = (*it)->EquationId();
+            }
+        }
+
+        return last_id;
+    }
+
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
     {
@@ -378,7 +443,8 @@ public:
         std::map<std::size_t, bf_t> map_bfs;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            map_bfs[(*it)->EquationId()] = (*it);
+            if (((*it)->BoundaryId() & side) == side)
+                map_bfs[(*it)->EquationId()] = (*it);
         }
 
         // then we can extract the equation_id
@@ -399,7 +465,8 @@ public:
         std::map<std::size_t, bf_t> map_bfs;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            map_bfs[(*it)->EquationId()] = (*it);
+            if (((*it)->BoundaryId() & side) == side)
+                map_bfs[(*it)->EquationId()] = (*it);
         }
 
         // then we can assign the equation_id incrementally

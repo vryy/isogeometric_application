@@ -262,6 +262,18 @@ public:
         }
     }
 
+    /// Get the first equation_id in this space
+    virtual std::size_t GetFirstEquationId() const
+    {
+        return *std::min_element(mFunctionsIds.begin(), mFunctionsIds.end());
+    }
+
+    /// Get the last equation_id in this space
+    virtual std::size_t GetLastEquationId() const
+    {
+        return *std::max_element(mFunctionsIds.begin(), mFunctionsIds.end());
+    }
+
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
     {

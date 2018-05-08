@@ -117,6 +117,13 @@ public:
 
         for (std::size_t ip = 0; ip < mpMultiPatches.size(); ++ip)
         {
+            if (!mpMultiPatches[ip]->IsEnumerated())
+            {
+                std::stringstream ss;
+                ss << "The multipatch " << ip << " is not enumerated";
+                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            }
+
             // create new nodes from control points
             for (std::size_t i = 0; i < mpMultiPatches[ip]->EquationSystemSize(); ++i)
             {
@@ -251,6 +258,13 @@ public:
         std::size_t cnt = 0;
         for (std::size_t ip = 0; ip < mpMultiPatches.size(); ++ip)
         {
+            if (!mpMultiPatches[ip]->IsEnumerated())
+            {
+                std::stringstream ss;
+                ss << "The multipatch " << ip << " is not enumerated";
+                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            }
+
             for (std::size_t i = 0; i < mpMultiPatches[ip]->EquationSystemSize(); ++i)
             {
                 std::tuple<std::size_t, std::size_t> loc = mpMultiPatches[ip]->EquationIdLocation(i);

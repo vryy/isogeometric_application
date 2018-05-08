@@ -127,6 +127,18 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
+    /// Get the first equation_id in this space
+    virtual std::size_t GetFirstEquationId() const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
+
+    /// Get the last equation_id in this space
+    virtual std::size_t GetLastEquationId() const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
+
     /// Return the local id of a given global id
     std::size_t LocalId(const std::size_t& global_id) const
     {

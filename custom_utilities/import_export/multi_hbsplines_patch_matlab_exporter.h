@@ -58,10 +58,11 @@ public:
         // extract the hierarchical B-Splines space
         typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
 
-        rOStream << "P" << patch_id << "_params.p1 = " << pFESpace->Order(0) << "\n";
-        rOStream << "P" << patch_id << "_params.p2 = " << pFESpace->Order(1) << "\n";
+        rOStream << "P" << patch_id << "_params.p1 = " << pFESpace->Order(0) << ";\n";
+        rOStream << "P" << patch_id << "_params.p2 = " << pFESpace->Order(1) << ";\n";
         if (TDim == 3)
-            rOStream << "P" << patch_id << "_params.p3 = " << pFESpace->Order(2) << "\n";
+            rOStream << "P" << patch_id << "_params.p3 = " << pFESpace->Order(2) << ";\n";
+        rOStream << "\n";
 
         for (typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
         {

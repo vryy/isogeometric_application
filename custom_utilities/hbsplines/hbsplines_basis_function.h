@@ -198,12 +198,7 @@ public:
     void RemoveBoundary(const std::size_t& BoundaryInfo) {mBoundaryId &= (0xff - BoundaryInfo);}
 
     /// Function to identify the location of this basis function
-    bool IsOnLeft() const {return (this->BoundaryId() & _LEFT_) == _LEFT_;}
-    bool IsOnRight() const {return (this->BoundaryId() & _RIGHT_) == _RIGHT_;}
-    bool IsOnTop() const {return (this->BoundaryId() & _TOP_) == _TOP_;}
-    bool IsOnBottom() const {return (this->BoundaryId() & _BOTTOM_) == _BOTTOM_;}
-    bool IsOnFront() const {return (this->BoundaryId() & _FRONT_) == _FRONT_;}
-    bool IsOnBack() const {return (this->BoundaryId() & _BACK_) == _BACK_;}
+    bool IsOnSide(const std::size_t& BoundaryInfo) const {return (this->BoundaryId() & BoundaryInfo) == BoundaryInfo;}
 
     /// Get the level of this basis function
     const std::size_t& Level() const {return mLevel;}
@@ -387,6 +382,13 @@ public:
         for (int dim = 0; dim < TDim; ++dim)
             rOStream << " " << this->Order(dim);
         rOStream << ")";
+        rOStream << ", boundary info:";
+        if ( this->IsOnSide(_LEFT_) ) rOStream << " left";
+        if ( this->IsOnSide(_RIGHT_) ) rOStream << " right";
+        if ( this->IsOnSide(_FRONT_) ) rOStream << " front";
+        if ( this->IsOnSide(_BACK_) ) rOStream << " back";
+        if ( this->IsOnSide(_TOP_) ) rOStream << " top";
+        if ( this->IsOnSide(_BOTTOM_) ) rOStream << " bottom";
     }
 
     /// Print data of this basis function

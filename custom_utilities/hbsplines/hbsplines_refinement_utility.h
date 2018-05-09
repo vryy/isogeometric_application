@@ -312,19 +312,19 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 std::size_t i_func = j * numbers[0] + i;
 
                 // set the boundary information
-                if (p_bf->IsOnLeft())
+                if (p_bf->IsOnSide(_LEFT_))
                     if (i == 0)
                         pnew_bfs[i_func]->AddBoundary(_LEFT_);
 
-                if (p_bf->IsOnRight())
+                if (p_bf->IsOnSide(_RIGHT_))
                     if (i == numbers[0]-1)
                         pnew_bfs[i_func]->AddBoundary(_RIGHT_);
 
-                if (p_bf->IsOnBottom())
+                if (p_bf->IsOnSide(_BOTTOM_))
                     if (j == 0)
                         pnew_bfs[i_func]->AddBoundary(_BOTTOM_);
 
-                if (p_bf->IsOnTop())
+                if (p_bf->IsOnSide(_TOP_))
                     if (j == numbers[1]-1)
                         pnew_bfs[i_func]->AddBoundary(_TOP_);
 
@@ -427,27 +427,27 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     std::size_t i_func = (l * numbers[1] + j) * numbers[0] + i;
 
                     // set the boundary information
-                    if (p_bf->IsOnLeft())
+                    if (p_bf->IsOnSide(_LEFT_))
                         if (i == 0)
                             pnew_bfs[i_func]->AddBoundary(_LEFT_);
 
-                    if (p_bf->IsOnRight())
+                    if (p_bf->IsOnSide(_RIGHT_))
                         if (i == numbers[0]-1)
                             pnew_bfs[i_func]->AddBoundary(_RIGHT_);
 
-                    if (p_bf->IsOnFront())
+                    if (p_bf->IsOnSide(_FRONT_))
                         if (j == 0)
                             pnew_bfs[i_func]->AddBoundary(_FRONT_);
 
-                    if (p_bf->IsOnBack())
+                    if (p_bf->IsOnSide(_BACK_))
                         if (j == numbers[1]-1)
                             pnew_bfs[i_func]->AddBoundary(_BACK_);
 
-                    if (p_bf->IsOnBottom())
+                    if (p_bf->IsOnSide(_BOTTOM_))
                         if (l == 0)
                             pnew_bfs[i_func]->AddBoundary(_BOTTOM_);
 
-                    if (p_bf->IsOnTop())
+                    if (p_bf->IsOnSide(_TOP_))
                         if (l == numbers[2]-1)
                             pnew_bfs[i_func]->AddBoundary(_TOP_);
 

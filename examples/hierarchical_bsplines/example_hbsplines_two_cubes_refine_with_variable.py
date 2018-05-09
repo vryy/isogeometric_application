@@ -29,7 +29,7 @@ def CreateMultiPatch():
     #print(patch1)
 
     fes2 = nurbs_fespace_library.CreateRectangularFESpace(3, 3)
-    ctrl_grid_2 = grid_lib.CreateRectangularControlPointGrid(1.0, 0.0, fes1.Number(0), fes1.Number(1), 2.0, 1.0)
+    ctrl_grid_2 = grid_lib.CreateRectangularControlPointGrid(1.2, 0.0, fes1.Number(0), fes1.Number(1), 2.2, 1.0)
     patch2_ptr = multipatch_util.CreatePatchPointer(2, fes2)
     patch2 = patch2_ptr.GetReference()
     patch2.CreateControlPointGridFunction(ctrl_grid_2)

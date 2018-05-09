@@ -265,13 +265,51 @@ public:
     /// Get the first equation_id in this space
     virtual std::size_t GetFirstEquationId() const
     {
-        return *std::min_element(mFunctionsIds.begin(), mFunctionsIds.end());
+        std::size_t first_id, size = mFunctionsIds.size();
+
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            if (mFunctionsIds[i] == -1)
+            {
+                return -1;
+            }
+            else
+            {
+                if (i == 0)
+                    first_id = mFunctionsIds[i];
+                else
+                    if (mFunctionsIds[i] < first_id)
+                        first_id = mFunctionsIds[i];
+            }
+        }
+
+        return first_id;
     }
 
     /// Get the last equation_id in this space
     virtual std::size_t GetLastEquationId() const
     {
-        return *std::max_element(mFunctionsIds.begin(), mFunctionsIds.end());
+        std::size_t last_id = -1, size = mFunctionsIds.size();
+        bool hit = false;
+
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            if (mFunctionsIds[i] != -1)
+            {
+                if (!hit)
+                {
+                    hit = true;
+                    last_id = mFunctionsIds[i];
+                }
+                else
+                {
+                    if (mFunctionsIds[i] > last_id)
+                        last_id = mFunctionsIds[i];
+                }
+            }
+        }
+
+        return last_id;
     }
 
     /// Extract the index of the functions on the boundary

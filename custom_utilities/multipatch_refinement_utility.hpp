@@ -48,6 +48,8 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
             pNewFESpace->SetInfo(dim, new_size[dim], pPatch->Order(dim));
         }
 
+        pNewFESpace->ResetFunctionIndices();
+
         // KRATOS_WATCH(T)
 
         // set the new FESpace
@@ -306,6 +308,8 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             pNewFESpace->SetKnotVector(dim, new_knots[dim]);
             pNewFESpace->SetInfo(dim, new_size[dim], pFESpace->Order(dim) + order_increment[dim]);
         }
+
+        pNewFESpace->ResetFunctionIndices();
 
         pNewControlPoints->SetName(pPatch->pControlPointGridFunction()->pControlGrid()->Name());
         pNewPatch->SetFESpace(pNewFESpace);

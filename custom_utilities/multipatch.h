@@ -150,14 +150,23 @@ public:
 
         for (typename PatchContainerType::const_iterator it = this->begin(); it != this->end(); ++it)
         {
-            if (it == this->begin())
+            std::size_t patch_first_id = it->pFESpace()->GetFirstEquationId();
+
+            if (patch_first_id == -1)
             {
-                first_id = it->pFESpace()->GetFirstEquationId();
+                return -1;
             }
             else
             {
-                if (it->pFESpace()->GetFirstEquationId() < first_id)
-                    first_id = it->pFESpace()->GetFirstEquationId();
+                if (it == this->begin())
+                {
+                    first_id = patch_first_id;
+                }
+                else
+                {
+                    if (patch_first_id < first_id)
+                        first_id = patch_first_id;
+                }
             }
         }
 
@@ -167,22 +176,39 @@ public:
     /// Get the last equation_id accross all patches
     std::size_t GetLastEquationId() const
     {
-        std::size_t last_id;
+        std::size_t last_id = -1;
+        bool hit = false;
 
         for (typename PatchContainerType::const_iterator it = this->begin(); it != this->end(); ++it)
         {
-            if (it == this->begin())
+            std::size_t patch_last_id = it->pFESpace()->GetLastEquationId();
+
+            if (patch_last_id != -1)
             {
-                last_id = it->pFESpace()->GetLastEquationId();
-            }
-            else
-            {
-                if (it->pFESpace()->GetLastEquationId() > last_id)
-                    last_id = it->pFESpace()->GetLastEquationId();
+                if (!hit)
+                {
+                    last_id = patch_last_id;
+                    hit = true;
+                }
+                else
+                {
+                    if (patch_last_id > last_id)
+                        last_id = patch_last_id;
+                }
             }
         }
 
         return last_id;
+    }
+
+    /// Reset global ids for each patch
+    /// In principle, it initializes all the equation_id to -1
+    void ResetFunctionIndices()
+    {
+        for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
+        {
+            (*it)->pFESpace()->ResetFunctionIndices();
+        }
     }
 
     /// Enumerate all the patches, starting at 0
@@ -194,12 +220,6 @@ public:
     /// Enumerate all the patches, with the given starting id
     std::size_t Enumerate(const std::size_t& start)
     {
-        // reset global ids for each patch
-        for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
-        {
-            (*it)->pFESpace()->ResetFunctionIndices();
-        }
-
         // enumerate each patch
         std::size_t last = start;
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
@@ -207,7 +227,7 @@ public:
             if ((*it)->IsBendingStrip() == false)
             {
                 last = (*it)->pFESpace()->Enumerate(last);
-                //KRATOS_WATCH(last)
+                KRATOS_WATCH(last)
 
                 // transfer the enumeration to neighbor boundary
                 for (int i = _LEFT_; i <= _BACK_; ++i)

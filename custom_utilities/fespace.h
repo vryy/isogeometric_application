@@ -352,20 +352,20 @@ public:
     }
 
     /// Reset all the dof numbers for each grid function to -1
-    void ResetFunctionIndices()
+    virtual void ResetFunctionIndices()
     {
         mFunctionId = -1;
     }
 
     /// Reset the function indices to a given values
-    void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
+    virtual void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
     {
         assert(func_indices.size() == 1);
         mFunctionId = func_indices[0];
     }
 
     /// Get the vector of function indices
-    std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t>{mFunctionId};}
+    virtual std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t>{mFunctionId};}
 
     /// Check the compatibility between boundaries of two FESpacees
     virtual bool CheckBoundaryCompatibility(const FESpace<0>& rFESpace1, const BoundarySide& side1,

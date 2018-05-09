@@ -448,6 +448,12 @@ typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_C
 ////////////////////////////////////////
 
 template<int TDim>
+void FESpace_ResetFunctionIndices(FESpace<TDim>& rDummy)
+{
+    rDummy.ResetFunctionIndices();
+}
+
+template<int TDim>
 std::size_t FESpace_Enumerate(FESpace<TDim>& rDummy)
 {
     std::size_t eq_size = 0;
@@ -921,6 +927,7 @@ void IsogeometricApplication_AddFESpacesToPython()
     (ss.str().c_str(), init<>())
     .def("Order", &FESpace<TDim>::Order)
     .def("TotalNumber", &FESpace<TDim>::TotalNumber)
+    .def("ResetFunctionIndices", &FESpace_ResetFunctionIndices<TDim>)
     .def("Enumerate", &FESpace_Enumerate<TDim>)
     .def("FunctionIndices", &FESpace_FunctionIndices<TDim>)
     .def("BoundaryFunctionIndices", &FESpace_BoundaryFunctionIndices<TDim>)
@@ -1070,6 +1077,7 @@ void IsogeometricApplication_AddPatchesToPython()
     .def("__len__", &MultiPatch_Len<MultiPatch<TDim> >)
     .def("MakeNeighbor", &MultiPatch_MakeNeighbor<TDim>)
     .def("EquationSystemSize", &MultiPatch<TDim>::EquationSystemSize)
+    .def("ResetFunctionIndices", &MultiPatch<TDim>::ResetFunctionIndices)
     .def("Enumerate", &MultiPatch_Enumerate1<TDim>)
     .def("Enumerate", &MultiPatch_Enumerate2<TDim>)
     .def("IsEnumerated", &MultiPatch<TDim>::IsEnumerated)

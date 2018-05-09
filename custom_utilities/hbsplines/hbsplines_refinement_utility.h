@@ -280,7 +280,15 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     std::vector<bf_t> pnew_bfs;
 
     // start to enumerate from the last equation id in the multipatch
-    std::size_t starting_id = pPatch->pParentMultiPatch()->GetLastEquationId();
+    std::size_t starting_id;
+    if (pPatch->pParentMultiPatch() != NULL)
+    {
+        starting_id = pPatch->pParentMultiPatch()->GetLastEquationId();
+    }
+    else
+    {
+        starting_id = pPatch->pFESpace()->GetLastEquationId();
+    }
 
     if (TDim == 2)
     {
@@ -518,8 +526,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 }
             }
         }
-
-        return std::make_pair(numbers, pnew_bfs);
     }
 
     // update the weight information for all the grid functions (except the control point grid function)
@@ -659,6 +665,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         std::cout << "Refine bf " << p_bf->Id() << " completed" << std::endl;
         #endif
     }
+
+    return std::make_pair(numbers, pnew_bfs);
 }
 
 template<>

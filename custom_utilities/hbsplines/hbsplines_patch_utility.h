@@ -138,11 +138,11 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             p_bf->SetEquationId(func_id);
 
             // set the boundary information
-            if (i == 0) p_bf->AddBoundary(_LEFT_);
-            else if (i == number_1-1) p_bf->AddBoundary(_RIGHT_);
+            if (i == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
+            else if (i == number_1-1) p_bf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
 
-            if (j == 0) p_bf->AddBoundary(_BOTTOM_);
-            else if (j == number_2-1) p_bf->AddBoundary(_TOP_);
+            if (j == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
+            else if (j == number_2-1) p_bf->AddBoundary(BOUNDARY_FLAG(_TOP_));
 
             // create the cells for the basis function
             for(std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
@@ -290,14 +290,14 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
                 p_bf->SetEquationId(func_id);
 
                 // set the boundary information
-                if (i == 0) p_bf->AddBoundary(_LEFT_);
-                else if (i == number_1-1) p_bf->AddBoundary(_RIGHT_);
+                if (i == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
+                else if (i == number_1-1) p_bf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
 
-                if (j == 0) p_bf->AddBoundary(_FRONT_);
-                else if (j == number_2-1) p_bf->AddBoundary(_BACK_);
+                if (j == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_FRONT_));
+                else if (j == number_2-1) p_bf->AddBoundary(BOUNDARY_FLAG(_BACK_));
 
-                if (l == 0) p_bf->AddBoundary(_BOTTOM_);
-                else if (l == number_3-1) p_bf->AddBoundary(_TOP_);
+                if (l == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
+                else if (l == number_3-1) p_bf->AddBoundary(BOUNDARY_FLAG(_TOP_));
 
                 // create the cells for the basis function
                 for(std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)

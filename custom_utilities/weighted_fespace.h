@@ -83,7 +83,9 @@ public:
     /// Get the string representing the type of the WeightedFESpace
     virtual std::string Type() const
     {
-        return StaticType();
+        std::stringstream ss;
+        ss << StaticType() << "_over_" << mpFESpace->Type();
+        return ss.str();
     }
 
     /// Get the string representing the type of the WeightedFESpace
@@ -121,11 +123,48 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /// Reset all the dof numbers for each grid function to -1.
+    virtual void ResetFunctionIndices()
+    {
+        mpFESpace->ResetFunctionIndices();
+    }
+
+    /// Reset the function indices to a given values.
+    /// This is useful when assigning the id for the boundary patch.
+    virtual void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
+    {
+        mpFESpace->ResetFunctionIndices(func_indices);
+    }
+
     /// Enumerate the dofs of each grid function. The enumeration algorithm is pretty straightforward.
     /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
     virtual std::size_t& Enumerate(std::size_t& start)
     {
         return mpFESpace->Enumerate(start);
+    }
+
+    /// Access the function indices (aka global ids)
+    virtual std::vector<std::size_t> FunctionIndices() const
+    {
+        return mpFESpace->FunctionIndices();
+    }
+
+    /// Update the function indices using a map. The map shall be the mapping from old index to new index.
+    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
+    {
+        mpFESpace->UpdateFunctionIndices(indices_map);
+    }
+
+    /// Get the first equation_id in this space
+    virtual std::size_t GetFirstEquationId() const
+    {
+        return mpFESpace->GetFirstEquationId();
+    }
+
+    /// Get the last equation_id in this space
+    virtual std::size_t GetLastEquationId() const
+    {
+        return mpFESpace->GetLastEquationId();
     }
 
     /// Check the compatibility between boundaries of two WeightedFESpacees

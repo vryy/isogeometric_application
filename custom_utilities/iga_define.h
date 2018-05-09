@@ -26,7 +26,7 @@ enum BoundarySide
 
 enum IsogeometricEchoFlags
 {
-    ECHO_REFIMENT   = 0b0000000000000001,
+    ECHO_REFINEMENT   = 0b0000000000000001,
 };
 
 enum PreElementType

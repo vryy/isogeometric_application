@@ -1228,7 +1228,7 @@ void IsogeometricApplication_AddNURBSToPython()
     ;
 
     enum_<IsogeometricEchoFlags>("IsogeometricEchoFlags")
-    .value("ECHO_REFIMENT", ECHO_REFIMENT)
+    .value("ECHO_REFINEMENT", ECHO_REFINEMENT)
     ;
 
     IsogeometricApplication_AddPatchesToPython<1>();

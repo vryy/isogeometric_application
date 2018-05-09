@@ -37,14 +37,14 @@ struct HBSplinesRefinementUtility_Helper
     typedef typename knot_container_t::knot_t knot_t;
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
-    static void Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& EchoLevel);
+    static void Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& echo_level);
 
     static std::pair<std::vector<std::size_t>, std::vector<bf_t> > Refine(typename Patch<TDim>::Pointer pPatch,
-            typename HBSplinesFESpace<TDim>::bf_t p_bf, std::set<std::size_t>& refined_patches, const int& EchoLevel);
+            typename HBSplinesFESpace<TDim>::bf_t p_bf, std::set<std::size_t>& refined_patches, const int& echo_level);
 
-    static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, const int& EchoLevel);
+    static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, const int& echo_level);
 
-    static void LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& EchoLevel);
+    static void LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& echo_level);
 };
 
 
@@ -65,26 +65,26 @@ public:
 
     /// Refine a single B-Splines basis function
     template<int TDim>
-    static void Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& EchoLevel)
+    static void Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& echo_level)
     {
-        HBSplinesRefinementUtility_Helper<TDim>::Refine(pPatch, Id, EchoLevel);
+        HBSplinesRefinementUtility_Helper<TDim>::Refine(pPatch, Id, echo_level);
     }
 
 
     /// Refine the basis functions in a region
     template<int TDim>
-    static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, const int& EchoLevel)
+    static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, const int& echo_level)
     {
-        HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(pPatch, window, EchoLevel);
+        HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(pPatch, window, echo_level);
     }
 
 
     /// Perform additional refinement to ensure linear independence
     /// In this algorithm, every bf in each level will be checked. If the support domain of a bf contained in the domain_manager of that level, this bf will be refined. According to the paper of Vuong et al, this will produce a linear independent bases.
     template<int TDim>
-    static void LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& EchoLevel)
+    static void LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& echo_level)
     {
-        HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(pPatch, refine_cycle, EchoLevel);
+        HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(pPatch, refine_cycle, echo_level);
     }
 
 
@@ -110,7 +110,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesRefineme
 }
 
 template<int TDim>
-inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& EchoLevel)
+inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& echo_level)
 {
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
     typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
@@ -145,7 +145,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     // refine the patch
     std::set<std::size_t> refined_patches;
     std::size_t equation_id = p_bf->EquationId();
-    Refine(pPatch, p_bf, refined_patches, EchoLevel);
+    Refine(pPatch, p_bf, refined_patches, echo_level);
 
     // refine also the neighbors
     for (int i = _LEFT_; i <= _BACK_; ++i)
@@ -171,7 +171,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
                 }
             }
 
-            if (found) Refine(pNeighborPatch, p_neighbor_bf, refined_patches, EchoLevel);
+            if (found) Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
         }
     }
 }
@@ -179,7 +179,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
 template<int TDim>
 std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>::bf_t> > HBSplinesRefinementUtility_Helper<TDim>::Refine(
         typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf,
-        std::set<std::size_t>& refined_patches, const int& EchoLevel)
+        std::set<std::size_t>& refined_patches, const int& echo_level)
 {
     // Type definitions
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
@@ -589,7 +589,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         std::vector<cell_t> p_cells = pFESpace->pCellManager()->GetCells(*it_cell);
         if(p_cells.size() > 0)
         {
-            if((EchoLevel & ECHO_REFIMENT) == ECHO_REFIMENT)
+            if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
             {
                 std::cout << "cell " << (*it_cell)->Id() << " is detected to contain some smaller cells:";
                 for(std::size_t i = 0; i < p_cells.size(); ++i)
@@ -648,7 +648,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     */
 
     pFESpace->RecordRefinementHistory(p_bf->Id());
-    if((EchoLevel & ECHO_REFIMENT) == ECHO_REFIMENT)
+    if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
     {
         #ifdef ENABLE_PROFILING
         std::cout << "Refine bf " << p_bf->Id() << " completed" << std::endl;
@@ -663,7 +663,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
 template<>
 inline void HBSplinesRefinementUtility_Helper<2>::RefineWindow(typename Patch<2>::Pointer pPatch,
-        const std::vector<std::vector<double> >& window, const int& EchoLevel)
+        const std::vector<std::vector<double> >& window, const int& echo_level)
 {
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<2>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
@@ -690,14 +690,14 @@ inline void HBSplinesRefinementUtility_Helper<2>::RefineWindow(typename Patch<2>
         if(    bounding_box[0] >= window[0][0] && bounding_box[1] <= window[0][1]
             && bounding_box[2] >= window[1][0] && bounding_box[3] <= window[1][1] )
         {
-            Refine(pPatch, (*it_bf)->Id(), EchoLevel);
+            Refine(pPatch, (*it_bf)->Id(), echo_level);
         }
     }
 }
 
 template<>
 inline void HBSplinesRefinementUtility_Helper<3>::RefineWindow(typename Patch<3>::Pointer pPatch,
-        const std::vector<std::vector<double> >& window, const int& EchoLevel)
+        const std::vector<std::vector<double> >& window, const int& echo_level)
 {
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<3>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
@@ -725,14 +725,14 @@ inline void HBSplinesRefinementUtility_Helper<3>::RefineWindow(typename Patch<3>
             && bounding_box[2] >= window[1][0] && bounding_box[3] <= window[1][1]
             && bounding_box[4] >= window[2][0] && bounding_box[5] <= window[2][1] )
         {
-            Refine(pPatch, (*it_bf)->Id(), EchoLevel);
+            Refine(pPatch, (*it_bf)->Id(), echo_level);
         }
     }
 }
 
 
 template<int TDim>
-inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& EchoLevel)
+inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& echo_level)
 {
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
@@ -840,7 +840,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
 
         if(refined_bfs.size() > 0)
         {
-            if((EchoLevel & ECHO_REFIMENT) == ECHO_REFIMENT)
+            if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
             {
                 std::cout << "Additional Bf";
                 for(std::size_t i = 0; i < refined_bfs.size(); ++i)
@@ -849,10 +849,10 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
             }
 
             for(std::size_t i = 0; i < refined_bfs.size(); ++i)
-                Refine(pPatch, refined_bfs[i], EchoLevel);
+                Refine(pPatch, refined_bfs[i], echo_level);
 
             // perform another round to make sure all bfs has support domain in the domain manager of each level
-            LinearDependencyRefine(pPatch, refine_cycle + 1, EchoLevel);
+            LinearDependencyRefine(pPatch, refine_cycle + 1, echo_level);
         }
     }
 

@@ -395,7 +395,7 @@ namespace Kratos
         // close the file
         infile.close();
 
-        if((GetEchoLevel() & ECHO_REFIMENT) == ECHO_REFIMENT)
+        if((GetEchoLevel() & ECHO_REFINEMENT) == ECHO_REFINEMENT)
             std::cout << __FUNCTION__ << ": Traverse file completed" << std::endl;
 
         // update the order
@@ -542,7 +542,7 @@ namespace Kratos
             }
         }
 
-        if((GetEchoLevel() & ECHO_REFIMENT) == ECHO_REFIMENT)
+        if((GetEchoLevel() & ECHO_REFINEMENT) == ECHO_REFINEMENT)
             std::cout << "ReadMesh and build level 1 completed" << std::endl;
     }
 
@@ -819,7 +819,7 @@ namespace Kratos
             std::vector<cell_t> p_cells = mpCellManager->GetCells(*it_cell);
             if(p_cells.size() > 0)
             {
-                if((GetEchoLevel() & ECHO_REFIMENT) == ECHO_REFIMENT)
+                if((GetEchoLevel() & ECHO_REFINEMENT) == ECHO_REFINEMENT)
                 {
                     std::cout << "cell " << (*it_cell)->Id() << " is detected to contain some smaller cells:";
                     for(std::size_t i = 0; i < p_cells.size(); ++i)
@@ -878,7 +878,7 @@ namespace Kratos
         */
 
         mRefinementHistory.push_back(p_bf->Id());
-        if((GetEchoLevel() & ECHO_REFIMENT) == ECHO_REFIMENT)
+        if((GetEchoLevel() & ECHO_REFINEMENT) == ECHO_REFINEMENT)
         {
         #ifdef ENABLE_PROFILING
             std::cout << "Refine bf " << p_bf->Id() << " completed" << std::endl;
@@ -1046,7 +1046,7 @@ namespace Kratos
 
             if(refined_bfs.size() > 0)
             {
-                if((GetEchoLevel() & ECHO_REFIMENT) == ECHO_REFIMENT)
+                if((GetEchoLevel() & ECHO_REFINEMENT) == ECHO_REFINEMENT)
                 {
                     std::cout << "Additional Bf";
                     for(std::size_t i = 0; i < refined_bfs.size(); ++i)

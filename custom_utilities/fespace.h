@@ -171,10 +171,10 @@ public:
     virtual bool CheckBoundaryCompatibility(const FESpace<TDim>& rFESpace1, const BoundarySide& side1,
             const FESpace<TDim>& rFESpace2, const BoundarySide& side2) const
     {
-        typename FESpace<TDim-1>::Pointer BFESpace1 = rFESpace1.ConstructBoundaryFESpace(side1);
-        typename FESpace<TDim-1>::Pointer BFESpace2 = rFESpace1.ConstructBoundaryFESpace(side2);
+        typename FESpace<TDim-1>::Pointer pBFESpace1 = rFESpace1.ConstructBoundaryFESpace(side1);
+        typename FESpace<TDim-1>::Pointer pBFESpace2 = rFESpace1.ConstructBoundaryFESpace(side2);
 
-        return (*BFESpace1) == (*BFESpace2);
+        return (*pBFESpace1) == (*pBFESpace2);
     }
 
     /// Validate the FESpace before using

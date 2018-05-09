@@ -426,7 +426,7 @@ public:
         std::map<std::size_t, bf_t> map_bfs;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if ((*it)->IsOnSide(side))
+            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
                 map_bfs[(*it)->EquationId()] = (*it);
         }
 
@@ -448,7 +448,7 @@ public:
         std::map<std::size_t, bf_t> map_bfs;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if ((*it)->IsOnSide(side))
+            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
                 map_bfs[(*it)->EquationId()] = (*it);
         }
 

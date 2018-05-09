@@ -14,15 +14,16 @@ namespace Kratos
 
 enum BoundarySide
 {
-    _INSIDE_ = 0x00,
-    _LEFT_   = 0x01,
-    _RIGHT_  = 0x02,
-    _TOP_    = 0x04,
-    _BOTTOM_ = 0x08,
-    _FRONT_  = 0x10,
-    _BACK_   = 0x20,
+    _LEFT_   = 0,
+    _RIGHT_  = 1,
+    _TOP_    = 2,
+    _BOTTOM_ = 3,
+    _FRONT_  = 4,
+    _BACK_   = 5,
     _NUMBER_OF_BOUNDARY_SIDE = 6
 };
+
+#define BOUNDARY_FLAG(x) (1 << (x+1))
 
 enum IsogeometricEchoFlags
 {

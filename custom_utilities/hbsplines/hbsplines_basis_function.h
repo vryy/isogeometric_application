@@ -98,7 +98,7 @@ public:
 
     /// Default constructor
     HBSplinesBasisFunction(const std::size_t& Id, const std::size_t& Level)
-    : mId(Id), mEquationId(-1), mBoundaryId(_INSIDE_), mLevel(Level)
+    : mId(Id), mEquationId(-1), mBoundaryId(0), mLevel(Level)
     {}
 
     /// Destructor
@@ -383,12 +383,12 @@ public:
             rOStream << " " << this->Order(dim);
         rOStream << ")";
         rOStream << ", boundary info:";
-        if ( this->IsOnSide(_LEFT_) ) rOStream << " left";
-        if ( this->IsOnSide(_RIGHT_) ) rOStream << " right";
-        if ( this->IsOnSide(_FRONT_) ) rOStream << " front";
-        if ( this->IsOnSide(_BACK_) ) rOStream << " back";
-        if ( this->IsOnSide(_TOP_) ) rOStream << " top";
-        if ( this->IsOnSide(_BOTTOM_) ) rOStream << " bottom";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_LEFT_) ) ) rOStream << " left";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_RIGHT_) ) ) rOStream << " right";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_FRONT_) ) ) rOStream << " front";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BACK_) ) ) rOStream << " back";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_TOP_) ) ) rOStream << " top";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BOTTOM_) ) ) rOStream << " bottom";
     }
 
     /// Print data of this basis function

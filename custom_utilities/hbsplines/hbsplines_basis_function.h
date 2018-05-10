@@ -28,6 +28,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "includes/serializer.h"
 #include "containers/data_value_container.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/bezier_utils.h"
@@ -95,6 +96,16 @@ public:
     typedef std::set<cell_t> cell_container_t;
     typedef typename cell_container_t::iterator cell_iterator;
     typedef typename cell_container_t::const_iterator cell_const_iterator;
+
+    /// Empty constructor for serialization
+    HBSplinesBasisFunction()
+    : mId(0), mEquationId(-1), mBoundaryId(0), mLevel(0)
+    {}
+
+    /// Empty constructor for serialization
+    HBSplinesBasisFunction(const std::size_t& Id)
+    : mId(Id), mEquationId(-1), mBoundaryId(0), mLevel(0)
+    {}
 
     /// Default constructor
     HBSplinesBasisFunction(const std::size_t& Id, const std::size_t& Level)
@@ -363,12 +374,28 @@ public:
     /// Implement relational operator for automatic arrangement in container
     inline bool operator==(const HBSplinesBasisFunction& rA) const
     {
-        return this->Id() == rA.Id();
+        return (this->Id() == rA.Id()) && (this->EquationId() == rA.EquationId());
     }
 
     inline bool operator<(const HBSplinesBasisFunction& rA) const
     {
-        return this->Id() < rA.Id();
+        if (this->Id() != rA.Id())
+            return this->Id() < rA.Id();
+        else
+            return this->EquationId() < rA.EquationId();
+    }
+
+    /// Compare the two basis functions, in terms of the equation_id and parameter space
+    inline bool IsSame(const HBSplinesBasisFunction& rA) const
+    {
+        if (this->EquationId() != rA.EquationId())
+        {
+            return false;
+        }
+        else
+        {
+            // TODO
+        }
     }
 
     /**************************************************************************
@@ -438,6 +465,19 @@ private:
 
     /** A pointer to data related to this basis function. */
     DataValueContainer mData;
+
+    friend class Serializer;
+
+    virtual void save(Serializer& rSerializer) const
+    {
+        rSerializer.save("Data", mData);
+    }
+
+    virtual void load(Serializer& rSerializer)
+    {
+        rSerializer.load("Data", mData);
+    }
+
 };
 
 /// output stream function

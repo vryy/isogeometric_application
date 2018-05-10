@@ -709,6 +709,7 @@ inline void HBSplinesRefinementUtility_Helper<2>::RefineWindow(typename Patch<2>
             && bounding_box[2] >= window[1][0] && bounding_box[3] <= window[1][1] )
         {
             Refine(pPatch, (*it_bf)->Id(), echo_level);
+            pPatch->pParentMultiPatch()->Enumerate();
         }
     }
 }
@@ -744,6 +745,7 @@ inline void HBSplinesRefinementUtility_Helper<3>::RefineWindow(typename Patch<3>
             && bounding_box[4] >= window[2][0] && bounding_box[5] <= window[2][1] )
         {
             Refine(pPatch, (*it_bf)->Id(), echo_level);
+            pPatch->pParentMultiPatch()->Enumerate();
         }
     }
 }
@@ -867,7 +869,10 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
             }
 
             for(std::size_t i = 0; i < refined_bfs.size(); ++i)
+            {
                 Refine(pPatch, refined_bfs[i], echo_level);
+                pPatch->pParentMultiPatch()->Enumerate();
+            }
 
             // perform another round to make sure all bfs has support domain in the domain manager of each level
             LinearDependencyRefine(pPatch, refine_cycle + 1, echo_level);

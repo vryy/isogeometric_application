@@ -170,8 +170,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
 
     ss.str(std::string());
     ss << "Patch" << TDim << "DContainer";
-    PointerVectorSetPythonInterface<typename MultiPatch<TDim>::PatchContainerType>::CreateInterface(ss.str())
-    ;
+    PointerVectorSetPythonInterface<typename MultiPatch<TDim>::PatchContainerType>::CreateInterface(ss.str());
 
     ss.str(std::string());
     ss << "BendingStripPatch" << TDim << "D";

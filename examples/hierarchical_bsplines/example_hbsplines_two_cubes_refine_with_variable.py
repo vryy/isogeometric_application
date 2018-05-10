@@ -63,6 +63,47 @@ def CreateMultiPatch():
 def main():
     hmpatch = CreateMultiPatch()
 #    print(hmpatch)
+
+    hpatch1_ptr = hmpatch[1]
+    hpatch1 = hpatch1_ptr.GetReference()
+
+    hpatch2_ptr = hmpatch[2]
+    hpatch2 = hpatch2_ptr.GetReference()
+
+    ###############
+
+    echo_level = IsogeometricEchoFlags.ECHO_REFINEMENT
+    refine_bf_id = 4
+    hbsplines_refinement_util.Refine(hpatch1, refine_bf_id, echo_level)
+    hmpatch.Enumerate()
+#    print(hmpatch)
+
+    ###
+
+    refine_bf_id = 20
+    hbsplines_refinement_util.Refine(hpatch1, refine_bf_id, echo_level)
+    hmpatch.Enumerate()
+
+    ###
+
+    refine_bf_id = 26
+    hbsplines_refinement_util.Refine(hpatch1, refine_bf_id, echo_level)
+    hmpatch.Enumerate()
+
+    ################
+
+    boundary_basis_1 = hpatch1.FESpace().GetBoundaryBfs(BoundarySide.Right)
+    boundary_basis_2 = hpatch2.FESpace().GetBoundaryBfs(BoundarySide.Left)
+
+    for i in range(0, len(boundary_basis_1)):
+        bf1 = boundary_basis_1[i]
+        bf2 = boundary_basis_2[i]
+        print(bf1.Id, bf1.EquationId)
+        print(bf2.Id, bf2.EquationId)
+#        print(bf1)
+#        print(bf2)
+        print("-----------")
+
     hmpatch_export.Export(hmpatch, "hierarchical_b_splines_two_cube.m")
 
 if __name__ == "__main__":

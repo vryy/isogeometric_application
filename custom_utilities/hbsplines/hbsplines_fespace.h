@@ -18,6 +18,7 @@
 // Project includes
 #include "includes/define.h"
 #include "containers/array_1d.h"
+#include "containers/pointer_vector_set.h"
 #include "custom_utilities/bezier_utils.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/fespace.h"
@@ -512,6 +513,28 @@ public:
         }
 
         return pCompatCellManager;
+    }
+
+    /// Get the basis functions on side
+    std::vector<bf_t> GetBoundaryBfs(const BoundarySide& side) const
+    {
+        // firstly we organize the basis functions based on its equation_id
+        std::map<std::size_t, bf_t> map_bfs;
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
+                map_bfs[(*it)->EquationId()] = (*it);
+        }
+
+        // then we can extract the equation_id
+        std::vector<bf_t> bf_list(map_bfs.size());
+        std::size_t cnt = 0;
+        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
+        {
+            bf_list[cnt++] = it->second;
+        }
+
+        return bf_list;
     }
 
     /// Overload operator[], this allows to access the basis function randomly based on index

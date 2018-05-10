@@ -171,7 +171,15 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
                 }
             }
 
-            if (found) Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
+            if (found)
+            {
+                if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
+                {
+                    std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
+                }
+
+                Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
+            }
         }
     }
 }
@@ -228,7 +236,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 if(fabs((*it2)->Value() - (*it)->Value()) > tol)
                 {
                     // now we just add the middle one, but in the general we can add arbitrary values
-                    // TODO: find the way to generalize this or parameterize this
+                    // TODO find the way to generalize this or parameterize this
                     double ins_knot = 0.5 * ((*it)->Value() + (*it2)->Value());
                     knot_t p_new_knot;
                     p_new_knot = pFESpace->KnotVector(dim).pCreateUniqueKnot(ins_knot, tol);
@@ -337,7 +345,11 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                         pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_TOP_));
 
                 // assign new equation id
-                p_bf->SetEquationId(starting_id++);
+                pnew_bf->SetEquationId(++starting_id);
+                if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
+                {
+                    std::cout << "new bf " << pnew_bf->Id() << " is assigned eq_id = " << pnew_bf->EquationId() << std::endl;
+                }
 
                 // transfer the control point information
                 ControlPointType oldC = p_bf->GetValue(CONTROL_POINT);
@@ -460,7 +472,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                             pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_TOP_));
 
                     // assign new equation id
-                    p_bf->SetEquationId(starting_id++);
+                    pnew_bf->SetEquationId(++starting_id);
 
                     // transfer the control point information
                     ControlPointType oldC = p_bf->GetValue(CONTROL_POINT);
@@ -656,13 +668,11 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     pFESpace->RecordRefinementHistory(p_bf->Id());
     if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
     {
+        std::cout << "Refine patch " << pPatch->Id() << ", bf " << p_bf->Id() << ", eq_id " << p_bf->EquationId() << " completed" << std::endl;
         #ifdef ENABLE_PROFILING
-        std::cout << "Refine bf " << p_bf->Id() << " completed" << std::endl;
         std::cout << " Time to compute the refinement coefficients: " << time_1 << " s" << std::endl;
         std::cout << " Time to create new cells and new bfs: " << time_2 << " s" << std::endl;
         std::cout << " Time to clean up: " << time_3 << " s" << std::endl;
-        #else
-        std::cout << "Refine bf " << p_bf->Id() << " completed" << std::endl;
         #endif
     }
 

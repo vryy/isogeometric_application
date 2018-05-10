@@ -60,6 +60,7 @@ def CreateMultiPatch():
 #print("############RESULTS###############")
 def main():
     mpatch = CreateMultiPatch()
+    mpatch.Enumerate()
     print(mpatch)
     mpatch_export1.Export(mpatch, "mpatch.mesh")
     mpatch_export2.Export(mpatch, "mpatch.m")

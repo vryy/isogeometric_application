@@ -9,6 +9,8 @@
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_IGA_DEFINE_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_IGA_DEFINE_H_INCLUDED
 
+#include <cstring>
+
 namespace Kratos
 {
 
@@ -24,6 +26,20 @@ enum BoundarySide
 };
 
 #define BOUNDARY_FLAG(x) (1 << (x+1))
+
+inline std::string BoundarySideName(const BoundarySide& side)
+{
+    switch(side)
+    {
+        case _LEFT_:    return "left";
+        case _RIGHT_:   return "right";
+        case _TOP_:     return "top";
+        case _BOTTOM_: return "bottom";
+        case _FRONT_:   return "front";
+        case _BACK_:    return "back";
+        default:        return "inner";
+    }
+}
 
 enum IsogeometricEchoFlags
 {

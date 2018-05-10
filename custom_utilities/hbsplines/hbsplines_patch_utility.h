@@ -60,6 +60,23 @@ public:
         return HBSplinesPatchUtility_Helper<TDim>::CreatePatchFromBSplines(pPatch);
     }
 
+    /// List the boundary basis functions on side
+    template<int TDim>
+    static void ListBoundaryBfs(std::ostream& rOStream, typename HBSplinesFESpace<TDim>::Pointer pFESpace, const BoundarySide& side)
+    {
+        typedef typename HBSplinesFESpace<TDim>::bf_iterator bf_iterator;
+
+        rOStream << "Listing of boundary basis function on " << BoundarySideName(side) << " side of hierarchical B-Splines space:" << std::endl;
+
+        for (bf_iterator it = pFESpace->bf_begin(); it != pFESpace->bf_end(); ++it)
+        {
+            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
+            {
+                rOStream << "  bf " << (*it)->Id() << ", eq_id: " << (*it)->EquationId() << std::endl;
+            }
+        }
+    }
+
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {

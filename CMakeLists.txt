@@ -75,9 +75,13 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_processes_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_backend_utilities_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_frontend_utilities_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_transformation_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_control_grids_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_nurbs_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_hbsplines_to_python.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_isogeometric_structures_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_tsplines_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_mesh_and_model_part_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_patches_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/isogeometric_python_application.cpp
 )
 

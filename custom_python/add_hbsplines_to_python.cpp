@@ -31,7 +31,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
 #include "custom_utilities/hbsplines/hbsplines_patch_utility.h"
 #include "custom_utilities/hbsplines/hbsplines_refinement_utility.h"
-#include "custom_utilities/tsplines/tsmesh_2d.h"
 #include "custom_utilities/import_export/multi_hbsplines_patch_matlab_exporter.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
 #include "custom_python/add_import_export_to_python.h"
@@ -46,6 +45,13 @@ namespace Python
 using namespace boost::python;
 
 ////////////////////////////////////////
+
+template<int TDim>
+void HBSplinesPatchUtility_ListBoundaryBfs(HBSplinesPatchUtility& rDummy,
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace, BoundarySide side)
+{
+    rDummy.ListBoundaryBfs<TDim>(std::cout, pFESpace, side);
+}
 
 template<int TDim>
 typename Patch<TDim>::Pointer HBSplinesPatchUtility_CreatePatchFromBSplines(HBSplinesPatchUtility& rDummy,
@@ -177,25 +183,6 @@ void IsogeometricApplication_AddHBSplinesToPython()
 {
 
     /////////////////////////////////////////////////////////////////
-    ///////////////////////TSPLINES//////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-
-    class_<TsMesh2D, TsMesh2D::Pointer, boost::noncopyable>
-    ("TsMesh2D", init<>())
-    .def("BeginConstruct", &TsMesh2D::BeginConstruct)
-    .def("EndConstruct", &TsMesh2D::EndConstruct)
-    .def("ReadFromFile", &TsMesh2D::ReadFromFile)
-    .def("ExportMatlab", &TsMesh2D::ExportMatlab)
-    .def("BuildExtendedTmesh", &TsMesh2D::BuildExtendedTmesh)
-    .def("IsAnalysisSuitable", &TsMesh2D::IsAnalysisSuitable)
-    .def("BuildAnchors", &TsMesh2D::BuildAnchors)
-    .def("BuildCells", &TsMesh2D::BuildCells)
-    .def("ExportMDPA", &TsMesh2D::ExportMDPA)
-    //    .def("FindKnots2", &TsMesh2D::FindKnots2)
-    .def(self_ns::str(self))
-    ;
-
-    /////////////////////////////////////////////////////////////////
     ///////////////////////HIERARCHICAL BSplines/////////////////////
     /////////////////////////////////////////////////////////////////
 
@@ -219,6 +206,8 @@ void IsogeometricApplication_AddHBSplinesToPython()
     ("HBSplinesPatchUtility", init<>())
     .def("CreatePatchFromBSplines", &HBSplinesPatchUtility_CreatePatchFromBSplines<2>)
     .def("CreatePatchFromBSplines", &HBSplinesPatchUtility_CreatePatchFromBSplines<3>)
+    .def("ListBoundaryBfs", &HBSplinesPatchUtility_ListBoundaryBfs<2>)
+    .def("ListBoundaryBfs", &HBSplinesPatchUtility_ListBoundaryBfs<3>)
     .def(self_ns::str(self))
     ;
 

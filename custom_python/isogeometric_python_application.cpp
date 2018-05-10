@@ -17,6 +17,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <boost/python.hpp>
 
 #include "custom_python/add_utilities_to_python.h"
+#include "custom_python/add_fespace_to_python.hpp"
+#include "custom_python/add_grid_functions_to_python.hpp"
 #include "custom_python/add_processes_to_python.h"
 #include "custom_python/add_io_to_python.h"
 
@@ -46,9 +48,19 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
 
     IsogeometricApplication_AddBackendUtilitiesToPython();
     IsogeometricApplication_AddFrontendUtilitiesToPython();
+    IsogeometricApplication_AddControlGridsToPython();
+    IsogeometricApplication_AddTransformationToPython();
+    IsogeometricApplication_AddFESpacesToPython<1>();
+    IsogeometricApplication_AddFESpacesToPython<2>();
+    IsogeometricApplication_AddFESpacesToPython<3>();
+    IsogeometricApplication_AddGridFunctionsToPython<1>();
+    IsogeometricApplication_AddGridFunctionsToPython<2>();
+    IsogeometricApplication_AddGridFunctionsToPython<3>();
+    IsogeometricApplication_AddPatchesToPython();
     IsogeometricApplication_AddNURBSToPython();
     IsogeometricApplication_AddHBSplinesToPython();
-    IsogeometricApplication_AddIsogeometricStructuresToPython();
+    IsogeometricApplication_AddTSplinesToPython();
+    IsogeometricApplication_AddMeshAndModelPartToPython();
     IsogeometricApplication_AddProcessesToPython();
     IsogeometricApplication_AddIOToPython();
 

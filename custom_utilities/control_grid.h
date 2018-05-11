@@ -68,7 +68,7 @@ public:
     }
 
     /// Get the data at specific point
-    virtual const TDataType& GetData(const std::size_t& i) const
+    virtual TDataType GetData(const std::size_t& i) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }

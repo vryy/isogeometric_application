@@ -56,7 +56,7 @@ public:
     virtual std::size_t size() const {return mData.size();}
 
     /// Get the data at specific point
-    virtual const TDataType& GetData(const std::size_t& i) const {return mData[i];}
+    virtual TDataType GetData(const std::size_t& i) const {return mData[i];}
 
     /// Set the data at specific point
     /// Be careful with this method. You can destroy the coherency of internal data.

@@ -24,9 +24,6 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
     if (std::find(refined_patches.begin(), refined_patches.end(), pPatch->Id()) == refined_patches.end())
     {
-        // get the parent multipatch
-        typename MultiPatch<TDim>::Pointer pMultiPatch = pPatch->pParentMultiPatch();
-
         // create new patch with same Id
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
 
@@ -251,21 +248,27 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
             // }
         }
 
-        // set the parent multipatch
-        pNewPatch->pSetParentMultiPatch(pMultiPatch);
+        // get the parent multipatch
+        typename MultiPatch<TDim>::Pointer pMultiPatch = pPatch->pParentMultiPatch();
 
-        // remove this patch from multipatch
-        pMultiPatch->Patches().erase(pPatch->Id());
+        if (pMultiPatch != NULL)
+        {
+            // set the parent multipatch
+            pNewPatch->pSetParentMultiPatch(pMultiPatch);
+
+            // remove this patch from multipatch
+            pMultiPatch->Patches().erase(pPatch->Id());
+        }
 
         // swap
         pPatch.swap(pNewPatch);
 
-        // replace the corresponding patch in multipatch
-        pMultiPatch->Patches().push_back(pPatch);
-        pMultiPatch->Patches().Unique();
-
-        // TODO re-generate the connection topology
-        // 
+        if (pMultiPatch != NULL)
+        {
+            // replace the corresponding patch in multipatch
+            pMultiPatch->Patches().push_back(pPatch);
+            pMultiPatch->Patches().Unique();
+        }
     }
 }
 
@@ -276,11 +279,6 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
 {
     if (std::find(refined_patches.begin(), refined_patches.end(), pPatch->Id()) == refined_patches.end())
     {
-        // get the parent multipatch
-        typename MultiPatch<TDim>::Pointer pMultiPatch = pPatch->pParentMultiPatch();
-        if (pMultiPatch == NULL)
-            KRATOS_THROW_ERROR(std::logic_error, "The parent multipatch is not defined for patch", pPatch->Id())
-
         // create new patch with same Id
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
 
@@ -471,18 +469,27 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             // }
         }
 
-        // set the parent multipatch
-        pNewPatch->pSetParentMultiPatch(pMultiPatch);
+        // get the parent multipatch
+        typename MultiPatch<TDim>::Pointer pMultiPatch = pPatch->pParentMultiPatch();
 
-        // remove this patch from multipatch
-        pMultiPatch->Patches().erase(pPatch->Id());
+        if (pMultiPatch != NULL)
+        {
+            // set the parent multipatch
+            pNewPatch->pSetParentMultiPatch(pMultiPatch);
+
+            // remove this patch from multipatch
+            pMultiPatch->Patches().erase(pPatch->Id());
+        }
 
         // swap
         pPatch.swap(pNewPatch);
 
-        // replace the corresponding patch in multipatch
-        pMultiPatch->Patches().push_back(pPatch);
-        pMultiPatch->Patches().Unique();
+        if (pMultiPatch != NULL)
+        {
+            // replace the corresponding patch in multipatch
+            pMultiPatch->Patches().push_back(pPatch);
+            pMultiPatch->Patches().Unique();
+        }
     }
 }
 

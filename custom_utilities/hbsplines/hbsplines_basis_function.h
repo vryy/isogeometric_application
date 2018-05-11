@@ -233,6 +233,12 @@ public:
             rKnots[i] = mpLocalKnots[dim][i]->Value();
     }
 
+    /// Get the weight associated with the control point
+    double Weight() const
+    {
+        return this->GetValue(CONTROL_POINT).W();
+    }
+
     /// Get the bounding box (=support domain) of this basis function
     std::vector<double> GetBoundingBox() const
     {

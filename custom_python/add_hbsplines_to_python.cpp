@@ -72,17 +72,23 @@ void HBSplinesBasisFunction_SetEquationId(HBSplinesBasisFunction<TDim>& rDummy, 
 }
 
 template<int TDim>
-boost::python::list HBSplinesFESpace_GetBoundaryBfs(HBSplinesFESpace<TDim>& rDummy, BoundarySide side)
+boost::python::list HBSplinesFESpace_GetBoundaryBfs(HBSplinesFESpace<TDim>& rDummy, std::size_t boundary_id)
 {
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
-    std::vector<bf_t> bf_list = rDummy.GetBoundaryBfs(side);
+    std::vector<bf_t> bf_list = rDummy.GetBoundaryBfs(boundary_id);
 
     boost::python::list Output;
     for (std::size_t i = 0; i < bf_list.size(); ++i)
         Output.append(bf_list[i]);
 
     return Output;
+}
+
+template<int TDim>
+typename HBSplinesBasisFunction<TDim>::Pointer HBSplinesFESpace_GetItem(HBSplinesFESpace<TDim>& rDummy, std::size_t i)
+{
+    return rDummy[i];
 }
 
 ////////////////////////////////////////
@@ -162,6 +168,7 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     (ss.str().c_str(), init<const std::size_t&, const std::size_t&>())
     .add_property("Id", HBSplinesBasisFunction_GetId<TDim>, HBSplinesBasisFunction_SetId<TDim>)
     .add_property("EquationId", HBSplinesBasisFunction_GetEquationId<TDim>, HBSplinesBasisFunction_SetEquationId<TDim>)
+    .def("Weight", &HBSplinesBasisFunction<TDim>::Weight)
     .def(self_ns::str(self))
     ;
 
@@ -169,6 +176,7 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     ss << "HBSplinesFESpace" << TDim << "D";
     class_<HBSplinesFESpace<TDim>, typename HBSplinesFESpace<TDim>::Pointer, bases<FESpace<TDim> >, boost::noncopyable>
     (ss.str().c_str(), init<>())
+    .def("__getitem__", &HBSplinesFESpace_GetItem<TDim>)
     .def("GetBoundaryBfs", &HBSplinesFESpace_GetBoundaryBfs<TDim>)
     .def(self_ns::str(self))
     ;

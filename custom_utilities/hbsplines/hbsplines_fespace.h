@@ -171,9 +171,7 @@ public:
         std::vector<double> weights(this->TotalNumber());
         std::size_t cnt = 0;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
-        {
             weights[cnt++] = (*it)->GetValue(CONTROL_POINT).W();
-        }
         return weights;
     }
 
@@ -199,35 +197,26 @@ public:
     }
 
     /// Get the values of the basis function i at point xi
+    /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
     virtual double GetValue(const std::size_t& i, const std::vector<double>& xi) const
     {
-        std::vector<double> weights = this->GetWeights();
-
-        double sum = 0.0;
+        std::size_t j = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
-            sum += weights[i]*(*it)->GetValue(xi);
-
-        return weights[i]/sum;
+        {
+            if (j == i) return (*it)->GetValue(xi);
+            ++j;
+        }
+        return 0.0;
     }
 
     /// Get the values of the basis functions at point xi
+    /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
     virtual std::vector<double> GetValue(const std::vector<double>& xi) const
     {
         std::vector<double> values(this->TotalNumber());
-        std::vector<double> weights = this->GetWeights();
-
-        double sum = 0.0;
         std::size_t i = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
-        {
-            values[i] = (*it)->GetValue(xi);
-            sum += weights[i]*values[i];
-            ++i;
-        }
-
-        for (i = 0; i < values.size(); ++i)
-            values[i] *= weights[i]/sum;
-
+            values[i++] = (*it)->GetValue(xi);
         return values;
     }
 
@@ -516,13 +505,13 @@ public:
     }
 
     /// Get the basis functions on side
-    std::vector<bf_t> GetBoundaryBfs(const BoundarySide& side) const
+    std::vector<bf_t> GetBoundaryBfs(const std::size_t& boundary_id) const
     {
         // firstly we organize the basis functions based on its equation_id
         std::map<std::size_t, bf_t> map_bfs;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
+            if ((*it)->IsOnSide(boundary_id))
                 map_bfs[(*it)->EquationId()] = (*it);
         }
 

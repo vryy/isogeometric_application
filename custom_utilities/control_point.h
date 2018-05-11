@@ -19,6 +19,7 @@
 #include "includes/define.h"
 #include "includes/serializer.h"
 #include "custom_utilities/trans/transformation.h"
+#include "custom_utilities/control_value.h"
 
 namespace Kratos
 {
@@ -27,65 +28,76 @@ namespace Kratos
     Represent a control point in isogeometric mesh topology.
  */
 template<typename TDataType>
-class ControlPoint
+class ControlPoint : public ControlValue<array_1d<TDataType, 3>, TDataType>
 {
 public:
+    // Type definitions
+    typedef ControlValue<array_1d<TDataType, 3>, TDataType> BaseType;
+
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(ControlPoint);
 
     /// Default constructor
-    ControlPoint() : mWX(0.0), mWY(0.0), mWZ(0.0), mW(0.0) {}
+    ControlPoint() : BaseType() {}
 
     /// Constant constructor
-    ControlPoint(const double& v) : mWX(v), mWY(v), mWZ(v), mW(v) {}
+    ControlPoint(const double& v)
+    {
+        BaseType::WV()[0] = v;
+        BaseType::WV()[1] = v;
+        BaseType::WV()[2] = v;
+        BaseType::W() = v;
+    }
 
     /// Constructor with full coordinates
-    ControlPoint(const double& wx, const double& wy, const double& wz, const double& w) : mWX(wx), mWY(wy), mWZ(wz), mW(w) {}
+    ControlPoint(const double& wx, const double& wy, const double& wz, const double& w)
+    {
+        BaseType::WV()[0] = wx;
+        BaseType::WV()[1] = wy;
+        BaseType::WV()[2] = wz;
+        BaseType::W() = w;
+    }
 
     /// Destructor
     virtual ~ControlPoint() {}
 
     /// homogeneous X-coordinate
-    TDataType& WX() {return mWX;}
-    const TDataType& WX() const {return mWX;}
+    TDataType& WX() {return BaseType::WV()[0];}
+    const TDataType& WX() const {return BaseType::WV()[0];}
 
     /// X-coordinate
-    const TDataType X() const {return mWX/mW;}
+    TDataType X() const {return BaseType::WV()[0] / BaseType::W();}
 
     /// homogeneous Y-coordinate
-    TDataType& WY() {return mWY;}
-    const TDataType& WY() const {return mWY;}
+    TDataType& WY() {return BaseType::WV()[1];}
+    const TDataType& WY() const {return BaseType::WV()[1];}
 
     /// Y-coordinate
-    const TDataType Y() const {return mWY/mW;}
+    TDataType Y() const {return BaseType::WV()[1] / BaseType::W();}
 
     /// homogeneous Z-coordinate
-    TDataType& WZ() {return mWZ;}
-    const TDataType& WZ() const {return mWZ;}
+    TDataType& WZ() {return BaseType::WV()[2];}
+    const TDataType& WZ() const {return BaseType::WV()[2];}
 
     /// Z-coordinate
-    const TDataType Z() const {return mWZ/mW;}
-
-    /// Weight
-    TDataType& W() {return mW;}
-    const TDataType& W() const {return mW;}
+    TDataType Z() const {return BaseType::WV()[2] / BaseType::W();}
 
     /// Set the coordinate. The input is the physical coordinates in 3D space.
     void SetCoordinates(const TDataType& _X, const TDataType& _Y, const TDataType& _Z, const TDataType& _W)
     {
-        mWX = _W*_X;
-        mWY = _W*_Y;
-        mWZ = _W*_Z;
-        mW  = _W;
+        BaseType::WV()[0] = _W*_X;
+        BaseType::WV()[1] = _W*_Y;
+        BaseType::WV()[2] = _W*_Z;
+        BaseType::W()  = _W;
     }
 
     /// Add to the coordinate. The input is the increment of physical coordinates in 3D space.
     void AddCoordinates(const TDataType& _X, const TDataType& _Y, const TDataType& _Z, const TDataType& _W)
     {
-        mWX += _W*_X;
-        mWY += _W*_Y;
-        mWZ += _W*_Z;
-        mW  += _W;
+        BaseType::WV()[0] += _W*_X;
+        BaseType::WV()[1] += _W*_Y;
+        BaseType::WV()[2] += _W*_Z;
+        BaseType::W()  += _W;
     }
 
     // overload operator []
@@ -94,7 +106,7 @@ public:
         if (i == 0) return WX();
         else if (i == 1) return WY();
         else if (i == 2) return WZ();
-        else if (i == 3) return W();
+        else if (i == 3) return BaseType::W();
     }
 
     const TDataType& operator[] (const int& i) const
@@ -102,7 +114,7 @@ public:
         if (i == 0) return WX();
         else if (i == 1) return WY();
         else if (i == 2) return WZ();
-        else if (i == 3) return W();
+        else if (i == 3) return BaseType::W();
     }
 
     // overload operator ()
@@ -111,26 +123,20 @@ public:
         if (i == 0) return X();
         else if (i == 1) return Y();
         else if (i == 2) return Z();
-        else if (i == 3) return W();
+        else if (i == 3) return BaseType::W();
     }
 
     /// Assignment operator
-    ControlPoint& operator=(const ControlPoint& rOther)
+    ControlPoint& operator=(const BaseType& rOther)
     {
-        this->mWX = rOther.mWX;
-        this->mWY = rOther.mWY;
-        this->mWZ = rOther.mWZ;
-        this->mW = rOther.mW;
+        BaseType::operator=(rOther);
         return *this;
     }
 
     /// Addition operator
-    ControlPoint& operator+=(const ControlPoint& rOther)
+    ControlPoint& operator+=(const BaseType& rOther)
     {
-        this->mWX += rOther.mWX;
-        this->mWY += rOther.mWY;
-        this->mWZ += rOther.mWZ;
-        this->mW += rOther.mW;
+        BaseType::operator+=(rOther);
         return *this;
     }
 
@@ -144,11 +150,24 @@ public:
     /// Multiplication operator
     ControlPoint& operator*=(const TDataType& alpha)
     {
-        this->mWX *= alpha;
-        this->mWY *= alpha;
-        this->mWZ *= alpha;
-        this->mW *= alpha;
+        BaseType::operator*=(alpha);
         return *this;
+    }
+
+    /// Multiplication operator
+    friend ControlPoint operator*(const TDataType& alpha, BaseType c)
+    {
+        ControlPoint p;
+        p = alpha*c;
+        return p;
+    }
+
+    /// Multiplication operator
+    friend ControlPoint operator*(BaseType c, const TDataType& alpha)
+    {
+        ControlPoint p;
+        p = alpha*c;
+        return p;
     }
 
     /// Apply the homogeneous transformation to the control point
@@ -156,15 +175,14 @@ public:
     {
         TDataType res[4];
         for (std::size_t i = 0; i < 4; ++i)
-            res[i] = trans(i, 0)*this->mWX + trans(i, 1)*this->mWY + trans(i, 2)*this->mWZ + trans(i, 3)*this->mW;
-        this->mWX = res[0]; this->mWY = res[1]; this->mWZ = res[2]; this->mW = res[3];
-    }
-
-    /// Multiplication operator
-    friend ControlPoint operator*(const double& alpha, ControlPoint c)
-    {
-        c *= alpha;
-        return c;
+            res[i] = trans(i, 0)*BaseType::WV()[0]
+                   + trans(i, 1)*BaseType::WV()[1]
+                   + trans(i, 2)*BaseType::WV()[2]
+                   + trans(i, 3)*BaseType::W();
+        BaseType::WV()[0] = res[0];
+        BaseType::WV()[1] = res[1];
+        BaseType::WV()[2] = res[2];
+        BaseType::W() = res[3];
     }
 
     /// Multiplication operator
@@ -183,35 +201,27 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         // print the control point in homogeneous coordinates
-        rOStream << "(X: " << X() << ", Y: " << Y() << ", Z: " << Z() << ", W: " << W() << ")";
+        rOStream << "(X: " << X() << ", Y: " << Y() << ", Z: " << Z() << ", W: " << BaseType::W() << ")";
     }
 
 private:
-
-    TDataType mWX, mWY, mWZ, mW;
 
     /// Serializer
     friend class Serializer;
 
     virtual void save(Serializer& rSerializer) const
     {
-        rSerializer.save( "WX", mWX );
-        rSerializer.save( "WY", mWY );
-        rSerializer.save( "WZ", mWZ );
-        rSerializer.save( "W", mW );
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType);
     }
 
     virtual void load(Serializer& rSerializer)
     {
-        rSerializer.load( "WX", mWX );
-        rSerializer.load( "WY", mWY );
-        rSerializer.load( "WZ", mWZ );
-        rSerializer.load( "W", mW );
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType);
     }
 };
 
 /// output stream function
-template<class TDataType>
+template<typename TDataType>
 inline std::ostream& operator <<(std::ostream& rOStream, const ControlPoint<TDataType>& rThis)
 {
     // rThis.PrintInfo(rOStream);

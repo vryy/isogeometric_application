@@ -144,44 +144,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
 
     // refine the patch
     std::set<std::size_t> refined_patches;
-    std::size_t equation_id = p_bf->EquationId();
     Refine(pPatch, p_bf, refined_patches, echo_level);
-
-    // refine also the neighbors
-    for (int i = _LEFT_; i <= _BACK_; ++i)
-    {
-        BoundarySide side = static_cast<BoundarySide>(i);
-
-        if (pPatch->pNeighbor(side) != NULL)
-        {
-            typename Patch<TDim>::Pointer pNeighborPatch = pPatch->pNeighbor(side);
-
-            // extract the hierarchical B-Splines space
-            typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
-
-            // get the correct basis function
-            bf_t p_neighbor_bf;
-            bool found = false;
-            for(typename bf_container_t::iterator it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
-            {
-                if ((*it)->EquationId() == equation_id)
-                {
-                    p_neighbor_bf = *it;
-                    found = true;
-                }
-            }
-
-            if (found)
-            {
-                if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
-                {
-                    std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
-                }
-
-                Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
-            }
-        }
-    }
 }
 
 template<int TDim>
@@ -204,10 +167,17 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
         return std::make_pair(aux1, aux2);
     }
+    else
+    {
+        refined_patches.insert(pPatch->Id());
+    }
 
     #ifdef ENABLE_PROFILING
     double start = OpenMPUtils::GetCurrentTime();
     #endif
+
+    // save the equation_id
+    std::size_t equation_id = p_bf->EquationId();
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
@@ -674,6 +644,42 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         std::cout << " Time to create new cells and new bfs: " << time_2 << " s" << std::endl;
         std::cout << " Time to clean up: " << time_3 << " s" << std::endl;
         #endif
+    }
+
+    // refine also the neighbors
+    for (int i = _LEFT_; i <= _BACK_; ++i)
+    {
+        BoundarySide side = static_cast<BoundarySide>(i);
+
+        if (pPatch->pNeighbor(side) != NULL)
+        {
+            typename Patch<TDim>::Pointer pNeighborPatch = pPatch->pNeighbor(side);
+
+            // extract the hierarchical B-Splines space
+            typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
+
+            // get the correct basis function
+            bf_t p_neighbor_bf;
+            bool found = false;
+            for(typename bf_container_t::iterator it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
+            {
+                if ((*it)->EquationId() == equation_id)
+                {
+                    p_neighbor_bf = *it;
+                    found = true;
+                }
+            }
+
+            if (found)
+            {
+                if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
+                {
+                    std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
+                }
+
+                Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
+            }
+        }
     }
 
     return std::make_pair(numbers, pnew_bfs);

@@ -15,6 +15,7 @@ import example_hbsplines_refine
 
 def main():
     patch_ptr = example_hbsplines_refine.CreatePatch()
+
     patch = patch_ptr.GetReference()
     temp_ctrl_grid = ctrl_grid_util.CreatePointBasedControlGrid(TEMPERATURE, patch.FESpace())
     for i in range(0, temp_ctrl_grid.Size()):
@@ -26,7 +27,8 @@ def main():
     print("temperature_grid_func.GetValue(0.5, 0.5):", temperature_grid_func.GetValue([0.5, 0.5]))
 ##    print(patch)
     echo_level = 1
-    hbsplines_refinement_util.Refine(patch, 1, echo_level)
+    refine_bf_id = 9
+    hbsplines_refinement_util.Refine(patch, refine_bf_id, echo_level)
     patch.FESpace().Enumerate()
     print("temperature_grid_func:")
     print(temperature_grid_func)

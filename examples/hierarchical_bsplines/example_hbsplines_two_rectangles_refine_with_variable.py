@@ -92,8 +92,8 @@ def main():
 
     ################
 
-    boundary_basis_1 = hpatch1.FESpace().GetBoundaryBfs(BoundarySide.Right)
-    boundary_basis_2 = hpatch2.FESpace().GetBoundaryBfs(BoundarySide.Left)
+    boundary_basis_1 = hpatch1.FESpace().GetBoundaryBfs(BoundaryFlag.Right)
+    boundary_basis_2 = hpatch2.FESpace().GetBoundaryBfs(BoundaryFlag.Left)
 
     for i in range(0, len(boundary_basis_1)):
         bf1 = boundary_basis_1[i]
@@ -104,7 +104,7 @@ def main():
 #        print(bf2)
         print("-----------")
 
-    hmpatch_export.Export(hmpatch, "hierarchical_b_splines_two_cube.m")
+    hmpatch_export.Export(hmpatch, "hierarchical_b_splines_two_rectangles.m")
 
 if __name__ == "__main__":
     main()

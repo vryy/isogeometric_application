@@ -28,43 +28,53 @@ mpatch_export = MultiNURBSPatchMatlabExporter()
 
 import geometry_factory
 
-####### create arc 1
-r1 = 1.0
-arc1_ptr = geometry_factory.CreateSmallArc([0.0, 0.0, 0.0], 'z', r1, 0.0, 45.0)
-arc1 = arc1_ptr.GetReference()
+def CreateMultiPatch():
+    ####### create arc 1
+    r1 = 1.0
+    arc1_ptr = geometry_factory.CreateSmallArc([0.0, 0.0, 0.0], 'z', r1, 0.0, 45.0)
+    arc1 = arc1_ptr.GetReference()
 
-# create line 1
-b1 = 4.0
-line1_ptr = geometry_factory.CreateLine([b1, 0.0, 0.0], [b1, b1, 0.0], arc1.Order(0))
-line1 = line1_ptr.GetReference()
+    # create line 1
+    b1 = 4.0
+    line1_ptr = geometry_factory.CreateLine([b1, 0.0, 0.0], [b1, b1, 0.0], arc1.Order(0))
+    line1 = line1_ptr.GetReference()
 
-# create patch 1
-patch1_ptr = bsplines_patch_util.CreateConnectedPatch(line1, arc1)
-patch1 = patch1_ptr.GetReference()
-patch1.Id = 1
+    # create patch 1
+    patch1_ptr = bsplines_patch_util.CreateConnectedPatch(line1, arc1)
+    patch1 = patch1_ptr.GetReference()
+    patch1.Id = 1
 
-####### create arc 2
-arc2_ptr = geometry_factory.CreateSmallArc([0.0, 0.0, 0.0], 'z', r1, 45.0, 90.0)
-arc2 = arc2_ptr.GetReference()
+    ####### create arc 2
+    arc2_ptr = geometry_factory.CreateSmallArc([0.0, 0.0, 0.0], 'z', r1, 45.0, 90.0)
+    arc2 = arc2_ptr.GetReference()
 
-# create line 2
-line2_ptr = geometry_factory.CreateLine([b1, b1, 0.0], [0.0, b1, 0.0], arc2.Order(0))
-line2 = line2_ptr.GetReference()
+    # create line 2
+    line2_ptr = geometry_factory.CreateLine([b1, b1, 0.0], [0.0, b1, 0.0], arc2.Order(0))
+    line2 = line2_ptr.GetReference()
 
-# create patch 2
-patch2_ptr = bsplines_patch_util.CreateConnectedPatch(line2, arc2)
-patch2 = patch2_ptr.GetReference()
-patch2.Id = 2
+    # create patch 2
+    patch2_ptr = bsplines_patch_util.CreateConnectedPatch(line2, arc2)
+    patch2 = patch2_ptr.GetReference()
+    patch2.Id = 2
 
-######create multipatch
-mpatch = MultiPatch2D()
-mpatch.AddPatch(patch1_ptr)
-mpatch.AddPatch(patch2_ptr)
-mpatch.MakeNeighbor(patch1, BoundarySide.Right, patch2, BoundarySide.Left)
-multipatch_refine_util.DegreeElevate(patch1_ptr, [1, 1])
-multipatch_refine_util.InsertKnots(patch1_ptr, [[0.5], [0.5]])
-print(mpatch)
+    ######create multipatch
+    mpatch = MultiPatch2D()
+    mpatch.AddPatch(patch1_ptr)
+    mpatch.AddPatch(patch2_ptr)
+    mpatch.MakeNeighbor(patch1, BoundarySide.Right, patch2, BoundarySide.Left)
+    multipatch_refine_util.DegreeElevate(patch1_ptr, [1, 1])
+    multipatch_refine_util.InsertKnots(patch1_ptr, [[0.5], [0.5]])
 
-mpatch_export.Export(mpatch, "plate_with_hole.m")
+    return mpatch
+
+def main():
+    mpatch = CreateMultiPatch()
+    mpatch.Enumerate()
+    print(mpatch)
+
+    mpatch_export.Export(mpatch, "plate_with_hole.m")
+
+if __name__ == "__main__":
+    main()
 
 

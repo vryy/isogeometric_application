@@ -286,6 +286,15 @@ void IsogeometricApplication_AddPatchesToPython()
     .value("Back", _BACK_)
     ;
 
+    enum_<BoundaryFlag>("BoundaryFlag")
+    .value("Left", _FLEFT_)
+    .value("Right", _FRIGHT_)
+    .value("Top", _FTOP_)
+    .value("Bottom", _FBOTTOM_)
+    .value("Front", _FFRONT_)
+    .value("Back", _FBACK_)
+    ;
+
     enum_<IsogeometricEchoFlags>("IsogeometricEchoFlags")
     .value("ECHO_REFINEMENT", ECHO_REFINEMENT)
     ;

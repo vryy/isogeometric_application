@@ -27,6 +27,16 @@ enum BoundarySide
 
 #define BOUNDARY_FLAG(x) (1 << (x+1))
 
+enum BoundaryFlag
+{
+    _FLEFT_   = BOUNDARY_FLAG(_LEFT_),
+    _FRIGHT_  = BOUNDARY_FLAG(_RIGHT_),
+    _FTOP_    = BOUNDARY_FLAG(_TOP_),
+    _FBOTTOM_ = BOUNDARY_FLAG(_BOTTOM_),
+    _FFRONT_  = BOUNDARY_FLAG(_FRONT_),
+    _FBACK_   = BOUNDARY_FLAG(_BACK_)
+};
+
 inline std::string BoundarySideName(const BoundarySide& side)
 {
     switch(side)

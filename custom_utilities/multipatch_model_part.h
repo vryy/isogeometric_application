@@ -270,14 +270,14 @@ public:
 
     /// Create entities (elements/conditions) from FESpace
     /// @param pFESpace the finite element space to provide the cell manager
-    /// @param pControlGrid control grid to provide control points
+    /// @param pControlPointGrid control grid to provide control points
     /// @param rNodes model_part Nodes to look up for when creating elements
     /// @param element_name name of the sample element
     /// @param starting_id the first id of the newly created entities, from there the id is incremental
     /// @param p_temp_properties the Properties to create new entities
     template<class TEntityType, class TFESpace, class TControlGridType, class TNodeContainerType>
     static PointerVectorSet<TEntityType, IndexedObject> CreateEntitiesFromFESpace(typename TFESpace::ConstPointer pFESpace,
-        typename TControlGridType::ConstPointer pControlGrid,
+        typename TControlGridType::ConstPointer pControlPointGrid,
         TNodeContainerType& rNodes, const std::string& element_name,
         const std::size_t& starting_id, Properties::Pointer p_temp_properties)
     {
@@ -328,7 +328,7 @@ public:
             for (std::size_t i = 0; i < anchors.size(); ++i)
             {
                 temp_element_nodes.push_back(( *(MultiPatchUtility::FindKey(rNodes, CONVERT_INDEX_IGA_TO_KRATOS(anchors[i]), "Node").base())));
-                weights[i] = pControlGrid->GetData(pFESpace->LocalId(anchors[i])).W();
+                weights[i] = pControlPointGrid->GetData(pFESpace->LocalId(anchors[i])).W();
             }
 
             #ifdef DEBUG_GEN_ENTITY

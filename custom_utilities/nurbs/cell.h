@@ -217,7 +217,7 @@ public:
         mCrows.push_back(Crow_sparse);
     }
 
-    /// Get the number of supported anchors of this cell. In the other language, it is the number of basis functions that the support domain includes this cell.
+    /// Get the number of supported anchors of this cell. In other words, it is the number of basis functions that the support domain includes this cell.
     std::size_t NumberOfAnchors() const {return mSupportedAnchors.size();}
 
     /// Get the supported anchors of this cell

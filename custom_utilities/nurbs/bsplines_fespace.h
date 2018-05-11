@@ -151,12 +151,14 @@ public:
     /// Get the values of the basis function i at point xi
     virtual double GetValue(const std::size_t& i, const std::vector<double>& xi) const
     {
+        // TODO
         KRATOS_THROW_ERROR(std::logic_error, "GetValue is not implemented for dimension", TDim)
     }
 
     /// Get the values of the basis functions at point xi
     virtual std::vector<double> GetValue(const std::vector<double>& xi) const
     {
+        // TODO
         KRATOS_THROW_ERROR(std::logic_error, "GetValue is not implemented for dimension", TDim)
     }
 

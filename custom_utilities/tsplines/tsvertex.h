@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 15 Apr 2015 $
 //   Revision:            $Revision: 1.0 $
@@ -14,7 +14,7 @@
 #include <vector>
 #include <iostream>
 
-// External includes 
+// External includes
 #include <omp.h>
 
 // Project includes
@@ -66,17 +66,17 @@ public:
     /// Get and Set for edge identification
     unsigned int Id() const {return mId;}
     void SetId(unsigned int Id) {mId = Id;}
-    
+
     /// Get the index
     int Index1() const {return mpXi->Index();}
     int Index2() const {return mpEta->Index();}
     int Index3() const {return mpZeta->Index();}
-    
+
     /// Get the respective knots
     knot_t pXi() const {return mpXi;}
     knot_t pEta() const {return mpEta;}
     knot_t pZeta() const {return mpZeta;}
-    
+
     /// Check the activeness of the vertex
     bool IsActive() const
     {

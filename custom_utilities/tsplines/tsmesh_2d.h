@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 4 Feb 2015 $
 //   Revision:            $Revision: 1.0 $
@@ -19,7 +19,7 @@
 #include <set>
 #include <list>
 
-// External includes 
+// External includes
 #include <omp.h>
 #include "boost/progress.hpp"
 #include "boost/algorithm/string.hpp"
@@ -79,10 +79,10 @@ public:
 
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(TsMesh2D);
-    
+
     /// Default constructor
     TsMesh2D() : mOrder1(1), mOrder2(1), mLastEdge(0), mLastVertex(0), mLockConstruct(true), mIsExtended(false) {}
-    
+
     /// Destructor
     ~TsMesh2D() {}
 
@@ -103,7 +103,7 @@ public:
 
     /// Subroutines to modify the T-splines mesh
     void RenumberMesh();
-    
+
     /// Auxilliary subroutines
     void ClearExtendedTmesh();
     void BuildExtendedTmesh();
@@ -127,13 +127,13 @@ private:
     double mKnots1Max;
     double mKnots2Min;
     double mKnots2Max;
-    
+
     knot_container_t mKnots1; // knot vector in horizontal direction
     knot_container_t mKnots2; // knot vector in vertical direction
-    
+
     bool mLockConstruct; // lock variable to control the build process
     bool mIsExtended; // variable to keep track with the construction of extended topology mesh
-    
+
     void LockQuery()
     {
         if(mLockConstruct)
@@ -192,7 +192,7 @@ private:
             }
         }
     }
-    
+
     /// Find the local knot vectors for an arbitrary anchor
     /// Algorithm: ray marching, Isogeometric analysis using T-splines
     /// Id1, Id2: topology coordinates of the anchor (IN)
@@ -231,27 +231,27 @@ private:
             }
         }
 //        std::cout << "marching completed" << std::endl;
-        
+
 //        std::cout << "tmp_knot_index_left:";
 //        for(std::set<int>::iterator it = tmp_knot_index_left.begin(); it != tmp_knot_index_left.end(); ++it)
 //            std::cout << " " << (*it);
 //        std::cout << std::endl;
-// 
+//
 //        std::cout << "tmp_knot_index_right:";
 //        for(std::set<int>::iterator it = tmp_knot_index_right.begin(); it != tmp_knot_index_right.end(); ++it)
 //            std::cout << " " << (*it);
 //        std::cout << std::endl;
-// 
+//
 //        std::cout << "tmp_knot_index_up:";
 //        for(std::set<int>::iterator it = tmp_knot_index_up.begin(); it != tmp_knot_index_up.end(); ++it)
 //            std::cout << " " << (*it);
 //        std::cout << std::endl;
-// 
+//
 //        std::cout << "tmp_knot_index_down:";
 //        for(std::set<int>::iterator it = tmp_knot_index_down.begin(); it != tmp_knot_index_down.end(); ++it)
 //            std::cout << " " << (*it);
 //        std::cout << std::endl;
-        
+
         // fill in the knot vectors
         if(mOrder1 % 2 == 0)
         {
@@ -286,7 +286,7 @@ private:
             int k_index;
             std::vector<int> tmp_left(tmp_knot_index_left.begin(), tmp_knot_index_left.end());
             std::vector<int> tmp_right(tmp_knot_index_right.begin(), tmp_knot_index_right.end());
-            
+
             if(Knots1.size() != 2*span + 1)
                 Knots1.resize(2*span + 1);
 
@@ -320,10 +320,10 @@ private:
             int k_index;
             std::vector<int> tmp_down(tmp_knot_index_down.begin(), tmp_knot_index_down.end());
             std::vector<int> tmp_up(tmp_knot_index_up.begin(), tmp_knot_index_up.end());
-            
+
             if(Knots2.size() != 2*span)
                 Knots2.resize(2*span);
-            
+
             for(std::size_t i = 0; i < span; ++i)
             {
                 k_index = *(tmp_down.end() - span + i);
@@ -347,10 +347,10 @@ private:
             int k_index;
             std::vector<int> tmp_down(tmp_knot_index_down.begin(), tmp_knot_index_down.end());
             std::vector<int> tmp_up(tmp_knot_index_up.begin(), tmp_knot_index_up.end());
-            
+
             if(Knots2.size() != 2*span + 1)
                 Knots2.resize(2*span + 1);
-            
+
             for(std::size_t i = 0; i < span; ++i)
             {
                 k_index = *(tmp_down.end() - span + i);
@@ -359,12 +359,12 @@ private:
                 else if(FuncType == 2)
                     Knots2[i] = static_cast<DataType>(mKnots2[k_index]->Index());
             }
-            
+
             if(FuncType == 1)
                 Knots2[span] = static_cast<DataType>(mKnots2[Anchor_eta_index]->Value());
             else if(FuncType == 2)
                 Knots2[span] = static_cast<DataType>(mKnots2[Anchor_eta_index]->Index());
-            
+
             for(std::size_t i = 0; i < span; ++i)
             {
                 k_index = *(tmp_up.begin() + i);
@@ -382,16 +382,16 @@ private:
         std::vector<double> tmpKnots1;
         std::vector<double> tmpKnots2;
         this->FindKnots<1, double>(Anchor_xi_index, Anchor_eta_index, tmpKnots1, tmpKnots2);
-        
+
         if(Knots1.size() != tmpKnots1.size())
             Knots1.resize(tmpKnots1.size());
         std::copy(tmpKnots1.begin(), tmpKnots1.end(), Knots1.begin());
-        
+
         if(Knots2.size() != tmpKnots2.size())
             Knots2.resize(tmpKnots2.size());
         std::copy(tmpKnots2.begin(), tmpKnots2.end(), Knots2.begin());
     }
-    
+
     /// Find the span of knot in the local knot vector
     /// Remarks: it will give the based-1 index
     int FindSpanLocal(double Xi, const std::vector<double>& U)
@@ -399,7 +399,7 @@ private:
 //        int low = 0;
 //        int high = U.size() - 1;
 //        int mid = (low + high) / 2;
-// 
+//
 //        while( Xi < U[mid] || Xi >= U[mid+1] )
 //        {
 //            if(Xi < U[mid])
@@ -412,7 +412,7 @@ private:
 //            }
 //            mid = (low + high) / 2;
 //        }
-// 
+//
 //        return mid + 1;
 
         if(!U.empty())
@@ -422,12 +422,12 @@ private:
 
             if(Xi > U.back())
                 return U.size();
-            
+
             for(std::size_t i = 0; i < U.size() - 1; ++i)
                 if(Xi >= U[i] && Xi < U[i + 1])
                     return i + 1;
         }
-        
+
         return 0;
     }
 };

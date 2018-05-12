@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 23 Apr 2015 $
 //   Revision:            $Revision: 1.0 $
@@ -14,7 +14,7 @@
 #include <vector>
 #include <iostream>
 
-// External includes 
+// External includes
 #include <omp.h>
 
 // Project includes
@@ -55,7 +55,7 @@ public:
 
     /// Get the Id of the anchor
     int Id() const {return mId;}
-    
+
     /// Information
     void PrintInfo(std::ostream& rOStream) const
     {

@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 14 Apr 2015 $
 //   Revision:            $Revision: 1.0 $
@@ -14,7 +14,7 @@
 #include <vector>
 #include <iostream>
 
-// External includes 
+// External includes
 #include <omp.h>
 
 // Project includes
@@ -80,7 +80,7 @@ public:
     {
         rOStream << "Edge (" << pV1()->Id() << ", " << pV2()->Id() << "), type = " << EdgeType();
     }
-    
+
 private:
     unsigned int mId;
     TsVertex::Pointer mpV1, mpV2;
@@ -103,10 +103,10 @@ class TsHEdge : public TsEdge
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(TsHEdge);
-    
+
     /// Type definitions
     typedef TsEdge BaseType;
-    
+
     /// Constructor
     TsHEdge(unsigned int Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2) : BaseType(Id, pV1, pV2)
     {
@@ -114,7 +114,7 @@ public:
         if(BaseType::pV1()->Index2() != BaseType::pV2()->Index2())
             KRATOS_THROW_ERROR(std::logic_error, "The edge is not a horizonal edge", "")
     }
-    
+
     /// check if the edge was cut by a vertical ray
     virtual bool IsCut(double anchor_xi_index) const
     {
@@ -124,7 +124,7 @@ public:
         int edge_xi_index_max = std::max(edge_xi_index1, edge_xi_index2);
         return (anchor_xi_index >= edge_xi_index_min) && (anchor_xi_index <= edge_xi_index_max);
     }
-    
+
     /// Get the edge type of this specific edge
     /// 0: a general edge
     /// 1: a vertical edge
@@ -133,7 +133,7 @@ public:
     {
         return BaseType::HORIZONTAL_EDGE;
     }
-    
+
     /// Return the vertical index of this edge
     virtual int Index() const
     {
@@ -150,14 +150,14 @@ class TsVirtualHEdge : public TsHEdge
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(TsVirtualHEdge);
-    
+
     /// Type definitions
     typedef TsHEdge BaseType;
-    
+
     /// Constructor
     TsVirtualHEdge(unsigned int Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2) : BaseType(Id, pV1, pV2)
     {}
-    
+
     /// Get the edge type of this specific edge
     virtual int EdgeType() const
     {
@@ -174,10 +174,10 @@ class TsVEdge : public TsEdge
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(TsVEdge);
-    
+
     /// Type definitions
     typedef TsEdge BaseType;
-    
+
     /// Constructor
     TsVEdge(unsigned int Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2) : BaseType(Id, pV1, pV2)
     {
@@ -185,7 +185,7 @@ public:
         if(BaseType::pV1()->Index1() != BaseType::pV2()->Index1())
             KRATOS_THROW_ERROR(std::logic_error, "The edge is not a vertical edge", "")
     }
-    
+
     /// check if the edge was cut by a horizontal ray
     virtual bool IsCut(double anchor_eta_index) const
     {
@@ -195,7 +195,7 @@ public:
         int edge_eta_index_max = std::max(edge_eta_index1, edge_eta_index2);
         return (anchor_eta_index >= edge_eta_index_min) && (anchor_eta_index <= edge_eta_index_max);
     }
-    
+
     /// Get the edge type of this specific edge
     /// 0: a general edge
     /// 1: a vertical edge
@@ -204,7 +204,7 @@ public:
     {
         return BaseType::VERTICAL_EDGE;
     }
-    
+
     /// Return the horizontal index of this edge
     virtual int Index() const
     {
@@ -221,14 +221,14 @@ class TsVirtualVEdge : public TsVEdge
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(TsVirtualVEdge);
-    
+
     /// Type definitions
     typedef TsVEdge BaseType;
-    
+
     /// Constructor
     TsVirtualVEdge(unsigned int Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2) : BaseType(Id, pV1, pV2)
     {}
-    
+
     /// Get the edge type of this specific edge
     virtual int EdgeType() const
     {

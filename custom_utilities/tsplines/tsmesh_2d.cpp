@@ -74,7 +74,7 @@ namespace Kratos
     void TsMesh2D::ReadFromFile(std::string fn)
     {
         std::ifstream infile(fn.c_str());
-        
+
         std::string line;
         std::vector<std::string> words;
         int ReadMode = NO_READ;
@@ -106,14 +106,14 @@ namespace Kratos
                         ReadMode = READ_V_EDGES;
                     continue;
                 }
-                
+
                 if(words[0] == std::string("End"))
                 {
                     Dim = 0;
                     ReadMode = NO_READ;
                     continue;
                 }
-                
+
                 if(ReadMode == READ_ORDER)
                 {
                     int Order = atoi(words[0].c_str());
@@ -142,7 +142,7 @@ namespace Kratos
                 }
             }
         }
-        
+
         infile.close();
 
         // assign the index to the knot vectors
@@ -152,7 +152,7 @@ namespace Kratos
         cnt = -1;
         for(std::size_t i = 0; i < mKnots2.size(); ++i)
             mKnots2[i]->UpdateIndex(++cnt);
-        
+
         // create the vertex list
         std::set<std::pair<int, int> > VertexList;
         for(std::size_t i = 0; i < HEdgeList.size(); ++i)
@@ -205,7 +205,7 @@ namespace Kratos
                 if(mKnots2[i+1]->Value() < mKnots2[i]->Value())
                     KRATOS_THROW_ERROR(std::logic_error, "The knot vector in v-direction is not ascending at i =", i)
         std::cout << "Check OK! The knot vector in v-direction is in ascending order" << std::endl;
-        
+
         // check for the repetition of knots at first p values and last p values
         mKnots1Min = mKnots1.front()->Value();
         mKnots1Max = mKnots1.back()->Value();
@@ -230,7 +230,7 @@ namespace Kratos
                 KRATOS_THROW_ERROR(std::logic_error, "Knots2 does not repeat at end. Error at knot", i)
         }
         std::cout << "Check OK! The knot vector satisfies repetitiveness condition" << std::endl;
-        
+
         // update the indexing of knot vectors
         int cnt = -1;
         for(std::size_t i = 0; i < mKnots1.size(); ++i)
@@ -239,7 +239,7 @@ namespace Kratos
         for(std::size_t i = 0; i < mKnots2.size(); ++i)
             mKnots2[i]->UpdateIndex(++cnt);
         std::cout << "The indexing for knots is updated" << std::endl;
-        
+
         // By default, set first p knots and last p knots to inactive state
         for(std::size_t i = 0; i < mKnots1.size(); ++i)
         {
@@ -255,7 +255,7 @@ namespace Kratos
             else
                 mKnots2[i]->SetActive(true);
         }
-        
+
         // check if all vertices contain the knots in the knot vector
         // If one vertex contain a knot that is not in the knot vectors of the T-splines mesh, then a compatibility error should happen
         for(vertex_container_t::iterator it = mVertices.begin(); it != mVertices.end(); ++it)
@@ -266,7 +266,7 @@ namespace Kratos
                 KRATOS_THROW_ERROR(std::logic_error, "The v-knot vector does not contain knot at", *(*it))
         }
         std::cout << "Check OK! All vertices contain knots in knot vectors" << std::endl;
-        
+
         // check if all edges contain the vertices in the T-splines mesh
         for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
         {
@@ -275,7 +275,7 @@ namespace Kratos
                 KRATOS_THROW_ERROR(std::logic_error, "The edge does not contain a vertex in the vertex list, wrong edge is", (*it)->Id())
         }
         std::cout << "Check OK! All edges contain vertices in the vertex list" << std::endl;
-        
+
         // check for the horizontalness and verticalness of the edges
         for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
         {
@@ -293,7 +293,7 @@ namespace Kratos
                 KRATOS_THROW_ERROR(std::logic_error, "An unknown edge is found", *(*it))
         }
         std::cout << "Check OK! All edge vertical/horizontal configurations are valid" << std::endl;
-        
+
         // set the type for vertex
         typedef std::map<TsVertex::Pointer, std::vector<TsEdge::Pointer> > vertex_neighbour_type;
         vertex_neighbour_type VertexNeighbours;
@@ -336,7 +336,7 @@ namespace Kratos
                     }
 //                    KRATOS_WATCH(num_vertical_edges)
 //                    KRATOS_WATCH(num_horizontal_edges)
-                    
+
                     if(num_horizontal_edges > num_vertical_edges)
                     {
                         // detect T-joint UP/DOWN, check for the vertical edge
@@ -414,7 +414,7 @@ namespace Kratos
     {
         // empty the cells
         rCells.clear();
-    
+
         // firstly make a vertical scanning to identify the horizontal segment
         std::vector<std::pair<double, std::set<int> > > HorizontalSegments;
         bool is_active_edge;
@@ -423,7 +423,7 @@ namespace Kratos
             int index_low  = mKnots2[i]->Index();
             int index_high = mKnots2[i+1]->Index();
             double index_eta = 0.5 * (double)(index_low + index_high);
-            
+
             std::set<int> Segments;
             for(edge_container_t::const_iterator it_edge = mEdges.begin(); it_edge != mEdges.end(); ++it_edge)
             {
@@ -456,7 +456,7 @@ namespace Kratos
             int index_low  = mKnots1[i]->Index();
             int index_high = mKnots1[i+1]->Index();
             double index_xi = 0.5 * (double)(index_low + index_high);
-            
+
             std::set<int> Segments;
             for(edge_container_t::const_iterator it_edge = mEdges.begin(); it_edge != mEdges.end(); ++it_edge)
             {
@@ -493,7 +493,7 @@ namespace Kratos
                     if(detect == false)
                         KRATOS_THROW_ERROR(std::logic_error, "ERROR: cannot detect the intersection", "")
                 }
-                
+
                 // now we make the box intersection
                 std::vector<int> Temp(Segments.begin(), Segments.end());
                 for(std::size_t j = 0; j < Temp.size() - 1; ++j)
@@ -511,7 +511,7 @@ namespace Kratos
                 }
             }
         }
-        
+
 //        std::cout << "Found " << rCells.size() << " cells in the T-splines topology mesh" << std::endl;
 //        for(std::set<cell_t>::iterator it = rCells.begin(); it != rCells.end(); ++it)
 //            std::cout << "cell " << it->first.first << " " << it->first.second
@@ -523,7 +523,7 @@ namespace Kratos
     {
         bool isAnalysisSuitable = true;
 //        std::vector<std::pair<TsEdge::Pointer, TsEdge::Pointer> > CuttingCouples;
-        
+
         // firstly seperate out the virtual horizontal edges and virtual vertical edges
         std::vector<TsEdge::Pointer> VirtualHorizontalEdges;
         std::vector<TsEdge::Pointer> VirtualVerticalEdges;
@@ -534,7 +534,7 @@ namespace Kratos
             else if((*it)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE)
                 VirtualVerticalEdges.push_back(*it);
         }
-        
+
         // secondly check for each horizontal edges if it was cut by any virtual vertical edges
         for(std::size_t i = 0; i < VirtualHorizontalEdges.size(); ++i)
         {
@@ -549,7 +549,7 @@ namespace Kratos
                 }
             }
         }
-        
+
         return isAnalysisSuitable;
     }
 
@@ -571,7 +571,7 @@ namespace Kratos
         for(edge_container_t::iterator it = mEdges.begin(); it != mEdges.end(); ++it)
             (*it)->SetId(++mLastEdge);
     }
-    
+
     /*****************************************************************************/
     /* END SUBROUTINES TO MODIFY THE T-MESH */
     /*****************************************************************************/
@@ -593,7 +593,7 @@ namespace Kratos
 
         // clear all virtual vertices
         mVirtualVertices.clear();
-        
+
         // reset the flag
         mIsExtended = false;
     }
@@ -604,7 +604,7 @@ namespace Kratos
         // firstly clean the extended T-splines topology mesh
         if(mIsExtended == true)
             this->ClearExtendedTmesh();
-        
+
         // iterate through all vertices to check for T-joint and add the virtual entities
         for(vertex_container_t::iterator it = mVertices.begin(); it != mVertices.end(); ++it)
         {
@@ -775,7 +775,7 @@ namespace Kratos
 //                std::cout << *(*it) << " insert virtual edges completed" << std::endl;
             }
         }
-        
+
         // set the flag
         mIsExtended = true;
     }
@@ -785,7 +785,7 @@ namespace Kratos
     {
         // clear all existing anchors
         mAnchors.clear();
-    
+
         // firstly find all anchors in the T-splines topology mesh
         std::vector<anchor_t> Anchors;
         this->FindAnchors(Anchors);
@@ -822,7 +822,7 @@ namespace Kratos
                         ReadMode = READ_ANCHORS;
                     continue;
                 }
-                
+
                 if(words[0] == std::string("End"))
                 {
                     ReadMode = NO_READ;
@@ -842,7 +842,7 @@ namespace Kratos
                     Y    = atof(words[5].c_str());
                     Z    = atof(words[6].c_str());
                     W    = atof(words[7].c_str());
-                    
+
                     // find if the provided anchor exist in the anchor list
                     found = false;
                     for(std::vector<anchor_t>::iterator it = Anchors.begin(); it != Anchors.end(); ++it)
@@ -863,7 +863,7 @@ namespace Kratos
                 }
             }
         }
-        
+
         infile.close();
         std::cout << "Build anchors completed, " << mAnchors.size() << " is read" << std::endl;
     }
@@ -874,7 +874,7 @@ namespace Kratos
     {
         if(!mIsExtended)
             KRATOS_THROW_ERROR(std::logic_error, "Extended T-splines mesh is not constructed yet", "")
-    
+
         // firstly check if anchors has been found
         if(mAnchors.size() == 0)
             KRATOS_THROW_ERROR(std::logic_error, "The anchors size is zero", "")
@@ -906,7 +906,7 @@ namespace Kratos
             }
         }
         std::cout << "Create cells completed, " << mCells.size() << " was created" << std::endl;
-        
+
         // for each anchors search for the supported cells
         std::vector<int> KnotsIndex1;
         std::vector<int> KnotsIndex2;
@@ -923,13 +923,13 @@ namespace Kratos
         {
             double anchor_xi_index = (*it)->Xi();
             double anchor_eta_index = (*it)->Eta();
-            
+
             // find the knot span supported by the anchor
             this->FindKnots<2, int>(anchor_xi_index, anchor_eta_index, KnotsIndex1, KnotsIndex2);
 
             // find the local knot vector of the anchor
             this->FindKnots<1, double>(anchor_xi_index, anchor_eta_index, Knots1, Knots2);
-            
+
             // check if the knot span cover any cell
             for(cell_container_t::iterator it2 = mCells.begin(); it2 != mCells.end(); ++it2)
             {
@@ -939,7 +939,7 @@ namespace Kratos
                     Ueta.clear();
                     spans_xi.clear();
                     spans_eta.clear();
-                
+
                     // compute the Bezier extraction operator of the anchor w.r.t the cell
                     // Remarks: right now, I don't know the method to articulate two Bezier extraction on two
                     //          consecutive knot spans, I have to compute the Bezier extraction operator at each
@@ -1029,10 +1029,10 @@ namespace Kratos
                     span_eta_after = this->FindSpanLocal(0.5 * (mKnots2[down]->Value() + mKnots2[up]->Value()), Ubar_eta_unique);
                     KRATOS_WATCH(span_xi_after)
                     KRATOS_WATCH(span_eta_after)
-                    
+
                     // add the Id of the anchor and the bezier extraction operator of the cell to the anchor to the internal data of the cell
                     (*it2)->AddAnchor((*it)->Id(), (*it)->W(), Crows[(span_xi_after - 1) * nb_eta + span_eta_after - 1]);
-                    
+
                     std::cout << "---------------------------------------" << std::endl;
                 }
             }
@@ -1060,11 +1060,11 @@ namespace Kratos
         for(std::size_t i = 0; i < mKnots2.size(); ++i)
             rOStream << " " << *(mKnots2[i]);
         rOStream << std::endl;
-        
+
         rOStream << "Vertex List:" << std::endl;
         for(vertex_container_t::const_iterator it = mVertices.begin(); it != mVertices.end(); ++it)
             rOStream << *(*it) << std::endl;
-        
+
         rOStream << "Edge List:" << std::endl;
         for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
             rOStream << *(*it) << std::endl;
@@ -1074,11 +1074,11 @@ namespace Kratos
     void TsMesh2D::ExportMatlab(std::string fn, std::string mesh_type) const
     {
         std::ofstream outfile(fn.c_str());
-        
+
         outfile << "axis equal" << std::endl;
         outfile << "close all" << std::endl;
         outfile << "hold on" << std::endl << std::endl;
-        
+
         // plot edges
         if(mesh_type == std::string("topology"))
         {
@@ -1113,11 +1113,11 @@ namespace Kratos
             }
         }
         outfile << std::endl;
-        
+
         // find all anchors in the current topology mesh
         std::vector<anchor_t> Anchors;
         this->FindAnchors(Anchors);
-        
+
         // export the knot vectors for each anchors
         std::vector<double> Knots1;
         std::vector<double> Knots2;
@@ -1136,11 +1136,11 @@ namespace Kratos
 
         outfile.close();
         std::cout << "Exported to " << fn << " completed!" << std::endl;
-        
+
         std::cout << "Find cells in the T-splines topology mesh..." << std::endl;
         std::set<cell_t> cells;
         this->FindCells(cells);
-        
+
         std::cout << "Find cells in the extended T-splines topology mesh..." << std::endl;
         cells.clear();
         this->FindCells(cells, true);
@@ -1154,7 +1154,7 @@ namespace Kratos
         // write header
         outfile << "//KRATOS isogeometric application data file for T-splines\n";
         outfile << "//(c) 2015 Hoang Giang Bui, Ruhr-University Bochum\n";
-        
+
         std::time_t t = time(0);
         struct tm* now = std::localtime(&t);
         outfile << "//This file is created on " << now->tm_mday << "/" << now->tm_mon << "/" << (now->tm_year + 1900)
@@ -1270,10 +1270,10 @@ namespace Kratos
         for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
             outfile << (*it)->Id() << " " << Division2 << std::endl;
         outfile << "End ElementalData\n\n";
-        
+
         outfile.close();
         std::cout << "ExportMDPA completed" << std::endl;
     }
-    
+
 } // end namespace Kratos
 

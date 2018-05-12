@@ -82,5 +82,5 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TsAnchor& rThis)
 
 }// namespace Kratos.
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_TS_KNOT_H_INCLUDED
+#endif // KRATOS_ISOGEOMETRIC_APPLICATION_TS_ANCHOR_H_INCLUDED
 

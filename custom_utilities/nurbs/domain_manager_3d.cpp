@@ -21,7 +21,7 @@ namespace Kratos
         rOStream << std::endl;
 
         rOStream << "Z-coordinates:";
-        for(coords_container_t::const_iterator it = BaseType::mYcoords.begin(); it != BaseType::mYcoords.end(); ++it)
+        for(coords_container_t::const_iterator it = BaseType::mZcoords.begin(); it != BaseType::mZcoords.end(); ++it)
             rOStream << " " << *it;
         rOStream << std::endl;
 

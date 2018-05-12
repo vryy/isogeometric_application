@@ -258,6 +258,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     std::vector<bf_t> pnew_bfs;
 
     // start to enumerate from the last equation id in the multipatch
+    // we always assign an incremental equation_id for the new refined bfs, so that the bfs on the boundary will automaticall match
     std::size_t starting_id;
     if (pPatch->pParentMultiPatch() != NULL)
     {

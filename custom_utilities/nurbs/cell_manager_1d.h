@@ -62,7 +62,6 @@ public:
     static typename BaseType::Pointer Create() {return typename BaseType::Pointer(new CellManager1D<CellType>());}
 
     /// Check if the cell exists in the list; otherwise create new cell and return
-//    virtual cell_t CreateCell(knot_t pLeft, knot_t pRight)
     virtual cell_t CreateCell(const std::vector<knot_t>& pKnots)
     {
         assert(pKnots.size() == 2);
@@ -83,8 +82,6 @@ public:
 
         #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
-//        double cmin[] = {pLeft->Value()};
-//        double cmax[] = {pRight->Value()};
         double cmin[] = {pKnots[0]->Value()};
         double cmax[] = {pKnots[1]->Value()};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());

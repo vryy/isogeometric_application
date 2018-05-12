@@ -24,6 +24,7 @@
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/nurbs/bsplines_indexing_utility.h"
+#include "custom_utilities/nurbs/cell_manager_1d.h"
 #include "custom_utilities/nurbs/cell_manager_2d.h"
 #include "custom_utilities/nurbs/cell_manager_3d.h"
 #include "custom_utilities/nurbs/domain_manager.h"
@@ -72,7 +73,11 @@ public:
     /// Default constructor
     HBSplinesFESpace() : BaseType(), m_function_map_is_created(false), mLastLevel(1), mMaxLevel(10)
     {
-        if (TDim == 2)
+        if (TDim == 1)
+        {
+            mpCellManager = typename cell_container_t::Pointer(new CellManager1D<CellType>());
+        }
+        else if (TDim == 2)
         {
             mpCellManager = typename cell_container_t::Pointer(new CellManager2D<CellType>());
         }
@@ -94,6 +99,12 @@ public:
     static HBSplinesFESpace<TDim>::Pointer Create()
     {
         return HBSplinesFESpace<TDim>::Pointer(new HBSplinesFESpace());
+    }
+
+    /// Add a already constructed basis function to the internal list
+    void AddBf(bf_t p_bf)
+    {
+        mpBasisFuncs.insert(p_bf);
     }
 
     /// Check if the bf exists in the list; otherwise create new bf and return
@@ -450,17 +461,76 @@ public:
         }
     }
 
-    /// Construct the boundary patch based on side
+    /// Construct the boundary FESpace based on side
     virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
     {
         typename HBSplinesFESpace<TDim-1>::Pointer pBFESpace = typename HBSplinesFESpace<TDim-1>::Pointer(new HBSplinesFESpace<TDim-1>());
 
-/*        // FIXME construct the basis function and cells on the boundary*/
-/*        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet supported")*/
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
+            {
+                typename HBSplinesBasisFunction<TDim-1>::Pointer pNewSubBf;
 
-/*        // transfer the function indices*/
-/*        std::vector<std::size_t> b_func_indices = ExtractBoundaryFunctionIndices(side);*/
-/*        pBFESpace->ResetFunctionIndices(b_func_indices);*/
+                if (TDim == 2)
+                {
+                    if ((side == _LEFT_) || (side == _RIGHT_))
+                        pNewSubBf = (*it)->Project(1);
+                    if ((side == _TOP_) || (side == _BOTTOM_))
+                        pNewSubBf = (*it)->Project(0);
+                }
+                else if (TDim == 3)
+                {
+                    if ((side == _FRONT_) || (side == _BACK_))
+                        pNewSubBf = (*it)->Project(0);
+                    if ((side == _LEFT_) || (side == _RIGHT_))
+                        pNewSubBf = (*it)->Project(1);
+                    if ((side == _TOP_) || (side == _BOTTOM_))
+                        pNewSubBf = (*it)->Project(2);
+                }
+                pBFESpace->AddBf(pNewSubBf);
+            }
+        }
+
+        if (TDim == 2)
+        {
+            if ((side == _LEFT_) || (side == _RIGHT_))
+            {
+                pBFESpace->SetInfo(0, this->Order(1));
+                pBFESpace->KnotVector(0) = this->KnotVector(1);
+            }
+            if ((side == _TOP_) || (side == _BOTTOM_))
+            {
+                pBFESpace->SetInfo(0, this->Order(0));
+                pBFESpace->KnotVector(0) = this->KnotVector(0);
+            }
+        }
+        else if (TDim == 3)
+        {
+            if ((side == _FRONT_) || (side == _BACK_))
+            {
+                pBFESpace->SetInfo(0, this->Order(1));
+                pBFESpace->SetInfo(1, this->Order(2));
+                pBFESpace->KnotVector(0) = this->KnotVector(1);
+                pBFESpace->KnotVector(1) = this->KnotVector(2);
+            }
+            if ((side == _LEFT_) || (side == _RIGHT_))
+            {
+                pBFESpace->SetInfo(0, this->Order(2));
+                pBFESpace->SetInfo(1, this->Order(0));
+                pBFESpace->KnotVector(0) = this->KnotVector(2);
+                pBFESpace->KnotVector(1) = this->KnotVector(0);
+            }
+            if ((side == _TOP_) || (side == _BOTTOM_))
+            {
+                pBFESpace->SetInfo(0, this->Order(0));
+                pBFESpace->SetInfo(1, this->Order(1));
+                pBFESpace->KnotVector(0) = this->KnotVector(0);
+                pBFESpace->KnotVector(1) = this->KnotVector(1);
+            }
+        }
+
+        pBFESpace->SetLastLevel(this->LastLevel());
 
         return pBFESpace;
     }
@@ -492,14 +562,16 @@ public:
     {
         // create the compatible cell manager and add to the list
         typename BaseType::cell_container_t::Pointer pCompatCellManager;
-        if (TDim == 2)
+
+        if (TDim == 1)
+            pCompatCellManager = CellManager1D<typename BaseType::cell_container_t::CellType>::Create();
+        else if (TDim == 2)
             pCompatCellManager = CellManager2D<typename BaseType::cell_container_t::CellType>::Create();
         else if (TDim == 3)
             pCompatCellManager = CellManager3D<typename BaseType::cell_container_t::CellType>::Create();
+
         for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
-        {
             pCompatCellManager->insert(*it_cell);
-        }
 
         return pCompatCellManager;
     }
@@ -650,6 +722,8 @@ public:
     typedef FESpace<0> BaseType;
     typedef KnotArray1D<double> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
+    typedef HBSplinesBasisFunction<0> BasisFunctionType;
+    typedef typename BasisFunctionType::Pointer bf_t;
 
     /// Default constructor
     HBSplinesFESpace() : BaseType() {}
@@ -694,6 +768,26 @@ public:
 
         return true;
     }
+
+    /// Add a already constructed basis function to the internal list
+    void AddBf(bf_t p_bf) {}
+
+    /// Set the last level in the hierarchical mesh
+    void SetLastLevel(const std::size_t& LastLevel) {}
+
+    /// Set the order for the B-Splines
+    void SetInfo(const std::size_t& i, const std::size_t& order) {}
+
+    /// Get the knot vector in i-direction, i=0..Dim
+    /// User must be careful to use this function because it can modify the internal knot vectors
+    knot_container_t& KnotVector(const std::size_t& i) {return mDummyKnotVector;}
+
+    /// Get the knot vector in i-direction, i=0..Dim
+    const knot_container_t& KnotVector(const std::size_t& i) const {return mDummyKnotVector;}
+
+private:
+
+    knot_container_t mDummyKnotVector;
 };
 
 /// output stream function

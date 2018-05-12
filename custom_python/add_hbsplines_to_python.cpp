@@ -178,6 +178,7 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     (ss.str().c_str(), init<>())
     .def("__getitem__", &HBSplinesFESpace_GetItem<TDim>)
     .def("GetBoundaryBfs", &HBSplinesFESpace_GetBoundaryBfs<TDim>)
+    .def("ConstructBoundaryFESpace", &HBSplinesFESpace<TDim>::ConstructBoundaryFESpace)
     .def(self_ns::str(self))
     ;
 

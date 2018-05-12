@@ -47,11 +47,17 @@ public:
     typedef typename bf_container_t::iterator bf_iterator;
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
-    /// Default constructor
+    /// Constructor for 1D
+    HBCell(const std::size_t& Id, knot_t pLeft, knot_t pRight)
+    : BaseType(Id, pLeft, pRight)
+    {}
+
+    /// Constructor for 2D
     HBCell(const std::size_t& Id, knot_t pLeft, knot_t pRight, knot_t pDown, knot_t pUp)
     : BaseType(Id, pLeft, pRight, pDown, pUp)
     {}
 
+    /// Constructor for 3D
     HBCell(const std::size_t& Id, knot_t pLeft, knot_t pRight, knot_t pDown, knot_t pUp, knot_t pBelow, knot_t pAbove)
     : BaseType(Id, pLeft, pRight, pDown, pUp, pBelow, pAbove)
     {}

@@ -119,6 +119,12 @@ def main():
 
     ################
 
+    bfespace = hpatch1.FESpace().ConstructBoundaryFESpace(BoundarySide.Top)
+    print("patch 1 boundary FESpace on top:")
+    print(bfespace)
+
+    ################
+
     hmpatch_export.Export(hmpatch, "hierarchical_b_splines_l_shape.m")
 
 if __name__ == "__main__":

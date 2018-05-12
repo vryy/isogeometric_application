@@ -124,7 +124,7 @@ public:
     std::size_t NumberOfChildren() const {return mpChilds.size();}
 
     /// Add a child which support this basis function
-    void AddChild(bf_t p_bf, double RefinedCoefficient)
+    void AddChild(bf_t p_bf, const double& RefinedCoefficient)
     {
         mpChilds.push_back(p_bf);
         mRefinedCoefficients[p_bf->Id()] = RefinedCoefficient;
@@ -273,15 +273,15 @@ public:
     }
 
     /// Get the refined coefficient of a child
-    double GetRefinedCoefficient(int ChildId) const
+    double GetRefinedCoefficient(const int& child_id) const
     {
-        std::map<int, double>::const_iterator it = mRefinedCoefficients.find(ChildId);
+        std::map<int, double>::const_iterator it = mRefinedCoefficients.find(child_id);
         if(it != mRefinedCoefficients.end())
             return it->second;
         else
         {
             std::stringstream ss;
-            ss << "The basis function " << ChildId << " is not the child of basis function " << Id();
+            ss << "The basis function " << child_id << " is not the child of basis function " << Id();
             KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
         }
     }
@@ -320,6 +320,10 @@ public:
 
         return res;
     }
+
+    /// Access the internal data container, be very careful with this function
+    DataValueContainer& Data() {return mData;}
+    const DataValueContainer& Data() const {return mData;}
 
     /**************************************************************************
                             CONTROL VALUES
@@ -373,6 +377,71 @@ public:
         HBSplinesBasisFunction_Helper<TDim>::ComputeExtractionOperator(Crow, orders, LocalKnots, *p_cell);
     }
 
+    /// Construct the hierarchical B-Splines basis function in subspace
+    typename HBSplinesBasisFunction<TDim-1>::Pointer Project(const std::size_t& dim) const
+    {
+        typename HBSplinesBasisFunction<TDim-1>::Pointer pNewSubBf;
+
+        if (dim >= TDim)
+            KRATOS_THROW_ERROR(std::logic_error, "The dimension is invalid", "")
+
+        pNewSubBf = typename HBSplinesBasisFunction<TDim-1>::Pointer(new HBSplinesBasisFunction<TDim-1>(this->Id(), this->Level()));
+        pNewSubBf->SetEquationId(this->EquationId());
+
+        if (TDim == 2)
+        {
+            pNewSubBf->SetLocalKnotVectors(0, this->mpLocalKnots[dim]);
+            pNewSubBf->SetInfo(0, this->mOrders[dim]);
+
+            if (dim == 0)
+            {
+                if (this->IsOnSide(BOUNDARY_FLAG(_LEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_RIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+            }
+        }
+        else if (TDim == 3)
+        {
+            if (dim == 0)
+            {
+                pNewSubBf->SetLocalKnotVectors(0, this->mpLocalKnots[1]);
+                pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[2]);
+                pNewSubBf->SetInfo(0, this->mOrders[1]);
+                pNewSubBf->SetInfo(1, this->mOrders[2]);
+                if (this->IsOnSide(BOUNDARY_FLAG(_BOTTOM_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_TOP_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_TOP_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_FRONT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BACK_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+            }
+            else if (dim == 1)
+            {
+                pNewSubBf->SetLocalKnotVectors(0, this->mpLocalKnots[2]);
+                pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[0]);
+                pNewSubBf->SetInfo(0, this->mOrders[2]);
+                pNewSubBf->SetInfo(1, this->mOrders[0]);
+                if (this->IsOnSide(BOUNDARY_FLAG(_LEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_RIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_TOP_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BOTTOM_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_TOP_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+            }
+            else if (dim == 2)
+            {
+                pNewSubBf->SetLocalKnotVectors(0, this->mpLocalKnots[0]);
+                pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[1]);
+                pNewSubBf->SetInfo(0, this->mOrders[0]);
+                pNewSubBf->SetInfo(1, this->mOrders[1]);
+                if (this->IsOnSide(BOUNDARY_FLAG(_FRONT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BACK_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_TOP_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_LEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_RIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+            }
+        }
+
+        // transfer the values
+        pNewSubBf->Data() = this->Data();
+
+        return pNewSubBf;
+    }
+
     /**************************************************************************
                             COMPARISON SUBROUTINES
     **************************************************************************/
@@ -402,6 +471,8 @@ public:
         {
             // TODO
         }
+
+        return true;
     }
 
     /**************************************************************************
@@ -411,7 +482,7 @@ public:
     /// Print information of this basis function
     void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "Bf(id: " << this->Id() << "), eq_id: " << this->EquationId() << ", p = (";
+        rOStream << "HBSplinesBasisFunction" << TDim << "D (id: " << this->Id() << "), eq_id: " << this->EquationId() << ", p = (";
         for (int dim = 0; dim < TDim; ++dim)
             rOStream << " " << this->Order(dim);
         rOStream << ")";
@@ -484,6 +555,40 @@ private:
         rSerializer.load("Data", mData);
     }
 
+};
+
+
+/// Template Specialization to terminate the compilation
+template<>
+class HBSplinesBasisFunction<0>
+{
+public:
+    /// Pointer definition
+    KRATOS_CLASS_POINTER_DEFINITION(HBSplinesBasisFunction);
+
+    /// Type definitions
+    typedef Knot<double>::Pointer knot_t;
+
+    /// Default constructor
+    HBSplinesBasisFunction(const std::size_t& Id) {}
+
+    /// Default constructor
+    HBSplinesBasisFunction(const std::size_t& Id, const std::size_t& Level) {}
+
+    /// Set the equation Id for this basis function. One shall use this function only in the enumeration process
+    void SetEquationId(const std::size_t& EquationId) {}
+
+    /// Set the information in each direction
+    void SetInfo(const int& dim, const std::size_t& Order) {}
+
+    /// Set the local knot vectors to this basis function
+    void SetLocalKnotVectors(const int& dim, const std::vector<knot_t>& rpKnots) {}
+
+    /// Dummy function to return an empty data value container
+    DataValueContainer Data() {return DataValueContainer();}
+
+    /// Add the boundary information to this basis function
+    void AddBoundary(const std::size_t& BoundaryInfo) {}
 };
 
 /// output stream function

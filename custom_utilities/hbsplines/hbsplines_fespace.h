@@ -464,13 +464,14 @@ public:
     /// Construct the boundary FESpace based on side
     virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
     {
-        typename HBSplinesFESpace<TDim-1>::Pointer pBFESpace = typename HBSplinesFESpace<TDim-1>::Pointer(new HBSplinesFESpace<TDim-1>());
+        typedef HBSplinesFESpace<TDim-1> BoundaryFESpaceType;
+        typename BoundaryFESpaceType::Pointer pBFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
 
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
             if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
             {
-                typename HBSplinesBasisFunction<TDim-1>::Pointer pNewSubBf;
+                typename BoundaryFESpaceType::bf_t pNewSubBf;
 
                 if (TDim == 2)
                 {
@@ -531,6 +532,60 @@ public:
         }
 
         pBFESpace->SetLastLevel(this->LastLevel());
+
+        double cell_tol = pBFESpace->pCellManager()->GetTolerance();
+
+        // construct the cells from the boundary basis functions
+        if (TDim == 2)
+        {
+            for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
+            {
+                for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
+                {
+                    knot_t pLeft = (*it)->LocalKnots(0)[i1];
+                    knot_t pRight = (*it)->LocalKnots(0)[i1 + 1];
+
+                    // check if the cell domain length is nonzero
+                    double length = (pRight->Value() - pLeft->Value());
+                    if(fabs(length) > cell_tol)
+                    {
+                        std::vector<knot_t> pKnots = {pLeft, pRight};
+                        typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
+                        pnew_cell->SetLevel(this->LastLevel());
+                        (*it)->AddCell(pnew_cell);
+                        pnew_cell->AddBf(*it);
+                    }
+                }
+            }
+        }
+        else if (TDim == 3)
+        {
+            for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
+            {
+                for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
+                {
+                    knot_t pLeft = (*it)->LocalKnots(0)[i1];
+                    knot_t pRight = (*it)->LocalKnots(0)[i1 + 1];
+
+                    for(std::size_t j1 = 0; j1 < pBFESpace->Order(1) + 1; ++j1)
+                    {
+                        knot_t pDown = (*it)->LocalKnots(1)[j1];
+                        knot_t pUp = (*it)->LocalKnots(1)[j1 + 1];
+
+                        // check if the cell domain area is nonzero
+                        double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value());
+                        if(sqrt(fabs(area)) > cell_tol)
+                        {
+                            std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp};
+                            typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
+                            pnew_cell->SetLevel(this->LastLevel());
+                            (*it)->AddCell(pnew_cell);
+                            pnew_cell->AddBf(*it);
+                        }
+                    }
+                }
+            }
+        }
 
         return pBFESpace;
     }
@@ -724,6 +779,14 @@ public:
     typedef typename knot_container_t::knot_t knot_t;
     typedef HBSplinesBasisFunction<0> BasisFunctionType;
     typedef typename BasisFunctionType::Pointer bf_t;
+    struct bf_compare { bool operator() (const bf_t& lhs, const bf_t& rhs) const {return lhs->Id() < rhs->Id();} };
+    typedef std::set<bf_t, bf_compare> bf_container_t;
+    typedef typename bf_container_t::iterator bf_iterator;
+    typedef typename bf_container_t::const_iterator bf_const_iterator;
+
+    typedef HBCell<HBSplinesBasisFunction<0> > CellType;
+    typedef CellManager<CellType> cell_container_t;
+    typedef typename cell_container_t::cell_t cell_t;
 
     /// Default constructor
     HBSplinesFESpace() : BaseType() {}
@@ -772,6 +835,12 @@ public:
     /// Add a already constructed basis function to the internal list
     void AddBf(bf_t p_bf) {}
 
+    // Iterators for the basis functions
+    bf_iterator bf_begin() {}
+    bf_const_iterator bf_begin() const {}
+    bf_iterator bf_end() {}
+    bf_const_iterator bf_end() const {}
+
     /// Set the last level in the hierarchical mesh
     void SetLastLevel(const std::size_t& LastLevel) {}
 
@@ -784,6 +853,15 @@ public:
 
     /// Get the knot vector in i-direction, i=0..Dim
     const knot_container_t& KnotVector(const std::size_t& i) const {return mDummyKnotVector;}
+
+    /// Get the underlying cell manager
+    typename cell_container_t::Pointer pCellManager() {}
+
+    /// Get the underlying cell manager
+    typename cell_container_t::ConstPointer pCellManager() const {}
+
+    /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
+    void UpdateCells() {}
 
 private:
 
@@ -805,7 +883,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesFESpace<
 
 } // namespace Kratos.
 
-#undef DEBUG_GEN_CELL
+#undef DEBUG_GEN_CELL    /// Get the underlying cell manager
 #undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_FESPACE_H_INCLUDED defined

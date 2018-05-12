@@ -189,7 +189,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
     /* create a list of basis function in the next level representing this basis function */
     // create a list of new knots
-    double tol = 1.0e-10; // TODO what is this? can we parameterize?
+    double cell_tol = pFESpace->pCellManager()->GetTolerance(); // tolerance to accept the nonzero-area cell. We should parameterize it.
     std::vector<std::vector<knot_t> > pnew_local_knots(TDim);
     std::vector<std::vector<double> > ins_knots(TDim);
     for(unsigned int dim = 0; dim < TDim; ++dim)
@@ -203,13 +203,13 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             std::vector<knot_t>::const_iterator it2 = it + 1;
             if(it2 != pLocalKnots.end())
             {
-                if(fabs((*it2)->Value() - (*it)->Value()) > tol)
+                if(fabs((*it2)->Value() - (*it)->Value()) > cell_tol)
                 {
                     // now we just add the middle one, but in the general we can add arbitrary values
                     // TODO find the way to generalize this or parameterize this
                     double ins_knot = 0.5 * ((*it)->Value() + (*it2)->Value());
                     knot_t p_new_knot;
-                    p_new_knot = pFESpace->KnotVector(dim).pCreateUniqueKnot(ins_knot, tol);
+                    p_new_knot = pFESpace->KnotVector(dim).pCreateUniqueKnot(ins_knot, cell_tol);
                     pnew_local_knots[dim].push_back(p_new_knot);
                     ins_knots[dim].push_back(p_new_knot->Value());
                 }
@@ -250,7 +250,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     /* create new basis functions */
     unsigned int next_level = p_bf->Level() + 1;
     if(next_level > pFESpace->LastLevel()) pFESpace->SetLastLevel(next_level);
-    double area_tol = 1.0e-6; // tolerance to accept the nonzero-area cell. We should parameterize it.
     std::size_t last_id = pFESpace->LastId();
     typename cell_container_t::Pointer pnew_cells;
 
@@ -365,7 +364,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                         // check if the cell domain area is nonzero
                         double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value());
-                        if(fabs(area) > area_tol)
+                        if(sqrt(fabs(area)) > cell_tol)
                         {
                             std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp};
                             cell_t pnew_cell = pFESpace->pCellManager()->CreateCell(pKnots);
@@ -492,9 +491,9 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                                 knot_t pBelow = pnew_local_knots[2][l + l1];
                                 knot_t pAbove = pnew_local_knots[2][l + l1 + 1];
 
-                                // check if the cell domain area is nonzero
-                                double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value()) * (pAbove->Value() - pBelow->Value());
-                                if(fabs(area) > area_tol)
+                                // check if the cell domain volume is nonzero
+                                double volume = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value()) * (pAbove->Value() - pBelow->Value());
+                                if(pow(fabs(volume), 1.0/3) > cell_tol)
                                 {
                                     std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp, pBelow, pAbove};
                                     cell_t pnew_cell = pFESpace->pCellManager()->CreateCell(pKnots);

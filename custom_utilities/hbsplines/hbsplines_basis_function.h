@@ -568,12 +568,21 @@ public:
 
     /// Type definitions
     typedef Knot<double>::Pointer knot_t;
+    typedef HBCell<HBSplinesBasisFunction<0> > CellType;
+    typedef typename CellType::Pointer cell_t;
+    typedef typename CellType::ConstPointer const_cell_t;
+    typedef std::set<cell_t> cell_container_t;
+    typedef typename cell_container_t::iterator cell_iterator;
+    typedef typename cell_container_t::const_iterator cell_const_iterator;
 
     /// Default constructor
     HBSplinesBasisFunction(const std::size_t& Id) {}
 
     /// Default constructor
     HBSplinesBasisFunction(const std::size_t& Id, const std::size_t& Level) {}
+
+    /// Get the Id of the basis function
+    std::size_t Id() const {return 0;}
 
     /// Set the equation Id for this basis function. One shall use this function only in the enumeration process
     void SetEquationId(const std::size_t& EquationId) {}
@@ -583,6 +592,12 @@ public:
 
     /// Set the local knot vectors to this basis function
     void SetLocalKnotVectors(const int& dim, const std::vector<knot_t>& rpKnots) {}
+
+    /// return the internal reference of the knot vectors; use it with care
+    std::vector<knot_t> LocalKnots(const int& dim) const {}
+
+    /// Add a cell support this basis function to the list
+    cell_iterator AddCell(cell_t p_cell) {}
 
     /// Dummy function to return an empty data value container
     DataValueContainer Data() {return DataValueContainer();}

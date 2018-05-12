@@ -174,6 +174,7 @@ protected:
     std::size_t mLastId;
 
 private:
+
     double mTol;
 
     void CreateCellsMap()

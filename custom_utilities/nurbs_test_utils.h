@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 2013 Sep 12 $
 //   Revision:            $Revision: 1.1 $
@@ -12,9 +12,9 @@
 // System includes
 #include <string>
 #include <vector>
-#include <iostream> 
+#include <iostream>
 
-// External includes 
+// External includes
 #include "boost/numeric/ublas/vector.hpp"
 
 // Project includes
@@ -59,7 +59,7 @@ public:
     typedef boost::numeric::ublas::vector<double> ValueContainerType;
 
     typedef ModelPart::NodesContainerType NodesArrayType;
-    
+
     typedef ModelPart::ElementsContainerType ElementsArrayType;
 
     typedef typename Element::GeometryType GeometryType;
@@ -205,65 +205,65 @@ public:
         std::cout << "------------------------------------------" << std::endl;
 
     }
-    
+
     void ProbeGlobalCoordinates(Element::Pointer& pElement, double X, double Y, double Z = 0.0)
     {
         CoordinatesArrayType p;
         p[0] = X;
         p[1] = Y;
         p[2] = Z;
-        
+
         CoordinatesArrayType Result = ZeroVector( 3 );
-        
+
         pElement->GetGeometry().GlobalCoordinates(Result, p);
-        
+
         std::cout << "Global coordinates at " << p << ": " << Result << std::endl;
     }
-    
+
     void ProbeShapeFunctionValues(Element::Pointer& pElement, double X, double Y, double Z = 0.0)
     {
         CoordinatesArrayType p;
         p[0] = X;
         p[1] = Y;
         p[2] = Z;
-        
+
         Vector Result;
         Result = pElement->GetGeometry().ShapeFunctionsValues(Result, p);
-        
+
         for(int i = 0; i < pElement->GetGeometry().size(); ++i)
         {
             std::cout << "Shape function value " << (i+1) << " at " << p << ": " << Result(i) << std::endl;
         }
     }
-    
+
     void ProbeShapeFunctionDerivatives(Element::Pointer& pElement, double X, double Y, double Z = 0.0)
     {
         CoordinatesArrayType p;
         p[0] = X;
         p[1] = Y;
         p[2] = Z;
-        
+
         Matrix Result;
-        
+
         pElement->GetGeometry().ShapeFunctionsLocalGradients(Result, p);
-        
+
         std::cout << "Shape function local gradients at " << p << ":\n" << Result << std::endl;
     }
-    
+
     void ProbeJacobian(Element::Pointer& pElement, double X, double Y, double Z = 0.0)
     {
         CoordinatesArrayType p;
         p[0] = X;
         p[1] = Y;
         p[2] = Z;
-        
+
         Matrix Result;
-        
+
         pElement->GetGeometry().Jacobian(Result, p);
-        
+
         std::cout << "Jacobian at " << p << ":\n" << Result << std::endl;
     }
-    
+
     template<class TDataType>
     void DumpNodalValues(
         Variable<TDataType>& rVariable,
@@ -271,14 +271,14 @@ public:
     )
     {
         NodesArrayType& pNodes = r_model_part.Nodes();
-        
+
         std::cout << "Dumping nodal results " << rVariable.Name() << ": " << std::endl;
         for(NodesArrayType::ptr_iterator it = pNodes.ptr_begin(); it != pNodes.ptr_end();  ++it)
         {
             std::cout << "Node " << (*it)->Id() << ": " << (*it)->GetSolutionStepValue(rVariable) << std::endl;
         }
     }
-    
+
     ///@}
     ///@name Access
     ///@{
@@ -419,4 +419,4 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 }// namespace Kratos.
 
-#endif // KRATOS_BSPLINE_UTILS_H_INCLUDED  defined 
+#endif // KRATOS_BSPLINE_UTILS_H_INCLUDED  defined

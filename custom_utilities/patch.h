@@ -38,9 +38,9 @@ namespace Kratos
 {
 
 
-// Declaration
-template<int TDim> class Patch;
+// Forward Declaration
 template<int TDim> class MultiPatch;
+template<int TDim> class PatchInterface;
 
 
 /**
@@ -141,7 +141,7 @@ public:
     }
 
     /// Return true if this patch is a bending strip patch
-    virtual bool IsBendingStrip() const
+    virtual bool IsInterface() const
     {
         return false;
     }

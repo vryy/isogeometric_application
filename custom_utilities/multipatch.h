@@ -11,7 +11,7 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_H_INCLUDED
 
 #include "custom_utilities/patch.h"
-#include "custom_utilities/bending_strip_patch.h"
+#include "custom_utilities/patch_interface.h"
 
 namespace Kratos
 {
@@ -224,7 +224,7 @@ public:
         std::size_t last = start;
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
-            if ((*it)->IsBendingStrip() == false)
+            if ((*it)->IsInterface() == false)
             {
                 last = (*it)->pFESpace()->Enumerate(last);
                 KRATOS_WATCH(last)
@@ -259,15 +259,14 @@ public:
             }
         }
 
-        // check if a patch is a bending strip, then that patch must be enumerated again using the enumeration info from the parent patches
+        // check if a patch is an interface patch, then that patch must be enumerated again using the enumeration info from the parent patches
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
-            if ((*it)->IsBendingStrip() == true)
+            if ((*it)->IsInterface() == true)
             {
-                typename BendingStripPatch<TDim>::Pointer pBendPatch = boost::dynamic_pointer_cast<BendingStripPatch<TDim> >(*it);
-
-                std::vector<std::size_t> patch_indices = pBendPatch->GetIndicesFromParent();
-                pBendPatch->pFESpace()->ResetFunctionIndices(patch_indices);
+                typename PatchInterface<TDim>::Pointer pInterfacePatch = boost::dynamic_pointer_cast<PatchInterface<TDim> >(*it);
+                std::vector<std::size_t> patch_indices = pInterfacePatch->GetIndicesFromParent();
+                (*it)->pFESpace()->ResetFunctionIndices(patch_indices);
             }
         }
 

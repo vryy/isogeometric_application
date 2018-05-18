@@ -17,7 +17,7 @@
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/patch.h"
-#include "custom_utilities/bending_strip_patch.h"
+#include "custom_utilities/patch_interface.h"
 #include "custom_utilities/nurbs/bending_strip_nurbs_patch.h"
 
 namespace Kratos

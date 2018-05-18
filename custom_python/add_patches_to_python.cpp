@@ -27,8 +27,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "python/pointer_vector_set_python_interface.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/multipatch.h"
-#include "custom_utilities/bending_strip_patch.h"
-#include "custom_utilities/nurbs/bending_strip_nurbs_patch.h"
+#include "custom_utilities/patch_interface.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_geo_exporter.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_geo_importer.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_matlab_exporter.h"
@@ -173,28 +172,12 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     PointerVectorSetPythonInterface<typename MultiPatch<TDim>::PatchContainerType>::CreateInterface(ss.str());
 
     ss.str(std::string());
-    ss << "BendingStripPatch" << TDim << "D";
-    class_<BendingStripPatch<TDim>, bases<Patch<TDim> > >
-    // class_<BendingStripPatch<TDim>, typename BendingStripPatch<TDim>::Pointer >
-    (ss.str().c_str(), init<const std::size_t&, const int&>())
-    .def(self_ns::str(self))
-    ;
-
-    ss.str(std::string());
-    ss << "BendingStripNURBSPatch" << TDim << "D";
-    class_<BendingStripNURBSPatch<TDim>, bases<BendingStripPatch<TDim> > >
-    // class_<BendingStripNURBSPatch<TDim>, typename BendingStripNURBSPatch<TDim>::Pointer >
-    (ss.str().c_str(), init<const std::size_t&, const int&>())
-    .def(init<const std::size_t&, typename Patch<TDim>::Pointer, const BoundarySide&, typename Patch<TDim>::Pointer, const BoundarySide&, const int&>())
-    .def(self_ns::str(self))
-    ;
-
-    ss.str(std::string());
-    ss << "BendingStripNURBSPatch" << TDim << "DPointer";
-    class_<typename BendingStripNURBSPatch<TDim>::Pointer>
-    (ss.str().c_str(), init<typename BendingStripNURBSPatch<TDim>::Pointer>())
-    .def("GetReference", GetReference<BendingStripNURBSPatch<TDim> >, return_value_policy<reference_existing_object>())
-    .def(self_ns::str(self))
+    ss << "PatchInterface" << TDim << "D";
+    class_<PatchInterface<TDim> >
+    // class_<PatchInterface<TDim>, typename PatchInterface<TDim>::Pointer >
+    (ss.str().c_str(), init<>())
+    .def(init<typename Patch<TDim>::Pointer, const BoundarySide&, typename Patch<TDim>::Pointer, const BoundarySide&>())
+    // .def(self_ns::str(self))
     ;
 
     ss.str(std::string());

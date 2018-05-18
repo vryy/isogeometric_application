@@ -33,6 +33,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/nurbs/bsplines_fespace.h"
 #include "custom_utilities/nurbs/bsplines_fespace_library.h"
+#include "custom_utilities/patch_interface.h"
+#include "custom_utilities/nurbs/bending_strip_nurbs_patch.h"
 
 
 namespace Kratos
@@ -347,6 +349,33 @@ void IsogeometricApplication_AddBSplinesFESpaceToPython()
 
 //////////////////////////////////////////////////
 
+template<int TDim>
+void IsogeometricApplication_AddBendingStripNURBSToPython()
+{
+    std::stringstream ss;
+
+    ss.str(std::string());
+    ss << "BendingStripNURBSPatch" << TDim << "D";
+    class_<BendingStripNURBSPatch<TDim>, bases<PatchInterface<TDim>, Patch<TDim> > >
+    // class_<BendingStripNURBSPatch<TDim>, typename BendingStripNURBSPatch<TDim>::Pointer >
+    (ss.str().c_str(), init<const std::size_t&, const int&>())
+    .def(init<const std::size_t&, typename Patch<TDim>::Pointer, const BoundarySide&, typename Patch<TDim>::Pointer, const BoundarySide&, const int&>())
+    // .def(self_ns::str(self_ns::self))
+    .def(self_ns::str(self))
+    ;
+
+    ss.str(std::string());
+    ss << "BendingStripNURBSPatch" << TDim << "DPointer";
+    class_<typename BendingStripNURBSPatch<TDim>::Pointer>
+    (ss.str().c_str(), init<typename BendingStripNURBSPatch<TDim>::Pointer>())
+    .def("GetReference", GetReference<BendingStripNURBSPatch<TDim> >, return_value_policy<reference_existing_object>())
+    .def(self_ns::str(self))
+    ;
+
+}
+
+//////////////////////////////////////////////////
+
 void IsogeometricApplication_AddNURBSToPython()
 {
     /////////////////////////////////////////////////////////////////
@@ -386,6 +415,13 @@ void IsogeometricApplication_AddNURBSToPython()
     .def("CreateRectangularFESpace", &BSplinesFESpaceLibrary_CreateRectangularFESpace)
     .def("CreateCubicFESpace", &BSplinesFESpaceLibrary_CreateCubicFESpace)
     ;
+
+    /////////////////////////////////////////////////////////////////
+    ///////////////////////Bending Strip NURBS Patch/////////////////
+    /////////////////////////////////////////////////////////////////
+
+    IsogeometricApplication_AddBendingStripNURBSToPython<2>();
+    IsogeometricApplication_AddBendingStripNURBSToPython<3>();
 
 }
 

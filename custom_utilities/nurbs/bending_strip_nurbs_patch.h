@@ -14,7 +14,7 @@
 // External includes
 
 // Project includes
-#include "custom_utilities/bending_strip_patch.h"
+#include "custom_utilities/patch_interface.h"
 #include "custom_utilities/multipatch.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/nurbs/bsplines_fespace.h"
@@ -26,12 +26,13 @@ namespace Kratos
 {
 
 /**
-This class represents an isogeometric bending strip patch connecting two NURBS patches.
-REF: Kiendl et al, The bending strip method for isogeometric analysis of Kirchhoff–Love shell structures comprised of multiple patches.
-REMARK: User must create the bending strip patch after refinement, because bending strip patch is not refined automatically when the parent patches are refined.
+ * This class represents an isogeometric bending strip patch connecting two NURBS patches. This is constructed as a patch and hence shall contain a FESpace.
+ * The idea is taken from Kiendl et al, The bending strip method for isogeometric analysis of Kirchhoff–Love shell structures comprised of multiple patches.
+ * REF: Kiendl et al, The bending strip method for isogeometric analysis of Kirchhoff–Love shell structures comprised of multiple patches.
+ * REMARK: User must create the bending strip patch after refinement, because bending strip patch is not refined automatically when the parent patches are refined.
  */
 template<int TDim>
-class BendingStripNURBSPatch : public BendingStripPatch<TDim>
+class BendingStripNURBSPatch : public PatchInterface<TDim>, public Patch<TDim>
 {
 public:
     /// Pointer definition
@@ -39,11 +40,11 @@ public:
 
     typedef Patch<TDim> PatchType;
     typedef KnotArray1D<double> knot_container_t;
-    typedef BendingStripPatch<TDim> BaseType;
-    typedef typename BaseType::ControlPointType ControlPointType;
+    typedef PatchInterface<TDim> BaseType;
+    typedef typename PatchType::ControlPointType ControlPointType;
 
     /// Default Constructor
-    BendingStripNURBSPatch(const std::size_t& Id, const int& Order) : BaseType(Id, Order)
+    BendingStripNURBSPatch(const std::size_t& Id, const int& Order) : PatchType(Id), mNormalOrder(Order)
     {
     }
 
@@ -54,7 +55,7 @@ public:
     BendingStripNURBSPatch(const std::size_t& Id,
         typename PatchType::Pointer pPatch1, const BoundarySide& side1,
         typename PatchType::Pointer pPatch2, const BoundarySide& side2,
-        const int& Order) : BaseType(Id, pPatch1, side1, pPatch2, side2, Order)
+        const int& Order) : PatchType(Id), BaseType(pPatch1, side1, pPatch2, side2), mNormalOrder(Order)
     {
         // check if the order is even
         if (this->NormalOrder()%2 != 0)
@@ -106,7 +107,7 @@ public:
     BendingStripNURBSPatch(const std::size_t& Id,
         typename PatchType::Pointer pPatch1, const BoundarySide& side1,
         typename PatchType::Pointer pPatch2, const BoundarySide& side2,
-        const std::vector<int>& Orders) : BaseType(Id, pPatch1, side1, pPatch2, side2, Orders[TDim-1])
+        const std::vector<int>& Orders) : PatchType(Id), BaseType(pPatch1, side1, pPatch2, side2), mNormalOrder(Orders[TDim-1])
     {
         // check if the order is even
         if (this->NormalOrder()%2 != 0)
@@ -159,6 +160,15 @@ public:
         #endif
     }
 
+    /// Return true if this patch is a bending strip patch
+    virtual bool IsInterface() const
+    {
+        return true;
+    }
+
+    /// Get the order of the strip patch in the orthogonal direction
+    const int& NormalOrder() const {return mNormalOrder;}
+
     /// Get the string representing the type of the patch
     virtual std::string Type() const
     {
@@ -193,10 +203,12 @@ public:
             func_indices.insert(func_indices.end(), indices.begin(), indices.end());
         }
 
-        return func_indices;        
+        return func_indices;
     }
 
 private:
+
+    int mNormalOrder; // this is the bending strip order in the normal direction to the boundary
 
     template<typename TDataType>
     std::vector<typename StructuredControlGrid<TDim-1, TDataType>::Pointer> ExtractSlicedControlGrids(
@@ -251,26 +263,23 @@ private:
 };
 
 template<>
-class BendingStripNURBSPatch<1> : public BendingStripPatch<1>
+class BendingStripNURBSPatch<1> : public PatchInterface<1>, public Patch<1>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BendingStripNURBSPatch);
 
     typedef Patch<1> PatchType;
-    typedef BendingStripPatch<1> BaseType;
+    typedef PatchInterface<1> BaseType;
 
-    BendingStripNURBSPatch(const std::size_t& Id, const int& Order) : BaseType(Id, Order)
-    {
-    }
+    BendingStripNURBSPatch(const std::size_t& Id, const int& Order) : PatchType(Id), BaseType()
+    {}
 
     BendingStripNURBSPatch(const std::size_t& Id,
         typename PatchType::Pointer pPatch1, const BoundarySide& side1,
         typename PatchType::Pointer pPatch2, const BoundarySide& side2,
-        const int& Order) : BaseType(Id, pPatch1, side1, pPatch2, side2, Order)
-    {
-        // TODO
-    }
+        const int& Order) : PatchType(Id), BaseType(pPatch1, side1, pPatch2, side2)
+    {}
 };
 
 /// output stream function
@@ -278,9 +287,9 @@ template<int TDim>
 inline std::ostream& operator <<(std::ostream& rOStream, const BendingStripNURBSPatch<TDim>& rThis)
 {
     rOStream << "-------------Begin BendingStripNURBSPatchInfo-------------" << std::endl;
-    rThis.PrintInfo(rOStream);
+    rThis.PatchInterface<TDim>::PrintInfo(rOStream);
     rOStream << std::endl;
-    rThis.PrintData(rOStream);
+    rThis.PatchInterface<TDim>::PrintData(rOStream);
     rOStream << std::endl;
     rOStream << "-------------End BendingStripNURBSPatchInfo-------------";
     return rOStream;

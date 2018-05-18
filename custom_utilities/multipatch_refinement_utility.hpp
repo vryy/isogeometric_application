@@ -261,7 +261,9 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         }
 
         // swap
+        std::cout << pPatch << " is swapped with ";
         pPatch.swap(pNewPatch);
+        std::cout << pPatch << std::endl;
 
         if (pMultiPatch != NULL)
         {
@@ -269,6 +271,8 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
             pMultiPatch->Patches().push_back(pPatch);
             pMultiPatch->Patches().Unique();
         }
+
+        std::cout << __FUNCTION__ << " completed for patch " << pPatch->Id() << std::endl;
     }
 }
 

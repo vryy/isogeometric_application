@@ -180,6 +180,7 @@ public:
 
 private:
 
+    /// REF: https://github.com/rafavzqz/geopdes/blob/master/geopdes/doc/geo_specs_v06.txt
     void ReadV06Single(std::ifstream& infile, std::vector<std::size_t>& orders,
         std::vector<std::size_t>& numbers,
         std::vector<std::vector<double> >& knots,
@@ -190,6 +191,7 @@ private:
         ReadV07Single(infile, orders, numbers, knots, wcoords, weights);
     }
 
+    /// REF: https://github.com/rafavzqz/geopdes/blob/master/geopdes/doc/geo_specs_v07.txt
     void ReadV07Single(std::ifstream& infile, std::vector<std::size_t>& orders,
         std::vector<std::size_t>& numbers,
         std::vector<std::vector<double> >& knots,
@@ -324,6 +326,7 @@ private:
         }
     }
 
+    /// REF: https://github.com/rafavzqz/geopdes/blob/master/geopdes/doc/geo_specs_v21.txt
     void ReadV21Single(std::ifstream& infile, std::vector<std::size_t>& orders,
         std::vector<std::size_t>& numbers,
         std::vector<std::vector<double> >& knots,

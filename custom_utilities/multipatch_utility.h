@@ -158,10 +158,10 @@ public:
     }
 
     /// Information
-    template<int TDim>
-    void PrintAddress(std::ostream& rOStream, typename Patch<TDim>::Pointer pPatch)
+    template<class TClassType>
+    static void PrintAddress(std::ostream& rOStream, typename TClassType::Pointer pInstance)
     {
-        rOStream << pPatch << std::endl;
+        rOStream << pInstance << std::endl;
     }
 
     virtual void PrintInfo(std::ostream& rOStream) const

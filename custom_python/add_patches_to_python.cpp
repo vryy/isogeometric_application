@@ -195,7 +195,6 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("Enumerate", &MultiPatch_Enumerate1<TDim>)
     .def("Enumerate", &MultiPatch_Enumerate2<TDim>)
     .def("IsEnumerated", &MultiPatch<TDim>::IsEnumerated)
-    .def("PrintAddress", &MultiPatch<TDim>::PrintAddress)
     .def(self_ns::str(self))
     ;
 }

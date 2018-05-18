@@ -76,6 +76,12 @@ void MultiPatchUtility_ListModelPart(MultiPatchUtility& rDummy, ModelPart& r_mod
     rDummy.ListModelPart(r_model_part);
 }
 
+template<class TClassType>
+void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassType::Pointer pInstance)
+{
+    rDummy.PrintAddress<TClassType>(std::cout, pInstance);
+}
+
 //////////////////////////////////////////////////
 
 template<int TDim>
@@ -208,6 +214,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("GetLastConditionId", &MultiPatchUtility_GetLastConditionId)
     .def("CreateConditionFromElement", &MultiPatchUtility_CreateConditionFromElement)
     .def("ListModelPart", &MultiPatchUtility_ListModelPart)
+    .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<1> >)
+    .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<2> >)
+    .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<3> >)
     ;
 
     class_<MultiPatchRefinementUtility, MultiPatchRefinementUtility::Pointer, boost::noncopyable>

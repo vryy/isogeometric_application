@@ -140,10 +140,17 @@ public:
         else return mpFESpace->Order(i);
     }
 
-    /// Return true if this patch is a bending strip patch
-    virtual bool IsInterface() const
+    /// Return true if this patch is a primary patch
+    virtual bool IsPrimary() const
     {
-        return false;
+        return true;
+    }
+
+    /// Enumerate the patch
+    virtual void Enumerate()
+    {
+        std::size_t last = 0;
+        last = this->pFESpace()->Enumerate(last);
     }
 
     /// Get the string representing the type of the patch
@@ -351,55 +358,7 @@ public:
             }
         }
 
-        // check the compatibility between patch
-        for (int i = _LEFT_; i <= _BACK_; ++i)
-        {
-            BoundarySide side = static_cast<BoundarySide>(i);
-
-            if (this->pNeighbor(side) != NULL)
-            {
-                if (this->Type() != this->pNeighbor(side)->Type())
-                {
-                    KRATOS_THROW_ERROR(std::logic_error, "The patch type between this and the neighbor is incompatible", "")
-                }
-                else
-                {
-                    // find the side of the other neighbor
-                    BoundarySide other_side = this->pNeighbor(side)->FindBoundarySide(this->shared_from_this());
-
-                    if (other_side == _NUMBER_OF_BOUNDARY_SIDE)
-                        KRATOS_THROW_ERROR(std::logic_error, "No neighbor of the neighbor is the same as this. Error setting the neighbor.", "")
-
-                    bool check = CheckBoundaryCompatibility(*this, side, *(this->pNeighbor(side)), other_side);
-                    if (!check)
-                    {
-                        KRATOS_WATCH(side)
-                        KRATOS_WATCH(other_side)
-                        KRATOS_THROW_ERROR(std::logic_error, "The boundary between this and the neighbor is incompatible", "")
-                        return false;
-                    }
-                }
-            }
-        }
-
         return true;
-    }
-
-    /// Check the compatibility between boundaries of two patches
-    static bool CheckBoundaryCompatibility(const Patch<TDim>& rPatch1, const BoundarySide& side1,
-            const Patch<TDim>& rPatch2, const BoundarySide& side2)
-    {
-        typename Patch<TDim-1>::Pointer BPatch1 = rPatch1.ConstructBoundaryPatch(side1);
-        typename Patch<TDim-1>::Pointer BPatch2 = rPatch1.ConstructBoundaryPatch(side2);
-
-        return (*BPatch1) == (*BPatch2);
-    }
-
-    /// Check the boundary compatibility between this patch and the other patch
-    bool CheckBoundaryCompatibility(const BoundarySide& side1,
-            const Patch<TDim>& rOtherPatch, const BoundarySide& side2) const
-    {
-        return CheckBoundaryCompatibility(*this, side1, rOtherPatch, side2);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -483,6 +442,24 @@ public:
                 return side;
         }
         return _NUMBER_OF_BOUNDARY_SIDE;
+    }
+
+    /// Add an interface to the patch
+    void AddInterface(typename PatchInterface<TDim>::Pointer pInterface)
+    {
+        mpInterfaces.push_back(pInterface);
+    }
+
+    /// Get the number of interfaces
+    std::size_t NumberOfInterfaces() const
+    {
+        return mpInterfaces.size();
+    }
+
+    /// Get the interface
+    typename PatchInterface<TDim>::Pointer pInterface(const std::size_t& i) const
+    {
+        return mpInterfaces[i];
     }
 
     /// Get/Set the parent multipatch
@@ -715,6 +692,7 @@ private:
      * neighboring data
      */
     std::vector<typename Patch<TDim>::WeakPointer> mpNeighbors;
+    std::vector<typename PatchInterface<TDim>::Pointer> mpInterfaces;
 
     /**
      * pointer to parent multipatch

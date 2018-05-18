@@ -158,6 +158,12 @@ public:
     }
 
     /// Information
+    template<int TDim>
+    void PrintAddress(std::ostream& rOStream, typename Patch<TDim>::Pointer pPatch)
+    {
+        rOStream << pPatch << std::endl;
+    }
+
     virtual void PrintInfo(std::ostream& rOStream) const
     {
         rOStream << "MultiPatchUtility";

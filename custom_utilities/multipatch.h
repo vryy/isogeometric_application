@@ -96,6 +96,13 @@ public:
             bool check = it->Validate();
             if (!check)
                 return false;
+
+            for (std::size_t i = 0; i < it->NumberOfInterfaces(); ++i)
+            {
+                bool check2 = it->pInterface(i)->Validate();
+                if (!check2)
+                    return false;
+            }
         }
 
         return true;
@@ -224,49 +231,23 @@ public:
         std::size_t last = start;
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
-            if ((*it)->IsInterface() == false)
+            if ((*it)->IsPrimary() == true)
             {
                 last = (*it)->pFESpace()->Enumerate(last);
                 KRATOS_WATCH(last)
 
-                // transfer the enumeration to neighbor boundary
-                for (int i = _LEFT_; i <= _BACK_; ++i)
-                {
-                    BoundarySide side = static_cast<BoundarySide>(i);
-
-                    if ((*it)->pNeighbor(side) != NULL)
-                    {
-                        // find the side of the other neighbor
-                        BoundarySide other_side = (*it)->pNeighbor(side)->FindBoundarySide(*it);
-
-                        if (other_side == _NUMBER_OF_BOUNDARY_SIDE)
-                            KRATOS_THROW_ERROR(std::logic_error, "No neighbor of the neighbor is the same as this. Error setting the neighbor.", "")
-
-                        // check the boundary compatibility again
-                        if (!(*it)->CheckBoundaryCompatibility(side, *((*it)->pNeighbor(side)), other_side))
-                        {
-                            KRATOS_WATCH(side)
-                            KRATOS_WATCH(other_side)
-                            KRATOS_THROW_ERROR(std::logic_error, "The boundary compatibility with the neighbor is not satisfied", "")
-                        }
-                        else
-                        {
-                            std::vector<std::size_t> func_indices = (*it)->pFESpace()->ExtractBoundaryFunctionIndices(side);
-                            (*it)->pNeighbor(side)->pFESpace()->AssignBoundaryFunctionIndices(other_side, func_indices);
-                        }
-                    }
-                }
+                // enumerate the interface
+                for (std::size_t i = 0; i < (*it)->NumberOfInterfaces(); ++i)
+                    (*it)->pInterface(i)->Enumerate();
             }
         }
 
-        // check if a patch is an interface patch, then that patch must be enumerated again using the enumeration info from the parent patches
+        // check if a patch is not a primary patch, then that patch must be enumerated again using the enumeration info from the other patches
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
-            if ((*it)->IsInterface() == true)
+            if ((*it)->IsPrimary() == false)
             {
-                typename PatchInterface<TDim>::Pointer pInterfacePatch = boost::dynamic_pointer_cast<PatchInterface<TDim> >(*it);
-                std::vector<std::size_t> patch_indices = pInterfacePatch->GetIndicesFromParent();
-                (*it)->pFESpace()->ResetFunctionIndices(patch_indices);
+                (*it)->Enumerate();
             }
         }
 
@@ -322,11 +303,6 @@ public:
     }
 
     /// Information
-    void PrintAddress(typename PatchType::Pointer pPatch)
-    {
-        std::cout << pPatch << std::endl;
-    }
-
     virtual void PrintInfo(std::ostream& rOStream) const
     {
         rOStream << "MultiPatch overview: Number of patches = " << mpPatches.size();

@@ -70,6 +70,22 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
+    /// Validate the compatibility of two patches on the interface
+    virtual bool Validate() const
+    {
+        typename Patch<TDim-1>::Pointer BPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
+        typename Patch<TDim-1>::Pointer BPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
+
+        return (*BPatch1) == (*BPatch2);
+    }
+
+    /// Enumerate on the interface, i.e. to make sure that the enumeration on the two patch interfaces are compatible
+    virtual void Enumerate()
+    {
+        std::vector<std::size_t> func_indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side1());
+        this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices);
+    }
+
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {

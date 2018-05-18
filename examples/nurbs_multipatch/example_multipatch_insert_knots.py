@@ -34,16 +34,16 @@ def CreateMultiPatch():
     patch1_ptr = multipatch_util.CreatePatchPointer(1, fes1)
     patch1 = patch1_ptr.GetReference()
     patch1.CreateControlPointGridFunction(ctrl_grid_1)
-#    print(patch1)
-    mpatch_export1.Export(patch1, "patch1.txt")
+    print("patch 1 is created at address " + str(patch1_ptr))
+#    mpatch_export1.Export(patch1, "patch1.txt")
 
     fes2 = nurbs_fespace_library.CreateRectangularFESpace(3, 3)
     ctrl_grid_2 = grid_lib.CreateRectangularControlPointGrid(1.0, 0.0, fes2.Number(0), fes2.Number(1), 2.0, 1.0)
     patch2_ptr = multipatch_util.CreatePatchPointer(2, fes2)
     patch2 = patch2_ptr.GetReference()
     patch2.CreateControlPointGridFunction(ctrl_grid_2)
-#    print(patch2)
-    mpatch_export1.Export(patch2, "patch2.txt")
+    print("patch 2 is created at address " + str(patch2_ptr))
+#    mpatch_export1.Export(patch2, "patch2.txt")
 
     mpatch.AddPatch(patch1_ptr)
     mpatch.AddPatch(patch2_ptr)
@@ -57,10 +57,10 @@ def CreateMultiPatch():
     multipatch_refine_util.InsertKnots(patch1_ptr, [[0.5], [0.5]])
 #    patch1 = patch1_ptr.GetReference()
 #    patch2 = patch2_ptr.GetReference()
-#    print(patch1)
-#    print(patch2)
+    print(mpatch[1])
+    print(mpatch[2])
 #    print(mpatch)
-    #print("############RESULTS###############")
+    print("############REFINEMENT COMPLETED###############")
 
     return mpatch
 

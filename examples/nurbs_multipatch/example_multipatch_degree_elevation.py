@@ -11,6 +11,8 @@
 ##################################################################
 import sys
 import os
+import pdb
+
 kratos_root_path=os.environ['KRATOS_ROOT_PATH']
 ##################################################################
 ##################################################################
@@ -53,12 +55,13 @@ def CreateMultiPatch():
 
     #patch1 = patch1_ptr.GetReference()
     #patch2 = patch2_ptr.GetReference()
+    print("############REFINEMENT COMPLETED###############")
 
     return mpatch
 
-
 #print("############RESULTS###############")
 def main():
+    pdb.set_trace()
     mpatch = CreateMultiPatch()
     mpatch.Enumerate()
     print(mpatch)

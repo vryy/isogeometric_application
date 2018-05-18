@@ -201,7 +201,7 @@ public:
     }
 
     /// Add supported anchor and the respective extraction operator of this cell to the anchor
-    void AddAnchor(const unsigned int& Id, const double& W, const Vector& Crow)
+    void AddAnchor(const std::size_t& Id, const double& W, const Vector& Crow)
     {
         mSupportedAnchors.push_back(Id);
         mAnchorWeights.push_back(W);
@@ -215,6 +215,18 @@ public:
         for (std::size_t i = 0; i < inz.size(); ++i)
             Crow_sparse[inz[i]] = Crow[inz[i]];
         mCrows.push_back(Crow_sparse);
+    }
+
+    /// Absorb the information from the other cell
+    virtual void Absorb(Cell::Pointer pOther)
+    {
+        for (std::size_t i = 0; i < pOther->NumberOfAnchors(); ++i)
+        {
+            if (std::find(mSupportedAnchors.begin(), mSupportedAnchors.end(), pOther->GetSupportedAnchors()[i]) == mSupportedAnchors.end())
+            {
+                this->AddAnchor(pOther->GetSupportedAnchors()[i], pOther->GetAnchorWeights()[i], pOther->GetCrows()[i]);
+            }
+        }
     }
 
     /// Get the number of supported anchors of this cell. In other words, it is the number of basis functions that the support domain includes this cell.
@@ -231,6 +243,9 @@ public:
             rWeights.resize(mAnchorWeights.size(), false);
         std::copy(mAnchorWeights.begin(), mAnchorWeights.end(), rWeights.begin());
     }
+
+    /// Get the internal data of row of the extraction operator
+    const std::vector<SparseVectorType>& GetCrows() const {return mCrows;}
 
     /// Get the extraction operator matrix
     Matrix GetExtractionOperator() const

@@ -96,6 +96,27 @@ public:
         }
     }
 
+    /// Absorb the information from the other cell
+    virtual void Absorb(BaseType::Pointer pOther)
+    {
+        BaseType::Absorb(pOther);
+
+        try
+        {
+            typedef HBCell<TBasisFuncType> HBCellType;
+
+            typename HBCellType::Pointer pOtherCell = boost::dynamic_pointer_cast<HBCellType>(pOther);
+            for(typename HBCellType::bf_iterator it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
+            {
+                this->AddBf(*it_bf);
+            }
+        }
+        catch (std::exception const& e)
+        {
+            // DO NOTHING
+        }
+    }
+
     /// Iterators
     bf_iterator bf_begin() {return mpBasisFuncs.begin();}
     bf_const_iterator bf_begin() const {return mpBasisFuncs.begin();}

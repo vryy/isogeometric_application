@@ -99,7 +99,7 @@ public:
     {
         // create the index map if it's not created yet
         if(!cell_map_is_created)
-            CreateCellsMap();
+            this->CreateCellsMap();
 
         // return the bf if its Id exist in the list
         typename map_t::iterator it = mCellsMap.find(Id);
@@ -141,10 +141,22 @@ public:
         return !(*this == rOther);
     }
 
-    /// Search the cells covered in another cell. In return std::vector<cell_t> are all the cells covered by p_cell.
+    /// Search the cells covered in another cell. In return, std::vector<cell_t> are all the cells covered by p_cell.
     virtual std::vector<cell_t> GetCells(cell_t p_cell)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+    }
+
+    /// Collapse the overlapping cells
+    void CollapseCells()
+    {
+        bool hit;
+        do
+        {
+            iterator it_cell = this->begin();
+            hit = this->CollapseCells(it_cell, this->end());
+            if (hit) this->erase(*it_cell);
+        } while (hit);
     }
 
     /// Reset all the Id of all the basis functions. Remarks: use it with care, you have to be responsible to the old indexing data of the basis functions before calling this function
@@ -183,6 +195,28 @@ private:
         for(iterator it = mpCells.begin(); it != mpCells.end(); ++it)
             mCellsMap[(*it)->Id()] = *it;
         cell_map_is_created = true;
+    }
+
+    /// Collapse the first found overlapping cells
+    bool CollapseCells(iterator& it_cell, const_iterator cell_end)
+    {
+        do
+        {
+            std::vector<cell_t> inner_cells = this->GetCells(*it_cell);
+
+            if (inner_cells.size() != 0)
+            {
+                for (std::size_t i = 0; i < inner_cells.size(); ++i)
+                {
+                    inner_cells[i]->Absorb(*it_cell);
+                }
+                return true;
+            }
+            else
+                ++it_cell;
+        } while (it_cell != cell_end);
+
+        return false;
     }
 };
 

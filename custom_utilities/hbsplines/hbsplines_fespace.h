@@ -489,6 +489,7 @@ public:
                     if ((side == _TOP_) || (side == _BOTTOM_))
                         pNewSubBf = (*it)->Project(2);
                 }
+
                 pBFESpace->AddBf(pNewSubBf);
             }
         }
@@ -533,11 +534,14 @@ public:
 
         pBFESpace->SetLastLevel(this->LastLevel());
 
+        // construct the cells from the boundary basis functions
+        typename BoundaryFESpaceType::cell_container_t::Pointer pnew_cells;
         double cell_tol = pBFESpace->pCellManager()->GetTolerance();
 
-        // construct the cells from the boundary basis functions
         if (TDim == 2)
         {
+            pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new CellManager1D<typename BoundaryFESpaceType::CellType>());
+
             for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
                 for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
@@ -554,12 +558,15 @@ public:
                         pnew_cell->SetLevel(this->LastLevel());
                         (*it)->AddCell(pnew_cell);
                         pnew_cell->AddBf(*it);
+                        pnew_cells->insert(pnew_cell);
                     }
                 }
             }
         }
         else if (TDim == 3)
         {
+            pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new CellManager2D<typename BoundaryFESpaceType::CellType>());
+
             for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
                 for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
@@ -581,11 +588,15 @@ public:
                             pnew_cell->SetLevel(this->LastLevel());
                             (*it)->AddCell(pnew_cell);
                             pnew_cell->AddBf(*it);
+                            pnew_cells->insert(pnew_cell);
                         }
                     }
                 }
             }
         }
+
+        // collapse the overlapping cells
+        pBFESpace->pCellManager()->CollapseCells();
 
         return pBFESpace;
     }

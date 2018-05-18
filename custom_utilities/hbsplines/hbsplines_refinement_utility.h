@@ -597,7 +597,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         }
     }
 
-    /* remove the cells */
+    /* remove the cells from the previous step */
     for(typename cell_container_t::iterator it_cell = pcells_to_remove->begin(); it_cell != pcells_to_remove->end(); ++it_cell)
     {
         pFESpace->pCellManager()->erase(*it_cell);
@@ -611,6 +611,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
     /* remove the old basis function */
     pFESpace->RemoveBf(p_bf);
+
+    // TODO check if pFESpace->pCellManager()->CollapseCells() can help to further remove the overlapping cells
 
     #ifdef ENABLE_PROFILING
     double time_3 = OpenMPUtils::GetCurrentTime() - start;

@@ -27,6 +27,16 @@ enum BoundarySide
 
 #define BOUNDARY_FLAG(x) (1 << (x+1))
 
+enum BoundaryRotation
+{
+    _ROTATE_0_   = 0,
+    _ROTATE_90_  = 90,
+    _ROTATE_180_ = 180,
+    _ROTATE_270_ = 270
+};
+
+#define BOUNDARY_ROTATION(x) (x%360)
+
 enum BoundaryFlag
 {
     _FLEFT_   = BOUNDARY_FLAG(_LEFT_),
@@ -44,12 +54,53 @@ inline std::string BoundarySideName(const BoundarySide& side)
         case _LEFT_:    return "left";
         case _RIGHT_:   return "right";
         case _TOP_:     return "top";
-        case _BOTTOM_: return "bottom";
+        case _BOTTOM_:  return "bottom";
         case _FRONT_:   return "front";
         case _BACK_:    return "back";
         default:        return "inner";
     }
 }
+
+template<int TDim>
+struct ParameterDirection
+{
+};
+
+template<>
+struct ParameterDirection<2>
+{
+    static int Get(const BoundarySide& side)
+    {
+        switch(side)
+        {
+            case _LEFT_:    return 1;
+            case _RIGHT_:   return 1;
+            case _TOP_:     return 0;
+            case _BOTTOM_:  return 0;
+            default:        return -1;
+        }
+        return -1;
+    }
+};
+
+template<>
+struct ParameterDirection<3>
+{
+    static std::pair<int, int> Get(const BoundarySide& side)
+    {
+        switch(side)
+        {
+            case _LEFT_:    return std::make_pair(1, 2);
+            case _RIGHT_:   return std::make_pair(1, 2);
+            case _FRONT_:   return std::make_pair(0, 2);
+            case _BACK_:    return std::make_pair(0, 2);
+            case _TOP_:     return std::make_pair(0, 1);
+            case _BOTTOM_:  return std::make_pair(0, 1);
+            default:        return std::make_pair(-1, -1);
+        }
+        return std::make_pair(-1, -1);
+    }
+};
 
 enum IsogeometricEchoFlags
 {

@@ -20,6 +20,7 @@
 #include "includes/model_part.h"
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/patch_interface.h"
 #include "custom_utilities/multipatch.h"
 
 namespace Kratos
@@ -47,6 +48,57 @@ public:
     static typename Patch<TDim>::Pointer CreatePatchPointer(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
     {
         return typename Patch<TDim>::Pointer(new Patch<TDim>(Id, pFESpace));
+    }
+
+    /// Make the interface between two patches
+    template<int TDim>
+    static void MakeInterface(typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
+            typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2, const BoundaryRotation& rotation)
+    {
+        typename FESpace<TDim-1>::Pointer pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
+
+        typename FESpace<TDim-1>::Pointer pBFESpace2;
+
+        if (TDim == 2)
+        {
+            if ((rotation == _ROTATE_0_) || (rotation == _ROTATE_180_))
+            {
+                pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2, rotation);
+            }
+            else
+                KRATOS_THROW_ERROR(std::logic_error, "Invalid rotation in 2D", "")
+        }
+        else if (TDim == 3)
+        {
+            // TODO
+            KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented for 3D")
+        }
+
+        if( (*pBFESpace1) == (*pBFESpace2) )
+        {
+            typename PatchInterface<TDim>::Pointer pInterface12;
+            typename PatchInterface<TDim>::Pointer pInterface21;
+
+            if (TDim == 2)
+            {
+                pInterface12 = boost::make_shared<PatchInterface<TDim> >(pPatch1, side1, pPatch2, side2, rotation);
+                pInterface21 = boost::make_shared<PatchInterface<TDim> >(pPatch2, side2, pPatch1, side1, rotation);
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << __FUNCTION__ << " is not yet implemented for " << TDim << "D";
+                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            }
+
+            pInterface12->SetOtherInterface(pInterface21);
+            pInterface21->SetOtherInterface(pInterface12);
+
+            pPatch1->AddInterface(pInterface12);
+            pPatch2->AddInterface(pInterface21);
+        }
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "The interface is not created because the two patch's boundaries are not conformed.", "")
     }
 
     /// Get the last node id of the model part
@@ -158,6 +210,12 @@ public:
     }
 
     /// Information
+    template<class TClassType>
+    static void PrintAddress(std::ostream& rOStream, typename TClassType::Pointer pInstance)
+    {
+        rOStream << pInstance << std::endl;
+    }
+
     virtual void PrintInfo(std::ostream& rOStream) const
     {
         rOStream << "MultiPatchUtility";

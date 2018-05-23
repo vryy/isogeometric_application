@@ -49,6 +49,13 @@ typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUti
     return rDummy.template CreatePatchPointer<TDim>(Id, pFESpace);
 }
 
+template<int TDim>
+void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
+    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2, const BoundaryRotation& Rotation)
+{
+    rDummy.MakeInterface<TDim>(pPatch1, side1, pPatch2, side2, Rotation);
+}
+
 std::size_t MultiPatchUtility_GetLastNodeId(MultiPatchUtility& rDummy, ModelPart& r_model_part)
 {
     return rDummy.GetLastNodeId(r_model_part);
@@ -74,6 +81,12 @@ Condition::Pointer MultiPatchUtility_CreateConditionFromElement(MultiPatchUtilit
 void MultiPatchUtility_ListModelPart(MultiPatchUtility& rDummy, ModelPart& r_model_part)
 {
     rDummy.ListModelPart(r_model_part);
+}
+
+template<class TClassType>
+void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassType::Pointer pInstance)
+{
+    rDummy.PrintAddress<TClassType>(std::cout, pInstance);
 }
 
 //////////////////////////////////////////////////
@@ -203,11 +216,17 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<1>)
     .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<2>)
     .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<3>)
+    .def("MakeInterface", &MultiPatchUtility_MakeInterface<1>)
+    .def("MakeInterface", &MultiPatchUtility_MakeInterface<2>)
+    .def("MakeInterface", &MultiPatchUtility_MakeInterface<3>)
     .def("GetLastNodeId", &MultiPatchUtility_GetLastNodeId)
     .def("GetLastElementId", &MultiPatchUtility_GetLastElementId)
     .def("GetLastConditionId", &MultiPatchUtility_GetLastConditionId)
     .def("CreateConditionFromElement", &MultiPatchUtility_CreateConditionFromElement)
     .def("ListModelPart", &MultiPatchUtility_ListModelPart)
+    .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<1> >)
+    .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<2> >)
+    .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<3> >)
     ;
 
     class_<MultiPatchRefinementUtility, MultiPatchRefinementUtility::Pointer, boost::noncopyable>

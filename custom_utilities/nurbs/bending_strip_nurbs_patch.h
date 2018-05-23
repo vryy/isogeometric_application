@@ -160,10 +160,10 @@ public:
         #endif
     }
 
-    /// Return true if this patch is a bending strip patch
-    virtual bool IsInterface() const
+    /// Return true if this patch is a primary patch
+    virtual bool IsPrimary() const
     {
-        return true;
+        return false;
     }
 
     /// Get the order of the strip patch in the orthogonal direction
@@ -204,6 +204,13 @@ public:
         }
 
         return func_indices;
+    }
+
+    /// Enumerate on the interface, taking the enumeration from the parent patches
+    virtual void Enumerate()
+    {
+        std::vector<std::size_t> patch_indices = this->GetIndicesFromParent();
+        this->pFESpace()->ResetFunctionIndices(patch_indices);
     }
 
 private:

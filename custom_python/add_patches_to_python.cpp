@@ -59,12 +59,6 @@ void Patch_SetId(TPatchType& rDummy, const std::size_t& Id)
 }
 
 template<class TPatchType>
-typename TPatchType::Pointer Patch_pGetNeighbor(TPatchType& rDummy, const BoundarySide& side)
-{
-    return rDummy.pNeighbor(side);
-}
-
-template<class TPatchType>
 typename TPatchType::FESpaceType::Pointer Patch_pFESpace(TPatchType& rDummy)
 {
     return rDummy.pFESpace();
@@ -98,13 +92,6 @@ template<class TMultiPatchType>
 std::size_t MultiPatch_Len(TMultiPatchType& rDummy)
 {
     return rDummy.size();
-}
-
-template<int TDim>
-void MultiPatch_MakeNeighbor(MultiPatch<TDim>& rDummy, typename Patch<TDim>::Pointer pPatch1, BoundarySide side1,
-           typename Patch<TDim>::Pointer pPatch2, BoundarySide side2)
-{
-   rDummy.MakeNeighbor(pPatch1, side1, pPatch2, side2);
 }
 
 template<int TDim>
@@ -154,7 +141,6 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("ApplyTransformation", &Patch<TDim>::ApplyTransformation)
     .def("Order", &Patch<TDim>::Order)
     .def("TotalNumber", &Patch<TDim>::TotalNumber)
-    .def("Neighbor", &Patch_pGetNeighbor<Patch<TDim> >)
     .def("FESpace", &Patch_pFESpace<Patch<TDim> >)
     .def(self_ns::str(self))
     ;
@@ -189,13 +175,11 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("Patches", &MultiPatch_GetPatches<MultiPatch<TDim> >)
     .def("__getitem__", &MultiPatch_GetItem<Patch<TDim>, MultiPatch<TDim> >)
     .def("__len__", &MultiPatch_Len<MultiPatch<TDim> >)
-    .def("MakeNeighbor", &MultiPatch_MakeNeighbor<TDim>)
     .def("EquationSystemSize", &MultiPatch<TDim>::EquationSystemSize)
     .def("ResetFunctionIndices", &MultiPatch<TDim>::ResetFunctionIndices)
     .def("Enumerate", &MultiPatch_Enumerate1<TDim>)
     .def("Enumerate", &MultiPatch_Enumerate2<TDim>)
     .def("IsEnumerated", &MultiPatch<TDim>::IsEnumerated)
-    .def("PrintAddress", &MultiPatch<TDim>::PrintAddress)
     .def(self_ns::str(self))
     ;
 }
@@ -267,6 +251,13 @@ void IsogeometricApplication_AddPatchesToPython()
     .value("Bottom", _BOTTOM_)
     .value("Front", _FRONT_)
     .value("Back", _BACK_)
+    ;
+
+    enum_<BoundaryRotation>("BoundaryRotation")
+    .value("R0", _ROTATE_0_)
+    .value("R90", _ROTATE_90_)
+    .value("R180", _ROTATE_180_)
+    .value("R270", _ROTATE_270_)
     ;
 
     enum_<BoundaryFlag>("BoundaryFlag")

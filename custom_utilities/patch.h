@@ -80,13 +80,11 @@ public:
     /// Constructor with id
     Patch(const std::size_t& Id) : mId(Id), mpFESpace(NULL)
     {
-        mpNeighbors.resize(2*TDim);
     }
 
     /// Constructor with id and FESpace
     Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace) : mId(Id), mpFESpace(pFESpace)
     {
-        mpNeighbors.resize(2*TDim);
         if (mpFESpace == NULL)
             KRATOS_THROW_ERROR(std::logic_error, "Invalid FESpace is provided", "")
     }
@@ -140,10 +138,17 @@ public:
         else return mpFESpace->Order(i);
     }
 
-    /// Return true if this patch is a bending strip patch
-    virtual bool IsInterface() const
+    /// Return true if this patch is a primary patch
+    virtual bool IsPrimary() const
     {
-        return false;
+        return true;
+    }
+
+    /// Enumerate the patch
+    virtual void Enumerate()
+    {
+        std::size_t last = 0;
+        last = this->pFESpace()->Enumerate(last);
     }
 
     /// Get the string representing the type of the patch
@@ -351,55 +356,7 @@ public:
             }
         }
 
-        // check the compatibility between patch
-        for (int i = _LEFT_; i <= _BACK_; ++i)
-        {
-            BoundarySide side = static_cast<BoundarySide>(i);
-
-            if (this->pNeighbor(side) != NULL)
-            {
-                if (this->Type() != this->pNeighbor(side)->Type())
-                {
-                    KRATOS_THROW_ERROR(std::logic_error, "The patch type between this and the neighbor is incompatible", "")
-                }
-                else
-                {
-                    // find the side of the other neighbor
-                    BoundarySide other_side = this->pNeighbor(side)->FindBoundarySide(this->shared_from_this());
-
-                    if (other_side == _NUMBER_OF_BOUNDARY_SIDE)
-                        KRATOS_THROW_ERROR(std::logic_error, "No neighbor of the neighbor is the same as this. Error setting the neighbor.", "")
-
-                    bool check = CheckBoundaryCompatibility(*this, side, *(this->pNeighbor(side)), other_side);
-                    if (!check)
-                    {
-                        KRATOS_WATCH(side)
-                        KRATOS_WATCH(other_side)
-                        KRATOS_THROW_ERROR(std::logic_error, "The boundary between this and the neighbor is incompatible", "")
-                        return false;
-                    }
-                }
-            }
-        }
-
         return true;
-    }
-
-    /// Check the compatibility between boundaries of two patches
-    static bool CheckBoundaryCompatibility(const Patch<TDim>& rPatch1, const BoundarySide& side1,
-            const Patch<TDim>& rPatch2, const BoundarySide& side2)
-    {
-        typename Patch<TDim-1>::Pointer BPatch1 = rPatch1.ConstructBoundaryPatch(side1);
-        typename Patch<TDim-1>::Pointer BPatch2 = rPatch1.ConstructBoundaryPatch(side2);
-
-        return (*BPatch1) == (*BPatch2);
-    }
-
-    /// Check the boundary compatibility between this patch and the other patch
-    bool CheckBoundaryCompatibility(const BoundarySide& side1,
-            const Patch<TDim>& rOtherPatch, const BoundarySide& side2) const
-    {
-        return CheckBoundaryCompatibility(*this, side1, rOtherPatch, side2);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -454,35 +411,59 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /// Get/Set the neighbor
-    void pSetNeighbor(const BoundarySide& side, typename Patch<TDim>::Pointer pNeighbor) {mpNeighbors[side] = pNeighbor->shared_from_this();}
-    Patch<TDim>& Neighbor(const BoundarySide& side) {return *pNeighbor(side);}
-    const Patch<TDim>& Neighbor(const BoundarySide& side) const {return *pNeighbor(side);}
+    /// Search for the neighbor
     typename Patch<TDim>::Pointer pNeighbor(const BoundarySide& side)
     {
-        if (side < 2*TDim)
-            return mpNeighbors[side].lock();
-        else
-            return NULL;
-    }
-    typename Patch<TDim>::ConstPointer pNeighbor(const BoundarySide& side) const
-    {
-        if (side < 2*TDim)
-            return mpNeighbors[side].lock();
-        else
-            return NULL;
+        for (std::size_t i = 0; i < this->NumberOfInterfaces(); ++i)
+        {
+            if (this->pInterface(i)->Side1() == side)
+                return this->pInterface(i)->pPatch2();
+        }
+        return NULL;
     }
 
-    /// Find the boundary side of the neighbor
-    BoundarySide FindBoundarySide(typename Patch<TDim>::ConstPointer pPatch) const
+    typename Patch<TDim>::ConstPointer pNeighbor(const BoundarySide& side) const
     {
-        for (int i = _LEFT_; i <= _BACK_; ++i)
+        for (std::size_t i = 0; i < this->NumberOfInterfaces(); ++i)
         {
-            BoundarySide side = static_cast<BoundarySide>(i);
-            if (this->pNeighbor(side) == pPatch)
-                return side;
+            if (this->pInterface(i)->Side1() == side)
+                return this->pInterface(i)->pPatch2();
         }
-        return _NUMBER_OF_BOUNDARY_SIDE;
+        return NULL;
+    }
+
+    /// Seach for the boundary side of the neighor patch, if it exists
+    int FindBoundarySide(typename Patch<TDim>::ConstPointer pPatch) const
+    {
+        for (std::size_t i = 0; i < this->NumberOfInterfaces(); ++i)
+        {
+            if (this->pNeighbor(i)->pPatch2() == pPatch)
+                return this->pNeighbor(i)->Side1();
+        }
+        return -1;
+    }
+
+    /// Add an interface to the patch
+    void AddInterface(typename PatchInterface<TDim>::Pointer pInterface)
+    {
+        mpInterfaces.push_back(pInterface);
+    }
+
+    /// Get the number of interfaces
+    std::size_t NumberOfInterfaces() const
+    {
+        return mpInterfaces.size();
+    }
+
+    /// Get the interface
+    typename PatchInterface<TDim>::Pointer pInterface(const std::size_t& i)
+    {
+        return mpInterfaces[i];
+    }
+
+    typename PatchInterface<TDim>::ConstPointer pInterface(const std::size_t& i) const
+    {
+        return mpInterfaces[i];
     }
 
     /// Get/Set the parent multipatch
@@ -671,32 +652,12 @@ public:
             rOStream << *((*it)->pControlGrid()) << std::endl;
         }
 
-        rOStream << "Neighbors = ";
-        if (TDim == 2)
+        rOStream << "Interfaces (" << this->NumberOfInterfaces() << "):" << std::endl;
+        for (std::size_t i = 0; i < this->NumberOfInterfaces(); ++i)
         {
-            if (pNeighbor(_LEFT_) != NULL)
-                rOStream << " left:" << pNeighbor(_LEFT_)->Id();
-            if (pNeighbor(_RIGHT_) != NULL)
-                rOStream << " right:" << pNeighbor(_RIGHT_)->Id();
-            if (pNeighbor(_TOP_) != NULL)
-                rOStream << " top:" << pNeighbor(_TOP_)->Id();
-            if (pNeighbor(_BOTTOM_) != NULL)
-                rOStream << " bottom:" << pNeighbor(_BOTTOM_)->Id();
-        }
-        else if (TDim == 3)
-        {
-            if (pNeighbor(_LEFT_) != NULL)
-                rOStream << " left:" << pNeighbor(_LEFT_)->Id();
-            if (pNeighbor(_RIGHT_) != NULL)
-                rOStream << " right:" << pNeighbor(_RIGHT_)->Id();
-            if (pNeighbor(_TOP_) != NULL)
-                rOStream << " top:" << pNeighbor(_TOP_)->Id();
-            if (pNeighbor(_BOTTOM_) != NULL)
-                rOStream << " bottom:" << pNeighbor(_BOTTOM_)->Id();
-            if (pNeighbor(_FRONT_) != NULL)
-                rOStream << " front:" << pNeighbor(_FRONT_)->Id();
-            if (pNeighbor(_BACK_) != NULL)
-                rOStream << " back:" << pNeighbor(_BACK_)->Id();
+            rOStream << "  ";
+            this->pInterface(i)->PrintInfo(rOStream);
+            rOStream << std::endl;
         }
     }
 
@@ -712,9 +673,9 @@ private:
     std::vector<boost::any> mpGridFunctions; // using boost::any so store pointers to grid function
 
     /**
-     * neighboring data
+     * interface data
      */
-    std::vector<typename Patch<TDim>::WeakPointer> mpNeighbors;
+    std::vector<typename PatchInterface<TDim>::Pointer> mpInterfaces;
 
     /**
      * pointer to parent multipatch

@@ -28,7 +28,7 @@ if ~isfield(params,'axis')
 end
 
 if ~isfield(params,'legend')
-    params.axis = 'on';
+    params.legend = 'on';
 end
 
 if ~isfield(params,'number')

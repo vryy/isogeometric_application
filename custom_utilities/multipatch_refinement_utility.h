@@ -28,6 +28,35 @@
 namespace Kratos
 {
 
+template<int TDim, typename TDataType>
+struct ComputeBsplinesDegreeElevation_Helper
+{
+    static void Compute(const StructuredControlGrid<TDim, TDataType>& ControlValues,
+        const BSplinesFESpace<TDim>& rFESpace,
+        const std::vector<std::size_t>& order_increment,
+        StructuredControlGrid<TDim, TDataType>& NewControlValues,
+        std::vector<std::vector<double> >& new_knots)
+    {
+        std::stringstream ss;
+        ss << __FUNCTION__ << " is not implemented for dimension " << TDim;
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+    }
+};
+
+template<int TDim>
+struct ComputeBsplinesKnotInsertionCoefficients_Helper
+{
+    static void Compute(Matrix& T,
+        std::vector<std::vector<double> >& new_knots,
+        typename BSplinesFESpace<TDim>::Pointer& pFESpace,
+        const std::vector<std::vector<double> >& ins_knots)
+    {
+        std::stringstream ss;
+        ss << __FUNCTION__ << " is not implemented for dimension " << TDim;
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+    }
+};
+
 /**
 Utility to control the refinement on multipatch structure
  */
@@ -99,22 +128,19 @@ private:
         typename BSplinesFESpace<TDim>::Pointer& pFESpace,
         const std::vector<std::vector<double> >& ins_knots) const
     {
-        std::stringstream ss;
-        ss << __FUNCTION__ << " is not implemented for dimension " << TDim;
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        ComputeBsplinesKnotInsertionCoefficients_Helper<TDim>::Compute(T, new_knots, pFESpace, ins_knots);
     }
 
-    template<int TDim>
+    template<int TDim, typename TDataType>
     void ComputeBsplinesDegreeElevation(
-        const StructuredControlGrid<TDim, ControlPoint<double> >& ControlPoints,
+        const StructuredControlGrid<TDim, TDataType>& ControlValues,
         const BSplinesFESpace<TDim>& rFESpace,
         const std::vector<std::size_t>& order_increment,
-        StructuredControlGrid<TDim, ControlPoint<double> >& NewControlPoints,
+        StructuredControlGrid<TDim, TDataType>& NewControlValues,
         std::vector<std::vector<double> >& new_knots) const
     {
-        std::stringstream ss;
-        ss << __FUNCTION__ << " is not implemented for dimension " << TDim;
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        ComputeBsplinesDegreeElevation_Helper<TDim, TDataType>::Compute(ControlValues,
+            rFESpace, order_increment, NewControlValues, new_knots);
     }
 
 };

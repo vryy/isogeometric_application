@@ -24,7 +24,7 @@ grid_lib = ControlGridLibrary()
 multipatch_util = MultiPatchUtility()
 mpatch_export1 = MultiNURBSPatchGeoExporter()
 mpatch_export2 = MultiNURBSPatchGLVisExporter()
-bending_strip_utility = BendingStripUtility()
+mpatch_export3 = MultiNURBSPatchMatlabExporter()
 
 def CreateMultiPatch():
     mpatch = MultiPatch2D()
@@ -35,42 +35,33 @@ def CreateMultiPatch():
     patch1_ptr = multipatch_util.CreatePatchPointer(1, fes1)
     patch1 = patch1_ptr.GetReference()
     patch1.CreateControlPointGridFunction(ctrl_grid_1)
-#    print(patch1)
-    mpatch_export1.Export(patch1, "patch1.txt")
+    print("patch 1 is created at address " + str(patch1_ptr))
+#    mpatch_export1.Export(patch1, "patch1.txt")
 
     fes2 = nurbs_fespace_library.CreateRectangularFESpace(3, 3)
-    ctrl_grid_2 = grid_lib.CreateRectangularControlPointGrid(1.0, 0.0, fes1.Number(0), fes1.Number(1), 2.0, 1.0)
+    ctrl_grid_2 = grid_lib.CreateRectangularControlPointGrid(2.0, 1.0, fes2.Number(0), fes2.Number(1), 1.0, 0.0)
     patch2_ptr = multipatch_util.CreatePatchPointer(2, fes2)
     patch2 = patch2_ptr.GetReference()
     patch2.CreateControlPointGridFunction(ctrl_grid_2)
-#    print(patch2)
-    mpatch_export1.Export(patch2, "patch2.txt")
+    print("patch 2 is created at address " + str(patch2_ptr))
+#    mpatch_export1.Export(patch2, "patch2.txt")
 
     mpatch.AddPatch(patch1_ptr)
     mpatch.AddPatch(patch2_ptr)
     patch1.Id = 1
     patch2.Id = 2
-    multipatch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left, BoundaryRotation.R0)
+    multipatch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left, BoundaryRotation.R180)
     #print(mpatch)
 
     print("############REFINEMENT###############")
     multipatch_refine_util = MultiPatchRefinementUtility()
-    multipatch_refine_util.InsertKnots(patch1_ptr, [[0.5], [0.5]])
-    patch1 = mpatch[1].GetReference()
-    patch2 = mpatch[2].GetReference()
-#    print(patch1)
-#    print(patch2)
+    multipatch_refine_util.InsertKnots(patch1_ptr, [[0.5], [0.25, 0.5]])
+#    patch1 = patch1_ptr.GetReference()
+#    patch2 = patch2_ptr.GetReference()
+    print("new patch 1 is at address " + str(mpatch[1]))
+    print("new patch 2 is at address " + str(mpatch[2]))
 #    print(mpatch)
-    system_size = mpatch.Enumerate()
-    print("system_size:", system_size)
-    #print("############RESULTS###############")
-
-    print("############CREATE BENDING STRIP PATCH###############")
-    strip_patch_id = 3
-    strip_normal_order = 2 # quadratic
-    strip_order = [1, strip_normal_order]
-    bspatch_ptr = bending_strip_utility.CreateBendingStripNURBSPatch(strip_patch_id, patch1, BoundarySide.Right, patch2, BoundarySide.Left, strip_order)
-    mpatch.AddPatch(bspatch_ptr)
+    print("############REFINEMENT COMPLETED###############")
 
     return mpatch
 
@@ -78,14 +69,14 @@ def CreateMultiPatch():
 
 def main():
     mpatch = CreateMultiPatch()
+    print("Multipatch is created")
 
-    bsp_ptr = mpatch[3]
-    bsp = bsp_ptr.GetReference()
-    print(bsp)
+#    mpatch_export2.Export(mpatch, "mpatch.mesh")
+    mpatch_export3.Export(mpatch, "mpatch180.m")
 
-    mpatch_export2.Export(mpatch, "mpatch.mesh")
-
-#    print(mpatch)
+    system_size = mpatch.Enumerate()
+    print("system_size:", system_size)
+    print(mpatch)
 
 if __name__ == "__main__":
     main()

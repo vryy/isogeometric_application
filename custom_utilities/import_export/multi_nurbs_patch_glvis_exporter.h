@@ -638,5 +638,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiNURBSPatchGL
 
 } // namespace Kratos.
 
+#undef DEBUG_GLVIS_EXPORT
+
 #endif // KRATOS_ISOGLVisMETRIC_APPLICATION_MULTI_NURBS_PATCH_GLVIS_EXPORTER_H_INCLUDED defined
 

@@ -68,8 +68,8 @@ def CreateMultiPatch():
     patch1.Id = 1
     patch2.Id = 2
     patch3.Id = 3
-    mpatch.MakeNeighbor(patch1, BoundarySide.Top, patch2, BoundarySide.Bottom)
-    mpatch.MakeNeighbor(patch2, BoundarySide.Right, patch3, BoundarySide.Left)
+    multipatch_util.MakeInterface(patch1, BoundarySide.Top, patch2, BoundarySide.Bottom, BoundaryRotation.R0)
+    multipatch_util.MakeInterface(patch2, BoundarySide.Right, patch3, BoundarySide.Left, BoundaryRotation.R0)
 
     return mpatch
 

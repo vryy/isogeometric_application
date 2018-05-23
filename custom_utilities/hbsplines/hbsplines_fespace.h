@@ -601,6 +601,12 @@ public:
         return pBFESpace;
     }
 
+    /// Construct the boundary FESpace based on side and rotation
+    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side, const BoundaryRotation& rotation) const
+    {
+        return this->ConstructBoundaryFESpace(side);
+    }
+
     /// Get the underlying cell manager
     typename cell_container_t::Pointer pCellManager() {return mpCellManager;}
 

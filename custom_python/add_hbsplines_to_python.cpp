@@ -174,11 +174,14 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
 
     ss.str(std::string());
     ss << "HBSplinesFESpace" << TDim << "D";
+    typename FESpace<TDim-1>::Pointer(HBSplinesFESpace<TDim>::*pointer_to_ConstructBoundaryFESpace1)(const BoundarySide& side) const = &HBSplinesFESpace<TDim>::ConstructBoundaryFESpace;
+    typename FESpace<TDim-1>::Pointer(HBSplinesFESpace<TDim>::*pointer_to_ConstructBoundaryFESpace2)(const BoundarySide& side, const BoundaryRotation& rotation) const = &HBSplinesFESpace<TDim>::ConstructBoundaryFESpace;
     class_<HBSplinesFESpace<TDim>, typename HBSplinesFESpace<TDim>::Pointer, bases<FESpace<TDim> >, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def("__getitem__", &HBSplinesFESpace_GetItem<TDim>)
     .def("GetBoundaryBfs", &HBSplinesFESpace_GetBoundaryBfs<TDim>)
-    .def("ConstructBoundaryFESpace", &HBSplinesFESpace<TDim>::ConstructBoundaryFESpace)
+    .def("ConstructBoundaryFESpace", pointer_to_ConstructBoundaryFESpace1)
+    .def("ConstructBoundaryFESpace", pointer_to_ConstructBoundaryFESpace2)
     .def(self_ns::str(self))
     ;
 

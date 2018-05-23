@@ -21,6 +21,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/add_grid_functions_to_python.hpp"
 #include "custom_python/add_processes_to_python.h"
 #include "custom_python/add_io_to_python.h"
+#include "custom_python/add_strategies_to_python.h"
 
 ////utilities
 
@@ -63,6 +64,7 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
     IsogeometricApplication_AddMeshAndModelPartToPython();
     IsogeometricApplication_AddProcessesToPython();
     IsogeometricApplication_AddIOToPython();
+    IsogeometricApplication_AddStrategiesToPython();
 
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( NUM_DIVISION_1 )
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( NUM_DIVISION_2 )

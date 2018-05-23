@@ -82,6 +82,7 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_tsplines_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_mesh_and_model_part_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_patches_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_strategies_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/isogeometric_python_application.cpp
 )
 

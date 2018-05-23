@@ -285,23 +285,6 @@ public:
         return start + mEquationSystemSize;
     }
 
-    /// Make the two patches neighbor. This requires that two patches are conformed at the interface.
-    static void MakeNeighbor(typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-            typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
-    {
-        typename FESpace<TDim-1>::Pointer pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
-        typename FESpace<TDim-1>::Pointer pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2);
-
-        if( (*pBFESpace1) == (*pBFESpace2) )
-        {
-            // set the neighbor information
-            pPatch1->pSetNeighbor(side1, pPatch2);
-            pPatch2->pSetNeighbor(side2, pPatch1);
-        }
-        else
-            KRATOS_THROW_ERROR(std::logic_error, "The two patch's boundaries are not conformed", "")
-    }
-
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {

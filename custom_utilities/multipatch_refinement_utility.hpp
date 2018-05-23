@@ -106,146 +106,37 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         // transfer the inserted knots to neighbors
         std::vector<std::vector<double> > neib_ins_knots(TDim);
 
-        if (pPatch->pNeighbor(_LEFT_) != NULL)
+        for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
         {
-            if (pPatch->pNeighbor(_LEFT_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
+            typename PatchInterface<TDim>::Pointer pInterface = pPatch->pInterface(i);
+            typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
+
+            if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+                KRATOS_THROW_ERROR(std::logic_error, "The FESpace of the neighbor is not BSplinesFESpace", "")
+
+            if (TDim == 2)
             {
-                pNewPatch->pSetNeighbor(_LEFT_, pPatch->pNeighbor(_LEFT_));
-                pPatch->pNeighbor(_LEFT_)->pSetNeighbor(_RIGHT_, pNewPatch);
+                std::size_t dir1 = ParameterDirection<2>::Get(pInterface->Side1());
+                std::size_t dir2 = ParameterDirection<2>::Get(pInterface->Side2());
 
-                if (TDim == 2)
-                {
-                    neib_ins_knots[1] = ins_knots[1];
-                }
-                else if (TDim == 3)
-                {
-                    neib_ins_knots[1] = ins_knots[1];
-                    neib_ins_knots[2] = ins_knots[2];
-                }
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_LEFT_);
-                InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots);
+                if (pInterface->Rotation() == _ROTATE_0_)
+                    neib_ins_knots[dir2] = ins_knots[dir1];
+                else if (pInterface->Rotation() == _ROTATE_180_)
+                    neib_ins_knots[dir2] = KnotArray1D<double>::ReverseKnots(ins_knots[dir1]);
             }
-            // else if (pPatch->pNeighbor(_LEFT_)->pFESpace()->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
-
-        if (pPatch->pNeighbor(_RIGHT_) != NULL)
-        {
-            if (pPatch->pNeighbor(_RIGHT_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
+            else if (TDim == 3)
             {
-                pNewPatch->pSetNeighbor(_RIGHT_, pPatch->pNeighbor(_RIGHT_));
-                pPatch->pNeighbor(_RIGHT_)->pSetNeighbor(_LEFT_, pNewPatch);
-
-                if (TDim == 2)
-                {
-                    neib_ins_knots[1] = ins_knots[1];
-                }
-                else if (TDim == 3)
-                {
-                    neib_ins_knots[1] = ins_knots[1];
-                    neib_ins_knots[2] = ins_knots[2];
-                }
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_RIGHT_);
-                InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots);
+                // TODO
+                KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "in 3D is not yet implemented")
             }
-            // else if (pPatch->pNeighbor(_RIGHT_)->pFESpace()->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
 
-        if (pPatch->pNeighbor(_TOP_) != NULL)
-        {
-            if (pPatch->pNeighbor(_TOP_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
-            {
-                pNewPatch->pSetNeighbor(_TOP_, pPatch->pNeighbor(_TOP_));
-                pPatch->pNeighbor(_TOP_)->pSetNeighbor(_BOTTOM_, pNewPatch);
+            InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots);
 
-                if (TDim == 2)
-                {
-                    neib_ins_knots[0] = ins_knots[0];
-                }
-                else if (TDim == 3)
-                {
-                    neib_ins_knots[0] = ins_knots[0];
-                    neib_ins_knots[1] = ins_knots[1];
-                }
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_TOP_);
-                InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots);
-            }
-            // else if (pPatch->pNeighbor(_TOP_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
+            pInterface->SetPatch1(pNewPatch);
+            pInterface->SetPatch2(pNeighbor);
+            pInterface->pOtherInterface()->SetPatch2(pNewPatch);
 
-        if (pPatch->pNeighbor(_BOTTOM_) != NULL)
-        {
-            if (pPatch->pNeighbor(_BOTTOM_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
-            {
-                pNewPatch->pSetNeighbor(_BOTTOM_, pPatch->pNeighbor(_BOTTOM_));
-                pPatch->pNeighbor(_BOTTOM_)->pSetNeighbor(_TOP_, pNewPatch);
-
-                if (TDim == 2)
-                {
-                    neib_ins_knots[0] = ins_knots[0];
-                }
-                else if (TDim == 3)
-                {
-                    neib_ins_knots[0] = ins_knots[0];
-                    neib_ins_knots[1] = ins_knots[1];
-                }
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_BOTTOM_);
-                InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots);
-            }
-            // else if (pPatch->pNeighbor(_BOTTOM_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
-
-        if (pPatch->pNeighbor(_FRONT_) != NULL)
-        {
-            if (pPatch->pNeighbor(_FRONT_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
-            {
-                pNewPatch->pSetNeighbor(_FRONT_, pPatch->pNeighbor(_FRONT_));
-                pPatch->pNeighbor(_FRONT_)->pSetNeighbor(_BACK_, pNewPatch);
-
-                neib_ins_knots[0] = ins_knots[0];
-                neib_ins_knots[2] = ins_knots[2];
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_FRONT_);
-                InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots);
-            }
-            // else if (pPatch->pNeighbor(_FRONT_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
-
-        if (pPatch->pNeighbor(_BACK_) != NULL)
-        {
-            if (pPatch->pNeighbor(_BACK_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
-            {
-                pNewPatch->pSetNeighbor(_BACK_, pPatch->pNeighbor(_BACK_));
-                pPatch->pNeighbor(_BACK_)->pSetNeighbor(_FRONT_, pNewPatch);
-
-                neib_ins_knots[0] = ins_knots[0];
-                neib_ins_knots[2] = ins_knots[2];
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_BACK_);
-                InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots);
-            }
-            // else if (pPatch->pNeighbor(_BACK_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
+            pNewPatch->AddInterface(pInterface);
         }
 
         // get the parent multipatch
@@ -261,7 +152,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         }
 
         // swap
-        std::cout << pPatch << " is swapped with ";
+        std::cout << __FUNCTION__ << ": " << pPatch << " is swapped with ";
         pPatch.swap(pNewPatch);
         std::cout << pPatch << std::endl;
 
@@ -281,6 +172,9 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 template<int TDim>
 void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& pPatch, std::set<std::size_t>& refined_patches, const std::vector<std::size_t>& order_increment)
 {
+    if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the NURBS patch")
+
     if (std::find(refined_patches.begin(), refined_patches.end(), pPatch->Id()) == refined_patches.end())
     {
         // create new patch with same Id
@@ -317,160 +211,42 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         pNewPatch->SetFESpace(pNewFESpace);
         pNewPatch->CreateControlPointGridFunction(pNewControlPoints);
 
+        // TODO raise the order for other control grids
+
         // mark refined patch
         refined_patches.insert(pPatch->Id());
 
         // transfer the order increment to neighbors
         std::vector<std::size_t> neib_order_increment(TDim);
 
-        if (pPatch->pNeighbor(_LEFT_) != NULL)
+        for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
         {
-            if (pPatch->pNeighbor(_LEFT_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
+            typename PatchInterface<TDim>::Pointer pInterface = pPatch->pInterface(i);
+            typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
+
+            if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+                KRATOS_THROW_ERROR(std::logic_error, "The FESpace of the neighbor is not BSplinesFESpace", "")
+
+            if (TDim == 2)
             {
-                pNewPatch->pSetNeighbor(_LEFT_, pPatch->pNeighbor(_LEFT_));
-                pPatch->pNeighbor(_LEFT_)->pSetNeighbor(_RIGHT_, pNewPatch);
+                std::size_t dir1 = ParameterDirection<2>::Get(pInterface->Side1());
+                std::size_t dir2 = ParameterDirection<2>::Get(pInterface->Side2());
 
-                if(TDim == 1)
-                {
-                    neib_order_increment[0] = order_increment[0];
-                }
-                else if(TDim == 2)
-                {
-                    neib_order_increment[1] = order_increment[1];
-                }
-                else if (TDim == 3)
-                {
-                    neib_order_increment[1] = order_increment[1];
-                    neib_order_increment[2] = order_increment[2];
-                }
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_LEFT_);
-                DegreeElevate<TDim>(pNeighbor, refined_patches, neib_order_increment);
+                neib_order_increment[dir2] = order_increment[dir1];
             }
-            // else if (pPatch->pNeighbor(_LEFT_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
-
-        if (pPatch->pNeighbor(_RIGHT_) != NULL)
-        {
-            if (pPatch->pNeighbor(_RIGHT_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
+            else if (TDim == 3)
             {
-                pNewPatch->pSetNeighbor(_RIGHT_, pPatch->pNeighbor(_RIGHT_));
-                pPatch->pNeighbor(_RIGHT_)->pSetNeighbor(_LEFT_, pNewPatch);
-
-                if(TDim == 1)
-                {
-                    neib_order_increment[0] = order_increment[0];
-                }
-                else if (TDim == 2)
-                {
-                    neib_order_increment[1] = order_increment[1];
-                }
-                else if (TDim == 3)
-                {
-                    neib_order_increment[1] = order_increment[1];
-                    neib_order_increment[2] = order_increment[2];
-                }
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_RIGHT_);
-                DegreeElevate<TDim>(pNeighbor, refined_patches, neib_order_increment);
+                // TODO
+                KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "in 3D is not yet implemented")
             }
-            // else if (pPatch->pNeighbor(_RIGHT_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
 
-        if (pPatch->pNeighbor(_TOP_) != NULL)
-        {
-            if (pPatch->pNeighbor(_TOP_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
-            {
-                pNewPatch->pSetNeighbor(_TOP_, pPatch->pNeighbor(_TOP_));
-                pPatch->pNeighbor(_TOP_)->pSetNeighbor(_BOTTOM_, pNewPatch);
+            DegreeElevate<TDim>(pNeighbor, refined_patches, neib_order_increment);
 
-                if (TDim == 2)
-                {
-                    neib_order_increment[0] = order_increment[0];
-                }
-                else if (TDim == 3)
-                {
-                    neib_order_increment[0] = order_increment[0];
-                    neib_order_increment[1] = order_increment[1];
-                }
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_TOP_);
-                DegreeElevate<TDim>(pNeighbor, refined_patches, neib_order_increment);
-            }
-            // else if (pPatch->pNeighbor(_TOP_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
+            pInterface->SetPatch1(pNewPatch);
+            pInterface->SetPatch2(pNeighbor);
+            pInterface->pOtherInterface()->SetPatch2(pNewPatch);
 
-        if (pPatch->pNeighbor(_BOTTOM_) != NULL)
-        {
-            if (pPatch->pNeighbor(_BOTTOM_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
-            {
-                pNewPatch->pSetNeighbor(_BOTTOM_, pPatch->pNeighbor(_BOTTOM_));
-                pPatch->pNeighbor(_BOTTOM_)->pSetNeighbor(_TOP_, pNewPatch);
-
-                if (TDim == 2)
-                {
-                    neib_order_increment[0] = order_increment[0];
-                }
-                else if (TDim == 3)
-                {
-                    neib_order_increment[0] = order_increment[0];
-                    neib_order_increment[1] = order_increment[1];
-                }
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_BOTTOM_);
-                DegreeElevate<TDim>(pNeighbor, refined_patches, neib_order_increment);
-            }
-            // else if (pPatch->pNeighbor(_BOTTOM_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
-
-        if (pPatch->pNeighbor(_FRONT_) != NULL)
-        {
-            if (pPatch->pNeighbor(_FRONT_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
-            {
-                pNewPatch->pSetNeighbor(_FRONT_, pPatch->pNeighbor(_FRONT_));
-                pPatch->pNeighbor(_FRONT_)->pSetNeighbor(_BACK_, pNewPatch);
-
-                neib_order_increment[0] = order_increment[0];
-                neib_order_increment[2] = order_increment[2];
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_FRONT_);
-                DegreeElevate<TDim>(pNeighbor, refined_patches, neib_order_increment);
-            }
-            // else if (pPatch->pNeighbor(_FRONT_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
-        }
-
-        if (pPatch->pNeighbor(_BACK_) != NULL)
-        {
-            if (pPatch->pNeighbor(_BACK_)->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
-            {
-                pNewPatch->pSetNeighbor(_BACK_, pPatch->pNeighbor(_BACK_));
-                pPatch->pNeighbor(_BACK_)->pSetNeighbor(_FRONT_, pNewPatch);
-
-                neib_order_increment[0] = order_increment[0];
-                neib_order_increment[2] = order_increment[2];
-                typename Patch<TDim>::Pointer pNeighbor = pPatch->pNeighbor(_BACK_);
-                DegreeElevate<TDim>(pNeighbor, refined_patches, neib_order_increment);
-            }
-            // else if (pPatch->pNeighbor(_BACK_)->Type() == HBMesh<TDim>::StaticType())
-            // {
-            //     //TODO
-            //     KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented", "")
-            // }
+            pNewPatch->AddInterface(pInterface);
         }
 
         // get the parent multipatch
@@ -486,7 +262,9 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         }
 
         // swap
+        std::cout << __FUNCTION__ << ": " << pPatch << " is swapped with ";
         pPatch.swap(pNewPatch);
+        std::cout << pPatch << std::endl;
 
         if (pMultiPatch != NULL)
         {
@@ -494,6 +272,8 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             pMultiPatch->Patches().push_back(pPatch);
             pMultiPatch->Patches().Unique();
         }
+
+        std::cout << __FUNCTION__ << " completed for patch " << pPatch->Id() << std::endl;
     }
 }
 

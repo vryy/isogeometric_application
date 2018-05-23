@@ -84,9 +84,24 @@ public:
         return p_knot;
     }
 
+    /// Normalize the knot vector so that the largest knot is 1.0
+    void Normalize()
+    {
+        TDataType kmax = -1.0;
+        for(iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        {
+            if ((*it)->Value() > kmax)
+                kmax = (*it)->Value();
+        }
+        for(iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        {
+            (*it)->Value() /= kmax;
+        }
+    }
+
     /// Insert the knot to the array and return its pointer.
     /// In the case that the knot are repetitive within the tolerance, return the internal one.
-    knot_t pCreateUniqueKnot(const TDataType& k, const double& tol)
+    knot_t pCreateUniqueKnot(const TDataType& k, const TDataType& tol)
     {
         // insert to the correct location
         for(iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
@@ -159,6 +174,24 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "the span index exceeds the number of span of the knot vector", "")
     }
 
+    /// Return the values of the knot vector
+    void GetValues(std::vector<TDataType>& r_values) const
+    {
+        if (r_values.size() != mpKnots.size())
+            r_values.resize(mpKnots.size());
+
+        for (std::size_t i = 0; i < mpKnots.size(); ++i)
+            r_values[i] = mpKnots[i]->Value();
+    }
+
+    /// Return the values of the knot vector
+    std::vector<TDataType> GetValues() const
+    {
+        std::vector<TDataType> values;
+        this->GetValues(values);
+        return values;
+    }
+
     /// Iterator
     iterator begin() {return mpKnots.begin();}
 
@@ -170,6 +203,63 @@ public:
 
     /// Iterator
     const_iterator end() const {return mpKnots.end();}
+
+    /// Check if this knot vector is symmetric within a specified tolerance
+    bool IsSymmetric(const TDataType& tol) const
+    {
+        std::vector<TDataType> knot_vec = this->GetValues();
+        return IsSymmetric(knot_vec, tol);
+    }
+
+    /// Check if a knot vector is symmetric. A knot vector is symmetric if both x and 1-x are in the knot vector
+    static bool IsSymmetric(const std::vector<TDataType>& knot_vec, const TDataType& tol, bool sorted = true)
+    {
+        std::vector<TDataType>* sorted_vec;
+        if (sorted == false)
+        {
+            sorted_vec = new std::vector<TDataType>(knot_vec.size());
+            std::copy(knot_vec.begin(), knot_vec.end(), sorted_vec->begin());
+            std::sort(sorted_vec->begin(), sorted_vec->end());
+        }
+        else
+            sorted_vec = const_cast<std::vector<TDataType>*>(&knot_vec);
+
+        std::size_t size = sorted_vec->size();
+        if (size % 2 == 0)
+        {
+            std::size_t half_size = size / 2;
+            for (std::size_t i = 0; i < half_size; ++i)
+            {
+                if (fabs((*sorted_vec)[size-1-i] - (*sorted_vec)[i]) > tol)
+                    return false;
+            }
+        }
+        else
+        {
+            std::size_t half_size = (size-1) / 2;
+            if (fabs((*sorted_vec)[half_size] - 0.5) > tol)
+                return false;
+            for (std::size_t i = 0; i < half_size; ++i)
+            {
+                if (fabs((*sorted_vec)[size-1-i] - (*sorted_vec)[i]) > tol)
+                    return false;
+            }
+        }
+
+        if (sorted == false)
+            delete sorted_vec;
+
+        return true;
+    }
+
+    /// Compute the reversed knots, i.e. 1-k
+    static std::vector<TDataType> ReverseKnots(const std::vector<TDataType>& knots)
+    {
+        std::vector<TDataType> reversed_knots(knots.size());
+        for (std::size_t i = 0; i < reversed_knots.size(); ++i)
+            reversed_knots[i] = 1.0 - knots[i];
+        return reversed_knots;
+    }
 
     /// Compare the two knot vectors
     bool operator==(const KnotArray1D<TDataType>& rOther) const

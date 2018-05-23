@@ -649,38 +649,35 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     }
 
     // refine also the neighbors
-    for (int i = _LEFT_; i <= _BACK_; ++i)
+    for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
     {
-        BoundarySide side = static_cast<BoundarySide>(i);
+        typename PatchInterface<TDim>::Pointer pInterface = pPatch->pInterface(i);
 
-        if (pPatch->pNeighbor(side) != NULL)
+        typename Patch<TDim>::Pointer pNeighborPatch = pInterface->pPatch2();
+
+        // extract the hierarchical B-Splines space
+        typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
+
+        // get the correct basis function
+        bf_t p_neighbor_bf;
+        bool found = false;
+        for(typename bf_container_t::iterator it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
         {
-            typename Patch<TDim>::Pointer pNeighborPatch = pPatch->pNeighbor(side);
-
-            // extract the hierarchical B-Splines space
-            typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
-
-            // get the correct basis function
-            bf_t p_neighbor_bf;
-            bool found = false;
-            for(typename bf_container_t::iterator it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
+            if ((*it)->EquationId() == equation_id)
             {
-                if ((*it)->EquationId() == equation_id)
-                {
-                    p_neighbor_bf = *it;
-                    found = true;
-                }
+                p_neighbor_bf = *it;
+                found = true;
+            }
+        }
+
+        if (found)
+        {
+            if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
+            {
+                std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
             }
 
-            if (found)
-            {
-                if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
-                {
-                    std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
-                }
-
-                Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
-            }
+            Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
         }
     }
 

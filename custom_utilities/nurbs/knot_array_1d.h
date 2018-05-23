@@ -114,6 +114,17 @@ public:
         return pCreateKnot(k);
     }
 
+    /// Create a knot vector with reversed knot
+    KnotArray1D<TDataType> ReversedClone() const
+    {
+        KnotArray1D<TDataType> kvec;
+
+        for (std::size_t i = 0; i < mpKnots.size(); ++i)
+            kvec.pCreateKnot(1.0 - mpKnots[mpKnots.size()-1-i]->Value());
+
+        return kvec;
+    }
+
     /// Get the knot at index i
     const knot_t pKnotAt(const std::size_t& i) const
     {

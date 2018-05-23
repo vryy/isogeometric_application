@@ -74,21 +74,6 @@ public:
         return typename PatchInterface<TDim>::Pointer(new PatchInterface<TDim>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), this->Rotation()));
     }
 
-    /// Create an inversed clone of this interface
-    virtual PatchInterface<TDim>::Pointer InversedClone() const
-    {
-        if (TDim == 2)
-        {
-            return typename PatchInterface<TDim>::Pointer(new PatchInterface<TDim>(this->pPatch2(), this->Side2(), this->pPatch1(), this->Side1(), this->Rotation()));
-        }
-        else if (TDim == 3)
-        {
-            // TODO
-            // return boost::make_shared(this->pPatch2(), this->Side2(), this->pPatch1(), this->Side1(), BOUNDARY_ROTATION(this->Rotation() + _ROTATE_180_));
-            KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented for 3D")
-        }
-    }
-
     /// Get/Set the other half interface
     void SetOtherInterface(typename PatchInterface<TDim>::Pointer pOther) {mpOtherInterface = pOther->shared_from_this();}
     typename PatchInterface<TDim>::Pointer pOtherInterface() const {return mpOtherInterface.lock();}

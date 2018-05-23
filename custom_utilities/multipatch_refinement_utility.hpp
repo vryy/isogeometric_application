@@ -196,7 +196,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         typename StructuredControlGrid<TDim, ControlPoint<double> >::Pointer pNewControlPoints
             = typename StructuredControlGrid<TDim, ControlPoint<double> >::Pointer(new StructuredControlGrid<TDim, ControlPoint<double> >(new_size)); // note here that the size is just temporary, it will be raised later on.
 
-        this->ComputeBsplinesDegreeElevation<TDim>(*pControlPoints, *pFESpace, order_increment, *pNewControlPoints, new_knots);
+        this->ComputeBsplinesDegreeElevation<TDim, ControlPoint<double> >(*pControlPoints, *pFESpace, order_increment, *pNewControlPoints, new_knots);
 
         for (std::size_t dim = 0; dim < TDim; ++dim)
         {
@@ -207,11 +207,53 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
 
         pNewFESpace->ResetFunctionIndices();
 
-        pNewControlPoints->SetName(pPatch->pControlPointGridFunction()->pControlGrid()->Name());
+        // set the new FESpace
         pNewPatch->SetFESpace(pNewFESpace);
+
+        pNewControlPoints->SetName(pPatch->pControlPointGridFunction()->pControlGrid()->Name());
         pNewPatch->CreateControlPointGridFunction(pNewControlPoints);
 
-        // TODO raise the order for other control grids
+        // raise the order for other control grids
+        typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
+
+        typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
+
+        typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
+
+        // transfer the grid function
+        // here to transfer correctly we apply a two-step process:
+        // + firstly the old control values is multiplied with weight to make it weighted control values
+        // + secondly the control values will be transferred
+        // + the new control values will be divided by the new weight to make it unweighted
+        for (typename Patch<TDim>::DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
+                it != DoubleGridFunctions_.end(); ++it)
+        {
+            typename StructuredControlGrid<TDim, double>::Pointer pNewDoubleControlGrid = typename StructuredControlGrid<TDim, double>::Pointer(new StructuredControlGrid<TDim, double>(new_size));
+            typename StructuredControlGrid<TDim, double>::Pointer pDoubleControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
+            this->ComputeBsplinesDegreeElevation<TDim, double>(*pDoubleControlGrid, *pFESpace, order_increment, *pNewDoubleControlGrid, new_knots);
+            pNewDoubleControlGrid->SetName((*it)->pControlGrid()->Name());
+            pNewPatch->template CreateGridFunction<double>(pNewDoubleControlGrid);
+        }
+
+        for (typename Patch<TDim>::Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
+                it != Array1DGridFunctions_.end(); ++it)
+        {
+            typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pNewArray1DControlGrid = typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer(new StructuredControlGrid<TDim, array_1d<double, 3> >(new_size));
+            typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pArray1DControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
+            this->ComputeBsplinesDegreeElevation<TDim, array_1d<double, 3> >(*pArray1DControlGrid, *pFESpace, order_increment, *pNewArray1DControlGrid, new_knots);
+            pNewArray1DControlGrid->SetName((*it)->pControlGrid()->Name());
+            pNewPatch->template CreateGridFunction<array_1d<double, 3> >(pNewArray1DControlGrid);
+        }
+
+        for (typename Patch<TDim>::VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
+                it != VectorGridFunctions_.end(); ++it)
+        {
+            typename StructuredControlGrid<TDim, Vector>::Pointer pNewVectorControlGrid = typename StructuredControlGrid<TDim, Vector>::Pointer(new StructuredControlGrid<TDim, Vector>(new_size));
+            typename StructuredControlGrid<TDim, Vector>::Pointer pVectorControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
+            this->ComputeBsplinesDegreeElevation<TDim, Vector>(*pVectorControlGrid, *pFESpace, order_increment, *pNewVectorControlGrid, new_knots);
+            pNewVectorControlGrid->SetName((*it)->pControlGrid()->Name());
+            pNewPatch->template CreateGridFunction<Vector>(pNewVectorControlGrid);
+        }
 
         // mark refined patch
         refined_patches.insert(pPatch->Id());
@@ -279,103 +321,115 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
 
 
 template<>
-void MultiPatchRefinementUtility::ComputeBsplinesKnotInsertionCoefficients<1>(
-    Matrix& T,
-    std::vector<std::vector<double> >& new_knots,
-    typename BSplinesFESpace<1>::Pointer& pFESpace,
-    const std::vector<std::vector<double> >& ins_knots) const
+struct ComputeBsplinesKnotInsertionCoefficients_Helper<1>
 {
-    BSplineUtils::ComputeBsplinesKnotInsertionCoefficients1D(T,
-            new_knots[0],
-            pFESpace->Order(0),
-            pFESpace->KnotVector(0),
-            ins_knots[0]);
-}
+    static void Compute(Matrix& T,
+        std::vector<std::vector<double> >& new_knots,
+        typename BSplinesFESpace<1>::Pointer& pFESpace,
+        const std::vector<std::vector<double> >& ins_knots)
+    {
+        BSplineUtils::ComputeBsplinesKnotInsertionCoefficients1D(T,
+                new_knots[0],
+                pFESpace->Order(0),
+                pFESpace->KnotVector(0),
+                ins_knots[0]);
+    }
+};
 
 template<>
-void MultiPatchRefinementUtility::ComputeBsplinesKnotInsertionCoefficients<2>(
-    Matrix& T,
-    std::vector<std::vector<double> >& new_knots,
-    typename BSplinesFESpace<2>::Pointer& pFESpace,
-    const std::vector<std::vector<double> >& ins_knots) const
+struct ComputeBsplinesKnotInsertionCoefficients_Helper<2>
 {
-    BSplineUtils::ComputeBsplinesKnotInsertionCoefficients2D(T,
-            new_knots[0], new_knots[1],
-            pFESpace->Order(0), pFESpace->Order(1),
-            pFESpace->KnotVector(0), pFESpace->KnotVector(1),
-            ins_knots[0], ins_knots[1]);
-}
+    static void Compute(Matrix& T,
+        std::vector<std::vector<double> >& new_knots,
+        typename BSplinesFESpace<2>::Pointer& pFESpace,
+        const std::vector<std::vector<double> >& ins_knots)
+    {
+        BSplineUtils::ComputeBsplinesKnotInsertionCoefficients2D(T,
+                new_knots[0], new_knots[1],
+                pFESpace->Order(0), pFESpace->Order(1),
+                pFESpace->KnotVector(0), pFESpace->KnotVector(1),
+                ins_knots[0], ins_knots[1]);
+    }
+};
 
 template<>
-void MultiPatchRefinementUtility::ComputeBsplinesKnotInsertionCoefficients<3>(
-    Matrix& T,
-    std::vector<std::vector<double> >& new_knots,
-    typename BSplinesFESpace<3>::Pointer& pFESpace,
-    const std::vector<std::vector<double> >& ins_knots) const
+struct ComputeBsplinesKnotInsertionCoefficients_Helper<3>
 {
-    BSplineUtils::ComputeBsplinesKnotInsertionCoefficients3D(T,
-            new_knots[0], new_knots[1], new_knots[2],
-            pFESpace->Order(0), pFESpace->Order(1), pFESpace->Order(2),
-            pFESpace->KnotVector(0), pFESpace->KnotVector(1), pFESpace->KnotVector(2),
-            ins_knots[0], ins_knots[1], ins_knots[2]);
-}
+    static void Compute(Matrix& T,
+        std::vector<std::vector<double> >& new_knots,
+        typename BSplinesFESpace<3>::Pointer& pFESpace,
+        const std::vector<std::vector<double> >& ins_knots)
+    {
+        BSplineUtils::ComputeBsplinesKnotInsertionCoefficients3D(T,
+                new_knots[0], new_knots[1], new_knots[2],
+                pFESpace->Order(0), pFESpace->Order(1), pFESpace->Order(2),
+                pFESpace->KnotVector(0), pFESpace->KnotVector(1), pFESpace->KnotVector(2),
+                ins_knots[0], ins_knots[1], ins_knots[2]);
+    }
+};
 
-template<>
-void MultiPatchRefinementUtility::ComputeBsplinesDegreeElevation<1>(
-    const StructuredControlGrid<1, ControlPoint<double> >& ControlPoints,
-    const BSplinesFESpace<1>& rFESpace,
-    const std::vector<std::size_t>& order_increment,
-    StructuredControlGrid<1, ControlPoint<double> >& NewControlPoints,
-    std::vector<std::vector<double> >& new_knots) const
+template<typename TDataType>
+struct ComputeBsplinesDegreeElevation_Helper<1, TDataType>
 {
-    ControlPoint<double> null_control_point(0.0);
+    static void Compute(const StructuredControlGrid<1, TDataType>& ControlValues,
+        const BSplinesFESpace<1>& rFESpace,
+        const std::vector<std::size_t>& order_increment,
+        StructuredControlGrid<1, TDataType>& NewControlValues,
+        std::vector<std::vector<double> >& new_knots)
+    {
+        TDataType null_control_value(0.0);
 
-    BSplineUtils::ComputeBsplinesDegreeElevation1D(rFESpace.Order(0),
-            ControlPoints,
-            rFESpace.KnotVector(0),
-            order_increment[0],
-            NewControlPoints,
-            new_knots[0],
-            null_control_point);
-}
+        BSplineUtils::ComputeBsplinesDegreeElevation1D(rFESpace.Order(0),
+                ControlValues,
+                rFESpace.KnotVector(0),
+                order_increment[0],
+                NewControlValues,
+                new_knots[0],
+                null_control_value);
+    }
+};
 
-template<>
-void MultiPatchRefinementUtility::ComputeBsplinesDegreeElevation<2>(
-    const StructuredControlGrid<2, ControlPoint<double> >& ControlPoints,
-    const BSplinesFESpace<2>& rFESpace,
-    const std::vector<std::size_t>& order_increment,
-    StructuredControlGrid<2, ControlPoint<double> >& NewControlPoints,
-    std::vector<std::vector<double> >& new_knots) const
+template<typename TDataType>
+struct ComputeBsplinesDegreeElevation_Helper<2, TDataType>
 {
-    ControlPoint<double> null_control_point(0.0);
+    static void Compute(const StructuredControlGrid<2, TDataType>& ControlValues,
+        const BSplinesFESpace<2>& rFESpace,
+        const std::vector<std::size_t>& order_increment,
+        StructuredControlGrid<2, TDataType>& NewControlValues,
+        std::vector<std::vector<double> >& new_knots)
+    {
+        TDataType null_control_value(0.0);
 
-    BSplineUtils::ComputeBsplinesDegreeElevation2D(rFESpace.Order(0), rFESpace.Order(1),
-            ControlPoints,
-            rFESpace.KnotVector(0), rFESpace.KnotVector(1),
-            order_increment[0], order_increment[1],
-            NewControlPoints,
-            new_knots[0], new_knots[1],
-            null_control_point);
-}
+        BSplineUtils::ComputeBsplinesDegreeElevation2D(rFESpace.Order(0), rFESpace.Order(1),
+                ControlValues,
+                rFESpace.KnotVector(0), rFESpace.KnotVector(1),
+                order_increment[0], order_increment[1],
+                NewControlValues,
+                new_knots[0], new_knots[1],
+                null_control_value);
+    }
+};
 
-template<>
-void MultiPatchRefinementUtility::ComputeBsplinesDegreeElevation<3>(
-    const StructuredControlGrid<3, ControlPoint<double> >& ControlPoints,
-    const BSplinesFESpace<3>& rFESpace,
-    const std::vector<std::size_t>& order_increment,
-    StructuredControlGrid<3, ControlPoint<double> >& NewControlPoints,
-    std::vector<std::vector<double> >& new_knots) const
+template<typename TDataType>
+struct ComputeBsplinesDegreeElevation_Helper<3, TDataType>
 {
-    ControlPoint<double> null_control_point(0.0);
+    static void Compute(const StructuredControlGrid<3, TDataType>& ControlValues,
+        const BSplinesFESpace<3>& rFESpace,
+        const std::vector<std::size_t>& order_increment,
+        StructuredControlGrid<3, TDataType>& NewControlValues,
+        std::vector<std::vector<double> >& new_knots)
+    {
+        TDataType null_control_value(0.0);
 
-    BSplineUtils::ComputeBsplinesDegreeElevation3D(rFESpace.Order(0), rFESpace.Order(1), rFESpace.Order(2),
-            ControlPoints,
-            rFESpace.KnotVector(0), rFESpace.KnotVector(1), rFESpace.KnotVector(2),
-            order_increment[0], order_increment[1], order_increment[2],
-            NewControlPoints,
-            new_knots[0], new_knots[1], new_knots[2],
-            null_control_point);
-}
+        BSplineUtils::ComputeBsplinesDegreeElevation3D(rFESpace.Order(0), rFESpace.Order(1), rFESpace.Order(2),
+                ControlValues,
+                rFESpace.KnotVector(0), rFESpace.KnotVector(1), rFESpace.KnotVector(2),
+                order_increment[0], order_increment[1], order_increment[2],
+                NewControlValues,
+                new_knots[0], new_knots[1], new_knots[2],
+                null_control_value);
+    }
+};
 
 } // namespace Kratos.
 

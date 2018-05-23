@@ -763,6 +763,60 @@ public:
         return pBFESpace;
     }
 
+    /// Construct the boundary patch based on side and rotation
+    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side, const BoundaryRotation& rotation) const
+    {
+        typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1>::Pointer(new BSplinesFESpace<TDim-1>());
+
+        // assign the knot vectors
+        if (TDim == 2)
+        {
+            if (side == _LEFT_)
+            {
+                if (rotation == _ROTATE_0_)
+                    pBFESpace->SetKnotVector(0, KnotVector(1));
+                else if (rotation == _ROTATE_180_)
+                    pBFESpace->SetKnotVector(0, KnotVector(1).ReversedClone());
+                pBFESpace->SetInfo(0, Number(1), Order(1));
+            }
+            else if (side == _RIGHT_)
+            {
+                if (rotation == _ROTATE_0_)
+                    pBFESpace->SetKnotVector(0, KnotVector(1));
+                else if (rotation == _ROTATE_180_)
+                    pBFESpace->SetKnotVector(0, KnotVector(1).ReversedClone());
+                pBFESpace->SetInfo(0, Number(1), Order(1));
+            }
+            else if (side == _TOP_)
+            {
+                if (rotation == _ROTATE_0_)
+                    pBFESpace->SetKnotVector(0, KnotVector(0));
+                else if (rotation == _ROTATE_180_)
+                    pBFESpace->SetKnotVector(0, KnotVector(0).ReversedClone());
+                pBFESpace->SetInfo(0, Number(0), Order(0));
+            }
+            else if (side == _BOTTOM_)
+            {
+                if (rotation == _ROTATE_0_)
+                    pBFESpace->SetKnotVector(0, KnotVector(0));
+                else if (rotation == _ROTATE_180_)
+                    pBFESpace->SetKnotVector(0, KnotVector(0).ReversedClone());
+                pBFESpace->SetInfo(0, Number(0), Order(0));
+            }
+        }
+        else if (TDim == 3)
+        {
+            // TODO
+            KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented for 3D")
+        }
+
+        // transfer the function indices
+        std::vector<std::size_t> b_func_indices = this->ExtractBoundaryFunctionIndices(side);
+        pBFESpace->ResetFunctionIndices(b_func_indices);
+
+        return pBFESpace;
+    }
+
     /// Create the cell manager for all the cells in the support domain of the BSplinesFESpace
     virtual typename cell_container_t::Pointer ConstructCellManager() const
     {

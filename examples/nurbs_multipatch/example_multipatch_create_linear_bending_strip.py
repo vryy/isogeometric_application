@@ -50,7 +50,7 @@ def CreateMultiPatch():
     mpatch.AddPatch(patch2_ptr)
     patch1.Id = 1
     patch2.Id = 2
-    mpatch.MakeNeighbor(patch1, BoundarySide.Right, patch2, BoundarySide.Left)
+    multipatch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left, BoundaryRotation.R0)
     #print(mpatch)
 
     print("############REFINEMENT###############")

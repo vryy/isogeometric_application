@@ -46,7 +46,7 @@ def CreateMultiPatch():
 
     mpatch.AddPatch(patch1_ptr)
     mpatch.AddPatch(patch2_ptr)
-    mpatch.MakeNeighbor(patch1, BoundarySide.Right, patch2, BoundarySide.Left)
+    multipatch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left, BoundaryRotation.R0)
 
     print("############REFINEMENT###############")
     multipatch_refine_util = MultiPatchRefinementUtility()
@@ -55,13 +55,15 @@ def CreateMultiPatch():
 
     #patch1 = patch1_ptr.GetReference()
     #patch2 = patch2_ptr.GetReference()
+    print("new patch 1 is at address " + str(mpatch[1]))
+    print("new patch 2 is at address " + str(mpatch[2]))
     print("############REFINEMENT COMPLETED###############")
 
     return mpatch
 
 #print("############RESULTS###############")
 def main():
-    pdb.set_trace()
+#    pdb.set_trace()
     mpatch = CreateMultiPatch()
     mpatch.Enumerate()
     print(mpatch)

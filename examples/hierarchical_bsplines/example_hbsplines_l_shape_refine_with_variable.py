@@ -49,8 +49,8 @@ def main():
     hmpatch.AddPatch(hpatch1_ptr)
     hmpatch.AddPatch(hpatch2_ptr)
     hmpatch.AddPatch(hpatch3_ptr)
-    multipatch_util.MakeInterface(hpatch1, BoundarySide.Top, hpatch2, BoundarySide.Bottom, BoundaryRotation.R0)
-    multipatch_util.MakeInterface(hpatch2, BoundarySide.Right, hpatch3, BoundarySide.Left, BoundaryRotation.R0)
+    multipatch_util.MakeInterface(hpatch1, BoundarySide.Top, hpatch2, BoundarySide.Bottom)
+    multipatch_util.MakeInterface(hpatch2, BoundarySide.Right, hpatch3, BoundarySide.Left)
     hmpatch.Enumerate()
     print("Create hierarchical B-Splines multipatch completed")
 

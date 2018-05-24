@@ -39,26 +39,12 @@ public:
     : mSide1(_NUMBER_OF_BOUNDARY_SIDE), mSide2(_NUMBER_OF_BOUNDARY_SIDE)
     {}
 
-    /// Full Constructor, the relative rotation is assumed zero by default
+    /// Full Constructor, the default local configuration is assumed and there is no reverse.
     PatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
         typename PatchType::Pointer pPatch2, const BoundarySide& side2)
     : mpPatch1(pPatch1->shared_from_this()), mpPatch2(pPatch2->shared_from_this())
-    , mSide1(side1), mSide2(side2), mRotation(_ROTATE_0_)
+    , mSide1(side1), mSide2(side2)
     {}
-
-    /// Full Constructor with the relative direction
-    /// In 2D, the rotation indicates that the neighbor is reflected or not. There are 4x4x2 = 32 possible relative positions.
-    /// In 3D, the rotation defines the relative position between two patches when two boundary faces are glues. There are 6x6x4 = 144 possible relative positions.
-    PatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-        typename PatchType::Pointer pPatch2, const BoundarySide& side2,
-        const BoundaryRotation& Rotation)
-    : mpPatch1(pPatch1->shared_from_this()), mpPatch2(pPatch2->shared_from_this())
-    , mSide1(side1), mSide2(side2), mRotation(Rotation)
-    {
-        if (TDim == 2)
-            if ((mRotation != _ROTATE_0_) && (mRotation != _ROTATE_180_))
-                KRATOS_THROW_ERROR(std::logic_error, "Rotation is not allowed to be 90 or 270 degrees in 2D", "")
-    }
 
     /// Destructor
     virtual ~PatchInterface()
@@ -71,7 +57,7 @@ public:
     /// Create a clone of this interface
     virtual PatchInterface<TDim>::Pointer Clone() const
     {
-        return typename PatchInterface<TDim>::Pointer(new PatchInterface<TDim>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), this->Rotation()));
+        return typename PatchInterface<TDim>::Pointer(new PatchInterface<TDim>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2()));
     }
 
     /// Get/Set the other half interface
@@ -96,9 +82,6 @@ public:
     /// Get the side of the second patch where the strip locates
     const BoundarySide& Side2() const {return mSide2;}
 
-    /// Get the relative direction of the parameter space
-    const BoundaryRotation& Rotation() const {return mRotation;}
-
     /// Get the indices of the control points on this strip from the parent patch
     virtual std::vector<std::size_t> GetIndicesFromParent() const
     {
@@ -108,12 +91,7 @@ public:
     /// Validate the compatibility of two patches on the interface
     virtual bool Validate() const
     {
-        // TODO validate the parameter direction
-
-        typename Patch<TDim-1>::Pointer BPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
-        typename Patch<TDim-1>::Pointer BPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
-
-        return (*BPatch1) == (*BPatch2);
+        return true;
     }
 
     /// Enumerate on the interface, i.e. to make sure that the enumeration on the two patch interfaces are compatible
@@ -169,7 +147,6 @@ private:
 
     BoundarySide mSide1;
     BoundarySide mSide2;
-    BoundaryRotation mRotation;
 
     typename PatchType::WeakPointer mpPatch1;
     typename PatchType::WeakPointer mpPatch2;

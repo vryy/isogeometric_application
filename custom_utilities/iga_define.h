@@ -27,15 +27,11 @@ enum BoundarySide
 
 #define BOUNDARY_FLAG(x) (1 << (x+1))
 
-enum BoundaryRotation
+enum BoundaryDirection
 {
-    _ROTATE_0_   = 0,
-    _ROTATE_90_  = 90,
-    _ROTATE_180_ = 180,
-    _ROTATE_270_ = 270
+    _FORWARD_ = 0,
+    _REVERSED_ = 1
 };
-
-#define BOUNDARY_ROTATION(x) (x%360)
 
 enum BoundaryFlag
 {

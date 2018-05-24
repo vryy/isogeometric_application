@@ -108,7 +108,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
         for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
         {
-            typename PatchInterface<TDim>::Pointer pInterface = pPatch->pInterface(i);
+            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
 
             if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
@@ -119,9 +119,9 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
                 std::size_t dir1 = ParameterDirection<2>::Get(pInterface->Side1());
                 std::size_t dir2 = ParameterDirection<2>::Get(pInterface->Side2());
 
-                if (pInterface->Rotation() == _ROTATE_0_)
+                if (pInterface->Direction(0) == _FORWARD_)
                     neib_ins_knots[dir2] = ins_knots[dir1];
-                else if (pInterface->Rotation() == _ROTATE_180_)
+                else if (pInterface->Direction(0) == _REVERSED_)
                     neib_ins_knots[dir2] = KnotArray1D<double>::ReverseKnots(ins_knots[dir1]);
             }
             else if (TDim == 3)

@@ -38,7 +38,7 @@ def CreateMultiPatch():
     mpatch = MultiPatch2D()
     mpatch.AddPatch(patch1_ptr)
     mpatch.AddPatch(patch2_ptr)
-    multipatch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left, BoundaryRotation.R0)
+    multipatch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left)
     mpatch.Enumerate()
 
 #    ### create hierarchical B-Splines multipatch
@@ -54,7 +54,7 @@ def CreateMultiPatch():
     hmpatch = MultiPatch2D()
     hmpatch.AddPatch(hpatch1_ptr)
     hmpatch.AddPatch(hpatch2_ptr)
-    multipatch_util.MakeInterface(hpatch1, BoundarySide.Right, hpatch2, BoundarySide.Left, BoundaryRotation.R0)
+    multipatch_util.MakeInterface(hpatch1, BoundarySide.Right, hpatch2, BoundarySide.Left)
     hmpatch.Enumerate()
     print("Create multipatch completed")
 

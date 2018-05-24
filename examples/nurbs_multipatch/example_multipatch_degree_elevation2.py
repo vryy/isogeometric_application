@@ -44,7 +44,7 @@ def CreateMultiPatch():
 
     mpatch.AddPatch(patch1_ptr)
     mpatch.AddPatch(patch2_ptr)
-    multipatch_util.MakeInterface(patch1, BoundarySide.Top, patch2, BoundarySide.Bottom, BoundaryRotation.R0)
+    multipatch_util.MakeInterface(patch1, BoundarySide.Top, patch2, BoundarySide.Bottom)
 
     print("############REFINEMENT###############")
     multipatch_refine_util = MultiPatchRefinementUtility()

@@ -61,7 +61,7 @@ def CreateMultiPatch():
     mpatch = MultiPatch2D()
     mpatch.AddPatch(patch1_ptr)
     mpatch.AddPatch(patch2_ptr)
-    multipatch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left, BoundaryRotation.R0)
+    bsplines_patch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left, BoundaryDirection.Forward)
     multipatch_refine_util.DegreeElevate(patch1_ptr, [1, 1])
     multipatch_refine_util.InsertKnots(patch1_ptr, [[0.5], [0.5]])
 

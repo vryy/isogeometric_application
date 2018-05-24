@@ -763,8 +763,9 @@ public:
         return pBFESpace;
     }
 
-    /// Construct the boundary patch based on side and rotation
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side, const BoundaryRotation& rotation) const
+    /// Construct the boundary patch based on side and direction
+    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+        const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
         typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1>::Pointer(new BSplinesFESpace<TDim-1>());
 
@@ -773,33 +774,33 @@ public:
         {
             if (side == _LEFT_)
             {
-                if (rotation == _ROTATE_0_)
+                if (directions[0] == _FORWARD_)
                     pBFESpace->SetKnotVector(0, KnotVector(1));
-                else if (rotation == _ROTATE_180_)
+                else if (directions[0] == _REVERSED_)
                     pBFESpace->SetKnotVector(0, KnotVector(1).ReversedClone());
                 pBFESpace->SetInfo(0, Number(1), Order(1));
             }
             else if (side == _RIGHT_)
             {
-                if (rotation == _ROTATE_0_)
+                if (directions[0] == _FORWARD_)
                     pBFESpace->SetKnotVector(0, KnotVector(1));
-                else if (rotation == _ROTATE_180_)
+                else if (directions[0] == _REVERSED_)
                     pBFESpace->SetKnotVector(0, KnotVector(1).ReversedClone());
                 pBFESpace->SetInfo(0, Number(1), Order(1));
             }
             else if (side == _TOP_)
             {
-                if (rotation == _ROTATE_0_)
+                if (directions[0] == _FORWARD_)
                     pBFESpace->SetKnotVector(0, KnotVector(0));
-                else if (rotation == _ROTATE_180_)
+                else if (directions[0] == _REVERSED_)
                     pBFESpace->SetKnotVector(0, KnotVector(0).ReversedClone());
                 pBFESpace->SetInfo(0, Number(0), Order(0));
             }
             else if (side == _BOTTOM_)
             {
-                if (rotation == _ROTATE_0_)
+                if (directions[0] == _FORWARD_)
                     pBFESpace->SetKnotVector(0, KnotVector(0));
-                else if (rotation == _ROTATE_180_)
+                else if (directions[0] == _REVERSED_)
                     pBFESpace->SetKnotVector(0, KnotVector(0).ReversedClone());
                 pBFESpace->SetInfo(0, Number(0), Order(0));
             }

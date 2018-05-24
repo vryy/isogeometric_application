@@ -25,15 +25,15 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/model_part.h"
 #include "includes/variables.h"
 #include "custom_python/add_utilities_to_python.h"
-#include "custom_utilities/nurbs/domain_manager.h"
-#include "custom_utilities/nurbs/domain_manager_2d.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
-#include "custom_utilities/nurbs/structured_control_grid.h"
 #include "custom_utilities/fespace.h"
+#include "custom_utilities/patch_interface.h"
+#include "custom_utilities/nurbs/domain_manager.h"
+#include "custom_utilities/nurbs/domain_manager_2d.h"
+#include "custom_utilities/nurbs/structured_control_grid.h"
 #include "custom_utilities/nurbs/bsplines_fespace.h"
 #include "custom_utilities/nurbs/bsplines_fespace_library.h"
-#include "custom_utilities/patch_interface.h"
 #include "custom_utilities/nurbs/bending_strip_nurbs_patch.h"
 
 
@@ -371,7 +371,6 @@ void IsogeometricApplication_AddBendingStripNURBSToPython()
     .def("GetReference", GetReference<BendingStripNURBSPatch<TDim> >, return_value_policy<reference_existing_object>())
     .def(self_ns::str(self))
     ;
-
 }
 
 //////////////////////////////////////////////////

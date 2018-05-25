@@ -209,8 +209,9 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
-    /// Construct the boundary FESpace based on side and rotation
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side, const BoundaryRotation& rotation) const
+    /// Construct the boundary FESpace based on side and local relative configuration between two patches
+    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+        const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }

@@ -253,11 +253,9 @@ void IsogeometricApplication_AddPatchesToPython()
     .value("Back", _BACK_)
     ;
 
-    enum_<BoundaryRotation>("BoundaryRotation")
-    .value("R0", _ROTATE_0_)
-    .value("R90", _ROTATE_90_)
-    .value("R180", _ROTATE_180_)
-    .value("R270", _ROTATE_270_)
+    enum_<BoundaryDirection>("BoundaryDirection")
+    .value("Forward", _FORWARD_)
+    .value("Reversed", _REVERSED_)
     ;
 
     enum_<BoundaryFlag>("BoundaryFlag")

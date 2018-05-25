@@ -20,6 +20,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/nurbs/knot.h"
 
 namespace Kratos
@@ -114,13 +115,21 @@ public:
         return pCreateKnot(k);
     }
 
-    /// Create a knot vector with reversed knot
-    KnotArray1D<TDataType> ReversedClone() const
+    /// Create a clone of this knot vector
+    KnotArray1D<TDataType> Clone(const BoundaryDirection& dir) const
     {
         KnotArray1D<TDataType> kvec;
 
-        for (std::size_t i = 0; i < mpKnots.size(); ++i)
-            kvec.pCreateKnot(1.0 - mpKnots[mpKnots.size()-1-i]->Value());
+        if (dir == _FORWARD_)
+        {
+            for (std::size_t i = 0; i < mpKnots.size(); ++i)
+                kvec.pCreateKnot(mpKnots[i]->Value());
+        }
+        else if (dir == _REVERSED_)
+        {
+            for (std::size_t i = 0; i < mpKnots.size(); ++i)
+                kvec.pCreateKnot(1.0 - mpKnots[mpKnots.size()-1-i]->Value());
+        }
 
         return kvec;
     }
@@ -261,6 +270,20 @@ public:
             delete sorted_vec;
 
         return true;
+    }
+
+    /// Compute the knots in the respective direction
+    static std::vector<TDataType> CloneKnots(const std::vector<TDataType>& knots, const BoundaryDirection& direction)
+    {
+        if (direction == _FORWARD_)
+        {
+            return knots;
+        }
+        else if (direction == _REVERSED_)
+        {
+            return ReverseKnots(knots);
+        }
+        return std::vector<TDataType>{};
     }
 
     /// Compute the reversed knots, i.e. 1-k

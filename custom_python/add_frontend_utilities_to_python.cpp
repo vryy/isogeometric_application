@@ -51,9 +51,9 @@ typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUti
 
 template<int TDim>
 void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2, const BoundaryRotation& Rotation)
+    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
 {
-    rDummy.MakeInterface<TDim>(pPatch1, side1, pPatch2, side2, Rotation);
+    rDummy.MakeInterface<TDim>(pPatch1, side1, pPatch2, side2);
 }
 
 std::size_t MultiPatchUtility_GetLastNodeId(MultiPatchUtility& rDummy, ModelPart& r_model_part)
@@ -166,6 +166,14 @@ boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility
     return patches;
 }
 
+void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
+    typename Patch<2>::Pointer pPatch1, const BoundarySide& side1,
+    typename Patch<2>::Pointer pPatch2, const BoundarySide& side2,
+    const BoundaryDirection& direction)
+{
+    rDummy.MakeInterface2D(pPatch1, side1, pPatch2, side2, direction);
+}
+
 //////////////////////////////////////////////////
 
 template<int TDim>
@@ -244,6 +252,7 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<2>)
     .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<3>)
     .def("CreatePatchFromGeo", &BSplinesPatchUtility_CreatePatchFromGeo)
+    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D)
     ;
 
     class_<BendingStripUtility, BendingStripUtility::Pointer, boost::noncopyable>

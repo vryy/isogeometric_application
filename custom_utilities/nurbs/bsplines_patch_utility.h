@@ -21,6 +21,9 @@
 #include "custom_utilities/nurbs/bsplines_fespace_library.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_geo_importer.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/multipatch.h"
+#include "custom_utilities/patch_interface.h"
+#include "custom_utilities/nurbs/bsplines_patch_interface.h"
 
 namespace Kratos
 {
@@ -125,6 +128,36 @@ public:
     {
         MultiNURBSPatchGeoImporter<TDim> dummy;
         return dummy.ImportSingle(fn);
+    }
+
+    /// Make the interface between two patches
+    static void MakeInterface2D(typename Patch<2>::Pointer pPatch1, const BoundarySide& side1,
+            typename Patch<2>::Pointer pPatch2, const BoundarySide& side2, const BoundaryDirection& direction)
+    {
+        typename FESpace<1>::Pointer pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
+
+        typename FESpace<1>::Pointer pBFESpace2;
+
+        std::map<std::size_t, std::size_t> local_parameter_map;
+        std::vector<BoundaryDirection> directions = {direction};
+        pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2, local_parameter_map, directions);
+
+        if( (*pBFESpace1) == (*pBFESpace2) )
+        {
+            typename PatchInterface<2>::Pointer pInterface12;
+            typename PatchInterface<2>::Pointer pInterface21;
+
+            pInterface12 = boost::make_shared<BSplinesPatchInterface<2> >(pPatch1, side1, pPatch2, side2, direction);
+            pInterface21 = boost::make_shared<BSplinesPatchInterface<2> >(pPatch2, side2, pPatch1, side1, direction);
+
+            pInterface12->SetOtherInterface(pInterface21);
+            pInterface21->SetOtherInterface(pInterface12);
+
+            pPatch1->AddInterface(pInterface12);
+            pPatch2->AddInterface(pInterface21);
+        }
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "The interface is not created because the two patch's boundaries are not conformed.", "")
     }
 
     /// Information

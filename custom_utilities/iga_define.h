@@ -10,6 +10,7 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_IGA_DEFINE_H_INCLUDED
 
 #include <cstring>
+#include <vector>
 
 namespace Kratos
 {
@@ -60,12 +61,18 @@ inline std::string BoundarySideName(const BoundarySide& side)
 template<int TDim>
 struct ParameterDirection
 {
+    static std::vector<int> Get(const BoundarySide& side)
+    {
+        std::stringstream ss;
+        ss << __FUNCTION__ << " is not implemented for " << TDim << "D";
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+    }
 };
 
 template<>
 struct ParameterDirection<2>
 {
-    static int Get(const BoundarySide& side)
+    static int Get_(const BoundarySide& side)
     {
         switch(side)
         {
@@ -77,24 +84,29 @@ struct ParameterDirection<2>
         }
         return -1;
     }
+
+    static std::vector<int> Get(const BoundarySide& side)
+    {
+        return std::vector<int>{Get_(side)};
+    }
 };
 
 template<>
 struct ParameterDirection<3>
 {
-    static std::pair<int, int> Get(const BoundarySide& side)
+    static std::vector<int> Get(const BoundarySide& side)
     {
         switch(side)
         {
-            case _LEFT_:    return std::make_pair(1, 2);
-            case _RIGHT_:   return std::make_pair(1, 2);
-            case _FRONT_:   return std::make_pair(0, 2);
-            case _BACK_:    return std::make_pair(0, 2);
-            case _TOP_:     return std::make_pair(0, 1);
-            case _BOTTOM_:  return std::make_pair(0, 1);
-            default:        return std::make_pair(-1, -1);
+            case _LEFT_:    return std::vector<int>{1, 2};
+            case _RIGHT_:   return std::vector<int>{1, 2};
+            case _FRONT_:   return std::vector<int>{0, 2};
+            case _BACK_:    return std::vector<int>{0, 2};
+            case _TOP_:     return std::vector<int>{0, 1};
+            case _BOTTOM_:  return std::vector<int>{0, 1};
+            default:        return std::vector<int>{-1, -1};
         }
-        return std::make_pair(-1, -1);
+        return std::vector<int>{-1, -1};
     }
 };
 

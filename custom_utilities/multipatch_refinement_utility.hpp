@@ -116,18 +116,18 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
             if (TDim == 2)
             {
-                std::size_t dir1 = ParameterDirection<2>::Get(pInterface->Side1());
-                std::size_t dir2 = ParameterDirection<2>::Get(pInterface->Side2());
+                int dir1 = ParameterDirection<2>::Get_(pInterface->Side1());
+                int dir2 = ParameterDirection<2>::Get_(pInterface->Side2());
 
-                if (pInterface->Direction(0) == _FORWARD_)
-                    neib_ins_knots[dir2] = ins_knots[dir1];
-                else if (pInterface->Direction(0) == _REVERSED_)
-                    neib_ins_knots[dir2] = KnotArray1D<double>::ReverseKnots(ins_knots[dir1]);
+                neib_ins_knots[dir2] = KnotArray1D<double>::CloneKnots(ins_knots[dir1], pInterface->Direction(0));
             }
             else if (TDim == 3)
             {
-                // TODO
-                KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "in 3D is not yet implemented")
+                std::vector<int> param_dirs_1 = ParameterDirection<3>::Get(pInterface->Side1());
+                std::vector<int> param_dirs_2 = ParameterDirection<3>::Get(pInterface->Side2());
+
+                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(0) ] ] = KnotArray1D<double>::CloneKnots(ins_knots[param_dirs_1[0]], pInterface->Direction(0));
+                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(1) ] ] = KnotArray1D<double>::CloneKnots(ins_knots[param_dirs_1[1]], pInterface->Direction(1));
             }
 
             InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots);
@@ -263,7 +263,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
 
         for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
         {
-            typename PatchInterface<TDim>::Pointer pInterface = pPatch->pInterface(i);
+            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
 
             if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
@@ -271,15 +271,18 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
 
             if (TDim == 2)
             {
-                std::size_t dir1 = ParameterDirection<2>::Get(pInterface->Side1());
-                std::size_t dir2 = ParameterDirection<2>::Get(pInterface->Side2());
+                int dir1 = ParameterDirection<2>::Get_(pInterface->Side1());
+                int dir2 = ParameterDirection<2>::Get_(pInterface->Side2());
 
                 neib_order_increment[dir2] = order_increment[dir1];
             }
             else if (TDim == 3)
             {
-                // TODO
-                KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "in 3D is not yet implemented")
+                std::vector<int> param_dirs_1 = ParameterDirection<3>::Get(pInterface->Side1());
+                std::vector<int> param_dirs_2 = ParameterDirection<3>::Get(pInterface->Side2());
+
+                neib_order_increment[param_dirs_2[ pInterface->LocalParameterMapping(0) ] ] = order_increment[param_dirs_1[0]];
+                neib_order_increment[param_dirs_2[ pInterface->LocalParameterMapping(1) ] ] = order_increment[param_dirs_1[1]];
             }
 
             DegreeElevate<TDim>(pNeighbor, refined_patches, neib_order_increment);

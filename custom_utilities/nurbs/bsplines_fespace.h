@@ -768,47 +768,25 @@ public:
         const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
         typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1>::Pointer(new BSplinesFESpace<TDim-1>());
+        std::vector<int> param_dirs = ParameterDirection<TDim>::Get(side);
 
         // assign the knot vectors
         if (TDim == 2)
         {
-            if (side == _LEFT_)
-            {
-                if (directions[0] == _FORWARD_)
-                    pBFESpace->SetKnotVector(0, KnotVector(1));
-                else if (directions[0] == _REVERSED_)
-                    pBFESpace->SetKnotVector(0, KnotVector(1).ReversedClone());
-                pBFESpace->SetInfo(0, Number(1), Order(1));
-            }
-            else if (side == _RIGHT_)
-            {
-                if (directions[0] == _FORWARD_)
-                    pBFESpace->SetKnotVector(0, KnotVector(1));
-                else if (directions[0] == _REVERSED_)
-                    pBFESpace->SetKnotVector(0, KnotVector(1).ReversedClone());
-                pBFESpace->SetInfo(0, Number(1), Order(1));
-            }
-            else if (side == _TOP_)
-            {
-                if (directions[0] == _FORWARD_)
-                    pBFESpace->SetKnotVector(0, KnotVector(0));
-                else if (directions[0] == _REVERSED_)
-                    pBFESpace->SetKnotVector(0, KnotVector(0).ReversedClone());
-                pBFESpace->SetInfo(0, Number(0), Order(0));
-            }
-            else if (side == _BOTTOM_)
-            {
-                if (directions[0] == _FORWARD_)
-                    pBFESpace->SetKnotVector(0, KnotVector(0));
-                else if (directions[0] == _REVERSED_)
-                    pBFESpace->SetKnotVector(0, KnotVector(0).ReversedClone());
-                pBFESpace->SetInfo(0, Number(0), Order(0));
-            }
+            pBFESpace->SetKnotVector(0, KnotVector(param_dirs[0]).Clone(directions[0]));
+            pBFESpace->SetInfo(0, Number(param_dirs[0]), Order(param_dirs[0]));
         }
         else if (TDim == 3)
         {
-            // TODO
-            KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented for 3D")
+            std::vector<int> map_param_dirs(2);
+
+            map_param_dirs[0] = param_dirs[local_parameter_map.at(0)];
+            map_param_dirs[1] = param_dirs[local_parameter_map.at(1)];
+
+            pBFESpace->SetKnotVector(0, KnotVector(map_param_dirs[0]).Clone(directions[0]));
+            pBFESpace->SetKnotVector(1, KnotVector(map_param_dirs[1]).Clone(directions[1]));
+            pBFESpace->SetInfo(0, Number(map_param_dirs[0]), Order(map_param_dirs[0]));
+            pBFESpace->SetInfo(1, Number(map_param_dirs[1]), Order(map_param_dirs[1]));
         }
 
         // transfer the function indices

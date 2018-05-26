@@ -130,7 +130,14 @@ public:
         return dummy.ImportSingle(fn);
     }
 
-    /// Make the interface between two patches
+    /// Dummy function to silence the compiler
+    static void MakeInterface2D(typename Patch<1>::Pointer pPatch1, const BoundarySide& side1,
+            typename Patch<1>::Pointer pPatch2, const BoundarySide& side2, const BoundaryDirection& direction)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not reallistic in 1D")
+    }
+
+    /// Make the interface between two patches in 2D
     static void MakeInterface2D(typename Patch<2>::Pointer pPatch1, const BoundarySide& side1,
             typename Patch<2>::Pointer pPatch2, const BoundarySide& side2, const BoundaryDirection& direction)
     {
@@ -149,6 +156,70 @@ public:
 
             pInterface12 = boost::make_shared<BSplinesPatchInterface<2> >(pPatch1, side1, pPatch2, side2, direction);
             pInterface21 = boost::make_shared<BSplinesPatchInterface<2> >(pPatch2, side2, pPatch1, side1, direction);
+
+            pInterface12->SetOtherInterface(pInterface21);
+            pInterface21->SetOtherInterface(pInterface12);
+
+            pPatch1->AddInterface(pInterface12);
+            pPatch2->AddInterface(pInterface21);
+        }
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "The interface is not created because the two patch's boundaries are not conformed.", "")
+    }
+
+    /// Dummy function to silence the compiler
+    static void MakeInterface2D(typename Patch<3>::Pointer pPatch1, const BoundarySide& side1,
+            typename Patch<3>::Pointer pPatch2, const BoundarySide& side2, const BoundaryDirection& direction)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not reallistic in 3D")
+    }
+
+    /// Dummy function to silence the compiler
+    static void MakeInterface3D(typename Patch<1>::Pointer pPatch1, const BoundarySide& side1,
+            typename Patch<1>::Pointer pPatch2, const BoundarySide& side2, const bool& uv_or_vu,
+            const BoundaryDirection& direction1, const BoundaryDirection& direction2)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not reallistic in 1D")
+    }
+
+    /// Dummy function to silence the compiler
+    static void MakeInterface3D(typename Patch<2>::Pointer pPatch1, const BoundarySide& side1,
+            typename Patch<2>::Pointer pPatch2, const BoundarySide& side2, const bool& uv_or_vu,
+            const BoundaryDirection& direction1, const BoundaryDirection& direction2)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not reallistic in 2D")
+    }
+
+    /// Make the interface between two patches in 3D
+    static void MakeInterface3D(typename Patch<3>::Pointer pPatch1, const BoundarySide& side1,
+            typename Patch<3>::Pointer pPatch2, const BoundarySide& side2, const bool& uv_or_vu,
+            const BoundaryDirection& direction1, const BoundaryDirection& direction2)
+    {
+        typename FESpace<2>::Pointer pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
+
+        typename FESpace<2>::Pointer pBFESpace2;
+
+        std::map<std::size_t, std::size_t> local_parameter_map;
+        if (uv_or_vu)
+        {
+            local_parameter_map[0] = 0;
+            local_parameter_map[1] = 1;
+        }
+        else
+        {
+            local_parameter_map[0] = 1;
+            local_parameter_map[1] = 0;
+        }
+        std::vector<BoundaryDirection> directions = {direction1, direction2};
+        pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2, local_parameter_map, directions);
+
+        if( (*pBFESpace1) == (*pBFESpace2) )
+        {
+            typename PatchInterface<3>::Pointer pInterface12;
+            typename PatchInterface<3>::Pointer pInterface21;
+
+            pInterface12 = boost::make_shared<BSplinesPatchInterface<3> >(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
+            pInterface21 = boost::make_shared<BSplinesPatchInterface<3> >(pPatch2, side2, pPatch1, side1, uv_or_vu, direction1, direction2);
 
             pInterface12->SetOtherInterface(pInterface21);
             pInterface21->SetOtherInterface(pInterface12);

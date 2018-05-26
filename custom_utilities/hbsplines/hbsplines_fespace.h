@@ -602,7 +602,8 @@ public:
     }
 
     /// Construct the boundary FESpace based on side and rotation
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side, const BoundaryRotation& rotation) const
+    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+        const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
         return this->ConstructBoundaryFESpace(side);
     }

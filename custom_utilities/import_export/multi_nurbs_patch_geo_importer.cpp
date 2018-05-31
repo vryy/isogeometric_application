@@ -411,7 +411,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
     std::string line;
     std::vector<std::string> words;
     int read_mode = _READ_PATCH;
-    int ipatch = 0, npatches, rdim, number_of_patches_read = 0;
+    int ipatch = 0, npatches, rdim, number_of_patches_read = 0, number_of_interfaces_read = 0;
     int iinterface = 0, ninterfaces;
 
     while(!infile.eof())
@@ -468,7 +468,9 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
                     ipatch = atoi(words[1].c_str()) - 1;
                 }
                 else
+                {
                     KRATOS_THROW_ERROR(std::logic_error, "The patch section has wrong keyword", words[0])
+                }
 
                 knots[ipatch].resize(3);
                 wcoords[ipatch].resize(3);
@@ -479,6 +481,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
                     read_mode = _CHECK_PATCH;
                 else
                     read_mode = _READ_INTERFACE;
+                continue;
             }
 
             if(read_mode == _READ_INTERFACE)
@@ -495,7 +498,11 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
                     iinterface = atoi(words[1].c_str()) - 1;
                 }
                 else
+                {
+                    KRATOS_WATCH(words[0])
+                    KRATOS_WATCH(words[1])
                     KRATOS_THROW_ERROR(std::logic_error, "The interface section has wrong keyword", words[0])
+                }
 
                 std::getline(infile, line);
                 boost::trim_if(line, boost::is_any_of("\t ")); // ignore trailing spaces
@@ -525,6 +532,10 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
                     interfaces[iinterface].ornt1 = atoi(words[1].c_str());
                     interfaces[iinterface].ornt2 = atoi(words[2].c_str());
                 }
+                ++number_of_interfaces_read;
+
+                if (number_of_interfaces_read == ninterfaces)
+                    break;
             }
         }
     }

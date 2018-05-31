@@ -28,14 +28,14 @@ enum ReadMode
 {
     _NO_READ          = 0,
     _READ_PATCH       = 1,
-    _CHECK_PATCH      = 7,
     _READ_ORDER       = 2,
     _READ_NUMBER      = 3,
     _READ_KNOTS       = 4,
     _READ_COORDINATES = 5,
     _READ_WEIGHTS     = 6,
-    _READ_INTERFACE   = 7,
-    _READ_BOUNDARY    = 8
+    _CHECK_PATCH      = 7,
+    _READ_INTERFACE   = 8,
+    _READ_BOUNDARY    = 9
 };
 
 struct GeoInterface

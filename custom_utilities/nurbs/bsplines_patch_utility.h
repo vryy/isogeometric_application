@@ -130,6 +130,15 @@ public:
         return dummy.ImportSingle(fn);
     }
 
+    /// Create the B-Splines multipatch from geo file
+    /// This function is kept for backward compatibility. New user should use MultiNURBSPatchGeoImporter instead.
+    template<int TDim>
+    static typename MultiPatch<TDim>::Pointer CreateMultiPatchFromGeo(const std::string& fn)
+    {
+        MultiNURBSPatchGeoImporter<TDim> dummy;
+        return dummy.Import(fn);
+    }
+
     /// Dummy function to silence the compiler
     static void MakeInterface2D(typename Patch<1>::Pointer pPatch1, const BoundarySide& side1,
             typename Patch<1>::Pointer pPatch2, const BoundarySide& side2, const BoundaryDirection& direction)

@@ -27,5 +27,5 @@ print(mp)
 #patch = mp[0].GetReference()
 #print(patch)
 
-#mpatch_export.Export(patch, "infinite_plate.m")
+mpatch_export.Export(mp, "geo_Lshaped_mp.m")
 

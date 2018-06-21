@@ -22,6 +22,7 @@ kernel = Kernel()   #defining kernel
 nurbs_fespace_library = BSplinesFESpaceLibrary()
 grid_lib = ControlGridLibrary()
 multipatch_util = MultiPatchUtility()
+mpatch_export1 = MultiNURBSPatchGeoExporter()
 
 fes1 = nurbs_fespace_library.CreateLinearFESpace(3)
 ctrl_grid_1 = grid_lib.CreateLinearControlPointGrid(0.0, 0.0, 0.0, fes1.Number(0), 1.0, 0.0, 0.0)
@@ -38,7 +39,7 @@ print(patch1)
 
 print("######BEFORE REFINEMENT#######")
 print(patch1)
-multipatch_util.ExportGeo(patch1, "line.txt")
+mpatch_export1.Export(patch1, "line.txt")
 
 mpatch = MultiPatch1D()
 mpatch.AddPatch(patch1_ptr)
@@ -46,6 +47,7 @@ mpatch.AddPatch(patch1_ptr)
 multipatch_refine_util = MultiPatchRefinementUtility()
 multipatch_refine_util.DegreeElevate(patch1_ptr, [1])
 print("######AFTER REFINEMENT#######")
+mpatch.Enumerate()
 print(mpatch) # result is the same as matlab code below
 
 ##lin = nrbdegelev(nrbline,2)

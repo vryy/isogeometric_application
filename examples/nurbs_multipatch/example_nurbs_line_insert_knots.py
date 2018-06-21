@@ -42,9 +42,11 @@ mpatch_export1.Export(patch1, "line.txt")
 print("######AFTER REFINEMENT#######")
 mpatch = MultiPatch1D()
 mpatch.AddPatch(patch1_ptr)
+mpatch.Enumerate()
 
 multipatch_refine_util = MultiPatchRefinementUtility()
 multipatch_refine_util.InsertKnots(patch1_ptr, [[0.4, 0.5]])
+mpatch.Enumerate()
 print(mpatch) # result is the same as matlab code below
 #mpatch_export2.Export(mpatch, "line.mesh")
 

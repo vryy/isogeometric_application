@@ -253,6 +253,22 @@ void IsogeometricApplication_AddPatchesToPython()
     .value("Back", _BACK_)
     ;
 
+    enum_<BoundarySide>("BoundarySide2D")
+    .value("U0", _LEFT_)
+    .value("U1", _RIGHT_)
+    .value("V0", _BOTTOM_)
+    .value("V1", _TOP_)
+    ;
+
+    enum_<BoundarySide>("BoundarySide3D")
+    .value("U0", _LEFT_)
+    .value("U1", _RIGHT_)
+    .value("V0", _FRONT_)
+    .value("V1", _BACK_)
+    .value("W0", _BOTTOM_)
+    .value("W1", _TOP_)
+    ;
+
     enum_<BoundaryDirection>("BoundaryDirection")
     .value("Forward", _FORWARD_)
     .value("Reversed", _REVERSED_)

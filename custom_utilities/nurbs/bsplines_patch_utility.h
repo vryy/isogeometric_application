@@ -71,7 +71,7 @@ public:
             pNewFESpace->SetInfo(dim, pFESpace1->Number(dim), pFESpace1->Order(dim));
         }
 
-        std::size_t connect_order = 1;
+        std::size_t connect_order = 1; // this is by default 1 and not changed
         typename BSplinesFESpace<TDim>::knot_container_t new_knot_vector = BSplinesFESpaceLibrary::CreatePrimitiveOpenKnotVector(connect_order);
         pNewFESpace->SetKnotVector(TDim-1, new_knot_vector);
         pNewFESpace->SetInfo(TDim-1, connect_order+1, connect_order);
@@ -107,10 +107,12 @@ public:
 
         // TODO create other grid function data
 
-        // enumerate the first time
-        std::size_t start = 0;
+        // reset the function indices
         pNewPatch->pFESpace()->ResetFunctionIndices();
-        start = pNewPatch->pFESpace()->Enumerate(start);
+
+        // // enumerate the first time
+        //std::size_t start = 0;
+        //start = pNewPatch->pFESpace()->Enumerate(start);
 
         return pNewPatch;
     }

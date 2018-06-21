@@ -167,19 +167,23 @@ boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility
 }
 
 void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
-    typename Patch<2>::Pointer pPatch1, const BoundarySide& side1,
-    typename Patch<2>::Pointer pPatch2, const BoundarySide& side2,
+    typename Patch<2>::Pointer pPatch1, const int& iside1,
+    typename Patch<2>::Pointer pPatch2, const int& iside2,
     const BoundaryDirection& direction)
 {
+    BoundarySide side1 = static_cast<BoundarySide>(iside1);
+    BoundarySide side2 = static_cast<BoundarySide>(iside2);
     rDummy.MakeInterface2D(pPatch1, side1, pPatch2, side2, direction);
 }
 
 void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
-    typename Patch<3>::Pointer pPatch1, const BoundarySide& side1,
-    typename Patch<3>::Pointer pPatch2, const BoundarySide& side2,
+    typename Patch<3>::Pointer pPatch1, const int& iside1,
+    typename Patch<3>::Pointer pPatch2, const int& iside2,
     const bool& uv_or_vu,
     const BoundaryDirection& direction1, const BoundaryDirection& direction2)
 {
+    BoundarySide side1 = static_cast<BoundarySide>(iside1);
+    BoundarySide side2 = static_cast<BoundarySide>(iside2);
     rDummy.MakeInterface3D(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
 }
 

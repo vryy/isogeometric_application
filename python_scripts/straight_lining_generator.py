@@ -27,7 +27,7 @@ class StraightLiningGenerator():
         ring2_ptr = geometry_factory.CreateSmallRing(cen2, self.axis, self.rin, self.rout, sangle, eangle)
         ring2 = ring2_ptr.GetReference()
 
-        ## create segment patch by connect the two rings
+        ## create segment patch by connecting the two rings
         segment_patch_ptr = self.bsplines_patch_util.CreateConnectedPatch(ring1, ring2)
         return segment_patch_ptr
 

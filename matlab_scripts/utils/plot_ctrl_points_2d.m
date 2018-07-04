@@ -1,5 +1,10 @@
 function plot_ctrl_points_2d(nurbs,params)
-
+% Plot the control points of a single 2D patch
+%   params.label: turn the id of each control point on/off
+%   params.axis: turn the axis on/off
+%   params.legend: turn the legend for u/v on/off
+%   params.number: if it is given, the id of each control points will be
+%   derived by the given value; otherwise, incremental values will be used.
 axis equal
 hold on
 

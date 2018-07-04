@@ -1,11 +1,12 @@
 function plot_ctrl_points_3d(nurbs,params)
-% Remarks: it works nicely in the script, but in the command line may exhibit weird behaviour
-% n = size(x(:), 1);
-% hold on
-% for i = 1:n
-%     text(x(i), y(i), z(i), num2str(i));
-% end
-
+% Plot the control points of a single 2D patch
+%   params.label: turn the id of each control point on/off
+%   params.axis: turn the axis on/off
+%   params.legend: turn the legend for u/v on/off
+%   params.number: if it is given, the id of each control points will be
+%     derived by the given value; otherwise, incremental values will be used.
+%   params.patch_id: if this is given, the patch id will be plotted at the
+%     center of gravity of all control points
 axis equal;
 hold on;
 
@@ -128,6 +129,27 @@ end
 
 if strcmp(params.legend,'on')
     legend([u_plot_for_legend,v_plot_for_legend,w_plot_for_legend], 'u-dim', 'v-dim', 'w-dim');
+end
+
+if isfield(params,'patch_id')
+    cnt = 1;
+    cen = [0 0 0];
+    for i = 1:w_dim
+        for j = 1:v_dim
+            for k = 1:u_dim
+                point = nurbs.coefs(:, k, j, i);
+                point(1:3) = point(1:3) / point(4);
+                cen = cen + point;
+                cnt = cnt + 1;
+            end
+        end
+    end
+    cen = cen / (w_dim*v_dim*u_dim);
+    text(cen(1), cen(2), cen(3), num2str(params.patch_id));
+%     [x y z] = sphere(10);
+%     h = surfl(x+cen(1), y+cen(2), z+cen(3)); 
+%     set(h, 'FaceAlpha', 0.5)
+%     shading interp
 end
 
 xlabel('x');

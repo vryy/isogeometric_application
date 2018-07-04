@@ -235,12 +235,12 @@ public:
     /// Fast function to get the opposite boundary side
     static BoundarySide OppositeBoundarySide(const BoundarySide& side)
     {
-        if (side == _LEFT_) return _RIGHT_;
-        else if (side == _RIGHT_) return _LEFT_;
-        else if (side == _TOP_) return _BOTTOM_;
-        else if (side == _BOTTOM_) return _TOP_;
-        else if (side == _FRONT_) return _BACK_;
-        else if (side == _BACK_) return _FRONT_;
+        if (side == _BLEFT_) return _BRIGHT_;
+        else if (side == _BRIGHT_) return _BLEFT_;
+        else if (side == _BTOP_) return _BBOTTOM_;
+        else if (side == _BBOTTOM_) return _BTOP_;
+        else if (side == _BFRONT_) return _BBACK_;
+        else if (side == _BBACK_) return _BFRONT_;
         else
             KRATOS_THROW_ERROR(std::logic_error, "Invalid boundary side", side)
     }

@@ -174,10 +174,10 @@ struct BoundarySideHelper<2>
     {
         switch(i)
         {
-            case 1: return _LEFT_;
-            case 2: return _RIGHT_;
-            case 3: return _BOTTOM_;
-            case 4: return _TOP_;
+            case 1: return _BLEFT_;
+            case 2: return _BRIGHT_;
+            case 3: return _BBOTTOM_;
+            case 4: return _BTOP_;
             default: KRATOS_THROW_ERROR(std::logic_error, i, "is not a valid side");
         }
         return _NUMBER_OF_BOUNDARY_SIDE;
@@ -191,12 +191,12 @@ struct BoundarySideHelper<3>
     {
         switch(i)
         {
-            case 1: return _LEFT_;
-            case 2: return _RIGHT_;
-            case 3: return _FRONT_;
-            case 4: return _BACK_;
-            case 5: return _BOTTOM_;
-            case 6: return _TOP_;
+            case 1: return _BLEFT_;
+            case 2: return _BRIGHT_;
+            case 3: return _BFRONT_;
+            case 4: return _BBACK_;
+            case 5: return _BBOTTOM_;
+            case 6: return _BTOP_;
             default: KRATOS_THROW_ERROR(std::logic_error, i, "is not a valid side");
         }
         return _NUMBER_OF_BOUNDARY_SIDE;

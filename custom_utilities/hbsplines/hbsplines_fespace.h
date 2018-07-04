@@ -475,18 +475,18 @@ public:
 
                 if (TDim == 2)
                 {
-                    if ((side == _LEFT_) || (side == _RIGHT_))
+                    if ((side == _BLEFT_) || (side == _BRIGHT_))
                         pNewSubBf = (*it)->Project(1);
-                    if ((side == _TOP_) || (side == _BOTTOM_))
+                    if ((side == _BTOP_) || (side == _BBOTTOM_))
                         pNewSubBf = (*it)->Project(0);
                 }
                 else if (TDim == 3)
                 {
-                    if ((side == _FRONT_) || (side == _BACK_))
+                    if ((side == _BFRONT_) || (side == _BBACK_))
                         pNewSubBf = (*it)->Project(0);
-                    if ((side == _LEFT_) || (side == _RIGHT_))
+                    if ((side == _BLEFT_) || (side == _BRIGHT_))
                         pNewSubBf = (*it)->Project(1);
-                    if ((side == _TOP_) || (side == _BOTTOM_))
+                    if ((side == _BTOP_) || (side == _BBOTTOM_))
                         pNewSubBf = (*it)->Project(2);
                 }
 
@@ -496,12 +496,12 @@ public:
 
         if (TDim == 2)
         {
-            if ((side == _LEFT_) || (side == _RIGHT_))
+            if ((side == _BLEFT_) || (side == _BRIGHT_))
             {
                 pBFESpace->SetInfo(0, this->Order(1));
                 pBFESpace->KnotVector(0) = this->KnotVector(1);
             }
-            if ((side == _TOP_) || (side == _BOTTOM_))
+            if ((side == _BTOP_) || (side == _BBOTTOM_))
             {
                 pBFESpace->SetInfo(0, this->Order(0));
                 pBFESpace->KnotVector(0) = this->KnotVector(0);
@@ -509,21 +509,21 @@ public:
         }
         else if (TDim == 3)
         {
-            if ((side == _FRONT_) || (side == _BACK_))
+            if ((side == _BFRONT_) || (side == _BBACK_))
             {
                 pBFESpace->SetInfo(0, this->Order(1));
                 pBFESpace->SetInfo(1, this->Order(2));
                 pBFESpace->KnotVector(0) = this->KnotVector(1);
                 pBFESpace->KnotVector(1) = this->KnotVector(2);
             }
-            if ((side == _LEFT_) || (side == _RIGHT_))
+            if ((side == _BLEFT_) || (side == _BRIGHT_))
             {
                 pBFESpace->SetInfo(0, this->Order(2));
                 pBFESpace->SetInfo(1, this->Order(0));
                 pBFESpace->KnotVector(0) = this->KnotVector(2);
                 pBFESpace->KnotVector(1) = this->KnotVector(0);
             }
-            if ((side == _TOP_) || (side == _BOTTOM_))
+            if ((side == _BTOP_) || (side == _BBOTTOM_))
             {
                 pBFESpace->SetInfo(0, this->Order(0));
                 pBFESpace->SetInfo(1, this->Order(1));

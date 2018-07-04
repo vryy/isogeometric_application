@@ -220,11 +220,11 @@ private:
         {
             const std::size_t& id = it->Id();
 
-            if (it->pNeighbor(_LEFT_) != NULL)
+            if (it->pNeighbor(_BLEFT_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_LEFT_)->Id();
+                const std::size_t& other_id = it->pNeighbor(_BLEFT_)->Id();
                 // TODO accommodate for different type of synchronization. Because the left neighbor does not always tie by the right boundary.
-                SynchronizeVertices(TDim, _LEFT_, patch_vertices[id], _RIGHT_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
+                SynchronizeVertices(TDim, _BLEFT_, patch_vertices[id], _BRIGHT_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 if (TDim == 2)
                 {
                     patch_knotv[other_id][1] = patch_knotv[id][1];
@@ -242,11 +242,11 @@ private:
                 }
             }
 
-            if (it->pNeighbor(_RIGHT_) != NULL)
+            if (it->pNeighbor(_BRIGHT_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_RIGHT_)->Id();
+                const std::size_t& other_id = it->pNeighbor(_BRIGHT_)->Id();
                 // TODO accommodate for different type of synchronization. Because the right neighbor does not always tie by the left boundary.
-                SynchronizeVertices(TDim, _RIGHT_, patch_vertices[id], _LEFT_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
+                SynchronizeVertices(TDim, _BRIGHT_, patch_vertices[id], _BLEFT_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 if (TDim == 2)
                 {
                     patch_knotv[other_id][1] = patch_knotv[id][1];
@@ -264,10 +264,10 @@ private:
                 }
             }
 
-            if (it->pNeighbor(_TOP_) != NULL)
+            if (it->pNeighbor(_BTOP_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_TOP_)->Id();
-                SynchronizeVertices(TDim, _TOP_, patch_vertices[id], _BOTTOM_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
+                const std::size_t& other_id = it->pNeighbor(_BTOP_)->Id();
+                SynchronizeVertices(TDim, _BTOP_, patch_vertices[id], _BBOTTOM_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 if (TDim == 2)
                 {
                     patch_knotv[other_id][0] = patch_knotv[id][0];
@@ -285,10 +285,10 @@ private:
                 }
             }
 
-            if (it->pNeighbor(_BOTTOM_) != NULL)
+            if (it->pNeighbor(_BBOTTOM_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_BOTTOM_)->Id();
-                SynchronizeVertices(TDim, _BOTTOM_, patch_vertices[id], _TOP_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
+                const std::size_t& other_id = it->pNeighbor(_BBOTTOM_)->Id();
+                SynchronizeVertices(TDim, _BBOTTOM_, patch_vertices[id], _BTOP_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 if (TDim == 2)
                 {
                     patch_knotv[other_id][0] = patch_knotv[id][0];
@@ -306,20 +306,20 @@ private:
                 }
             }
 
-            if (it->pNeighbor(_FRONT_) != NULL)
+            if (it->pNeighbor(_BFRONT_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_FRONT_)->Id();
-                SynchronizeVertices(TDim, _FRONT_, patch_vertices[id], _BACK_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
+                const std::size_t& other_id = it->pNeighbor(_BFRONT_)->Id();
+                SynchronizeVertices(TDim, _BFRONT_, patch_vertices[id], _BBACK_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 patch_knotv[other_id][0] = patch_knotv[id][0];
                 patch_knotv[other_id][2] = patch_knotv[id][2];
                 // TODO change knot vector index for edge
                 // TODO disable the boundary flag for edges and faces
             }
 
-            if (it->pNeighbor(_BACK_) != NULL)
+            if (it->pNeighbor(_BBACK_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_BACK_)->Id();
-                SynchronizeVertices(TDim, _BACK_, patch_vertices[id], _FRONT_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
+                const std::size_t& other_id = it->pNeighbor(_BBACK_)->Id();
+                SynchronizeVertices(TDim, _BBACK_, patch_vertices[id], _BFRONT_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 patch_knotv[other_id][0] = patch_knotv[id][0];
                 patch_knotv[other_id][2] = patch_knotv[id][2];
                 // TODO change knot vector index for edge
@@ -540,33 +540,33 @@ private:
     {
         if (dim == 2)
         {
-            if (side1 == _LEFT_)
+            if (side1 == _BLEFT_)
             {
-                if (side2 == _RIGHT_)
+                if (side2 == _BRIGHT_)
                     return std::vector<int>{ 0, 1, /**/ 2, 3 };
                 else
                     //TODO
                     KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
             }
-            else if (side1 == _RIGHT_)
+            else if (side1 == _BRIGHT_)
             {
-                if (side2 == _LEFT_)
+                if (side2 == _BLEFT_)
                     return std::vector<int>{ 1, 0, /**/ 3, 2 };
                 else
                     //TODO
                     KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
             }
-            else if (side1 == _TOP_)
+            else if (side1 == _BTOP_)
             {
-                if (side2 == _BOTTOM_)
+                if (side2 == _BBOTTOM_)
                     return std::vector<int>{ 2, 0, /**/ 3, 1 };
                 else
                     // TODO
                     KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
             }
-            else if (side1 == _BOTTOM_)
+            else if (side1 == _BBOTTOM_)
             {
-                if (side2 == _TOP_)
+                if (side2 == _BTOP_)
                     return std::vector<int>{ 0, 2, /**/ 1, 3 };
                 else
                     // TODO

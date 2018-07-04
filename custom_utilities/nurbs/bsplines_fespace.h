@@ -319,7 +319,7 @@ public:
     {
         std::vector<std::size_t> func_indices;
 
-        if (side == _LEFT_)
+        if (side == _BLEFT_)
         {
             if (TDim == 1)
             {
@@ -342,7 +342,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _RIGHT_)
+        else if (side == _BRIGHT_)
         {
             if (TDim == 1)
             {
@@ -365,7 +365,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _BOTTOM_)
+        else if (side == _BBOTTOM_)
         {
             if (TDim == 2)
             {
@@ -383,7 +383,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _TOP_)
+        else if (side == _BTOP_)
         {
             if (TDim == 2)
             {
@@ -401,7 +401,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _FRONT_)
+        else if (side == _BFRONT_)
         {
             if (TDim == 3)
             {
@@ -412,7 +412,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _BACK_)
+        else if (side == _BBACK_)
         {
             if (TDim == 3)
             {
@@ -432,7 +432,7 @@ public:
     {
         std::vector<std::size_t> func_indices;
 
-        if (side == _LEFT_)
+        if (side == _BLEFT_)
         {
             if (TDim == 1)
             {
@@ -455,7 +455,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(1+level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _RIGHT_)
+        else if (side == _BRIGHT_)
         {
             if (TDim == 1)
             {
@@ -478,7 +478,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0)-level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _BOTTOM_)
+        else if (side == _BBOTTOM_)
         {
             if (TDim == 2)
             {
@@ -496,7 +496,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1+level, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _TOP_)
+        else if (side == _BTOP_)
         {
             if (TDim == 2)
             {
@@ -514,7 +514,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2)-level, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _FRONT_)
+        else if (side == _BFRONT_)
         {
             if (TDim == 3)
             {
@@ -525,7 +525,7 @@ public:
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1+level, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
-        else if (side == _BACK_)
+        else if (side == _BBACK_)
         {
             if (TDim == 3)
             {
@@ -543,7 +543,7 @@ public:
     /// Assign the index for the functions on the boundary
     virtual void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices)
     {
-        if (side == _LEFT_)
+        if (side == _BLEFT_)
         {
             if (TDim == 1)
             {
@@ -572,7 +572,7 @@ public:
                 }
             }
         }
-        else if (side == _RIGHT_)
+        else if (side == _BRIGHT_)
         {
             if (TDim == 1)
             {
@@ -601,7 +601,7 @@ public:
                 }
             }
         }
-        else if (side == _BOTTOM_)
+        else if (side == _BBOTTOM_)
         {
             if (TDim == 2)
             {
@@ -625,7 +625,7 @@ public:
                 }
             }
         }
-        else if (side == _TOP_)
+        else if (side == _BTOP_)
         {
             if (TDim == 2)
             {
@@ -649,7 +649,7 @@ public:
                 }
             }
         }
-        else if (side == _FRONT_)
+        else if (side == _BFRONT_)
         {
             if (TDim == 3)
             {
@@ -664,7 +664,7 @@ public:
                 }
             }
         }
-        else if (side == _BACK_)
+        else if (side == _BBACK_)
         {
             if (TDim == 3)
             {
@@ -689,22 +689,22 @@ public:
         // assign the knot vectors
         if (TDim == 2)
         {
-            if (side == _LEFT_)
+            if (side == _BLEFT_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(1));
                 pBFESpace->SetInfo(0, Number(1), Order(1));
             }
-            else if (side == _RIGHT_)
+            else if (side == _BRIGHT_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(1));
                 pBFESpace->SetInfo(0, Number(1), Order(1));
             }
-            else if (side == _TOP_)
+            else if (side == _BTOP_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(0));
                 pBFESpace->SetInfo(0, Number(0), Order(0));
             }
-            else if (side == _BOTTOM_)
+            else if (side == _BBOTTOM_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(0));
                 pBFESpace->SetInfo(0, Number(0), Order(0));
@@ -712,42 +712,42 @@ public:
         }
         else if (TDim == 3)
         {
-            if (side == _LEFT_)
+            if (side == _BLEFT_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(1));
                 pBFESpace->SetKnotVector(1, KnotVector(2));
                 pBFESpace->SetInfo(0, Number(1), Order(1));
                 pBFESpace->SetInfo(1, Number(2), Order(2));
             }
-            else if (side == _RIGHT_)
+            else if (side == _BRIGHT_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(1));
                 pBFESpace->SetKnotVector(1, KnotVector(2));
                 pBFESpace->SetInfo(0, Number(1), Order(1));
                 pBFESpace->SetInfo(1, Number(2), Order(2));
             }
-            else if (side == _TOP_)
+            else if (side == _BTOP_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(0));
                 pBFESpace->SetKnotVector(1, KnotVector(1));
                 pBFESpace->SetInfo(0, Number(0), Order(0));
                 pBFESpace->SetInfo(1, Number(1), Order(1));
             }
-            else if (side == _BOTTOM_)
+            else if (side == _BBOTTOM_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(0));
                 pBFESpace->SetKnotVector(1, KnotVector(1));
                 pBFESpace->SetInfo(0, Number(0), Order(0));
                 pBFESpace->SetInfo(1, Number(1), Order(1));
             }
-            else if (side == _FRONT_)
+            else if (side == _BFRONT_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(0));
                 pBFESpace->SetKnotVector(1, KnotVector(2));
                 pBFESpace->SetInfo(0, Number(0), Order(0));
                 pBFESpace->SetInfo(1, Number(2), Order(2));
             }
-            else if (side == _BACK_)
+            else if (side == _BBACK_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(0));
                 pBFESpace->SetKnotVector(1, KnotVector(2));

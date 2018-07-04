@@ -84,9 +84,10 @@ boost::python::list FESpace_FunctionIndices(FESpace<TDim>& rDummy)
 }
 
 template<int TDim>
-boost::python::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, const BoundarySide& side)
+boost::python::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, const int& iside)
 {
     boost::python::list indices;
+    BoundarySide side = static_cast<BoundarySide>(iside);
     std::vector<std::size_t> boundary_indices = rDummy.ExtractBoundaryFunctionIndices(side);
     for (std::size_t i = 0; i < boundary_indices.size(); ++i)
         indices.append<int>(static_cast<int>(boundary_indices[i]));
@@ -94,9 +95,10 @@ boost::python::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, const
 }
 
 template<int TDim>
-boost::python::list FESpace_BoundaryShiftedFunctionIndices(FESpace<TDim>& rDummy, const BoundarySide& side)
+boost::python::list FESpace_BoundaryShiftedFunctionIndices(FESpace<TDim>& rDummy, const int& iside)
 {
     boost::python::list indices;
+    BoundarySide side = static_cast<BoundarySide>(iside);
     std::vector<std::size_t> boundary_indices = rDummy.ExtractBoundaryFunctionIndices(side);
     for (std::size_t i = 0; i < boundary_indices.size(); ++i)
         indices.append<int>(static_cast<int>(boundary_indices[i] + 1));

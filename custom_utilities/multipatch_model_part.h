@@ -123,7 +123,7 @@ public:
     /// create the conditions out from the patch and add to the model_part
     /// TODO find the way to parallelize this
     ModelPart::ElementsContainerType AddElements(typename Patch<TDim>::Pointer pPatch, const std::string& element_name,
-            const std::size_t& starting_id, const std::size_t& prop_id)
+            const std::size_t& starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ElementsContainerType(); // call BeginModelPart first before adding elements
 
@@ -131,14 +131,11 @@ public:
         double start = OpenMPUtils::GetCurrentTime();
         #endif
 
-        // get the Properties
-        Properties::Pointer p_temp_properties = mpModelPart->pGetProperties(prop_id);
-
         // get the grid function for control points
         const GridFunction<TDim, ControlPointType>& rControlPointGridFunction = pPatch->ControlPointGridFunction();
 
         // create new elements and add to the model_part
-        ModelPart::ElementsContainerType pNewElements = CreateEntitiesFromFESpace<Element, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), element_name, starting_id, p_temp_properties);
+        ModelPart::ElementsContainerType pNewElements = CreateEntitiesFromFESpace<Element, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), element_name, starting_id, pProperties);
 
         for (ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
         {
@@ -160,7 +157,7 @@ public:
 
     /// create the conditions out from the boundary of the patch and add to the model_part
     ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim>::Pointer pPatch, const BoundarySide& side,
-            const std::string& condition_name, const std::size_t& starting_id, const std::size_t& prop_id)
+            const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
 
@@ -172,14 +169,11 @@ public:
         typename Patch<TDim-1>::Pointer pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
         // KRATOS_WATCH(*pBoundaryPatch)
 
-        // get the Properties
-        Properties::Pointer p_temp_properties = mpModelPart->pGetProperties(prop_id);
-
         // get the grid function for control points
         const GridFunction<TDim-1, ControlPointType>& rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
 
         // create new conditions and add to the model_part
-        ModelPart::ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<Condition, FESpace<TDim-1>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), condition_name, starting_id, p_temp_properties);
+        ModelPart::ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<Condition, FESpace<TDim-1>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), condition_name, starting_id, pProperties);
 
         for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
@@ -364,6 +358,14 @@ public:
             pNewElement->SetValue(IS_INACTIVE, false);
             pNewElement->Set(ACTIVE, true);
             pNewElements.push_back(pNewElement);
+
+            std::cout << "Entity " << element_name << " " << pNewElement->Id() << " is created" << std::endl;
+            std::cout << "  Connectivity:";
+            for (unsigned int i = 0; i < p_temp_geometry->size(); ++i)
+            {
+                std::cout << " " << (*p_temp_geometry)[i].Id();
+            }
+            std::cout << std::endl;
         }
 
         #ifdef ENABLE_PROFILING

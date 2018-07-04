@@ -395,8 +395,8 @@ public:
 
             if (dim == 0)
             {
-                if (this->IsOnSide(BOUNDARY_FLAG(_LEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_RIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
             }
         }
         else if (TDim == 3)
@@ -407,10 +407,10 @@ public:
                 pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[2]);
                 pNewSubBf->SetInfo(0, this->mOrders[1]);
                 pNewSubBf->SetInfo(1, this->mOrders[2]);
-                if (this->IsOnSide(BOUNDARY_FLAG(_BOTTOM_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_TOP_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_TOP_));
-                if (this->IsOnSide(BOUNDARY_FLAG(_FRONT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BACK_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
             }
             else if (dim == 1)
             {
@@ -418,10 +418,10 @@ public:
                 pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[0]);
                 pNewSubBf->SetInfo(0, this->mOrders[2]);
                 pNewSubBf->SetInfo(1, this->mOrders[0]);
-                if (this->IsOnSide(BOUNDARY_FLAG(_LEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_RIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_TOP_));
-                if (this->IsOnSide(BOUNDARY_FLAG(_BOTTOM_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_TOP_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
             }
             else if (dim == 2)
             {
@@ -429,10 +429,10 @@ public:
                 pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[1]);
                 pNewSubBf->SetInfo(0, this->mOrders[0]);
                 pNewSubBf->SetInfo(1, this->mOrders[1]);
-                if (this->IsOnSide(BOUNDARY_FLAG(_FRONT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BACK_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_TOP_));
-                if (this->IsOnSide(BOUNDARY_FLAG(_LEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_LEFT_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_RIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
             }
         }
 
@@ -487,12 +487,12 @@ public:
             rOStream << " " << this->Order(dim);
         rOStream << ")";
         rOStream << ", boundary info:";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_LEFT_) ) ) rOStream << " left";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_RIGHT_) ) ) rOStream << " right";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_FRONT_) ) ) rOStream << " front";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BACK_) ) ) rOStream << " back";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_TOP_) ) ) rOStream << " top";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BOTTOM_) ) ) rOStream << " bottom";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BLEFT_) ) ) rOStream << " left";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BRIGHT_) ) ) rOStream << " right";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BFRONT_) ) ) rOStream << " front";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BBACK_) ) ) rOStream << " back";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BTOP_) ) ) rOStream << " top";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BBOTTOM_) ) ) rOStream << " bottom";
     }
 
     /// Print data of this basis function

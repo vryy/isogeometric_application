@@ -153,16 +153,13 @@ public:
     /// TODO find the way to parallelize this
     ModelPart::ElementsContainerType AddElements(std::vector<typename Patch<TDim>::Pointer> pPatches,
             const std::string& element_name,
-            const std::size_t& starting_id, const std::size_t& prop_id)
+            const std::size_t& starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ElementsContainerType(); // call BeginModelPart first before adding elements
 
         #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();
         #endif
-
-        // get the Properties
-        Properties::Pointer p_temp_properties = mpModelPart->pGetProperties(prop_id);
 
         // get the list of FESpaces and control grids
         std::vector<typename FESpace<TDim>::ConstPointer> pFESpaces;
@@ -182,7 +179,7 @@ public:
             mpModelPart->Nodes(),
             element_name,
             starting_id,
-            p_temp_properties);
+            pProperties);
 
         for (ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
         {
@@ -203,7 +200,7 @@ public:
 
     /// create the conditions out from the boundary of the patch and add to the model_part
     ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim>::Pointer pPatch, const BoundarySide& side,
-            const std::string& condition_name, const std::size_t& starting_id, const std::size_t& prop_id)
+            const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
 
@@ -215,14 +212,11 @@ public:
         typename Patch<TDim-1>::Pointer pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
         // KRATOS_WATCH(*pBoundaryPatch)
 
-        // get the Properties
-        Properties::Pointer p_temp_properties = mpModelPart->pGetProperties(prop_id);
-
         // get the grid function for control points
         const GridFunction<TDim-1, ControlPointType>& rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
 
         // create new conditions and add to the model_part
-        ModelPart::ConditionsContainerType pNewConditions = MultiPatchModelPart<TDim>::template CreateEntitiesFromFESpace<Condition, FESpace<TDim-1>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), condition_name, starting_id, p_temp_properties);
+        ModelPart::ConditionsContainerType pNewConditions = MultiPatchModelPart<TDim>::template CreateEntitiesFromFESpace<Condition, FESpace<TDim-1>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), condition_name, starting_id, pProperties);
 
         for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {

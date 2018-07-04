@@ -298,21 +298,21 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 std::size_t i_func = j * numbers[0] + i;
 
                 // set the boundary information
-                if (p_bf->IsOnSide(BOUNDARY_FLAG(_LEFT_)))
+                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))
                     if (i == 0)
-                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_LEFT_));
+                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
 
-                if (p_bf->IsOnSide(BOUNDARY_FLAG(_RIGHT_)))
+                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BRIGHT_)))
                     if (i == numbers[0]-1)
-                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
 
-                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BOTTOM_)))
+                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))
                     if (j == 0)
-                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
+                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
 
-                if (p_bf->IsOnSide(BOUNDARY_FLAG(_TOP_)))
+                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BTOP_)))
                     if (j == numbers[1]-1)
-                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_TOP_));
+                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BTOP_));
 
                 // assign new equation id
                 pnew_bf->SetEquationId(++starting_id);
@@ -417,29 +417,29 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     std::size_t i_func = (l * numbers[1] + j) * numbers[0] + i;
 
                     // set the boundary information
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_LEFT_)))
+                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))
                         if (i == 0)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_LEFT_));
+                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_RIGHT_)))
+                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BRIGHT_)))
                         if (i == numbers[0]-1)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_RIGHT_));
+                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_FRONT_)))
+                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BFRONT_)))
                         if (j == 0)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_FRONT_));
+                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BFRONT_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BACK_)))
+                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBACK_)))
                         if (j == numbers[1]-1)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BACK_));
+                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBACK_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BOTTOM_)))
+                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))
                         if (l == 0)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BOTTOM_));
+                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_TOP_)))
+                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BTOP_)))
                         if (l == numbers[2]-1)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_TOP_));
+                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BTOP_));
 
                     // assign new equation id
                     pnew_bf->SetEquationId(++starting_id);

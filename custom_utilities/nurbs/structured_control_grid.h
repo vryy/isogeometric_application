@@ -417,7 +417,7 @@ public:
     {
         typename StructuredControlGrid<1, TDataType>::Pointer pControlGrid;
 
-        if (side == _LEFT_)
+        if (side == _BLEFT_)
         {
             pControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer( new StructuredControlGrid<1, TDataType>(this->Size(1)) );
 
@@ -426,7 +426,7 @@ public:
                 pControlGrid->SetValue(i, this->GetValue(0+level, i));
             }
         }
-        else if (side == _RIGHT_)
+        else if (side == _BRIGHT_)
         {
             pControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer( new StructuredControlGrid<1, TDataType>(this->Size(1)) );
 
@@ -435,7 +435,7 @@ public:
                 pControlGrid->SetValue(i, this->GetValue(this->Size(0)-1-level, i));
             }
         }
-        else if (side == _TOP_)
+        else if (side == _BTOP_)
         {
             pControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer( new StructuredControlGrid<1, TDataType>(this->Size(0)) );
 
@@ -444,7 +444,7 @@ public:
                 pControlGrid->SetValue(i, this->GetValue(i, this->Size(1)-1-level));
             }
         }
-        else if (side == _BOTTOM_)
+        else if (side == _BBOTTOM_)
         {
             pControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer( new StructuredControlGrid<1, TDataType>(this->Size(0)) );
 
@@ -643,27 +643,27 @@ public:
         // TODO
         typename StructuredControlGrid<2, TDataType>::Pointer pControlGrid;
 
-        if (side == _LEFT_)
+        if (side == _BLEFT_)
         {
             
         }
-        else if (side == _RIGHT_)
+        else if (side == _BRIGHT_)
         {
             
         }
-        else if (side == _TOP_)
+        else if (side == _BTOP_)
         {
         
         }
-        else if (side == _BOTTOM_)
+        else if (side == _BBOTTOM_)
         {
         
         }
-        else if (side == _FRONT_)
+        else if (side == _BFRONT_)
         {
         
         }
-        else if (side == _BACK_)
+        else if (side == _BBACK_)
         {
         
         }

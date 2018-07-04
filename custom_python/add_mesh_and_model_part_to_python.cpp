@@ -58,11 +58,29 @@ typename T::MultiPatchType& MultiPatchModelPart_GetMultiPatch2(T& rDummy, const 
     return *(rDummy.pMultiPatch(i));
 }
 
+template<int TDim>
+ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions(MultiPatchModelPart<TDim>& rDummy,
+    typename Patch<TDim>::Pointer pPatch, const int& iside,
+    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+{
+    BoundarySide side = static_cast<BoundarySide>(iside);
+    return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
+}
+
+template<int TDim>
+ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions(MultiMultiPatchModelPart<TDim>& rDummy,
+    typename Patch<TDim>::Pointer pPatch, const int& iside,
+    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+{
+    BoundarySide side = static_cast<BoundarySide>(iside);
+    return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
+}
+
 ////////////////////////////////////////
 
 template<class T>
 ModelPart::ElementsContainerType MultiMultiPatchModelPart_AddElements(T& rDummy, boost::python::list patch_list,
-    const std::string& element_name, const std::size_t& starting_id, const std::size_t& prop_id)
+    const std::string& element_name, const std::size_t& starting_id, Properties::Pointer pProperties)
 {
     std::vector<typename T::PatchType::Pointer> pPatches;
 
@@ -72,7 +90,7 @@ ModelPart::ElementsContainerType MultiMultiPatchModelPart_AddElements(T& rDummy,
         pPatches.push_back(v);
     }
 
-    return rDummy.AddElements(pPatches, element_name, starting_id, prop_id);
+    return rDummy.AddElements(pPatches, element_name, starting_id, pProperties);
 }
 
 ////////////////////////////////////////
@@ -128,7 +146,7 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("BeginModelPart", &MultiPatchModelPartType::BeginModelPart)
     .def("CreateNodes", &MultiPatchModelPartType::CreateNodes)
     .def("AddElements", &MultiPatchModelPartType::AddElements)
-    .def("AddConditions", &MultiPatchModelPartType::AddConditions)
+    .def("AddConditions", &MultiPatchModelPart_AddConditions<TDim>)
     .def("EndModelPart", &MultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &MultiPatchModelPart_GetModelPart<MultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &MultiPatchModelPart_GetMultiPatch<MultiPatchModelPartType>, return_internal_reference<>())
@@ -150,7 +168,7 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("BeginModelPart", &MultiMultiPatchModelPartType::BeginModelPart)
     .def("CreateNodes", &MultiMultiPatchModelPartType::CreateNodes)
     .def("AddElements", &MultiMultiPatchModelPart_AddElements<MultiMultiPatchModelPartType>)
-    .def("AddConditions", &MultiMultiPatchModelPartType::AddConditions)
+    .def("AddConditions", &MultiMultiPatchModelPart_AddConditions<TDim>)
     .def("EndModelPart", &MultiMultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &MultiPatchModelPart_GetModelPart<MultiMultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &MultiPatchModelPart_GetMultiPatch2<MultiMultiPatchModelPartType>, return_internal_reference<>())

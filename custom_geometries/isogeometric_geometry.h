@@ -550,9 +550,12 @@ public:
     virtual void Clean()
     {
         #ifndef ENABLE_PRECOMPUTE
-        mpInternal_DN_De.reset();
-        mpInternal_Ncontainer.reset();
-        mIsInitialized = false;
+        if (mIsInitialized)
+        {
+            mpInternal_DN_De.reset();
+            mpInternal_Ncontainer.reset();
+            mIsInitialized = false;
+        }
         #endif
     }
 

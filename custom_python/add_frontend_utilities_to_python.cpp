@@ -117,9 +117,12 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
         ins_knots_array[dim++] = knots;
         if (dim == TDim)
             break;
-   }
+    }
 
-   rDummy.InsertKnots<TDim>(pPatch, ins_knots_array);
+    if (dim != TDim)
+        KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
+
+    rDummy.InsertKnots<TDim>(pPatch, ins_knots_array);
 }
 
 template<int TDim>
@@ -127,20 +130,23 @@ void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDum
        typename Patch<TDim>::Pointer& pPatch,
        boost::python::list order_increment)
 {
-   std::vector<std::size_t> order_incr_array(TDim);
-   std::size_t dim = 0;
+    std::vector<std::size_t> order_incr_array(TDim);
+    std::size_t dim = 0;
 
-   typedef boost::python::stl_input_iterator<int> iterator_value_type;
-   BOOST_FOREACH(const iterator_value_type::value_type& t,
+    typedef boost::python::stl_input_iterator<int> iterator_value_type;
+    BOOST_FOREACH(const iterator_value_type::value_type& t,
                std::make_pair(iterator_value_type(order_increment), // begin
                iterator_value_type() ) ) // end
-   {
+    {
        order_incr_array[dim++] = static_cast<std::size_t>(t);
        if (dim == TDim)
             break;
-   }
+    }
 
-   rDummy.DegreeElevate<TDim>(pPatch, order_incr_array);
+    if (dim != TDim)
+        KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
+
+    rDummy.DegreeElevate<TDim>(pPatch, order_incr_array);
 }
 
 //////////////////////////////////////////////////

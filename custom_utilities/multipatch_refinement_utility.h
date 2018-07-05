@@ -84,25 +84,25 @@ public:
     template<int TDim>
     void InsertKnots(typename Patch<TDim>::Pointer& pPatch, const std::vector<std::vector<double> >& ins_knots)
     {
-        std::set<std::size_t> refined_patches;
+        std::map<std::size_t, std::vector<int> > refined_patches;
         InsertKnots<TDim>(pPatch, refined_patches, ins_knots);
     }
 
     /// Insert the knots to the NURBS patch and make it compatible across neighbors
     template<int TDim>
-    void InsertKnots(typename Patch<TDim>::Pointer& pPatch, std::set<std::size_t>& refined_patches, const std::vector<std::vector<double> >& ins_knots);
+    void InsertKnots(typename Patch<TDim>::Pointer& pPatch, std::map<std::size_t, std::vector<int> >& refined_patches, const std::vector<std::vector<double> >& ins_knots);
 
     /// Degree elevation for the NURBS patch and make it compatible across neighbors
     template<int TDim>
     void DegreeElevate(typename Patch<TDim>::Pointer& pPatch, const std::vector<std::size_t>& order_increment)
     {
-        std::set<std::size_t> refined_patches;
+        std::map<std::size_t, std::vector<int> > refined_patches;
         DegreeElevate<TDim>(pPatch, refined_patches, order_increment);
     }
 
     /// Degree elevation for the NURBS patch and make it compatible across neighbors
     template<int TDim>
-    void DegreeElevate(typename Patch<TDim>::Pointer& pPatch, std::set<std::size_t>& refined_patches, const std::vector<std::size_t>& order_increment);
+    void DegreeElevate(typename Patch<TDim>::Pointer& pPatch, std::map<std::size_t, std::vector<int> >& refined_patches, const std::vector<std::size_t>& order_increment);
 
     /*************************************************************************
                               HIERARCHICAL B-SPLINES

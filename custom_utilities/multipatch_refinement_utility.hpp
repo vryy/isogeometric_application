@@ -17,12 +17,27 @@ namespace Kratos
 
 /// Insert the knots to the NURBS patch and make it compatible across neighbors
 template<int TDim>
-void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPatch, std::set<std::size_t>& refined_patches, const std::vector<std::vector<double> >& ins_knots)
+void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPatch, std::map<std::size_t, std::vector<int> >& refined_patches, const std::vector<std::vector<double> >& ins_knots)
 {
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the NURBS patch")
 
-    if (std::find(refined_patches.begin(), refined_patches.end(), pPatch->Id()) == refined_patches.end())
+    bool to_refine = false;
+    if (refined_patches.find( pPatch->Id() ) == refined_patches.end())
+    // the patch is not yet refined
+    {
+        to_refine = true;
+    }
+    else // the patch is refined but it has some unrefined directions
+    {
+        for (unsigned int i = 0; i < TDim; ++i)
+        {
+            if ( (ins_knots[i].size() != 0) && (refined_patches[pPatch->Id()][i] == 0) )
+                to_refine = true;
+        }
+    }
+
+    if (to_refine)
     {
         // create new patch with same Id
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
@@ -101,7 +116,14 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         }
 
         // mark refined patch
-        refined_patches.insert(pPatch->Id());
+        refined_patches[pPatch->Id()].resize(TDim);
+        for (unsigned int i = 0; i < TDim; ++i)
+        {
+            if (ins_knots[i].size() != 0)
+            {
+                refined_patches[pPatch->Id()][i] = 1;
+            }
+        }
 
         // transfer the inserted knots to neighbors
         std::vector<std::vector<double> > neib_ins_knots(TDim);
@@ -170,12 +192,27 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
 /// Degree elevation for the NURBS patch and make it compatible across neighbors
 template<int TDim>
-void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& pPatch, std::set<std::size_t>& refined_patches, const std::vector<std::size_t>& order_increment)
+void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& pPatch, std::map<std::size_t, std::vector<int> >& refined_patches, const std::vector<std::size_t>& order_increment)
 {
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the NURBS patch")
 
-    if (std::find(refined_patches.begin(), refined_patches.end(), pPatch->Id()) == refined_patches.end())
+    bool to_refine = false;
+    if (refined_patches.find( pPatch->Id() ) == refined_patches.end())
+    // the patch is not yet refined
+    {
+        to_refine = true;
+    }
+    else // the patch is refined but it has some unrefined directions
+    {
+        for (unsigned int i = 0; i < TDim; ++i)
+        {
+            if ( (order_increment[i] != 0) && (refined_patches[pPatch->Id()][i] == 0) )
+                to_refine = true;
+        }
+    }
+
+    if (to_refine)
     {
         // create new patch with same Id
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
@@ -256,7 +293,14 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         }
 
         // mark refined patch
-        refined_patches.insert(pPatch->Id());
+        refined_patches[pPatch->Id()].resize(TDim);
+        for (unsigned int i = 0; i < TDim; ++i)
+        {
+            if (order_increment[i] != 0)
+            {
+                refined_patches[pPatch->Id()][i] = 1;
+            }
+        }
 
         // transfer the order increment to neighbors
         std::vector<std::size_t> neib_order_increment(TDim);

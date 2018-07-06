@@ -176,6 +176,13 @@ public:
         }
     }
 
+    /// Get the equation id of a dof associated with a node
+    template<typename TVariableType>
+    static std::size_t GetEquationId(ModelPart::NodeType& rNode, const TVariableType& rVariable)
+    {
+    	return rNode.GetDof(rVariable).EquationId();
+    }
+
     /// Information
     template<class TClassType>
     static void PrintAddress(std::ostream& rOStream, typename TClassType::Pointer pInstance)

@@ -83,6 +83,12 @@ void MultiPatchUtility_ListModelPart(MultiPatchUtility& rDummy, ModelPart& r_mod
     rDummy.ListModelPart(r_model_part);
 }
 
+template<typename TVariableType>
+std::size_t MultiPatchUtility_GetEquationId(MultiPatchUtility& rDummy, ModelPart::NodeType& rNode, const TVariableType& rVariable)
+{
+    return rDummy.GetEquationId(rNode, rVariable);
+}
+
 template<class TClassType>
 void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassType::Pointer pInstance)
 {
@@ -251,6 +257,8 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("GetLastConditionId", &MultiPatchUtility_GetLastConditionId)
     .def("CreateConditionFromElement", &MultiPatchUtility_CreateConditionFromElement)
     .def("ListModelPart", &MultiPatchUtility_ListModelPart)
+    .def("GetEquationId", &MultiPatchUtility_GetEquationId<Variable<double> >)
+    .def("GetEquationId", &MultiPatchUtility_GetEquationId<Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > >)
     .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<1> >)
     .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<2> >)
     .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<3> >)

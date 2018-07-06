@@ -1,7 +1,7 @@
 #include "includes/deprecated_variables.h"
 #include "custom_utilities/bezier_post_utility.h"
 
-#define DEBUG_MULTISOLVE
+//#define DEBUG_MULTISOLVE
 
 namespace Kratos
 {

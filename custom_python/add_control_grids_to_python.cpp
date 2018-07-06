@@ -280,6 +280,7 @@ void IsogeometricApplication_AddControlPoint()
 {
     class_<ControlPoint<double>, ControlPoint<double>::Pointer>
     ("ControlPoint", init<>())
+    .def(init<const double&, const double&, const double&, const double&>())
     .add_property("WX", ControlPoint_GetWX, ControlPoint_SetWX)
     .add_property("WY", ControlPoint_GetWY, ControlPoint_SetWY)
     .add_property("WZ", ControlPoint_GetWZ, ControlPoint_SetWZ)

@@ -12,6 +12,8 @@
 // Project includes
 #include "custom_utilities/multipatch_refinement_utility.h"
 
+//#ifdef DEBUG_INS_KNOTS
+
 namespace Kratos
 {
 
@@ -22,13 +24,27 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the NURBS patch")
 
+    #ifdef DEBUG_INS_KNOTS
+    std::cout << "ins_knots:";
+    for (unsigned int i = 0; i < ins_knots.size(); ++i)
+    {
+        for (unsigned int j = 0; j < ins_knots[i].size(); ++j)
+        {
+            std::cout << " " << ins_knots[i][j];
+        }
+        std::cout << ";";
+    }
+    std::cout << std::endl;
+    #endif
+
     bool to_refine = false;
     if (refined_patches.find( pPatch->Id() ) == refined_patches.end())
     // the patch is not yet refined
     {
         to_refine = true;
     }
-    else // the patch is refined but it has some unrefined directions
+    else
+    // the patch is refined but it has some unrefined directions
     {
         for (unsigned int i = 0; i < TDim; ++i)
         {
@@ -116,7 +132,12 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         }
 
         // mark refined patch
-        refined_patches[pPatch->Id()].resize(TDim);
+        if (refined_patches.find(pPatch->Id()) == refined_patches.end())
+        {
+            refined_patches[pPatch->Id()].resize(TDim);
+            for (unsigned int i = 0; i < TDim; ++i)
+                refined_patches[pPatch->Id()][i] = 0;
+        }
         for (unsigned int i = 0; i < TDim; ++i)
         {
             if (ins_knots[i].size() != 0)
@@ -125,16 +146,18 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
             }
         }
 
-        // transfer the inserted knots to neighbors
-        std::vector<std::vector<double> > neib_ins_knots(TDim);
-
-        for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
+        for (std::size_t ii = 0; ii < pPatch->NumberOfInterfaces(); ++ii)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
+            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(ii));
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
 
             if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
                 KRATOS_THROW_ERROR(std::logic_error, "The FESpace of the neighbor is not BSplinesFESpace", "")
+
+            // transfer the inserted knots to neighbors
+            std::vector<std::vector<double> > neib_ins_knots(TDim);
+            for (unsigned int i = 0; i < TDim; ++i)
+                neib_ins_knots[i].resize(0);
 
             if (TDim == 2)
             {
@@ -142,6 +165,13 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
                 int dir2 = ParameterDirection<2>::Get_(pInterface->Side2());
 
                 neib_ins_knots[dir2] = KnotArray1D<double>::CloneKnots(ins_knots[dir1], pInterface->Direction(0));
+                #ifdef DEBUG_INS_KNOTS
+                std::cout << "Propagate [";
+                for (unsigned int i = 0; i < neib_ins_knots[dir2].size(); ++i)
+                    std::cout << ", " << neib_ins_knots[dir2][i];
+                std::cout << "] from Patch " << pPatch->Id() << " dir " << dir1;
+                std::cout << " to " << pNeighbor->Id() << " dir " << dir2 << std::endl;
+                #endif
             }
             else if (TDim == 3)
             {
@@ -203,7 +233,8 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
     {
         to_refine = true;
     }
-    else // the patch is refined but it has some unrefined directions
+    else
+    // the patch is refined but it has some unrefined directions
     {
         for (unsigned int i = 0; i < TDim; ++i)
         {
@@ -302,9 +333,6 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             }
         }
 
-        // transfer the order increment to neighbors
-        std::vector<std::size_t> neib_order_increment(TDim);
-
         for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
         {
             typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
@@ -312,6 +340,11 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
 
             if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
                 KRATOS_THROW_ERROR(std::logic_error, "The FESpace of the neighbor is not BSplinesFESpace", "")
+
+            // transfer the order increment to neighbors
+            std::vector<std::size_t> neib_order_increment(TDim);
+            for (unsigned int i = 0; i < TDim; ++i)
+                neib_order_increment[i] = 0;
 
             if (TDim == 2)
             {
@@ -479,6 +512,8 @@ struct ComputeBsplinesDegreeElevation_Helper<3, TDataType>
 };
 
 } // namespace Kratos.
+
+#undef DEBUG_INS_KNOTS
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_REFINEMENT_UTILITY_HPP_INCLUDED defined
 

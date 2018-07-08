@@ -186,10 +186,13 @@ def Refine(mpatch):
     print("############REFINEMENT###############")
     multipatch_refine_util = MultiPatchRefinementUtility()
 
-    multipatch_refine_util.DegreeElevate(mpatch[1], [0, 1])
+#    multipatch_refine_util.DegreeElevate(mpatch[1], [1, 2])
+
+    ins_knots_u = [0.5]
+    ins_knot_v = []
 
     ins_knot_v = [0.95]
-    multipatch_refine_util.InsertKnots(mpatch[1], [[], ins_knot_v])
+    multipatch_refine_util.InsertKnots(mpatch[1], [ins_knots_u, ins_knot_v])
 
     ins_knot_v = [0.05]
     multipatch_refine_util.InsertKnots(mpatch[2], [[], ins_knot_v])

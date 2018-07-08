@@ -202,6 +202,16 @@ struct StructuredControlGrid_Helper<2, TDataType>
     {
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "not implemented")
     }
+
+    static void SetValue2D(StructuredControlGrid<2, TDataType>& rDummy, const std::size_t& i, const std::size_t& j, const TDataType& value)
+    {
+        rDummy.SetValue(i, j, value);
+    }
+
+    static TDataType GetValue2D(StructuredControlGrid<2, TDataType>& rDummy, const std::size_t& i, const std::size_t& j)
+    {
+        return rDummy.GetValue(i, j);
+    }
 };
 
 template<typename TDataType>
@@ -233,6 +243,16 @@ struct StructuredControlGrid_Helper<3, TDataType>
     static void SetValue(StructuredControlGrid<3, TDataType>& rDummy, boost::python::list values)
     {
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "not implemented")
+    }
+
+    static void SetValue3D(StructuredControlGrid<3, TDataType>& rDummy, const std::size_t& i, const std::size_t& j, const std::size_t& k, const TDataType& value)
+    {
+        rDummy.SetValue(i, j, k, value);
+    }
+
+    static TDataType GetValue3D(StructuredControlGrid<3, TDataType>& rDummy, const std::size_t& i, const std::size_t& j, const std::size_t& k)
+    {
+        return rDummy.GetValue(i, j, k);
     }
 };
 
@@ -299,24 +319,32 @@ void IsogeometricApplication_AddStructuredControlGrids()
     class_<StructuredControlGrid<2, ControlPoint<double> >, StructuredControlGrid<2, ControlPoint<double> >::Pointer, bases<BaseStructuredControlGrid<ControlPoint<double> > >, boost::noncopyable>
     ("StructuredControlPointGrid2D", init<const std::size_t&, const std::size_t&>())
     .add_property("ControlValues", &StructuredControlGrid_Helper<2, ControlPoint<double> >::GetValue, &StructuredControlGrid_Helper<2, ControlPoint<double> >::SetValue)
+    .def("SetValue", &StructuredControlGrid_Helper<2, ControlPoint<double> >::SetValue2D)
+    .def("GetValue", &StructuredControlGrid_Helper<2, ControlPoint<double> >::GetValue2D)
     .def(self_ns::str(self))
     ;
 
     class_<StructuredControlGrid<2, double>, StructuredControlGrid<2, double>::Pointer, bases<BaseStructuredControlGrid<double> >, boost::noncopyable>
     ("StructuredDoubleControlGrid2D", init<const std::size_t&, const std::size_t&>())
     .add_property("ControlValues", &StructuredControlGrid_Helper<2, double>::GetValue, &StructuredControlGrid_Helper<2, double>::SetValue)
+    .def("SetValue", &StructuredControlGrid_Helper<2, double>::SetValue2D)
+    .def("GetValue", &StructuredControlGrid_Helper<2, double>::GetValue2D)
     .def(self_ns::str(self))
     ;
 
     class_<StructuredControlGrid<2, array_1d<double, 3> >, StructuredControlGrid<2, array_1d<double, 3> >::Pointer, bases<BaseStructuredControlGrid<array_1d<double, 3> > >, boost::noncopyable>
     ("StructuredArray1DControlGrid2D", init<const std::size_t&, const std::size_t&>())
     .add_property("ControlValues", &StructuredControlGrid_Helper<2, array_1d<double, 3> >::GetValue, &StructuredControlGrid_Helper<2, array_1d<double, 3> >::SetValue)
+    .def("SetValue", &StructuredControlGrid_Helper<2, array_1d<double, 3> >::SetValue2D)
+    .def("GetValue", &StructuredControlGrid_Helper<2, array_1d<double, 3> >::GetValue2D)
     .def(self_ns::str(self))
     ;
 
     class_<StructuredControlGrid<2, Vector>, StructuredControlGrid<2, Vector>::Pointer, bases<BaseStructuredControlGrid<Vector> >, boost::noncopyable>
     ("StructuredVectorControlGrid2D", init<const std::size_t&, const std::size_t&>())
     .add_property("ControlValues", &StructuredControlGrid_Helper<2, Vector>::GetValue, &StructuredControlGrid_Helper<2, Vector>::SetValue)
+    .def("SetValue", &StructuredControlGrid_Helper<2, Vector>::SetValue2D)
+    .def("GetValue", &StructuredControlGrid_Helper<2, Vector>::GetValue2D)
     .def(self_ns::str(self))
     ;
 
@@ -325,24 +353,32 @@ void IsogeometricApplication_AddStructuredControlGrids()
     class_<StructuredControlGrid<3, ControlPoint<double> >, StructuredControlGrid<3, ControlPoint<double> >::Pointer, bases<BaseStructuredControlGrid<ControlPoint<double> > >, boost::noncopyable>
     ("StructuredControlPointGrid3D", init<const std::size_t&, const std::size_t&, const std::size_t&>())
     .add_property("ControlValues", &StructuredControlGrid_Helper<3, ControlPoint<double> >::GetValue, &StructuredControlGrid_Helper<3, ControlPoint<double> >::SetValue)
+    .def("SetValue", &StructuredControlGrid_Helper<3, ControlPoint<double> >::SetValue3D)
+    .def("GetValue", &StructuredControlGrid_Helper<3, ControlPoint<double> >::GetValue3D)
     .def(self_ns::str(self))
     ;
 
     class_<StructuredControlGrid<3, double>, StructuredControlGrid<3, double>::Pointer, bases<BaseStructuredControlGrid<double> >, boost::noncopyable>
     ("StructuredDoubleControlGrid3D", init<const std::size_t&, const std::size_t&, const std::size_t&>())
     .add_property("ControlValues", &StructuredControlGrid_Helper<3, double>::GetValue, &StructuredControlGrid_Helper<3, double>::SetValue)
+    .def("SetValue", &StructuredControlGrid_Helper<3, double>::SetValue3D)
+    .def("GetValue", &StructuredControlGrid_Helper<3, double>::GetValue3D)
     .def(self_ns::str(self))
     ;
 
     class_<StructuredControlGrid<3, array_1d<double, 3> >, StructuredControlGrid<3, array_1d<double, 3> >::Pointer, bases<BaseStructuredControlGrid<array_1d<double, 3> > >, boost::noncopyable>
     ("StructuredArray1DControlGrid3D", init<const std::size_t&, const std::size_t&, const std::size_t&>())
     .add_property("ControlValues", &StructuredControlGrid_Helper<1, array_1d<double, 3> >::GetValue, &StructuredControlGrid_Helper<1, array_1d<double, 3> >::SetValue)
+    .def("SetValue", &StructuredControlGrid_Helper<3, array_1d<double, 3> >::SetValue3D)
+    .def("GetValue", &StructuredControlGrid_Helper<3, array_1d<double, 3> >::GetValue3D)
     .def(self_ns::str(self))
     ;
 
     class_<StructuredControlGrid<3, Vector>, StructuredControlGrid<3, Vector>::Pointer, bases<BaseStructuredControlGrid<Vector> >, boost::noncopyable>
     ("StructuredVectorControlGrid3D", init<const std::size_t&, const std::size_t&, const std::size_t&>())
     .add_property("ControlValues", &StructuredControlGrid_Helper<3, Vector>::GetValue, &StructuredControlGrid_Helper<3, Vector>::SetValue)
+    .def("SetValue", &StructuredControlGrid_Helper<3, Vector>::SetValue3D)
+    .def("GetValue", &StructuredControlGrid_Helper<3, Vector>::GetValue3D)
     .def(self_ns::str(self))
     ;
 

@@ -67,73 +67,69 @@ void DummyIsogeometricCondition::Initialize()
 {
     KRATOS_TRY
 
-    // disable this condition by default
-    GetValue(IS_INACTIVE) = true;
-    Set(ACTIVE, false);
+//    ////////////////////Initialize geometry_data/////////////////////////////
+//    #ifdef ENABLE_PROFILING
+//    double start_compute = OpenMPUtils::GetCurrentTime();
+//    #endif
 
-    ////////////////////Initialize geometry_data/////////////////////////////
-    #ifdef ENABLE_PROFILING
-    double start_compute = OpenMPUtils::GetCurrentTime();
-    #endif
+//    // try to read the extraction operator from the elemental data
+//    Matrix ExtractionOperator;
+//    bool manual_initilization = false;
+//    if( this->Has( EXTRACTION_OPERATOR ) )
+//    {
+//        ExtractionOperator = this->GetValue( EXTRACTION_OPERATOR );
+//        manual_initilization = true;
+//    }
+//    else if( this->Has( EXTRACTION_OPERATOR_MCSR ) )
+//    {
+//        Matrix Temp = this->GetValue( EXTRACTION_OPERATOR_MCSR );
 
-    // try to read the extraction operator from the elemental data
-    Matrix ExtractionOperator;
-    bool manual_initilization = false;
-    if( this->Has( EXTRACTION_OPERATOR ) )
-    {
-        ExtractionOperator = this->GetValue( EXTRACTION_OPERATOR );
-        manual_initilization = true;
-    }
-    else if( this->Has( EXTRACTION_OPERATOR_MCSR ) )
-    {
-        Matrix Temp = this->GetValue( EXTRACTION_OPERATOR_MCSR );
+//        // make a simple check
+//        if(Temp.size1() != 2)
+//            KRATOS_THROW_ERROR(std::logic_error, "Invalid MCSR matrix for extraction operator found at element", this->Id())
 
-        // make a simple check
-        if(Temp.size1() != 2)
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid MCSR matrix for extraction operator found at element", this->Id())
-
-        // choose the best storage scheme based ratio between number of nonzeros and the full size of the matrix
-        unsigned int size_ex_n = (unsigned int)(Temp(0, 0) - 1);
-        unsigned int size_ex_nz = Temp.size2() - 1;
-        if( ( (double)(size_ex_nz) ) / (size_ex_n * size_ex_n) < 0.2 )
-            ExtractionOperator = IsogeometricMathUtils::MCSR2CSR(Temp);
-        else
-            ExtractionOperator = IsogeometricMathUtils::MCSR2MAT(Temp);
-
-        manual_initilization = true;
-    }
-    else if( this->Has( EXTRACTION_OPERATOR_CSR_ROWPTR )
-         and this->Has( EXTRACTION_OPERATOR_CSR_COLIND )
-         and this->Has( EXTRACTION_OPERATOR_CSR_VALUES ) )
-    {
-        Vector rowPtr = this->GetValue( EXTRACTION_OPERATOR_CSR_ROWPTR ); // must be 0-base
-        Vector colInd = this->GetValue( EXTRACTION_OPERATOR_CSR_COLIND ); // must be 0-base
-        Vector values = this->GetValue( EXTRACTION_OPERATOR_CSR_VALUES );
-        ExtractionOperator = IsogeometricMathUtils::Triplet2CSR(rowPtr, colInd, values);
-        manual_initilization = true;
-    }
+//        // choose the best storage scheme based ratio between number of nonzeros and the full size of the matrix
+//        unsigned int size_ex_n = (unsigned int)(Temp(0, 0) - 1);
+//        unsigned int size_ex_nz = Temp.size2() - 1;
+//        if( ( (double)(size_ex_nz) ) / (size_ex_n * size_ex_n) < 0.2 )
+//            ExtractionOperator = IsogeometricMathUtils::MCSR2CSR(Temp);
 //        else
-//            KRATOS_THROW_ERROR(std::logic_error, "The extraction operator was not given for element", Id())
-//        KRATOS_WATCH(ExtractionOperator)
+//            ExtractionOperator = IsogeometricMathUtils::MCSR2MAT(Temp);
 
-    // initialize the geometry
-    if(manual_initilization)
-    {
-        int num_integration_method = 2; // by default compute two integration rules
-        if( GetProperties().Has(NUM_IGA_INTEGRATION_METHOD) )
-            num_integration_method = GetProperties()[NUM_IGA_INTEGRATION_METHOD];
-        mpIsogeometricGeometry->AssignGeometryData(
-            this->GetValue(NURBS_KNOTS_1),
-            this->GetValue(NURBS_KNOTS_2),
-            this->GetValue(NURBS_KNOTS_3),
-            this->GetValue(NURBS_WEIGHT),
-            ExtractionOperator,
-            this->GetValue(NURBS_DEGREE_1),
-            this->GetValue(NURBS_DEGREE_2),
-            this->GetValue(NURBS_DEGREE_3),
-            num_integration_method
-        );
-    }
+//        manual_initilization = true;
+//    }
+//    else if( this->Has( EXTRACTION_OPERATOR_CSR_ROWPTR )
+//         && this->Has( EXTRACTION_OPERATOR_CSR_COLIND )
+//         && this->Has( EXTRACTION_OPERATOR_CSR_VALUES ) )
+//    {
+//        Vector rowPtr = this->GetValue( EXTRACTION_OPERATOR_CSR_ROWPTR ); // must be 0-base
+//        Vector colInd = this->GetValue( EXTRACTION_OPERATOR_CSR_COLIND ); // must be 0-base
+//        Vector values = this->GetValue( EXTRACTION_OPERATOR_CSR_VALUES );
+//        ExtractionOperator = IsogeometricMathUtils::Triplet2CSR(rowPtr, colInd, values);
+//        manual_initilization = true;
+//    }
+////        else
+////            KRATOS_THROW_ERROR(std::logic_error, "The extraction operator was not given for element", Id())
+////        KRATOS_WATCH(ExtractionOperator)
+
+//    // initialize the geometry
+//    if(manual_initilization)
+//    {
+//        int num_integration_method = 2; // by default compute two integration rules
+//        if( GetProperties().Has(NUM_IGA_INTEGRATION_METHOD) )
+//            num_integration_method = GetProperties()[NUM_IGA_INTEGRATION_METHOD];
+//        mpIsogeometricGeometry->AssignGeometryData(
+//            this->GetValue(NURBS_KNOTS_1),
+//            this->GetValue(NURBS_KNOTS_2),
+//            this->GetValue(NURBS_KNOTS_3),
+//            this->GetValue(NURBS_WEIGHT),
+//            ExtractionOperator,
+//            this->GetValue(NURBS_DEGREE_1),
+//            this->GetValue(NURBS_DEGREE_2),
+//            this->GetValue(NURBS_DEGREE_3),
+//            num_integration_method
+//        );
+//    }
 
     KRATOS_CATCH("")
 }

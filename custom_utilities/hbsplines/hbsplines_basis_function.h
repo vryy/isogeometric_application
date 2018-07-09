@@ -575,6 +575,11 @@ public:
     typedef typename cell_container_t::iterator cell_iterator;
     typedef typename cell_container_t::const_iterator cell_const_iterator;
 
+    typedef typename HBSplinesBasisFunction<0>::Pointer bf_t;
+    typedef std::vector<bf_t> bf_container_t;
+    typedef typename bf_container_t::iterator bf_iterator;
+    typedef typename bf_container_t::const_iterator bf_const_iterator;
+
     /// Default constructor
     HBSplinesBasisFunction(const std::size_t& Id) {}
 
@@ -594,16 +599,21 @@ public:
     void SetLocalKnotVectors(const int& dim, const std::vector<knot_t>& rpKnots) {}
 
     /// return the internal reference of the knot vectors; use it with care
-    std::vector<knot_t> LocalKnots(const int& dim) const {}
+    std::vector<knot_t> LocalKnots(const int& dim) const {return std::vector<knot_t>{};}
 
     /// Add a cell support this basis function to the list
-    cell_iterator AddCell(cell_t p_cell) {}
+    cell_iterator AddCell(cell_t p_cell) {return mpCells.end();}
 
     /// Dummy function to return an empty data value container
     DataValueContainer Data() {return DataValueContainer();}
 
     /// Add the boundary information to this basis function
     void AddBoundary(const std::size_t& BoundaryInfo) {}
+
+private:
+
+    bf_container_t mpChilds; // list of refined basis functions that constitute this basis function
+    cell_container_t mpCells; // list of cells support this basis function at the level of this basis function
 };
 
 /// output stream function

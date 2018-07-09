@@ -44,6 +44,8 @@ struct ControlValue_Helper
 {
     static boost::python::list GetValue(const TDataType& rValue)
     {
+        boost::python::list dummy;
+        return dummy;
     }
 
     static TDataType GetValue(boost::python::list rValue)

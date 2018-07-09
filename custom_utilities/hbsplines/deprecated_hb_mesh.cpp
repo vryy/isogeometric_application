@@ -1092,12 +1092,14 @@ namespace Kratos
     bool DeprecatedHBMesh<TDim>::Validate() const
     {
         // TODO
+        return false;
     }
 
     template<int TDim>
     void DeprecatedHBMesh<TDim>::BuildBoundaryMesh(DeprecatedHBMesh<TDim>& rMesh, std::string boundary_mesh_type) const
     {
        // TODO
+       return;
     }
 
     template<int TDim>

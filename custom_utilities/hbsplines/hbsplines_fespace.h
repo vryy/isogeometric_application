@@ -96,9 +96,9 @@ public:
     }
 
     /// Helper to create new HBSplinesFESpace pointer
-    static HBSplinesFESpace<TDim>::Pointer Create()
+    static typename HBSplinesFESpace<TDim>::Pointer Create()
     {
-        return HBSplinesFESpace<TDim>::Pointer(new HBSplinesFESpace());
+        return typename HBSplinesFESpace<TDim>::Pointer(new HBSplinesFESpace());
     }
 
     /// Add a already constructed basis function to the internal list
@@ -854,10 +854,10 @@ public:
     void AddBf(bf_t p_bf) {}
 
     // Iterators for the basis functions
-    bf_iterator bf_begin() {}
-    bf_const_iterator bf_begin() const {}
-    bf_iterator bf_end() {}
-    bf_const_iterator bf_end() const {}
+    bf_iterator bf_begin() {return mpBasisFuncs.begin();}
+    bf_const_iterator bf_begin() const {return mpBasisFuncs.begin();}
+    bf_iterator bf_end() {return mpBasisFuncs.end();}
+    bf_const_iterator bf_end() const {return mpBasisFuncs.end();}
 
     /// Set the last level in the hierarchical mesh
     void SetLastLevel(const std::size_t& LastLevel) {}
@@ -873,10 +873,10 @@ public:
     const knot_container_t& KnotVector(const std::size_t& i) const {return mDummyKnotVector;}
 
     /// Get the underlying cell manager
-    typename cell_container_t::Pointer pCellManager() {}
+    typename cell_container_t::Pointer pCellManager() {return mpCellManager;}
 
     /// Get the underlying cell manager
-    typename cell_container_t::ConstPointer pCellManager() const {}
+    typename cell_container_t::ConstPointer pCellManager() const {return mpCellManager;}
 
     /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
     void UpdateCells() {}
@@ -884,6 +884,8 @@ public:
 private:
 
     knot_container_t mDummyKnotVector;
+    bf_container_t mpBasisFuncs;
+    typename cell_container_t::Pointer mpCellManager;
 };
 
 /// output stream function

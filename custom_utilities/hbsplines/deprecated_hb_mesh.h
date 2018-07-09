@@ -174,6 +174,7 @@ public:
         if (i == 0) return mOrder1;
         else if (i == 1) return mOrder2;
         else if (i == 2) return mOrder3;
+        else return 0;
     }
 
     /// Set the maximum level allowed in the hierarchical mesh

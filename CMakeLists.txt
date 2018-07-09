@@ -54,6 +54,10 @@ if(DEFINED GISMO_ROOT)
     add_definitions(-DISOGEOMETRIC_USE_GISMO)
 endif()
 
+if(EXISTS ${CMAKE_SOURCE_DIR}/kratos/solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation.h)
+    add_definitions(-D_residualbased_elimination_builder_and_solver_deactivation_existed_)
+endif()
+
 ## generate variables with the sources
 set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
 #    ${PROJECT_SOURCE_DIR}/kratos/sources/io.cpp

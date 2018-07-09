@@ -96,9 +96,9 @@ public:
     }
 
     /// Helper to create new HBSplinesFESpace pointer
-    static HBSplinesFESpace<TDim>::Pointer Create()
+    static typename HBSplinesFESpace<TDim>::Pointer Create()
     {
-        return HBSplinesFESpace<TDim>::Pointer(new HBSplinesFESpace());
+        return typename HBSplinesFESpace<TDim>::Pointer(new HBSplinesFESpace());
     }
 
     /// Add a already constructed basis function to the internal list

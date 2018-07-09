@@ -22,7 +22,9 @@
 #include "linear_solvers/linear_solver.h"
 #include "solving_strategies/schemes/scheme.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
+#ifdef _residualbased_elimination_builder_and_solver_deactivation_existed_
 #include "solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation.h"
+#endif
 #include "custom_strategies/builder_and_solvers/row_constraint_builder_and_solver.h"
 #include "custom_python/add_strategies_to_python.h"
 #include "isogeometric_application/isogeometric_application.h"
@@ -43,6 +45,7 @@ void IsogeometricApplication_AddStrategiesToPython()
     typedef UblasSpace<double, Matrix, Vector> LocalSpaceType;
     typedef LinearSolver<SparseSpaceType, LocalSpaceType> LinearSolverType;
 
+    #ifdef _residualbased_elimination_builder_and_solver_deactivation_existed_
     typedef ResidualBasedEliminationBuilderAndSolverDeactivation<SparseSpaceType, LocalSpaceType, LinearSolverType> ResidualBasedEliminationBuilderAndSolverDeactivationType;
 
     typedef RowConstraintBuilderAndSolver<ResidualBasedEliminationBuilderAndSolverDeactivationType> RowConstraintResidualBasedEliminationBuilderAndSolverDeactivationType;
@@ -50,6 +53,7 @@ void IsogeometricApplication_AddStrategiesToPython()
     ("RowConstraintResidualBasedEliminationBuilderAndSolverDeactivation", init<typename LinearSolverType::Pointer>())
     .def("AddConstraint", &RowConstraintResidualBasedEliminationBuilderAndSolverDeactivationType::AddConstraint)
     ;
+    #endif
 
 }
 

@@ -55,7 +55,7 @@ public:
     }
 
     /// Create a clone of this interface
-    virtual PatchInterface<TDim>::Pointer Clone() const
+    virtual typename PatchInterface<TDim>::Pointer Clone() const
     {
         return typename PatchInterface<TDim>::Pointer(new PatchInterface<TDim>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2()));
     }

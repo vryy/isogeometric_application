@@ -48,9 +48,9 @@ public:
     virtual ~PointBasedControlGrid() {}
 
     /// Create a new control grid pointer
-    static PointBasedControlGrid::Pointer Create(const VariableType& rVariable, typename FESpaceType::Pointer pFESpace)
+    static typename PointBasedControlGrid::Pointer Create(const VariableType& rVariable, typename FESpaceType::Pointer pFESpace)
     {
-        return PointBasedControlGrid::Pointer(new PointBasedControlGrid(rVariable, pFESpace));
+        return typename PointBasedControlGrid::Pointer(new PointBasedControlGrid(rVariable, pFESpace));
     }
 
     /// Clone this grid function
@@ -149,9 +149,9 @@ public:
     virtual ~PointBasedControlGrid() {}
 
     /// Create a new control grid pointer
-    static PointBasedControlGrid::Pointer Create(const VariableType& rVariable, typename FESpaceType::Pointer pFESpace)
+    static typename PointBasedControlGrid::Pointer Create(const VariableType& rVariable, typename FESpaceType::Pointer pFESpace)
     {
-        return PointBasedControlGrid::Pointer(new PointBasedControlGrid(rVariable, pFESpace));
+        return typename PointBasedControlGrid::Pointer(new PointBasedControlGrid(rVariable, pFESpace));
     }
 
     /// Clone this grid function

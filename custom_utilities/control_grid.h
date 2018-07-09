@@ -44,7 +44,7 @@ public:
     virtual ~ControlGrid() {}
 
     /// Create a new control grid pointer
-    static ControlGrid::Pointer Create() {return ControlGrid::Pointer(new ControlGrid());}
+    static typename ControlGrid::Pointer Create() {return typename ControlGrid::Pointer(new ControlGrid());}
 
     /// Clone this grid function
     virtual typename ControlGrid<TDataType>::Pointer Clone() const {return NULL;}

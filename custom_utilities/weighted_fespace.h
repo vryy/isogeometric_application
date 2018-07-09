@@ -52,9 +52,9 @@ public:
     }
 
     /// Helper to create new WeightedFESpace pointer
-    static WeightedFESpace<TDim>::Pointer Create(typename BaseType::Pointer pFESpace, const std::vector<double>& weights)
+    static typename WeightedFESpace<TDim>::Pointer Create(typename BaseType::Pointer pFESpace, const std::vector<double>& weights)
     {
-        return WeightedFESpace<TDim>::Pointer(new WeightedFESpace(pFESpace, weights));
+        return typename WeightedFESpace<TDim>::Pointer(new WeightedFESpace(pFESpace, weights));
     }
 
     /// Get the number of basis functions defined over the WeightedFESpace

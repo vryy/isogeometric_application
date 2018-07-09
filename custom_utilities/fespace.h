@@ -48,9 +48,9 @@ public:
     }
 
     /// Helper to create new BSplinesFESpace pointer
-    static FESpace<TDim>::Pointer Create()
+    static typename FESpace<TDim>::Pointer Create()
     {
-        return FESpace<TDim>::Pointer(new FESpace());
+        return typename FESpace<TDim>::Pointer(new FESpace());
     }
 
     /// Get the number of basis functions defined over the FESpace

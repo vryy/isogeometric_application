@@ -85,7 +85,7 @@ public:
     typedef ControlPoint<double> ControlPointType;
     typedef Knot<double>::Pointer knot_t;
 
-    typedef HBSplinesBasisFunction::Pointer bf_t;
+    typedef typename HBSplinesBasisFunction<TDim>::Pointer bf_t;
     typedef std::vector<bf_t> bf_container_t;
     typedef typename bf_container_t::iterator bf_iterator;
     typedef typename bf_container_t::const_iterator bf_const_iterator;

@@ -55,9 +55,9 @@ public:
     virtual ~BSplinesFESpace() {}
 
     /// Helper to create new BSplinesFESpace pointer
-    static BSplinesFESpace<TDim>::Pointer Create()
+    static typename BSplinesFESpace<TDim>::Pointer Create()
     {
-        return BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace());
+        return typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace());
     }
 
     /// Get the order of the BSplines patch in specific direction

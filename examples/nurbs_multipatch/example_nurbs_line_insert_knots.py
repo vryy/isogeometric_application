@@ -24,6 +24,7 @@ grid_lib = ControlGridLibrary()
 multipatch_util = MultiPatchUtility()
 mpatch_export1 = MultiNURBSPatchGeoExporter()
 mpatch_export2 = MultiNURBSPatchGLVisExporter()
+mpatch_export2 = MultiNURBSPatchMatlabExporter()
 
 fes1 = nurbs_fespace_library.CreateLinearFESpace(3)
 ctrl_grid_1 = grid_lib.CreateLinearControlPointGrid(0.0, 0.0, 0.0, fes1.Number(0), 1.0, 0.0, 0.0)

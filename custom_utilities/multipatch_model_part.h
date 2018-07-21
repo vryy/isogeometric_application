@@ -355,7 +355,9 @@ public:
             // create the element and add to the list
             typename TEntityType::Pointer pNewElement = r_clone_element.Create(cnt++, p_temp_geometry, p_temp_properties);
             pNewElement->SetValue(ACTIVATION_LEVEL, 0);
+            #ifdef IS_INACTIVE
             pNewElement->SetValue(IS_INACTIVE, false);
+            #endif
             pNewElement->Set(ACTIVE, true);
             pNewElements.push_back(pNewElement);
 

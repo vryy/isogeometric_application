@@ -212,24 +212,12 @@ namespace Kratos
 
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
                                                            ModelPart& r_model_part,
-                                                           const Variable<Vector>& rThisVariable)
+                                                           const Variable<Vector>& rThisVariable,
+                                                           std::size_t ncomponents)
     {
         ElementsArrayType& ElementsArray = r_model_part.Elements();
 
         const unsigned int& Dim = (*(ElementsArray.ptr_begin()))->GetGeometry().WorkingSpaceDimension();
-        unsigned int VariableSize;
-        bool is_allowed = (rThisVariable.Name() == std::string("STRESSES"))
-                       || (rThisVariable.Name() == std::string("PLASTIC_STRAIN_VECTOR"))
-                       || (rThisVariable.Name() == std::string("PRESTRESS"))
-                       || (rThisVariable.Name() == std::string("STRAIN"))
-            // TODO: extend for more variables
-            ;
-
-        if(is_allowed)
-//            VariableSize = Dim * (Dim + 1) / 2;
-            VariableSize = 6; // we always expect element will return full stress/strain even in 2D
-        else
-            KRATOS_THROW_ERROR(std::logic_error, rThisVariable.Name(), "is not a supported variable for TransferVariablesToNodes routine.")
 
         #ifdef ENABLE_PROFILING
         //profiling variables
@@ -256,10 +244,10 @@ namespace Kratos
         #endif
 
         // create and initialize vectors        
-        SerialDenseSpaceType::MatrixType g(NumberOfNodes, VariableSize);
-        noalias(g)= ZeroMatrix(NumberOfNodes, VariableSize);
-        SerialDenseSpaceType::MatrixType b(NumberOfNodes, VariableSize);
-        noalias(b)= ZeroMatrix(NumberOfNodes, VariableSize);
+        SerialDenseSpaceType::MatrixType g(NumberOfNodes, ncomponents);
+        noalias(g)= ZeroMatrix(NumberOfNodes, ncomponents);
+        SerialDenseSpaceType::MatrixType b(NumberOfNodes, ncomponents);
+        noalias(b)= ZeroMatrix(NumberOfNodes, ncomponents);
 
         //create a partition of the elements
         int number_of_threads = omp_get_max_threads();
@@ -323,7 +311,7 @@ namespace Kratos
 
                             omp_set_lock(&lock_array[row]);
 
-                            for(unsigned int i = 0; i < VariableSize; ++i)
+                            for(unsigned int i = 0; i < ncomponents; ++i)
                                 b(row, i) += ValuesOnIntPoint[point][i] * Ncontainer(point, prim) * dV;
 
                             for(unsigned int sec = 0; sec < (*it)->GetGeometry().size(); ++sec)
@@ -345,7 +333,7 @@ namespace Kratos
                             
                         omp_set_lock(&lock_array[row]);
                                 
-//                        for(unsigned int i = 0; i < VariableSize; ++i)
+//                        for(unsigned int i = 0; i < ncomponents; ++i)
 //                            b(row, i) += 0.0;
                                 
                         for(unsigned int sec = 0; sec < (*it)->GetGeometry().size(); ++sec)
@@ -387,7 +375,7 @@ namespace Kratos
         #endif
 
         // transfer the solution to the nodal variables
-        Vector tmp(VariableSize);
+        Vector tmp(ncomponents);
         for(ModelPart::NodeIterator it = r_model_part.NodesBegin(); it != r_model_part.NodesEnd(); ++it)
         {
             unsigned int r = MapNodeIdToVec[it->Id()];

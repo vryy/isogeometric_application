@@ -368,7 +368,8 @@ private:
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
                                   ModelPart& r_model_part,
-                                  const Variable<Vector>& rThisVariable);
+                                  const Variable<Vector>& rThisVariable,
+                                  std::size_t ncomponents = 6);
     
     ///@}
     ///@name Private  Access

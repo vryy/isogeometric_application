@@ -132,6 +132,48 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
 }
 
 template<int TDim>
+boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinementUtility& rDummy,
+       typename Patch<TDim>::Pointer& pPatch,
+       boost::python::list ins_knots)
+{
+    std::vector<std::vector<double> > ins_knots_array(TDim);
+    std::size_t dim = 0;
+
+    typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
+    BOOST_FOREACH(const iterator_value_type::value_type& ins_knots_x,
+                std::make_pair(iterator_value_type(ins_knots), // begin
+                iterator_value_type() ) ) // end
+    {
+        std::vector<double> knots;
+
+        typedef boost::python::stl_input_iterator<double> iterator_value_type2;
+        BOOST_FOREACH(const iterator_value_type2::value_type& knot,
+                    std::make_pair(iterator_value_type2(ins_knots_x), // begin
+                    iterator_value_type2() ) ) // end
+        {
+            knots.push_back(knot);
+        }
+
+        ins_knots_array[dim++] = knots;
+        if (dim == TDim)
+            break;
+    }
+
+    if (dim != TDim)
+        KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
+
+    std::map<std::size_t, Matrix> trans_mats;
+    rDummy.InsertKnots<TDim>(pPatch, ins_knots_array, trans_mats);
+    // KRATOS_WATCH(trans_mats.size())
+
+    boost::python::dict res;
+    for (std::map<std::size_t, Matrix>::iterator it = trans_mats.begin(); it != trans_mats.end(); ++it)
+        res[it->first] = it->second;
+
+    return res;
+}
+
+template<int TDim>
 void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDummy,
        typename Patch<TDim>::Pointer& pPatch,
        boost::python::list order_increment)
@@ -269,6 +311,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<1>)
     .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<2>)
     .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<3>)
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<1>)
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<2>)
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<3>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<1>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<2>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<3>)

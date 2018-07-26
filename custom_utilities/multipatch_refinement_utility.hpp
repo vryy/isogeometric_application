@@ -19,7 +19,11 @@ namespace Kratos
 
 /// Insert the knots to the NURBS patch and make it compatible across neighbors
 template<int TDim>
-void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPatch, std::map<std::size_t, std::vector<int> >& refined_patches, const std::vector<std::vector<double> >& ins_knots)
+void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPatch,
+    std::map<std::size_t, std::vector<int> >& refined_patches,
+    const std::vector<std::vector<double> >& ins_knots,
+    std::map<std::size_t, Matrix>& trans_mats,
+    bool record_trans_mat)
 {
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the NURBS patch")
@@ -59,16 +63,15 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
 
         // compute the transformation matrix
-        Matrix T;
         std::vector<std::vector<double> > new_knots(TDim);
 
         typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
 
-        std::vector<std::size_t> new_size(TDim);
-
+        Matrix T;
         this->ComputeBsplinesKnotInsertionCoefficients<TDim>(T, new_knots, pFESpace, ins_knots);
 
+        std::vector<std::size_t> new_size(TDim);
         for (std::size_t dim = 0; dim < TDim; ++dim)
         {
             new_size[dim] = new_knots[dim].size() - pPatch->Order(dim) - 1;
@@ -78,7 +81,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
         pNewFESpace->ResetFunctionIndices();
 
-        // KRATOS_WATCH(T)
+        KRATOS_WATCH(T)
 
         // set the new FESpace
         pNewPatch->SetFESpace(pNewFESpace);
@@ -90,8 +93,27 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         pNewPatch->CreateControlPointGridFunction(pNewControlPoints);
 //        KRATOS_WATCH(*pNewControlPoints)
 
+        // transfer the grid function
+        // here to transfer correctly we apply a two-step process:
+        // + firstly the old control values is multiplied with weight to make it weighted control values
+        // + secondly the control values will be transferred
+        // + the new control values will be divided by the new weight to make it unweighted
+
         std::vector<double> old_weights = pPatch->GetControlWeights();
         std::vector<double> new_weights = pNewPatch->GetControlWeights();
+
+        if (record_trans_mat)
+        {
+            Matrix M = trans(T);
+
+            for (std::size_t i = 0; i < new_weights.size(); ++i)
+                row(M, i) /= new_weights[i];
+
+            for (std::size_t j = 0; j < old_weights.size(); ++j)
+                column(M, j) *= old_weights[j];
+
+            trans_mats[pPatch->Id()] = M;
+        }
 
         typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
 
@@ -99,11 +121,6 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
         typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
 
-        // transfer the grid function
-        // here to transfer correctly we apply a two-step process:
-        // + firstly the old control values is multiplied with weight to make it weighted control values
-        // + secondly the control values will be transferred
-        // + the new control values will be divided by the new weight to make it unweighted
         for (typename Patch<TDim>::DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
                 it != DoubleGridFunctions_.end(); ++it)
         {
@@ -182,7 +199,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
                 neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(1) ] ] = KnotArray1D<double>::CloneKnots(ins_knots[param_dirs_1[1]], pInterface->Direction(1));
             }
 
-            InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots);
+            InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots, trans_mats, record_trans_mat);
 
             pInterface->SetPatch1(pNewPatch);
             pInterface->SetPatch2(pNeighbor);

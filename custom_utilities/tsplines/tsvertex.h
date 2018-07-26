@@ -55,22 +55,22 @@ public:
     typedef Knot<double>::Pointer knot_t;
 
     /// Default constructor
-    TsVertex(unsigned int Id, knot_t pXi, knot_t pEta)
+    TsVertex(const std::size_t& Id, knot_t pXi, knot_t pEta)
     : mId(Id), mpXi(pXi), mpEta(pEta), mpZeta(knot_t(new Knot<double>(0.0))), mType(UNDEFINED_JOINT)
     {}
 
-    TsVertex(unsigned int Id, knot_t pXi, knot_t pEta, knot_t pZeta)
+    TsVertex(const std::size_t& Id, knot_t pXi, knot_t pEta, knot_t pZeta)
     : mId(Id), mpXi(pXi), mpEta(pEta), mpZeta(pZeta), mType(UNDEFINED_JOINT)
     {}
 
     /// Get and Set for edge identification
-    unsigned int Id() const {return mId;}
-    void SetId(unsigned int Id) {mId = Id;}
+    std::size_t Id() const {return mId;}
+    void SetId(const std::size_t& Id) {mId = Id;}
 
     /// Get the index
-    int Index1() const {return mpXi->Index();}
-    int Index2() const {return mpEta->Index();}
-    int Index3() const {return mpZeta->Index();}
+    std::size_t Index1() const {return mpXi->Index();}
+    std::size_t Index2() const {return mpEta->Index();}
+    std::size_t Index3() const {return mpZeta->Index();}
 
     /// Get the respective knots
     knot_t pXi() const {return mpXi;}
@@ -85,7 +85,7 @@ public:
 
     /// Get and Set the type of this joint
     int Type() const {return mType;}
-    void SetType(int Type) {mType = Type;}
+    void SetType(const int& Type) {mType = Type;}
 
     /// Check if this vertex is a T-joint
     bool IsTJoint() const
@@ -104,7 +104,7 @@ public:
     }
 
 private:
-    unsigned int mId;
+    std::size_t mId;
     knot_t mpXi; // topology coordinates
     knot_t mpEta;
     knot_t mpZeta;

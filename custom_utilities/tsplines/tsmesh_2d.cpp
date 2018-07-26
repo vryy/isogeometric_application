@@ -1,10 +1,28 @@
-#include "custom_utilities/tsplines/tsmesh_2d.h"
 #include "custom_utilities/bezier_utils.h"
+#include "custom_utilities/tsplines/tshedge.h"
+#include "custom_utilities/tsplines/tsvedge.h"
+#include "custom_utilities/tsplines/tsvirtualhedge.h"
+#include "custom_utilities/tsplines/tsvirtualvedge.h"
+#include "custom_utilities/tsplines/tsmesh_2d.h"
 
 namespace Kratos
 {
 
     typedef TsMesh2D::knot_t knot_t;
+    typedef TsMesh2D::anchor_t anchor_t;
+
+    TsMesh2D::TsMesh2D()
+    {
+        mOrder[0] = 1;
+        mOrder[1] = 1;
+        mLastEdge = 0;
+        mLastVertex = 0;
+        mLockConstruct = true;
+        mIsExtended = false;
+    }
+
+    TsMesh2D::~TsMesh2D()
+    {}
 
     /*****************************************************************************/
     /* BEGIN SUBROUTINES TO CONSTRUCT THE T-MESH */
@@ -17,26 +35,21 @@ namespace Kratos
     }
 
     /// Set the order of T-splines
-    void TsMesh2D::SetOrder(int Dim, int Order)
+    void TsMesh2D::SetOrder(const int& dim, const int& order)
     {
         LockQuery();
-        if(Dim == 0)
-            mOrder1 = Order;
-        else if(Dim == 1)
-            mOrder2 = Order;
-        else
-            KRATOS_THROW_ERROR(std::logic_error, "T-splines 2D mesh does not support order > 2", "")
+        mOrder[dim] = order;
     }
 
     /// Insert knot into the knot vectors
-    knot_t TsMesh2D::InsertKnot(int Dim, double Value)
+    knot_t TsMesh2D::InsertKnot(const int& dim, const double& value)
     {
         LockQuery();
-        knot_t pKnot = knot_t(new Knot<double>(Value));
-        if(Dim == 0)
-            mKnots1.push_back(pKnot);
-        else if(Dim == 1)
-            mKnots2.push_back(pKnot);
+        knot_t pKnot = knot_t(new Knot<double>(value));
+        if(dim == 0)
+            mKnots[0].push_back(pKnot);
+        else if(dim == 1)
+            mKnots[1].push_back(pKnot);
         else
             KRATOS_THROW_ERROR(std::logic_error, "The 2D T-splines does not support for higher dimension", "")
         return pKnot;
@@ -71,7 +84,7 @@ namespace Kratos
 
     /// Read the T-splined mesh from file
     /// Remarks: need to be called after BeginConstruct() and before EndConstruct()
-    void TsMesh2D::ReadFromFile(std::string fn)
+    void TsMesh2D::ReadFromFile(const std::string& fn)
     {
         std::ifstream infile(fn.c_str());
 
@@ -147,11 +160,11 @@ namespace Kratos
 
         // assign the index to the knot vectors
         int cnt = -1;
-        for(std::size_t i = 0; i < mKnots1.size(); ++i)
-            mKnots1[i]->UpdateIndex(++cnt);
+        for(std::size_t i = 0; i < mKnots[0].size(); ++i)
+            mKnots[0][i]->UpdateIndex(++cnt);
         cnt = -1;
-        for(std::size_t i = 0; i < mKnots2.size(); ++i)
-            mKnots2[i]->UpdateIndex(++cnt);
+        for(std::size_t i = 0; i < mKnots[1].size(); ++i)
+            mKnots[1][i]->UpdateIndex(++cnt);
 
         // create the vertex list
         std::set<std::pair<int, int> > VertexList;
@@ -170,7 +183,7 @@ namespace Kratos
         std::map<std::pair<int, int>, TsVertex::Pointer> VertexMap;
         for(std::set<std::pair<int, int> >::iterator it = VertexList.begin(); it != VertexList.end(); ++it)
         {
-            TsVertex::Pointer pV = this->AddVertex(mKnots1[it->first], mKnots2[it->second]);
+            TsVertex::Pointer pV = this->AddVertex(mKnots[0][it->first], mKnots[1][it->second]);
             VertexMap[std::pair<int, int>(it->first, it->second)] = pV;
         }
 
@@ -195,74 +208,74 @@ namespace Kratos
         mLockConstruct = true;
 
         // check the sequence of knot vectors if it is arranged in ascending order
-        if(mKnots1.size() != 0)
-            for(std::size_t i = 0; i < mKnots1.size() - 1; ++i)
-                if(mKnots1[i+1]->Value() < mKnots1[i]->Value())
+        if(mKnots[0].size() != 0)
+            for(std::size_t i = 0; i < mKnots[0].size() - 1; ++i)
+                if(mKnots[0][i+1]->Value() < mKnots[0][i]->Value())
                     KRATOS_THROW_ERROR(std::logic_error, "The knot vector in u-direction is not ascending at i =", i)
         std::cout << "Check OK! The knot vector in u-direction is in ascending order" << std::endl;
-        if(mKnots2.size() != 0)
-            for(std::size_t i = 0; i < mKnots2.size() - 1; ++i)
-                if(mKnots2[i+1]->Value() < mKnots2[i]->Value())
+        if(mKnots[1].size() != 0)
+            for(std::size_t i = 0; i < mKnots[1].size() - 1; ++i)
+                if(mKnots[1][i+1]->Value() < mKnots[1][i]->Value())
                     KRATOS_THROW_ERROR(std::logic_error, "The knot vector in v-direction is not ascending at i =", i)
         std::cout << "Check OK! The knot vector in v-direction is in ascending order" << std::endl;
 
         // check for the repetition of knots at first p values and last p values
-        mKnots1Min = mKnots1.front()->Value();
-        mKnots1Max = mKnots1.back()->Value();
-        mKnots2Min = mKnots2.front()->Value();
-        mKnots2Max = mKnots2.back()->Value();
-//        KRATOS_WATCH(mKnots1Min)
-//        KRATOS_WATCH(mKnots1Max)
-//        KRATOS_WATCH(mKnots2Min)
-//        KRATOS_WATCH(mKnots2Max)
-        for(std::size_t i = 0; i < mOrder1; ++i)
+        mKnotsMin[0] = mKnots[0].front()->Value();
+        mKnotsMax[0] = mKnots[0].back()->Value();
+        mKnotsMin[1] = mKnots[1].front()->Value();
+        mKnotsMax[1] = mKnots[1].back()->Value();
+//        KRATOS_WATCH(mKnotsMin[0])
+//        KRATOS_WATCH(mKnotsMax[0])
+//        KRATOS_WATCH(mKnotsMin[1])
+//        KRATOS_WATCH(mKnotsMax[1])
+        for(std::size_t i = 0; i < this->Order(0); ++i)
         {
-            if(mKnots1[i]->Value() != mKnots1Min)
+            if(mKnots[0][i]->Value() != mKnotsMin[0])
                 KRATOS_THROW_ERROR(std::logic_error, "Knots1 does not repeat at begin. Error at knot", i)
-            if(mKnots1[mKnots1.size() - i - 1]->Value() != mKnots1Max)
+            if(mKnots[0][mKnots[0].size() - i - 1]->Value() != mKnotsMax[0])
                 KRATOS_THROW_ERROR(std::logic_error, "Knots1 does not repeat at end. Error at knot", i)
         }
-        for(std::size_t i = 0; i < mOrder2; ++i)
+        for(std::size_t i = 0; i < this->Order(1); ++i)
         {
-            if(mKnots2[i]->Value() != mKnots2Min)
+            if(mKnots[1][i]->Value() != mKnotsMin[1])
                 KRATOS_THROW_ERROR(std::logic_error, "Knots2 does not repeat at begin. Error at knot", i)
-            if(mKnots2[mKnots2.size() - i - 1]->Value() != mKnots2Max)
+            if(mKnots[1][mKnots[1].size() - i - 1]->Value() != mKnotsMax[1])
                 KRATOS_THROW_ERROR(std::logic_error, "Knots2 does not repeat at end. Error at knot", i)
         }
         std::cout << "Check OK! The knot vector satisfies repetitiveness condition" << std::endl;
 
         // update the indexing of knot vectors
         int cnt = -1;
-        for(std::size_t i = 0; i < mKnots1.size(); ++i)
-            mKnots1[i]->UpdateIndex(++cnt);
+        for(std::size_t i = 0; i < mKnots[0].size(); ++i)
+            mKnots[0][i]->UpdateIndex(++cnt);
         cnt = -1;
-        for(std::size_t i = 0; i < mKnots2.size(); ++i)
-            mKnots2[i]->UpdateIndex(++cnt);
+        for(std::size_t i = 0; i < mKnots[1].size(); ++i)
+            mKnots[1][i]->UpdateIndex(++cnt);
         std::cout << "The indexing for knots is updated" << std::endl;
 
         // By default, set first p knots and last p knots to inactive state
-        for(std::size_t i = 0; i < mKnots1.size(); ++i)
+        for(std::size_t i = 0; i < mKnots[0].size(); ++i)
         {
-            if((i < mOrder1) || (i > mKnots1.size() - mOrder1 - 1))
-                mKnots1[i]->SetActive(false);
+            if((i < this->Order(0)) || (i > mKnots[0].size() - this->Order(0) - 1))
+                mKnots[0][i]->SetActive(false);
             else
-                mKnots1[i]->SetActive(true);
+                mKnots[0][i]->SetActive(true);
         }
-        for(std::size_t i = 0; i < mKnots2.size(); ++i)
+        for(std::size_t i = 0; i < mKnots[1].size(); ++i)
         {
-            if((i < mOrder2) || (i > mKnots2.size() - mOrder2 - 1))
-                mKnots2[i]->SetActive(false);
+            if((i < this->Order(1)) || (i > mKnots[1].size() - this->Order(1) - 1))
+                mKnots[1][i]->SetActive(false);
             else
-                mKnots2[i]->SetActive(true);
+                mKnots[1][i]->SetActive(true);
         }
 
         // check if all vertices contain the knots in the knot vector
         // If one vertex contain a knot that is not in the knot vectors of the T-splines mesh, then a compatibility error should happen
         for(vertex_container_t::iterator it = mVertices.begin(); it != mVertices.end(); ++it)
         {
-            if(std::find(mKnots1.begin(), mKnots1.end(), (*it)->pXi()) == mKnots1.end())
+            if(std::find(mKnots[0].begin(), mKnots[0].end(), (*it)->pXi()) == mKnots[0].end())
                 KRATOS_THROW_ERROR(std::logic_error, "The u-knot vector does not contain knot at", *(*it))
-            if(std::find(mKnots2.begin(), mKnots2.end(), (*it)->pEta()) == mKnots2.end())
+            if(std::find(mKnots[1].begin(), mKnots[1].end(), (*it)->pEta()) == mKnots[1].end())
                 KRATOS_THROW_ERROR(std::logic_error, "The v-knot vector does not contain knot at", *(*it))
         }
         std::cout << "Check OK! All vertices contain knots in knot vectors" << std::endl;
@@ -307,8 +320,8 @@ namespace Kratos
         for(vertex_neighbour_type::iterator it = VertexNeighbours.begin(); it != VertexNeighbours.end(); ++it)
         {
             // check for border vertex
-            if((it->first->pXi()->Value() == mKnots1Min) || (it->first->pXi()->Value() == mKnots1Max)
-                || (it->first->pEta()->Value() == mKnots2Min) || (it->first->pEta()->Value() == mKnots2Max))
+            if((it->first->pXi()->Value() == mKnotsMin[0]) || (it->first->pXi()->Value() == mKnotsMax[0])
+                || (it->first->pEta()->Value() == mKnotsMin[1]) || (it->first->pEta()->Value() == mKnotsMax[1]))
             {
                 it->first->SetType(TsVertex::BORDER_JOINT);
 //                std::cout << "Border joint is detected at " << it->first->Index1() << " " << it->first->Index2() << std::endl;
@@ -404,6 +417,12 @@ namespace Kratos
     /* BEGIN SUBROUTINES TO QUERY THE T-MESH */
     /*****************************************************************************/
 
+    /// Get the order in specific dimension
+    int TsMesh2D::Order(const int& dim) const
+    {
+        return mOrder[dim];
+    }
+
     /// Find all cells in the T-splines topology mesh. If extend is true, it will find all cells with account to virtual edges
     /// Algorithm: scanning algorithm
     /// Remarks: this algorithm cannot work if the T-splines topology mesh contain L-joint.
@@ -418,10 +437,10 @@ namespace Kratos
         // firstly make a vertical scanning to identify the horizontal segment
         std::vector<std::pair<double, std::set<int> > > HorizontalSegments;
         bool is_active_edge;
-        for(std::size_t i = 0; i < mKnots2.size() - 1; ++i)
+        for(std::size_t i = 0; i < mKnots[1].size() - 1; ++i)
         {
-            int index_low  = mKnots2[i]->Index();
-            int index_high = mKnots2[i+1]->Index();
+            int index_low  = mKnots[1][i]->Index();
+            int index_high = mKnots[1][i+1]->Index();
             double index_eta = 0.5 * (double)(index_low + index_high);
 
             std::set<int> Segments;
@@ -451,10 +470,10 @@ namespace Kratos
 //        }
 
         // secondly make a horizontal scanning and identify possible intersection
-        for(std::size_t i = 0; i < mKnots1.size() - 1; ++i)
+        for(std::size_t i = 0; i < mKnots[0].size() - 1; ++i)
         {
-            int index_low  = mKnots1[i]->Index();
-            int index_high = mKnots1[i+1]->Index();
+            int index_low  = mKnots[0][i]->Index();
+            int index_high = mKnots[0][i+1]->Index();
             double index_xi = 0.5 * (double)(index_low + index_high);
 
             std::set<int> Segments;
@@ -628,13 +647,13 @@ namespace Kratos
 
                 // insert virtual vertices
                 std::vector<int> tmp_left(tmp_knot_index_left.begin(), tmp_knot_index_left.end());
-                int span = (mOrder1 % 2 == 0) ? (mOrder1 / 2 + 1) : (mOrder1 + 1) / 2;
+                int span = (this->Order(0) % 2 == 0) ? (this->Order(0) / 2 + 1) : (this->Order(0) + 1) / 2;
                 std::vector<TsVertex::Pointer> new_virtual_vertices;
                 TsVertex::Pointer p_vertex;
                 for(std::size_t i = 0; i < span; ++i)
                 {
                     int new_xi_index = *(tmp_left.end() - span + i);
-                    p_vertex = TsVertex::Pointer(new TsVertex(++mLastVertex, mKnots1[new_xi_index], mKnots2[eta_index]));
+                    p_vertex = TsVertex::Pointer(new TsVertex(++mLastVertex, mKnots[0][new_xi_index], mKnots[1][eta_index]));
                     new_virtual_vertices.push_back(p_vertex);
                 }
                 mVirtualVertices.insert(mVirtualVertices.end(), new_virtual_vertices.begin(), new_virtual_vertices.end());
@@ -669,13 +688,13 @@ namespace Kratos
 
                 // insert virtual vertices
                 std::vector<int> tmp_right(tmp_knot_index_right.begin(), tmp_knot_index_right.end());
-                int span = (mOrder1 % 2 == 0) ? (mOrder1 / 2 + 1) : (mOrder1 + 1) / 2;
+                int span = (this->Order(0) % 2 == 0) ? (this->Order(0) / 2 + 1) : (this->Order(0) + 1) / 2;
                 std::vector<TsVertex::Pointer> new_virtual_vertices;
                 TsVertex::Pointer p_vertex;
                 for(std::size_t i = 0; i < span; ++i)
                 {
                     int new_xi_index = *(tmp_right.begin() + i);
-                    p_vertex = TsVertex::Pointer(new TsVertex(++mLastVertex, mKnots1[new_xi_index], mKnots2[eta_index]));
+                    p_vertex = TsVertex::Pointer(new TsVertex(++mLastVertex, mKnots[0][new_xi_index], mKnots[1][eta_index]));
                     new_virtual_vertices.push_back(p_vertex);
                 }
                 mVirtualVertices.insert(mVirtualVertices.end(), new_virtual_vertices.begin(), new_virtual_vertices.end());
@@ -710,13 +729,13 @@ namespace Kratos
 
                 // insert virtual vertices
                 std::vector<int> tmp_up(tmp_knot_index_up.begin(), tmp_knot_index_up.end());
-                int span = (mOrder2 % 2 == 0) ? (mOrder2 / 2 + 1) : (mOrder2 + 1) / 2;
+                int span = (this->Order(1) % 2 == 0) ? (this->Order(1) / 2 + 1) : (this->Order(1) + 1) / 2;
                 std::vector<TsVertex::Pointer> new_virtual_vertices;
                 TsVertex::Pointer p_vertex;
                 for(std::size_t i = 0; i < span; ++i)
                 {
                     int new_eta_index = *(tmp_up.begin() + i);
-                    p_vertex = TsVertex::Pointer(new TsVertex(++mLastVertex, mKnots2[xi_index], mKnots2[new_eta_index]));
+                    p_vertex = TsVertex::Pointer(new TsVertex(++mLastVertex, mKnots[1][xi_index], mKnots[1][new_eta_index]));
                     new_virtual_vertices.push_back(p_vertex);
                 }
                 mVirtualVertices.insert(mVirtualVertices.end(), new_virtual_vertices.begin(), new_virtual_vertices.end());
@@ -751,13 +770,13 @@ namespace Kratos
 
                 // insert virtual vertices
                 std::vector<int> tmp_down(tmp_knot_index_down.begin(), tmp_knot_index_down.end());
-                int span = (mOrder2 % 2 == 0) ? (mOrder2 / 2 + 1) : (mOrder2 + 1) / 2;
+                int span = (this->Order(1) % 2 == 0) ? (this->Order(1) / 2 + 1) : (this->Order(1) + 1) / 2;
                 std::vector<TsVertex::Pointer> new_virtual_vertices;
                 TsVertex::Pointer p_vertex;
                 for(std::size_t i = 0; i < span; ++i)
                 {
                     int new_eta_index = *(tmp_down.end() - span + i);
-                    p_vertex = TsVertex::Pointer(new TsVertex(++mLastVertex, mKnots2[xi_index], mKnots2[new_eta_index]));
+                    p_vertex = TsVertex::Pointer(new TsVertex(++mLastVertex, mKnots[1][xi_index], mKnots[1][new_eta_index]));
                     new_virtual_vertices.push_back(p_vertex);
                 }
                 mVirtualVertices.insert(mVirtualVertices.end(), new_virtual_vertices.begin(), new_virtual_vertices.end());
@@ -893,15 +912,15 @@ namespace Kratos
         {
             // check if the cell area is larger than zero. This to prevent the case of repetitive knot values, then
             // the cell will be degenerated. In this case, the degenerated cells will be ignored.
-            double area = fabs(mKnots1[(*it).first.first]->Value() - mKnots1[(*it).first.second]->Value()) *
-                          fabs(mKnots2[(*it).second.first]->Value() - mKnots2[(*it).second.second]->Value());
+            double area = fabs(mKnots[0][(*it).first.first]->Value() - mKnots[0][(*it).first.second]->Value()) *
+                          fabs(mKnots[1][(*it).second.first]->Value() - mKnots[1][(*it).second.second]->Value());
             if(area > tol)
             {
                 pCell = Cell::Pointer(new Cell(++LastCell,
-                                               mKnots1[(*it).first.first],
-                                               mKnots1[(*it).first.second],
-                                               mKnots2[(*it).second.first],
-                                               mKnots2[(*it).second.second]));
+                                               mKnots[0][(*it).first.first],
+                                               mKnots[0][(*it).first.second],
+                                               mKnots[1][(*it).second.first],
+                                               mKnots[1][(*it).second.second]));
                 mCells.push_back(pCell);
             }
         }
@@ -943,7 +962,7 @@ namespace Kratos
                     // compute the Bezier extraction operator of the anchor w.r.t the cell
                     // Remarks: right now, I don't know the method to articulate two Bezier extraction on two
                     //          consecutive knot spans, I have to compute the Bezier extraction operator at each
-                    //          anchor w.r.t any cell sequentially. I know it is repetitive and expensive. I know it is approximately (mOrder1+1)(mOrder2+1) times more expensive than computing the extraction operator once for each anchor.
+                    //          anchor w.r.t any cell sequentially. I know it is repetitive and expensive. I know it is approximately (this->Order(0)+1)(this->Order(1)+1) times more expensive than computing the extraction operator once for each anchor.
                     // TODO: to improve the algorithm of this method
                     // firstly we know the knot span of this cell
                     double left  = (*it2)->LeftValue();
@@ -951,24 +970,27 @@ namespace Kratos
                     double up    = (*it2)->UpValue();
                     double down  = (*it2)->DownValue();
                     std::cout << "At anchor " << *(*it) << ", found cell" << *(*it2) << " with spans = (";
-                    std::cout << mKnots1[left]->Value() << ", " << mKnots1[right]->Value() << ", ";
-                    std::cout << mKnots2[down]->Value() << ", " << mKnots2[up]->Value() << ")" << std::endl;
+                    std::cout << mKnots[0][left]->Value() << ", " << mKnots[0][right]->Value() << ", ";
+                    std::cout << mKnots[1][down]->Value() << ", " << mKnots[1][up]->Value() << ")" << std::endl;
 
                     // secondly we figure out at which knot span in the local knot vectors it covers
                     if(std::find(KnotsIndex1.begin(), KnotsIndex1.end(), left) == KnotsIndex1.end())
                     {
-                        Uxi.push_back(mKnots1[left]->Value());
-                        temp = this->FindSpanLocal(mKnots1[left]->Value(), Knots1);
+                        Uxi.push_back(mKnots[0][left]->Value());
+                        temp = this->FindSpanLocal(mKnots[0][left]->Value(), Knots1);
                         spans_xi.push_back(temp);
                     }
                     if(std::find(KnotsIndex1.begin(), KnotsIndex1.end(), right) == KnotsIndex1.end())
                     {
-                        Uxi.push_back(mKnots1[right]->Value());
-                        temp = this->FindSpanLocal(mKnots1[right]->Value(), Knots1);
+                        Uxi.push_back(mKnots[0][right]->Value());
+                        temp = this->FindSpanLocal(mKnots[0][right]->Value(), Knots1);
                         spans_xi.push_back(temp);
                     }
                     if(spans_xi.size() > 1)
+                    {
+                        KRATOS_WATCH(spans_xi.size())
                         KRATOS_THROW_ERROR(std::logic_error, "The cell must not terminate at more than one virtual vertex in u-direction", "")
+                    }
                     std::cout << "Uxi:";
                     for(std::size_t i = 0; i < Uxi.size(); ++i)
                         std::cout << " " << Uxi[i];
@@ -980,14 +1002,14 @@ namespace Kratos
 
                     if(std::find(KnotsIndex2.begin(), KnotsIndex2.end(), down) == KnotsIndex2.end())
                     {
-                        Ueta.push_back(mKnots2[down]->Value());
-                        temp = this->FindSpanLocal(mKnots2[down]->Value(), Knots2);
+                        Ueta.push_back(mKnots[1][down]->Value());
+                        temp = this->FindSpanLocal(mKnots[1][down]->Value(), Knots2);
                         spans_eta.push_back(temp);
                     }
                     if(std::find(KnotsIndex2.begin(), KnotsIndex2.end(), up) == KnotsIndex2.end())
                     {
-                        Ueta.push_back(mKnots2[up]->Value());
-                        temp = this->FindSpanLocal(mKnots2[up]->Value(), Knots2);
+                        Ueta.push_back(mKnots[1][up]->Value());
+                        temp = this->FindSpanLocal(mKnots[1][up]->Value(), Knots2);
                         spans_eta.push_back(temp);
                     }
                     if(spans_eta.size() > 1)
@@ -1012,7 +1034,7 @@ namespace Kratos
                     std::cout << std::endl;
                     BezierUtils::bezier_extraction_tsplines_2d(Crows, nb_xi, nb_eta, Ubar_xi, Ubar_eta,
                                                                Knots1, Knots2, Uxi, Ueta, spans_xi, spans_eta,
-                                                               mOrder1, mOrder2);
+                                                               this->Order(0), this->Order(1));
                     KRATOS_WATCH(nb_xi)
                     KRATOS_WATCH(nb_eta)
                     KRATOS_WATCH(Ubar_xi)
@@ -1025,8 +1047,8 @@ namespace Kratos
                     std::set<double> Ubar_eta_set(Ubar_eta.begin(), Ubar_eta.end());
                     std::vector<double> Ubar_xi_unique(Ubar_xi_set.begin(), Ubar_xi_set.end());
                     std::vector<double> Ubar_eta_unique(Ubar_eta_set.begin(), Ubar_eta_set.end());
-                    span_xi_after = this->FindSpanLocal(0.5 * (mKnots1[left]->Value() + mKnots1[right]->Value()), Ubar_xi_unique);
-                    span_eta_after = this->FindSpanLocal(0.5 * (mKnots2[down]->Value() + mKnots2[up]->Value()), Ubar_eta_unique);
+                    span_xi_after = this->FindSpanLocal(0.5 * (mKnots[0][left]->Value() + mKnots[0][right]->Value()), Ubar_xi_unique);
+                    span_eta_after = this->FindSpanLocal(0.5 * (mKnots[1][down]->Value() + mKnots[1][up]->Value()), Ubar_eta_unique);
                     KRATOS_WATCH(span_xi_after)
                     KRATOS_WATCH(span_eta_after)
 
@@ -1049,16 +1071,16 @@ namespace Kratos
     {
         rOStream << "Tmesh details:" << std::endl;
 
-        rOStream << "Order 1: " << mOrder1 << std::endl;
-        rOStream << "Order 2: " << mOrder2 << std::endl;
+        rOStream << "Order 1: " << this->Order(0) << std::endl;
+        rOStream << "Order 2: " << this->Order(1) << std::endl;
 
         rOStream << "Knot vector 1:" << std::endl;
-        for(std::size_t i = 0; i < mKnots1.size(); ++i)
-            rOStream << " " << *(mKnots1[i]);
+        for(std::size_t i = 0; i < mKnots[0].size(); ++i)
+            rOStream << " " << *(mKnots[0][i]);
         rOStream << std::endl;
         rOStream << "Knot vector 2:" << std::endl;
-        for(std::size_t i = 0; i < mKnots2.size(); ++i)
-            rOStream << " " << *(mKnots2[i]);
+        for(std::size_t i = 0; i < mKnots[1].size(); ++i)
+            rOStream << " " << *(mKnots[1][i]);
         rOStream << std::endl;
 
         rOStream << "Vertex List:" << std::endl;
@@ -1071,7 +1093,7 @@ namespace Kratos
     }
 
     /// Export the topology mesh/knot coordinates mesh to matlab
-    void TsMesh2D::ExportMatlab(std::string fn, std::string mesh_type) const
+    void TsMesh2D::ExportMatlab(const std::string& fn, const std::string& mesh_type) const
     {
         std::ofstream outfile(fn.c_str());
 
@@ -1147,7 +1169,7 @@ namespace Kratos
     }
 
     /// Export the cells to mdpa format
-    void TsMesh2D::ExportMDPA(std::string fn, int Division1, int Division2) const
+    void TsMesh2D::ExportMDPA(const std::string& fn, const int& Division1, const int& Division2) const
     {
         std::ofstream outfile(fn.c_str());
 
@@ -1252,12 +1274,12 @@ namespace Kratos
         // write the degree
         outfile << "Begin ElementalData NURBS_DEGREE_1\n";
         for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
-            outfile << (*it)->Id() << " " << mOrder1 << std::endl;
+            outfile << (*it)->Id() << " " << this->Order(0) << std::endl;
         outfile << "End ElementalData\n\n";
 
         outfile << "Begin ElementalData NURBS_DEGREE_2\n";
         for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
-            outfile << (*it)->Id() << " " << mOrder2 << std::endl;
+            outfile << (*it)->Id() << " " << this->Order(1) << std::endl;
         outfile << "End ElementalData\n\n";
 
         // write the division

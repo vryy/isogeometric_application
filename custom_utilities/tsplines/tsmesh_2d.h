@@ -28,7 +28,7 @@
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
 #include "custom_utilities/nurbs/cell.h"
-#include "custom_utilities/tsplines/tsedges.h"
+#include "custom_utilities/tsplines/tsedge.h"
 #include "custom_utilities/tsplines/tsanchor.h"
 
 namespace Kratos
@@ -81,23 +81,23 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(TsMesh2D);
 
     /// Default constructor
-    TsMesh2D() : mOrder1(1), mOrder2(1), mLastEdge(0), mLastVertex(0), mLockConstruct(true), mIsExtended(false) {}
+    TsMesh2D();
 
     /// Destructor
-    ~TsMesh2D() {}
-
+    ~TsMesh2D();
 
     /// Subroutines to modify the T-splines mesh
     void BeginConstruct();
-    void SetOrder(int Dim, int Order);
-    knot_t InsertKnot(int Dim, double Knot);
+    void SetOrder(const int& dim, const int& order);
+    knot_t InsertKnot(const int& dim, const double& knot);
     TsVertex::Pointer AddVertex(knot_t pXi, knot_t pEta);
     TsEdge::Pointer AddHEdge(TsVertex::Pointer pV1, TsVertex::Pointer pV2);
     TsEdge::Pointer AddVEdge(TsVertex::Pointer pV1, TsVertex::Pointer pV2);
-    void ReadFromFile(std::string fn);
+    void ReadFromFile(const std::string& fn);
     void EndConstruct();
 
     /// Subroutines to query the T-splines mesh
+    int Order(const int& dim) const;
     void FindCells(std::set<cell_t>& rCells, bool _extend = false) const;
     bool IsAnalysisSuitable();
 
@@ -110,8 +110,8 @@ public:
     void BuildAnchors(std::string fn);
     void BuildCells();
     void PrintInfo(std::ostream& rOStream) const;
-    void ExportMatlab(std::string fn, std::string mesh_type) const;
-    void ExportMDPA(std::string fn, int Division1, int Division2) const;
+    void ExportMatlab(const std::string& fn, const std::string& mesh_type) const;
+    void ExportMDPA(const std::string& fn, const int& Division1, const int& Division2) const;
 
 private:
     vertex_container_t mVertices; // list of vertices
@@ -120,16 +120,16 @@ private:
     cell_container_t mCells; // list of cells
     anchor_container_t mAnchors; // list of anchors
 
-    int mOrder1, mOrder2; // order of the Tsplines mesh in horizontal and vertical direction
-    int mLastVertex; // internal variable point to the last vertex identification in the T-splines mesh
-    int mLastEdge; // internal variable point to the last edge identification in the T-splines mesh
-    double mKnots1Min;
-    double mKnots1Max;
-    double mKnots2Min;
-    double mKnots2Max;
+    boost::array<int, 2> mOrder; // order of the Tsplines mesh in horizontal and vertical direction
 
-    knot_container_t mKnots1; // knot vector in horizontal direction
-    knot_container_t mKnots2; // knot vector in vertical direction
+    std::size_t mLastVertex; // internal variable point to the last vertex identification in the T-splines mesh
+    std::size_t mLastEdge; // internal variable point to the last edge identification in the T-splines mesh
+
+    boost::array<double, 2> mKnotsMin;
+    boost::array<double, 2> mKnotsMax;
+
+    boost::array<knot_container_t, 2> mKnots; // 0: knot vector in horizontal direction
+                                              // 1: knot vector in vertical direction
 
     bool mLockConstruct; // lock variable to control the build process
     bool mIsExtended; // variable to keep track with the construction of extended topology mesh
@@ -144,50 +144,56 @@ private:
     /// Remarks: this is the anchors in the topology coordinates, not the anchors in knot coordinates
     void FindAnchors(std::vector<anchor_t>& rAnchors) const
     {
-        double anchor_xi;
+    	double anchor_xi;
         double anchor_eta;
-        if((mOrder1 % 2 != 0) && (mOrder2 % 2 != 0))
+        if((this->mOrder[0] % 2 != 0) && (this->mOrder[1] % 2 != 0))
         {
             // for odd order T-splines topology mesh, the vertex is also the anchor
             for(vertex_container_t::const_iterator it = mVertices.begin(); it != mVertices.end(); ++it)
+            {
                 if((*it)->pXi()->IsActive() && (*it)->pEta()->IsActive())
                 {
                     anchor_xi = static_cast<double>((*it)->Index1());
                     anchor_eta = static_cast<double>((*it)->Index2());
                     rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
                 }
+            }
         }
-        else if((mOrder1 % 2 == 0) && (mOrder2 % 2 != 0))
+        else if((this->mOrder[0] % 2 == 0) && (this->mOrder[1] % 2 != 0))
         {
             // the anchors are the middle of all horizontal edges
             for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
+            {
                 if((*it)->EdgeType() == TsEdge::HORIZONTAL_EDGE && (*it)->IsActive())
                 {
                     anchor_xi = 0.5 * static_cast<double>((*it)->pV1()->Index1() + (*it)->pV2()->Index1());
                     anchor_eta = static_cast<double>((*it)->Index());
                     rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
                 }
+            }
         }
-        else if((mOrder1 % 2 != 0) && (mOrder2 % 2 == 0))
+        else if((this->mOrder[0] % 2 != 0) && (this->mOrder[1] % 2 == 0))
         {
             // the anchors are the middle of all vertical edges
             for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
+            {
                 if((*it)->EdgeType() == TsEdge::VERTICAL_EDGE && (*it)->IsActive())
                 {
                     anchor_xi = static_cast<double>((*it)->Index());
                     anchor_eta = 0.5 * static_cast<double>((*it)->pV1()->Index2() + (*it)->pV2()->Index2());
                     rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
                 }
+            }
         }
-        else if((mOrder1 % 2 == 0) && (mOrder2 % 2 == 0))
+        else if((this->mOrder[0] % 2 == 0) && (this->mOrder[1] % 2 == 0))
         {
             // the anchors are the middle of the cells
             std::set<cell_t> cells;
             this->FindCells(cells, false);
             for(std::set<cell_t>::const_iterator it = cells.begin(); it != cells.end(); ++it)
             {
-                anchor_xi = 0.5 * (mKnots1[it->first.first]->Value() + mKnots1[it->first.second]->Value());
-                anchor_eta = 0.5 * (mKnots2[it->second.first]->Value() + mKnots2[it->second.second]->Value());
+                anchor_xi = 0.5 * (mKnots[0][it->first.first]->Value() + mKnots[0][it->first.second]->Value());
+                anchor_eta = 0.5 * (mKnots[1][it->second.first]->Value() + mKnots[1][it->second.second]->Value());
                 rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
             }
         }
@@ -203,19 +209,20 @@ private:
     ///     Call FindKnots<1, double> if one wants to find the local knot vector associated with the anchor
     ///     Call FindKnots<2, int> if one wants to find the index in topology coordinates of local knot vector associated with the anchor
     template<int FuncType, class DataType>
-    void FindKnots(double Anchor_xi_index, double Anchor_eta_index, std::vector<DataType>& Knots1, std::vector<DataType>& Knots2) const
+    void FindKnots(const double& Anchor_xi_index, const double& Anchor_eta_index,
+    	std::vector<DataType>& Knots1, std::vector<DataType>& Knots2) const
     {
-        std::set<int> tmp_knot_index_left;
-        std::set<int> tmp_knot_index_right;
-        std::set<int> tmp_knot_index_up;
-        std::set<int> tmp_knot_index_down;
+        std::set<std::size_t> tmp_knot_index_left;
+        std::set<std::size_t> tmp_knot_index_right;
+        std::set<std::size_t> tmp_knot_index_up;
+        std::set<std::size_t> tmp_knot_index_down;
 
         // marching to the all directions and find the intersecting edges
         for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
         {
             if((*it)->EdgeType() == TsEdge::VERTICAL_EDGE) //vertical edge
             {
-                int edge_xi_index = (*it)->Index();
+                std::size_t edge_xi_index = (*it)->Index();
                 if((*it)->IsCut(Anchor_eta_index) && edge_xi_index < Anchor_xi_index)
                     tmp_knot_index_left.insert(edge_xi_index);
                 if((*it)->IsCut(Anchor_eta_index) && edge_xi_index > Anchor_xi_index)
@@ -223,7 +230,7 @@ private:
             }
             if((*it)->EdgeType() == TsEdge::HORIZONTAL_EDGE) //horizontal edge
             {
-                int edge_eta_index = (*it)->Index();
+                std::size_t edge_eta_index = (*it)->Index();
                 if((*it)->IsCut(Anchor_xi_index) && edge_eta_index < Anchor_eta_index)
                     tmp_knot_index_down.insert(edge_eta_index);
                 if((*it)->IsCut(Anchor_xi_index) && edge_eta_index > Anchor_eta_index)
@@ -253,12 +260,12 @@ private:
 //        std::cout << std::endl;
 
         // fill in the knot vectors
-        if(mOrder1 % 2 == 0)
+        if(this->mOrder[0] % 2 == 0)
         {
-            int span = mOrder1/2 + 1;
+            std::size_t span = this->mOrder[0]/2 + 1;
             int k_index;
-            std::vector<int> tmp_left(tmp_knot_index_left.begin(), tmp_knot_index_left.end());
-            std::vector<int> tmp_right(tmp_knot_index_right.begin(), tmp_knot_index_right.end());
+            std::vector<std::size_t> tmp_left(tmp_knot_index_left.begin(), tmp_knot_index_left.end());
+            std::vector<std::size_t> tmp_right(tmp_knot_index_right.begin(), tmp_knot_index_right.end());
 
             if(Knots1.size() != 2*span)
                 Knots1.resize(2*span);
@@ -267,25 +274,25 @@ private:
             {
                 k_index = *(tmp_left.end() - span + i);
                 if(FuncType == 1)
-                    Knots1[i] = static_cast<DataType>(mKnots1[k_index]->Value());
+                    Knots1[i] = static_cast<DataType>(mKnots[0][k_index]->Value());
                 else if(FuncType == 2)
-                    Knots1[i] = static_cast<DataType>(mKnots1[k_index]->Index());
+                    Knots1[i] = static_cast<DataType>(mKnots[0][k_index]->Index());
             }
             for(std::size_t i = 0; i < span; ++i)
             {
                 k_index = *(tmp_right.begin() + i);
                 if(FuncType == 1)
-                    Knots1[i + span] = static_cast<DataType>(mKnots1[k_index]->Value());
+                    Knots1[i + span] = static_cast<DataType>(mKnots[0][k_index]->Value());
                 else if(FuncType == 2)
-                    Knots1[i + span] = static_cast<DataType>(mKnots1[k_index]->Index());
+                    Knots1[i + span] = static_cast<DataType>(mKnots[0][k_index]->Index());
             }
         }
         else
         {
-            int span = (mOrder1 + 1)/2;
+            std::size_t span = (this->mOrder[0] + 1)/2;
             int k_index;
-            std::vector<int> tmp_left(tmp_knot_index_left.begin(), tmp_knot_index_left.end());
-            std::vector<int> tmp_right(tmp_knot_index_right.begin(), tmp_knot_index_right.end());
+            std::vector<std::size_t> tmp_left(tmp_knot_index_left.begin(), tmp_knot_index_left.end());
+            std::vector<std::size_t> tmp_right(tmp_knot_index_right.begin(), tmp_knot_index_right.end());
 
             if(Knots1.size() != 2*span + 1)
                 Knots1.resize(2*span + 1);
@@ -294,32 +301,32 @@ private:
             {
                 k_index = *(tmp_left.end() - span + i);
                 if(FuncType == 1)
-                    Knots1[i] = static_cast<DataType>(mKnots1[k_index]->Value());
+                    Knots1[i] = static_cast<DataType>(mKnots[0][k_index]->Value());
                 else if(FuncType == 2)
-                    Knots1[i] = static_cast<DataType>(mKnots1[k_index]->Index());
+                    Knots1[i] = static_cast<DataType>(mKnots[0][k_index]->Index());
             }
 
             if(FuncType == 1)
-                Knots1[span] = static_cast<DataType>(mKnots1[Anchor_xi_index]->Value());
+                Knots1[span] = static_cast<DataType>(mKnots[0][Anchor_xi_index]->Value());
             else if(FuncType == 2)
-                Knots1[span] = static_cast<DataType>(mKnots1[Anchor_xi_index]->Index());
+                Knots1[span] = static_cast<DataType>(mKnots[0][Anchor_xi_index]->Index());
 
             for(std::size_t i = 0; i < span; ++i)
             {
                 k_index = *(tmp_right.begin() + i);
                 if(FuncType == 1)
-                    Knots1[i + span + 1] = static_cast<DataType>(mKnots1[k_index]->Value());
+                    Knots1[i + span + 1] = static_cast<DataType>(mKnots[0][k_index]->Value());
                 else if(FuncType == 2)
-                    Knots1[i + span + 1] = static_cast<DataType>(mKnots1[k_index]->Index());
+                    Knots1[i + span + 1] = static_cast<DataType>(mKnots[0][k_index]->Index());
             }
         }
 
-        if(mOrder2 % 2 == 0)
+        if(this->mOrder[1] % 2 == 0)
         {
-            int span = mOrder2/2 + 1;
+            std::size_t span = this->mOrder[1]/2 + 1;
             int k_index;
-            std::vector<int> tmp_down(tmp_knot_index_down.begin(), tmp_knot_index_down.end());
-            std::vector<int> tmp_up(tmp_knot_index_up.begin(), tmp_knot_index_up.end());
+            std::vector<std::size_t> tmp_down(tmp_knot_index_down.begin(), tmp_knot_index_down.end());
+            std::vector<std::size_t> tmp_up(tmp_knot_index_up.begin(), tmp_knot_index_up.end());
 
             if(Knots2.size() != 2*span)
                 Knots2.resize(2*span);
@@ -328,25 +335,25 @@ private:
             {
                 k_index = *(tmp_down.end() - span + i);
                 if(FuncType == 1)
-                    Knots2[i] = static_cast<DataType>(mKnots2[k_index]->Value());
+                    Knots2[i] = static_cast<DataType>(mKnots[1][k_index]->Value());
                 else if(FuncType == 2)
-                    Knots2[i] = static_cast<DataType>(mKnots2[k_index]->Index());
+                    Knots2[i] = static_cast<DataType>(mKnots[1][k_index]->Index());
             }
             for(std::size_t i = 0; i < span; ++i)
             {
                 k_index = *(tmp_up.begin() + i);
                 if(FuncType == 1)
-                    Knots2[i + span] = static_cast<DataType>(mKnots2[k_index]->Value());
+                    Knots2[i + span] = static_cast<DataType>(mKnots[1][k_index]->Value());
                 else if(FuncType == 2)
-                    Knots2[i + span] = static_cast<DataType>(mKnots2[k_index]->Index());
+                    Knots2[i + span] = static_cast<DataType>(mKnots[1][k_index]->Index());
             }
         }
         else
         {
-            int span = (mOrder2 + 1)/2;
+            std::size_t span = (this->mOrder[1] + 1)/2;
             int k_index;
-            std::vector<int> tmp_down(tmp_knot_index_down.begin(), tmp_knot_index_down.end());
-            std::vector<int> tmp_up(tmp_knot_index_up.begin(), tmp_knot_index_up.end());
+            std::vector<std::size_t> tmp_down(tmp_knot_index_down.begin(), tmp_knot_index_down.end());
+            std::vector<std::size_t> tmp_up(tmp_knot_index_up.begin(), tmp_knot_index_up.end());
 
             if(Knots2.size() != 2*span + 1)
                 Knots2.resize(2*span + 1);
@@ -355,29 +362,30 @@ private:
             {
                 k_index = *(tmp_down.end() - span + i);
                 if(FuncType == 1)
-                    Knots2[i] = static_cast<DataType>(mKnots2[k_index]->Value());
+                    Knots2[i] = static_cast<DataType>(mKnots[1][k_index]->Value());
                 else if(FuncType == 2)
-                    Knots2[i] = static_cast<DataType>(mKnots2[k_index]->Index());
+                    Knots2[i] = static_cast<DataType>(mKnots[1][k_index]->Index());
             }
 
             if(FuncType == 1)
-                Knots2[span] = static_cast<DataType>(mKnots2[Anchor_eta_index]->Value());
+                Knots2[span] = static_cast<DataType>(mKnots[1][Anchor_eta_index]->Value());
             else if(FuncType == 2)
-                Knots2[span] = static_cast<DataType>(mKnots2[Anchor_eta_index]->Index());
+                Knots2[span] = static_cast<DataType>(mKnots[1][Anchor_eta_index]->Index());
 
             for(std::size_t i = 0; i < span; ++i)
             {
                 k_index = *(tmp_up.begin() + i);
                 if(FuncType == 1)
-                    Knots2[i + span + 1] = static_cast<DataType>(mKnots2[k_index]->Value());
+                    Knots2[i + span + 1] = static_cast<DataType>(mKnots[1][k_index]->Value());
                 else if(FuncType == 2)
-                    Knots2[i + span + 1] = static_cast<DataType>(mKnots2[k_index]->Index());
+                    Knots2[i + span + 1] = static_cast<DataType>(mKnots[1][k_index]->Index());
             }
         }
     }
 
     /// For debugging only
-    void FindKnots2(double Anchor_xi_index, double Anchor_eta_index, Vector& Knots1, Vector& Knots2) const
+    void FindKnots2(const double& Anchor_xi_index, const double& Anchor_eta_index,
+    	Vector& Knots1, Vector& Knots2) const
     {
         std::vector<double> tmpKnots1;
         std::vector<double> tmpKnots2;
@@ -394,7 +402,7 @@ private:
 
     /// Find the span of knot in the local knot vector
     /// Remarks: it will give the based-1 index
-    int FindSpanLocal(double Xi, const std::vector<double>& U)
+    int FindSpanLocal(const double& Xi, const std::vector<double>& U)
     {
 //        int low = 0;
 //        int high = U.size() - 1;

@@ -697,7 +697,8 @@ public:
     /// Overload assignment operator
     HBSplinesFESpace<TDim>& operator=(const HBSplinesFESpace<TDim>& rOther)
     {
-        // TODO compare more
+        // TODO copy more
+        KRATOS_THROW_ERROR(std::logic_error, "The assignment oprator is not complete", "")
         BaseType::operator=(rOther);
         return *this;
     }
@@ -706,7 +707,6 @@ public:
     virtual typename FESpace<TDim>::Pointer Clone() const
     {
         typename HBSplinesFESpace<TDim>::Pointer pNewFESpace = typename HBSplinesFESpace<TDim>::Pointer(new HBSplinesFESpace<TDim>());
-        // TODO copy more
         *pNewFESpace = *this;
         return pNewFESpace;
     }

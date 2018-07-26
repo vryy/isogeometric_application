@@ -670,7 +670,7 @@ private:
     typename FESpace<TDim>::Pointer mpFESpace;
 
     // container to contain all the grid functions
-    std::vector<boost::any> mpGridFunctions; // using boost::any so store pointers to grid function
+    std::vector<boost::any> mpGridFunctions; // using boost::any to store pointer to grid function
 
     /**
      * interface data

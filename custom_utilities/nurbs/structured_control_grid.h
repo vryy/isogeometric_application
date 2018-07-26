@@ -68,6 +68,22 @@ public:
     /// overload operator []
     virtual const TDataType& operator[] (const std::size_t& i) const {return mData[i];}
 
+    /// Overload assignment operator
+    BaseStructuredControlGrid<TDataType>& operator=(const BaseStructuredControlGrid<TDataType>& rOther)
+    {
+        BaseType::operator=(rOther);
+        this->mData = rOther.mData;
+        return *this;
+    }
+
+    /// Create the clone
+    virtual typename ControlGrid<TDataType>::Pointer Clone() const
+    {
+        typename BaseStructuredControlGrid<TDataType>::Pointer pNewControlGrid = typename BaseStructuredControlGrid<TDataType>::Pointer(new BaseStructuredControlGrid<TDataType>());
+        *pNewControlGrid = *this;
+        return pNewControlGrid;
+    }
+
     /************************************/
     /****** EXCLUSIVE SUBROUTINES *******/
     /************************************/
@@ -242,11 +258,20 @@ public:
         this->ResizeAndCopyFrom(*pOther);
     }
 
+    /// Overload assignment operator
+    StructuredControlGrid<1, TDataType>& operator=(const StructuredControlGrid<1, TDataType>& rOther)
+    {
+        BaseType::operator=(rOther);
+        this->mSize = rOther.mSize;
+        this->CopyFrom(rOther);
+        return *this;
+    }
+
     /// Clone this grid
     virtual typename ControlGrid<TDataType>::Pointer Clone() const
     {
         typename StructuredControlGrid<1, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer(new StructuredControlGrid<1, TDataType>(mSize));
-        pNewControlGrid->CopyFrom(*this);
+        *pNewControlGrid = *this;
         return pNewControlGrid;
     }
 
@@ -459,11 +484,21 @@ public:
         return pControlGrid;
     }
 
+    /// Overload assignment operator
+    StructuredControlGrid<2, TDataType>& operator=(const StructuredControlGrid<2, TDataType>& rOther)
+    {
+        BaseType::operator=(rOther);
+        this->mSize[0] = rOther.mSize[0];
+        this->mSize[1] = rOther.mSize[1];
+        this->CopyFrom(rOther);
+        return *this;
+    }
+
     /// Clone this grid
     virtual typename ControlGrid<TDataType>::Pointer Clone() const
     {
         typename StructuredControlGrid<2, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<2, TDataType>::Pointer(new StructuredControlGrid<2, TDataType>(mSize[0], mSize[1]));
-        pNewControlGrid->CopyFrom(*this);
+        *pNewControlGrid = *this;
         return pNewControlGrid;
     }
 
@@ -609,13 +644,14 @@ public:
         this->CopyFrom(*pOther);
     }
 
-    /// Copy the data from a column of structured control_grid in 1D
+    /// Copy the data from a column of structured control_grid in 2D
     /// If dir==0, the column of grid will be copied in w-direction
     /// If dir==1, the column of grid will be copied in v-direction
     /// If dir==2, the column of grid will be copied in u-direction
     void CopyFrom(const int& dir, std::vector<typename StructuredControlGrid<2, TDataType>::Pointer> pOthers)
     {
         // TODO
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented")
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
@@ -641,6 +677,8 @@ public:
     typename StructuredControlGrid<2, TDataType>::Pointer Get(const BoundarySide& side, const unsigned int& level) const
     {
         // TODO
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented")
+
         typename StructuredControlGrid<2, TDataType>::Pointer pControlGrid;
 
         if (side == _BLEFT_)
@@ -671,11 +709,22 @@ public:
         return pControlGrid;
     }
 
+    /// Overload assignment operator
+    StructuredControlGrid<3, TDataType>& operator=(const StructuredControlGrid<3, TDataType>& rOther)
+    {
+        BaseType::operator=(rOther);
+        this->mSize[0] = rOther.mSize[0];
+        this->mSize[1] = rOther.mSize[1];
+        this->mSize[2] = rOther.mSize[2];
+        this->CopyFrom(rOther);
+        return *this;
+    }
+
     /// Clone this grid
     virtual typename ControlGrid<TDataType>::Pointer Clone() const
     {
         typename StructuredControlGrid<3, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<3, TDataType>::Pointer(new StructuredControlGrid<3, TDataType>(mSize[0], mSize[1], mSize[2]));
-        pNewControlGrid->CopyFrom(*this);
+        *pNewControlGrid = *this;
         return pNewControlGrid;
     }
 

@@ -46,8 +46,20 @@ public:
     /// Create a new control grid pointer
     static typename ControlGrid::Pointer Create() {return typename ControlGrid::Pointer(new ControlGrid());}
 
-    /// Clone this grid function
-    virtual typename ControlGrid<TDataType>::Pointer Clone() const {return NULL;}
+    /// Overload assignment operator
+    ControlGrid<TDataType>& operator=(const ControlGrid<TDataType>& rOther)
+    {
+        this->mName = rOther.mName;
+        return *this;
+    }
+
+    /// Create the clone
+    virtual typename ControlGrid<TDataType>::Pointer Clone() const
+    {
+        typename ControlGrid<TDataType>::Pointer pNewControlGrid = typename ControlGrid<TDataType>::Pointer(new ControlGrid<TDataType>());
+        *pNewControlGrid = *this;
+        return pNewControlGrid;
+    }
 
     /// Set the name
     void SetName(const std::string& Name) {mName = Name;}

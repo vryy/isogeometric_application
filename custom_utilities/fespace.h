@@ -258,6 +258,7 @@ public:
     /// Overload assignment operator
     FESpace<TDim>& operator=(const FESpace<TDim>& rOther)
     {
+        mGlobalToLocal = rOther.mGlobalToLocal;
         return *this;
     }
 

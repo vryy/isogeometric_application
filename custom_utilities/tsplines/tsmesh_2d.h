@@ -10,7 +10,6 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_TS_MESH_2D_H_INCLUDED
 
 // System includes
-#include <ctime>
 #include <cmath>
 #include <string>
 #include <vector>
@@ -71,7 +70,7 @@ public:
     typedef std::pair<double, double>       anchor_t;
     typedef Knot<double>::Pointer           knot_t;
 
-    typedef std::vector<knot_t>      knot_container_t;
+    typedef std::vector<knot_t>             knot_container_t;
     typedef std::list<Cell::Pointer>        cell_container_t;
     typedef std::list<TsAnchor::Pointer>    anchor_container_t;
     typedef std::list<TsVertex::Pointer>    vertex_container_t;
@@ -93,12 +92,17 @@ public:
     TsVertex::Pointer AddVertex(knot_t pXi, knot_t pEta);
     TsEdge::Pointer AddHEdge(TsVertex::Pointer pV1, TsVertex::Pointer pV2);
     TsEdge::Pointer AddVEdge(TsVertex::Pointer pV1, TsVertex::Pointer pV2);
-    void ReadFromFile(const std::string& fn);
     void EndConstruct();
 
     /// Subroutines to query the T-splines mesh
     int Order(const int& dim) const;
+    std::size_t NumberOfKnots(const int& dim) const;
+    knot_t GetKnot(const int& dim, const std::size_t& index) const;
+    const edge_container_t& Edges() const;
+    const anchor_container_t& Anchors() const;
+    const cell_container_t& Cells() const;
     void FindCells(std::set<cell_t>& rCells, bool _extend = false) const;
+    void FindAnchors(std::vector<anchor_t>& rAnchors) const;
     bool IsAnalysisSuitable();
 
     /// Subroutines to modify the T-splines mesh
@@ -109,95 +113,9 @@ public:
     void BuildExtendedTmesh();
     void BuildAnchors(std::string fn);
     void BuildCells();
+
+    /// Print out
     void PrintInfo(std::ostream& rOStream) const;
-    void ExportMatlab(const std::string& fn, const std::string& mesh_type) const;
-    void ExportMDPA(const std::string& fn, const int& Division1, const int& Division2) const;
-
-private:
-    vertex_container_t mVertices; // list of vertices
-    vertex_container_t mVirtualVertices; // list of virtual vertices
-    edge_container_t mEdges; // list of edges
-    cell_container_t mCells; // list of cells
-    anchor_container_t mAnchors; // list of anchors
-
-    boost::array<int, 2> mOrder; // order of the Tsplines mesh in horizontal and vertical direction
-
-    std::size_t mLastVertex; // internal variable point to the last vertex identification in the T-splines mesh
-    std::size_t mLastEdge; // internal variable point to the last edge identification in the T-splines mesh
-
-    boost::array<double, 2> mKnotsMin;
-    boost::array<double, 2> mKnotsMax;
-
-    boost::array<knot_container_t, 2> mKnots; // 0: knot vector in horizontal direction
-                                              // 1: knot vector in vertical direction
-
-    bool mLockConstruct; // lock variable to control the build process
-    bool mIsExtended; // variable to keep track with the construction of extended topology mesh
-
-    void LockQuery()
-    {
-        if(mLockConstruct)
-            KRATOS_THROW_ERROR(std::logic_error, "The T-splines mesh is currently locked. Please call BeginConstruct() to unlock", "")
-    }
-
-    /// Get the list of anchors associated with the T-splines topology mesh
-    /// Remarks: this is the anchors in the topology coordinates, not the anchors in knot coordinates
-    void FindAnchors(std::vector<anchor_t>& rAnchors) const
-    {
-    	double anchor_xi;
-        double anchor_eta;
-        if((this->mOrder[0] % 2 != 0) && (this->mOrder[1] % 2 != 0))
-        {
-            // for odd order T-splines topology mesh, the vertex is also the anchor
-            for(vertex_container_t::const_iterator it = mVertices.begin(); it != mVertices.end(); ++it)
-            {
-                if((*it)->pXi()->IsActive() && (*it)->pEta()->IsActive())
-                {
-                    anchor_xi = static_cast<double>((*it)->Index1());
-                    anchor_eta = static_cast<double>((*it)->Index2());
-                    rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
-                }
-            }
-        }
-        else if((this->mOrder[0] % 2 == 0) && (this->mOrder[1] % 2 != 0))
-        {
-            // the anchors are the middle of all horizontal edges
-            for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
-            {
-                if((*it)->EdgeType() == TsEdge::HORIZONTAL_EDGE && (*it)->IsActive())
-                {
-                    anchor_xi = 0.5 * static_cast<double>((*it)->pV1()->Index1() + (*it)->pV2()->Index1());
-                    anchor_eta = static_cast<double>((*it)->Index());
-                    rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
-                }
-            }
-        }
-        else if((this->mOrder[0] % 2 != 0) && (this->mOrder[1] % 2 == 0))
-        {
-            // the anchors are the middle of all vertical edges
-            for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
-            {
-                if((*it)->EdgeType() == TsEdge::VERTICAL_EDGE && (*it)->IsActive())
-                {
-                    anchor_xi = static_cast<double>((*it)->Index());
-                    anchor_eta = 0.5 * static_cast<double>((*it)->pV1()->Index2() + (*it)->pV2()->Index2());
-                    rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
-                }
-            }
-        }
-        else if((this->mOrder[0] % 2 == 0) && (this->mOrder[1] % 2 == 0))
-        {
-            // the anchors are the middle of the cells
-            std::set<cell_t> cells;
-            this->FindCells(cells, false);
-            for(std::set<cell_t>::const_iterator it = cells.begin(); it != cells.end(); ++it)
-            {
-                anchor_xi = 0.5 * (mKnots[0][it->first.first]->Value() + mKnots[0][it->first.second]->Value());
-                anchor_eta = 0.5 * (mKnots[1][it->second.first]->Value() + mKnots[1][it->second.second]->Value());
-                rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
-            }
-        }
-    }
 
     /// Find the local knot vectors for an arbitrary anchor
     /// Algorithm: ray marching, Isogeometric analysis using T-splines
@@ -383,6 +301,33 @@ private:
         }
     }
 
+private:
+    vertex_container_t mVertices; // list of vertices
+    vertex_container_t mVirtualVertices; // list of virtual vertices
+    edge_container_t mEdges; // list of edges
+    cell_container_t mCells; // list of cells
+    anchor_container_t mAnchors; // list of anchors
+
+    boost::array<int, 2> mOrder; // order of the Tsplines mesh in horizontal and vertical direction
+
+    std::size_t mLastVertex; // internal variable point to the last vertex identification in the T-splines mesh
+    std::size_t mLastEdge; // internal variable point to the last edge identification in the T-splines mesh
+
+    boost::array<double, 2> mKnotsMin;
+    boost::array<double, 2> mKnotsMax;
+
+    boost::array<knot_container_t, 2> mKnots; // 0: knot vector in horizontal direction
+                                              // 1: knot vector in vertical direction
+
+    bool mLockConstruct; // lock variable to control the build process
+    bool mIsExtended; // variable to keep track with the construction of extended topology mesh
+
+    void LockQuery()
+    {
+        if(mLockConstruct)
+            KRATOS_THROW_ERROR(std::logic_error, "The T-splines mesh is currently locked. Please call BeginConstruct() to unlock", "")
+    }
+
     /// For debugging only
     void FindKnots2(const double& Anchor_xi_index, const double& Anchor_eta_index,
     	Vector& Knots1, Vector& Knots2) const
@@ -400,44 +345,6 @@ private:
         std::copy(tmpKnots2.begin(), tmpKnots2.end(), Knots2.begin());
     }
 
-    /// Find the span of knot in the local knot vector
-    /// Remarks: it will give the based-1 index
-    int FindSpanLocal(const double& Xi, const std::vector<double>& U)
-    {
-//        int low = 0;
-//        int high = U.size() - 1;
-//        int mid = (low + high) / 2;
-//
-//        while( Xi < U[mid] || Xi >= U[mid+1] )
-//        {
-//            if(Xi < U[mid])
-//            {
-//                high = mid;
-//            }
-//            else
-//            {
-//                low = mid;
-//            }
-//            mid = (low + high) / 2;
-//        }
-//
-//        return mid + 1;
-
-        if(!U.empty())
-        {
-            if(Xi < U.front())
-                return 0;
-
-            if(Xi > U.back())
-                return U.size();
-
-            for(std::size_t i = 0; i < U.size() - 1; ++i)
-                if(Xi >= U[i] && Xi < U[i + 1])
-                    return i + 1;
-        }
-
-        return 0;
-    }
 };
 
 /// output stream function

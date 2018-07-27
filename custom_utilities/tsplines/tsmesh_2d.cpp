@@ -1,4 +1,5 @@
 #include "custom_utilities/bezier_utils.h"
+#include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/tsplines/tshedge.h"
 #include "custom_utilities/tsplines/tsvedge.h"
 #include "custom_utilities/tsplines/tsvirtualhedge.h"
@@ -10,6 +11,9 @@ namespace Kratos
 
     typedef TsMesh2D::knot_t knot_t;
     typedef TsMesh2D::anchor_t anchor_t;
+    typedef TsMesh2D::edge_container_t edge_container_t;
+    typedef TsMesh2D::anchor_container_t anchor_container_t;
+    typedef TsMesh2D::cell_container_t cell_container_t;
 
     TsMesh2D::TsMesh2D()
     {
@@ -80,126 +84,6 @@ namespace Kratos
         mEdges.push_back(pE);
 //        std::cout << "add a vertical edge " << pV1->Id() << " " << pV2->Id() << std::endl;
         return pE;
-    }
-
-    /// Read the T-splined mesh from file
-    /// Remarks: need to be called after BeginConstruct() and before EndConstruct()
-    void TsMesh2D::ReadFromFile(const std::string& fn)
-    {
-        std::ifstream infile(fn.c_str());
-
-        std::string line;
-        std::vector<std::string> words;
-        int ReadMode = NO_READ;
-        int Dim = 0;
-        std::vector<std::pair<int, std::pair<int, int> > > HEdgeList;
-        std::vector<std::pair<int, std::pair<int, int> > > VEdgeList;
-        while(!infile.eof())
-        {
-            std::getline(infile, line);
-            boost::split(words, line, boost::is_any_of(" \t"), boost::token_compress_on);
-
-//            for(std::size_t i = 0; i < words.size(); ++i)
-//                std::cout << " " << words[i];
-//            std::cout << std::endl;
-
-            if(words.size() != 0)
-            {
-                if(words[0] == std::string("Begin"))
-                {
-                    if(words.size() < 2)
-                        KRATOS_THROW_ERROR(std::logic_error, "Missing statement for Begin", "")
-                    if(words[1] == "Order")
-                        ReadMode = READ_ORDER;
-                    else if(words[1] == std::string("Knots"))
-                        ReadMode = READ_KNOTS;
-                    else if(words[1] == std::string("H-edges"))
-                        ReadMode = READ_H_EDGES;
-                    else if(words[1] == std::string("V-edges"))
-                        ReadMode = READ_V_EDGES;
-                    continue;
-                }
-
-                if(words[0] == std::string("End"))
-                {
-                    Dim = 0;
-                    ReadMode = NO_READ;
-                    continue;
-                }
-
-                if(ReadMode == READ_ORDER)
-                {
-                    int Order = atoi(words[0].c_str());
-                    this->SetOrder(Dim, Order);
-                    ++Dim;
-                }
-                else if(ReadMode == READ_KNOTS)
-                {
-                    for(std::size_t i = 0; i < words.size(); ++i)
-                        this->InsertKnot(Dim, atof(words[i].c_str()));
-                    ++Dim;
-                }
-                else if(ReadMode == READ_H_EDGES)
-                {
-                    int v  = atoi(words[0].c_str());
-                    int u1 = atoi(words[1].c_str());
-                    int u2 = atoi(words[2].c_str());
-                    HEdgeList.push_back(std::pair<int, std::pair<int, int> >(v, std::pair<int, int>(u1, u2)));
-                }
-                else if(ReadMode == READ_V_EDGES)
-                {
-                    int u  = atoi(words[0].c_str());
-                    int v1 = atoi(words[1].c_str());
-                    int v2 = atoi(words[2].c_str());
-                    VEdgeList.push_back(std::pair<int, std::pair<int, int> >(u, std::pair<int, int>(v1, v2)));
-                }
-            }
-        }
-
-        infile.close();
-
-        // assign the index to the knot vectors
-        int cnt = -1;
-        for(std::size_t i = 0; i < mKnots[0].size(); ++i)
-            mKnots[0][i]->UpdateIndex(++cnt);
-        cnt = -1;
-        for(std::size_t i = 0; i < mKnots[1].size(); ++i)
-            mKnots[1][i]->UpdateIndex(++cnt);
-
-        // create the vertex list
-        std::set<std::pair<int, int> > VertexList;
-        for(std::size_t i = 0; i < HEdgeList.size(); ++i)
-        {
-            VertexList.insert(std::pair<int, int>(HEdgeList[i].second.first, HEdgeList[i].first));
-            VertexList.insert(std::pair<int, int>(HEdgeList[i].second.second, HEdgeList[i].first));
-        }
-        for(std::size_t i = 0; i < VEdgeList.size(); ++i)
-        {
-            VertexList.insert(std::pair<int, int>(VEdgeList[i].first, VEdgeList[i].second.first));
-            VertexList.insert(std::pair<int, int>(VEdgeList[i].first, VEdgeList[i].second.second));
-        }
-
-        // insert the vertices to the T-splines mesh
-        std::map<std::pair<int, int>, TsVertex::Pointer> VertexMap;
-        for(std::set<std::pair<int, int> >::iterator it = VertexList.begin(); it != VertexList.end(); ++it)
-        {
-            TsVertex::Pointer pV = this->AddVertex(mKnots[0][it->first], mKnots[1][it->second]);
-            VertexMap[std::pair<int, int>(it->first, it->second)] = pV;
-        }
-
-        // insert the edges to the T-splines mesh
-        for(std::size_t i = 0; i < HEdgeList.size(); ++i)
-        {
-            TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(HEdgeList[i].second.first, HEdgeList[i].first)];
-            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(HEdgeList[i].second.second, HEdgeList[i].first)];
-            this->AddHEdge(pV1, pV2);
-        }
-        for(std::size_t i = 0; i < VEdgeList.size(); ++i)
-        {
-            TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(VEdgeList[i].first, VEdgeList[i].second.first)];
-            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(VEdgeList[i].first, VEdgeList[i].second.second)];
-            this->AddVEdge(pV1, pV2);
-        }
     }
 
     /// Lock T-splines mesh construction and perform validity check for the T-splines mesh
@@ -423,6 +307,36 @@ namespace Kratos
         return mOrder[dim];
     }
 
+    /// Get the number of knots in specific dimension
+    std::size_t TsMesh2D::NumberOfKnots(const int& dim) const
+    {
+        return mKnots[dim].size();
+    }
+
+    /// Get the knot in specific dimension
+    knot_t TsMesh2D::GetKnot(const int& dim, const std::size_t& index) const
+    {
+        return mKnots[dim][index];
+    }
+
+    /// Get all the edges in the T-mesh
+    const edge_container_t& TsMesh2D::Edges() const
+    {
+        return mEdges;
+    }
+
+    /// Get all the anchors in the T-mesh
+    const anchor_container_t& TsMesh2D::Anchors() const
+    {
+        return mAnchors;
+    }
+
+    /// Get all the cells in the T-mesh
+    const cell_container_t& TsMesh2D::Cells() const
+    {
+        return mCells;
+    }
+
     /// Find all cells in the T-splines topology mesh. If extend is true, it will find all cells with account to virtual edges
     /// Algorithm: scanning algorithm
     /// Remarks: this algorithm cannot work if the T-splines topology mesh contain L-joint.
@@ -535,6 +449,65 @@ namespace Kratos
 //        for(std::set<cell_t>::iterator it = rCells.begin(); it != rCells.end(); ++it)
 //            std::cout << "cell " << it->first.first << " " << it->first.second
 //                          << " " << it->second.first << " " << it->second.second << std::endl;
+    }
+
+    /// Get the list of anchors associated with the T-splines topology mesh
+    /// Remarks: this is the anchors in the topology coordinates, not the anchors in knot coordinates
+    void TsMesh2D::FindAnchors(std::vector<anchor_t>& rAnchors) const
+    {
+    	double anchor_xi;
+        double anchor_eta;
+        if((this->mOrder[0] % 2 != 0) && (this->mOrder[1] % 2 != 0))
+        {
+            // for odd order T-splines topology mesh, the vertex is also the anchor
+            for(vertex_container_t::const_iterator it = mVertices.begin(); it != mVertices.end(); ++it)
+            {
+                if((*it)->pXi()->IsActive() && (*it)->pEta()->IsActive())
+                {
+                    anchor_xi = static_cast<double>((*it)->Index1());
+                    anchor_eta = static_cast<double>((*it)->Index2());
+                    rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
+                }
+            }
+        }
+        else if((this->mOrder[0] % 2 == 0) && (this->mOrder[1] % 2 != 0))
+        {
+            // the anchors are the middle of all horizontal edges
+            for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
+            {
+                if((*it)->EdgeType() == TsEdge::HORIZONTAL_EDGE && (*it)->IsActive())
+                {
+                    anchor_xi = 0.5 * static_cast<double>((*it)->pV1()->Index1() + (*it)->pV2()->Index1());
+                    anchor_eta = static_cast<double>((*it)->Index());
+                    rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
+                }
+            }
+        }
+        else if((this->mOrder[0] % 2 != 0) && (this->mOrder[1] % 2 == 0))
+        {
+            // the anchors are the middle of all vertical edges
+            for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
+            {
+                if((*it)->EdgeType() == TsEdge::VERTICAL_EDGE && (*it)->IsActive())
+                {
+                    anchor_xi = static_cast<double>((*it)->Index());
+                    anchor_eta = 0.5 * static_cast<double>((*it)->pV1()->Index2() + (*it)->pV2()->Index2());
+                    rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
+                }
+            }
+        }
+        else if((this->mOrder[0] % 2 == 0) && (this->mOrder[1] % 2 == 0))
+        {
+            // the anchors are the middle of the cells
+            std::set<cell_t> cells;
+            this->FindCells(cells, false);
+            for(std::set<cell_t>::const_iterator it = cells.begin(); it != cells.end(); ++it)
+            {
+                anchor_xi = 0.5 * (mKnots[0][it->first.first]->Value() + mKnots[0][it->first.second]->Value());
+                anchor_eta = 0.5 * (mKnots[1][it->second.first]->Value() + mKnots[1][it->second.second]->Value());
+                rAnchors.push_back(anchor_t(anchor_xi, anchor_eta));
+            }
+        }
     }
 
     /// Check for the analysis-suitable property by checking the intersection of virtual edges
@@ -978,13 +951,13 @@ namespace Kratos
                     if(std::find(KnotsIndex1.begin(), KnotsIndex1.end(), left) == KnotsIndex1.end())
                     {
                         Uxi.push_back(mKnots[0][left]->Value());
-                        temp = this->FindSpanLocal(mKnots[0][left]->Value(), Knots1);
+                        temp = BSplineUtils::FindSpanLocal(mKnots[0][left]->Value(), Knots1);
                         spans_xi.push_back(temp);
                     }
                     if(std::find(KnotsIndex1.begin(), KnotsIndex1.end(), right) == KnotsIndex1.end())
                     {
                         Uxi.push_back(mKnots[0][right]->Value());
-                        temp = this->FindSpanLocal(mKnots[0][right]->Value(), Knots1);
+                        temp = BSplineUtils::FindSpanLocal(mKnots[0][right]->Value(), Knots1);
                         spans_xi.push_back(temp);
                     }
                     std::cout << "Uxi:";
@@ -1001,13 +974,13 @@ namespace Kratos
                     if(std::find(KnotsIndex2.begin(), KnotsIndex2.end(), down) == KnotsIndex2.end())
                     {
                         Ueta.push_back(mKnots[1][down]->Value());
-                        temp = this->FindSpanLocal(mKnots[1][down]->Value(), Knots2);
+                        temp = BSplineUtils::FindSpanLocal(mKnots[1][down]->Value(), Knots2);
                         spans_eta.push_back(temp);
                     }
                     if(std::find(KnotsIndex2.begin(), KnotsIndex2.end(), up) == KnotsIndex2.end())
                     {
                         Ueta.push_back(mKnots[1][up]->Value());
-                        temp = this->FindSpanLocal(mKnots[1][up]->Value(), Knots2);
+                        temp = BSplineUtils::FindSpanLocal(mKnots[1][up]->Value(), Knots2);
                         spans_eta.push_back(temp);
                     }
                     std::cout << "Ueta:";
@@ -1045,8 +1018,8 @@ namespace Kratos
                     std::set<double> Ubar_eta_set(Ubar_eta.begin(), Ubar_eta.end());
                     std::vector<double> Ubar_xi_unique(Ubar_xi_set.begin(), Ubar_xi_set.end());
                     std::vector<double> Ubar_eta_unique(Ubar_eta_set.begin(), Ubar_eta_set.end());
-                    span_xi_after = this->FindSpanLocal(0.5 * (mKnots[0][left]->Value() + mKnots[0][right]->Value()), Ubar_xi_unique);
-                    span_eta_after = this->FindSpanLocal(0.5 * (mKnots[1][down]->Value() + mKnots[1][up]->Value()), Ubar_eta_unique);
+                    span_xi_after = BSplineUtils::FindSpanLocal(0.5 * (mKnots[0][left]->Value() + mKnots[0][right]->Value()), Ubar_xi_unique);
+                    span_eta_after = BSplineUtils::FindSpanLocal(0.5 * (mKnots[1][down]->Value() + mKnots[1][up]->Value()), Ubar_eta_unique);
                     KRATOS_WATCH(span_xi_after)
                     KRATOS_WATCH(span_eta_after)
 
@@ -1088,211 +1061,6 @@ namespace Kratos
         rOStream << "Edge List:" << std::endl;
         for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
             rOStream << *(*it) << std::endl;
-    }
-
-    /// Export the topology mesh/knot coordinates mesh to matlab
-    void TsMesh2D::ExportMatlab(const std::string& fn, const std::string& mesh_type) const
-    {
-        std::ofstream outfile(fn.c_str());
-
-        outfile << "axis equal" << std::endl;
-        outfile << "close all" << std::endl;
-        outfile << "hold on" << std::endl << std::endl;
-
-        // plot edges
-        if(mesh_type == std::string("topology"))
-        {
-            for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
-            {
-                if((*it)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE || (*it)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE)
-                {
-                    outfile << "line([" << (*it)->pV1()->Index1() << " " << (*it)->pV2()->Index1() << "],";
-                    outfile << "[" << (*it)->pV1()->Index2() << " " << (*it)->pV2()->Index2() << "],'LineStyle',':');" << std::endl;
-                }
-                else
-                {
-                    outfile << "line([" << (*it)->pV1()->Index1() << " " << (*it)->pV2()->Index1() << "],";
-                    outfile << "[" << (*it)->pV1()->Index2() << " " << (*it)->pV2()->Index2() << "]);" << std::endl;
-                }
-            }
-        }
-        else if(mesh_type == std::string("knots"))
-        {
-            for(edge_container_t::const_iterator it = mEdges.begin(); it != mEdges.end(); ++it)
-            {
-                if((*it)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE || (*it)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE)
-                {
-                    outfile << "line([" << (*it)->pV1()->pXi()->Value() << " " << (*it)->pV2()->pXi()->Value() << "],";
-                    outfile << "[" << (*it)->pV1()->pEta()->Value() << " " << (*it)->pV2()->pEta()->Value() << "],'LineStyle',':');" << std::endl;
-                }
-                else
-                {
-                    outfile << "line([" << (*it)->pV1()->pXi()->Value() << " " << (*it)->pV2()->pXi()->Value() << "],";
-                    outfile << "[" << (*it)->pV1()->pEta()->Value() << " " << (*it)->pV2()->pEta()->Value() << "]);" << std::endl;
-                }
-            }
-        }
-        outfile << std::endl;
-
-        // find all anchors in the current topology mesh
-        std::vector<anchor_t> Anchors;
-        this->FindAnchors(Anchors);
-
-        // export the knot vectors for each anchors
-        std::vector<double> Knots1;
-        std::vector<double> Knots2;
-        int cnt = 0;
-        for(std::size_t i = 0; i < Anchors.size(); ++i)
-        {
-            this->FindKnots<1, double>(Anchors[i].first, Anchors[i].second, Knots1, Knots2);
-            outfile << "local_knots(" << ++cnt << ",:,:) = [";
-            for(std::size_t i = 0; i < Knots1.size(); ++i)
-                outfile << " " << Knots1[i];
-            outfile << std::endl;
-            for(std::size_t i = 0; i < Knots2.size(); ++i)
-                outfile << " " << Knots2[i];
-            outfile << "];" << std::endl;
-        }
-
-        outfile.close();
-        std::cout << "Exported to " << fn << " completed!" << std::endl;
-
-        std::cout << "Find cells in the T-splines topology mesh..." << std::endl;
-        std::set<cell_t> cells;
-        this->FindCells(cells);
-
-        std::cout << "Find cells in the extended T-splines topology mesh..." << std::endl;
-        cells.clear();
-        this->FindCells(cells, true);
-    }
-
-    /// Export the cells to mdpa format
-    void TsMesh2D::ExportMDPA(const std::string& fn, const int& Division1, const int& Division2) const
-    {
-        std::ofstream outfile(fn.c_str());
-
-        // write header
-        outfile << "//KRATOS isogeometric application data file for T-splines\n";
-        outfile << "//(c) 2015 Hoang Giang Bui, Ruhr-University Bochum\n";
-
-        std::time_t t = time(0);
-        struct tm* now = std::localtime(&t);
-        outfile << "//This file is created on " << now->tm_mday << "/" << now->tm_mon << "/" << (now->tm_year + 1900)
-                << " " << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec << std::endl << std::endl;
-
-        // write model_part data section
-        outfile << "Begin ModelPartData\n";
-        outfile << "End ModelPartData\n\n";
-
-        // write properties
-        outfile << "Begin Properties 1\n";
-        outfile << "End Properties\n\n";
-
-        // write nodes
-        outfile << "Begin Nodes\n";
-        for(anchor_container_t::const_iterator it = mAnchors.begin(); it != mAnchors.end(); ++it)
-            outfile << (*it)->Id() << "\t" << (*it)->X() << "\t" << (*it)->Y() << "\t" << (*it)->Z() << std::endl;
-        outfile << "End Nodes\n\n";
-
-        // write elements
-        outfile << "Begin Elements KinematicLinearGeo2dBezier\n";
-        for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
-        {
-            const std::vector<std::size_t>& AnchorIds = (*it)->GetSupportedAnchors();
-            outfile << (*it)->Id() << " 1";
-            for(std::vector<std::size_t>::const_iterator it2 = AnchorIds.begin(); it2 != AnchorIds.end(); ++it2)
-                outfile << " " << (*it2);
-            outfile << std::endl;
-        }
-        outfile << "End Elements\n\n";
-
-        // write weights
-        outfile << "Begin ElementalData NURBS_WEIGHT\n";
-        std::vector<double> AnchorWeights;
-        for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
-        {
-            AnchorWeights = (*it)->GetAnchorWeights();
-            outfile << (*it)->Id() << " [" << AnchorWeights.size() << "] (";
-            for(std::size_t i = 0; i < AnchorWeights.size() - 1; ++i)
-                outfile << AnchorWeights[i] << ",";
-            outfile << AnchorWeights.back() << ")\n";
-        }
-        outfile << "End ElementalData\n\n";
-
-        // read extraction operator from element in the form of triplet CSR
-        // this requires that the Id of the cell must be unique
-        std::vector<int> rowPtr;
-        std::vector<int> colInd;
-        std::vector<double> values;
-        std::map<int, std::vector<int> > rowPtrMap;
-        std::map<int, std::vector<int> > colIndMap;
-        std::map<int, std::vector<double> > valuesMap;
-        for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
-        {
-            rowPtr.clear();
-            colInd.clear();
-            values.clear();
-            (*it)->GetExtractionOperator(rowPtr, colInd, values);
-            rowPtrMap[(*it)->Id()] = rowPtr;
-            colIndMap[(*it)->Id()] = colInd;
-            valuesMap[(*it)->Id()] = values;
-        }
-
-        // write extraction operator
-        outfile << "Begin ElementalData EXTRACTION_OPERATOR_CSR_ROWPTR\n";
-        for(std::map<int, std::vector<int> >::iterator it = rowPtrMap.begin(); it != rowPtrMap.end(); ++it)
-        {
-            outfile << (*it).first << " [" << (*it).second.size() << "] (";
-            for(std::size_t i = 0; i < (*it).second.size() - 1; ++i)
-                outfile << (*it).second[i] << ",";
-            outfile << (*it).second.back() << ")\n";
-        }
-        outfile << "End ElementalData\n\n";
-
-        outfile << "Begin ElementalData EXTRACTION_OPERATOR_CSR_COLIND\n";
-        for(std::map<int, std::vector<int> >::iterator it = colIndMap.begin(); it != colIndMap.end(); ++it)
-        {
-            outfile << (*it).first << " [" << (*it).second.size() << "] (";
-            for(std::size_t i = 0; i < (*it).second.size() - 1; ++i)
-                outfile << (*it).second[i] << ",";
-            outfile << (*it).second.back() << ")\n";
-        }
-        outfile << "End ElementalData\n\n";
-
-        outfile << "Begin ElementalData EXTRACTION_OPERATOR_CSR_VALUES\n";
-        for(std::map<int, std::vector<double> >::iterator it = valuesMap.begin(); it != valuesMap.end(); ++it)
-        {
-            outfile << (*it).first << " [" << (*it).second.size() << "] (";
-            for(std::size_t i = 0; i < (*it).second.size() - 1; ++i)
-                outfile << (*it).second[i] << ",";
-            outfile << (*it).second.back() << ")\n";
-        }
-        outfile << "End ElementalData\n\n";
-
-        // write the degree
-        outfile << "Begin ElementalData NURBS_DEGREE_1\n";
-        for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
-            outfile << (*it)->Id() << " " << this->Order(0) << std::endl;
-        outfile << "End ElementalData\n\n";
-
-        outfile << "Begin ElementalData NURBS_DEGREE_2\n";
-        for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
-            outfile << (*it)->Id() << " " << this->Order(1) << std::endl;
-        outfile << "End ElementalData\n\n";
-
-        // write the division
-        outfile << "Begin ElementalData NUM_DIVISION_1\n";
-        for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
-            outfile << (*it)->Id() << " " << Division1 << std::endl;
-        outfile << "End ElementalData\n\n";
-
-        outfile << "Begin ElementalData NUM_DIVISION_2\n";
-        for(cell_container_t::const_iterator it = mCells.begin(); it != mCells.end(); ++it)
-            outfile << (*it)->Id() << " " << Division2 << std::endl;
-        outfile << "End ElementalData\n\n";
-
-        outfile.close();
-        std::cout << "ExportMDPA completed" << std::endl;
     }
 
 } // end namespace Kratos

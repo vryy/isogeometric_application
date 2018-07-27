@@ -10,6 +10,7 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_BASIS_FUNCTION_HPP_INCLUDED
 
 #include "custom_utilities/bezier_utils.h"
+#include "custom_utilities/bspline_utils.h"
 
 namespace Kratos
 {
@@ -186,8 +187,8 @@ inline void HBSplinesBasisFunction_Helper<2>::ComputeExtractionOperator(TVectorT
     std::set<double> Ubar_eta_unique(Ubar_eta.begin(), Ubar_eta.end());
     std::vector<double> Ubar_xi_unique_vector(Ubar_xi_unique.begin(), Ubar_xi_unique.end());
     std::vector<double> Ubar_eta_unique_vector(Ubar_eta_unique.begin(), Ubar_eta_unique.end());
-    span1 = FindSpanLocal(r_cell.LeftValue(), Ubar_xi_unique_vector) - 1;
-    span2 = FindSpanLocal(r_cell.DownValue(), Ubar_eta_unique_vector) - 1;
+    span1 = BSplineUtils::FindSpanLocal(r_cell.LeftValue(), Ubar_xi_unique_vector) - 1;
+    span2 = BSplineUtils::FindSpanLocal(r_cell.DownValue(), Ubar_eta_unique_vector) - 1;
 
     #ifdef DEBUG_BEZIER_EXTRACTION
     KRATOS_WATCH(span1)
@@ -433,9 +434,9 @@ inline void HBSplinesBasisFunction_Helper<3>::ComputeExtractionOperator(TVectorT
     std::vector<double> Ubar_xi_unique_vector(Ubar_xi_unique.begin(), Ubar_xi_unique.end());
     std::vector<double> Ubar_eta_unique_vector(Ubar_eta_unique.begin(), Ubar_eta_unique.end());
     std::vector<double> Ubar_zeta_unique_vector(Ubar_zeta_unique.begin(), Ubar_zeta_unique.end());
-    span1 = FindSpanLocal(r_cell.LeftValue(), Ubar_xi_unique_vector) - 1;
-    span2 = FindSpanLocal(r_cell.DownValue(), Ubar_eta_unique_vector) - 1;
-    span3 = FindSpanLocal(r_cell.BelowValue(), Ubar_zeta_unique_vector) - 1;
+    span1 = BSplineUtils::FindSpanLocal(r_cell.LeftValue(), Ubar_xi_unique_vector) - 1;
+    span2 = BSplineUtils::FindSpanLocal(r_cell.DownValue(), Ubar_eta_unique_vector) - 1;
+    span3 = BSplineUtils::FindSpanLocal(r_cell.BelowValue(), Ubar_zeta_unique_vector) - 1;
 
     #ifdef DEBUG_BEZIER_EXTRACTION
     KRATOS_WATCH(span1)

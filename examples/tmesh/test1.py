@@ -9,10 +9,9 @@ from KratosMultiphysics.IsogeometricApplication import *
 kernel = Kernel()   #defining kernel
 
 Tmesh = TsMesh2D()
+util = TSplineUtils()
 
-Tmesh.BeginConstruct()
-Tmesh.ReadFromFile('test1.tmesh')
-Tmesh.EndConstruct()
+util.ReadFromFile(Tmesh, 'test1.tmesh')
 # print(Tmesh)
 
 # 
@@ -30,6 +29,6 @@ Tmesh.BuildExtendedTmesh()
 # Tmesh.BuildExtendedTmesh()
 print "Tmesh is analysis suitable: ", Tmesh.IsAnalysisSuitable()
 
-Tmesh.ExportMatlab("tmesh1.m", "topology")
-# Tmesh.ExportMatlab("tmesh.m", "knots")
+util.ExportMatlab(Tmesh, "tmesh1_topo.m", "topology")
+util.ExportMatlab(Tmesh, "tmesh1_knots.m", "knots")
 

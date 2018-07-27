@@ -48,7 +48,8 @@ namespace Kratos
 ///@{
 
 /// Short class definition.
-/** Detail class definition.
+/**
+ * Utility for various operations with Bsplines
  */
 class BSplineUtils
 {
@@ -214,6 +215,47 @@ public:
     //N = 1000000: 0.96382
     //N = 10000000: 8.45895
     //N = 100000000: 81.9643, 81.9494
+
+    /// Find the span of knot in the local knot vector
+    /// Remarks: it will give the based-1 index
+    ///          it only works if U is non-repeated
+    template<typename TDataType, class TValuesContainerType>
+    static std::size_t FindSpanLocal(const TDataType& Xi, const TValuesContainerType& U)
+    {
+        //        int low = 0;
+//        int high = U.size() - 1;
+//        int mid = (low + high) / 2;
+//
+//        while( Xi < U[mid] || Xi >= U[mid+1] )
+//        {
+//            if(Xi < U[mid])
+//            {
+//                high = mid;
+//            }
+//            else
+//            {
+//                low = mid;
+//            }
+//            mid = (low + high) / 2;
+//        }
+//
+//        return mid + 1;
+
+        if(!U.empty())
+        {
+            if(Xi < U[0])
+                return 0;
+
+            if(Xi > U[U.size()-1])
+                return U.size();
+
+            for(std::size_t i = 0; i < U.size()-1; ++i)
+                if(Xi >= U[i] && Xi < U[i + 1])
+                    return i + 1;
+        }
+
+        return 0;
+    }
 
     // This function works slightly faster than the above implementation
     template<class ValuesContainerType1, class ValuesContainerType2>

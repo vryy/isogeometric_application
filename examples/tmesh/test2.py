@@ -15,21 +15,20 @@ kernel = Kernel()   #defining kernel
 
 ## test the functionality of the Tmesh
 Tmesh = TsMesh2D()
+util = TSplineUtils()
 
-Tmesh.BeginConstruct()
-Tmesh.ReadFromFile('test2.tmesh')
-Tmesh.EndConstruct()
+util.ReadFromFile(Tmesh, 'test2.tmesh')
 # print(Tmesh)
 
 Tmesh.BuildExtendedTmesh()
 print "Tmesh is analysis suitable: ", Tmesh.IsAnalysisSuitable()
 
-# Tmesh.ExportMatlab("tmesh2.m", "topology")
-# Tmesh.ExportMatlab("tmesh2.m", "knots")
+util.ExportMatlab(Tmesh, "tmesh2_topo.m", "topology")
+util.ExportMatlab(Tmesh, "tmesh2_knots.m", "knots")
 
 Tmesh.BuildAnchors('test2.coordinates')
 
 Tmesh.BuildCells()
 
-Tmesh.ExportMDPA('tmesh2.mdpa', 1, 1)
+util.ExportMDPA(Tmesh, 'tmesh2.mdpa', 1, 1)
 

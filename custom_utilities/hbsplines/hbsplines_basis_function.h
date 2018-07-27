@@ -43,28 +43,6 @@ namespace Kratos
 template<int TDim>
 struct HBSplinesBasisFunction_Helper
 {
-    /// Find the span of knot in the local knot vector
-    /// Remarks: it will give the based-1 index
-    ///          it only works if U is non-repeated
-    template<typename TDataType, class TValuesContainerType>
-    static std::size_t FindSpanLocal(const TDataType& Xi, const TValuesContainerType& U)
-    {
-        if(!U.empty())
-        {
-            if(Xi < U[0])
-                return 0;
-
-            if(Xi > U[U.size()-1])
-                return U.size();
-
-            for(std::size_t i = 0; i < U.size()-1; ++i)
-                if(Xi >= U[i] && Xi < U[i + 1])
-                    return i + 1;
-        }
-
-        return 0;
-    }
-
     template<typename TVectorType, typename TIArrayType, typename TKnotContainerType, class TCellType>
     static void ComputeExtractionOperator(TVectorType& Crow, const TIArrayType& orders,
         const TKnotContainerType& local_knots, const TCellType& r_cell);

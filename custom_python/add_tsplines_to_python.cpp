@@ -32,6 +32,12 @@ LICENSE: see isogeometric_application/LICENSE.txt
 namespace Kratos
 {
 
+void TSplineUtils_CreateFromBSplines(TSplineUtils& rDummy, TsMesh2D& tmesh,
+    const BSplinesFESpace<2>& rFESpace)
+{
+    rDummy.CreateFromBSplines(tmesh, rFESpace);
+}
+
 void TSplineUtils_ReadFromFile(TSplineUtils& rDummy, TsMesh2D& tmesh,
     const std::string& fn)
 {
@@ -86,6 +92,7 @@ void IsogeometricApplication_AddTSplinesToPython()
 
     class_<TSplineUtils, TSplineUtils::Pointer, boost::noncopyable>
     ("TSplineUtils", init<>())
+    .def("CreateFromBSplines", &TSplineUtils_CreateFromBSplines)
     .def("ReadFromFile", &TSplineUtils_ReadFromFile)
     .def("ExportMatlab", &TSplineUtils_ExportMatlab)
     .def("ExportMDPA", &TSplineUtils_ExportMDPA)

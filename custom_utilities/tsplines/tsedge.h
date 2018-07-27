@@ -52,7 +52,8 @@ public:
     void SetId(const std::size_t& Id) {mId = Id;}
 
     /// check if the edge was cut by a straight ray
-    virtual bool IsCut(const double& v) const {return false;}
+    /// It is noted that the value to be checked against is the index value, not the knot value (which is real)
+    virtual bool IsCut(const double& index) const {return false;}
 
     /// Get associated vertices
     TsVertex::Pointer pV1() const {return mpV1;}

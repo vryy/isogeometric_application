@@ -21,6 +21,7 @@
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
 #include "custom_utilities/tsplines/tsmesh_2d.h"
+#include "custom_utilities/nurbs/bsplines_fespace.h"
 
 
 namespace Kratos
@@ -80,6 +81,12 @@ public:
     ///@}
     ///@name Operations
     ///@{
+
+    /// Create the T-mesh from BSplines
+    static void CreateFromBSplines(TsMesh2D& tmesh, const BSplinesFESpace<2>& rFESpace)
+    {
+        // TODO
+    }
 
     /// Read the T-mesh topology from .tmesh file
     static void ReadFromFile(TsMesh2D& tmesh, const std::string& fn)
@@ -276,13 +283,15 @@ public:
         outfile.close();
         std::cout << "Exported to " << fn << " completed!" << std::endl;
 
-        std::cout << "Find cells in the T-splines topology mesh..." << std::endl;
+        std::cout << "Find cells in the T-splines topology mesh...";
         std::set<cell_t> cells;
         tmesh.FindCells(cells);
+        std::cout << "OK!" << std::endl;
 
-        std::cout << "Find cells in the extended T-splines topology mesh..." << std::endl;
+        std::cout << "Find cells in the extended T-splines topology mesh...";
         cells.clear();
         tmesh.FindCells(cells, true);
+        std::cout << "OK!" << std::endl;
     }
 
     /// Export the T-mesh cells to mdpa format

@@ -349,30 +349,33 @@ namespace Kratos
         rCells.clear();
 
         // firstly make a vertical scanning to identify the horizontal segment
-        std::vector<std::pair<double, std::set<int> > > HorizontalSegments;
+        std::vector<std::pair<double, std::set<std::size_t> > > HorizontalSegments;
         bool is_active_edge;
-        for(std::size_t i = 0; i < mKnots[1].size() - 1; ++i)
+        if (mKnots[1].size() > 0)
         {
-            int index_low  = mKnots[1][i]->Index();
-            int index_high = mKnots[1][i+1]->Index();
-            double index_eta = 0.5 * (double)(index_low + index_high);
-
-            std::set<int> Segments;
-            for(edge_container_t::const_iterator it_edge = mEdges.begin(); it_edge != mEdges.end(); ++it_edge)
+            for(std::size_t i = 0; i < mKnots[1].size() - 1; ++i)
             {
-                if(_extend)
-                    is_active_edge = (*it_edge)->EdgeType() == TsEdge::VERTICAL_EDGE || (*it_edge)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE;
-                else
-                    is_active_edge = (*it_edge)->EdgeType() == TsEdge::VERTICAL_EDGE;
+                std::size_t index_low  = mKnots[1][i]->Index();
+                std::size_t index_high = mKnots[1][i+1]->Index();
+                double index_eta = 0.5 * (double)(index_low + index_high);
 
-                is_active_edge = is_active_edge && (*it_edge)->IsActive();
+                std::set<std::size_t> Segments;
+                for(edge_container_t::const_iterator it_edge = mEdges.begin(); it_edge != mEdges.end(); ++it_edge)
+                {
+                    if(_extend)
+                        is_active_edge = (*it_edge)->EdgeType() == TsEdge::VERTICAL_EDGE || (*it_edge)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE;
+                    else
+                        is_active_edge = (*it_edge)->EdgeType() == TsEdge::VERTICAL_EDGE;
 
-                if(is_active_edge) //active vertical edge
-                    if((*it_edge)->IsCut(index_eta))
-                        Segments.insert((*it_edge)->Index());
+                    is_active_edge = is_active_edge && (*it_edge)->IsActive();
+
+                    if(is_active_edge) //active vertical edge
+                        if((*it_edge)->IsCut(index_eta))
+                            Segments.insert((*it_edge)->Index());
+                }
+                if(!Segments.empty())
+                    HorizontalSegments.push_back(std::pair<double, std::set<std::size_t> >(index_eta, Segments));
             }
-            if(!Segments.empty())
-                HorizontalSegments.push_back(std::pair<double, std::set<int> >(index_eta, Segments));
         }
 
 //        std::cout << "HorizontalSegments:" << std::endl;
@@ -384,61 +387,64 @@ namespace Kratos
 //        }
 
         // secondly make a horizontal scanning and identify possible intersection
-        for(std::size_t i = 0; i < mKnots[0].size() - 1; ++i)
+        if (mKnots[0].size() > 0)
         {
-            int index_low  = mKnots[0][i]->Index();
-            int index_high = mKnots[0][i+1]->Index();
-            double index_xi = 0.5 * (double)(index_low + index_high);
-
-            std::set<int> Segments;
-            for(edge_container_t::const_iterator it_edge = mEdges.begin(); it_edge != mEdges.end(); ++it_edge)
+            for(std::size_t i = 0; i < mKnots[0].size() - 1; ++i)
             {
-                if(_extend)
-                    is_active_edge = (*it_edge)->EdgeType() == TsEdge::HORIZONTAL_EDGE || (*it_edge)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE;
-                else
-                    is_active_edge = (*it_edge)->EdgeType() == TsEdge::HORIZONTAL_EDGE;
+                std::size_t index_low  = mKnots[0][i]->Index();
+                std::size_t index_high = mKnots[0][i+1]->Index();
+                double index_xi = 0.5 * (double)(index_low + index_high);
 
-                is_active_edge = is_active_edge && (*it_edge)->IsActive();
-
-                if(is_active_edge) //active horizontal edge
-                    if((*it_edge)->IsCut(index_xi))
-                        Segments.insert((*it_edge)->Index());
-            }
-            if(!Segments.empty())
-            {
-                // identify which segment in every row of horizontal segments this vertical ray cut
-                std::vector<std::pair<int, int> > cut_segments;
-                for(std::size_t j = 0; j < HorizontalSegments.size(); ++j)
+                std::set<std::size_t> Segments;
+                for(edge_container_t::const_iterator it_edge = mEdges.begin(); it_edge != mEdges.end(); ++it_edge)
                 {
-                    bool detect = false;
-                    std::set<int>::iterator it_old = HorizontalSegments[j].second.begin();
-                    std::set<int>::iterator it_begin = it_old;
-                    for(std::set<int>::iterator it = it_begin; it != HorizontalSegments[j].second.end(); ++it)
-                    {
-                        if(*it > index_xi)
-                        {
-                            cut_segments.push_back(std::pair<int, int>(*it_old, *it));
-                            detect = true;
-                            break;
-                        }
-                        it_old = it;
-                    }
-                    if(detect == false)
-                        KRATOS_THROW_ERROR(std::logic_error, "ERROR: cannot detect the intersection", "")
+                    if(_extend)
+                        is_active_edge = (*it_edge)->EdgeType() == TsEdge::HORIZONTAL_EDGE || (*it_edge)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE;
+                    else
+                        is_active_edge = (*it_edge)->EdgeType() == TsEdge::HORIZONTAL_EDGE;
+
+                    is_active_edge = is_active_edge && (*it_edge)->IsActive();
+
+                    if(is_active_edge) //active horizontal edge
+                        if((*it_edge)->IsCut(index_xi))
+                            Segments.insert((*it_edge)->Index());
                 }
-
-                // now we make the box intersection
-                std::vector<int> Temp(Segments.begin(), Segments.end());
-                for(std::size_t j = 0; j < Temp.size() - 1; ++j)
+                if(!Segments.empty())
                 {
-                    for(std::size_t k = 0; k < HorizontalSegments.size(); ++k)
+                    // identify which segment in every row of horizontal segments this vertical ray cut
+                    std::vector<std::pair<std::size_t, std::size_t> > cut_segments;
+                    for(std::size_t j = 0; j < HorizontalSegments.size(); ++j)
                     {
-                        if((HorizontalSegments[k].first > Temp[j]) && (HorizontalSegments[k].first < Temp[j+1]))
+                        bool detect = false;
+                        std::set<std::size_t>::iterator it_old = HorizontalSegments[j].second.begin();
+                        std::set<std::size_t>::iterator it_begin = it_old;
+                        for(std::set<std::size_t>::iterator it = it_begin; it != HorizontalSegments[j].second.end(); ++it)
                         {
-//                            std::cout << "Found box " << cut_segments[k].first << " " << cut_segments[k].second
-//                                      << " " << Temp[j] << " " << Temp[j+1] << std::endl;
-                            rCells.insert(cell_t(std::pair<int, int>(cut_segments[k].first, cut_segments[k].second),
-                                                    std::pair<int, int>(Temp[j], Temp[j+1])));
+                            if(*it > index_xi)
+                            {
+                                cut_segments.push_back(std::pair<std::size_t, std::size_t>(*it_old, *it));
+                                detect = true;
+                                break;
+                            }
+                            it_old = it;
+                        }
+                        if(detect == false)
+                            KRATOS_THROW_ERROR(std::logic_error, "ERROR: cannot detect the intersection", "")
+                    }
+
+                    // now we make the box intersection
+                    std::vector<std::size_t> Temp(Segments.begin(), Segments.end());
+                    for(std::size_t j = 0; j < Temp.size() - 1; ++j)
+                    {
+                        for(std::size_t k = 0; k < HorizontalSegments.size(); ++k)
+                        {
+                            if((HorizontalSegments[k].first > Temp[j]) && (HorizontalSegments[k].first < Temp[j+1]))
+                            {
+    //                            std::cout << "Found box " << cut_segments[k].first << " " << cut_segments[k].second
+    //                                      << " " << Temp[j] << " " << Temp[j+1] << std::endl;
+                                rCells.insert(cell_t(std::pair<std::size_t, std::size_t>(cut_segments[k].first, cut_segments[k].second),
+                                                        std::pair<std::size_t, std::size_t>(Temp[j], Temp[j+1])));
+                            }
                         }
                     }
                 }

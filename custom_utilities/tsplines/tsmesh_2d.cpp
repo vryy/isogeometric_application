@@ -936,7 +936,8 @@ namespace Kratos
         Vector Ubar_xi;
         Vector Ubar_eta;
         std::vector<double> Uxi, Ueta;
-        std::vector<int> spans_xi, spans_eta;
+        typedef std::vector<int> span_container_t;
+        span_container_t spans_xi, spans_eta;
         int temp, span_xi_after, span_eta_after;
         for(anchor_container_t::iterator it = mAnchors.begin(); it != mAnchors.end(); ++it)
         {
@@ -965,11 +966,11 @@ namespace Kratos
                     //          anchor w.r.t any cell sequentially. I know it is repetitive and expensive. I know it is approximately (this->Order(0)+1)(this->Order(1)+1) times more expensive than computing the extraction operator once for each anchor.
                     // TODO: to improve the algorithm of this method
                     // firstly we know the knot span of this cell
-                    double left  = (*it2)->LeftValue();
-                    double right = (*it2)->RightValue();
-                    double up    = (*it2)->UpValue();
-                    double down  = (*it2)->DownValue();
-                    std::cout << "At anchor " << *(*it) << ", found cell" << *(*it2) << " with spans = (";
+                    int left  = (*it2)->LeftIndex();
+                    int right = (*it2)->RightIndex();
+                    int up    = (*it2)->UpIndex();
+                    int down  = (*it2)->DownIndex();
+                    std::cout << "At anchor " << *(*it) << ", found " << *(*it2) << " with spans = (";
                     std::cout << mKnots[0][left]->Value() << ", " << mKnots[0][right]->Value() << ", ";
                     std::cout << mKnots[1][down]->Value() << ", " << mKnots[1][up]->Value() << ")" << std::endl;
 
@@ -986,19 +987,16 @@ namespace Kratos
                         temp = this->FindSpanLocal(mKnots[0][right]->Value(), Knots1);
                         spans_xi.push_back(temp);
                     }
-                    if(spans_xi.size() > 1)
-                    {
-                        KRATOS_WATCH(spans_xi.size())
-                        KRATOS_THROW_ERROR(std::logic_error, "The cell must not terminate at more than one virtual vertex in u-direction", "")
-                    }
                     std::cout << "Uxi:";
                     for(std::size_t i = 0; i < Uxi.size(); ++i)
                         std::cout << " " << Uxi[i];
                     std::cout << std::endl;
                     std::cout << "spans_xi:";
-                    for(std::size_t i = 0; i < spans_xi.size(); ++i)
-                        std::cout << " " << spans_xi[i];
+                    for (span_container_t::iterator it = spans_xi.begin(); it != spans_xi.end(); ++it)
+                            std::cout << " " << *it;
                     std::cout << std::endl;
+                    if(spans_xi.size() > 1)
+                        KRATOS_THROW_ERROR(std::logic_error, "The cell must not terminate at more than one virtual vertex in u-direction", "")
 
                     if(std::find(KnotsIndex2.begin(), KnotsIndex2.end(), down) == KnotsIndex2.end())
                     {
@@ -1012,16 +1010,16 @@ namespace Kratos
                         temp = this->FindSpanLocal(mKnots[1][up]->Value(), Knots2);
                         spans_eta.push_back(temp);
                     }
-                    if(spans_eta.size() > 1)
-                        KRATOS_THROW_ERROR(std::logic_error, "The cell must not terminate at more than one virtual vertex in v-direction", "")
                     std::cout << "Ueta:";
                     for(std::size_t i = 0; i < Ueta.size(); ++i)
                         std::cout << " " << Ueta[i];
                     std::cout << std::endl;
                     std::cout << "spans_eta:";
-                    for(std::size_t i = 0; i < spans_eta.size(); ++i)
-                        std::cout << " " << spans_eta[i];
+                    for(span_container_t::iterator it = spans_eta.begin(); it != spans_eta.end(); ++it)
+                        std::cout << " " << *it;
                     std::cout << std::endl;
+                    if(spans_eta.size() > 1)
+                        KRATOS_THROW_ERROR(std::logic_error, "The cell must not terminate at more than one virtual vertex in v-direction", "")
 
                     // compute the 2d bezier extraction operator
                     std::cout << "Knots1:";

@@ -33,48 +33,53 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(GridFunction);
 
     /// Type definition
+    typedef TDataType DataType;
     typedef std::vector<TDataType> DataContainerType;
+    typedef FESpace<TDim> FESpaceType;
+    typedef ControlGrid<TDataType> ControlGridType;
 
     /// Default constructor
-    GridFunction(typename FESpace<TDim>::Pointer pFESpace, typename ControlGrid<TDataType>::Pointer pControlGrid)
+    GridFunction(typename FESpaceType::Pointer pFESpace, typename ControlGridType::Pointer pControlGrid)
     : mpFESpace(pFESpace), mpControlGrid(pControlGrid) {}
 
     /// Destructor
     virtual ~GridFunction() {}
 
     /// Helper to create the new instance of grid function
-    static typename GridFunction<TDim, TDataType>::Pointer Create(typename FESpace<TDim>::Pointer pFESpace, typename ControlGrid<TDataType>::Pointer pControlGrid)
+    static typename GridFunction<TDim, TDataType>::Pointer Create(typename FESpaceType::Pointer pFESpace, typename ControlGridType::Pointer pControlGrid)
     {
         return typename GridFunction<TDim, TDataType>::Pointer(new GridFunction<TDim, TDataType>(pFESpace, pControlGrid));
     }
 
     /// Set the FESpace
-    void SetFESpace(typename FESpace<TDim>::Pointer pNewFESpace) {mpFESpace = pNewFESpace;} // use this with care
+    void SetFESpace(typename FESpaceType::Pointer pNewFESpace) {mpFESpace = pNewFESpace;} // use this with care
 
     /// Get the FESpace pointer
-    typename FESpace<TDim>::Pointer pFESpace() {return mpFESpace;}
+    typename FESpaceType::Pointer pFESpace() {return mpFESpace;}
 
     /// Get the FESpace pointer
-    typename FESpace<TDim>::ConstPointer pFESpace() const {return mpFESpace;}
+    typename FESpaceType::ConstPointer pFESpace() const {return mpFESpace;}
 
     /// Set the control grid
-    void SetControlGrid(typename ControlGrid<TDataType>::Pointer pNewControlGrid) {mpControlGrid = pNewControlGrid;} // use this with care
+    /// Remarks: this function will effectively replace the underlying control grid, so use this with care
+    void SetControlGrid(typename ControlGridType::Pointer pNewControlGrid) {mpControlGrid = pNewControlGrid;}
 
     /// Get the control grid pointer
-    typename ControlGrid<TDataType>::Pointer pControlGrid() {return mpControlGrid;}
+    typename ControlGridType::Pointer pControlGrid() {return mpControlGrid;}
 
     /// Get the control grid pointer
-    typename ControlGrid<TDataType>::ConstPointer pControlGrid() const {return mpControlGrid;}
+    typename ControlGridType::ConstPointer pControlGrid() const {return mpControlGrid;}
 
     /// Get the value of the grid at specific local coordinates
     template<typename TCoordinatesType>
     TDataType GetValue(const TCoordinatesType& xi) const
     {
         // firstly get the values of all the basis functions
-        std::vector<double> f_values = pFESpace()->GetValue(xi);
+        std::vector<double> f_values;
+        pFESpace()->GetValue(f_values, xi);
 
         // then interpolate the value at local coordinates using the control values
-        const ControlGrid<TDataType>& r_control_grid = *pControlGrid();
+        const ControlGridType& r_control_grid = *pControlGrid();
 
         TDataType v = f_values[0] * r_control_grid.GetData(0);
         for (std::size_t i = 1; i < r_control_grid.size(); ++i)
@@ -132,8 +137,8 @@ public:
 
 private:
 
-    typename FESpace<TDim>::Pointer mpFESpace;
-    typename ControlGrid<TDataType>::Pointer mpControlGrid;
+    typename FESpaceType::Pointer mpFESpace;
+    typename ControlGridType::Pointer mpControlGrid;
 
 };
 

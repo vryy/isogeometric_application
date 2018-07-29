@@ -284,7 +284,15 @@ public:
     /// Get the value of B-splines basis function
     double GetValue(const std::vector<double>& xi) const
     {
-        double res = 1.0;
+        double res;
+        this->GetValue(res, xi);
+        return res;
+    }
+
+    /// Get the value of B-splines basis function
+    void GetValue(double& res, const std::vector<double>& xi) const
+    {
+        res = 1.0;
 
         for (std::size_t dim = 0; dim < TDim; ++dim)
         {
@@ -295,8 +303,20 @@ public:
             double v = BSplineUtils::CoxDeBoor(xi[dim], 0, order, local_knots);
             res *= v;
         }
+    }
 
+    /// Get the derivative of B-splines basis function
+    std::vector<double> GetDerivative(const std::vector<double>& xi) const
+    {
+        std::vector<double> res;
+        this->GetDerivative(res, xi);
         return res;
+    }
+
+    /// Get the derivative of B-splines basis function
+    void GetDerivative(std::vector<double>& res, const std::vector<double>& xi) const
+    {
+        // TODO
     }
 
     /// Access the internal data container, be very careful with this function

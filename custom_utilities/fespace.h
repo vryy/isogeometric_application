@@ -82,13 +82,70 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Get the values of the basis function i at point xi
-    virtual double GetValue(const std::size_t& i, const std::vector<double>& xi) const
+    virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
+
+    /// Get the values of the basis function i at point xi
+    double GetValue(const std::size_t& i, const std::vector<double>& xi) const
+    {
+        double v;
+        this->GetValue(v, i, xi);
+        return v;
+    }
+
+    /// Get the values of the basis functions at point xi
+    virtual void GetValue(std::vector<double>& values, const std::vector<double>& xi) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Get the values of the basis functions at point xi
-    virtual std::vector<double> GetValue(const std::vector<double>& xi) const
+    std::vector<double> GetValue(const std::vector<double>& xi) const
+    {
+        std::vector<double> values;
+        this->GetValue(values, xi);
+        return values;
+    }
+
+    ///////////////
+
+    /// Get the derivatives of the basis function i at point xi
+    void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
+
+    /// Get the derivatives of the basis function i at point xi
+    std::vector<double> GetDerivative(const std::size_t& i, const std::vector<double>& xi) const
+    {
+        std::vector<double> values;
+        this->GetDerivative(values, i, xi);
+        return values;
+    }
+
+    /// Get the derivatives of the basis functions at point xi
+    /// the output values has the form of values[func_index][dim_index]
+    virtual void GetDerivative(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
+
+    /// Get the derivatives of the basis functions at point xi
+    /// the return values has the form of values[func_index][dim_index]
+    std::vector<std::vector<double> > GetDerivative(const std::vector<double>& xi) const
+    {
+        std::vector<std::vector<double> > values;
+        this->GetDerivative(values);
+        return values;
+    }
+
+    ///////////////
+
+    /// Get the values and derivatives of the basis functions at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    virtual void GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }

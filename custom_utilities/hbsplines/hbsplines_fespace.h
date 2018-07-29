@@ -209,26 +209,88 @@ public:
 
     /// Get the values of the basis function i at point xi
     /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
-    virtual double GetValue(const std::size_t& i, const std::vector<double>& xi) const
+    virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
     {
         std::size_t j = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if (j == i) return (*it)->GetValue(xi);
+            if (j == i)
+            {
+                v = (*it)->GetValue(xi);
+                return;
+            }
             ++j;
         }
-        return 0.0;
+        v = 0.0;
     }
 
     /// Get the values of the basis functions at point xi
     /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
-    virtual std::vector<double> GetValue(const std::vector<double>& xi) const
+    virtual void GetValue(std::vector<double>& values, const std::vector<double>& xi) const
     {
-        std::vector<double> values(this->TotalNumber());
+        if (values.size() != this->TotalNumber())
+            values.resize(this->TotalNumber());
         std::size_t i = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
             values[i++] = (*it)->GetValue(xi);
-        return values;
+    }
+
+    /// Get the derivative of the basis function i at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
+    void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
+    {
+        std::size_t j = 0;
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            if (j == i)
+            {
+                (*it)->GetDerivative(values, xi);
+                return;
+            }
+            ++j;
+        }
+        if (values.size() != TDim)
+            values.resize(TDim);
+        for (int dim = 0; dim < TDim; ++dim) values[dim] = 0.0;
+    }
+
+    /// Get the derivative of the basis functions at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
+    void GetDerivative(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    {
+        if (values.size() != this->TotalNumber())
+            values.resize(this->TotalNumber());
+        std::size_t i = 0;
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            if (values[i].size() != TDim)
+                values[i].resize(TDim);
+            (*it)->GetDerivative(values[i], xi);
+            ++i;
+        }
+    }
+
+    /// Get the values and derivatives of the basis functions at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
+    virtual void GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+    {
+        if (values.size() != this->TotalNumber())
+            values.resize(this->TotalNumber());
+        if (derivatives.size() != this->TotalNumber())
+            derivatives.resize(this->TotalNumber());
+
+        std::size_t i = 0;
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            values[i] = (*it)->GetValue(xi);
+            if (derivatives[i].size() != TDim)
+                derivatives[i].resize(TDim);
+            (*it)->GetDerivative(derivatives[i], xi);
+            ++i;
+        }
     }
 
     /// Compare between two BSplines patches in terms of parametric information

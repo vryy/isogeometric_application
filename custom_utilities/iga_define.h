@@ -15,6 +15,15 @@
 namespace Kratos
 {
 
+#if defined(__GNUC__) || defined(__clang__)
+#define IGA_DEPRECATED __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define IGA_DEPRECATED __declspec(deprecated)
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#define IGA_DEPRECATED
+#endif
+
 enum BoundarySide
 {
     _BLEFT_   = 0,

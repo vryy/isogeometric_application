@@ -401,10 +401,13 @@ public:
     }
 
     /// Copy the data from a column of structured control_grid in 1D
-    /// If dir==0, the column of grid will be copied in v-direction
-    /// If dir==1, the column of grid will be copied in u-direction
-    void CopyFrom(const int& dir, std::vector<typename StructuredControlGrid<1, TDataType>::Pointer> pOthers)
+    /// If dir==0, the column of grid will be copied along u-direction
+    /// If dir==1, the column of grid will be copied along v-direction
+    void CopyFrom(const int& dir, const std::vector<typename StructuredControlGrid<1, TDataType>::Pointer>& pOthers)
     {
+        if (pOthers.size() != this->Size(dir))
+            KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
+
         if (dir == 0)
         {
             for (std::size_t i = 0; i < this->Size(0); ++i)
@@ -645,13 +648,35 @@ public:
     }
 
     /// Copy the data from a column of structured control_grid in 2D
-    /// If dir==0, the column of grid will be copied in w-direction
-    /// If dir==1, the column of grid will be copied in v-direction
-    /// If dir==2, the column of grid will be copied in u-direction
-    void CopyFrom(const int& dir, std::vector<typename StructuredControlGrid<2, TDataType>::Pointer> pOthers)
+    /// If dir==0, the column of grid will be copied along u-direction
+    /// If dir==1, the column of grid will be copied along v-direction
+    /// If dir==2, the column of grid will be copied along w-direction
+    void CopyFrom(const int& dir, const std::vector<typename StructuredControlGrid<2, TDataType>::Pointer>& pOthers)
     {
-        // TODO
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented")
+        if (pOthers.size() != this->Size(dir))
+            KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
+
+        if (dir == 0)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                        this->SetValue(i, j, k, pOthers[i]->GetValue(j, k));
+        }
+        else if (dir == 1)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                        this->SetValue(i, j, k, pOthers[j]->GetValue(i, k));
+        }
+        else if (dir == 2)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                        this->SetValue(i, j, k, pOthers[k]->GetValue(i, j));
+        }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.

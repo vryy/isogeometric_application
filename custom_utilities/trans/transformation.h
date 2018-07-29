@@ -19,7 +19,8 @@
 
 // Project includes
 #include "includes/define.h"
-#include "containers/array_1d.h"
+#include "utilities/math_utils.h"
+
 
 namespace Kratos
 {
@@ -36,6 +37,7 @@ public:
 
     /// Type definitions
     typedef boost::numeric::ublas::matrix<TDataType> MatrixType;
+    typedef boost::numeric::ublas::vector<TDataType> VectorType;
     typedef boost::numeric::ublas::zero_matrix<TDataType> ZeroMatrixType;
     typedef boost::numeric::ublas::identity_matrix<TDataType> IdentityMatrixType;
 
@@ -45,6 +47,36 @@ public:
         mTransMat.resize(4, 4);
         noalias(mTransMat) = IdentityMatrixType(4, 4);
     }
+
+    /// Constructor from location and three directional vectors
+    Transformation(const VectorType& T, const VectorType& B, const VectorType& N, const VectorType& P)
+    {
+        mTransMat.resize(4, 4);
+        noalias(column(mTransMat, 0)) = T;
+        noalias(column(mTransMat, 1)) = B;
+        noalias(column(mTransMat, 2)) = N;
+        noalias(column(mTransMat, 3)) = P;
+        mTransMat(3, 3) = 1.0;
+    }
+
+    /// Constructor from location and two directional vectors. The remaining one is computed by cross product.
+    Transformation(const VectorType& T, const VectorType& B, const VectorType& P)
+    {
+        VectorType N = MathUtils<double>::CrossProduct(T, B);
+        N *= 1.0/norm_2(N);
+
+        mTransMat.resize(4, 4);
+        noalias(column(mTransMat, 0)) = T;
+        noalias(column(mTransMat, 1)) = B;
+        noalias(column(mTransMat, 2)) = N;
+        noalias(column(mTransMat, 3)) = P;
+        mTransMat(3, 3) = 1.0;
+    }
+
+    /// Copy constructor
+    Transformation(const Transformation& rOther)
+    : mTransMat(rOther.mTransMat)
+    {}
 
     /// Destructor
     virtual ~Transformation() {}
@@ -117,7 +149,6 @@ public:
 
     virtual void PrintData(std::ostream& rOStream) const
     {
-        // print the control point in homogeneous coordinates
         rOStream << mTransMat;
     }
 

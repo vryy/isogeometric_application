@@ -1,0 +1,41 @@
+ |  /           |             
+ ' /   __| _` | __|  _ \   __|
+ . \  |   (   | |   (   |\__ \ 
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 3.3
+Importing    KratosStructuralApplication
+Initializing KratosStructuralApplication... 
+Importing    KratosIsogeometricApplication
+Initializing KratosIsogeometricApplication... 
+ |  /           |             
+ ' /   __| _` | __|  _ \   __|
+ . \  |   (   | |   (   |\__ \ 
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 3.3
+Check OK! The knot vector in u-direction is in ascending order
+Check OK! The knot vector in v-direction is in ascending order
+Check OK! The knot vector satisfies repetitiveness condition
+The indexing for knots is updated
+Check OK! All vertices contain knots in knot vectors
+Check OK! All edges contain vertices in the vertex list
+Check OK! All edge vertical/horizontal configurations are valid
+Detect vertex neighbours completed
+Vertex Id 20, Index = {6, 6, 18446744073709551615} is set to T_JOINT_DOWN
+Vertex Id 21, Index = {6, 8, 18446744073709551615} is set to T_JOINT_RIGHT
+Vertex Id 24, Index = {7, 4, 18446744073709551615} is set to T_JOINT_UP
+Vertex Id 11, Index = {4, 4, 18446744073709551615} is set to T_JOINT_LEFT
+Vertex Id 12, Index = {4, 5, 18446744073709551615} is set to T_JOINT_LEFT
+Vertex Id 13, Index = {4, 6, 18446744073709551615} is set to T_JOINT_LEFT
+Vertex Id 14, Index = {4, 7, 18446744073709551615} is set to T_JOINT_RIGHT
+Vertex Id 15, Index = {4, 8, 18446744073709551615} is set to T_JOINT_LEFT
+Vertex Id 19, Index = {5, 5, 18446744073709551615} is set to T_JOINT_UP
+Vertex Id 25, Index = {8, 5, 18446744073709551615} is set to T_JOINT_DOWN
+Vertex Id 26, Index = {8, 6, 18446744073709551615} is set to T_JOINT_RIGHT
+Check joint type successfully. There are 11 T-joints in the T-splines topology mesh
+Tmesh is analysis suitable:  False
+Exported to tmesh1_topo.m completed!
+Find cells in the T-splines topology mesh...
+Find cells in the extended T-splines topology mesh...
+Exported to tmesh1_knots.m completed!
+Find cells in the T-splines topology mesh...
+Find cells in the extended T-splines topology mesh...

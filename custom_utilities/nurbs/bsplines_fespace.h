@@ -165,7 +165,7 @@ public:
     }
 
     /// Get the derivatives of the basis function i at point xi
-    void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
+    virtual void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
     {
         // TODO the current approach is expensive (all is computed). Find the way to optimize it.
         std::vector<std::vector<double> > tmp;

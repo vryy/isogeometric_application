@@ -112,7 +112,7 @@ public:
     ///////////////
 
     /// Get the derivatives of the basis function i at point xi
-    void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
+    virtual void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }

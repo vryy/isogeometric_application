@@ -41,10 +41,20 @@ using namespace boost::python;
 
 void IsogeometricApplication_AddTransformationToPython()
 {
+    typedef Transformation<double>::VectorType VectorType;
+
     class_<Transformation<double>, Transformation<double>::Pointer, boost::noncopyable>
     ("Transformation", init<>())
+    .def(init<const VectorType&, const VectorType&, const VectorType&>())
+    .def(init<const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&>())
+    .def(init<const VectorType&, const VectorType&, const VectorType&, const VectorType&>())
+    .def(init<const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&>())
     .def("AppendTransformation", &Transformation<double>::AppendTransformation)
     // .def(boost::python::operators<boost::python::op_mul>());
+    .def("P", &Transformation<double>::P)
+    .def("V1", &Transformation<double>::V1)
+    .def("V2", &Transformation<double>::V2)
+    .def("V3", &Transformation<double>::V3)
     .def(self_ns::str(self))
     ;
 

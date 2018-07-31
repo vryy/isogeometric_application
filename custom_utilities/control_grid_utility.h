@@ -161,6 +161,21 @@ public:
 
 
 
+    /// Helper function to create the point-based control grid based on Variable and FESpace
+    template<typename TControlValueType>
+    static typename ControlGrid<typename TControlValueType::DataType>::Pointer CreateControlPointValueGrid(
+            typename ControlGrid<TControlValueType>::ConstPointer pControlPointGrid)
+    {
+        typedef ControlGrid<typename TControlValueType::DataType> ControlPointValueGridType;
+        typename ControlPointValueGridType::Pointer pControlPointValueGrid
+            = typename ControlPointValueGridType::Pointer(new UnstructuredControlGrid<typename TControlValueType::DataType>(pControlPointGrid->size()));
+        for (std::size_t i = 0; i < pControlPointGrid->size(); ++i)
+            pControlPointValueGrid->SetData(i, pControlPointGrid->GetData(i).V());
+        return pControlPointValueGrid;
+    }
+
+
+
     /// Helper function to extract some control values to a new control grid based on indices
     /// The returned grid is assumed to be unstructured by default
     template<typename TDataType>

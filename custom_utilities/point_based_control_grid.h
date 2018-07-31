@@ -80,7 +80,8 @@ public:
     /// Get the data at specific point
     virtual DataType GetData(const std::size_t& i) const
     {
-        // TODO Get and Set data in the sequential manner can be expensive if the underlying FESPace uses set to store the basis functions. It is suggested to implement the iterator for get and set the values.
+        // TODO Get and Set data in the sequential manner can be expensive if the underlying FESPace uses std::set to store the basis functions.
+        // It is suggested to implement the iterator for get and set the values.
         return (*mpFESpace)[i]->GetValue(mrVariable) / (*mpFESpace)[i]->Weight();
     }
 
@@ -129,7 +130,7 @@ private:
 
 /// Partial template specialization for ControlPoint variable
 template<class TFESpaceType>
-class PointBasedControlGrid<Variable<ControlPoint<double> >, TFESpaceType > : public ControlGrid<ControlPoint<double> >
+class PointBasedControlGrid<Variable<ControlPoint<double> >, TFESpaceType> : public ControlGrid<ControlPoint<double> >
 {
 public:
     /// Pointer definition

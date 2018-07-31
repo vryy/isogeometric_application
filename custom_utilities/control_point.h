@@ -33,6 +33,7 @@ class ControlPoint : public ControlValue<array_1d<TDataType, 3>, TDataType>
 public:
     // Type definitions
     typedef ControlValue<array_1d<TDataType, 3>, TDataType> BaseType;
+    typedef typename BaseType::DataType CoordinatesType;
 
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(ControlPoint);
@@ -202,7 +203,8 @@ public:
     {
         // print the control point in homogeneous coordinates
         // rOStream << "(X: " << X() << ", Y: " << Y() << ", Z: " << Z() << ", W: " << BaseType::W() << ")";
-        rOStream << "(" << X() << ", " << Y() << ", " << Z() << ", " << BaseType::W() << ")";
+        // rOStream << "(" << X() << ", " << Y() << ", " << Z() << ", " << BaseType::W() << ")";
+        rOStream << "(" << WX() << ", " << WY() << ", " << WZ() << ", " << BaseType::W() << ")";
     }
 
 private:

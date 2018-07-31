@@ -50,6 +50,7 @@ namespace Kratos
     KRATOS_CREATE_VARIABLE( ControlPoint<double>, CONTROL_POINT )
 
     KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS( LOCAL_COORDINATES )
+    KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS( CONTROL_POINT_COORDINATES )
 
     KratosIsogeometricApplication::KratosIsogeometricApplication()
     : mDummyConditionBezier( 0, Element::GeometryType::Pointer( new Geo1dBezier<Node<3> >() ) )
@@ -88,6 +89,7 @@ namespace Kratos
 
         // to make sure the variable imported from other application is registered
         KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( LOCAL_COORDINATES )
+        KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( CONTROL_POINT_COORDINATES )
 
         // register the geometries
         Geo1dBezier<Node<3> > Geo1dBezierPrototype;

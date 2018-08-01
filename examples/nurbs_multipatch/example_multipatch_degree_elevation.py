@@ -24,6 +24,7 @@ kernel = Kernel()   #defining kernel
 nurbs_fespace_library = BSplinesFESpaceLibrary()
 grid_lib = ControlGridLibrary()
 multipatch_util = MultiPatchUtility()
+bsplines_patch_util = BSplinesPatchUtility()
 mpatch_export1 = MultiNURBSPatchGLVisExporter()
 mpatch_export2 = MultiNURBSPatchMatlabExporter()
 mpatch = MultiPatch2D()
@@ -46,7 +47,7 @@ def CreateMultiPatch():
 
     mpatch.AddPatch(patch1_ptr)
     mpatch.AddPatch(patch2_ptr)
-    multipatch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left)
+    bsplines_patch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left, BoundaryDirection.Forward)
 
     print("############REFINEMENT###############")
     multipatch_refine_util = MultiPatchRefinementUtility()

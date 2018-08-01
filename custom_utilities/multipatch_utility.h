@@ -51,6 +51,7 @@ public:
     }
 
     /// Make a simple interface between two patches
+    /// For BSplines patch, one shall use BSplinesPatchUtility::MakeInterfacexD instead
     template<int TDim>
     static void MakeInterface(typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
             typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)

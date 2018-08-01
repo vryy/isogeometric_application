@@ -133,6 +133,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         for (typename Patch<TDim>::Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
                 it != Array1DGridFunctions_.end(); ++it)
         {
+            if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
             typename ControlGrid<array_1d<double, 3> >::Pointer pNewArray1DControlGrid = typename ControlGrid<array_1d<double, 3> >::Pointer (new StructuredControlGrid<TDim, array_1d<double, 3> >(new_size));
             ControlGridUtility::Transform<array_1d<double, 3>, Matrix>(T, old_weights, *((*it)->pControlGrid()), new_weights, *pNewArray1DControlGrid);
             pNewArray1DControlGrid->SetName((*it)->pControlGrid()->Name());
@@ -323,6 +324,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         for (typename Patch<TDim>::Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
                 it != Array1DGridFunctions_.end(); ++it)
         {
+            if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
             typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pNewArray1DControlGrid = typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer(new StructuredControlGrid<TDim, array_1d<double, 3> >(new_size));
             typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pArray1DControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
             this->ComputeBsplinesDegreeElevation<TDim, array_1d<double, 3> >(*pArray1DControlGrid, *pFESpace, order_increment, *pNewArray1DControlGrid, new_knots);
@@ -341,7 +343,12 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         }
 
         // mark refined patch
-        refined_patches[pPatch->Id()].resize(TDim);
+        if (refined_patches.find(pPatch->Id()) == refined_patches.end())
+        {
+            refined_patches[pPatch->Id()].resize(TDim);
+            for (unsigned int i = 0; i < TDim; ++i)
+                refined_patches[pPatch->Id()][i] = 0;
+        }
         for (unsigned int i = 0; i < TDim; ++i)
         {
             if (order_increment[i] != 0)
@@ -350,9 +357,9 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             }
         }
 
-        for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
+        for (std::size_t ii = 0; ii < pPatch->NumberOfInterfaces(); ++ii)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
+            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(ii));
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
 
             if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())

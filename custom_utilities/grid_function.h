@@ -187,7 +187,7 @@ public:
     std::string Info() const
     {
         std::stringstream ss;
-        ss << "GridFunction" << TDim << "D";
+        ss << "GridFunction" << TDim << "D_" << mpControlGrid->Name();
         return ss.str();
     }
 

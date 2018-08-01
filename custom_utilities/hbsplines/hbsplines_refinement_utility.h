@@ -120,6 +120,8 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    if (pFESpace == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
     // get the correct basis function
     bf_t p_bf;
@@ -181,6 +183,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    if (pFESpace == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
     // get the list of variables in the patch
     std::vector<Variable<double>*> double_variables = pPatch->template ExtractVariables<Variable<double> >();
@@ -518,6 +522,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             it != DoubleGridFunctions_.end(); ++it)
     {
         typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
+        if (pThisFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
         pThisFESpace->SetWeights(Weights);
     }
 
@@ -526,6 +532,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             it != Array1DGridFunctions_.end(); ++it)
     {
         typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
+        if (pThisFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
         pThisFESpace->SetWeights(Weights);
     }
 
@@ -534,6 +542,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             it != VectorGridFunctions_.end(); ++it)
     {
         typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
+        if (pThisFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
         pThisFESpace->SetWeights(Weights);
     }
 
@@ -657,6 +667,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
         // extract the hierarchical B-Splines space
         typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
+        if (pNeighborFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
         // get the correct basis function
         bf_t p_neighbor_bf;
@@ -701,6 +713,8 @@ inline void HBSplinesRefinementUtility_Helper<2>::RefineWindow(typename Patch<2>
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<2>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<2> >(pPatch->pFESpace());
+    if (pFESpace == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
     // search and mark all basis functions need to refine on all level (starting from the last level) which support is contained in the refining domain
     for(typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
@@ -736,6 +750,8 @@ inline void HBSplinesRefinementUtility_Helper<3>::RefineWindow(typename Patch<3>
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<3>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<3> >(pPatch->pFESpace());
+    if (pFESpace == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
     // search and mark all basis functions need to refine on all level (starting from the last level) which support is contained in the refining domain
     for(typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
@@ -773,6 +789,8 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    if (pFESpace == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
     if(pFESpace->LastLevel() < 1) return;
 

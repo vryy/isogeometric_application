@@ -326,6 +326,8 @@ namespace Kratos
 //            else if(p_temp_info->local_space_dim == 2 && p_temp_info->global_space_dim == 3)
 //                p_temp_geometry = IsogeometricGeometryType::Pointer(new Geo2dBezier3<NodeType>(temp_element_nodes));
             p_temp_geometry = boost::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
+            if (p_temp_geometry == NULL)
+                KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
 
             Vector dummy;
             int max_integration_method = (*p_temp_properties)[NUM_IGA_INTEGRATION_METHOD];
@@ -427,6 +429,8 @@ namespace Kratos
 //            else if(p_temp_info->local_space_dim == 2 && p_temp_info->global_space_dim == 3)
 //                p_temp_geometry = IsogeometricGeometryType::Pointer(new Geo2dBezier3<NodeType>(temp_condition_nodes));
             p_temp_geometry = boost::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_condition.GetGeometry().Create(temp_condition_nodes));
+            if (p_temp_geometry == NULL)
+                KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
 
             Vector dummy;
             int max_integration_method = (*p_temp_properties)[NUM_IGA_INTEGRATION_METHOD];

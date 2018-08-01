@@ -340,6 +340,8 @@ public:
 
             // create the geometry
             p_temp_geometry = boost::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
+            if (p_temp_geometry == NULL)
+                KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
 
             p_temp_geometry->AssignGeometryData(dummy,
                                                 dummy,

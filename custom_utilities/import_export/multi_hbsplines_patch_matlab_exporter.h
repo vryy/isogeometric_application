@@ -57,6 +57,8 @@ public:
 
         // extract the hierarchical B-Splines space
         typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+        if (pFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
         rOStream << "P" << patch_id << "_params.p1 = " << pFESpace->Order(0) << ";\n";
         rOStream << "P" << patch_id << "_params.p2 = " << pFESpace->Order(1) << ";\n";

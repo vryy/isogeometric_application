@@ -82,6 +82,8 @@ public:
 
         // create the new FESpace
         typename BSplinesFESpace<TDim-1>::Pointer pFESpace0 = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pPatches[0]->pFESpace());
+        if (pFESpace0 == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = BSplinesFESpace<TDim>::Create();
         for (std::size_t dim = 0; dim < TDim-1; ++dim)
         {
@@ -100,6 +102,8 @@ public:
         typedef typename Patch<TDim>::ControlPointType ControlPointType;
         typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pControlPointGrid0
             = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >(pPatches[0]->pControlPointGridFunction()->pControlGrid());
+        if (pControlPointGrid0 == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
         //// make a size check, it is not necessary anyway
         for (std::size_t j = 1; j < pPatches.size(); ++j)

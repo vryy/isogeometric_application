@@ -106,6 +106,8 @@ public:
             typedef HBCell<TBasisFuncType> HBCellType;
 
             typename HBCellType::Pointer pOtherCell = boost::dynamic_pointer_cast<HBCellType>(pOther);
+            if (pOtherCell == NULL)
+                KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBCell is failed.", "")
             for(typename HBCellType::bf_iterator it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
             {
                 this->AddBf(*it_bf);

@@ -110,6 +110,8 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
         KRATOS_THROW_ERROR(std::logic_error, "The input patch is not B-Splines patch", "")
 
     typename BSplinesFESpace<2>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<2> >(pPatch->pFESpace());
+    if (pFESpace == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
     // create the hierarchical B-Splines FESpace
     typename HBSplinesFESpace<2>::Pointer pNewFESpace = HBSplinesFESpace<2>::Create();
@@ -257,6 +259,8 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
         KRATOS_THROW_ERROR(std::logic_error, "The input patch is not B-Splines patch", "")
 
     typename BSplinesFESpace<3>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<3> >(pPatch->pFESpace());
+    if (pFESpace == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
     // create the hierarchical B-Splines FESpace
     typename HBSplinesFESpace<3>::Pointer pNewFESpace = HBSplinesFESpace<3>::Create();

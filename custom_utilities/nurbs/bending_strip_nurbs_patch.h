@@ -75,6 +75,8 @@ public:
 
         // get the FESpace of boundary patch 1
         typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pBPatch1->pFESpace());
+        if (pBFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
         // construct the FESpace
         typename BSplinesFESpace<TDim>::Pointer pFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
@@ -127,6 +129,8 @@ public:
 
         // get the FESpace of boundary patch 1
         typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pBPatch1->pFESpace());
+        if (pBFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
         // construct the FESpace
         typename BSplinesFESpace<TDim>::Pointer pFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
@@ -227,8 +231,16 @@ private:
         std::vector<typename StructuredControlGrid<TDim-1, TDataType>::Pointer> pSlicedControlGrids;
 
         typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid1 = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid1 );
+        if (psControlGrid1 == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+
         typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid2 = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid2 );
+        if (psControlGrid2 == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+
         typename StructuredControlGrid<TDim-1, TDataType>::Pointer psBControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, TDataType> >( pBControlGrid );
+        if (psBControlGrid == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
         for (std::size_t i = 0; i < this->NormalOrder()/2; ++i)
             pSlicedControlGrids.push_back(psControlGrid1->Get(this->Side1(), i+1));

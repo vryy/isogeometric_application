@@ -49,58 +49,81 @@ public:
     template<int TDim>
     static typename Patch<TDim>::Pointer CreateConnectedPatch(typename Patch<TDim-1>::Pointer pPatch1, typename Patch<TDim-1>::Pointer pPatch2)
     {
+        std::vector<typename Patch<TDim-1>::Pointer> pPatches = {pPatch1, pPatch2};
+        return CreateConnectedPatch(pPatches, 1);
+    }
+
+    /// Construct a higher dimension patch by connecting multiple patches with the B-Splines curve.
+    /// The knot vector of the curve is adjusted accordingly with the given order and the number of patches.
+    /// The knot vector will be by default uniform.
+    /// To have higher order of the connection one needs to elevate the degree.
+    /// Right now, the two sub-patches must have same parameters (knot vectors) and are B-Splines.
+    template<int TDim>
+    static typename Patch<TDim>::Pointer CreateConnectedPatch(std::vector<typename Patch<TDim-1>::Pointer> pPatches, const int& order)
+    {
+        if (pPatches.size() == 0)
+            return typename Patch<TDim>::Pointer(new Patch<TDim>(-1));
+
         // check prerequisites
-        if (pPatch1->pFESpace()->Type() != BSplinesFESpace<TDim-1>::StaticType())
-            KRATOS_THROW_ERROR(std::logic_error, "Patch 1 is not B-Splines patch", "")
-
-        if (pPatch2->pFESpace()->Type() != BSplinesFESpace<TDim-1>::StaticType())
-            KRATOS_THROW_ERROR(std::logic_error, "Patch 2 is not B-Splines patch", "")
-
-        // check the FESpace
-        if ( !pPatch1->pFESpace()->IsCompatible(*(pPatch2->pFESpace())) )
+        for (std::size_t i = 0; i < pPatches.size(); ++i)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "The two patches are not compatible", "")
+	        if (pPatches[i]->pFESpace()->Type() != BSplinesFESpace<TDim-1>::StaticType())
+	        {
+                std::stringstream ss;
+                ss << "Patch " << pPatches[i]->Name() << " is not B-Splines patch";
+                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+	        }
+
+	        // check the FESpace
+            if (i != 0)
+               if ( !pPatches[0]->pFESpace()->IsCompatible(*(pPatches[i]->pFESpace())) )
+		            KRATOS_THROW_ERROR(std::logic_error, "The patch is not compatible with patch 0", "")
         }
 
         // create the new FESpace
-        typename BSplinesFESpace<TDim-1>::Pointer pFESpace1 = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pPatch1->pFESpace());
+        typename BSplinesFESpace<TDim-1>::Pointer pFESpace0 = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pPatches[0]->pFESpace());
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = BSplinesFESpace<TDim>::Create();
         for (std::size_t dim = 0; dim < TDim-1; ++dim)
         {
-            pNewFESpace->SetKnotVector(dim, pFESpace1->KnotVector(dim));
-            pNewFESpace->SetInfo(dim, pFESpace1->Number(dim), pFESpace1->Order(dim));
+            pNewFESpace->SetKnotVector(dim, pFESpace0->KnotVector(dim));
+            pNewFESpace->SetInfo(dim, pFESpace0->Number(dim), pFESpace0->Order(dim));
         }
 
-        std::size_t connect_order = 1; // this is by default 1 and not changed
-        typename BSplinesFESpace<TDim>::knot_container_t new_knot_vector = BSplinesFESpaceLibrary::CreatePrimitiveOpenKnotVector(connect_order);
+        typename BSplinesFESpace<TDim>::knot_container_t new_knot_vector = BSplinesFESpaceLibrary::CreateUniformOpenKnotVector(pPatches.size(), order);
         pNewFESpace->SetKnotVector(TDim-1, new_knot_vector);
-        pNewFESpace->SetInfo(TDim-1, connect_order+1, connect_order);
+        pNewFESpace->SetInfo(TDim-1, pPatches.size(), order);
 
         // create the new patch
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(-1, pNewFESpace));
 
         // create the new control point grid
         typedef typename Patch<TDim>::ControlPointType ControlPointType;
-        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pControlPointGrid1
-            = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >(pPatch1->pControlPointGridFunction()->pControlGrid());
-        typename ControlGrid<ControlPointType>::Pointer pControlPointGrid2 = pPatch2->pControlPointGridFunction()->pControlGrid();
+        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pControlPointGrid0
+            = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >(pPatches[0]->pControlPointGridFunction()->pControlGrid());
 
         //// make a size check, it is not necessary anyway
-        if (pControlPointGrid1->size() != pControlPointGrid2->size())
-            KRATOS_THROW_ERROR(std::logic_error, "The size of two control point grid are not the same", "")
+        for (std::size_t j = 1; j < pPatches.size(); ++j)
+        {
+            typename ControlGrid<ControlPointType>::Pointer pControlPointGrid = pPatches[j]->pControlPointGridFunction()->pControlGrid();
+            if (pControlPointGrid0->size() != pControlPointGrid->size())
+                KRATOS_THROW_ERROR(std::logic_error, "The size of the control point grid is not the same as the first control grid", "")
+        }
 
         // assign data to the new control point grid
         std::vector<std::size_t> new_sizes(TDim);
         for (std::size_t dim = 0; dim < TDim-1; ++dim)
-            new_sizes[dim] = pControlPointGrid1->Size(dim);
-        new_sizes[TDim-1] = 2;
+            new_sizes[dim] = pControlPointGrid0->Size(dim);
+        new_sizes[TDim-1] = pPatches.size();
         typename StructuredControlGrid<TDim, ControlPointType>::Pointer pNewControlPointGrid = StructuredControlGrid<TDim, ControlPointType>::Create(new_sizes);
-        for (std::size_t i = 0; i < pControlPointGrid1->size(); ++i)
+        for (std::size_t j = 0; j < pPatches.size(); ++j)
         {
-            pNewControlPointGrid->SetData(i, pControlPointGrid1->GetData(i));
-            pNewControlPointGrid->SetData(i + pControlPointGrid1->size(), pControlPointGrid2->GetData(i));
+            typename ControlGrid<ControlPointType>::Pointer pControlPointGrid = pPatches[j]->pControlPointGridFunction()->pControlGrid();
+            for (std::size_t i = 0; i < pControlPointGrid0->size(); ++i)
+            {
+                pNewControlPointGrid->SetData(i + j*pControlPointGrid0->size(), pControlPointGrid->GetData(i));
+            }
         }
-        pNewControlPointGrid->SetName(pControlPointGrid1->Name());
+        pNewControlPointGrid->SetName(pControlPointGrid0->Name());
 
         // assign new control point grid to new patch
         pNewPatch->CreateControlPointGridFunction(pNewControlPointGrid);

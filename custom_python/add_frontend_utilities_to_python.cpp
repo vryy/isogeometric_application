@@ -206,6 +206,23 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatch(BSplines
     return BSplinesPatchUtility::CreateConnectedPatch<TDim>(pPatch1, pPatch2);
 }
 
+template<int TDim>
+typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatch2(BSplinesPatchUtility& dummy,
+        boost::python::list patch_list, const int& order)
+{
+    std::vector<typename Patch<TDim-1>::Pointer> pPatches;
+
+    typedef boost::python::stl_input_iterator<typename Patch<TDim-1>::Pointer> iterator_value_type;
+    BOOST_FOREACH(const typename iterator_value_type::value_type& pPatch,
+                std::make_pair(iterator_value_type(patch_list), // begin
+                iterator_value_type() ) ) // end
+    {
+        pPatches.push_back(pPatch);
+    }
+
+    return BSplinesPatchUtility::CreateConnectedPatch<TDim>(pPatches, order);
+}
+
 boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility& dummy,
         const std::string& filename)
 {
@@ -323,6 +340,8 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     ("BSplinesPatchUtility", init<>())
     .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<2>)
     .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<3>)
+    .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch2<2>)
+    .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch2<3>)
     .def("CreatePatchFromGeo", &BSplinesPatchUtility_CreatePatchFromGeo)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface3D)

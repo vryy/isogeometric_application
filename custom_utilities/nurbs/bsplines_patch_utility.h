@@ -50,7 +50,7 @@ public:
     static typename Patch<TDim>::Pointer CreateConnectedPatch(typename Patch<TDim-1>::Pointer pPatch1, typename Patch<TDim-1>::Pointer pPatch2)
     {
         std::vector<typename Patch<TDim-1>::Pointer> pPatches = {pPatch1, pPatch2};
-        return CreateConnectedPatch(pPatches, 1);
+        return CreateConnectedPatch<TDim>(pPatches, 1);
     }
 
     /// Construct a higher dimension patch by connecting multiple patches with the B-Splines curve.

@@ -50,6 +50,7 @@ void IsogeometricApplication_AddTransformationToPython()
     .def(init<const VectorType&, const VectorType&, const VectorType&, const VectorType&>())
     .def(init<const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&>())
     .def("AppendTransformation", &Transformation<double>::AppendTransformation)
+    .def("PrependTransformation", &Transformation<double>::PrependTransformation)
     // .def(boost::python::operators<boost::python::op_mul>());
     .def("P", &Transformation<double>::P)
     .def("V1", &Transformation<double>::V1)

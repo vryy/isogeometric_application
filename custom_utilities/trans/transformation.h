@@ -49,12 +49,13 @@ public:
     }
 
     /// Constructor from location and three directional vectors
-    Transformation(const VectorType& T, const VectorType& B, const VectorType& N, const VectorType& P)
+    /// B & N are the normal vectors, T is tangent vector
+    Transformation(const VectorType& B, const VectorType& N, const VectorType& T, const VectorType& P)
     {
         mTransMat.resize(4, 4, false);
-        noalias(column(mTransMat, 0)) = T;
-        noalias(column(mTransMat, 1)) = B;
-        noalias(column(mTransMat, 2)) = N;
+        noalias(column(mTransMat, 0)) = B;
+        noalias(column(mTransMat, 1)) = N;
+        noalias(column(mTransMat, 2)) = T;
         noalias(column(mTransMat, 3)) = P;
         mTransMat(3, 0) = 0.0;
         mTransMat(3, 1) = 0.0;
@@ -63,12 +64,13 @@ public:
     }
 
     /// Constructor from location and three directional vectors
-    Transformation(const array_1d<TDataType, 3>& T, const array_1d<TDataType, 3>& B, const array_1d<TDataType, 3>& N, const array_1d<TDataType, 3>& P)
+    /// B & N are the normal vectors, T is tangent vector
+    Transformation(const array_1d<TDataType, 3>& B, const array_1d<TDataType, 3>& N, const array_1d<TDataType, 3>& T, const array_1d<TDataType, 3>& P)
     {
         mTransMat.resize(4, 4, false);
-        noalias(column(mTransMat, 0)) = T;
-        noalias(column(mTransMat, 1)) = B;
-        noalias(column(mTransMat, 2)) = N;
+        noalias(column(mTransMat, 0)) = B;
+        noalias(column(mTransMat, 1)) = N;
+        noalias(column(mTransMat, 2)) = T;
         noalias(column(mTransMat, 3)) = P;
         mTransMat(3, 0) = 0.0;
         mTransMat(3, 1) = 0.0;
@@ -77,15 +79,15 @@ public:
     }
 
     /// Constructor from location and two directional vectors. The remaining one is computed by cross product.
-    Transformation(const VectorType& T, const VectorType& B, const VectorType& P)
+    Transformation(const VectorType& B, const VectorType& T, const VectorType& P)
     {
         VectorType N = MathUtils<TDataType>::CrossProduct(T, B);
         N *= 1.0/norm_2(N);
 
         mTransMat.resize(4, 4, false);
-        noalias(column(mTransMat, 0)) = T;
-        noalias(column(mTransMat, 1)) = B;
-        noalias(column(mTransMat, 2)) = N;
+        noalias(column(mTransMat, 0)) = B;
+        noalias(column(mTransMat, 1)) = N;
+        noalias(column(mTransMat, 2)) = T;
         noalias(column(mTransMat, 3)) = P;
         mTransMat(3, 0) = 0.0;
         mTransMat(3, 1) = 0.0;
@@ -94,15 +96,15 @@ public:
     }
 
     /// Constructor from location and two directional vectors. The remaining one is computed by cross product.
-    Transformation(const array_1d<TDataType, 3>& T, const array_1d<TDataType, 3>& B, const array_1d<TDataType, 3>& P)
+    Transformation(const array_1d<TDataType, 3>& B, const array_1d<TDataType, 3>& T, const array_1d<TDataType, 3>& P)
     {
         VectorType N = MathUtils<TDataType>::CrossProduct(T, B);
         N *= 1.0/norm_2(N);
 
         mTransMat.resize(4, 4);
-        noalias(column(mTransMat, 0)) = T;
-        noalias(column(mTransMat, 1)) = B;
-        noalias(column(mTransMat, 2)) = N;
+        noalias(column(mTransMat, 0)) = B;
+        noalias(column(mTransMat, 1)) = N;
+        noalias(column(mTransMat, 2)) = T;
         noalias(column(mTransMat, 3)) = P;
         mTransMat(3, 0) = 0.0;
         mTransMat(3, 1) = 0.0;
@@ -121,11 +123,16 @@ public:
     /// Get the homogeneous transformation matrix
     const MatrixType& Mat() const {return mTransMat;}
 
+    /// Prepend the transformation
+    void PrependTransformation(const Transformation& rOther)
+    {
+        noalias(this->mTransMat) = prod(this->mTransMat, rOther.Mat());
+    }
+
     /// Append the transformation
     void AppendTransformation(const Transformation& rOther)
     {
-        MatrixType temp = prod(rOther.Mat(), this->mTransMat);
-        noalias(this->mTransMat) = temp;
+        noalias(this->mTransMat) = prod(rOther.Mat(), this->mTransMat);
     }
 
     /// Apply the transformation for a point in 3D

@@ -60,7 +60,7 @@ public:
     virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const
     {
         rOStream << std::setprecision(BaseType::Accuracy());
-        this->ExportMatlab(rOStream, pPatch, std::string("nurbs"));
+        this->ExportMatlab(rOStream, pPatch, pPatch->Name());
     }
 
     /// Export a multipatch

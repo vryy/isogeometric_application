@@ -59,6 +59,18 @@ void Patch_SetId(TPatchType& rDummy, const std::size_t& Id)
 }
 
 template<class TPatchType>
+std::string Patch_GetPrefix(TPatchType& rDummy)
+{
+    return rDummy.Prefix();
+}
+
+template<class TPatchType>
+void Patch_SetPrefix(TPatchType& rDummy, const std::string& Prefix)
+{
+    rDummy.SetPrefix(Prefix);
+}
+
+template<class TPatchType>
 typename TPatchType::FESpaceType::Pointer Patch_pFESpace(TPatchType& rDummy)
 {
     return rDummy.pFESpace();
@@ -129,7 +141,9 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     // class_<Patch<TDim>, typename Patch<TDim>::Pointer >
     (ss.str().c_str(), init<const std::size_t&, typename FESpace<TDim>::Pointer>())
     .add_property("Id", &Patch_GetId<Patch<TDim> >, &Patch_SetId<Patch<TDim> >)
+    .add_property("Prefix", &Patch_GetPrefix<Patch<TDim> >, &Patch_SetPrefix<Patch<TDim> >)
     .def("WorkingSpaceDimension", &Patch<TDim>::WorkingSpaceDimension)
+    .def("Name", &Patch<TDim>::Name)
     .def("CreateControlPointGridFunction", &Patch<TDim>::CreateControlPointGridFunction)
     .def("CreateGridFunction", &Patch_CreateGridFunction<TDim, double>)
     .def("CreateGridFunction", &Patch_CreateGridFunction<TDim, array_1d<double, 3> >)

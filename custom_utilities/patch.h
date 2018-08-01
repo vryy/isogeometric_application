@@ -78,12 +78,12 @@ public:
     typedef FESpace<TDim> FESpaceType;
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : mId(Id), mpFESpace(NULL)
+    Patch(const std::size_t& Id) : mId(Id), mpFESpace(NULL), mPrefix("Patch")
     {
     }
 
     /// Constructor with id and FESpace
-    Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace) : mId(Id), mpFESpace(pFESpace)
+    Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace) : mId(Id), mpFESpace(pFESpace), mPrefix("Patch")
     {
         if (mpFESpace == NULL)
             KRATOS_THROW_ERROR(std::logic_error, "Invalid FESpace is provided", "")
@@ -108,8 +108,22 @@ public:
     /// Get the working space dimension of the patch
     std::size_t WorkingSpaceDimension() const {return TDim;}
 
+    /// Set the prefix for the patch
+    void SetPrefix(const std::string& prefix) {mPrefix = prefix;}
+
+    /// Get the prefix of the patch
+    const std::string& Prefix() const {return mPrefix;}
+
     /// Set the Id of this patch
     void SetId(const std::size_t& Id) {mId = Id;}
+
+    /// Get the name of the patch. The name is prefix + id
+    std::string Name() const
+    {
+        std::stringstream ss;
+        ss << mPrefix << "_" << mId;
+        return ss.str();
+    }
 
     /// Get the Id of this patch
     const std::size_t& Id() const {return mId;}
@@ -174,6 +188,15 @@ public:
         pControlPointGrid->SetName("CONTROL_POINT");
         typename GridFunction<TDim, ControlPointType>::Pointer pNewGridFunc = GridFunction<TDim, ControlPointType>::Create(mpFESpace, pControlPointGrid);
         mpGridFunctions.push_back(pNewGridFunc);
+
+        // create additional grid for control point coordinates, in order to compute the derivatives
+        typedef typename ControlPointType::CoordinatesType CoordinatesType;
+        ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
+        pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
+        typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
+        typename GridFunction<TDim, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
+        mpGridFunctions.push_back(pNewCoordinatesGridFunc);
+
         return pNewGridFunc;
     }
 
@@ -385,7 +408,7 @@ public:
         {
 //            typename ControlGrid<double>::Pointer pBoundaryDoubleControlGrid = ControlGridUtility::ExtractSubGrid<double>((*it)->pControlGrid(), local_ids);
             typename ControlGrid<double>::Pointer pBoundaryDoubleControlGrid = ControlGridUtility::ExtractSubGrid<TDim, double>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
-            pBPatch->CreateGridFunction<double>(pBoundaryDoubleControlGrid);
+            pBPatch->template CreateGridFunction<double>(pBoundaryDoubleControlGrid);
         }
 
         Array1DGridFunctionContainerType Array1DGridFunctions_ = this->Array1DGridFunctions();
@@ -394,7 +417,7 @@ public:
         {
 //            typename ControlGrid<array_1d<double, 3> >::Pointer pBoundaryArray1DControlGrid = ControlGridUtility::ExtractSubGrid<array_1d<double, 3> >((*it)->pControlGrid(), local_ids);
             typename ControlGrid<array_1d<double, 3> >::Pointer pBoundaryArray1DControlGrid = ControlGridUtility::ExtractSubGrid<TDim, array_1d<double, 3> >((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
-            pBPatch->CreateGridFunction<array_1d<double, 3> >(pBoundaryArray1DControlGrid);
+            pBPatch->template CreateGridFunction<array_1d<double, 3> >(pBoundaryArray1DControlGrid);
         }
 
         VectorGridFunctionContainerType VectorGridFunctions_ = this->VectorGridFunctions();
@@ -403,7 +426,7 @@ public:
         {
 //            typename ControlGrid<Vector>::Pointer pBoundaryVectorControlGrid = ControlGridUtility::ExtractSubGrid<Vector>((*it)->pControlGrid(), local_ids);
             typename ControlGrid<Vector>::Pointer pBoundaryVectorControlGrid = ControlGridUtility::ExtractSubGrid<TDim, Vector>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
-            pBPatch->CreateGridFunction<Vector>(pBoundaryVectorControlGrid);
+            pBPatch->template CreateGridFunction<Vector>(pBoundaryVectorControlGrid);
         }
 
         return pBPatch;
@@ -664,6 +687,7 @@ public:
 private:
 
     std::size_t mId;
+    std::string mPrefix;
 
     // FESpace contains the shape function information and various information with regards to the functional space.
     // Because the control point grid is in homogeneous coordinates, the FESpace shall be an unweighted spaces

@@ -81,7 +81,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
         pNewFESpace->ResetFunctionIndices();
 
-        KRATOS_WATCH(T)
+        // KRATOS_WATCH(T)
 
         // set the new FESpace
         pNewPatch->SetFESpace(pNewFESpace);

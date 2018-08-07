@@ -126,13 +126,15 @@ public:
     /// Prepend the transformation
     void PrependTransformation(const Transformation& rOther)
     {
-        noalias(this->mTransMat) = prod(this->mTransMat, rOther.Mat());
+        Matrix tmp = prod(this->mTransMat, rOther.Mat());
+        noalias(this->mTransMat) = tmp;
     }
 
     /// Append the transformation
     void AppendTransformation(const Transformation& rOther)
     {
-        noalias(this->mTransMat) = prod(rOther.Mat(), this->mTransMat);
+        Matrix tmp = prod(rOther.Mat(), this->mTransMat);
+        noalias(this->mTransMat) = tmp;
     }
 
     /// Apply the transformation for a point in 3D
@@ -205,7 +207,8 @@ public:
     /// Multiplication operator
     Transformation& operator*=(const Transformation& rOther)
     {
-        noalias(this->mTransMat) = prod(rOther.mTransMat, this->mTransMat);
+        Matrix tmp = prod(rOther.mTransMat, this->mTransMat);
+        noalias(this->mTransMat) = tmp;
         return *this;
     }
 

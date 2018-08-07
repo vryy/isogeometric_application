@@ -60,6 +60,7 @@ public:
         if (pFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
+        rOStream << "% Degree" << std::endl;
         rOStream << "P" << patch_id << "_params.p1 = " << pFESpace->Order(0) << ";\n";
         rOStream << "P" << patch_id << "_params.p2 = " << pFESpace->Order(1) << ";\n";
         if (TDim == 3)
@@ -92,6 +93,7 @@ public:
 
             ++cnt;
 
+            rOStream << "% basis function " << (*it_bf)->Id() << std::endl;
             rOStream << "P" << patch_id << "_Xi{" << cnt << "} = [";
             for(std::size_t i = 0; i < local_knots[0].size(); ++i)
                 rOStream << " " << local_knots[0][i];
@@ -128,6 +130,7 @@ public:
             ++cnt;
 
             // write the boundary of the cell
+            rOStream << "% cell " << cnt << " information" << std::endl;
             rOStream << "P" << patch_id << "_S{" << cnt << "} = [" << (*it_cell)->LeftValue() << " " << (*it_cell)->RightValue() << ";";
             rOStream << (*it_cell)->DownValue() << " " << (*it_cell)->UpValue() << "];\n";
 

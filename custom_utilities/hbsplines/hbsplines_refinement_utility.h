@@ -451,6 +451,10 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                     // assign new equation id
                     pnew_bf->SetEquationId(++starting_id);
+                    if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
+                    {
+                        std::cout << "new bf " << pnew_bf->Id() << " is assigned eq_id = " << pnew_bf->EquationId() << std::endl;
+                    }
 
                     // transfer the control point information
                     ControlPointType oldC = p_bf->GetValue(CONTROL_POINT);

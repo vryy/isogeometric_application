@@ -348,7 +348,7 @@ public:
         }
     }
 
-    /// Reset the function indices to a given values.
+    /// Reset the function indices to -1.
     /// This is useful when assigning the id for the boundary patch.
     virtual void ResetFunctionIndices()
     {
@@ -381,8 +381,9 @@ public:
         }
     }
 
-    /// Enumerate the dofs of each grid function. The enumeration algorithm is pretty straightforward.
-    /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
+    /// Enumerate the dofs of each grid function. This function is used to initialize the equation id for all basis functions.
+    /// It shall not be used after refinement.
+    /// If the dof does not have pre-existing value, which assumes -1, it will be assigned the incremental value.
     virtual std::size_t& Enumerate(std::size_t& start)
     {
         BaseType::mGlobalToLocal.clear();

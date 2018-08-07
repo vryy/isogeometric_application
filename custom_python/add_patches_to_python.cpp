@@ -88,6 +88,12 @@ typename GridFunction<TDim, typename TVariableType::Type>::Pointer Patch_GridFun
     return rDummy.template pGetGridFunction<TVariableType>(rVariable);
 }
 
+template<int TDim>
+typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, const std::size_t& i)
+{
+    return rDummy.pInterface(i);
+}
+
 template<class TMultiPatchType>
 typename TMultiPatchType::PatchContainerType MultiPatch_GetPatches(TMultiPatchType& rDummy)
 {
@@ -128,6 +134,30 @@ std::size_t MultiPatch_Enumerate2(MultiPatch<TDim>& rDummy, const std::size_t& s
     return system_size;
 }
 
+template<int TDim>
+typename Patch<TDim>::Pointer PatchInterface_pPatch1(PatchInterface<TDim>& rDummy)
+{
+    return rDummy.pPatch1();
+}
+
+template<class TPatchInterfaceType>
+BoundarySide PatchInterface_Side1(TPatchInterfaceType& rDummy)
+{
+    return rDummy.Side1();
+}
+
+template<int TDim>
+typename Patch<TDim>::Pointer PatchInterface_pPatch2(PatchInterface<TDim>& rDummy)
+{
+    return rDummy.pPatch2();
+}
+
+template<class TPatchInterfaceType>
+BoundarySide PatchInterface_Side2(TPatchInterfaceType& rDummy)
+{
+    return rDummy.Side2();
+}
+
 ////////////////////////////////////////
 
 template<int TDim>
@@ -156,6 +186,9 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("Order", &Patch<TDim>::Order)
     .def("TotalNumber", &Patch<TDim>::TotalNumber)
     .def("FESpace", &Patch_pFESpace<Patch<TDim> >)
+    .def("NumberOfInterfaces", &Patch<TDim>::NumberOfInterfaces)
+    .def("AddInterface", &Patch<TDim>::AddInterface)
+    .def("GetInterface", &Patch_GetInterface<TDim>)
     .def(self_ns::str(self))
     ;
 
@@ -173,11 +206,15 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
 
     ss.str(std::string());
     ss << "PatchInterface" << TDim << "D";
-    class_<PatchInterface<TDim> >
-    // class_<PatchInterface<TDim>, typename PatchInterface<TDim>::Pointer >
+    // class_<PatchInterface<TDim> >
+    class_<PatchInterface<TDim>, typename PatchInterface<TDim>::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def(init<typename Patch<TDim>::Pointer, const BoundarySide&, typename Patch<TDim>::Pointer, const BoundarySide&>())
-    // .def(self_ns::str(self))
+    .def("Patch1", &PatchInterface_pPatch1<TDim>)
+    .def("Patch2", &PatchInterface_pPatch2<TDim>)
+    .def("Side1", &PatchInterface_Side1<PatchInterface<TDim> >)
+    .def("Side2", &PatchInterface_Side2<PatchInterface<TDim> >)
+    .def(self_ns::str(self))
     ;
 
     ss.str(std::string());

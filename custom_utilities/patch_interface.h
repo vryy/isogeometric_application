@@ -101,6 +101,16 @@ public:
         this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices);
     }
 
+    /// Overload operator ==
+    virtual bool operator==(const PatchInterface<TDim>& rOther) const
+    {
+        if (this->pPatch1() != rOther.pPatch1()) return false;
+        if (this->pPatch2() != rOther.pPatch2()) return false;
+        if (this->Side1() != rOther.Side1()) return false;
+        if (this->Side2() != rOther.Side2()) return false;
+        return true;
+    }
+
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {

@@ -469,6 +469,19 @@ public:
     /// Add an interface to the patch
     void AddInterface(typename PatchInterface<TDim>::Pointer pInterface)
     {
+        if (&(*(pInterface->pPatch1())) != this)
+        {
+            std::cout << "WARNING: the patch 1 of the interface is not the same as this patch, skipped." << std::endl;
+            return;
+        }
+
+        for (std::size_t i = 0; i < mpInterfaces.size(); ++i)
+        {
+            if (*mpInterfaces[i] == *pInterface)
+                std::cout << "WARNING: the interface exist in this patch, skipped." << std::endl;
+            return;
+        }
+
         mpInterfaces.push_back(pInterface);
     }
 

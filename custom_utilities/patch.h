@@ -478,8 +478,10 @@ public:
         for (std::size_t i = 0; i < mpInterfaces.size(); ++i)
         {
             if (*mpInterfaces[i] == *pInterface)
+            {
                 std::cout << "WARNING: the interface exist in this patch, skipped." << std::endl;
-            return;
+                return;
+            }
         }
 
         mpInterfaces.push_back(pInterface);

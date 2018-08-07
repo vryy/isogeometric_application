@@ -52,6 +52,9 @@ def main():
     multipatch_util.MakeInterface(hpatch1, BoundarySide.Top, hpatch2, BoundarySide.Bottom)
     multipatch_util.MakeInterface(hpatch2, BoundarySide.Right, hpatch3, BoundarySide.Left)
     hmpatch.Enumerate()
+    for hpatch_ptr in hmpatch.Patches():
+    	hpatch = hpatch_ptr.GetReference()
+    	hpatch.FESpace().UpdateCells()
     print("Create hierarchical B-Splines multipatch completed")
 
 #    print(hmpatch)
@@ -83,6 +86,9 @@ def main():
         print("refine_bf_id:", refine_bf_id)
         hbsplines_refinement_util.Refine(hpatch1, refine_bf_id, echo_level)
         hmpatch.Enumerate()
+        for hpatch_ptr in hmpatch.Patches():
+        	hpatch = hpatch_ptr.GetReference()
+        	hpatch.FESpace().UpdateCells()
 
     ###
 
@@ -121,6 +127,7 @@ def main():
 
     bfespace = hpatch1.FESpace().ConstructBoundaryFESpace(BoundarySide.Top)
     print("patch 1 boundary FESpace on top:")
+    bfespace.UpdateCells()
     print(bfespace)
 
     ################

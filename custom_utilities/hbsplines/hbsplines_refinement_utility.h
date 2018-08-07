@@ -135,12 +135,16 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
         }
     }
 
-    if(!found) return;
+    if(!found)
+    {
+        std::cout << "Basis function " << Id << " is not found, skipped." << std::endl;
+        return;
+    }
 
     // does not refine if maximum level is reached
     if(p_bf->Level() == pFESpace->MaxLevel())
     {
-        std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " is skipped" << std::endl;
+        std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " is skipped." << std::endl;
         return;
     }
 

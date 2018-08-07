@@ -69,7 +69,7 @@ public:
 
         rOStream << "# nurbs mesh v.0.6\n";
         rOStream << "#\n";
-        rOStream << "# BSplines representation for patch " << pPatch->Id() << "\n";
+        rOStream << "# BSplines representation for patch " << pPatch->Name() << "\n";
         rOStream << "#\n";
 
         rOStream << "#dim\n";

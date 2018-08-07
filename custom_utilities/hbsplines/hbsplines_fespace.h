@@ -687,7 +687,7 @@ public:
             for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
                 (*it_bf)->ComputeExtractionOperator(Crow, *it_cell);
-                (*it_cell)->AddAnchor((*it_bf)->Id(), (*it_bf)->GetValue(CONTROL_POINT).W(), Crow);
+                (*it_cell)->AddAnchor((*it_bf)->EquationId(), (*it_bf)->GetValue(CONTROL_POINT).W(), Crow);
             }
         }
     }

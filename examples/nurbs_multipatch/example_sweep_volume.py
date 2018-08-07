@@ -50,13 +50,11 @@ def CreatePatch():
     start_angle = 45
     end_angle = 90
     axis = "z"
-    cnt = 1
     ring_patches = []
     for i in range(0, npoints):
         ring_ptr = geometry_factory.CreateSmallRing([0.0, 0.0, 0.0], axis, rin, rout, start_angle, end_angle)
         ring = ring_ptr.GetReference()
-        ring.Id = cnt
-        cnt = cnt+1
+        ring.Id = i+1
         ring.Prefix = "ring"
         ring.ApplyTransformation(trans_list[i])
         # mpatch_export3.Export(ring, ring.Name() + "_def.m")

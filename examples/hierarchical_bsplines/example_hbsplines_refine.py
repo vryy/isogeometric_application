@@ -33,6 +33,7 @@ def main():
     echo_level = 1
     hbsplines_refinement_util.Refine(patch, 1, echo_level)
     patch.FESpace().Enumerate()
+    patch.FESpace().UpdateCells()
     print(patch)
 
 if __name__ == "__main__":

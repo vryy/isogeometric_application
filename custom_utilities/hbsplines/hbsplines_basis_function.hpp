@@ -20,9 +20,106 @@ template<typename TVectorType, typename TIArrayType, typename TKnotContainerType
 inline void HBSplinesBasisFunction_Helper<1>::ComputeExtractionOperator(TVectorType& Crow,
         const TIArrayType& orders, const TKnotContainerType& local_knots, const TCellType& r_cell)
 {
-    std::stringstream ss;
-    ss << __FUNCTION__ << " is not yet implemented for 1D";
-    KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+    // a priori check
+    for(std::size_t i = 0; i < local_knots[0].size(); ++i)
+    {
+        if(local_knots[0][i] > r_cell.LeftValue() && local_knots[0][i] < r_cell.RightValue())
+        {
+            std::stringstream ss;
+            ss << "Error: the cell is not contained in one knot span in u-direction of the basis function" << std::endl;
+            ss << "LeftValue: " << r_cell.LeftValue() << ", RightValue: " << r_cell.RightValue() << std::endl;
+            ss << "local_knots[0]:";
+            for(std::size_t j = 0; j < local_knots[0].size(); ++j)
+                ss << " " << local_knots[0][j];
+            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        }
+    }
+
+    #ifdef DEBUG_BEZIER_EXTRACTION
+    std::cout << "Bezier extraction debug at bf " << Id() << ":" << std::endl;
+    std::cout << "local_knots[0]:";
+    for(std::size_t i = 0; i < local_knots[0].size(); ++i)
+        std::cout << " " << local_knots[0][i];
+    std::cout << std::endl;
+    KRATOS_WATCH(r_cell.LeftValue())
+    KRATOS_WATCH(r_cell.RightValue())
+    #endif
+
+    // compute the inserted knot vector
+    std::vector<double> ins_knots1;
+//        std::vector<int> ins_span1;
+    for(std::size_t i = 0; i < local_knots[0].size() - 1; ++i)
+    {
+        if(r_cell.LeftValue() > local_knots[0][i] && r_cell.LeftValue() < local_knots[0][i+1])
+        {
+            ins_knots1.push_back(r_cell.LeftValue());
+//                ins_span1.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
+            break;
+        }
+    }
+
+    for(std::size_t i = 0; i < local_knots[0].size() - 1; ++i)
+    {
+        if(r_cell.RightValue() > local_knots[0][i] && r_cell.RightValue() < local_knots[0][i+1])
+        {
+            ins_knots1.push_back(r_cell.RightValue());
+//                ins_span1.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
+            break;
+        }
+    }
+
+    #ifdef DEBUG_BEZIER_EXTRACTION
+    std::cout << "ins_knots1:";
+    for(std::size_t i = 0; i < ins_knots1.size(); ++i)
+        std::cout << " " << ins_knots1[i];
+    std::cout << std::endl;
+//        std::cout << "ins_span1:";
+//        for(std::size_t i = 0; i < ins_span1.size(); ++i)
+//            std::cout << " " << ins_span1[i];
+//        std::cout << std::endl;
+    #endif
+
+    // compute the Bezier extraction operator
+    std::vector<Vector> Crows;
+    int nb_xi;
+    Vector Ubar_xi;
+
+    BezierUtils::bezier_extraction_local_1d(Crows,
+                                            nb_xi,
+                                            Ubar_xi,
+                                            local_knots[0],
+                                            ins_knots1,
+                                            orders[0]);
+
+    #ifdef DEBUG_BEZIER_EXTRACTION
+    std::cout << "Crows:" << std::endl;
+    for(std::size_t i = 0; i < Crows.size(); ++i)
+        std::cout << Crows[i] << std::endl;
+    #endif
+
+    // extract the correct row
+    std::size_t span1;// knot span in u-direction of the cell w.r.t basis function support
+    #ifdef DEBUG_BEZIER_EXTRACTION
+    KRATOS_WATCH(Ubar_xi)
+    #endif
+    std::set<double> Ubar_xi_unique(Ubar_xi.begin(), Ubar_xi.end());
+    std::vector<double> Ubar_xi_unique_vector(Ubar_xi_unique.begin(), Ubar_xi_unique.end());
+    span1 = BSplineUtils::FindSpanLocal(r_cell.LeftValue(), Ubar_xi_unique_vector) - 1;
+
+    #ifdef DEBUG_BEZIER_EXTRACTION
+    KRATOS_WATCH(span1)
+    #endif
+    std::size_t span = span1;
+    if(Crow.size() != Crows[span].size())
+        Crow.resize(Crows[span].size());
+    #ifdef DEBUG_BEZIER_EXTRACTION
+    KRATOS_WATCH(span)
+    KRATOS_WATCH(Crows.size())
+    #endif
+    std::copy(Crows[span].begin(), Crows[span].end(), Crow.begin());
+    #ifdef DEBUG_BEZIER_EXTRACTION
+    std::cout << "----------------------" << std::endl;
+    #endif
 }
 
 template<>

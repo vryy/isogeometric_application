@@ -243,6 +243,7 @@ void IsogeometricApplication_AddHBSplinesToPython()
     ///////////////////////HIERARCHICAL BSplines/////////////////////
     /////////////////////////////////////////////////////////////////
 
+    IsogeometricApplication_AddHBSplinesSpaceToPython<1>();
     IsogeometricApplication_AddHBSplinesSpaceToPython<2>();
     IsogeometricApplication_AddHBSplinesSpaceToPython<3>();
 

@@ -334,6 +334,7 @@ private:
             typedef array_1d<double, 3> DataType;
             typedef Variable<DataType> VariableType;
             const std::string& var_name = (*it_gf)->pControlGrid()->Name();
+            if (var_name == "CONTROL_POINT_COORDINATES") continue;
             if (KratosComponents<VariableData>::Has(var_name))
             {
                 VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));

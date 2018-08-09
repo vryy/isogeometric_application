@@ -57,6 +57,8 @@ public:
     typedef ControlPoint<double> ControlPointType;
     typedef Transformation<double> TransformationType;
 
+    typedef std::map<std::string, boost::any> GridFunctionContainerType;
+
     typedef GridFunction<TDim, double> DoubleGridFunctionType;
     typedef std::vector<typename DoubleGridFunctionType::Pointer> DoubleGridFunctionContainerType;
 
@@ -187,7 +189,7 @@ public:
         CheckSize(*pControlPointGrid, __FUNCTION__);
         pControlPointGrid->SetName("CONTROL_POINT");
         typename GridFunction<TDim, ControlPointType>::Pointer pNewGridFunc = GridFunction<TDim, ControlPointType>::Create(mpFESpace, pControlPointGrid);
-        mpGridFunctions.push_back(pNewGridFunc);
+        mpGridFunctions["CONTROL_POINT"] = pNewGridFunc;
 
         // create additional grid for control point coordinates, in order to compute the derivatives
         typedef typename ControlPointType::CoordinatesType CoordinatesType;
@@ -195,7 +197,7 @@ public:
         pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
         typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
         typename GridFunction<TDim, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
-        mpGridFunctions.push_back(pNewCoordinatesGridFunc);
+        mpGridFunctions["CONTROL_POINT_COORDINATES"] = pNewCoordinatesGridFunc;
 
         return pNewGridFunc;
     }
@@ -239,7 +241,7 @@ public:
         CheckSize(*pControlGrid, __FUNCTION__);
         typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
         typename GridFunction<TDim, TDataType>::Pointer pNewGridFunc = GridFunction<TDim, TDataType>::Create(pNewFESpace, pControlGrid);
-        mpGridFunctions.push_back(pNewGridFunc);
+        mpGridFunctions[pControlGrid->Name()] = pNewGridFunc;
         return pNewGridFunc;
     }
 
@@ -257,11 +259,11 @@ public:
     typename GridFunction<TDim, typename TVariableType::Type>::Pointer pGetGridFunction(const TVariableType& rVariable)
     {
         typedef typename GridFunction<TDim, typename TVariableType::Type>::Pointer GridFunctionPointerType;
-        for (std::size_t i = 0; i < mpGridFunctions.size(); ++i)
+        for (GridFunctionContainerType::iterator it = mpGridFunctions.begin(); it != mpGridFunctions.end(); ++it)
         {
             try
             {
-                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(mpGridFunctions[i]);
+                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
                 if (pGridFunc->pControlGrid()->Name() == rVariable.Name())
                     return pGridFunc;
             }
@@ -281,11 +283,11 @@ public:
     typename GridFunction<TDim, typename TVariableType::Type>::ConstPointer pGetGridFunction(const TVariableType& rVariable) const
     {
         typedef typename GridFunction<TDim, typename TVariableType::Type>::Pointer GridFunctionPointerType;
-        for (std::size_t i = 0; i < mpGridFunctions.size(); ++i)
+        for (GridFunctionContainerType::const_iterator it = mpGridFunctions.begin(); it != mpGridFunctions.end(); ++it)
         {
             try
             {
-                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(mpGridFunctions[i]);
+                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
                 if (pGridFunc->pControlGrid()->Name() == rVariable.Name())
                     return pGridFunc;
             }
@@ -709,7 +711,7 @@ private:
     typename FESpace<TDim>::Pointer mpFESpace;
 
     // container to contain all the grid functions
-    std::vector<boost::any> mpGridFunctions; // using boost::any to store pointer to grid function
+    GridFunctionContainerType mpGridFunctions; // using boost::any to store pointer to grid function
 
     /**
      * interface data
@@ -750,17 +752,17 @@ private:
 
     /// Helper to extract the grid functions out from boost::any
     template<class TContainerType>
-    TContainerType ExtractGridFunctions(const std::vector<boost::any>& pGridFunctions) const
+    TContainerType ExtractGridFunctions(const GridFunctionContainerType& pGridFunctions) const
     {
         TContainerType GridFuncs;
 
         typedef typename TContainerType::value_type GridFunctionPointerType;
 
-        for (std::size_t i = 0; i < pGridFunctions.size(); ++i)
+        for (GridFunctionContainerType::const_iterator it = pGridFunctions.begin(); it != pGridFunctions.end(); ++it)
         {
             try
             {
-                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(pGridFunctions[i]);
+                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
                 GridFuncs.push_back(pGridFunc);
             }
             catch (boost::bad_any_cast& e)
@@ -774,11 +776,11 @@ private:
 
     /// Helper to extract the variables out from Grid functions. It is important that the variable is already registered to the Kratos kernel.
     template<class TVariableType>
-    std::vector<TVariableType*> ExtractVariables(const std::vector<boost::any>& pGridFunctions) const
+    std::vector<TVariableType*> ExtractVariables(const GridFunctionContainerType& pGridFunctions) const
     {
         typedef GridFunction<TDim, typename TVariableType::Type> GridFunctionType;
-        typedef std::vector<typename GridFunctionType::Pointer> GridFunctionContainerType;
-        GridFunctionContainerType GridFuncs = this->ExtractGridFunctions<GridFunctionContainerType>(pGridFunctions);
+        typedef std::vector<typename GridFunctionType::Pointer> GridFunctionVectorContainerType;
+        GridFunctionVectorContainerType GridFuncs = this->ExtractGridFunctions<GridFunctionVectorContainerType>(pGridFunctions);
 
         std::vector<TVariableType*> var_list;
         for (std::size_t i = 0; i < GridFuncs.size(); ++i)

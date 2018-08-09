@@ -89,6 +89,21 @@ std::size_t MultiPatchUtility_GetEquationId(MultiPatchUtility& rDummy, ModelPart
     return rDummy.GetEquationId(rNode, rVariable);
 }
 
+std::size_t MultiPatchUtility_BoundaryFlag(MultiPatchUtility& rDummy, const BoundarySide& side)
+{
+    return BOUNDARY_FLAG(side);
+}
+
+std::size_t MultiPatchUtility_BoundaryFlag2D(MultiPatchUtility& rDummy, const BoundarySide2D& side)
+{
+    return BOUNDARY_FLAG(side);
+}
+
+std::size_t MultiPatchUtility_BoundaryFlag3D(MultiPatchUtility& rDummy, const BoundarySide3D& side)
+{
+    return BOUNDARY_FLAG(side);
+}
+
 template<class TClassType>
 void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassType::Pointer pInstance)
 {
@@ -318,6 +333,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("ListModelPart", &MultiPatchUtility_ListModelPart)
     .def("GetEquationId", &MultiPatchUtility_GetEquationId<Variable<double> >)
     .def("GetEquationId", &MultiPatchUtility_GetEquationId<Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > >)
+    .def("BoundaryFlag", &MultiPatchUtility_BoundaryFlag)
+    .def("BoundaryFlag", &MultiPatchUtility_BoundaryFlag2D)
+    .def("BoundaryFlag", &MultiPatchUtility_BoundaryFlag3D)
     .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<1> >)
     .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<2> >)
     .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<3> >)

@@ -18,7 +18,6 @@
 // Project includes
 #include "includes/define.h"
 #include "containers/array_1d.h"
-#include "containers/pointer_vector_set.h"
 #include "custom_utilities/bezier_utils.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/fespace.h"
@@ -661,6 +660,15 @@ public:
         // collapse the overlapping cells
         pBFESpace->pCellManager()->CollapseCells();
 
+        // re-add the supporting cells
+        for(typename BoundaryFESpaceType::cell_container_t::iterator it_cell = pBFESpace->pCellManager()->begin(); it_cell != pBFESpace->pCellManager()->end(); ++it_cell)
+        {
+            for(typename BoundaryFESpaceType::CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
+            {
+                (*it_bf).lock()->AddCell(*it_cell);
+            }
+        }
+
         return pBFESpace;
     }
 
@@ -687,8 +695,9 @@ public:
             (*it_cell)->Reset();
             for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
-                (*it_bf)->ComputeExtractionOperator(Crow, *it_cell);
-                (*it_cell)->AddAnchor((*it_bf)->EquationId(), (*it_bf)->GetValue(CONTROL_POINT).W(), Crow);
+                BasisFunctionType& bf = *(it_bf->lock());
+                bf.ComputeExtractionOperator(Crow, *it_cell);
+                (*it_cell)->AddAnchor(bf.EquationId(), bf.GetValue(CONTROL_POINT).W(), Crow);
             }
         }
     }

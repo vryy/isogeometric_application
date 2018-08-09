@@ -173,6 +173,7 @@ public:
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
+        rOStream << "CellManager2D";
     }
 
     virtual void PrintData(std::ostream& rOStream) const

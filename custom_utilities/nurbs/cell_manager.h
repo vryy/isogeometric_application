@@ -23,6 +23,8 @@
 #include "includes/define.h"
 #include "custom_utilities/nurbs/knot.h"
 
+#define DEBUG_DESTROY
+
 namespace Kratos
 {
 
@@ -59,7 +61,11 @@ public:
 
     /// Destructor
     virtual ~CellManager()
-    {}
+    {
+        #ifdef DEBUG_DESTROY
+        this->PrintInfo(std::cout); std::cout << ", Addr = " << this << " is destroyed" << std::endl;
+        #endif
+    }
 
     /// Set the tolerance for the internal searching algorithm
     void SetTolerance(const double& Tol) {mTol = Tol;}
@@ -155,7 +161,11 @@ public:
         {
             iterator it_cell = this->begin();
             hit = this->CollapseCells(it_cell, this->end());
-            if (hit) this->erase(*it_cell);
+            if (hit)
+            {
+                (*it_cell)->ClearTrace();
+                this->erase(*it_cell);
+            }
         } while (hit);
     }
 
@@ -172,6 +182,7 @@ public:
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
+        rOStream << "CellManager";
     }
 
     virtual void PrintData(std::ostream& rOStream) const
@@ -230,6 +241,8 @@ inline std::ostream& operator <<(std::ostream& rOStream, const CellManager<TCell
 }
 
 }// namespace Kratos.
+
+#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_MANAGER_H_INCLUDED
 

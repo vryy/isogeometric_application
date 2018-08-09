@@ -24,6 +24,8 @@
 #include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/nurbs/cell.h"
 
+#define DEBUG_DESTROY
+
 namespace Kratos
 {
 
@@ -43,7 +45,8 @@ public:
     typedef Cell BaseType;
 
     typedef typename TBasisFuncType::Pointer bf_t;
-    typedef std::set<bf_t> bf_container_t;
+    typedef typename TBasisFuncType::WeakPointer bf_wt;
+    typedef std::set<bf_wt> bf_container_t;
     typedef typename bf_container_t::iterator bf_iterator;
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
@@ -64,7 +67,11 @@ public:
 
     /// Destructor
     virtual ~HBCell()
-    {}
+    {
+        #ifdef DEBUG_DESTROY
+        std::cout << "hbcell "; this->PrintInfo(std::cout); std::cout << " is destroyed" << std::endl;
+        #endif
+    }
 
     /// Set the level for this cell
     void SetLevel(const std::size_t& Level) {mLevel = Level;}
@@ -77,8 +84,8 @@ public:
     bf_t AddBf(bf_t p_bf)
     {
         for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
-            if(*it == p_bf)
-                return *it;
+            if((*it).lock() == p_bf)
+                return p_bf;
         mpBasisFuncs.insert(p_bf);
         return p_bf;
     }
@@ -88,7 +95,7 @@ public:
     {
         for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if(*it == p_bf)
+            if((*it).lock() == p_bf)
             {
                 mpBasisFuncs.erase(it);
                 break;
@@ -110,12 +117,21 @@ public:
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBCell is failed.", "")
             for(typename HBCellType::bf_iterator it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
             {
-                this->AddBf(*it_bf);
+                this->AddBf((*it_bf).lock());
             }
         }
         catch (std::exception const& e)
         {
-            // DO NOTHING
+            KRATOS_THROW_ERROR(std::runtime_error, __FUNCTION__, "failed.")
+        }
+    }
+
+    /// Tell all the basis function to disconnect with this cell. This happens when we want to eliminate this cell.
+    virtual void ClearTrace()
+    {
+        for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            (*it).lock()->RemoveCell(*this);
         }
     }
 
@@ -138,7 +154,7 @@ public:
     {
         rOStream << ", supporting basis functions: (";
         for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
-            rOStream << " " << (*it)->Id();
+            rOStream << " " << (*it).lock()->Id();
         rOStream << ")";
         BaseType::PrintData(rOStream);
     }
@@ -160,6 +176,8 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBCell<TBasisFunc
 }
 
 }// namespace Kratos.
+
+#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HB_CELL_H_INCLUDED
 

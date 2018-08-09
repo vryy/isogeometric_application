@@ -35,6 +35,7 @@ struct HBSplinesRefinementUtility_Helper
 {
     typedef KnotArray1D<double> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
+    typedef typename HBSplinesFESpace<TDim>::BasisFunctionType BasisFunctionType;
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
     static void Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& echo_level);
@@ -578,8 +579,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 {
                     for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
                     {
-                        (*it_subcell)->AddBf(*it_bf);
-                        (*it_bf)->AddCell(*it_subcell);
+                        (*it_subcell)->AddBf(it_bf->lock());
+                        it_bf->lock()->AddCell(*it_subcell);
                     }
                 }
             }
@@ -608,8 +609,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             {
                 for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
                 {
-                    p_cells[i]->AddBf(*it_bf);
-                    (*it_bf)->AddCell(p_cells[i]);
+                    p_cells[i]->AddBf(it_bf->lock());
+                    it_bf->lock()->AddCell(p_cells[i]);
                 }
             }
         }
@@ -724,6 +725,16 @@ inline void HBSplinesRefinementUtility_Helper<2>::RefineWindow(typename Patch<2>
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
+    std::cout << "window:";
+    for (std::size_t i = 0; i < window.size(); ++i)
+    {
+        std::cout << " [";
+        for (std::size_t j = 0; j < window[i].size(); ++j)
+            std::cout << " " << window[i][j];
+        std::cout << "]";
+    }
+    std::cout << std::endl;
+
     // search and mark all basis functions need to refine on all level (starting from the last level) which support is contained in the refining domain
     for(typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
     {
@@ -736,7 +747,7 @@ inline void HBSplinesRefinementUtility_Helper<2>::RefineWindow(typename Patch<2>
             && bounding_box[2] >= window[1][0] && bounding_box[3] <= window[1][1] )
         {
             Refine(pPatch, (*it_bf)->Id(), echo_level);
-            pPatch->pParentMultiPatch()->Enumerate();
+            pPatch->pParentMultiPatch()->Enumerate(); // TODO error here
         }
     }
 }

@@ -229,6 +229,12 @@ public:
         }
     }
 
+    /// This action is called when the cell is removed from the cell manager, see hb_cell.
+    virtual void ClearTrace()
+    {
+        // DO NOTHING
+    }
+
     /// Get the number of supported anchors of this cell. In other words, it is the number of basis functions that the support domain includes this cell.
     std::size_t NumberOfAnchors() const {return mSupportedAnchors.size();}
 

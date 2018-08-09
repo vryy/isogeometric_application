@@ -55,7 +55,8 @@ public:
     typedef bf_container_t::iterator bf_iterator;
     typedef bf_container_t::const_iterator bf_const_iterator;
 
-    typedef typename HBCell<DeprecatedHBBasisFunction>::Pointer cell_t;
+    typedef HBCell<DeprecatedHBBasisFunction> CellType;
+    typedef typename CellType::Pointer cell_t;
     typedef std::set<cell_t> cell_container_t;
     typedef cell_container_t::iterator cell_iterator;
     typedef cell_container_t::const_iterator cell_const_iterator;
@@ -112,6 +113,19 @@ public:
                 mpCells.erase(it);
                 break;
             }
+    }
+
+    /// Remove the cell from the list
+    void RemoveCell(CellType& r_cell)
+    {
+        for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
+        {
+            if(&(*(*it)) == &r_cell)
+            {
+                mpCells.erase(it);
+                break;
+            }
+        }
     }
 
     /// Set the local knot vectors to this basis function

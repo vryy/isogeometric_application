@@ -37,6 +37,8 @@
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/hbsplines/hb_cell.h"
 
+#define DEBUG_DESTROY
+
 namespace Kratos
 {
 
@@ -92,11 +94,37 @@ public:
 
     /// Destructor
     ~HBSplinesBasisFunction()
-    {}
+    {
+        #ifdef DEBUG_DESTROY
+        std::cout << "HBSplinesBasisFunction" << TDim << "D " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;
+        #endif
+    }
 
     /**************************************************************************
                             MODIFICATION SUBROUTINES
     **************************************************************************/
+
+    /// Get the number of parent that this basis function supports
+    std::size_t NumberOfParent() const {return mpParents.size();}
+
+    /// Add a parent that this basis function supports
+    void AddParent(bf_t p_bf)
+    {
+        mpParents.push_back(p_bf);
+    }
+
+    /// Remove the parent from the list
+    void RemoveParent(bf_t p_bf)
+    {
+        for(bf_iterator it = bf_parent_begin(); it != bf_parent_end(); ++it)
+        {
+            if(*it == p_bf)
+            {
+                mpParents.erase(it);
+                break;
+            }
+        }
+    }
 
     /// Get the number of children of this basis function
     std::size_t NumberOfChildren() const {return mpChilds.size();}
@@ -108,7 +136,7 @@ public:
         mRefinedCoefficients[p_bf->Id()] = RefinedCoefficient;
     }
 
-    /// Remove the cell from the list
+    /// Remove the child from the list
     void RemoveChild(bf_t p_bf)
     {
         for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
@@ -144,6 +172,19 @@ public:
         }
     }
 
+    /// Remove the cell from the list
+    void RemoveCell(CellType& r_cell)
+    {
+        for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
+        {
+            if(&(*(*it)) == &r_cell)
+            {
+                mpCells.erase(it);
+                break;
+            }
+        }
+    }
+
     /// Set the local knot vectors to this basis function
     void SetLocalKnotVectors(const int& dim, const std::vector<knot_t>& rpKnots)
     {
@@ -156,7 +197,13 @@ public:
                             ACCESS SUBROUTINES
     **************************************************************************/
 
-    /// Iterators to the child of this basis function
+    /// Iterators to the parent of this basis function
+    bf_iterator bf_parent_begin() {return mpParents.begin();}
+    bf_const_iterator bf_parent_begin() const {return mpParents.begin();}
+    bf_iterator bf_parent_end() {return mpParents.end();}
+    bf_const_iterator bf_parent_end() const {return mpParents.end();}
+
+    /// Iterators to the children of this basis function
     bf_iterator bf_begin() {return mpChilds.begin();}
     bf_const_iterator bf_begin() const {return mpChilds.begin();}
     bf_iterator bf_end() {return mpChilds.end();}
@@ -259,7 +306,7 @@ public:
         else
         {
             std::stringstream ss;
-            ss << "The basis function " << child_id << " is not the child of basis function " << Id();
+            ss << "The basis function " << child_id << " is not the child of basis function " << this->Id();
             KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
         }
     }
@@ -514,7 +561,7 @@ public:
         if(cell_end() == cell_begin())
             rOStream << " none";
         rOStream << std::endl;
-        rOStream << "List of children:";
+        rOStream << " List of children:";
         cnt = 0;
         for(bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
@@ -531,9 +578,12 @@ private:
     std::size_t mId;
     std::size_t mEquationId; // this variable stores the equation id of this basis function accross patches for the case of scalar PDE.
     std::size_t mLevel;
-    std::size_t mBoundaryId; // this variable embeddeds the boundary information associated with this basis function. By default, the new basis function is considerred inside of the patch.
+    std::size_t mBoundaryId; // this variable stores the boundary information associated with this basis function.
+                // By default, the new basis function is considerred inside of the patch.
+                // User can add/remove the boundary information by using AddBoundary/RemoveBoundary
     boost::array<std::size_t, TDim> mOrders;
-    bf_container_t mpChilds; // list of refined basis functions that constitute this basis function
+    bf_container_t mpParents; // list of refined basis functions that this basis function is composed from
+    bf_container_t mpChilds; // list of refined basis functions that composes this basis function
     std::map<int, double> mRefinedCoefficients; // store the coefficient of refined basis functions
     cell_container_t mpCells; // list of cells support this basis function at the level of this basis function
     boost::array<std::vector<knot_t>, TDim> mpLocalKnots;
@@ -605,6 +655,9 @@ public:
     /// Dummy function to return an empty data value container
     DataValueContainer Data() {return DataValueContainer();}
 
+    /// Remove the cell from the list
+    void RemoveCell(CellType& r_cell) {}
+
     /// Add the boundary information to this basis function
     void AddBoundary(const std::size_t& BoundaryInfo) {}
 
@@ -625,6 +678,8 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesBasisFun
 }
 
 }// namespace Kratos.
+
+#undef DEBUG_DESTROY
 
 #include "hbsplines_basis_function.hpp"
 

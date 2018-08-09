@@ -186,6 +186,19 @@ public:
         return typename StructuredControlGrid<1, TDataType>::Pointer(new StructuredControlGrid<1, TDataType>(sizes));
     }
 
+    /// resize the grid
+    void Resize(const std::size_t& new_size)
+    {
+        resize(new_size);
+    }
+
+    /// resize the grid
+    void resize(const std::size_t& new_size)
+    {
+        mSize = new_size;
+        BaseType::Data().resize(new_size);
+    }
+
     /// Get the size of underlying data
     std::size_t Size() const {return BaseType::Data().size();}
 

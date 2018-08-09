@@ -20,6 +20,7 @@
 #include "includes/serializer.h"
 #include "custom_utilities/fespace.h"
 
+#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -49,6 +50,9 @@ public:
     /// Destructor
     virtual ~WeightedFESpace()
     {
+        #ifdef DEBUG_DESTROY
+        std::cout << this->Type() << ", Addr = " << this << " is destroyed" << std::endl;
+        #endif
     }
 
     /// Helper to create new WeightedFESpace pointer

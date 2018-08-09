@@ -28,6 +28,7 @@
 #include "custom_utilities/nurbs/cell_manager_3d.h"
 
 // #define DEBUG_GEN_CELL
+#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -52,7 +53,12 @@ public:
     BSplinesFESpace() : BaseType() {}
 
     /// Destructor
-    virtual ~BSplinesFESpace() {}
+    virtual ~BSplinesFESpace()
+    {
+        #ifdef DEBUG_DESTROY
+        std::cout << this->Type() << ", Addr = " << this << " is destroyed" << std::endl;
+        #endif
+    }
 
     /// Helper to create new BSplinesFESpace pointer
     static typename BSplinesFESpace<TDim>::Pointer Create()
@@ -1233,5 +1239,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesFESpace<T
 } // namespace Kratos.
 
 #undef DEBUG_GEN_CELL
+#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BSPLINES_FESPACE_H_INCLUDED defined

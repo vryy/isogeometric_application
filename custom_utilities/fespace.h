@@ -22,6 +22,7 @@
 #include "custom_utilities/nurbs/cell.h"
 #include "custom_utilities/nurbs/cell_manager.h"
 
+// #define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -45,6 +46,9 @@ public:
     /// Destructor
     virtual ~FESpace()
     {
+        #ifdef DEBUG_DESTROY
+        this->PrintInfo(std::cout); std::cout << " is destroyed" << std::endl;
+        #endif
     }
 
     /// Helper to create new BSplinesFESpace pointer

@@ -27,6 +27,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/trans/transformation.h"
 #include "custom_utilities/trans/translation.h"
 #include "custom_utilities/trans/rotation.h"
+#include "custom_utilities/trans/transformation_utility.h"
 
 
 namespace Kratos
@@ -39,11 +40,34 @@ using namespace boost::python;
 
 //////////////////////////////////////////////////
 
+template<typename TDataType>
+Transformation<TDataType> TransformationUtility_CreateAlignTransformation(TransformationUtility<TDataType>& rDummy,
+    const typename Transformation<TDataType>::VectorType& a, const typename Transformation<TDataType>::VectorType& b)
+{
+    Transformation<TDataType> T;
+    T = rDummy.CreateAlignTransformation(a, b);
+    return T;
+}
+
+template<typename TDataType>
+void Transformation_SetValue(Transformation<TDataType>& rDummy, const int& i, const int& j, const TDataType& v)
+{
+    rDummy(i, j) = v;
+}
+
+template<typename TDataType>
+TDataType Transformation_GetValue(Transformation<TDataType>& rDummy, const int& i, const int& j)
+{
+    return rDummy(i, j);
+}
+
+//////////////////////////////////////////////////
+
 void IsogeometricApplication_AddTransformationToPython()
 {
     typedef Transformation<double>::VectorType VectorType;
 
-    class_<Transformation<double>, Transformation<double>::Pointer, boost::noncopyable>
+    class_<Transformation<double>, Transformation<double>::Pointer>
     ("Transformation", init<>())
     .def(init<const VectorType&, const VectorType&, const VectorType&>())
     .def(init<const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&>())
@@ -56,6 +80,8 @@ void IsogeometricApplication_AddTransformationToPython()
     .def("V1", &Transformation<double>::V1)
     .def("V2", &Transformation<double>::V2)
     .def("V3", &Transformation<double>::V3)
+    .def("SetValue", &Transformation_SetValue<double>)
+    .def("GetValue", &Transformation_GetValue<double>)
     .def(self_ns::str(self))
     ;
 
@@ -78,6 +104,12 @@ void IsogeometricApplication_AddTransformationToPython()
     ("RotationZ", init<const double&>())
     .def(self_ns::str(self))
     ;
+
+    class_<TransformationUtility<double>, TransformationUtility<double>::Pointer, boost::noncopyable>
+    ("TransformationUtility", init<>())
+    .def("CreateAlignTransformation", &TransformationUtility_CreateAlignTransformation<double>)
+    ;
+
 }
 
 }  // namespace Python.

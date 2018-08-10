@@ -345,6 +345,10 @@ public:
         std::vector<std::size_t> func_indices = this->FunctionIndices();
         for (std::size_t i = 0; i < func_indices.size(); ++i)
             rOStream << " " << func_indices[i];
+        rOStream << std::endl;
+        rOStream << " GlobalToLocal:";
+        for(std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalToLocal.begin(); it2 != mGlobalToLocal.end(); ++it2)
+            rOStream << " " << it2->first << "->" << it2->second;
     }
 
 protected:

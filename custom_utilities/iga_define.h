@@ -140,6 +140,15 @@ struct ParameterDirection<3>
 enum IsogeometricEchoFlags
 {
     ECHO_REFINEMENT   = 0b0000000000000001,
+    ECHO_REFINEMENT_DETAIL   = 0b0000000000000010,
+};
+
+struct IsogeometricEchoCheck
+{
+    static bool Has(const int& echo_level, const int& echo_flag)
+    {
+        return ((echo_level & echo_flag) == echo_flag);
+    }
 };
 
 enum PreElementType

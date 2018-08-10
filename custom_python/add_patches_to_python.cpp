@@ -336,6 +336,7 @@ void IsogeometricApplication_AddPatchesToPython()
 
     enum_<IsogeometricEchoFlags>("IsogeometricEchoFlags")
     .value("ECHO_REFINEMENT", ECHO_REFINEMENT)
+    .value("ECHO_REFINEMENT_DETAIL", ECHO_REFINEMENT_DETAIL)
     ;
 
     IsogeometricApplication_AddPatchesToPython_Helper<1>();

@@ -553,6 +553,30 @@ inline void HBSplinesBasisFunction_Helper<3>::ComputeExtractionOperator(TVectorT
     #endif
 }
 
+template<>
+inline bool HBSplinesBasisFunction_Helper<1>::CheckBoundingBox(const std::vector<double>& bounding_box,
+    const std::vector<std::vector<double> >& window)
+{
+    return (bounding_box[0] >= window[0][0] && bounding_box[1] <= window[0][1]);
+}
+
+template<>
+inline bool HBSplinesBasisFunction_Helper<2>::CheckBoundingBox(const std::vector<double>& bounding_box,
+    const std::vector<std::vector<double> >& window)
+{
+    return (bounding_box[0] >= window[0][0] && bounding_box[1] <= window[0][1]
+         && bounding_box[2] >= window[1][0] && bounding_box[3] <= window[1][1]);
+}
+
+template<>
+inline bool HBSplinesBasisFunction_Helper<3>::CheckBoundingBox(const std::vector<double>& bounding_box,
+    const std::vector<std::vector<double> >& window)
+{
+    return (bounding_box[0] >= window[0][0] && bounding_box[1] <= window[0][1]
+         && bounding_box[2] >= window[1][0] && bounding_box[3] <= window[1][1]
+         && bounding_box[4] >= window[2][0] && bounding_box[5] <= window[2][1]);
+}
+
 template<class TBasisFunctionType>
 struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<double> >
 {

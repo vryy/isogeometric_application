@@ -738,23 +738,23 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     return std::make_pair(numbers, pnew_bfs);
 }
 
-template<>
-inline void HBSplinesRefinementUtility_Helper<2>::RefineWindow(typename Patch<2>::Pointer pPatch,
+template<int TDim>
+inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch<TDim>::Pointer pPatch,
         const std::vector<std::vector<double> >& window, const int& echo_level)
 {
-    if (pPatch->pFESpace()->Type() != HBSplinesFESpace<2>::StaticType())
+    if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
 
     // Type definitions
-    typedef typename HBSplinesFESpace<2>::bf_t bf_t;
-    typedef typename HBSplinesFESpace<2>::bf_container_t bf_container_t;
-    typedef typename HBSplinesFESpace<2>::CellType CellType;
-    typedef typename HBSplinesFESpace<2>::cell_t cell_t;
-    typedef typename HBSplinesFESpace<2>::cell_container_t cell_container_t;
-    typedef typename Patch<2>::ControlPointType ControlPointType;
+    typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
+    typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
+    typedef typename HBSplinesFESpace<TDim>::CellType CellType;
+    typedef typename HBSplinesFESpace<TDim>::cell_t cell_t;
+    typedef typename HBSplinesFESpace<TDim>::cell_container_t cell_container_t;
+    typedef typename Patch<TDim>::ControlPointType ControlPointType;
 
     // extract the hierarchical B-Splines space
-    typename HBSplinesFESpace<2>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<2> >(pPatch->pFESpace());
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
@@ -769,6 +769,7 @@ inline void HBSplinesRefinementUtility_Helper<2>::RefineWindow(typename Patch<2>
     std::cout << std::endl;
 
     // search and mark all basis functions need to refine on all level (starting from the last level) which support is contained in the refining domain
+    std::vector<std::size_t> bf_list;
     for(typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
     {
         // get the bounding box (support domain of the basis function)
@@ -776,53 +777,20 @@ inline void HBSplinesRefinementUtility_Helper<2>::RefineWindow(typename Patch<2>
 
         // check if the bounding box lie in the refined domain
         // Remarks: this can be changed by a refinement indicator (i.e from error estimator)
-        if(    bounding_box[0] >= window[0][0] && bounding_box[1] <= window[0][1]
-            && bounding_box[2] >= window[1][0] && bounding_box[3] <= window[1][1] )
+        if( HBSplinesBasisFunction_Helper<TDim>::CheckBoundingBox(bounding_box, window) )
         {
-            Refine(pPatch, (*it_bf)->Id(), echo_level);
-            pPatch->pParentMultiPatch()->Enumerate(); // TODO error here
+            bf_list.push_back((*it_bf)->Id());
         }
     }
-}
 
-template<>
-inline void HBSplinesRefinementUtility_Helper<3>::RefineWindow(typename Patch<3>::Pointer pPatch,
-        const std::vector<std::vector<double> >& window, const int& echo_level)
-{
-    if (pPatch->pFESpace()->Type() != HBSplinesFESpace<3>::StaticType())
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
-
-    // Type definitions
-    typedef typename HBSplinesFESpace<3>::bf_t bf_t;
-    typedef typename HBSplinesFESpace<3>::bf_container_t bf_container_t;
-    typedef typename HBSplinesFESpace<3>::CellType CellType;
-    typedef typename HBSplinesFESpace<3>::cell_t cell_t;
-    typedef typename HBSplinesFESpace<3>::cell_container_t cell_container_t;
-    typedef typename Patch<3>::ControlPointType ControlPointType;
-
-    // extract the hierarchical B-Splines space
-    typename HBSplinesFESpace<3>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<3> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
-
-    // search and mark all basis functions need to refine on all level (starting from the last level) which support is contained in the refining domain
-    for(typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
+    // refine
+    for(std::size_t i = 0; i < bf_list.size(); ++i)
     {
-        // get the bounding box (support domain of the basis function)
-        std::vector<double> bounding_box = (*it_bf)->GetBoundingBox();
-
-        // check if the bounding box lie in the refined domain
-        // Remarks: this can be changed by a refinement indicator (i.e from error estimator)
-        if(    bounding_box[0] >= window[0][0] && bounding_box[1] <= window[0][1]
-            && bounding_box[2] >= window[1][0] && bounding_box[3] <= window[1][1]
-            && bounding_box[4] >= window[2][0] && bounding_box[5] <= window[2][1] )
-        {
-            Refine(pPatch, (*it_bf)->Id(), echo_level);
-            pPatch->pParentMultiPatch()->Enumerate();
-        }
+        Refine(pPatch, bf_list[i], echo_level);
     }
-}
 
+    pPatch->pParentMultiPatch()->Enumerate();
+}
 
 template<int TDim>
 inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& echo_level)
@@ -867,7 +835,12 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
                 {
                     for(typename HBSplinesFESpace<TDim>::BasisFunctionType::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
                     {
-                        if(TDim == 2)
+                        if(TDim == 1)
+                        {
+                            p_domain->AddXcoord((*it_cell)->LeftValue());
+                            p_domain->AddXcoord((*it_cell)->RightValue());
+                        }
+                        else if(TDim == 2)
                         {
                             p_domain->AddXcoord((*it_cell)->LeftValue());
                             p_domain->AddXcoord((*it_cell)->RightValue());
@@ -897,7 +870,12 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
                 {
                     for(typename HBSplinesFESpace<TDim>::BasisFunctionType::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
                     {
-                        if(TDim == 2)
+                        if(TDim == 1)
+                        {
+                            std::vector<double> box = {(*it_cell)->LeftValue(), (*it_cell)->RightValue()};
+                            p_domain->AddCell(box);
+                        }
+                        else if(TDim == 2)
                         {
                             std::vector<double> box = {(*it_cell)->LeftValue(), (*it_cell)->RightValue(), (*it_cell)->DownValue(), (*it_cell)->UpValue()};
                             p_domain->AddCell(box);

@@ -49,6 +49,8 @@ struct HBSplinesBasisFunction_Helper
     template<typename TVectorType, typename TIArrayType, typename TKnotContainerType, class TCellType>
     static void ComputeExtractionOperator(TVectorType& Crow, const TIArrayType& orders,
         const TKnotContainerType& local_knots, const TCellType& r_cell);
+
+    static bool CheckBoundingBox(const std::vector<double>& bounding_box, const std::vector<std::vector<double> >& window);
 };
 
 template<class TBasisFunctionType, class TVariableType>

@@ -36,6 +36,7 @@
 #include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/hbsplines/hb_cell.h"
+#include "isogeometric_application/isogeometric_application.h"
 
 #define DEBUG_DESTROY
 
@@ -48,6 +49,20 @@ struct HBSplinesBasisFunction_Helper
     template<typename TVectorType, typename TIArrayType, typename TKnotContainerType, class TCellType>
     static void ComputeExtractionOperator(TVectorType& Crow, const TIArrayType& orders,
         const TKnotContainerType& local_knots, const TCellType& r_cell);
+};
+
+template<class TBasisFunctionType, class TVariableType>
+struct HBSplinesBasisFunction_InitializeValue_Helper
+{
+    static void Initialize(TBasisFunctionType& r_bf, const TVariableType& rVariable)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+    }
+
+    static void Initialize(TBasisFunctionType& r_bf, const TVariableType& rVariable, typename TBasisFunctionType::Pointer p_ref_bf)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+    }
 };
 
 /**
@@ -639,6 +654,9 @@ public:
 
     /// Set the equation Id for this basis function. One shall use this function only in the enumeration process
     void SetEquationId(const std::size_t& EquationId) {}
+
+    /// Get the equation Id of this basis function. Each basis function should have unique equation Id accross patches
+    std::size_t EquationId() const {return -1;}
 
     /// Set the information in each direction
     void SetInfo(const int& dim, const std::size_t& Order) {}

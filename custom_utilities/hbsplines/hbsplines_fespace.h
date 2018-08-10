@@ -529,6 +529,8 @@ public:
         typedef HBSplinesFESpace<TDim-1> BoundaryFESpaceType;
         typename BoundaryFESpaceType::Pointer pBFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
 
+        std::map<std::size_t, std::size_t> ident_indices_map;
+
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
             if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
@@ -553,9 +555,14 @@ public:
                 }
 
                 pBFESpace->AddBf(pNewSubBf);
+                ident_indices_map[pNewSubBf->EquationId()] = pNewSubBf->EquationId();
             }
         }
 
+        // update the global to local map
+        pBFESpace->UpdateFunctionIndices(ident_indices_map);
+
+        // set the B-Splines information
         if (TDim == 2)
         {
             if ((side == _BLEFT_) || (side == _BRIGHT_))
@@ -660,6 +667,9 @@ public:
         // collapse the overlapping cells
         pBFESpace->pCellManager()->CollapseCells();
 
+        // update the cell support and extraction operator
+        pBFESpace->UpdateCells();
+
         // re-add the supporting cells
         for(typename BoundaryFESpaceType::cell_container_t::iterator it_cell = pBFESpace->pCellManager()->begin(); it_cell != pBFESpace->pCellManager()->end(); ++it_cell)
         {
@@ -685,14 +695,22 @@ public:
     /// Get the underlying cell manager
     typename cell_container_t::ConstPointer pCellManager() const {return mpCellManager;}
 
+    /// Clean the internal data of all the cells
+    void ResetCells()
+    {
+        for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
+            (*it_cell)->Reset();
+    }
+
     /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
     void UpdateCells()
     {
+        this->ResetCells();
+
         // for each cell compute the extraction operator and add to the anchor
         Vector Crow;
         for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
         {
-            (*it_cell)->Reset();
             for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
                 BasisFunctionType& bf = *(it_bf->lock());
@@ -805,11 +823,13 @@ public:
 
     virtual void PrintData(std::ostream& rOStream) const
     {
+        BaseType::PrintData(rOStream);
+        rOStream << std::endl;
+        rOStream << "###################" << std::endl;
+
         // print the basis functions
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
-        {
             rOStream << *(*it) << std::endl;
-        }
 
         // print the cells in each level
         for (std::size_t level = 1; level < mLastLevel+1; ++level)
@@ -949,6 +969,9 @@ public:
 
     /// Get the underlying cell manager
     typename cell_container_t::ConstPointer pCellManager() const {return mpCellManager;}
+
+    /// Update the function indices using a map. The map shall be the mapping from old index to new index.
+    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map) {}
 
     /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
     void UpdateCells() {}

@@ -553,6 +553,44 @@ inline void HBSplinesBasisFunction_Helper<3>::ComputeExtractionOperator(TVectorT
     #endif
 }
 
+template<class TBasisFunctionType>
+struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<double> >
+{
+    static inline void Initialize(TBasisFunctionType& r_bf, const Variable<double>& rVariable)
+    {
+        if (!r_bf.Has(rVariable))
+            r_bf.SetValue(rVariable, 0.0);
+    }
+};
+
+template<class TBasisFunctionType>
+struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<array_1d<double, 3> > >
+{
+    static inline void Initialize(TBasisFunctionType& r_bf, const Variable<array_1d<double, 3> >& rVariable)
+    {
+        if (!r_bf.Has(rVariable))
+        {
+            array_1d<double, 3> zero_v;
+            zero_v[0] = 0.0; zero_v[1] = 0.0; zero_v[2] = 0.0;
+            r_bf.SetValue(rVariable, zero_v);
+        }
+    }
+};
+
+template<class TBasisFunctionType>
+struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<Vector> >
+{
+    static inline void Initialize(TBasisFunctionType& r_bf, const Variable<Vector>& rVariable, typename TBasisFunctionType::Pointer p_ref_bf)
+    {
+        if (!r_bf.Has(rVariable))
+        {
+            Vector zero_v = p_ref_bf->GetValue(rVariable);
+            for (std::size_t i = 0; i < zero_v.size(); ++i) zero_v[i] = 0.0;
+            r_bf.SetValue(rVariable, zero_v);
+        }
+    }
+};
+
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_BASIS_FUNCTION_HPP_INCLUDED

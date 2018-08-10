@@ -21,11 +21,13 @@
 #include "includes/model_part.h"
 #include "utilities/openmp_utils.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/control_grid_utility.h"
 #include "custom_utilities/multipatch_utility.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "isogeometric_application/isogeometric_application.h"
 
 #define ENABLE_PROFILING
+#define DEBUG_GEN_ENTITY
 
 namespace Kratos
 {
@@ -167,7 +169,7 @@ public:
 
         // construct the boundary patch
         typename Patch<TDim-1>::Pointer pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
-        // KRATOS_WATCH(*pBoundaryPatch)
+//        KRATOS_WATCH(*pBoundaryPatch)
 
         // get the grid function for control points
         const GridFunction<TDim-1, ControlPointType>& rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
@@ -243,8 +245,8 @@ public:
             // check if the grid function existed in the patch
             if (!it->template HasGridFunction<TVariableType>(rVariable))
             {
-                // if not then create the new grid function
-                typename ControlGrid<typename TVariableType::Type>::Pointer pNewControlGrid = UnstructuredControlGrid<typename TVariableType::Type>::Create(it->pFESpace()->TotalNumber());
+                // --> if not then create the new grid function
+                typename ControlGrid<typename TVariableType::Type>::Pointer pNewControlGrid = ControlGridUtility::CreateControlGrid<TDim, TVariableType>(it->pFESpace(), rVariable);
                 it->template CreateGridFunction<TVariableType>(rVariable, pNewControlGrid);
             }
 

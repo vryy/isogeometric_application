@@ -25,6 +25,7 @@
 #include "custom_utilities/patch.h"
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
 
+#define ENABLE_PROFILING
 
 namespace Kratos
 {
@@ -165,6 +166,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     typedef typename HBSplinesFESpace<TDim>::CellType CellType;
     typedef typename HBSplinesFESpace<TDim>::cell_t cell_t;
     typedef typename HBSplinesFESpace<TDim>::cell_container_t cell_container_t;
+    typedef typename HBSplinesFESpace<TDim>::BasisFunctionType BasisFunctionType;
     typedef typename Patch<TDim>::ControlPointType ControlPointType;
 
     if (std::find(refined_patches.begin(), refined_patches.end(), pPatch->Id()) != refined_patches.end())
@@ -182,6 +184,9 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     #ifdef ENABLE_PROFILING
     double start = OpenMPUtils::GetCurrentTime();
     #endif
+
+    bool echo_refinement = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT);
+    bool echo_refinement_detail = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT_DETAIL);
 
     // save the equation_id
     std::size_t equation_id = p_bf->EquationId();
@@ -301,6 +306,16 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 // create the basis function object
                 std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
                 bf_t pnew_bf = pFESpace->CreateBf(last_id+1, next_level, pLocalKnots);
+
+                // and initialize its value
+                for (std::size_t i = 0; i < double_variables.size(); ++i)
+                    HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<double> >::Initialize(*pnew_bf, *double_variables[i]);
+                for (std::size_t i = 0; i < array_1d_variables.size(); ++i)
+                    HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<array_1d<double, 3> > >::Initialize(*pnew_bf, *array_1d_variables[i]);
+                for (std::size_t i = 0; i < vector_variables.size(); ++i)
+                    HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<Vector> >::Initialize(*pnew_bf, *vector_variables[i], p_bf);
+
+                // add to the new bf list and set the boundary information
                 pnew_bfs.push_back(pnew_bf);
                 if (pnew_bf->Id() == last_id+1) ++last_id;
 
@@ -325,40 +340,51 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                 // assign new equation id
                 pnew_bf->SetEquationId(++starting_id);
-                if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
-                {
+                if (echo_refinement)
                     std::cout << "new bf " << pnew_bf->Id() << " is assigned eq_id = " << pnew_bf->EquationId() << std::endl;
-                }
 
                 // transfer the control point information
-                ControlPointType oldC = p_bf->GetValue(CONTROL_POINT);
-                ControlPointType newC = pnew_bf->GetValue(CONTROL_POINT);
+                const ControlPointType& oldC = p_bf->GetValue(CONTROL_POINT);
+                ControlPointType& newC = pnew_bf->GetValue(CONTROL_POINT);
                 newC += RefinedCoeffs[i_func] * oldC;
-                pnew_bf->SetValue(CONTROL_POINT, newC);
+                // pnew_bf->SetValue(CONTROL_POINT, newC);
 
                 // transfer other control values from p_bf to pnew_bf
                 for (std::size_t i = 0; i < double_variables.size(); ++i)
                 {
-                    double old_value = p_bf->GetValue(*double_variables[i]);
-                    double new_value = pnew_bf->GetValue(*double_variables[i]);
+                    if (echo_refinement_detail)
+                        std::cout << "Transfer double variable " << double_variables[i]->Name();
+                    const double& old_value = p_bf->GetValue(*double_variables[i]);
+                    double& new_value = pnew_bf->GetValue(*double_variables[i]);
                     new_value += RefinedCoeffs[i_func] * old_value;
-                    pnew_bf->SetValue(*double_variables[i], new_value);
+                    // pnew_bf->SetValue(*double_variables[i], new_value);
+                    if (echo_refinement_detail)
+                        std::cout << " completed" << std::endl;
                 }
 
                 for (std::size_t i = 0; i < array_1d_variables.size(); ++i)
                 {
-                    array_1d<double, 3> old_value = p_bf->GetValue(*array_1d_variables[i]);
-                    array_1d<double, 3> new_value = pnew_bf->GetValue(*array_1d_variables[i]);
-                    new_value += RefinedCoeffs[i_func] * old_value;
-                    pnew_bf->SetValue(*array_1d_variables[i], new_value);
+                    if (*(array_1d_variables[i]) == CONTROL_POINT_COORDINATES) continue;
+                    if (echo_refinement_detail)
+                        std::cout << "Transfer array_1d variable " << array_1d_variables[i]->Name();
+                    const array_1d<double, 3>& old_value = p_bf->GetValue(*array_1d_variables[i]);
+                    array_1d<double, 3>& new_value = pnew_bf->GetValue(*array_1d_variables[i]);
+                    noalias(new_value) += RefinedCoeffs[i_func] * old_value;
+                    // pnew_bf->SetValue(*array_1d_variables[i], new_value);
+                    if (echo_refinement_detail)
+                        std::cout << " completed" << std::endl;
                 }
 
                 for (std::size_t i = 0; i < vector_variables.size(); ++i)
                 {
-                    Vector old_value = p_bf->GetValue(*vector_variables[i]);
-                    Vector new_value = pnew_bf->GetValue(*vector_variables[i]);
-                    new_value += RefinedCoeffs[i_func] * old_value;
-                    pnew_bf->SetValue(*vector_variables[i], new_value);
+                    if (echo_refinement_detail)
+                        std::cout << "Transfer vector variable " << vector_variables[i]->Name();
+                    const Vector& old_value = p_bf->GetValue(*vector_variables[i]);
+                    Vector& new_value = pnew_bf->GetValue(*vector_variables[i]);
+                    noalias(new_value) += RefinedCoeffs[i_func] * old_value;
+                    // pnew_bf->SetValue(*vector_variables[i], new_value);
+                    if (echo_refinement_detail)
+                        std::cout << " completed" << std::endl;
                 }
 
                 // create the cells for the basis function
@@ -419,10 +445,19 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     // create the basis function object
                     std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2, pLocalKnots3};
                     bf_t pnew_bf = pFESpace->CreateBf(last_id+1, next_level, pLocalKnots);
+
+                    // and initialize its value
+                    for (std::size_t i = 0; i < double_variables.size(); ++i)
+                        HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<double> >::Initialize(*pnew_bf, *double_variables[i]);
+                    for (std::size_t i = 0; i < array_1d_variables.size(); ++i)
+                        HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<array_1d<double, 3> > >::Initialize(*pnew_bf, *array_1d_variables[i]);
+                    for (std::size_t i = 0; i < vector_variables.size(); ++i)
+                        HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<Vector> >::Initialize(*pnew_bf, *vector_variables[i], p_bf);
+
+                    // add to the new bf list and set the boundary information
                     pnew_bfs.push_back(pnew_bf);
                     if (pnew_bf->Id() == last_id+1) ++last_id;
 
-                    // update the coordinates
                     std::size_t i_func = (l * numbers[1] + j) * numbers[0] + i;
 
                     // set the boundary information
@@ -452,40 +487,38 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                     // assign new equation id
                     pnew_bf->SetEquationId(++starting_id);
-                    if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
-                    {
+                    if (echo_refinement)
                         std::cout << "new bf " << pnew_bf->Id() << " is assigned eq_id = " << pnew_bf->EquationId() << std::endl;
-                    }
 
                     // transfer the control point information
-                    ControlPointType oldC = p_bf->GetValue(CONTROL_POINT);
-                    ControlPointType newC = pnew_bf->GetValue(CONTROL_POINT);
+                    const ControlPointType& oldC = p_bf->GetValue(CONTROL_POINT);
+                    ControlPointType& newC = pnew_bf->GetValue(CONTROL_POINT);
                     newC += RefinedCoeffs[i_func] * oldC;
-                    pnew_bf->SetValue(CONTROL_POINT, newC);
+                    // pnew_bf->SetValue(CONTROL_POINT, newC);
 
                     // transfer other control values from p_bf to pnew_bf
                     for (std::size_t i = 0; i < double_variables.size(); ++i)
                     {
-                        double old_value = p_bf->GetValue(*double_variables[i]);
-                        double new_value = pnew_bf->GetValue(*double_variables[i]);
+                        const double& old_value = p_bf->GetValue(*double_variables[i]);
+                        double& new_value = pnew_bf->GetValue(*double_variables[i]);
                         new_value += RefinedCoeffs[i_func] * old_value;
-                        pnew_bf->SetValue(*double_variables[i], new_value);
+                        // pnew_bf->SetValue(*double_variables[i], new_value);
                     }
 
                     for (std::size_t i = 0; i < array_1d_variables.size(); ++i)
                     {
-                        array_1d<double, 3> old_value = p_bf->GetValue(*array_1d_variables[i]);
-                        array_1d<double, 3> new_value = pnew_bf->GetValue(*array_1d_variables[i]);
-                        new_value += RefinedCoeffs[i_func] * old_value;
-                        pnew_bf->SetValue(*array_1d_variables[i], new_value);
+                        const array_1d<double, 3>& old_value = p_bf->GetValue(*array_1d_variables[i]);
+                        array_1d<double, 3>& new_value = pnew_bf->GetValue(*array_1d_variables[i]);
+                        noalias(new_value) += RefinedCoeffs[i_func] * old_value;
+                        // pnew_bf->SetValue(*array_1d_variables[i], new_value);
                     }
 
                     for (std::size_t i = 0; i < vector_variables.size(); ++i)
                     {
-                        Vector old_value = p_bf->GetValue(*vector_variables[i]);
-                        Vector new_value = pnew_bf->GetValue(*vector_variables[i]);
-                        new_value += RefinedCoeffs[i_func] * old_value;
-                        pnew_bf->SetValue(*vector_variables[i], new_value);
+                        const Vector& old_value = p_bf->GetValue(*vector_variables[i]);
+                        Vector& new_value = pnew_bf->GetValue(*vector_variables[i]);
+                        noalias(new_value) += RefinedCoeffs[i_func] * old_value;
+                        // pnew_bf->SetValue(*vector_variables[i], new_value);
                     }
 
                     // create the cells for the basis function
@@ -596,7 +629,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         std::vector<cell_t> p_cells = pFESpace->pCellManager()->GetCells(*it_cell);
         if(p_cells.size() > 0)
         {
-            if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
+            if(echo_refinement)
             {
                 std::cout << "cell " << (*it_cell)->Id() << " is detected to contain some smaller cells:";
                 for(std::size_t i = 0; i < p_cells.size(); ++i)
@@ -657,7 +690,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     */
 
     pFESpace->RecordRefinementHistory(p_bf->Id());
-    if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
+    if(echo_refinement)
     {
         std::cout << "Refine patch " << pPatch->Id() << ", bf " << p_bf->Id() << ", eq_id " << p_bf->EquationId() << " completed" << std::endl;
         #ifdef ENABLE_PROFILING
@@ -693,7 +726,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
         if (found)
         {
-            if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
+            if(echo_refinement)
             {
                 std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
             }
@@ -817,6 +850,8 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
     double start = OpenMPUtils::GetCurrentTime();
     #endif
 
+    bool echo_refinement = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT);
+
     // rebuild support domain
     pFESpace->ClearSupportDomain();
     for(std::size_t level = 1; level <= pFESpace->LastLevel(); ++level)
@@ -902,7 +937,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
 
         if(refined_bfs.size() > 0)
         {
-            if((echo_level & ECHO_REFINEMENT) == ECHO_REFINEMENT)
+            if(echo_refinement)
             {
                 std::cout << "Additional Bf";
                 for(std::size_t i = 0; i < refined_bfs.size(); ++i)
@@ -929,6 +964,8 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
 }
 
 } // namespace Kratos.
+
+#undef ENABLE_PROFILING
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_REFINEMENT_UTILITY_H_INCLUDED defined
 

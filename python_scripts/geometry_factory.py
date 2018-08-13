@@ -127,6 +127,21 @@ def CreateSmallRing(center, axis, rin, rout, start_angle, end_angle):
     ring_patch_ptr = bsplines_patch_util.CreateConnectedPatch(iarc, oarc)
     return ring_patch_ptr
 
+### Create the 3D slab align with Cartesian axes
+def CreateSlab(start_point, end_point):
+    line1 = CreateLine(start_point, [end_point[0], start_point[1], start_point[2]])
+    line2 = CreateLine([start_point[0], end_point[1], start_point[2]], [end_point[0], end_point[1], start_point[2]])
+    face1_ptr = bsplines_patch_util.CreateConnectedPatch(line1, line2)
+    face1 = face1_ptr.GetReference()
+
+    line3 = CreateLine([start_point[0], start_point[1], end_point[2]], [end_point[0], start_point[1], end_point[2]])
+    line4 = CreateLine([start_point[0], end_point[1], end_point[2]], [end_point[0], end_point[1], end_point[2]])
+    face2_ptr = bsplines_patch_util.CreateConnectedPatch(line3, line4)
+    face2 = face2_ptr.GetReference()
+
+    volume_patch_ptr = bsplines_patch_util.CreateConnectedPatch(face1, face2)
+    return volume_patch_ptr
+
 ### Create a list of Frenet frame along a curve. The Frenet frame is stored as a transformation matrix.
 ### zvec is a reference vector to compute B at the first sampling point. It shall not be parallel with the tangent vector of the first sampling point.
 def GenerateLocalFrenetFrame(curve, num_sampling_points, zvec = [1.0, 0.0, 0.0]):

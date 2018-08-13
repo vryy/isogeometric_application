@@ -29,8 +29,6 @@
 #include "custom_utilities/control_grid_utility.h"
 #include "isogeometric_application/isogeometric_application.h"
 
-#define DEBUG_DESTROY
-
 #define CONVERT_INDEX_IGA_TO_KRATOS(n) (n+1)
 #define CONVERT_INDEX_KRATOS_TO_IGA(n) (n-1)
 
@@ -94,7 +92,7 @@ public:
     /// Destructor
     virtual ~Patch()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Id = " << Id()
                   << ", " << mpFESpace->Type()
                   << ", Addr = " << this << " is destroyed" << std::endl;
@@ -1104,8 +1102,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Patch<TDim>& rThi
 }
 
 } // namespace Kratos.
-
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PATCH_H_INCLUDED defined
 

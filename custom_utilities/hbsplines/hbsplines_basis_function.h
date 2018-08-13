@@ -38,7 +38,6 @@
 #include "custom_utilities/hbsplines/hb_cell.h"
 #include "isogeometric_application/isogeometric_application.h"
 
-#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -112,7 +111,7 @@ public:
     /// Destructor
     ~HBSplinesBasisFunction()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "HBSplinesBasisFunction" << TDim << "D " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
@@ -698,8 +697,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesBasisFun
 }
 
 }// namespace Kratos.
-
-#undef DEBUG_DESTROY
 
 #include "hbsplines_basis_function.hpp"
 

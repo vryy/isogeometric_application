@@ -11,6 +11,7 @@
 
 // System includes
 #include <vector>
+#include <algorithm>
 
 // External includes
 #include <boost/array.hpp>
@@ -28,7 +29,6 @@
 #include "custom_utilities/nurbs/cell_manager_3d.h"
 
 // #define DEBUG_GEN_CELL
-#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -55,7 +55,7 @@ public:
     /// Destructor
     virtual ~BSplinesFESpace()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << this->Type() << ", Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
@@ -345,26 +345,87 @@ public:
         return last_id;
     }
 
+    /// Extract the index of the functions on the boundaries
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesbyFlag(const int& boundary_id) const
+    {
+        std::set<std::size_t> bf_id_set;
+
+        for (int iside = _BLEFT_; iside < _NUMBER_OF_BOUNDARY_SIDE; ++iside)
+        {
+            BoundarySide side = static_cast<BoundarySide>(iside);
+            std::vector<std::size_t> func_indices = this->ExtractBoundaryFunctionIndices(side);
+            if (func_indices.size() != 0)
+            {
+                if (bf_id_set.size() == 0)
+                {
+                    // initialize the new set
+                    bf_id_set.insert(func_indices.begin(), func_indices.end());
+                }
+                else
+                {
+                    // take the intersection
+                    std::vector<std::size_t> temp;
+                    std::set_intersection(bf_id_set.begin(), bf_id_set.end(), func_indices.begin(), func_indices.end(), temp.begin());
+                    bf_id_set.clear();
+                    bf_id_set.insert(temp.begin(), temp.end());
+                }
+            }
+        }
+
+        return std::vector<std::size_t>(bf_id_set.begin(), bf_id_set.end());
+    }
+
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
     {
         std::vector<std::size_t> func_indices;
 
-        if (side == _BLEFT_)
+        if (TDim == 1)
         {
-            if (TDim == 1)
+            func_indices.resize(1);
+            if (side == _BLEFT_)
             {
-                func_indices.resize(1);
                 func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(1, this->Number(0))];
             }
-            else if (TDim == 2)
+            else if (side  == _BRIGHT_)
+            {
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0), this->Number(0))];
+            }
+        }
+        else if (TDim == 2)
+        {
+            if (side == _BLEFT_)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
                         = mFunctionsIds[BSplinesIndexingUtility::Index2D(1, j+1, this->Number(0), this->Number(1))];
             }
-            else if (TDim == 3)
+            else if (side == _BRIGHT_)
+            {
+                func_indices.resize(this->Number(1));
+                for (std::size_t j = 0; j < this->Number(1); ++j)
+                    func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))];
+            }
+            else if (side == _BBOTTOM_)
+            {
+                func_indices.resize(this->Number(0));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1, this->Number(0), this->Number(1))];
+            }
+            else if (side == _BTOP_)
+            {
+                func_indices.resize(this->Number(0));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))];
+            }
+        }
+        else if (TDim == 3)
+        {
+            if (side == _BLEFT_)
             {
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
@@ -372,22 +433,7 @@ public:
                         func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BRIGHT_)
-        {
-            if (TDim == 1)
-            {
-                func_indices.resize(1);
-                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0), this->Number(0))];
-            }
-            else if (TDim == 2)
-            {
-                func_indices.resize(this->Number(1));
-                for (std::size_t j = 0; j < this->Number(1); ++j)
-                    func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))];
-            }
-            else if (TDim == 3)
+            else if (side == _BRIGHT_)
             {
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
@@ -395,17 +441,7 @@ public:
                         func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BBOTTOM_)
-        {
-            if (TDim == 2)
-            {
-                func_indices.resize(this->Number(0));
-                for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1, this->Number(0), this->Number(1))];
-            }
-            else if (TDim == 3)
+            else if (side == _BBOTTOM_)
             {
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
@@ -413,17 +449,7 @@ public:
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BTOP_)
-        {
-            if (TDim == 2)
-            {
-                func_indices.resize(this->Number(0));
-                for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))];
-            }
-            else if (TDim == 3)
+            else if (side == _BTOP_)
             {
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
@@ -431,10 +457,7 @@ public:
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BFRONT_)
-        {
-            if (TDim == 3)
+            else if (side == _BFRONT_)
             {
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
@@ -442,10 +465,7 @@ public:
                         func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
                             = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BBACK_)
-        {
-            if (TDim == 3)
+            else if (side == _BBACK_)
             {
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
@@ -1239,6 +1259,5 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesFESpace<T
 } // namespace Kratos.
 
 #undef DEBUG_GEN_CELL
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BSPLINES_FESPACE_H_INCLUDED defined

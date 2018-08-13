@@ -72,11 +72,11 @@ void HBSplinesBasisFunction_SetEquationId(HBSplinesBasisFunction<TDim>& rDummy, 
 }
 
 template<int TDim>
-boost::python::list HBSplinesFESpace_GetBoundaryBfs(HBSplinesFESpace<TDim>& rDummy, std::size_t boundary_id)
+boost::python::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<TDim>& rDummy, std::size_t boundary_id)
 {
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
-    std::vector<bf_t> bf_list = rDummy.GetBoundaryBfs(boundary_id);
+    std::vector<bf_t> bf_list = rDummy.ExtractBoundaryBfsByFlag(boundary_id);
 
     boost::python::list Output;
     for (std::size_t i = 0; i < bf_list.size(); ++i)
@@ -179,7 +179,8 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     class_<HBSplinesFESpace<TDim>, typename HBSplinesFESpace<TDim>::Pointer, bases<FESpace<TDim> >, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def("__getitem__", &HBSplinesFESpace_GetItem<TDim>)
-    .def("GetBoundaryBfs", &HBSplinesFESpace_GetBoundaryBfs<TDim>)
+    .def("GetBoundaryBfs", &HBSplinesFESpace_ExtractBoundaryBfsByFlag<TDim>) // deprecated
+    .def("ExtractBoundaryBfsByFlag", &HBSplinesFESpace_ExtractBoundaryBfsByFlag<TDim>)
     .def("ConstructBoundaryFESpace", pointer_to_ConstructBoundaryFESpace1)
     // .def("ConstructBoundaryFESpace", pointer_to_ConstructBoundaryFESpace2)
     .def("UpdateCells", &HBSplinesFESpace<TDim>::UpdateCells)

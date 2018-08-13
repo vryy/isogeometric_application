@@ -23,8 +23,6 @@
 #include "includes/define.h"
 #include "custom_utilities/nurbs/knot.h"
 
-#define DEBUG_DESTROY
-
 namespace Kratos
 {
 
@@ -62,7 +60,7 @@ public:
     /// Destructor
     virtual ~CellManager()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         this->PrintInfo(std::cout); std::cout << ", Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
@@ -241,8 +239,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const CellManager<TCell
 }
 
 }// namespace Kratos.
-
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_MANAGER_H_INCLUDED
 

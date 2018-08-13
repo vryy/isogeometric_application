@@ -24,7 +24,6 @@
 #include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/nurbs/cell.h"
 
-#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -68,7 +67,7 @@ public:
     /// Destructor
     virtual ~HBCell()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "hbcell "; this->PrintInfo(std::cout); std::cout << " is destroyed" << std::endl;
         #endif
     }
@@ -176,8 +175,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBCell<TBasisFunc
 }
 
 }// namespace Kratos.
-
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HB_CELL_H_INCLUDED
 

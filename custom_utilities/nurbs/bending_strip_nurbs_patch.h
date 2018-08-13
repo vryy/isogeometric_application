@@ -45,8 +45,7 @@ public:
 
     /// Default Constructor
     BendingStripNURBSPatch(const std::size_t& Id, const int& Order) : PatchType(Id), mNormalOrder(Order)
-    {
-    }
+    {}
 
     /// Full Constructor
     /// Note that the two patches must represent the NURBS patches
@@ -159,7 +158,7 @@ public:
     /// Destructor
     virtual ~BendingStripNURBSPatch()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Id = " << Id() << ", Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
@@ -315,8 +314,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BendingStripNURBS
 }
 
 } // namespace Kratos.
-
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BENDING_STRIP_NURBS_PATCH_H_INCLUDED defined
 

@@ -22,8 +22,6 @@
 #include "custom_utilities/nurbs/cell.h"
 #include "custom_utilities/nurbs/cell_manager.h"
 
-// #define DEBUG_DESTROY
-
 namespace Kratos
 {
 
@@ -46,7 +44,7 @@ public:
     /// Destructor
     virtual ~FESpace()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         this->PrintInfo(std::cout); std::cout << " is destroyed" << std::endl;
         #endif
     }
@@ -245,6 +243,12 @@ public:
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /// Extract the index of the functions based on the boundary flag. It allows to extract the corner one.
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesbyFlag(const int& boundary_id) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
 
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
@@ -656,8 +660,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const FESpace<TDim>& rT
 }
 
 } // namespace Kratos.
-
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_FESPACE_H_INCLUDED defined
 

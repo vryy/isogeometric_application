@@ -33,7 +33,6 @@
 #include "custom_utilities/hbsplines/hbsplines_basis_function.h"
 
 #define DEBUG_GEN_CELL
-#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -89,7 +88,7 @@ public:
     /// Destructor
     virtual ~HBSplinesFESpace()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
@@ -480,6 +479,52 @@ public:
         return last_id;
     }
 
+    /// Get the basis functions based on boundary flag. This allows to extract the corner bf.
+    std::vector<bf_t> ExtractBoundaryBfsByFlag(const std::size_t& boundary_id) const
+    {
+        // firstly we organize the basis functions based on its equation_id
+        // it may happen that one bf is encountered twice, so we use a map here
+        std::map<std::size_t, bf_t> map_bfs;
+        for (bf_iterator it_bf = bf_begin(); it_bf != bf_end(); ++it_bf)
+        {
+            if ((*it_bf)->IsOnSide(boundary_id))
+            {
+                typename std::map<std::size_t, bf_t>::iterator it = map_bfs.find((*it_bf)->EquationId());
+                if (it == map_bfs.end())
+                    map_bfs[(*it_bf)->EquationId()] = (*it_bf);
+                else
+                    if (it->second != (*it_bf))
+                        KRATOS_THROW_ERROR(std::logic_error, "There are two bfs with the same equation_id. This is not valid.", "")
+            }
+        }
+
+        // then we can extract the equation_id
+        std::vector<bf_t> bf_list(map_bfs.size());
+        std::size_t cnt = 0;
+        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
+        {
+            bf_list[cnt++] = it->second;
+        }
+
+        return bf_list;
+    }
+
+    /// Extract the index of the functions on the boundaries
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(const int& boundary_id) const
+    {
+        std::vector<bf_t> bfs = this->ExtractBoundaryBfsByFlag(boundary_id);
+
+        // then we can extract the equation_id
+        std::vector<std::size_t> func_indices(bfs.size());
+        std::size_t cnt = 0;
+        for (typename std::vector<bf_t>::iterator it = bfs.begin(); it != bfs.end(); ++it)
+        {
+            func_indices[cnt++] = (*it)->EquationId();
+        }
+
+        return func_indices;
+    }
+
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
     {
@@ -739,28 +784,6 @@ public:
         return pCompatCellManager;
     }
 
-    /// Get the basis functions on side
-    std::vector<bf_t> GetBoundaryBfs(const std::size_t& boundary_id) const
-    {
-        // firstly we organize the basis functions based on its equation_id
-        std::map<std::size_t, bf_t> map_bfs;
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
-        {
-            if ((*it)->IsOnSide(boundary_id))
-                map_bfs[(*it)->EquationId()] = (*it);
-        }
-
-        // then we can extract the equation_id
-        std::vector<bf_t> bf_list(map_bfs.size());
-        std::size_t cnt = 0;
-        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
-        {
-            bf_list[cnt++] = it->second;
-        }
-
-        return bf_list;
-    }
-
     /// Overload operator[], this allows to access the basis function randomly based on index
     bf_t operator[](const std::size_t& i)
     {
@@ -999,6 +1022,5 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesFESpace<
 } // namespace Kratos.
 
 #undef DEBUG_GEN_CELL    /// Get the underlying cell manager
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_FESPACE_H_INCLUDED defined

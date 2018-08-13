@@ -94,6 +94,13 @@ typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, c
     return rDummy.pInterface(i);
 }
 
+template<int TDim>
+typename Patch<TDim-1>::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, const std::size_t& iside)
+{
+    BoundarySide side = static_cast<BoundarySide>(iside);
+    return rDummy.ConstructBoundaryPatch(side);
+}
+
 template<class TMultiPatchType>
 typename TMultiPatchType::PatchContainerType MultiPatch_GetPatches(TMultiPatchType& rDummy)
 {
@@ -189,6 +196,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("NumberOfInterfaces", &Patch<TDim>::NumberOfInterfaces)
     .def("AddInterface", &Patch<TDim>::AddInterface)
     .def("GetInterface", &Patch_GetInterface<TDim>)
+    .def("ConstructBoundaryPatch", &Patch_ConstructBoundaryPatch<TDim>)
     .def(self_ns::str(self))
     ;
 

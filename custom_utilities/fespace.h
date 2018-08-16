@@ -245,7 +245,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Extract the index of the functions based on the boundary flag. It allows to extract the corner one.
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesbyFlag(const int& boundary_id) const
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(const int& boundary_id) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }

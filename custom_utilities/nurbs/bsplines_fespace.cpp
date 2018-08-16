@@ -43,7 +43,7 @@ void BSplinesFESpace<1>::GetValue(std::vector<double>& values, const std::vector
     unsigned int i, Index;
     for(i = Start; i <= Span; ++i)
     {
-        Index = BSplinesIndexingUtility::Index1D(i+1, this->Number(0));
+        Index = BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0));
 
         N = ShapeFunctionValues[i - Start];
 
@@ -98,7 +98,7 @@ void BSplinesFESpace<1>::GetValueAndDerivative(std::vector<double>& values, std:
     unsigned int i, Index;
     for(i = Start; i <= Span; ++i)
     {
-        Index = BSplinesIndexingUtility::Index1D(i+1, this->Number(0));
+        Index = BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0));
 
         N = ShapeFunctionsValuesAndDerivatives[0][i - Start];
         dN = ShapeFunctionsValuesAndDerivatives[1][i - Start];
@@ -139,7 +139,7 @@ void BSplinesFESpace<2>::GetValue(std::vector<double>& values, const std::vector
     {
         for(j = Start[1]; j <= Span[1]; ++j)
         {
-            Index = BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1));
+            Index = BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1));
 
             N1 = ShapeFunctionValues1[i - Start[0]];
             N2 = ShapeFunctionValues2[j - Start[1]];
@@ -195,7 +195,7 @@ void BSplinesFESpace<2>::GetValueAndDerivative(std::vector<double>& values, std:
     {
         for(j = Start[1]; j <= Span[1]; ++j)
         {
-            Index = BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1));
+            Index = BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1));
 
             N1 = ShapeFunctionsValuesAndDerivatives1[0][i - Start[0]];
             dN1 = ShapeFunctionsValuesAndDerivatives1[1][i - Start[0]];
@@ -246,7 +246,7 @@ void BSplinesFESpace<3>::GetValue(std::vector<double>& values, const std::vector
         {
             for(k = Start[2]; k <= Span[2]; ++k)
             {
-                Index = BSplinesIndexingUtility::Index3D(i+1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2));
+                Index = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2));
 
                 N1 = ShapeFunctionValues1[i - Start[0]];
                 N2 = ShapeFunctionValues2[j - Start[1]];
@@ -311,7 +311,7 @@ void BSplinesFESpace<3>::GetValueAndDerivative(std::vector<double>& values, std:
         {
             for(k = Start[2]; k <= Span[2]; ++k)
             {
-                Index = BSplinesIndexingUtility::Index3D(i+1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2));
+                Index = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2));
 
                 N1 = ShapeFunctionsValuesAndDerivatives1[0][i - Start[0]];
                 dN1 = ShapeFunctionsValuesAndDerivatives1[1][i - Start[0]];

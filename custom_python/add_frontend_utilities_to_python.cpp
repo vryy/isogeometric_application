@@ -273,6 +273,13 @@ void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
     rDummy.MakeInterface3D(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
 }
 
+template<int TDim>
+void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
+    typename Patch<TDim>::Pointer pPatch, const std::size_t& idir)
+{
+    rDummy.Reverse<TDim>(pPatch, idir);
+}
+
 //////////////////////////////////////////////////
 
 template<int TDim>
@@ -363,6 +370,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CreatePatchFromGeo", &BSplinesPatchUtility_CreatePatchFromGeo)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface3D)
+    // .def("Reverse", &BSplinesPatchUtility_Reverse<1>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<2>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<3>)
     ;
 
     class_<BendingStripUtility, BendingStripUtility::Pointer, boost::noncopyable>

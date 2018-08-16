@@ -115,6 +115,21 @@ public:
         return pCreateKnot(k);
     }
 
+    /// Reverse this knot
+    void Reverse()
+    {
+        TDataType maxv = mpKnots.back()->Value();
+        std::reverse(mpKnots.begin(), mpKnots.end());
+        // update the index and value of the knot
+        std::size_t index = 0;
+        for(iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        {
+            (*it)->UpdateIndex(index);
+            (*it)->Value() = maxv - (*it)->Value();
+            ++index;
+        }
+    }
+
     /// Create a clone of this knot vector
     KnotArray1D<TDataType> Clone(const BoundaryDirection& dir) const
     {
@@ -128,7 +143,7 @@ public:
         else if (dir == _REVERSED_)
         {
             for (std::size_t i = 0; i < mpKnots.size(); ++i)
-                kvec.pCreateKnot(1.0 - mpKnots[mpKnots.size()-1-i]->Value());
+                kvec.pCreateKnot(mpKnots.back()->Value() - mpKnots[mpKnots.size()-1-i]->Value());
         }
 
         return kvec;
@@ -291,7 +306,7 @@ public:
     {
         std::vector<TDataType> reversed_knots(knots.size());
         for (std::size_t i = 0; i < reversed_knots.size(); ++i)
-            reversed_knots[i] = 1.0 - knots[i];
+            reversed_knots[i] = knots.back() - knots[i];
         return reversed_knots;
     }
 

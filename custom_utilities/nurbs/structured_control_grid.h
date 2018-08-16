@@ -18,6 +18,7 @@
 #include "includes/define.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/control_grid.h"
+#include "custom_utilities/nurbs/bsplines_indexing_utility.h"
 
 namespace Kratos
 {
@@ -124,6 +125,12 @@ public:
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+    }
+
+    /// Reverse the control grid in specific dimension
+    virtual void Reverse(const int& idir)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
@@ -269,6 +276,13 @@ public:
     virtual void ResizeAndCopyFrom(const typename StructuredControlGrid<1, TDataType>::Pointer pOther)
     {
         this->ResizeAndCopyFrom(*pOther);
+    }
+
+    /// Reverse the control grid in specific dimension
+    virtual void Reverse(const int& idir)
+    {
+        if (idir == 0)
+            std::reverse(BaseType::Data().begin(), BaseType::Data().end());
     }
 
     /// Overload assignment operator
@@ -453,6 +467,34 @@ public:
         this->ResizeAndCopyFrom(*pOther);
     }
 
+    /// Reverse the control grid in specific dimension
+    virtual void Reverse(const int& idir)
+    {
+        // if (idir == 0)
+        // {
+        //     for (std::size_t j = 0; j < mSize[1]; ++j)
+        //     {
+        //         std::reverse(BaseType::Data().begin() + j*mSize[0], BaseType::Data().begin() + (j+1)*mSize[0]);
+        //     }
+        // }
+        // else if (idir == 1)
+        // {
+        //     for (std::size_t i = 0; i < mSize[0]; ++i)
+        //     {
+        //         // extract the value
+        //         DataContainerType Temp(mSize[1]);
+        //         for (std::size_t j = 0; j < mSize[1]; ++j)
+        //             Temp[j] = this->GetValue(i, j);
+
+        //         // assign the reverse value
+        //         for (std::size_t j = 0; j < mSize[1]; ++j)
+        //             this->SetValue(i, j, Temp[mSize[1]-1-j]);
+        //     }
+        // }
+
+        BSplinesIndexingUtility::Reverse<2, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir);
+    }
+
     /// Get the layer of control grid from the boundary, if the level = 0, the control grid on the boundary will be extracted.
     typename StructuredControlGrid<1, TDataType>::Pointer Get(const BoundarySide& side, const std::size_t& level)
     {
@@ -527,11 +569,11 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         rOStream << " Data:\n (\n";
-        for (std::size_t i = 0; i < mSize[0]; ++i)
+        for (std::size_t j = 0; j < mSize[1]; ++j)
         {
             rOStream << "  (";
-            for (std::size_t j = 0; j < mSize[1]; ++j)
             {
+                for (std::size_t i = 0; i < mSize[0]; ++i)
                 rOStream << " " << GetValue(i, j);
             }
             rOStream << ")" << std::endl;
@@ -711,6 +753,53 @@ public:
         this->ResizeAndCopyFrom(*pOther);
     }
 
+    /// Reverse the control grid in specific dimension
+    virtual void Reverse(const int& idir)
+    {
+        // if (idir == 0)
+        // {
+        //     for (std::size_t j = 0; j < mSize[1]; ++j)
+        //         for (std::size_t k = 0; k < mSize[2]; ++k)
+        //             std::reverse(BaseType::Data().begin() + (k*mSize[1] + j)*mSize[0], BaseType::Data().begin() + (k*mSize[1] + j + 1)*mSize[0]);
+        // }
+        // else if (idir == 1)
+        // {
+        //     for (std::size_t i = 0; i < mSize[0]; ++i)
+        //     {
+        //         for (std::size_t k = 0; k < mSize[2]; ++k)
+        //         {
+        //             // extract the value
+        //             DataContainerType Temp(mSize[1]);
+        //             for (std::size_t j = 0; j < mSize[1]; ++j)
+        //                 Temp[j] = this->GetValue(i, j, k);
+
+        //             // assign the reverse value
+        //             for (std::size_t j = 0; j < mSize[1]; ++j)
+        //                 this->SetValue(i, j, k, Temp[mSize[1]-1-j]);
+        //         }
+        //     }
+        // }
+        // else if (idir == 2)
+        // {
+        //     for (std::size_t i = 0; i < mSize[0]; ++i)
+        //     {
+        //         for (std::size_t j = 0; j < mSize[1]; ++j)
+        //         {
+        //             // extract the value
+        //             DataContainerType Temp(mSize[2]);
+        //             for (std::size_t k = 0; k < mSize[2]; ++k)
+        //                 Temp[k] = this->GetValue(i, j, k);
+
+        //             // assign the reverse value
+        //             for (std::size_t k = 0; k < mSize[2]; ++k)
+        //                 this->SetValue(i, j, k, Temp[mSize[2]-1-k]);
+        //         }
+        //     }
+        // }
+
+        BSplinesIndexingUtility::Reverse<3, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir);
+    }
+
     /// Get the layer of control grid from the boundary, if the level = 0, the control grid on the boundary will be extracted.
     typename StructuredControlGrid<2, TDataType>::Pointer Get(const BoundarySide& side, const unsigned int& level) const
     {
@@ -775,13 +864,13 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         rOStream << " Data:\n (";
-        for (std::size_t i = 0; i < mSize[0]; ++i)
+        for (std::size_t k = 0; k < mSize[2]; ++k)
         {
             rOStream << " (";
             for (std::size_t j = 0; j < mSize[1]; ++j)
             {
                 rOStream << " (";
-                for (std::size_t k = 0; k < mSize[2]; ++k)
+                for (std::size_t i = 0; i < mSize[0]; ++i)
                 {
                     rOStream << " " << GetValue(i, j, k);
                 }

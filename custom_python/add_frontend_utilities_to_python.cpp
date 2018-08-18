@@ -353,9 +353,12 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<1>)
     .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<2>)
     .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<3>)
-    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<1>)
-    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<2>)
-    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<3>)
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<1>) // deprecated
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<2>) // deprecated
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<3>) // deprecated
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<1>)
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<2>)
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<3>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<1>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<2>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<3>)

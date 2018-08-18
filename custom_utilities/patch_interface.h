@@ -78,8 +78,14 @@ public:
     /// Get the side of the first patch where the strip locates
     const BoundarySide& Side1() const {return mSide1;}
 
+    /// Flip the boundary side 1
+    void FlipSide1() {mSide1 = ReversedBoundarySide::Get(mSide1);}
+
     /// Get the side of the second patch where the strip locates
     const BoundarySide& Side2() const {return mSide2;}
+
+    /// Flip the boundary side 2
+    void FlipSide2() {mSide2 = ReversedBoundarySide::Get(mSide2);}
 
     /// Get the indices of the control points on this strip from the parent patch
     virtual std::vector<std::size_t> GetIndicesFromParent() const

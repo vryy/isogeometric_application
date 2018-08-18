@@ -160,6 +160,8 @@ public:
         if (reversed_patches.find(pPatch->Id()) != reversed_patches.end())
             return;
 
+        std::cout << "Patch " << pPatch->Name() << " will be reversed in direction " << idir << std::endl;
+
         if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
         {
             std::stringstream ss;
@@ -250,25 +252,47 @@ public:
 
                 if (pInterface != NULL)
                 {
-                    std::size_t idir2;
-
                     if (TDim == 2)
                     {
-                        idir2 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side2()));
+                        std::size_t idir1 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side1()));
+                        std::size_t idir2 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side2()));
+
+                        if (idir1 == idir)
+                        {
+                            // reverse the neighbour patch
+                            ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
+                        }
+                        else
+                        {
+                            pInterface->FlipSide1();
+                            pInterface->pOtherInterface()->FlipSide2();
+                        }
                     }
                     else if (TDim == 3)
                     {
                         std::vector<int> dirs1 = ParameterDirection<3>::Get(pInterface->Side1());
                         std::vector<int> dirs2 = ParameterDirection<3>::Get(pInterface->Side2());
-                        if (dirs1[0] == i)
-                            idir2 = dirs2[pInterface->LocalParameterMapping(0)];
-                        else if (dirs1[1] == i)
-                            idir2 = dirs2[pInterface->LocalParameterMapping(1)];
-                        else
-                            continue;
-                    }
 
-                    ReverseImpl<TDim>(pPatch->pInterface(i)->pPatch2(), idir2, reversed_patches);
+                        if (static_cast<std::size_t>(dirs1[0]) == idir)
+                        {
+                            std::size_t idir2 = dirs2[pInterface->LocalParameterMapping(0)];
+
+                            // reverse the neighbour patch
+                            ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
+                        }
+                        else if (static_cast<std::size_t>(dirs1[1]) == idir)
+                        {
+                            std::size_t idir2 = dirs2[pInterface->LocalParameterMapping(1)];
+
+                            // reverse the neighbour patch
+                            ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
+                        }
+                        else
+                        {
+                            pInterface->FlipSide1();
+                            pInterface->pOtherInterface()->FlipSide2();
+                        }
+                    }
                 }
                 else
                     KRATOS_THROW_ERROR(std::logic_error, "The interface is not B-Splines patch interface", "")

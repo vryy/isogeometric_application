@@ -138,8 +138,15 @@ public:
         // reverse the knot vector
         mKnotVectors[idir].Reverse();
 
-        // // also change the function indices
-        // BSplinesIndexingUtility::Reverse<TDim, std::vector<std::size_t>, std::vector<std::size_t> >(mFunctionsIds, this->Numbers(), idir);
+        // also change the function indices
+        BSplinesIndexingUtility::Reverse<TDim, std::vector<std::size_t>, std::vector<std::size_t> >(mFunctionsIds, this->Numbers(), idir);
+
+        // and the global to local map
+        BaseType::mGlobalToLocal.clear();
+        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
+        {
+            BaseType::mGlobalToLocal[mFunctionsIds[i]] = i;
+        }
     }
 
     /// Set the BSplines information in the direction i

@@ -22,6 +22,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/model_part.h"
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_utilities/bspline_utils.h"
+#include "custom_utilities/isogeometric_post_utility.h"
 #include "custom_utilities/bezier_classical_post_utility.h"
 #include "custom_utilities/bezier_post_utility.h"
 #include "custom_utilities/nurbs_test_utils.h"
@@ -191,6 +192,40 @@ void NURBSTestUtils_ProbeJacobian3(
     dummy.ProbeJacobian(pElement, X, Y, Z);
 }
 
+ModelPart::ElementsContainerType IsogeometricPostUtility_TransferElements(IsogeometricPostUtility& rDummy, ModelPart::ElementsContainerType& pElements,
+    ModelPart& r_other_model_part, const std::string& sample_element_name, Properties::Pointer pProperties)
+{
+    std::size_t last_element_id = IsogeometricPostUtility::GetLastElementId(r_other_model_part);
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+    ModelPart::ElementsContainerType pNewElements = IsogeometricPostUtility::CreateEntities(pElements, r_other_model_part, r_clone_element, last_element_id, pProperties);
+
+    for(ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
+        r_other_model_part.Elements().push_back(*it);
+
+    std::cout << "Transfer mesh completed, "
+              << pNewElements.size() << " elements of type " << sample_element_name
+              << " was added to model_part" << r_other_model_part.Name() << std::endl;
+
+    return pNewElements;
+}
+
+ModelPart::ConditionsContainerType IsogeometricPostUtility_TransferConditions(IsogeometricPostUtility& rDummy, ModelPart::ConditionsContainerType& pConditions,
+    ModelPart& r_other_model_part, const std::string& sample_condition_name, Properties::Pointer pProperties)
+{
+    std::size_t last_condition_id = IsogeometricPostUtility::GetLastConditionId(r_other_model_part);
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+    ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities(pConditions, r_other_model_part, r_clone_condition, last_condition_id, pProperties);
+
+    for(ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
+        r_other_model_part.Conditions().push_back(*it);
+
+    std::cout << "Transfer mesh completed, "
+              << pNewConditions.size() << " conditions of type " << sample_condition_name
+              << " was added to model_part" << r_other_model_part.Name() << std::endl;
+
+    return pNewConditions;
+}
+
 void BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& dummy,
         ModelPart& rModelPart,
         Condition& rCondition,
@@ -239,6 +274,11 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("ComputeCentroid", BezierUtils_ComputeCentroid<Condition>)
 //    .def("compute_extended_knot_vector", &BezierUtils::compute_extended_knot_vector)
 //    .def("bezier_extraction_tsplines_1d", &BezierUtils::bezier_extraction_tsplines_1d)
+    ;
+
+    class_<IsogeometricPostUtility,IsogeometricPostUtility::Pointer, boost::noncopyable>("IsogeometricPostUtility", init<>())
+    .def("TransferElements", &IsogeometricPostUtility_TransferElements)
+    .def("TransferConditions", &IsogeometricPostUtility_TransferConditions)
     ;
 
     class_<BezierClassicalPostUtility, BezierClassicalPostUtility::Pointer, boost::noncopyable>("BezierClassicalPostUtility", init<ModelPart::Pointer>())

@@ -34,6 +34,7 @@
 #include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
 #include "custom_utilities/iga_define.h"
+#include "custom_utilities/isogeometric_utility.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "isogeometric_application/isogeometric_application.h"
 
@@ -67,7 +68,7 @@ namespace Kratos
 /**
  * Abstract class for all utility to export mesh from NURBS. Also to provide basic utility functions.
  */
-class IsogeometricPostUtility
+class IsogeometricPostUtility : public IsogeometricUtility
 {
 public:
     ///@name Type Definitions
@@ -86,6 +87,8 @@ public:
     typedef typename Element::GeometryType GeometryType;
 
     typedef typename GeometryType::PointType NodeType;
+
+    typedef typename NodeType::PointType PointType;
 
     typedef typename GeometryType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
@@ -125,6 +128,51 @@ public:
     ///@}
     ///@name Operations
     ///@{
+
+    /// Create a list of entities (element/condition) (from a model_part) to another model_part
+    /// It is noted that the newly created entities are not added to the other model_part. User must do it manually.
+    template<class TEntityType, class TEntitiesContainerType>
+    static TEntitiesContainerType CreateEntities(TEntitiesContainerType& pEntities, ModelPart& r_other_model_part,
+        TEntityType const& r_sample_entity, std::size_t& last_entity_id, Properties::Pointer pProperties)
+    {
+        // first collect all the nodes from the elements
+        std::map<std::size_t, NodeType::Pointer> pNodes;
+
+        for (typename TEntitiesContainerType::ptr_iterator it = pEntities.ptr_begin(); it != pEntities.ptr_end(); ++it)
+        {
+            for (std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i)
+            {
+                pNodes[(*it)->GetGeometry()[i].Id()] = (*it)->GetGeometry().pGetPoint(i);
+            }
+        }
+
+        // create the new nodes in the other model_part
+        std::size_t last_node_id = GetLastNodeId(r_other_model_part);
+        std::map<std::size_t, std::size_t> MapOldToNew;
+        for (std::map<std::size_t, NodeType::Pointer>::iterator it = pNodes.begin(); it != pNodes.end(); ++it)
+        {
+            const PointType& rPoint = it->second->GetInitialPosition();
+            NodeType::Pointer pNewNode = r_other_model_part.CreateNewNode(++last_node_id, rPoint[0], rPoint[1], rPoint[2]);
+            MapOldToNew[it->second->Id()] = last_node_id;
+        }
+
+        // create new elements in the other model_part
+        std::string NodeKey = std::string("Node");
+        typename TEntityType::NodesArrayType temp_entity_nodes;
+        TEntitiesContainerType pNewEntities;
+        for (typename TEntitiesContainerType::ptr_iterator it = pEntities.ptr_begin(); it != pEntities.ptr_end(); ++it)
+        {
+            temp_entity_nodes.clear();
+            for (std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i)
+            {
+                std::size_t node_id = MapOldToNew[(*it)->GetGeometry()[i].Id()];
+                temp_entity_nodes.push_back(*(FindKey(r_other_model_part.Nodes(), node_id, NodeKey).base()));
+            }
+            pNewEntities.push_back(r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pProperties));
+        }
+
+        return pNewEntities;
+    }
 
     //**********AUXILIARY FUNCTION**************************************************************
     //******************************************************************************************
@@ -202,22 +250,6 @@ public:
             }
         }
 #endif
-    }
-
-    //**********AUXILIARY FUNCTION**************************************************************
-    //******************************************************************************************
-    template<class TContainerType, class TKeyType>
-    static typename TContainerType::iterator FindKey(TContainerType& ThisContainer, TKeyType& ThisKey, const std::string& ComponentName)
-    {
-        typename TContainerType::iterator i_result;
-        if((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
-        {
-            std::stringstream buffer;
-            buffer << ComponentName << " #" << ThisKey << " is not found.";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-        }
-
-        return i_result;
     }
 
     //**********AUXILIARY FUNCTION**************************************************************

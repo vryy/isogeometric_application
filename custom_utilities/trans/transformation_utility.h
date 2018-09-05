@@ -68,16 +68,18 @@ public:
     static TransformationType CreateAlignTransformation(const VectorType& a, const VectorType& b)
     {
         MatrixType M = IdentityMatrixType(3, 3);
+        TransformationType T;
 
         VectorType ua = a / norm_2(a);
         VectorType ub = b / norm_2(b);
 
         VectorType c = MathUtils<TDataType>::CrossProduct(ua, ub);
+        double normc = norm_2(c);
+        if (normc < 1.0e-10) return T;
         MatrixType ssc = SkewSymmetric(c);
 
-        noalias(M) += ssc + prod(ssc, ssc) * (1.0 - inner_prod(ua, ub)) / pow(norm_2(c), 2);
+        noalias(M) += ssc + prod(ssc, ssc) * (1.0 - inner_prod(ua, ub)) / pow(normc, 2);
 
-        TransformationType T;
         for (int i = 0; i < 3; ++i)
             for (int j = 0; j < 3; ++j)
                 T(i, j) = M(i, j);

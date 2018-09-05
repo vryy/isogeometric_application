@@ -61,6 +61,31 @@ TDataType Transformation_GetValue(Transformation<TDataType>& rDummy, const int& 
     return rDummy(i, j);
 }
 
+template<typename TDataType, typename TVectorType>
+TVectorType Transformation_Apply(Transformation<TDataType>& rDummy, const TVectorType& v)
+{
+    TVectorType newv = v;
+    rDummy.template ApplyTransformation<TVectorType>(newv);
+    return newv;
+}
+
+template<typename TDataType>
+boost::python::list Transformation_Apply2(Transformation<TDataType>& rDummy, boost::python::list v)
+{
+    std::vector<TDataType> newv;
+    typedef boost::python::stl_input_iterator<TDataType> iterator_value_type;
+    BOOST_FOREACH(const typename iterator_value_type::value_type& d, std::make_pair(iterator_value_type(v), iterator_value_type() ) )
+        newv.push_back(d);
+
+    rDummy.template ApplyTransformation<std::vector<TDataType> >(newv);
+
+    boost::python::list res;
+    for (std::size_t i = 0; i < newv.size(); ++i)
+        res.append(newv[i]);
+
+    return res;
+}
+
 //////////////////////////////////////////////////
 
 void IsogeometricApplication_AddTransformationToPython()
@@ -82,6 +107,9 @@ void IsogeometricApplication_AddTransformationToPython()
     .def("V3", &Transformation<double>::V3)
     .def("SetValue", &Transformation_SetValue<double>)
     .def("GetValue", &Transformation_GetValue<double>)
+    .def("Apply", &Transformation_Apply<double, Vector>)
+    .def("Apply", &Transformation_Apply<double, array_1d<double, 3> >)
+    .def("Apply", &Transformation_Apply2<double>)
     .def(self_ns::str(self))
     ;
 

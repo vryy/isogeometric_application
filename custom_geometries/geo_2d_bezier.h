@@ -613,7 +613,7 @@ public:
         BezierUtils::bernstein(bezier_functions_values1, bezier_functions_derivatives1, mOrder1, rCoordinates[0]);
         BezierUtils::bernstein(bezier_functions_values2, bezier_functions_derivatives2, mOrder2, rCoordinates[1]);
 
-        //compute trivariate Bezier shape functions values
+        //compute bivariate Bezier shape functions values
         VectorType bezier_functions_values(mNumber1 * mNumber2);
         for(IndexType i = 0; i < mNumber1; ++i)
         {
@@ -657,7 +657,7 @@ public:
         BezierUtils::bernstein(bezier_functions_values1, bezier_functions_derivatives1, mOrder1, rCoordinates[0]);
         BezierUtils::bernstein(bezier_functions_values2, bezier_functions_derivatives2, mOrder2, rCoordinates[1]);
 
-        //compute trivariate Bezier shape functions values
+        //compute bivariate Bezier shape functions values
         VectorType bezier_functions_values(mNumber1 * mNumber2);
         for(IndexType i = 0; i < mNumber1; ++i)
         {
@@ -670,7 +670,7 @@ public:
             }
         }
 
-        //compute trivariate Bezier shape functions derivatives w.r.t local coordinates
+        //compute bivariate Bezier shape functions derivatives w.r.t local coordinates
         VectorType bezier_functions_local_derivatives1(mNumber1 * mNumber2);
         VectorType bezier_functions_local_derivatives2(mNumber1 * mNumber2);
         for(IndexType i = 0; i < mNumber1; ++i)
@@ -744,7 +744,7 @@ public:
                                mOrder2,
                                rCoordinates[1]);
 
-        //compute trivariate Bezier shape functions values
+        //compute bivariate Bezier shape functions values
         VectorType bezier_functions_values(mNumber1 * mNumber2);
         for(IndexType i = 0; i < mNumber1; ++i)
         {
@@ -757,7 +757,7 @@ public:
             }
         }
 
-        //compute trivariate Bezier shape functions derivatives w.r.t local coordinates
+        //compute bivariate Bezier shape functions derivatives w.r.t local coordinates
         VectorType bezier_functions_local_derivatives1(mNumber1 * mNumber2);
         VectorType bezier_functions_local_derivatives2(mNumber1 * mNumber2);
         for(IndexType i = 0; i < mNumber1; ++i)
@@ -775,7 +775,7 @@ public:
             }
         }
 
-        //compute trivariate Bezier shape functions second derivatives w.r.t local coordinates
+        //compute bivariate Bezier shape functions second derivatives w.r.t local coordinates
         VectorType bezier_functions_local_second_derivatives11(mNumber1 * mNumber2);
         VectorType bezier_functions_local_second_derivatives12(mNumber1 * mNumber2);
         VectorType bezier_functions_local_second_derivatives22(mNumber1 * mNumber2);
@@ -839,6 +839,69 @@ public:
         }
 
         return rResults;
+    }
+
+    /**
+     * Compute the Bezier control points
+     */
+    virtual void ExtractControlPoints(PointsArrayType& rPoints)
+    {
+        std::size_t number_of_points = this->PointsNumber();
+        std::size_t number_of_local_points = mExtractionOperator.size2();
+        rPoints.clear();
+        rPoints.reserve(number_of_local_points);
+
+        // compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+
+        // compute the Bezier control points
+        typedef typename PointType::Pointer PointPointerType;
+        for(std::size_t i = 0; i < number_of_local_points; ++i)
+        {
+            PointPointerType pPoint = PointPointerType(new PointType(0, 0.0, 0.0, 0.0));
+            for(std::size_t j = 0; j < number_of_points; ++j)
+                noalias(*pPoint) += mExtractionOperator(j, i) * this->GetPoint(j) * mCtrlWeights[j] / bezier_weights[i];
+            pPoint->SetInitialPosition(*pPoint);
+            pPoint->SetSolutionStepVariablesList(this->GetPoint(0).pGetVariablesList());
+            pPoint->SetBufferSize(this->GetPoint(0).GetBufferSize());
+            rPoints.push_back(pPoint);
+        }
+    }
+
+    /**
+     * Extract the control values from NURBS/Bezier geometry
+     */
+    virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues)
+    {
+        this->ExtractControlValues<double>(rVariable, rValues);
+    }
+
+    /**
+     * Extract the control values from NURBS/Bezier geometry
+     */
+    virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues)
+    {
+        this->ExtractControlValues<array_1d<double, 3> >(rVariable, rValues);
+    }
+
+    template<typename TDataType>
+    void ExtractControlValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues)
+    {
+        std::size_t number_of_points = this->PointsNumber();
+        std::size_t number_of_local_points = mExtractionOperator.size2();
+        if (rValues.size() != number_of_local_points)
+            rValues.resize(number_of_local_points);
+
+        // compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+
+        // compute the Bezier control points
+        for(std::size_t i = 0; i < number_of_local_points; ++i)
+        {
+            rValues[i] = TDataType(0.0);
+            for(std::size_t j = 0; j < number_of_points; ++j)
+                rValues[i] += mExtractionOperator(j, i) * this->GetPoint(j).GetSolutionStepValue(rVariable) * mCtrlWeights[j] / bezier_weights[i];
+        }
     }
 
     virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
@@ -1002,7 +1065,7 @@ private:
         BezierUtils::bernstein(bezier_functions_values1, bezier_functions_derivatives1, mOrder1, rPoint[0]);
         BezierUtils::bernstein(bezier_functions_values2, bezier_functions_derivatives2, mOrder2, rPoint[1]);
 
-        //compute trivariate Bezier shape functions values
+        //compute bivariate Bezier shape functions values
         VectorType bezier_functions_values(mNumber1 * mNumber2);
         for(IndexType i = 0; i < mNumber1; ++i)
         {
@@ -1015,7 +1078,7 @@ private:
             }
         }
 
-        //compute trivariate Bezier shape functions derivatives w.r.t local coordinates
+        //compute bivariate Bezier shape functions derivatives w.r.t local coordinates
         VectorType bezier_functions_local_derivatives1(mNumber1 * mNumber2);
         VectorType bezier_functions_local_derivatives2(mNumber1 * mNumber2);
         for(IndexType i = 0; i < mNumber1; ++i)

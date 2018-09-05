@@ -5,11 +5,11 @@
 
 namespace Kratos
 {
-    double BezierPostUtility::CalculateOnPoint(
+    double& BezierPostUtility_Helper<double>::CalculateOnPoint(
         const Variable<double>& rVariable,
         double& rResult,
         Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates) const
+        const Element::GeometryType::CoordinatesArrayType& rCoordinates)
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
@@ -23,11 +23,11 @@ namespace Kratos
         return rResult;
     }
 
-    Vector& BezierPostUtility::CalculateOnPoint(
+    Vector& BezierPostUtility_Helper<Vector>::CalculateOnPoint(
         const Variable<Vector>& rVariable,
         Vector& rResult,
         Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates) const
+        const Element::GeometryType::CoordinatesArrayType& rCoordinates)
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
@@ -48,11 +48,11 @@ namespace Kratos
         return rResult;
     }
 
-    array_1d<double, 3>& BezierPostUtility::CalculateOnPoint(
+    array_1d<double, 3>& BezierPostUtility_Helper<array_1d<double, 3> >::CalculateOnPoint(
         const Variable<array_1d<double, 3> >& rVariable,
         array_1d<double, 3>& rResult,
         Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates) const
+        const Element::GeometryType::CoordinatesArrayType& rCoordinates)
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
@@ -381,12 +381,6 @@ namespace Kratos
         }
         std::cout << "Transfer variable to node for " << rThisVariable.Name() << " completed" << std::endl;
     }
-
-
-//    void BezierPostUtility::TransferElements(ElementsArrayType& pElements, ModelPart& r_other_model_part) const
-//    {
-//
-//    }
 
 }
 

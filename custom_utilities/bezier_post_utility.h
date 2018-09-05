@@ -69,6 +69,21 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
+template<typename TDataType>
+struct BezierPostUtility_Helper
+{
+    typedef typename Element::GeometryType GeometryType;
+
+    typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
+
+    /// Interpolation on element
+    static TDataType& CalculateOnPoint(const Variable<TDataType>& rVariable,
+        TDataType& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+    }
+};
+
 /// Short class definition.
 /**
 An advanced utility to export directly the FEM mesh out from isogeometric Bezier mesh. Each Bezier element will generate its own set of FEM elements. Therefore a large amount of nodes and elements may be generated.
@@ -160,7 +175,7 @@ public:
         {
             ElementId = (*it)->GetSolutionStepValue(PARENT_ELEMENT_ID);
             noalias(LocalPos) = (*it)->GetSolutionStepValue(LOCAL_COORDINATES);
-            Results = CalculateOnPoint(rThisVariable, Results, pElements(ElementId), LocalPos);
+            Results = BezierPostUtility_Helper<typename TVariableType::Type>::CalculateOnPoint(rThisVariable, Results, pElements(ElementId), LocalPos);
             (*it)->GetSolutionStepValue(rThisVariable) = Results;
         }
 
@@ -226,11 +241,6 @@ public:
         std::cout << "########################################" << std::endl;
         #endif
     }
-
-    // Transfer a list of elements to another model_part
-/*    template<class TEntityType, class TEntitiesContainerType>*/
-/*    void TransferEntities(TEntitiesContainerType& pElements, ModelPart& r_other_model_part,
-        TEntityType const& r_sample_entity, Properties::Pointer pProperties) const;*/
 
     ///@}
     ///@name Access
@@ -314,27 +324,6 @@ private:
     ///@name Private Operations
     ///@{
 
-    /// Interpolation on element
-    double CalculateOnPoint(
-        const Variable<double>& rVariable,
-        double& rResult,
-        Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates) const;
-
-    /// Interpolation on element
-    Vector& CalculateOnPoint(
-        const Variable<Vector>& rVariable,
-        Vector& rResult,
-        Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates) const;
-
-    /// Interpolation on element
-    array_1d<double, 3>& CalculateOnPoint(
-        const Variable<array_1d<double, 3> >& rVariable,
-        array_1d<double, 3>& rResult,
-        Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates) const;
-
     /**
      * Transfer variable at integration points to nodes
      *
@@ -399,6 +388,42 @@ private:
 }; // Class BezierPostUtility
 
 ///@}
+
+template<>
+struct BezierPostUtility_Helper<double>
+{
+    typedef typename Element::GeometryType GeometryType;
+
+    typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
+
+    /// Interpolation on element
+    static double& CalculateOnPoint(const Variable<double>& rVariable,
+        double& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
+};
+
+template<>
+struct BezierPostUtility_Helper<Vector>
+{
+    typedef typename Element::GeometryType GeometryType;
+
+    typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
+
+    /// Interpolation on element
+    static Vector& CalculateOnPoint(const Variable<Vector>& rVariable,
+        Vector& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
+};
+
+template<>
+struct BezierPostUtility_Helper<array_1d<double, 3> >
+{
+    typedef typename Element::GeometryType GeometryType;
+
+    typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
+
+    /// Interpolation on element
+    static array_1d<double, 3>& CalculateOnPoint(const Variable<array_1d<double, 3> >& rVariable,
+        array_1d<double, 3>& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
+};
 
 ///@name Type Definitions
 ///@{

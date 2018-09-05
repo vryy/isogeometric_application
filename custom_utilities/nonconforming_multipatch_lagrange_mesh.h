@@ -115,13 +115,14 @@ public:
         std::size_t NodeCounter = mLastNodeId;
         std::size_t NodeCounter_old = NodeCounter;
         std::size_t ElementCounter = mLastElemId;
-        std::size_t PropertiesCounter = mLastPropId;
+        // std::size_t PropertiesCounter = mLastPropId;
         std::vector<double> p_ref(TDim);
         for (typename MultiPatch<TDim>::PatchContainerType::iterator it = mpMultiPatch->begin();
                 it != mpMultiPatch->end(); ++it)
         {
             // create new properties and add to model_part
-            Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));
+            // Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));
+            Properties::Pointer pNewProperties = Properties::Pointer(new Properties(it->Id()));
             r_model_part.AddProperties(pNewProperties);
 
             if (TDim == 2)

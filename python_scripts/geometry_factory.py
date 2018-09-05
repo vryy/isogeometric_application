@@ -127,7 +127,14 @@ def CreateSmallRing(center, axis, rin, rout, start_angle, end_angle):
     ring_patch_ptr = bsplines_patch_util.CreateConnectedPatch(iarc, oarc)
     return ring_patch_ptr
 
-### Create the 3D slab align with Cartesian axes
+### Create the 2D rectangle aligned with Cartesian axes
+def CreateRectangle(start_point, end_point):
+    line1 = CreateLine(start_point, [end_point[0], start_point[1], start_point[2]])
+    line2 = CreateLine([start_point[0], end_point[1], start_point[2]], [end_point[0], end_point[1], start_point[2]])
+    face_ptr = bsplines_patch_util.CreateConnectedPatch(line1, line2)
+    return face_ptr
+
+### Create the 3D slab aligned with Cartesian axes
 def CreateSlab(start_point, end_point):
     line1 = CreateLine(start_point, [end_point[0], start_point[1], start_point[2]])
     line2 = CreateLine([start_point[0], end_point[1], start_point[2]], [end_point[0], end_point[1], start_point[2]])

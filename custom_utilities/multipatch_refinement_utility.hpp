@@ -61,6 +61,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
     {
         // create new patch with same Id
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
+        pNewPatch->SetPrefix(pPatch->Prefix());
 
         // compute the transformation matrix
         std::vector<std::vector<double> > new_knots(TDim);
@@ -269,6 +270,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
     {
         // create new patch with same Id
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
+        pNewPatch->SetPrefix(pPatch->Prefix());
 
         // elevate the degree and initialize new patch
         typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());

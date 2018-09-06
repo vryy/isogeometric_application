@@ -81,28 +81,67 @@ void BSplinesFESpace_SetKnotVector(BSplinesFESpace<TDim>& rDummy, boost::python:
 
 ////////////////////////////////////////
 
-BSplinesFESpace<1>::Pointer BSplinesFESpaceLibrary_CreateLinearFESpace(BSplinesFESpaceLibrary& rDummy, const std::size_t& order_u)
+BSplinesFESpace<1>::Pointer BSplinesFESpaceLibrary_CreatePrimitiveFESpace1(BSplinesFESpaceLibrary& rDummy, const std::size_t& order_u)
 {
     std::vector<std::size_t> orders(1);
     orders[0] = order_u;
-    return rDummy.CreateRegularFESpace<1>(orders);
+    return rDummy.CreatePrimitiveFESpace<1>(orders);
 }
 
-BSplinesFESpace<2>::Pointer BSplinesFESpaceLibrary_CreateRectangularFESpace(BSplinesFESpaceLibrary& rDummy, const std::size_t& order_u, const std::size_t& order_v)
+BSplinesFESpace<2>::Pointer BSplinesFESpaceLibrary_CreatePrimitiveFESpace2(BSplinesFESpaceLibrary& rDummy, const std::size_t& order_u, const std::size_t& order_v)
 {
     std::vector<std::size_t> orders(2);
     orders[0] = order_u;
     orders[1] = order_v;
-    return rDummy.CreateRegularFESpace<2>(orders);
+    return rDummy.CreatePrimitiveFESpace<2>(orders);
 }
 
-BSplinesFESpace<3>::Pointer BSplinesFESpaceLibrary_CreateCubicFESpace(BSplinesFESpaceLibrary& rDummy, const std::size_t& order_u, const std::size_t& order_v, const std::size_t& order_w)
+BSplinesFESpace<3>::Pointer BSplinesFESpaceLibrary_CreatePrimitiveFESpace3(BSplinesFESpaceLibrary& rDummy, const std::size_t& order_u, const std::size_t& order_v, const std::size_t& order_w)
 {
     std::vector<std::size_t> orders(3);
     orders[0] = order_u;
     orders[1] = order_v;
     orders[2] = order_w;
-    return rDummy.CreateRegularFESpace<3>(orders);
+    return rDummy.CreatePrimitiveFESpace<3>(orders);
+}
+
+BSplinesFESpace<1>::Pointer BSplinesFESpaceLibrary_CreateUniformFESpace1(BSplinesFESpaceLibrary& rDummy,
+    const std::size_t& number_u, const std::size_t& order_u)
+{
+    std::vector<std::size_t> numbers(1);
+    numbers[0] = number_u;
+    std::vector<std::size_t> orders(1);
+    orders[0] = order_u;
+    return rDummy.CreateUniformFESpace<1>(numbers, orders);
+}
+
+BSplinesFESpace<2>::Pointer BSplinesFESpaceLibrary_CreateUniformFESpace2(BSplinesFESpaceLibrary& rDummy,
+    const std::size_t& number_u, const std::size_t& order_u,
+    const std::size_t& number_v, const std::size_t& order_v)
+{
+    std::vector<std::size_t> numbers(2);
+    numbers[0] = number_u;
+    numbers[1] = number_v;
+    std::vector<std::size_t> orders(2);
+    orders[0] = order_u;
+    orders[1] = order_v;
+    return rDummy.CreateUniformFESpace<2>(numbers, orders);
+}
+
+BSplinesFESpace<3>::Pointer BSplinesFESpaceLibrary_CreateUniformFESpace3(BSplinesFESpaceLibrary& rDummy,
+    const std::size_t& number_u, const std::size_t& order_u,
+    const std::size_t& number_v, const std::size_t& order_v,
+    const std::size_t& number_w, const std::size_t& order_w)
+{
+    std::vector<std::size_t> numbers(3);
+    numbers[0] = number_u;
+    numbers[1] = number_v;
+    numbers[2] = number_w;
+    std::vector<std::size_t> orders(3);
+    orders[0] = order_u;
+    orders[1] = order_v;
+    orders[2] = order_w;
+    return rDummy.CreateUniformFESpace<3>(numbers, orders);
 }
 
 //////////////////////////////////////////////////
@@ -466,9 +505,15 @@ void IsogeometricApplication_AddNURBSToPython()
 
     class_<BSplinesFESpaceLibrary, BSplinesFESpaceLibrary::Pointer, boost::noncopyable>
     ("BSplinesFESpaceLibrary", init<>())
-    .def("CreateLinearFESpace", &BSplinesFESpaceLibrary_CreateLinearFESpace)
-    .def("CreateRectangularFESpace", &BSplinesFESpaceLibrary_CreateRectangularFESpace)
-    .def("CreateCubicFESpace", &BSplinesFESpaceLibrary_CreateCubicFESpace)
+    .def("CreateLinearFESpace", &BSplinesFESpaceLibrary_CreatePrimitiveFESpace1) // backward compatibility
+    .def("CreateRectangularFESpace", &BSplinesFESpaceLibrary_CreatePrimitiveFESpace2) // backward compatibility
+    .def("CreateCubicFESpace", &BSplinesFESpaceLibrary_CreatePrimitiveFESpace3) // backward compatibility
+    .def("CreatePrimitiveFESpace", &BSplinesFESpaceLibrary_CreatePrimitiveFESpace1)
+    .def("CreatePrimitiveFESpace", &BSplinesFESpaceLibrary_CreatePrimitiveFESpace2)
+    .def("CreatePrimitiveFESpace", &BSplinesFESpaceLibrary_CreatePrimitiveFESpace3)
+    .def("CreateUniformFESpace", &BSplinesFESpaceLibrary_CreateUniformFESpace1)
+    .def("CreateUniformFESpace", &BSplinesFESpaceLibrary_CreateUniformFESpace2)
+    .def("CreateUniformFESpace", &BSplinesFESpaceLibrary_CreateUniformFESpace3)
     ;
 
     /////////////////////////////////////////////////////////////////

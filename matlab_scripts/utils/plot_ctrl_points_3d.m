@@ -147,7 +147,7 @@ if isfield(params,'patch_id')
     cen = cen / (w_dim*v_dim*u_dim);
     text(cen(1), cen(2), cen(3), num2str(params.patch_id));
 %     [x y z] = sphere(10);
-%     h = surfl(x+cen(1), y+cen(2), z+cen(3)); 
+%     h = surfl(x+cen(1), y+cen(2), z+cen(3));
 %     set(h, 'FaceAlpha', 0.5)
 %     shading interp
 end

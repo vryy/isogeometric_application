@@ -115,13 +115,14 @@ public:
         std::size_t NodeCounter = mLastNodeId;
         std::size_t NodeCounter_old = NodeCounter;
         std::size_t ElementCounter = mLastElemId;
-        std::size_t PropertiesCounter = mLastPropId;
+        // std::size_t PropertiesCounter = mLastPropId;
         std::vector<double> p_ref(TDim);
         for (typename MultiPatch<TDim>::PatchContainerType::iterator it = mpMultiPatch->begin();
                 it != mpMultiPatch->end(); ++it)
         {
             // create new properties and add to model_part
-            Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));
+            // Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));
+            Properties::Pointer pNewProperties = Properties::Pointer(new Properties(it->Id()));
             r_model_part.AddProperties(pNewProperties);
 
             if (TDim == 2)
@@ -334,6 +335,7 @@ private:
             typedef array_1d<double, 3> DataType;
             typedef Variable<DataType> VariableType;
             const std::string& var_name = (*it_gf)->pControlGrid()->Name();
+            if (var_name == "CONTROL_POINT_COORDINATES") continue;
             if (KratosComponents<VariableData>::Has(var_name))
             {
                 VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));

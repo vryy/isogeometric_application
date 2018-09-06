@@ -11,6 +11,7 @@
 
 // System includes
 #include <vector>
+#include <algorithm>
 
 // External includes
 #include <boost/array.hpp>
@@ -52,7 +53,12 @@ public:
     BSplinesFESpace() : BaseType() {}
 
     /// Destructor
-    virtual ~BSplinesFESpace() {}
+    virtual ~BSplinesFESpace()
+    {
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+        std::cout << this->Type() << ", Addr = " << this << " is destroyed" << std::endl;
+        #endif
+    }
 
     /// Helper to create new BSplinesFESpace pointer
     static typename BSplinesFESpace<TDim>::Pointer Create()
@@ -124,13 +130,30 @@ public:
     }
 
     /// Get the knot vector in i-direction
-    const knot_container_t& KnotVector(const std::size_t& i) const {return mKnotVectors[i];}
+    const knot_container_t& KnotVector(const std::size_t& idir) const {return mKnotVectors[idir];}
+
+    /// Reverse the evaluation in i-direction
+    void Reverse(const std::size_t& idir)
+    {
+        // reverse the knot vector
+        mKnotVectors[idir].Reverse();
+
+        // also change the function indices
+        BSplinesIndexingUtility::Reverse<TDim, std::vector<std::size_t>, std::vector<std::size_t> >(mFunctionsIds, this->Numbers(), idir);
+
+        // and the global to local map
+        BaseType::mGlobalToLocal.clear();
+        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
+        {
+            BaseType::mGlobalToLocal[mFunctionsIds[i]] = i;
+        }
+    }
 
     /// Set the BSplines information in the direction i
-    void SetInfo(const std::size_t& i, const std::size_t& Number, const std::size_t& Order)
+    void SetInfo(const std::size_t& idir, const std::size_t& Number, const std::size_t& Order)
     {
-        mOrders[i] = Order;
-        mNumbers[i] = Number;
+        mOrders[idir] = Order;
+        mNumbers[idir] = Number;
     }
 
     /// Validate the BSplinesFESpace
@@ -149,17 +172,42 @@ public:
     }
 
     /// Get the values of the basis function i at point xi
-    virtual double GetValue(const std::size_t& i, const std::vector<double>& xi) const
+    virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
+    {
+        // TODO the current approach is expensive (all is computed). Find the way to optimize it.
+        std::vector<double> values;
+        this->GetValue(values, xi);
+        v = values[i];
+    }
+
+    /// Get the values of the basis functions at point xi
+    virtual void GetValue(std::vector<double>& values, const std::vector<double>& xi) const
     {
         // TODO
         KRATOS_THROW_ERROR(std::logic_error, "GetValue is not implemented for dimension", TDim)
     }
 
-    /// Get the values of the basis functions at point xi
-    virtual std::vector<double> GetValue(const std::vector<double>& xi) const
+    /// Get the derivatives of the basis function i at point xi
+    virtual void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
     {
-        // TODO
-        KRATOS_THROW_ERROR(std::logic_error, "GetValue is not implemented for dimension", TDim)
+        // TODO the current approach is expensive (all is computed). Find the way to optimize it.
+        std::vector<std::vector<double> > tmp;
+        this->GetDerivative(tmp, xi);
+        values = tmp[i];
+    }
+
+    /// Get the derivatives of the basis functions at point xi
+    virtual void GetDerivative(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    {
+        std::vector<double> dummy;
+        this->GetValueAndDerivative(dummy, values, xi);
+    }
+
+    /// Get the values and derivatives of the basis functions at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    virtual void GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "GetValueAndDerivative is not implemented for dimension", TDim)
     }
 
     /// Compare between two BSplines patches in terms of parametric information
@@ -314,113 +362,138 @@ public:
         return last_id;
     }
 
+    /// Extract the index of the functions on the boundaries
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(const int& boundary_id) const
+    {
+        std::set<std::size_t> bf_id_set;
+        bool first = false;
+
+        for (int iside = _BLEFT_; iside < _NUMBER_OF_BOUNDARY_SIDE; ++iside)
+        {
+            BoundarySide side = static_cast<BoundarySide>(iside);
+            if ((BOUNDARY_FLAG(side) & boundary_id) == BOUNDARY_FLAG(side))
+            {
+                std::vector<std::size_t> func_indices = this->ExtractBoundaryFunctionIndices(side);
+                if (func_indices.size() != 0)
+                {
+                    if (!first)
+                    {
+                        // initialize the new set
+                        bf_id_set.insert(func_indices.begin(), func_indices.end());
+                        first = true;
+                    }
+                    else
+                    {
+                        // take the intersection
+                        std::vector<std::size_t> temp;
+                        std::set_intersection(bf_id_set.begin(), bf_id_set.end(), func_indices.begin(), func_indices.end(), std::back_inserter(temp));
+                        bf_id_set.clear();
+                        bf_id_set.insert(temp.begin(), temp.end());
+                    }
+                }
+            }
+        }
+
+        return std::vector<std::size_t>(bf_id_set.begin(), bf_id_set.end());
+    }
+
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
     {
         std::vector<std::size_t> func_indices;
 
-        if (side == _BLEFT_)
+        if (TDim == 1)
         {
-            if (TDim == 1)
+            func_indices.resize(1);
+            if (side == _BLEFT_)
             {
-                func_indices.resize(1);
-                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(1, this->Number(0))];
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(1, this->Number(0))];
             }
-            else if (TDim == 2)
+            else if (side  == _BRIGHT_)
+            {
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(this->Number(0), this->Number(0))];
+            }
+        }
+        else if (TDim == 2)
+        {
+            if (side == _BLEFT_)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
-                    func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(1, j+1, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1, j+1, this->Number(0), this->Number(1))];
             }
-            else if (TDim == 3)
+            else if (side == _BRIGHT_)
+            {
+                func_indices.resize(this->Number(1));
+                for (std::size_t j = 0; j < this->Number(1); ++j)
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))];
+            }
+            else if (side == _BBOTTOM_)
+            {
+                func_indices.resize(this->Number(0));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, 1, this->Number(0), this->Number(1))];
+            }
+            else if (side == _BTOP_)
+            {
+                func_indices.resize(this->Number(0));
+                for (std::size_t i = 0; i < this->Number(0); ++i)
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))];
+            }
+        }
+        else if (TDim == 3)
+        {
+            if (side == _BLEFT_)
             {
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BRIGHT_)
-        {
-            if (TDim == 1)
-            {
-                func_indices.resize(1);
-                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0), this->Number(0))];
-            }
-            else if (TDim == 2)
-            {
-                func_indices.resize(this->Number(1));
-                for (std::size_t j = 0; j < this->Number(1); ++j)
-                    func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))];
-            }
-            else if (TDim == 3)
+            else if (side == _BRIGHT_)
             {
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BBOTTOM_)
-        {
-            if (TDim == 2)
-            {
-                func_indices.resize(this->Number(0));
-                for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1, this->Number(0), this->Number(1))];
-            }
-            else if (TDim == 3)
+            else if (side == _BBOTTOM_)
             {
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
-                        func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BTOP_)
-        {
-            if (TDim == 2)
-            {
-                func_indices.resize(this->Number(0));
-                for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))];
-            }
-            else if (TDim == 3)
+            else if (side == _BTOP_)
             {
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
-                        func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BFRONT_)
-        {
-            if (TDim == 3)
+            else if (side == _BFRONT_)
             {
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
-        }
-        else if (side == _BBACK_)
-        {
-            if (TDim == 3)
+            else if (side == _BBACK_)
             {
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
 
@@ -437,22 +510,22 @@ public:
             if (TDim == 1)
             {
                 func_indices.resize(1);
-                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(1+level, this->Number(0))];
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(1+level, this->Number(0))];
             }
             else if (TDim == 2)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
-                    func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(1+level, j+1, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1+level, j+1, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(1+level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1+level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BRIGHT_)
@@ -460,22 +533,22 @@ public:
             if (TDim == 1)
             {
                 func_indices.resize(1);
-                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0)-level, this->Number(0))];
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(this->Number(0)-level, this->Number(0))];
             }
             else if (TDim == 2)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
-                    func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0)-level, j+1, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0)-level, j+1, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0)-level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0)-level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BBOTTOM_)
@@ -484,16 +557,16 @@ public:
             {
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1+level, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, 1+level, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
-                        func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1+level, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, 1+level, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BTOP_)
@@ -502,16 +575,16 @@ public:
             {
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1)-level, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, this->Number(1)-level, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
-                        func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2)-level, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, this->Number(2)-level, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BFRONT_)
@@ -521,8 +594,8 @@ public:
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1+level, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, 1+level, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BBACK_)
@@ -532,8 +605,8 @@ public:
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1)-level, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, this->Number(1)-level, k+1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
 
@@ -548,15 +621,15 @@ public:
             if (TDim == 1)
             {
                 if (func_indices[0] != -1)
-                    mFunctionsIds[BSplinesIndexingUtility::Index1D(1, this->Number(0))] = func_indices[0];
+                    mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(1, this->Number(0))] = func_indices[0];
             }
             else if (TDim == 2)
             {
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                 {
-                    const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))];
+                    const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))];
                     if (aux != -1)
-                        mFunctionsIds[BSplinesIndexingUtility::Index2D(1, j+1, this->Number(0), this->Number(1))] = aux;
+                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1, j+1, this->Number(0), this->Number(1))] = aux;
                 }
             }
             else if (TDim == 3)
@@ -565,9 +638,9 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
+                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -577,15 +650,15 @@ public:
             if (TDim == 1)
             {
                 if (func_indices[0] != -1)
-                    mFunctionsIds[BSplinesIndexingUtility::Index1D(this->Number(0), this->Number(0))] = func_indices[0];
+                    mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(this->Number(0), this->Number(0))] = func_indices[0];
             }
             else if (TDim == 2)
             {
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                 {
-                    const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index1D(j+1, this->Number(1))];
+                    const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))];
                     if (aux != -1)
-                        mFunctionsIds[BSplinesIndexingUtility::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))] = aux;
+                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))] = aux;
                 }
             }
             else if (TDim == 3)
@@ -594,9 +667,9 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
+                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -607,9 +680,9 @@ public:
             {
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                 {
-                    const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))];
+                    const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))];
                     if (aux != -1)
-                        mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, 1, this->Number(0), this->Number(1))] = aux;
+                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, 1, this->Number(0), this->Number(1))] = aux;
                 }
             }
             else if (TDim == 3)
@@ -618,9 +691,9 @@ public:
                 {
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
+                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -631,9 +704,9 @@ public:
             {
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                 {
-                    const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index1D(i+1, this->Number(0))];
+                    const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))];
                     if (aux != -1)
-                        mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))] = aux;
+                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))] = aux;
                 }
             }
             else if (TDim == 3)
@@ -642,9 +715,9 @@ public:
                 {
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
+                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -657,9 +730,9 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
+                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -672,9 +745,9 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
+                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
                 }
             }
@@ -1075,7 +1148,7 @@ public:
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                 {
                     for (std::size_t i = 0; i < this->Number(0); ++i)
-                        rOStream << " " << mFunctionsIds[BSplinesIndexingUtility::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
+                        rOStream << " " << mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
                     rOStream << std::endl;
                 }
             }
@@ -1086,7 +1159,7 @@ public:
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                     {
                         for (std::size_t i = 0; i < this->Number(0); ++i)
-                            rOStream << " " << mFunctionsIds[BSplinesIndexingUtility::Index3D(i+1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                            rOStream << " " << mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
                         rOStream << std::endl;
                     }
                     rOStream << std::endl;

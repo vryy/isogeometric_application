@@ -866,10 +866,10 @@ public:
         noalias( rResult ) = ZeroMatrix( mNumber, 1 );
 
         //compute the b-spline shape functions & first derivatives
-        int NumberOfDerivatives = 1;
+        const int NumberOfDerivatives = 1;
         Matrix ShapeFunctionsValuesAndDerivatives(NumberOfDerivatives + 1, mOrder + 1);
         int span = BSplineUtils::FindSpan(mNumber, mOrder, rPoint[0], mKnots);
-        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives, span, rPoint[0], mOrder, mKnots, NumberOfDerivatives);
+        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives, span, rPoint[0], mOrder, mKnots, NumberOfDerivatives, BSplineUtils::MatrixOp());
         double denom = 0.0;
         double denom_der = 0.0;
         int start = span - mOrder;
@@ -910,10 +910,10 @@ public:
         noalias( shape_functions_values ) = ZeroVector(mNumber);
 
         //compute the b-spline shape functions & first derivatives
-        int NumberOfDerivatives = 1;
+        const int NumberOfDerivatives = 1;
         Matrix ShapeFunctionsValuesAndDerivatives(NumberOfDerivatives + 1, mOrder + 1);
         int span = BSplineUtils::FindSpan(mNumber, mOrder, rPoint[0], mKnots);
-        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives, span, rPoint[0], mOrder, mKnots, NumberOfDerivatives);
+        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives, span, rPoint[0], mOrder, mKnots, NumberOfDerivatives, BSplineUtils::MatrixOp());
         double denom = 0.0;
         double denom_der = 0.0;
         int start = span - mOrder;

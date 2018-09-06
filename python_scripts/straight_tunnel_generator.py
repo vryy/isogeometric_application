@@ -30,6 +30,7 @@ class StraightTunnelGenerator():
         self.x_max = -self.x_min
 
         self.bsplines_patch_util = BSplinesPatchUtility()
+        self.mpatch_export = MultiNURBSPatchMatlabExporter()
         self.patch_id_stepping = 1000
         self.layer_sets = {}
 
@@ -60,6 +61,7 @@ class StraightTunnelGenerator():
                     bf2_patch_ptr = bf2_patches_ptr[i]
                     patch_ptr = self.bsplines_patch_util.CreateConnectedPatch(bf2_patch_ptr, bf1_patch_ptr)
                     patch = patch_ptr.GetReference()
+                    patch.Prefix = "Excavation"
                     patch.Id = step*self.patch_id_stepping + bf1_patch.Id
                     mp.AddPatch(patch_ptr)
                     self.layer_sets["excavation"].append(patch.Id)
@@ -114,6 +116,7 @@ class StraightTunnelGenerator():
         arc1 = arc1_ptr.GetReference()
 #        print("arc1:")
 #        print(arc1)
+        # self.mpatch_export.Export(arc1, "arc1.m")
 
         ### create line 1
         p1 = [center[0], center[1], center[2] + 0.5*exc_radius]
@@ -169,7 +172,7 @@ class StraightTunnelGenerator():
 #        print(line4)
 
         ### create arc 2
-        arc2_ptr = geometry_factory.CreateSmallArc(center, 'x', exc_radius, 45.0, 0.0)
+        arc2_ptr = geometry_factory.CreateSmallArc(center, self.axis, exc_radius, 45.0, 0.0)
         arc2 = arc2_ptr.GetReference()
 #        print("arc2:")
 #        print(arc2)
@@ -190,7 +193,7 @@ class StraightTunnelGenerator():
 #        print(line5)
 
         ### create arc 3
-        arc3_ptr = geometry_factory.CreateSmallArc(center, 'x', exc_radius, 0.0, -45.0)
+        arc3_ptr = geometry_factory.CreateSmallArc(center, self.axis, exc_radius, 0.0, -45.0)
         arc3 = arc3_ptr.GetReference()
 #        print("arc3:")
 #        print(arc3)
@@ -211,7 +214,7 @@ class StraightTunnelGenerator():
 #        print(line6)
 
         ### create arc 4
-        arc4_ptr = geometry_factory.CreateSmallArc(center, 'x', exc_radius, -45.0, -90.0)
+        arc4_ptr = geometry_factory.CreateSmallArc(center, self.axis, exc_radius, -45.0, -90.0)
         arc4 = arc4_ptr.GetReference()
 #        print("arc4:")
 #        print(arc4)
@@ -221,6 +224,9 @@ class StraightTunnelGenerator():
         patch6 = patch6_ptr.GetReference()
         patch6.Id = 6
 
+        ##############################
+
+        # return [patch3_ptr]
         return [patch1_ptr, patch2_ptr, patch3_ptr, patch4_ptr, patch5_ptr, patch6_ptr]
 
 

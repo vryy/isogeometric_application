@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 2013-10-12 $
 //   Revision:            $Revision: 1.0 $
@@ -14,7 +14,7 @@
 #include <vector>
 #include <iostream>
 
-// External includes 
+// External includes
 #include <omp.h>
 #include "boost/progress.hpp"
 
@@ -33,9 +33,10 @@
 #include "spaces/ublas_space.h"
 #include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
-#include "custom_geometries/isogeometric_geometry.h"
-#include "isogeometric_application/isogeometric_application.h"
 #include "utilities/auto_collapse_spatial_binning.h"
+#include "custom_geometries/isogeometric_geometry.h"
+#include "custom_utilities/isogeometric_post_utility.h"
+#include "isogeometric_application/isogeometric_application.h"
 
 // #define DEBUG_LEVEL1
 //#define DEBUG_LEVEL2
@@ -63,52 +64,67 @@ namespace Kratos
 ///@name  Functions
 ///@{
 
-    
+
 ///@}
 ///@name Kratos Classes
 ///@{
+
+template<typename TDataType>
+struct BezierPostUtility_Helper
+{
+    typedef typename Element::GeometryType GeometryType;
+
+    typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
+
+    /// Interpolation on element
+    static TDataType& CalculateOnPoint(const Variable<TDataType>& rVariable,
+        TDataType& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+    }
+};
 
 /// Short class definition.
 /**
 An advanced utility to export directly the FEM mesh out from isogeometric Bezier mesh. Each Bezier element will generate its own set of FEM elements. Therefore a large amount of nodes and elements may be generated.
 One shall carefully use this utility for large problem. Previously, this class is named IsogeometricPostUtility.
  */
-class BezierPostUtility
+class BezierPostUtility : public IsogeometricPostUtility
 {
 public:
     ///@name Type Definitions
     ///@{
 
     typedef boost::numeric::ublas::vector<double> ValuesContainerType;
-    
+
     typedef boost::numeric::ublas::matrix<double> ValuesArrayContainerType;
-    
+
     typedef typename ModelPart::NodesContainerType NodesArrayType;
-    
+
     typedef typename ModelPart::ElementsContainerType ElementsArrayType;
 
     typedef typename ModelPart::ConditionsContainerType ConditionsArrayType;
-    
+
     typedef typename Element::GeometryType GeometryType;
-    
-    typedef IsogeometricGeometry<GeometryType::PointType> IsogeometricGeometryType;
-    
+
+    typedef typename GeometryType::PointType NodeType;
+
+    typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
+
     typedef typename GeometryType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
     typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
 
-    typedef typename Node<3>::DofsContainerType DofsContainerType;
-    
-    typedef Node<3> NodeType;
+    typedef typename NodeType::DofsContainerType DofsContainerType;
 
     typedef UblasSpace<double, CompressedMatrix, Vector> SerialSparseSpaceType;
 
     typedef UblasSpace<double, Matrix, Vector> SerialDenseSpaceType;
-    
+
     typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType> LinearSolverType;
-    
+
     typedef std::size_t IndexType;
-    
+
     /// Pointer definition of BezierPostUtility
     KRATOS_CLASS_POINTER_DEFINITION(BezierPostUtility);
 
@@ -139,8 +155,7 @@ public:
     void TransferNodalResults(
         const TVariableType& rThisVariable,
         ModelPart& r_model_part,
-        ModelPart& r_model_part_post
-    )
+        ModelPart& r_model_part_post) const
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
@@ -160,7 +175,7 @@ public:
         {
             ElementId = (*it)->GetSolutionStepValue(PARENT_ELEMENT_ID);
             noalias(LocalPos) = (*it)->GetSolutionStepValue(LOCAL_COORDINATES);
-            Results = CalculateOnPoint(rThisVariable, Results, pElements(ElementId), LocalPos);
+            Results = BezierPostUtility_Helper<typename TVariableType::Type>::CalculateOnPoint(rThisVariable, Results, pElements(ElementId), LocalPos);
             (*it)->GetSolutionStepValue(rThisVariable) = Results;
         }
 
@@ -178,8 +193,7 @@ public:
         const TVariableType& rThisVariable,
         ModelPart& r_model_part,
         ModelPart& r_model_part_post,
-        LinearSolverType::Pointer pSolver
-    )
+        LinearSolverType::Pointer pSolver) const
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
@@ -190,7 +204,7 @@ public:
 
         // firstly transfer rThisVariable from integration points of reference model_part to its nodes
         TransferVariablesToNodes(pSolver, r_model_part, rThisVariable);
-        
+
         // secondly transfer new nodal variables results to the post model_part
         TransferNodalResults(rThisVariable, r_model_part, r_model_part_post);
 
@@ -208,8 +222,7 @@ public:
     void TransferVariablesToNodes(
         const TVariableType& rThisVariable,
         ModelPart& r_model_part,
-        LinearSolverType::Pointer pSolver
-    )
+        LinearSolverType::Pointer pSolver) const
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
@@ -310,42 +323,18 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
-    
-    /// Interpolation on element
-    double CalculateOnPoint(
-        const Variable<double>& rVariable,
-        double& rResult,
-        Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates
-    );
 
-    /// Interpolation on element
-    Vector& CalculateOnPoint(
-        const Variable<Vector>& rVariable,
-        Vector& rResult,
-        Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates
-    );
-
-    /// Interpolation on element
-    array_1d<double, 3>& CalculateOnPoint(
-        const Variable<array_1d<double, 3> >& rVariable,
-        array_1d<double, 3>& rResult,
-        Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates
-    );
-    
     /**
      * Transfer variable at integration points to nodes
-     * 
+     *
      * @param pSolver       the solver used for solving the local system matrix
      * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
      * @param rThisVariable the variable need to transfer the respected values
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
                                   ModelPart& r_model_part,
-                                  const Variable<double>& rThisVariable);
-    
+                                  const Variable<double>& rThisVariable) const;
+
     /**
      * Transfer of rThisVariable defined on integration points to corresponding
      * nodal values. The transformation is done in a form that ensures a minimization
@@ -369,8 +358,8 @@ private:
     void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
                                   ModelPart& r_model_part,
                                   const Variable<Vector>& rThisVariable,
-                                  std::size_t ncomponents = 6);
-    
+                                  std::size_t ncomponents = 6) const;
+
     ///@}
     ///@name Private  Access
     ///@{
@@ -379,116 +368,6 @@ private:
     ///@name Private Inquiry
     ///@{
 
-    void ConstructMatrixStructure (
-        SerialSparseSpaceType::MatrixType& A,
-        ElementsArrayType& rElements,
-        std::map<unsigned int, unsigned int> MapNodeIdToVec,
-        ProcessInfo& CurrentProcessInfo
-    )
-    {
-        std::size_t equation_size = A.size1();
-        std::vector<std::vector<std::size_t> > indices(equation_size);
-
-        Element::EquationIdVectorType ids;
-        for(typename ElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
-        {
-            ids.resize((i_element)->GetGeometry().size());
-            for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
-                ids[i] = MapNodeIdToVec[(i_element)->GetGeometry()[i].Id()];
-
-            for(std::size_t i = 0 ; i < ids.size() ; ++i)
-            {
-                if(ids[i] < equation_size)
-                {
-                    std::vector<std::size_t>& row_indices = indices[ids[i]];
-                    for(std::size_t j = 0 ; j < ids.size() ; ++j)
-                    {
-                        if(ids[j] < equation_size)
-                            AddUnique(row_indices, ids[j]);
-                    }
-                }
-            }
-        }
-
-        //allocating the memory needed
-        int data_size = 0;
-        for(std::size_t i = 0 ; i < indices.size() ; ++i)
-        {
-            data_size += indices[i].size();
-        }
-        A.reserve(data_size, false);
-
-        //filling with zero the matrix (creating the structure)
-#ifndef _OPENMP
-        for(std::size_t i = 0 ; i < indices.size() ; i++)
-        {
-            std::vector<std::size_t>& row_indices = indices[i];
-            std::sort(row_indices.begin(), row_indices.end());
-
-            for(std::vector<std::size_t>::iterator it= row_indices.begin(); it != row_indices.end() ; it++)
-            {
-                A.push_back(i, *it, 0.00);
-            }
-            row_indices.clear();
-        }
-#else
-        int number_of_threads = omp_get_max_threads();
-        vector<unsigned int> matrix_partition;
-        OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
-        for( int k=0; k < number_of_threads; ++k )
-        {
-            #pragma omp parallel
-            if( omp_get_thread_num() == k )
-            {
-                for( std::size_t i = matrix_partition[k]; i < matrix_partition[k+1]; i++ )
-                {
-                    std::vector<std::size_t>& row_indices = indices[i];
-                    std::sort(row_indices.begin(), row_indices.end());
-
-                    for(std::vector<std::size_t>::iterator it= row_indices.begin(); it != row_indices.end() ; it++)
-                    {
-                        A.push_back(i, *it, 0.00);
-                    }
-                    row_indices.clear();
-                }
-            }
-        }
-#endif
-    }
-    
-    //**********AUXILIARY FUNCTION**************************************************************
-    //******************************************************************************************
-    template<class TContainerType, class TKeyType>
-    typename TContainerType::iterator FindKey(TContainerType& ThisContainer, TKeyType& ThisKey, const std::string& ComponentName)
-    {
-        typename TContainerType::iterator i_result;
-        if((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
-        {
-            std::stringstream buffer;
-            buffer << ComponentName << " #" << ThisKey << " is not found.";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-        }
-
-        return i_result;
-    }
-    
-    //**********AUXILIARY FUNCTION**************************************************************
-    //******************************************************************************************
-    inline void AddUnique(std::vector<std::size_t>& v, const std::size_t& candidate)
-    {
-        std::vector<std::size_t>::iterator i = v.begin();
-        std::vector<std::size_t>::iterator endit = v.end();
-        while ( i != endit && (*i) != candidate)
-        {
-            ++i;
-        }
-        if( i == endit )
-        {
-            v.push_back(candidate);
-        }
-
-    }
-    
     ///@}
     ///@name Un accessible methods
     ///@{
@@ -509,6 +388,42 @@ private:
 }; // Class BezierPostUtility
 
 ///@}
+
+template<>
+struct BezierPostUtility_Helper<double>
+{
+    typedef typename Element::GeometryType GeometryType;
+
+    typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
+
+    /// Interpolation on element
+    static double& CalculateOnPoint(const Variable<double>& rVariable,
+        double& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
+};
+
+template<>
+struct BezierPostUtility_Helper<Vector>
+{
+    typedef typename Element::GeometryType GeometryType;
+
+    typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
+
+    /// Interpolation on element
+    static Vector& CalculateOnPoint(const Variable<Vector>& rVariable,
+        Vector& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
+};
+
+template<>
+struct BezierPostUtility_Helper<array_1d<double, 3> >
+{
+    typedef typename Element::GeometryType GeometryType;
+
+    typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
+
+    /// Interpolation on element
+    static array_1d<double, 3>& CalculateOnPoint(const Variable<array_1d<double, 3> >& rVariable,
+        array_1d<double, 3>& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
+};
 
 ///@name Type Definitions
 ///@{

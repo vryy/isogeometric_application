@@ -16,7 +16,6 @@
 // Project includes
 #include "custom_utilities/patch.h"
 
-#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -49,7 +48,7 @@ public:
     /// Destructor
     virtual ~PatchInterface()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "PatchInterface" << TDim << "D, Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
@@ -79,8 +78,14 @@ public:
     /// Get the side of the first patch where the strip locates
     const BoundarySide& Side1() const {return mSide1;}
 
+    /// Flip the boundary side 1
+    void FlipSide1() {mSide1 = ReversedBoundarySide::Get(mSide1);}
+
     /// Get the side of the second patch where the strip locates
     const BoundarySide& Side2() const {return mSide2;}
+
+    /// Flip the boundary side 2
+    void FlipSide2() {mSide2 = ReversedBoundarySide::Get(mSide2);}
 
     /// Get the indices of the control points on this strip from the parent patch
     virtual std::vector<std::size_t> GetIndicesFromParent() const
@@ -99,6 +104,16 @@ public:
     {
         std::vector<std::size_t> func_indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side1());
         this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices);
+    }
+
+    /// Overload operator ==
+    virtual bool operator==(const PatchInterface<TDim>& rOther) const
+    {
+        if (this->pPatch1() != rOther.pPatch1()) return false;
+        if (this->pPatch2() != rOther.pPatch2()) return false;
+        if (this->Side1() != rOther.Side1()) return false;
+        if (this->Side2() != rOther.Side2()) return false;
+        return true;
     }
 
     /// Information
@@ -168,8 +183,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const PatchInterface<TD
 }
 
 } // namespace Kratos.
-
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PATCH_INTERFACE_H_INCLUDED defined
 

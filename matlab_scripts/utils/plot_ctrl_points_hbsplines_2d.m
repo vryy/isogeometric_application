@@ -7,8 +7,8 @@ end
 
 axis off
 
-Px = P(:,1) ./ W';
-Py = P(:,2) ./ W';
+Px = P(:,1); % ./ W';
+Py = P(:,2); % ./ W';
 plot(Px,Py,'o','color',params.color);
 
 for i = 1:length(W)

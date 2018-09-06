@@ -38,32 +38,32 @@ namespace Python
 
 using namespace boost::python;
 
-template<int TDim, typename TDataType>
-typename FESpace<TDim>::Pointer GridFunction_GetFESpace(GridFunction<TDim, TDataType>& rDummy)
+template<class TGridFrunctionType>
+typename TGridFrunctionType::FESpaceType::Pointer GridFunction_GetFESpace(TGridFrunctionType& rDummy)
 {
     return rDummy.pFESpace();
 }
 
-template<int TDim, typename TDataType>
-void GridFunction_SetFESpace(GridFunction<TDim, TDataType>& rDummy, typename FESpace<TDim>::Pointer pNewFESpace)
+template<class TGridFrunctionType>
+void GridFunction_SetFESpace(TGridFrunctionType& rDummy, typename TGridFrunctionType::FESpaceType::Pointer pNewFESpace)
 {
     rDummy.SetFESpace(pNewFESpace);
 }
 
-template<int TDim, typename TDataType>
-typename ControlGrid<TDataType>::Pointer GridFunction_GetControlGrid(GridFunction<TDim, TDataType>& rDummy)
+template<class TGridFrunctionType>
+typename TGridFrunctionType::ControlGridType::Pointer GridFunction_GetControlGrid(TGridFrunctionType& rDummy)
 {
     return rDummy.pControlGrid();
 }
 
-template<int TDim, typename TDataType>
-void GridFunction_SetControlGrid(GridFunction<TDim, TDataType>& rDummy, typename ControlGrid<TDataType>::Pointer pNewControlGrid)
+template<class TGridFrunctionType>
+void GridFunction_SetControlGrid(TGridFrunctionType& rDummy, typename TGridFrunctionType::ControlGridType::Pointer pNewControlGrid)
 {
     rDummy.SetControlGrid(pNewControlGrid);
 }
 
-template<int TDim, typename TDataType>
-TDataType GridFunction_GetValue(GridFunction<TDim, TDataType>& rDummy, const boost::python::list& xi)
+template<class TGridFrunctionType>
+typename TGridFrunctionType::DataType GridFunction_GetValue(TGridFrunctionType& rDummy, const boost::python::list& xi)
 {
     std::vector<double> xi_vec;
     typedef boost::python::stl_input_iterator<double> iterator_value_type;
@@ -75,6 +75,26 @@ TDataType GridFunction_GetValue(GridFunction<TDim, TDataType>& rDummy, const boo
     return rDummy.GetValue(xi_vec);
 }
 
+template<class TGridFrunctionType>
+boost::python::list GridFunction_GetDerivative(TGridFrunctionType& rDummy, const boost::python::list& xi)
+{
+    std::vector<double> xi_vec;
+    typedef boost::python::stl_input_iterator<double> iterator_value_type;
+    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi), iterator_value_type() ) )
+    {
+        xi_vec.push_back(v);
+    }
+
+    std::vector<typename TGridFrunctionType::DataType> derivatives;
+    rDummy.GetDerivative(derivatives, xi_vec);
+
+    boost::python::list results;
+    for (std::size_t i = 0; i < derivatives.size(); ++i)
+        results.append(derivatives[i]);
+
+    return results;
+}
+
 ///////////////////////////////////////////////////////
 
 template<int TDim>
@@ -84,41 +104,49 @@ void IsogeometricApplication_AddGridFunctionsToPython()
 
     ss.str(std::string());
     ss << "ControlPointGridFunction" << TDim << "D";
-    class_<GridFunction<TDim, ControlPoint<double> >, typename GridFunction<TDim, ControlPoint<double> >::Pointer, boost::noncopyable>
+    typedef GridFunction<TDim, ControlPoint<double> > ControlPointGridFunctionType;
+    class_<ControlPointGridFunctionType, typename ControlPointGridFunctionType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<ControlPoint<double> >::Pointer>())
-    .add_property("FESpace", GridFunction_GetFESpace<TDim, ControlPoint<double> >, GridFunction_SetFESpace<TDim, ControlPoint<double> >)
-    .add_property("ControlGrid", GridFunction_GetControlGrid<TDim, ControlPoint<double> >, GridFunction_SetControlGrid<TDim, ControlPoint<double> >)
-    .def("GetValue", &GridFunction_GetValue<TDim, ControlPoint<double> >)
+    .add_property("FESpace", GridFunction_GetFESpace<ControlPointGridFunctionType>, GridFunction_SetFESpace<ControlPointGridFunctionType>)
+    .add_property("ControlGrid", GridFunction_GetControlGrid<ControlPointGridFunctionType>, GridFunction_SetControlGrid<ControlPointGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue<ControlPointGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative<ControlPointGridFunctionType>)
     .def(self_ns::str(self))
     ;
 
     ss.str(std::string());
     ss << "DoubleGridFunction" << TDim << "D";
-    class_<GridFunction<TDim, double>, typename GridFunction<TDim, double>::Pointer, boost::noncopyable>
+    typedef GridFunction<TDim, double> DoubleGridFunctionType;
+    class_<DoubleGridFunctionType, typename DoubleGridFunctionType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<double>::Pointer>())
-    .add_property("FESpace", GridFunction_GetFESpace<TDim, double>, GridFunction_SetFESpace<TDim, double>)
-    .add_property("ControlGrid", GridFunction_GetControlGrid<TDim, double>, GridFunction_SetControlGrid<TDim, double>)
-    .def("GetValue", &GridFunction_GetValue<TDim, double>)
+    .add_property("FESpace", GridFunction_GetFESpace<DoubleGridFunctionType>, GridFunction_SetFESpace<DoubleGridFunctionType>)
+    .add_property("ControlGrid", GridFunction_GetControlGrid<DoubleGridFunctionType>, GridFunction_SetControlGrid<DoubleGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue<DoubleGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative<DoubleGridFunctionType>)
     .def(self_ns::str(self))
     ;
 
     ss.str(std::string());
     ss << "Array1DGridFunction" << TDim << "D";
-    class_<GridFunction<TDim, array_1d<double, 3> >, typename GridFunction<TDim, array_1d<double, 3> >::Pointer, boost::noncopyable>
+    typedef GridFunction<TDim, array_1d<double, 3> > Array1DGridFunctionType;
+    class_<Array1DGridFunctionType, typename Array1DGridFunctionType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<array_1d<double, 3> >::Pointer>())
-    .add_property("FESpace", GridFunction_GetFESpace<TDim, array_1d<double, 3> >, GridFunction_SetFESpace<TDim, array_1d<double, 3> >)
-    .add_property("ControlGrid", GridFunction_GetControlGrid<TDim, array_1d<double, 3> >, GridFunction_SetControlGrid<TDim, array_1d<double, 3> >)
-    .def("GetValue", &GridFunction_GetValue<TDim, array_1d<double, 3> >)
+    .add_property("FESpace", GridFunction_GetFESpace<Array1DGridFunctionType>, GridFunction_SetFESpace<Array1DGridFunctionType>)
+    .add_property("ControlGrid", GridFunction_GetControlGrid<Array1DGridFunctionType>, GridFunction_SetControlGrid<Array1DGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue<Array1DGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative<Array1DGridFunctionType>)
     .def(self_ns::str(self))
     ;
 
     ss.str(std::string());
     ss << "VectorGridFunction" << TDim << "D";
-    class_<GridFunction<TDim, Vector>, typename GridFunction<TDim, Vector>::Pointer, boost::noncopyable>
+    typedef GridFunction<TDim, Vector> VectorGridFunctionType;
+    class_<VectorGridFunctionType, typename VectorGridFunctionType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<Vector>::Pointer>())
-    .add_property("FESpace", GridFunction_GetFESpace<TDim, Vector>, GridFunction_SetFESpace<TDim, Vector>)
-    .add_property("ControlGrid", GridFunction_GetControlGrid<TDim, Vector>, GridFunction_SetControlGrid<TDim, Vector>)
-    .def("GetValue", &GridFunction_GetValue<TDim, Vector>)
+    .add_property("FESpace", GridFunction_GetFESpace<VectorGridFunctionType>, GridFunction_SetFESpace<VectorGridFunctionType>)
+    .add_property("ControlGrid", GridFunction_GetControlGrid<VectorGridFunctionType>, GridFunction_SetControlGrid<VectorGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue<VectorGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative<VectorGridFunctionType>)
     .def(self_ns::str(self))
     ;
 }

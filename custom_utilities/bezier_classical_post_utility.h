@@ -37,7 +37,8 @@
 #include "utilities/auto_collapse_spatial_binning.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_geometries/isogeometric_geometry.h"
-#include "isogeometric_application.h"
+#include "custom_utilities/isogeometric_post_utility.h"
+#include "isogeometric_application/isogeometric_application.h"
 
 //#define DEBUG_LEVEL1
 //#define DEBUG_LEVEL2
@@ -86,7 +87,7 @@ template<> void AddToModelPart<Condition>(ModelPart& rModelPart, typename Condit
 A simple utility to export directly the FEM mesh out from isogeometric Bezier mesh. Each Bezier element will generate its own set of FEM elements. Therefore a large amount of nodes and elements may be generated.
 One shall carefully use this utility for large problem. Previously, this class is named IsogeometricClassicalPostUtility.
  */
-class BezierClassicalPostUtility
+class BezierClassicalPostUtility : public IsogeometricPostUtility
 {
 public:
     ///@name Type Definitions
@@ -103,17 +104,17 @@ public:
     typedef typename ModelPart::ConditionsContainerType ConditionsArrayType;
     
     typedef typename Element::GeometryType GeometryType;
-    
-    typedef IsogeometricGeometry<GeometryType::PointType> IsogeometricGeometryType;
+
+    typedef typename GeometryType::PointType NodeType;
+
+    typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
     
     typedef typename GeometryType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
     typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
 
-    typedef typename Node<3>::DofsContainerType DofsContainerType;
+    typedef typename NodeType::DofsContainerType DofsContainerType;
     
-    typedef Node<3> NodeType;
-
     typedef UblasSpace<double, CompressedMatrix, Vector> SerialSparseSpaceType;
 
     typedef UblasSpace<double, Matrix, Vector> SerialDenseSpaceType;
@@ -1495,7 +1496,7 @@ public:
             std::cout << "Global renumbering completed" << std::endl;
         #endif
     }
-    
+
     ///@}
     ///@name Access
     ///@{
@@ -2108,68 +2109,7 @@ private:
         }
 #endif
     }
-    
-    //**********AUXILIARY FUNCTION**************************************************************
-    //******************************************************************************************
-    template<class TContainerType, class TKeyType>
-    typename TContainerType::iterator FindKey(TContainerType& ThisContainer, TKeyType& ThisKey, const std::string& ComponentName)
-    {
-        typename TContainerType::iterator i_result;
-        if((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
-        {
-            std::stringstream buffer;
-            buffer << ComponentName << " #" << ThisKey << " is not found.";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-        }
 
-        return i_result;
-    }
-    
-    //**********AUXILIARY FUNCTION**************************************************************
-    //******************************************************************************************
-    inline void AddUnique(std::vector<std::size_t>& v, const std::size_t& candidate)
-    {
-        std::vector<std::size_t>::iterator i = v.begin();
-        std::vector<std::size_t>::iterator endit = v.end();
-        while ( i != endit && (*i) != candidate)
-        {
-            ++i;
-        }
-        if( i == endit )
-        {
-            v.push_back(candidate);
-        }
-
-    }
-    
-    //**********AUXILIARY FUNCTION**************************************************************
-    //******************************************************************************************
-    inline void CreatePartition(unsigned int number_of_threads,const int number_of_rows, vector<unsigned int>& partitions)
-    {
-        partitions.resize(number_of_threads + 1);
-        int partition_size = number_of_rows / number_of_threads;
-        partitions[0] = 0;
-        partitions[number_of_threads] = number_of_rows;
-        for(unsigned int i = 1; i < number_of_threads; ++i)
-            partitions[i] = partitions[i-1] + partition_size ;
-    }
-    
-    //**********AUXILIARY FUNCTION**************************************************************
-    //******************************************************************************************
-    inline double CoordinateScaling(double x, int Type)
-    {
-        if(Type == _NURBS_)
-        {
-            return x;
-        }
-        else if(Type == _BEZIER_)
-        {
-            return 2 * x - 1;
-        }
-        else
-            return 0.0;
-    }
-    
     ///@}
     ///@name Un accessible methods
     ///@{

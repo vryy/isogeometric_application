@@ -49,6 +49,9 @@ public:
     /// Destructor
     virtual ~WeightedFESpace()
     {
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+        std::cout << this->Type() << ", Addr = " << this << " is destroyed" << std::endl;
+        #endif
     }
 
     /// Helper to create new WeightedFESpace pointer
@@ -99,26 +102,95 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Get the values of the basis function i at point xi
-    virtual double GetValue(const std::size_t& i, const std::vector<double>& xi) const
+    virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
     {
-        std::vector<double> values = mpFESpace->GetValue(xi);
+        std::vector<double> values;
+        mpFESpace->GetValue(values, xi);
         double sum_value = 0.0;
         for (std::size_t j = 0; j < values.size(); ++j)
             sum_value += mWeights[j] * values[j];
-        return mWeights[i]*values[i] / sum_value;
+        v = mWeights[i]*values[i] / sum_value;
     }
 
     /// Get the values of the basis functions at point xi
-    virtual std::vector<double> GetValue(const std::vector<double>& xi) const
+    virtual void GetValue(std::vector<double>& new_values, const std::vector<double>& xi) const
     {
-        std::vector<double> values = mpFESpace->GetValue(xi);
-        std::vector<double> new_values(values.size());
+        std::vector<double> values;
+        mpFESpace->GetValue(values, xi);
+
+        if (new_values.size() != values.size())
+            new_values.resize(values.size());
+
         double sum_value = 0.0;
         for (std::size_t i = 0; i < values.size(); ++i)
             sum_value += mWeights[i] * values[i];
         for (std::size_t i = 0; i < new_values.size(); ++i)
             new_values[i] = mWeights[i]*values[i] / sum_value;
-        return new_values;
+    }
+
+    /// Get the derivatives of the basis function i at point xi
+    virtual void GetDerivative(std::vector<double>& new_dvalues, const std::size_t& i, const std::vector<double>& xi) const
+    {
+        std::vector<double> values;
+        std::vector<std::vector<double> > dvalues;
+        mpFESpace->GetValueAndDerivative(values, dvalues, xi);
+
+        double sum_value = 0.0;
+        std::vector<double> dsum_value(TDim);
+        std::fill(dsum_value.begin(), dsum_value.end(), 0.0);
+        for (std::size_t j = 0; j < values.size(); ++j)
+        {
+            sum_value += mWeights[j] * values[j];
+            for (int dim = 0; dim < TDim; ++dim)
+                dsum_value[dim] += mWeights[j] * dvalues[j][dim];
+        }
+
+        if (new_dvalues.size() != TDim)
+            new_dvalues.resize(TDim);
+
+        for (int dim = 0; dim < TDim; ++dim)
+        {
+            new_dvalues[dim] = mWeights[i] * (dvalues[i][dim]/sum_value - values[i]*dsum_value[dim]/pow(sum_value, 2));
+        }
+    }
+
+    /// Get the derivatives of the basis functions at point xi
+    /// the output values has the form of values[func_index][dim_index]
+    virtual void GetDerivative(std::vector<std::vector<double> >& new_dvalues, const std::vector<double>& xi) const
+    {
+        std::vector<double> values;
+        std::vector<std::vector<double> > dvalues;
+        mpFESpace->GetValueAndDerivative(values, dvalues, xi);
+
+        double sum_value = 0.0;
+        std::vector<double> dsum_value(TDim);
+        std::fill(dsum_value.begin(), dsum_value.end(), 0.0);
+        for (std::size_t i = 0; i < values.size(); ++i)
+        {
+            sum_value += mWeights[i] * values[i];
+            for (int dim = 0; dim < TDim; ++dim)
+                dsum_value[dim] += mWeights[i] * dvalues[i][dim];
+        }
+
+        // KRATOS_WATCH(sum_value)
+        // KRATOS_WATCH(dsum_value[0])
+
+        if (new_dvalues.size() != dvalues.size())
+            new_dvalues.resize(dvalues.size());
+        for (std::size_t i = 0; i < new_dvalues.size(); ++i)
+            if (new_dvalues[i].size() != TDim)
+                new_dvalues[i].resize(TDim);
+
+        for (std::size_t i = 0; i < new_dvalues.size(); ++i)
+        {
+            for (int dim = 0; dim < TDim; ++dim)
+            {
+                new_dvalues[i][dim] = mWeights[i] * (dvalues[i][dim]/sum_value - values[i]*dsum_value[dim]/pow(sum_value, 2));
+            }
+        }
+
+        // for (std::size_t i = 0; i < new_dvalues.size(); ++i)
+        //     KRATOS_WATCH(new_dvalues[i][0])
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -593,8 +665,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const WeightedFESpace<T
 }
 
 } // namespace Kratos.
-
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_WEIGHTED_FESPACE_H_INCLUDED defined
 

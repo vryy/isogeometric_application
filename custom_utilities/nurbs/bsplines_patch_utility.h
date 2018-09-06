@@ -11,6 +11,7 @@
 
 // System includes
 #include <vector>
+#include <algorithm>
 
 // External includes
 #include "boost/algorithm/string.hpp"
@@ -49,58 +50,85 @@ public:
     template<int TDim>
     static typename Patch<TDim>::Pointer CreateConnectedPatch(typename Patch<TDim-1>::Pointer pPatch1, typename Patch<TDim-1>::Pointer pPatch2)
     {
+        std::vector<typename Patch<TDim-1>::Pointer> pPatches = {pPatch1, pPatch2};
+        return CreateConnectedPatch<TDim>(pPatches, 1);
+    }
+
+    /// Construct a higher dimension patch by connecting multiple patches with the B-Splines curve.
+    /// The knot vector of the curve is adjusted accordingly with the given order and the number of patches.
+    /// The knot vector will be by default uniform.
+    /// To have higher order of the connection one needs to elevate the degree.
+    /// Right now, the two sub-patches must have same parameters (knot vectors) and are B-Splines.
+    template<int TDim>
+    static typename Patch<TDim>::Pointer CreateConnectedPatch(std::vector<typename Patch<TDim-1>::Pointer> pPatches, const int& order)
+    {
+        if (pPatches.size() == 0)
+            return typename Patch<TDim>::Pointer(new Patch<TDim>(-1));
+
         // check prerequisites
-        if (pPatch1->pFESpace()->Type() != BSplinesFESpace<TDim-1>::StaticType())
-            KRATOS_THROW_ERROR(std::logic_error, "Patch 1 is not B-Splines patch", "")
-
-        if (pPatch2->pFESpace()->Type() != BSplinesFESpace<TDim-1>::StaticType())
-            KRATOS_THROW_ERROR(std::logic_error, "Patch 2 is not B-Splines patch", "")
-
-        // check the FESpace
-        if ( !pPatch1->pFESpace()->IsCompatible(*(pPatch2->pFESpace())) )
+        for (std::size_t i = 0; i < pPatches.size(); ++i)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "The two patches are not compatible", "")
+	        if (pPatches[i]->pFESpace()->Type() != BSplinesFESpace<TDim-1>::StaticType())
+	        {
+                std::stringstream ss;
+                ss << "Patch " << pPatches[i]->Name() << " is not B-Splines patch";
+                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+	        }
+
+	        // check the FESpace
+            if (i != 0)
+               if ( !pPatches[0]->pFESpace()->IsCompatible(*(pPatches[i]->pFESpace())) )
+		            KRATOS_THROW_ERROR(std::logic_error, "The patch is not compatible with patch 0", "")
         }
 
         // create the new FESpace
-        typename BSplinesFESpace<TDim-1>::Pointer pFESpace1 = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pPatch1->pFESpace());
+        typename BSplinesFESpace<TDim-1>::Pointer pFESpace0 = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pPatches[0]->pFESpace());
+        if (pFESpace0 == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = BSplinesFESpace<TDim>::Create();
         for (std::size_t dim = 0; dim < TDim-1; ++dim)
         {
-            pNewFESpace->SetKnotVector(dim, pFESpace1->KnotVector(dim));
-            pNewFESpace->SetInfo(dim, pFESpace1->Number(dim), pFESpace1->Order(dim));
+            pNewFESpace->SetKnotVector(dim, pFESpace0->KnotVector(dim));
+            pNewFESpace->SetInfo(dim, pFESpace0->Number(dim), pFESpace0->Order(dim));
         }
 
-        std::size_t connect_order = 1; // this is by default 1 and not changed
-        typename BSplinesFESpace<TDim>::knot_container_t new_knot_vector = BSplinesFESpaceLibrary::CreatePrimitiveOpenKnotVector(connect_order);
+        typename BSplinesFESpace<TDim>::knot_container_t new_knot_vector = BSplinesFESpaceLibrary::CreateUniformOpenKnotVector(pPatches.size(), order);
         pNewFESpace->SetKnotVector(TDim-1, new_knot_vector);
-        pNewFESpace->SetInfo(TDim-1, connect_order+1, connect_order);
+        pNewFESpace->SetInfo(TDim-1, pPatches.size(), order);
 
         // create the new patch
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(-1, pNewFESpace));
 
         // create the new control point grid
         typedef typename Patch<TDim>::ControlPointType ControlPointType;
-        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pControlPointGrid1
-            = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >(pPatch1->pControlPointGridFunction()->pControlGrid());
-        typename ControlGrid<ControlPointType>::Pointer pControlPointGrid2 = pPatch2->pControlPointGridFunction()->pControlGrid();
+        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pControlPointGrid0
+            = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >(pPatches[0]->pControlPointGridFunction()->pControlGrid());
+        if (pControlPointGrid0 == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
         //// make a size check, it is not necessary anyway
-        if (pControlPointGrid1->size() != pControlPointGrid2->size())
-            KRATOS_THROW_ERROR(std::logic_error, "The size of two control point grid are not the same", "")
+        for (std::size_t j = 1; j < pPatches.size(); ++j)
+        {
+            typename ControlGrid<ControlPointType>::Pointer pControlPointGrid = pPatches[j]->pControlPointGridFunction()->pControlGrid();
+            if (pControlPointGrid0->size() != pControlPointGrid->size())
+                KRATOS_THROW_ERROR(std::logic_error, "The size of the control point grid is not the same as the first control grid", "")
+        }
 
         // assign data to the new control point grid
         std::vector<std::size_t> new_sizes(TDim);
         for (std::size_t dim = 0; dim < TDim-1; ++dim)
-            new_sizes[dim] = pControlPointGrid1->Size(dim);
-        new_sizes[TDim-1] = 2;
+            new_sizes[dim] = pControlPointGrid0->Size(dim);
+        new_sizes[TDim-1] = pPatches.size();
         typename StructuredControlGrid<TDim, ControlPointType>::Pointer pNewControlPointGrid = StructuredControlGrid<TDim, ControlPointType>::Create(new_sizes);
-        for (std::size_t i = 0; i < pControlPointGrid1->size(); ++i)
+        for (std::size_t j = 0; j < pPatches.size(); ++j)
         {
-            pNewControlPointGrid->SetData(i, pControlPointGrid1->GetData(i));
-            pNewControlPointGrid->SetData(i + pControlPointGrid1->size(), pControlPointGrid2->GetData(i));
+            typename ControlGrid<ControlPointType>::Pointer pControlPointGrid = pPatches[j]->pControlPointGridFunction()->pControlGrid();
+            for (std::size_t i = 0; i < pControlPointGrid0->size(); ++i)
+            {
+                pNewControlPointGrid->SetData(i + j*pControlPointGrid0->size(), pControlPointGrid->GetData(i));
+            }
         }
-        pNewControlPointGrid->SetName(pControlPointGrid1->Name());
+        pNewControlPointGrid->SetName(pControlPointGrid0->Name());
 
         // assign new control point grid to new patch
         pNewPatch->CreateControlPointGridFunction(pNewControlPointGrid);
@@ -115,6 +143,161 @@ public:
         //start = pNewPatch->pFESpace()->Enumerate(start);
 
         return pNewPatch;
+    }
+
+    /// Reverse the B-Splines patch in specific direction
+    template<int TDim>
+    static void Reverse(typename Patch<TDim>::Pointer pPatch, const std::size_t& idir)
+    {
+        std::set<std::size_t> reversed_patches;
+        ReverseImpl<TDim>(pPatch, idir, reversed_patches);
+    }
+
+    /// Reverse the B-Splines patch in specific direction
+    template<int TDim>
+    static void ReverseImpl(typename Patch<TDim>::Pointer pPatch, const std::size_t& idir, std::set<std::size_t>& reversed_patches)
+    {
+        if (reversed_patches.find(pPatch->Id()) != reversed_patches.end())
+            return;
+
+        std::cout << "Patch " << pPatch->Name() << " will be reversed in direction " << idir << std::endl;
+
+        if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+        {
+            std::stringstream ss;
+            ss << "Patch " << pPatch->Name() << " is not B-Splines patch. Reverse can't be done.";
+            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        }
+
+        // reverse the FESPace
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+        pFESpace->Reverse(idir);
+
+        // reverse the structured control grid
+        typedef typename Patch<TDim>::ControlPointType ControlPointType;
+        typename StructuredControlGrid<TDim, ControlPointType>::Pointer pControlPointGrid =
+            boost::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+        if (pControlPointGrid != NULL)
+            pControlPointGrid->Reverse(idir);
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "The control point grid is not structured", "")
+
+        typedef typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctionContainerType;
+        DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
+        for (typename DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
+                it != DoubleGridFunctions_.end(); ++it)
+        {
+            typename StructuredControlGrid<TDim, double>::Pointer pControlValueGrid =
+                boost::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
+            if (pControlValueGrid != NULL)
+            {
+                pControlValueGrid->Reverse(idir);
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << "The control value grid " << (*it)->pControlGrid()->Name() << " is not structured";
+                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            }
+        }
+
+        typedef typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctionContainerType;
+        Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
+        for (typename Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
+                it != Array1DGridFunctions_.end(); ++it)
+        {
+            typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pControlValueGrid =
+                boost::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
+            if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
+            if (pControlValueGrid != NULL)
+            {
+                pControlValueGrid->Reverse(idir);
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << "The control value grid " << (*it)->pControlGrid()->Name() << " is not structured";
+                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            }
+        }
+
+        typedef typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctionContainerType;
+        VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
+        for (typename VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
+                it != VectorGridFunctions_.end(); ++it)
+        {
+            typename StructuredControlGrid<TDim, Vector>::Pointer pControlValueGrid =
+                boost::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
+            if (pControlValueGrid != NULL)
+            {
+                pControlValueGrid->Reverse(idir);
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << "The control value grid " << (*it)->pControlGrid()->Name() << " is not structured";
+                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            }
+        }
+
+        // add to the list of reversed patches
+        reversed_patches.insert(pPatch->Id());
+
+        // look for neighbours and reverse
+        if (TDim > 1)
+        {
+            for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
+            {
+                typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
+
+                if (pInterface != NULL)
+                {
+                    if (TDim == 2)
+                    {
+                        std::size_t idir1 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side1()));
+                        std::size_t idir2 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side2()));
+
+                        if (idir1 == idir)
+                        {
+                            // reverse the neighbour patch
+                            ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
+                        }
+                        else
+                        {
+                            pInterface->FlipSide1();
+                            pInterface->pOtherInterface()->FlipSide2();
+                        }
+                    }
+                    else if (TDim == 3)
+                    {
+                        std::vector<int> dirs1 = ParameterDirection<3>::Get(pInterface->Side1());
+                        std::vector<int> dirs2 = ParameterDirection<3>::Get(pInterface->Side2());
+
+                        if (static_cast<std::size_t>(dirs1[0]) == idir)
+                        {
+                            std::size_t idir2 = dirs2[pInterface->LocalParameterMapping(0)];
+
+                            // reverse the neighbour patch
+                            ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
+                        }
+                        else if (static_cast<std::size_t>(dirs1[1]) == idir)
+                        {
+                            std::size_t idir2 = dirs2[pInterface->LocalParameterMapping(1)];
+
+                            // reverse the neighbour patch
+                            ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
+                        }
+                        else
+                        {
+                            pInterface->FlipSide1();
+                            pInterface->pOtherInterface()->FlipSide2();
+                        }
+                    }
+                }
+                else
+                    KRATOS_THROW_ERROR(std::logic_error, "The interface is not B-Splines patch interface", "")
+            }
+        }
     }
 
     /// Get the dimension of underlying NURBS in geo file

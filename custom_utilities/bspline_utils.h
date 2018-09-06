@@ -182,40 +182,6 @@ public:
         return (ret - 1);
     }
 
-    // Remark: this function only works correctly when rXi is in the knot span rI.
-//    static void BasisFuns(
-//            ValueContainerType& rS,
-//            const int rI,
-//            const double rXi,
-//            const int rP,
-//            const ValueContainerType& rU
-//    )
-//    {
-//        rS[0] = 1.0;
-//
-//        for(unsigned int j = 1; j < rP + 1; ++j)
-//        {
-//            rS[j] = (rXi - rU[rI]) / (rU[rI + j] - rU[rI]) * rS[j-1];
-//
-//            for(unsigned int i = j - 1; i > 0; --i)
-//            {
-//                int t = j - i;
-//                rS[i] = (rXi - rU[rI - t]) / (rU[rI - t + j] - rU[rI - t]) * rS[i - 1]
-//                + (rU[rI - t + j + 1] - rXi) / (rU[rI - t + j + 1] - rU[rI - t + 1]) * rS[i];
-//            }
-//
-//            rS[0] *= (rU[rI + 1] - rXi) / (rU[rI + 1] - rU[rI - j + 1]);
-//        }
-//    }
-    //time:
-    //N = 100: 0.000123978
-    //N = 1000: 0.00120997
-    //N = 10000: 0.013212
-    //N = 100000: 0.119535
-    //N = 1000000: 0.96382
-    //N = 10000000: 8.45895
-    //N = 100000000: 81.9643, 81.9494
-
     /// Find the span of knot in the local knot vector
     /// Remarks: it will give the based-1 index
     ///          it only works if U is non-repeated
@@ -257,6 +223,40 @@ public:
         return 0;
     }
 
+    // Remark: this function only works correctly when rXi is in the knot span rI.
+//    static void BasisFuns(
+//            ValueContainerType& rS,
+//            const int rI,
+//            const double rXi,
+//            const int rP,
+//            const ValueContainerType& rU
+//    )
+//    {
+//        rS[0] = 1.0;
+//
+//        for(unsigned int j = 1; j < rP + 1; ++j)
+//        {
+//            rS[j] = (rXi - rU[rI]) / (rU[rI + j] - rU[rI]) * rS[j-1];
+//
+//            for(unsigned int i = j - 1; i > 0; --i)
+//            {
+//                int t = j - i;
+//                rS[i] = (rXi - rU[rI - t]) / (rU[rI - t + j] - rU[rI - t]) * rS[i - 1]
+//                + (rU[rI - t + j + 1] - rXi) / (rU[rI - t + j + 1] - rU[rI - t + 1]) * rS[i];
+//            }
+//
+//            rS[0] *= (rU[rI + 1] - rXi) / (rU[rI + 1] - rU[rI - j + 1]);
+//        }
+//    }
+    //time:
+    //N = 100: 0.000123978
+    //N = 1000: 0.00120997
+    //N = 10000: 0.013212
+    //N = 100000: 0.119535
+    //N = 1000000: 0.96382
+    //N = 10000000: 8.45895
+    //N = 100000000: 81.9643, 81.9494
+
     // This function works slightly faster than the above implementation
     template<class ValuesContainerType1, class ValuesContainerType2>
     static void BasisFuns(ValuesContainerType1& rS,
@@ -296,22 +296,60 @@ public:
     //N = 10000000: 8.18893
     //N = 100000000: 76.7523, 81.9167
 
+    struct MatrixOp
+    {
+        void InitZero(Matrix& S, const int& m, const int& n) const
+        {
+            if (S.size1() != m || S.size2() != n)
+                S.resize(m, n, false);
+            noalias(S) = ZeroMatrix(m, n);
+        }
+
+        double& Get(Matrix& S, const int& i, const int& j) const
+        {
+            return S(i, j);
+        }
+    };
+
+    template<typename TDataType>
+    struct StdVector2DOp
+    {
+        typedef std::vector<std::vector<TDataType> > Matrix;
+
+        void InitZero(Matrix& S, const int& m, const int& n) const
+        {
+            if (S.size() != m) S.resize(m);
+            for (int i = 0; i < m; ++i)
+            {
+                if (S[i].size() != n) S[i].resize(n);
+                for (int j = 0; j < n; ++j) S[i][j] = 0.0;
+            }
+        }
+
+        double& Get(Matrix& S, const int& i, const int& j) const
+        {
+            return S[i][j];
+        }
+    };
+
     /**
      * Computes b-spline function derivatives
      */
-    template<class ValuesContainerType1, class ValuesContainerType2>
+    template<class ValuesContainerType1, class ValuesContainerType1Operator, class ValuesContainerType2>
     static void BasisFunsDer(ValuesContainerType1& rS,
                              int rI,
                              const double& rXi,
                              const int& rP,
                              const ValuesContainerType2& rU,
-                             const int& rD)
+                             const int& rD,
+                             const ValuesContainerType1Operator& Op) // use MatrixOp() or StdVector2DOp()
     {
         int j, r, k, rk, pk, j1, j2, s1, s2;
         double d, temp, saved;
 
 //        ders = zeros(nders+1,pl+1);
-        noalias(rS) = ZeroMatrix(rD + 1, rP + 1);
+//        noalias(rS) = ZeroMatrix(rD + 1, rP + 1);
+        Op.InitZero(rS, rD + 1, rP + 1);
 
 //        ndu = zeros(pl+1,pl+1);
         Matrix ndu = ZeroMatrix(rP + 1, rP + 1);
@@ -331,9 +369,9 @@ public:
         for (j = 1; j <= rP; ++j)
         {
 //            left(j+1) = u - u_knotl(i+1-j);
-            left(j) = rXi - rU(rI - j);
+            left(j) = rXi - rU[rI - j];
 //            right(j+1) = u_knotl(i+j) - u;
-            right(j) = rU(rI + j - 1) - rXi;
+            right(j) = rU[rI + j - 1] - rXi;
 //            saved = 0;
             saved = 0.0;
 //            for r = 0:j-1
@@ -358,7 +396,8 @@ public:
         for (j = 0; j <= rP; ++j)
         {
 //            ders(1,j+1) = ndu(j+1,pl+1);
-            rS(0, j) = ndu(j, rP);
+//            rS(0, j) = ndu(j, rP);
+            Op.Get(rS, 0, j) = ndu(j, rP);
 //        end
         }
 
@@ -416,7 +455,8 @@ public:
 //                end
                 }
 //                ders(k+1,r+1) = d;
-                rS(k, r) = d;
+//                rS(k, r) = d;
+                Op.Get(rS, k, r) = d;
                 j = s1;
                 s1 = s2;
                 s2 = j;
@@ -433,13 +473,13 @@ public:
             for (j = 0; j <= rP; ++j)
             {
 //                ders(k+1,j+1) = ders(k+1,j+1)*r;
-                rS(k, j) = rS(k, j) * r;
+//                rS(k, j) = rS(k, j) * r;
+                Op.Get(rS, k, j) *= r;
 //            end
             }
             r = r * (rP - k);
 //        end
         }
-
     }
 
     /// Compute the B-spline basis function based on Cox-de-Boor algorithm

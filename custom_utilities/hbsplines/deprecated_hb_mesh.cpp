@@ -802,8 +802,8 @@ namespace Kratos
                     {
                         for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
                         {
-                            (*it_subcell)->AddBf(*it_bf);
-                            (*it_bf)->AddCell(*it_subcell);
+                            (*it_subcell)->AddBf(it_bf->lock());
+                            it_bf->lock()->AddCell(*it_subcell);
                         }
                     }
                 }
@@ -832,8 +832,8 @@ namespace Kratos
                 {
                     for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
                     {
-                        p_cells[i]->AddBf(*it_bf);
-                        (*it_bf)->AddCell(p_cells[i]);
+                        p_cells[i]->AddBf(it_bf->lock());
+                        it_bf->lock()->AddCell(p_cells[i]);
                     }
                 }
             }
@@ -1078,11 +1078,12 @@ namespace Kratos
             (*it_cell)->Reset();
             for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
+                DeprecatedHBBasisFunction& bf = *(it_bf->lock());
                 if(TDim == 2)
-                    (*it_bf)->ComputeExtractionOperator(*it_cell, Crow, mOrder1, mOrder2);
+                    bf.ComputeExtractionOperator(*it_cell, Crow, mOrder1, mOrder2);
                 else if(TDim == 3)
-                    (*it_bf)->ComputeExtractionOperator(*it_cell, Crow, mOrder1, mOrder2, mOrder3);
-                (*it_cell)->AddAnchor((*it_bf)->Id(), (*it_bf)->GetControlPoint().W(), Crow);
+                    bf.ComputeExtractionOperator(*it_cell, Crow, mOrder1, mOrder2, mOrder3);
+                (*it_cell)->AddAnchor(bf.Id(), bf.GetControlPoint().W(), Crow);
             }
         }
     }

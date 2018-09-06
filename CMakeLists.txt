@@ -2,7 +2,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 message("**** configuring KratosIsogeometricApplication ****")
 
-
 include_directories( ${CMAKE_SOURCE_DIR})
 include_directories( ${CMAKE_SOURCE_DIR}/kratos)
 include_directories( ${CMAKE_SOURCE_DIR}/applications)
@@ -58,6 +57,8 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/kratos/solving_strategies/builder_and_solvers/resi
     add_definitions(-D_residualbased_elimination_builder_and_solver_deactivation_existed_)
 endif()
 
+#add_definitions(-DISOGEOMETRIC_DEBUG_DESTROY)
+
 ## generate variables with the sources
 set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
 #    ${PROJECT_SOURCE_DIR}/kratos/sources/io.cpp
@@ -66,6 +67,7 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bezier_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bspline_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bezier_post_utility.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/bsplines_indexing_utility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/bsplines_fespace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/cell_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/domain_manager_2d.cpp

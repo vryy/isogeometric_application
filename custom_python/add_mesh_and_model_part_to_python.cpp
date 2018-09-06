@@ -60,6 +60,14 @@ typename T::MultiPatchType& MultiPatchModelPart_GetMultiPatch2(T& rDummy, const 
 
 template<int TDim>
 ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions(MultiPatchModelPart<TDim>& rDummy,
+    typename Patch<TDim>::Pointer pPatch,
+    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+{
+    return rDummy.AddConditions(pPatch, condition_name, starting_id, pProperties);
+}
+
+template<int TDim>
+ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary(MultiPatchModelPart<TDim>& rDummy,
     typename Patch<TDim>::Pointer pPatch, const int& iside,
     const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
 {
@@ -68,7 +76,7 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions(MultiPatchM
 }
 
 template<int TDim>
-ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions(MultiMultiPatchModelPart<TDim>& rDummy,
+ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary(MultiMultiPatchModelPart<TDim>& rDummy,
     typename Patch<TDim>::Pointer pPatch, const int& iside,
     const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
 {
@@ -91,6 +99,21 @@ ModelPart::ElementsContainerType MultiMultiPatchModelPart_AddElements(T& rDummy,
     }
 
     return rDummy.AddElements(pPatches, element_name, starting_id, pProperties);
+}
+
+template<class T>
+ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions(T& rDummy, boost::python::list patch_list,
+    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+{
+    std::vector<typename T::PatchType::Pointer> pPatches;
+
+    typedef boost::python::stl_input_iterator<typename T::PatchType::Pointer> iterator_value_type;
+    BOOST_FOREACH(const typename iterator_value_type::value_type& v, std::make_pair(iterator_value_type(patch_list), iterator_value_type() ) )
+    {
+        pPatches.push_back(v);
+    }
+
+    return rDummy.AddConditions(pPatches, condition_name, starting_id, pProperties);
 }
 
 ////////////////////////////////////////
@@ -147,6 +170,7 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("CreateNodes", &MultiPatchModelPartType::CreateNodes)
     .def("AddElements", &MultiPatchModelPartType::AddElements)
     .def("AddConditions", &MultiPatchModelPart_AddConditions<TDim>)
+    .def("AddConditions", &MultiPatchModelPart_AddConditions_OnBoundary<TDim>)
     .def("EndModelPart", &MultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &MultiPatchModelPart_GetModelPart<MultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &MultiPatchModelPart_GetMultiPatch<MultiPatchModelPartType>, return_internal_reference<>())
@@ -168,7 +192,8 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("BeginModelPart", &MultiMultiPatchModelPartType::BeginModelPart)
     .def("CreateNodes", &MultiMultiPatchModelPartType::CreateNodes)
     .def("AddElements", &MultiMultiPatchModelPart_AddElements<MultiMultiPatchModelPartType>)
-    .def("AddConditions", &MultiMultiPatchModelPart_AddConditions<TDim>)
+    .def("AddConditions", &MultiMultiPatchModelPart_AddConditions<MultiMultiPatchModelPartType>)
+    .def("AddConditions", &MultiMultiPatchModelPart_AddConditions_OnBoundary<TDim>)
     .def("EndModelPart", &MultiMultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &MultiPatchModelPart_GetModelPart<MultiMultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &MultiPatchModelPart_GetMultiPatch2<MultiMultiPatchModelPartType>, return_internal_reference<>())

@@ -939,17 +939,207 @@ public:
     /**
      * Compute shape function second derivatives at a particular reference point. This function is kept to keep the backward compatibility.
      */
-    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResult, const CoordinatesArrayType& rCoordinates ) const
+    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error,
-                      "Calling base class ShapeFunctionsSecondDerivatives at" , *this );
-        return rResult;
+        #ifdef DEBUG_LEVEL3
+        std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;
+        #endif
+
+        //compute all univariate Bezier shape functions & derivatives at rPoint
+        VectorType bezier_functions_values1(mNumber1);
+        VectorType bezier_functions_values2(mNumber2);
+        VectorType bezier_functions_values3(mNumber3);
+        VectorType bezier_functions_derivatives1(mNumber1);
+        VectorType bezier_functions_derivatives2(mNumber2);
+        VectorType bezier_functions_derivatives3(mNumber3);
+        VectorType bezier_functions_second_derivatives1(mNumber1);
+        VectorType bezier_functions_second_derivatives2(mNumber2);
+        VectorType bezier_functions_second_derivatives3(mNumber3);
+        BezierUtils::bernstein(bezier_functions_values1,
+                               bezier_functions_derivatives1,
+                               bezier_functions_second_derivatives1,
+                               mOrder1,
+                               rCoordinates[0]);
+        BezierUtils::bernstein(bezier_functions_values2,
+                               bezier_functions_derivatives2,
+                               bezier_functions_second_derivatives2,
+                               mOrder2,
+                               rCoordinates[1]);
+        BezierUtils::bernstein(bezier_functions_values3,
+                               bezier_functions_derivatives3,
+                               bezier_functions_second_derivatives3,
+                               mOrder3,
+                               rCoordinates[2]);
+
+        //compute trivariate Bezier shape functions values
+        VectorType bezier_functions_values(mNumber1 * mNumber2 * mNumber3);
+        for(IndexType i = 0; i < mNumber1; ++i)
+        {
+            for(IndexType j = 0; j < mNumber2; ++j)
+            {
+                for(IndexType k = 0; k < mNumber3; ++k)
+                {
+                    IndexType index = k + (j + i * mNumber2) * mNumber3;
+
+                    bezier_functions_values(index) =
+                        bezier_functions_values1(i) *
+                        bezier_functions_values2(j) *
+                        bezier_functions_values3(k);
+                }
+            }
+        }
+
+        //compute trivariate Bezier shape functions derivatives w.r.t local coordinates
+        VectorType bezier_functions_local_derivatives1(mNumber1 * mNumber2 * mNumber3);
+        VectorType bezier_functions_local_derivatives2(mNumber1 * mNumber2 * mNumber3);
+        VectorType bezier_functions_local_derivatives3(mNumber1 * mNumber2 * mNumber3);
+        for(IndexType i = 0; i < mNumber1; ++i)
+        {
+            for(IndexType j = 0; j < mNumber2; ++j)
+            {
+                for(IndexType k = 0; k < mNumber3; ++k)
+                {
+                    IndexType index = k + (j + i * mNumber2) * mNumber3;
+
+                    bezier_functions_local_derivatives1(index) =
+                        bezier_functions_derivatives1(i) *
+                        bezier_functions_values2(j) *
+                        bezier_functions_values3(k);
+                    bezier_functions_local_derivatives2(index) =
+                        bezier_functions_values1(i) *
+                        bezier_functions_derivatives2(j) *
+                        bezier_functions_values3(k);
+                    bezier_functions_local_derivatives3(index) =
+                        bezier_functions_values1(i) *
+                        bezier_functions_values2(j) *
+                        bezier_functions_derivatives3(k);
+                }
+            }
+        }
+
+        //compute trivariate Bezier shape functions second derivatives w.r.t local coordinates
+        VectorType bezier_functions_local_second_derivatives11(mNumber1 * mNumber2 * mNumber3);
+        VectorType bezier_functions_local_second_derivatives12(mNumber1 * mNumber2 * mNumber3);
+        VectorType bezier_functions_local_second_derivatives13(mNumber1 * mNumber2 * mNumber3);
+        VectorType bezier_functions_local_second_derivatives22(mNumber1 * mNumber2 * mNumber3);
+        VectorType bezier_functions_local_second_derivatives23(mNumber1 * mNumber2 * mNumber3);
+        VectorType bezier_functions_local_second_derivatives33(mNumber1 * mNumber2 * mNumber3);
+        for(IndexType i = 0; i < mNumber1; ++i)
+        {
+            for(IndexType j = 0; j < mNumber2; ++j)
+            {
+                for(IndexType k = 0; k < mNumber3; ++k)
+                {
+                    IndexType index = k + (j + i * mNumber2) * mNumber3;
+
+                    bezier_functions_local_second_derivatives11(index) =
+                        bezier_functions_second_derivatives1(i) *
+                        bezier_functions_values2(j) *
+                        bezier_functions_values3(k);
+                    bezier_functions_local_second_derivatives12(index) =
+                        bezier_functions_derivatives1(i) *
+                        bezier_functions_derivatives2(j) *
+                        bezier_functions_values3(k);
+                    bezier_functions_local_second_derivatives13(index) =
+                        bezier_functions_derivatives1(i) *
+                        bezier_functions_values2(j) *
+                        bezier_functions_derivatives3(k);
+
+                    bezier_functions_local_second_derivatives22(index) =
+                        bezier_functions_values1(i) *
+                        bezier_functions_second_derivatives2(j) *
+                        bezier_functions_values3(k);
+                    bezier_functions_local_second_derivatives23(index) =
+                        bezier_functions_values1(i) *
+                        bezier_functions_derivatives2(j) *
+                        bezier_functions_derivatives3(k);
+
+                    bezier_functions_local_second_derivatives33(index) =
+                        bezier_functions_values1(i) *
+                        bezier_functions_values2(j) *
+                        bezier_functions_second_derivatives3(k);
+                }
+            }
+        }
+
+        //compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+        double denom = inner_prod(bezier_functions_values, bezier_weights);
+
+        //compute the shape function local second gradients
+        rResults.resize(this->PointsNumber(), false);
+        double aux1 = inner_prod(bezier_functions_local_derivatives1, bezier_weights);
+        double aux2 = inner_prod(bezier_functions_local_derivatives2, bezier_weights);
+        double aux3 = inner_prod(bezier_functions_local_derivatives3, bezier_weights);
+        double auxs11 = inner_prod(bezier_functions_local_second_derivatives11, bezier_weights);
+        double auxs12 = inner_prod(bezier_functions_local_second_derivatives12, bezier_weights);
+        double auxs13 = inner_prod(bezier_functions_local_second_derivatives13, bezier_weights);
+        double auxs22 = inner_prod(bezier_functions_local_second_derivatives22, bezier_weights);
+        double auxs23 = inner_prod(bezier_functions_local_second_derivatives23, bezier_weights);
+        double auxs33 = inner_prod(bezier_functions_local_second_derivatives33, bezier_weights);
+        VectorType tmp_gradients11 =
+            prod(mExtractionOperator,
+                    (1 / denom) * bezier_functions_local_second_derivatives11
+                    - (aux1 / pow(denom, 2)) * bezier_functions_local_derivatives1 * 2
+                    - (auxs11 / pow(denom, 2)) * bezier_functions_values
+                    + 2.0 * pow(aux1, 2) / pow(denom, 3) * bezier_functions_values
+            );
+        VectorType tmp_gradients12 =
+            prod(mExtractionOperator,
+                    (1 / denom) * bezier_functions_local_second_derivatives12
+                    - ((aux1 + aux2) / pow(denom, 2)) * bezier_functions_local_derivatives1
+                    - (auxs12 / pow(denom, 2)) * bezier_functions_values
+                    + 2.0 * aux1 * aux2 / pow(denom, 3) * bezier_functions_values
+            );
+        VectorType tmp_gradients13 =
+            prod(mExtractionOperator,
+                    (1 / denom) * bezier_functions_local_second_derivatives13
+                    - ((aux1 + aux3) / pow(denom, 2)) * bezier_functions_local_derivatives1
+                    - (auxs13 / pow(denom, 2)) * bezier_functions_values
+                    + 2.0 * aux1 * aux3 / pow(denom, 3) * bezier_functions_values
+            );
+        VectorType tmp_gradients22 =
+            prod(mExtractionOperator,
+                    (1 / denom) * bezier_functions_local_second_derivatives22
+                    - (aux2 / pow(denom, 2)) * bezier_functions_local_derivatives2 * 2
+                    - (auxs22 / pow(denom, 2)) * bezier_functions_values
+                    + 2.0 * pow(aux2, 2) / pow(denom, 3) * bezier_functions_values
+            );
+        VectorType tmp_gradients23 =
+            prod(mExtractionOperator,
+                    (1 / denom) * bezier_functions_local_second_derivatives23
+                    - ((aux2 + aux3) / pow(denom, 2)) * bezier_functions_local_derivatives2
+                    - (auxs23 / pow(denom, 2)) * bezier_functions_values
+                    + 2.0 * aux2 * aux3 / pow(denom, 3) * bezier_functions_values
+            );
+        VectorType tmp_gradients33 =
+            prod(mExtractionOperator,
+                    (1 / denom) * bezier_functions_local_second_derivatives33
+                    - (aux3 / pow(denom, 2)) * bezier_functions_local_derivatives3 * 2
+                    - (auxs33 / pow(denom, 2)) * bezier_functions_values
+                    + 2.0 * pow(aux3, 2) / pow(denom, 3) * bezier_functions_values
+            );
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
+        {
+            rResults[i].resize(3, 3, false);
+            rResults[i](0, 0) = tmp_gradients11(i) * mCtrlWeights(i);
+            rResults[i](0, 1) = tmp_gradients12(i) * mCtrlWeights(i);
+            rResults[i](0, 2) = tmp_gradients13(i) * mCtrlWeights(i);
+            rResults[i](1, 0) = rResults[i](0, 1);
+            rResults[i](1, 1) = tmp_gradients22(i) * mCtrlWeights(i);
+            rResults[i](1, 2) = tmp_gradients23(i) * mCtrlWeights(i);
+            rResults[i](2, 0) = rResults[i](0, 2);
+            rResults[i](2, 1) = rResults[i](1, 2);
+            rResults[i](2, 2) = tmp_gradients33(i) * mCtrlWeights(i);
+        }
+
+        return rResults;
     }
 
     /**
      * Compute the Bezier control points
      */
-    virtual void ExtractLocalCoordinates(PointsArrayType& rPoints)
+    virtual void ExtractControlPoints(PointsArrayType& rPoints)
     {
         std::size_t number_of_points = this->PointsNumber();
         std::size_t number_of_local_points = mExtractionOperator.size2();
@@ -966,7 +1156,46 @@ public:
             PointPointerType pPoint = PointPointerType(new PointType(0, 0.0, 0.0, 0.0));
             for(std::size_t j = 0; j < number_of_points; ++j)
                 noalias(*pPoint) += mExtractionOperator(j, i) * this->GetPoint(j) * mCtrlWeights[j] / bezier_weights[i];
+            pPoint->SetInitialPosition(*pPoint);
+            pPoint->SetSolutionStepVariablesList(this->GetPoint(0).pGetVariablesList());
+            pPoint->SetBufferSize(this->GetPoint(0).GetBufferSize());
             rPoints.push_back(pPoint);
+        }
+    }
+
+    /**
+     * Extract the control values from NURBS/Bezier geometry
+     */
+    virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues)
+    {
+        this->ExtractControlValues<double>(rVariable, rValues);
+    }
+
+    /**
+     * Extract the control values from NURBS/Bezier geometry
+     */
+    virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues)
+    {
+        this->ExtractControlValues<array_1d<double, 3> >(rVariable, rValues);
+    }
+
+    template<typename TDataType>
+    void ExtractControlValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues)
+    {
+        std::size_t number_of_points = this->PointsNumber();
+        std::size_t number_of_local_points = mExtractionOperator.size2();
+        if (rValues.size() != number_of_local_points)
+            rValues.resize(number_of_local_points);
+
+        // compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+
+        // compute the Bezier control points
+        for(std::size_t i = 0; i < number_of_local_points; ++i)
+        {
+            rValues[i] = TDataType(0.0);
+            for(std::size_t j = 0; j < number_of_points; ++j)
+                rValues[i] += mExtractionOperator(j, i) * this->GetPoint(j).GetSolutionStepValue(rVariable) * mCtrlWeights[j] / bezier_weights[i];
         }
     }
 

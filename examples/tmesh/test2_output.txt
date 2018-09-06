@@ -1,0 +1,6237 @@
+ |  /           |             
+ ' /   __| _` | __|  _ \   __|
+ . \  |   (   | |   (   |\__ \ 
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 3.3
+Importing    KratosStructuralApplication
+Initializing KratosStructuralApplication... 
+Importing    KratosIsogeometricApplication
+Initializing KratosIsogeometricApplication... 
+ |  /           |             
+ ' /   __| _` | __|  _ \   __|
+ . \  |   (   | |   (   |\__ \ 
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 3.3
+Check OK! The knot vector in u-direction is in ascending order
+Check OK! The knot vector in v-direction is in ascending order
+Check OK! The knot vector satisfies repetitiveness condition
+The indexing for knots is updated
+Check OK! All vertices contain knots in knot vectors
+Check OK! All edges contain vertices in the vertex list
+Check OK! All edge vertical/horizontal configurations are valid
+Detect vertex neighbours completed
+Vertex Id 38, Index = {7, 6, 18446744073709551615} is set to T_JOINT_LEFT
+Vertex Id 39, Index = {7, 7, 18446744073709551615} is set to T_JOINT_UP
+Check joint type successfully. There are 2 T-joints in the T-splines topology mesh
+Tmesh is analysis suitable:  True
+Exported to tmesh2_topo.m completed!
+Find cells in the T-splines topology mesh...
+Find cells in the extended T-splines topology mesh...
+Exported to tmesh2_knots.m completed!
+Find cells in the T-splines topology mesh...
+Find cells in the extended T-splines topology mesh...
+Find anchors completed, number of anchors = 57
+Build anchors completed, 57 is read
+Create cells completed, 24 was created
+At anchor (1: 3, 3, 0, 1), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: () with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 0 0 0 1
+nb_xi : 1
+nb_eta : 1
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 1
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (2: 4, 3, 0, 0.9512), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 0 0 1
+nb_xi : 2
+nb_eta : 1
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 2
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (2: 4, 3, 0, 0.9512), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: () with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 0 0 1
+nb_xi : 2
+nb_eta : 1
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 2
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (3: 5, 3, 0, 0.878), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 0 1
+nb_xi : 3
+nb_eta : 1
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (3: 5, 3, 0, 0.878), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 0 1
+nb_xi : 3
+nb_eta : 1
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (3: 5, 3, 0, 0.878), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: () with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 0 1
+nb_xi : 3
+nb_eta : 1
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (4: 6, 3, 0, 0.8475), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (4: 6, 3, 0, 0.8475), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (4: 6, 3, 0, 0.8475), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (4: 6, 3, 0, 0.8475), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: () with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (5: 7, 3, 0, 0.8597), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (5: 7, 3, 0, 0.8597), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (5: 7, 3, 0, 0.8597), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (5: 7, 3, 0, 0.8597), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: () with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (6: 8, 3, 0, 0.8963), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (6: 8, 3, 0, 0.8963), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (6: 8, 3, 0, 0.8963), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 0 0 1
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (7: 9, 3, 0, 0.9512), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 0 0 1
+nb_xi : 3
+nb_eta : 1
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (7: 9, 3, 0, 0.9512), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 0 0 1
+nb_xi : 3
+nb_eta : 1
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (8: 10, 3, 0, 1), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 0 0 0 1
+nb_xi : 1
+nb_eta : 1
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [8](0,0,0,0,1,1,1,1)
+Crows.size() : 1
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (9: 3, 4, 0, 1), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 0 0 1 2
+nb_xi : 1
+nb_eta : 2
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 2
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (9: 3, 4, 0, 1), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: () with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 0 0 1 2
+nb_xi : 1
+nb_eta : 2
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 2
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (10: 4, 4, 0, 0.9512), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 0 1 2
+nb_xi : 2
+nb_eta : 2
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (10: 4, 4, 0, 0.9512), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 0 1 2
+nb_xi : 2
+nb_eta : 2
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (10: 4, 4, 0, 0.9512), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 0 1 2
+nb_xi : 2
+nb_eta : 2
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (10: 4, 4, 0, 0.9512), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: () with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 0 1 2
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (10: 4, 4, 0, 0.9512), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: () with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 0 1 2
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (11: 5, 4, 0, 0.878), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 1 2
+nb_xi : 3
+nb_eta : 2
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (11: 5, 4, 0, 0.878), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 1 2
+nb_xi : 3
+nb_eta : 2
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (11: 5, 4, 0, 0.878), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 1 2
+nb_xi : 3
+nb_eta : 2
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (11: 5, 4, 0, 0.878), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 1 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (11: 5, 4, 0, 0.878), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 1 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (11: 5, 4, 0, 0.878), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 1 2
+nb_xi : 3
+nb_eta : 2
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (11: 5, 4, 0, 0.878), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: () with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 1 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (11: 5, 4, 0, 0.878), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: () with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 0 1 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: () with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (12: 6, 4, 0, 0.8475), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: () with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 4
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 0 1 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [9](0,0,0,0,1,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (13: 7, 4, 0, 0.8597), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (13: 7, 4, 0, 0.8597), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (13: 7, 4, 0, 0.8597), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (13: 7, 4, 0, 0.8597), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (13: 7, 4, 0, 0.8597), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (13: 7, 4, 0, 0.8597), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (13: 7, 4, 0, 0.8597), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (13: 7, 4, 0, 0.8597), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: () with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (14: 8, 4, 0, 0.8963), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (14: 8, 4, 0, 0.8963), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (14: 8, 4, 0, 0.8963), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (14: 8, 4, 0, 0.8963), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (14: 8, 4, 0, 0.8963), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (14: 8, 4, 0, 0.8963), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 4
+nb_eta : 2
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (15: 9, 4, 0, 0.9512), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 3
+nb_eta : 2
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (15: 9, 4, 0, 0.9512), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 3
+nb_eta : 2
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (15: 9, 4, 0, 0.9512), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 3
+nb_eta : 2
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (15: 9, 4, 0, 0.9512), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 3
+nb_eta : 2
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (16: 10, 4, 0, 1), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 1
+nb_eta : 2
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 2
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (16: 10, 4, 0, 1), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 0 0 1 1.5
+nb_xi : 1
+nb_eta : 2
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Crows.size() : 2
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (17: 3, 5, 0, 1), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11 12) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 0 1 2 3
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (17: 3, 5, 0, 1), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 0 1 2 3
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (17: 3, 5, 0, 1), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: () with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 0 1 2 3
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (18: 4, 5, 0, 0.9512), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11 12 17) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 1 2 3
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (18: 4, 5, 0, 0.9512), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 1 2 3
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (18: 4, 5, 0, 0.9512), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 1 2 3
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (18: 4, 5, 0, 0.9512), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12 13) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 1 2 3
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (18: 4, 5, 0, 0.9512), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 1 2 3
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (18: 4, 5, 0, 0.9512), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 1 2 3
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (18: 4, 5, 0, 0.9512), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: () with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 0 1 2 3
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11 12 17 18) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12 13 18) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13 14) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (19: 5, 5, 0, 0.878), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: () with spans = (1.5, 2, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 0 1 2 3
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11 12 17 18 19) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12 13 18 19) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13 14 19) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19) with spans = (1.5, 2, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14 15) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 3
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,1.5,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 3
+---------------------------------------
+At anchor (20: 6, 5, 0, 0.8475), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: () with spans = (2, 3, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 0 1 2 3
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [10](0,0,0,0,1,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 3
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12 13 18 19 20) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13 14 19 20) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14 15 20) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15 16) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (21: 7, 5, 0, 0.8597), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: () with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 3
+---------------------------------------
+At anchor (22: 8, 5, 0, 0.8963), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13 14 19 20 21) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (22: 8, 5, 0, 0.8963), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (22: 8, 5, 0, 0.8963), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (22: 8, 5, 0, 0.8963), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14 15 20 21) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (22: 8, 5, 0, 0.8963), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (22: 8, 5, 0, 0.8963), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (22: 8, 5, 0, 0.8963), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15 16 21) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (22: 8, 5, 0, 0.8963), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (22: 8, 5, 0, 0.8963), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (23: 9, 5, 0, 0.9512), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14 15 20 21 22) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (23: 9, 5, 0, 0.9512), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (23: 9, 5, 0, 0.9512), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (23: 9, 5, 0, 0.9512), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15 16 21 22) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (23: 9, 5, 0, 0.9512), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (23: 9, 5, 0, 0.9512), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (24: 10, 5, 0, 1), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15 16 21 22 23) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (24: 10, 5, 0, 1), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (24: 10, 5, 0, 1), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 0 1 1.5 2
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [10](0,0,0,0,1,1.5,2,2,2,2)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12 13 18 19 20 21) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20 21) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13 14 19 20 21 22) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21 22) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20) with spans = (1.5, 2, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 4
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14 15 20 21 22 23) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20) with spans = (2, 3, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 4
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15 16 21 22 23 24) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 3
+---------------------------------------
+At anchor (25: 7, 6, 0, 0.8597), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: () with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 4
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13 14 19 20 21 22 25) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21 22 25) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25) with spans = (1.5, 2, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14 15 20 21 22 23 25) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23 25) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25) with spans = (2, 3, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 4
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15 16 21 22 23 24 25) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24 25) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (26: 8, 6, 0, 0.8963), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 4
+---------------------------------------
+At anchor (27: 9, 6, 0, 0.9512), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14 15 20 21 22 23 25 26) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (27: 9, 6, 0, 0.9512), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23 25 26) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (27: 9, 6, 0, 0.9512), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (27: 9, 6, 0, 0.9512), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26) with spans = (2, 3, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (27: 9, 6, 0, 0.9512), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15 16 21 22 23 24 25 26) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (27: 9, 6, 0, 0.9512), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24 25 26) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (27: 9, 6, 0, 0.9512), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (27: 9, 6, 0, 0.9512), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 4
+---------------------------------------
+At anchor (28: 10, 6, 0, 1), found cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15 16 21 22 23 24 25 26 27) with spans = (3, 4, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (28: 10, 6, 0, 1), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24 25 26 27) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (28: 10, 6, 0, 1), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (28: 10, 6, 0, 1), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 0 1 1.5 2 3
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (29: 3, 7, 0, 1), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11 12 17 18 19 20) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 1 2 3 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (29: 3, 7, 0, 1), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19 20) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 1 2 3 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (29: 3, 7, 0, 1), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 1 2 3 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (29: 3, 7, 0, 1), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: () with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 0 1 2 3 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (30: 4, 7, 0, 0.9512), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11 12 17 18 19 20 29) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 1 2 3 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (30: 4, 7, 0, 0.9512), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19 20 29) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 1 2 3 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (30: 4, 7, 0, 0.9512), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 1 2 3 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (30: 4, 7, 0, 0.9512), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 1 2 3 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (30: 4, 7, 0, 0.9512), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12 13 18 19 20 21 25) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 1 2 3 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (30: 4, 7, 0, 0.9512), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20 21 25) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 0 0 1 1.5
+Knots2: 0 1 2 3 4
+nb_xi : 2
+nb_eta : 5
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 10
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (30: 4, 7, 0, 0.9512), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21 25) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 0 0 1 1.5
+Knots2: 0 1 2 3 4
+nb_xi : 2
+nb_eta : 5
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 10
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (30: 4, 7, 0, 0.9512), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 1 2 3 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (30: 4, 7, 0, 0.9512), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: () with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 0 1 2 3 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 4
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11 12 17 18 19 20 29 30) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19 20 29 30) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12 13 18 19 20 21 25 30) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20 21 25 30) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21 25 30) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 4
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13 14 19 20 21 22 25 26) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21 22 25 26) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25 26) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26) with spans = (1.5, 2, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (31: 5, 7, 0, 0.878), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: () with spans = (1.5, 2, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 2
+Knots2: 0 1 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,2,2,2,2)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 4
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11 12 17 18 19 20 29 30 31) with spans = (0, 1, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19 20 29 30 31) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12 13 18 19 20 21 25 30 31) with spans = (1, 1.5, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20 21 25 30 31) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21 25 30 31) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 4
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13 14 19 20 21 22 25 26 31) with spans = (1.5, 2, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21 22 25 26 31) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25 26 31) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31) with spans = (1.5, 2, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31) with spans = (1.5, 2, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 4
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14 15 20 21 22 23 25 26 27) with spans = (2, 3, 0, 1)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23 25 26 27) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26 27) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 2
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 3
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27) with spans = (2, 3, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 3
+---------------------------------------
+At anchor (32: 6, 7, 0, 0.8475), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: () with spans = (2, 3, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 2 3
+Knots2: 0 1 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,2,3,3,3,3)
+Ubar_eta : [11](0,0,0,0,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 4
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20 21 25 30 31 32) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21 25 30 31 32) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21 22 25 26 31 32) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25 26 31 32) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32) with spans = (1.5, 2, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32) with spans = (1.5, 2, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 4
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23 25 26 27 32) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26 27 32) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32) with spans = (2, 3, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32) with spans = (2, 3, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 4
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24 25 26 27 28) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27 28) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 3
+---------------------------------------
+At anchor (33: 7, 7, 0, 0.7895), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: () with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 2 3 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 4
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21 22 25 26 31 32 33) with spans = (1.5, 2, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25 26 31 32 33) with spans = (1.5, 2, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33) with spans = (1.5, 2, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33) with spans = (1.5, 2, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23 25 26 27 32 33) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26 27 32 33) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33) with spans = (2, 3, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33) with spans = (2, 3, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 4
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24 25 26 27 28 33) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27 28 33) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (34: 8, 7, 0, 0.8963), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 2 3 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 4
+---------------------------------------
+At anchor (35: 9, 7, 0, 0.9512), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23 25 26 27 32 33 34) with spans = (2, 3, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (35: 9, 7, 0, 0.9512), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26 27 32 33 34) with spans = (2, 3, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (35: 9, 7, 0, 0.9512), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34) with spans = (2, 3, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (35: 9, 7, 0, 0.9512), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34) with spans = (2, 3, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (35: 9, 7, 0, 0.9512), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24 25 26 27 28 33 34) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (35: 9, 7, 0, 0.9512), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27 28 33 34) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (35: 9, 7, 0, 0.9512), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (35: 9, 7, 0, 0.9512), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 2 3 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](2,2,2,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 4
+---------------------------------------
+At anchor (36: 10, 7, 0, 1), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24 25 26 27 28 33 34 35) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (36: 10, 7, 0, 1), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27 28 33 34 35) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (36: 10, 7, 0, 1), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (36: 10, 7, 0, 1), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 1 1.5 2 3 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 4
+---------------------------------------
+At anchor (37: 3, 8, 0, 1), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19 20 29 30 31 32) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 1 2 3 4 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (37: 3, 8, 0, 1), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31 32) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 1 2 3 4 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (37: 3, 8, 0, 1), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 1 2 3 4 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (38: 4, 8, 0, 0.9512), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19 20 29 30 31 32 37) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 1 2 3 4 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (38: 4, 8, 0, 0.9512), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31 32 37) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 1 2 3 4 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (38: 4, 8, 0, 0.9512), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 1 2 3 4 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (38: 4, 8, 0, 0.9512), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20 21 25 30 31 32 33) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 0 0 1 1.5
+Knots2: 1 2 3 4 4
+nb_xi : 2
+nb_eta : 5
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 10
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (38: 4, 8, 0, 0.9512), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21 25 30 31 32 33) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 0 0 1 1.5
+Knots2: 1 2 3 4 4
+nb_xi : 2
+nb_eta : 5
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 10
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (38: 4, 8, 0, 0.9512), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32 33) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 1 2 3 4 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (38: 4, 8, 0, 0.9512), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 1 2 3 4 4
+nb_xi : 2
+nb_eta : 4
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 8
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19 20 29 30 31 32 37 38) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31 32 37 38) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20 21 25 30 31 32 33 38) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 3
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21 25 30 31 32 33 38) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 3
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32 33 38) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21 22 25 26 31 32 33 34) with spans = (1.5, 2, 1, 1.5)
+Uxi: 2
+spans_xi: 4
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25 26 31 32 33 34) with spans = (1.5, 2, 1.5, 2)
+Uxi: 2
+spans_xi: 4
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33 34) with spans = (1.5, 2, 2, 3)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23 25 26 27 32 33 34 35) with spans = (2, 3, 1, 1.5)
+Uxi: 2
+spans_xi: 4
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26 27 32 33 34 35) with spans = (2, 3, 1.5, 2)
+Uxi: 2
+spans_xi: 4
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34 35) with spans = (2, 3, 2, 3)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (39: 5, 8, 0, 0.878), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19 20 29 30 31 32 37 38 39) with spans = (0, 1, 1, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31 32 37 38 39) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20 21 25 30 31 32 33 38 39) with spans = (1, 1.5, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21 25 30 31 32 33 38 39) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32 33 38 39) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21 22 25 26 31 32 33 34 39) with spans = (1.5, 2, 1, 1.5)
+Uxi: 2
+spans_xi: 3
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 5
+nb_eta : 5
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 25
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25 26 31 32 33 34 39) with spans = (1.5, 2, 1.5, 2)
+Uxi: 2
+spans_xi: 3
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 5
+nb_eta : 5
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 25
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33 34 39) with spans = (1.5, 2, 2, 3)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23 25 26 27 32 33 34 35 39) with spans = (2, 3, 1, 1.5)
+Uxi: 2
+spans_xi: 3
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 5
+nb_eta : 5
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 25
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26 27 32 33 34 35 39) with spans = (2, 3, 1.5, 2)
+Uxi: 2
+spans_xi: 3
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 5
+nb_eta : 5
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 25
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34 35 39) with spans = (2, 3, 2, 3)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 3
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24 25 26 27 28 33 34 35 36) with spans = (3, 4, 1, 1.5)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27 28 33 34 35 36) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta: 1.5
+spans_eta: 1
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 5
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35 36) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (40: 6, 8, 0, 0.8413), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 1 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1,1,1,1,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 3
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21 25 30 31 32 33 38 39 40) with spans = (1, 1.5, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32 33 38 39 40) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25 26 31 32 33 34 39 40) with spans = (1.5, 2, 1.5, 2)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33 34 39 40) with spans = (1.5, 2, 2, 3)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26 27 32 33 34 35 39 40) with spans = (2, 3, 1.5, 2)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34 35 39 40) with spans = (2, 3, 2, 3)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 5
+nb_eta : 4
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 20
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27 28 33 34 35 36 40) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35 36 40) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (41: 8, 8, 0, 0.878), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 3
+---------------------------------------
+At anchor (42: 9, 8, 0, 0.9512), found cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25 26 31 32 33 34 39 40 41) with spans = (1.5, 2, 1.5, 2)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (42: 9, 8, 0, 0.9512), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33 34 39 40 41) with spans = (1.5, 2, 2, 3)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (42: 9, 8, 0, 0.9512), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (42: 9, 8, 0, 0.9512), found cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26 27 32 33 34 35 39 40 41) with spans = (2, 3, 1.5, 2)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (42: 9, 8, 0, 0.9512), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34 35 39 40 41) with spans = (2, 3, 2, 3)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (42: 9, 8, 0, 0.9512), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 4
+nb_eta : 4
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 16
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (42: 9, 8, 0, 0.9512), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27 28 33 34 35 36 40 41) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](1.5,1.5,1.5,1.5,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (42: 9, 8, 0, 0.9512), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35 36 40 41) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](1.5,1.5,1.5,1.5,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (42: 9, 8, 0, 0.9512), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 3
+nb_eta : 4
+Ubar_xi : [9](1.5,1.5,1.5,1.5,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 3
+---------------------------------------
+At anchor (43: 10, 8, 0, 1), found cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27 28 33 34 35 36 40 41 42) with spans = (3, 4, 1.5, 2)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (43: 10, 8, 0, 1), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35 36 40 41 42) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (43: 10, 8, 0, 1), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 1.5 2 3 4 4
+nb_xi : 1
+nb_eta : 4
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 3
+---------------------------------------
+At anchor (44: 3, 9, 0, 1), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31 32 37 38 39 40) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 2 3 4 4 4
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (44: 3, 9, 0, 1), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39 40) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 2 3 4 4 4
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (45: 4, 9, 0, 0.9512), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31 32 37 38 39 40 44) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 2 3 4 4 4
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (45: 4, 9, 0, 0.9512), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39 40 44) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 2 3 4 4 4
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (45: 4, 9, 0, 0.9512), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32 33 38 39 40 41) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 2 3 4 4 4
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (45: 4, 9, 0, 0.9512), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40 41) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 2 3 4 4 4
+nb_xi : 2
+nb_eta : 3
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 6
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (46: 5, 9, 0, 0.878), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31 32 37 38 39 40 44 45) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 2 3 4 4 4
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (46: 5, 9, 0, 0.878), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39 40 44 45) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 2 3 4 4 4
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (46: 5, 9, 0, 0.878), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32 33 38 39 40 41 45) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 2 3 4 4 4
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (46: 5, 9, 0, 0.878), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40 41 45) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 2 3 4 4 4
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (46: 5, 9, 0, 0.878), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33 34 39 40 41 42) with spans = (1.5, 2, 2, 3)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (46: 5, 9, 0, 0.878), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41 42) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (46: 5, 9, 0, 0.878), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34 35 39 40 41 42) with spans = (2, 3, 2, 3)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (46: 5, 9, 0, 0.878), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41 42) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31 32 37 38 39 40 44 45 46) with spans = (0, 1, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39 40 44 45 46) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32 33 38 39 40 41 45 46) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40 41 45 46) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33 34 39 40 41 42 46) with spans = (1.5, 2, 2, 3)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 5
+nb_eta : 3
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41 42 46) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 5
+nb_eta : 3
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34 35 39 40 41 42 46) with spans = (2, 3, 2, 3)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 5
+nb_eta : 3
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41 42 46) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 5
+nb_eta : 3
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35 36 40 41 42 43) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (47: 6, 9, 0, 0.8413), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42 43) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 2
+---------------------------------------
+At anchor (48: 8, 9, 0, 0.878), found cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32 33 38 39 40 41 45 46 47) with spans = (1, 1.5, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (48: 8, 9, 0, 0.878), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40 41 45 46 47) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (48: 8, 9, 0, 0.878), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33 34 39 40 41 42 46 47) with spans = (1.5, 2, 2, 3)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 5
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (48: 8, 9, 0, 0.878), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41 42 46 47) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 5
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (48: 8, 9, 0, 0.878), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34 35 39 40 41 42 46 47) with spans = (2, 3, 2, 3)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 5
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (48: 8, 9, 0, 0.878), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41 42 46 47) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 5
+nb_eta : 3
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 15
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (48: 8, 9, 0, 0.878), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35 36 40 41 42 43 47) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (48: 8, 9, 0, 0.878), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42 43 47) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 2
+---------------------------------------
+At anchor (49: 9, 9, 0, 0.9512), found cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33 34 39 40 41 42 46 47 48) with spans = (1.5, 2, 2, 3)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (49: 9, 9, 0, 0.9512), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41 42 46 47 48) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (49: 9, 9, 0, 0.9512), found cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34 35 39 40 41 42 46 47 48) with spans = (2, 3, 2, 3)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (49: 9, 9, 0, 0.9512), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41 42 46 47 48) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 4
+nb_eta : 3
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 12
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (49: 9, 9, 0, 0.9512), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35 36 40 41 42 43 47 48) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [9](1.5,1.5,1.5,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (49: 9, 9, 0, 0.9512), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42 43 47 48) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 3
+nb_eta : 3
+Ubar_xi : [9](1.5,1.5,1.5,1.5,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 9
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 2
+---------------------------------------
+At anchor (50: 10, 9, 0, 1), found cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35 36 40 41 42 43 47 48 49) with spans = (3, 4, 2, 3)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (50: 10, 9, 0, 1), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42 43 47 48 49) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 2 3 4 4 4
+nb_xi : 1
+nb_eta : 3
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [9](2,2,2,2,3,4,4,4,4)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 2
+---------------------------------------
+At anchor (51: 3, 10, 0, 1), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39 40 44 45 46 47) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 0 1
+Knots2: 3 4 4 4 4
+nb_xi : 1
+nb_eta : 1
+Ubar_xi : [8](0,0,0,0,1,1,1,1)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 1
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (52: 4, 10, 0, 0.9512), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39 40 44 45 46 47 51) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 3 4 4 4 4
+nb_xi : 2
+nb_eta : 1
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 2
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (52: 4, 10, 0, 0.9512), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40 41 45 46 47 48) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 0 1 1.5
+Knots2: 3 4 4 4 4
+nb_xi : 2
+nb_eta : 1
+Ubar_xi : [9](0,0,0,0,1,1.5,1.5,1.5,1.5)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 2
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (53: 5, 10, 0, 0.878), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39 40 44 45 46 47 51 52) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 3 4 4 4 4
+nb_xi : 3
+nb_eta : 1
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (53: 5, 10, 0, 0.878), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40 41 45 46 47 48 52) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 3 4 4 4 4
+nb_xi : 3
+nb_eta : 1
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (53: 5, 10, 0, 0.878), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41 42 46 47 48 49) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 3 4 4 4 4
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (53: 5, 10, 0, 0.878), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41 42 46 47 48 49) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 4
+Ueta:
+spans_eta:
+Knots1: 0 0 1 1.5 3
+Knots2: 3 4 4 4 4
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [10](0,0,0,0,1,1.5,3,3,3,3)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (54: 6, 10, 0, 0.8413), found cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39 40 44 45 46 47 51 52 53) with spans = (0, 1, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 3 4 4 4 4
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (54: 6, 10, 0, 0.8413), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40 41 45 46 47 48 52 53) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 3 4 4 4 4
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (54: 6, 10, 0, 0.8413), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41 42 46 47 48 49 53) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 3 4 4 4 4
+nb_xi : 5
+nb_eta : 1
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 5
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (54: 6, 10, 0, 0.8413), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41 42 46 47 48 49 53) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 3
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 3 4 4 4 4
+nb_xi : 5
+nb_eta : 1
+Ubar_xi : [12](0,0,0,0,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 5
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (54: 6, 10, 0, 0.8413), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42 43 47 48 49 50) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 0 1 1.5 3 4
+Knots2: 3 4 4 4 4
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [11](0,0,0,0,1,1.5,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 4
+span_eta_after : 1
+---------------------------------------
+At anchor (55: 8, 10, 0, 0.878), found cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40 41 45 46 47 48 52 53 54) with spans = (1, 1.5, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 3 4 4 4 4
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (55: 8, 10, 0, 0.878), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41 42 46 47 48 49 53 54) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 3 4 4 4 4
+nb_xi : 5
+nb_eta : 1
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 5
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (55: 8, 10, 0, 0.878), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41 42 46 47 48 49 53 54) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 2
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 3 4 4 4 4
+nb_xi : 5
+nb_eta : 1
+Ubar_xi : [11](1,1,1,1,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 5
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (55: 8, 10, 0, 0.878), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42 43 47 48 49 50 54) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1 1.5 3 4 4
+Knots2: 3 4 4 4 4
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [10](1,1,1,1,1.5,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 3
+span_eta_after : 1
+---------------------------------------
+At anchor (56: 9, 10, 0, 0.9512), found cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41 42 46 47 48 49 53 54 55) with spans = (1.5, 2, 3, 4)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 3 4 4 4 4
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+At anchor (56: 9, 10, 0, 0.9512), found cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41 42 46 47 48 49 53 54 55) with spans = (2, 3, 3, 4)
+Uxi: 2
+spans_xi: 1
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 3 4 4 4 4
+nb_xi : 4
+nb_eta : 1
+Ubar_xi : [10](1.5,1.5,1.5,1.5,2,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 4
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (56: 9, 10, 0, 0.9512), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42 43 47 48 49 50 54 55) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 1.5 3 4 4 4
+Knots2: 3 4 4 4 4
+nb_xi : 3
+nb_eta : 1
+Ubar_xi : [9](1.5,1.5,1.5,1.5,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 3
+Crows[0].size() : 16
+span_xi_after : 2
+span_eta_after : 1
+---------------------------------------
+At anchor (57: 10, 10, 0, 1), found cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42 43 47 48 49 50 54 55 56) with spans = (3, 4, 3, 4)
+Uxi:
+spans_xi:
+Ueta:
+spans_eta:
+Knots1: 3 4 4 4 4
+Knots2: 3 4 4 4 4
+nb_xi : 1
+nb_eta : 1
+Ubar_xi : [8](3,3,3,3,4,4,4,4)
+Ubar_eta : [8](3,3,3,3,4,4,4,4)
+Crows.size() : 1
+Crows[0].size() : 16
+span_xi_after : 1
+span_eta_after : 1
+---------------------------------------
+Find supported cell domain completed
+cell cell {Id:1,range:([4 5];[4 5];[-1 -1])<=>([0 1];[0 1];[0 0])}, supporting anchors: ( 1 2 3 4 9 10 11 12 17 18 19 20 29 30 31 32)
+cell cell {Id:2,range:([4 5];[5 7];[-1 -1])<=>([0 1];[1 2];[0 0])}, supporting anchors: ( 9 10 11 12 17 18 19 20 29 30 31 32 37 38 39 40)
+cell cell {Id:3,range:([4 5];[7 8];[-1 -1])<=>([0 1];[2 3];[0 0])}, supporting anchors: ( 17 18 19 20 29 30 31 32 37 38 39 40 44 45 46 47)
+cell cell {Id:4,range:([4 5];[8 9];[-1 -1])<=>([0 1];[3 4];[0 0])}, supporting anchors: ( 29 30 31 32 37 38 39 40 44 45 46 47 51 52 53 54)
+cell cell {Id:5,range:([5 6];[4 5];[-1 -1])<=>([1 1.5];[0 1];[0 0])}, supporting anchors: ( 2 3 4 5 10 11 12 13 18 19 20 21 25 30 31 32)
+cell cell {Id:6,range:([5 6];[5 6];[-1 -1])<=>([1 1.5];[1 1.5];[0 0])}, supporting anchors: ( 10 11 12 13 18 19 20 21 25 30 31 32 33 38 39 40)
+cell cell {Id:7,range:([5 6];[6 7];[-1 -1])<=>([1 1.5];[1.5 2];[0 0])}, supporting anchors: ( 10 11 12 18 19 20 21 25 30 31 32 33 38 39 40 41)
+cell cell {Id:8,range:([5 6];[7 8];[-1 -1])<=>([1 1.5];[2 3];[0 0])}, supporting anchors: ( 18 19 20 25 30 31 32 33 38 39 40 41 45 46 47 48)
+cell cell {Id:9,range:([5 6];[8 9];[-1 -1])<=>([1 1.5];[3 4];[0 0])}, supporting anchors: ( 30 31 32 33 38 39 40 41 45 46 47 48 52 53 54 55)
+cell cell {Id:10,range:([6 7];[4 5];[-1 -1])<=>([1.5 2];[0 1];[0 0])}, supporting anchors: ( 3 4 5 6 11 12 13 14 19 20 21 22 25 26 31 32)
+cell cell {Id:11,range:([6 7];[5 6];[-1 -1])<=>([1.5 2];[1 1.5];[0 0])}, supporting anchors: ( 11 12 13 14 19 20 21 22 25 26 31 32 33 34 39 40)
+cell cell {Id:12,range:([6 7];[6 7];[-1 -1])<=>([1.5 2];[1.5 2];[0 0])}, supporting anchors: ( 11 12 19 20 21 22 25 26 31 32 33 34 39 40 41 42)
+cell cell {Id:13,range:([6 7];[7 8];[-1 -1])<=>([1.5 2];[2 3];[0 0])}, supporting anchors: ( 19 20 25 26 31 32 33 34 39 40 41 42 46 47 48 49)
+cell cell {Id:14,range:([6 7];[8 9];[-1 -1])<=>([1.5 2];[3 4];[0 0])}, supporting anchors: ( 31 32 33 34 39 40 41 42 46 47 48 49 53 54 55 56)
+cell cell {Id:15,range:([7 8];[4 5];[-1 -1])<=>([2 3];[0 1];[0 0])}, supporting anchors: ( 4 5 6 7 12 13 14 15 20 21 22 23 25 26 27 32)
+cell cell {Id:16,range:([7 8];[5 6];[-1 -1])<=>([2 3];[1 1.5];[0 0])}, supporting anchors: ( 12 13 14 15 20 21 22 23 25 26 27 32 33 34 35 39 40)
+cell cell {Id:17,range:([7 8];[6 7];[-1 -1])<=>([2 3];[1.5 2];[0 0])}, supporting anchors: ( 12 20 21 22 23 25 26 27 32 33 34 35 39 40 41 42)
+cell cell {Id:18,range:([7 8];[7 8];[-1 -1])<=>([2 3];[2 3];[0 0])}, supporting anchors: ( 20 25 26 27 32 33 34 35 39 40 41 42 46 47 48 49)
+cell cell {Id:19,range:([7 8];[8 9];[-1 -1])<=>([2 3];[3 4];[0 0])}, supporting anchors: ( 32 33 34 35 39 40 41 42 46 47 48 49 53 54 55 56)
+cell cell {Id:20,range:([8 9];[4 5];[-1 -1])<=>([3 4];[0 1];[0 0])}, supporting anchors: ( 5 6 7 8 13 14 15 16 21 22 23 24 25 26 27 28)
+cell cell {Id:21,range:([8 9];[5 6];[-1 -1])<=>([3 4];[1 1.5];[0 0])}, supporting anchors: ( 13 14 15 16 21 22 23 24 25 26 27 28 33 34 35 36 40)
+cell cell {Id:22,range:([8 9];[6 7];[-1 -1])<=>([3 4];[1.5 2];[0 0])}, supporting anchors: ( 21 22 23 24 25 26 27 28 33 34 35 36 40 41 42 43)
+cell cell {Id:23,range:([8 9];[7 8];[-1 -1])<=>([3 4];[2 3];[0 0])}, supporting anchors: ( 25 26 27 28 33 34 35 36 40 41 42 43 47 48 49 50)
+cell cell {Id:24,range:([8 9];[8 9];[-1 -1])<=>([3 4];[3 4];[0 0])}, supporting anchors: ( 33 34 35 36 40 41 42 43 47 48 49 50 54 55 56 57)
+ExportMDPA completed

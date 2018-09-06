@@ -18,6 +18,7 @@
 #include "includes/define.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/control_grid.h"
+#include "custom_utilities/nurbs/bsplines_indexing_utility.h"
 
 namespace Kratos
 {
@@ -128,6 +129,12 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
+    /// Reverse the control grid in specific dimension
+    virtual void Reverse(const int& idir)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+    }
+
 private:
 
     DataContainerType mData;
@@ -184,6 +191,19 @@ public:
     static typename StructuredControlGrid<1, TDataType>::Pointer Create(const std::vector<std::size_t>& sizes)
     {
         return typename StructuredControlGrid<1, TDataType>::Pointer(new StructuredControlGrid<1, TDataType>(sizes));
+    }
+
+    /// resize the grid
+    void Resize(const std::size_t& new_size)
+    {
+        resize(new_size);
+    }
+
+    /// resize the grid
+    void resize(const std::size_t& new_size)
+    {
+        mSize = new_size;
+        BaseType::Data().resize(new_size);
     }
 
     /// Get the size of underlying data
@@ -256,6 +276,13 @@ public:
     virtual void ResizeAndCopyFrom(const typename StructuredControlGrid<1, TDataType>::Pointer pOther)
     {
         this->ResizeAndCopyFrom(*pOther);
+    }
+
+    /// Reverse the control grid in specific dimension
+    virtual void Reverse(const int& idir)
+    {
+        if (idir == 0)
+            std::reverse(BaseType::Data().begin(), BaseType::Data().end());
     }
 
     /// Overload assignment operator
@@ -401,10 +428,13 @@ public:
     }
 
     /// Copy the data from a column of structured control_grid in 1D
-    /// If dir==0, the column of grid will be copied in v-direction
-    /// If dir==1, the column of grid will be copied in u-direction
-    void CopyFrom(const int& dir, std::vector<typename StructuredControlGrid<1, TDataType>::Pointer> pOthers)
+    /// If dir==0, the column of grid will be copied along u-direction
+    /// If dir==1, the column of grid will be copied along v-direction
+    void CopyFrom(const int& dir, const std::vector<typename StructuredControlGrid<1, TDataType>::Pointer>& pOthers)
     {
+        if (pOthers.size() != this->Size(dir))
+            KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
+
         if (dir == 0)
         {
             for (std::size_t i = 0; i < this->Size(0); ++i)
@@ -435,6 +465,34 @@ public:
     virtual void ResizeAndCopyFrom(const typename StructuredControlGrid<2, TDataType>::Pointer pOther)
     {
         this->ResizeAndCopyFrom(*pOther);
+    }
+
+    /// Reverse the control grid in specific dimension
+    virtual void Reverse(const int& idir)
+    {
+        // if (idir == 0)
+        // {
+        //     for (std::size_t j = 0; j < mSize[1]; ++j)
+        //     {
+        //         std::reverse(BaseType::Data().begin() + j*mSize[0], BaseType::Data().begin() + (j+1)*mSize[0]);
+        //     }
+        // }
+        // else if (idir == 1)
+        // {
+        //     for (std::size_t i = 0; i < mSize[0]; ++i)
+        //     {
+        //         // extract the value
+        //         DataContainerType Temp(mSize[1]);
+        //         for (std::size_t j = 0; j < mSize[1]; ++j)
+        //             Temp[j] = this->GetValue(i, j);
+
+        //         // assign the reverse value
+        //         for (std::size_t j = 0; j < mSize[1]; ++j)
+        //             this->SetValue(i, j, Temp[mSize[1]-1-j]);
+        //     }
+        // }
+
+        BSplinesIndexingUtility::Reverse<2, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir);
     }
 
     /// Get the layer of control grid from the boundary, if the level = 0, the control grid on the boundary will be extracted.
@@ -511,11 +569,11 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         rOStream << " Data:\n (\n";
-        for (std::size_t i = 0; i < mSize[0]; ++i)
+        for (std::size_t j = 0; j < mSize[1]; ++j)
         {
             rOStream << "  (";
-            for (std::size_t j = 0; j < mSize[1]; ++j)
             {
+                for (std::size_t i = 0; i < mSize[0]; ++i)
                 rOStream << " " << GetValue(i, j);
             }
             rOStream << ")" << std::endl;
@@ -645,13 +703,35 @@ public:
     }
 
     /// Copy the data from a column of structured control_grid in 2D
-    /// If dir==0, the column of grid will be copied in w-direction
-    /// If dir==1, the column of grid will be copied in v-direction
-    /// If dir==2, the column of grid will be copied in u-direction
-    void CopyFrom(const int& dir, std::vector<typename StructuredControlGrid<2, TDataType>::Pointer> pOthers)
+    /// If dir==0, the column of grid will be copied along u-direction
+    /// If dir==1, the column of grid will be copied along v-direction
+    /// If dir==2, the column of grid will be copied along w-direction
+    void CopyFrom(const int& dir, const std::vector<typename StructuredControlGrid<2, TDataType>::Pointer>& pOthers)
     {
-        // TODO
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented")
+        if (pOthers.size() != this->Size(dir))
+            KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
+
+        if (dir == 0)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                        this->SetValue(i, j, k, pOthers[i]->GetValue(j, k));
+        }
+        else if (dir == 1)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                        this->SetValue(i, j, k, pOthers[j]->GetValue(i, k));
+        }
+        else if (dir == 2)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                        this->SetValue(i, j, k, pOthers[k]->GetValue(i, j));
+        }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
@@ -671,6 +751,53 @@ public:
     virtual void ResizeAndCopyFrom(const typename StructuredControlGrid<3, TDataType>::Pointer pOther)
     {
         this->ResizeAndCopyFrom(*pOther);
+    }
+
+    /// Reverse the control grid in specific dimension
+    virtual void Reverse(const int& idir)
+    {
+        // if (idir == 0)
+        // {
+        //     for (std::size_t j = 0; j < mSize[1]; ++j)
+        //         for (std::size_t k = 0; k < mSize[2]; ++k)
+        //             std::reverse(BaseType::Data().begin() + (k*mSize[1] + j)*mSize[0], BaseType::Data().begin() + (k*mSize[1] + j + 1)*mSize[0]);
+        // }
+        // else if (idir == 1)
+        // {
+        //     for (std::size_t i = 0; i < mSize[0]; ++i)
+        //     {
+        //         for (std::size_t k = 0; k < mSize[2]; ++k)
+        //         {
+        //             // extract the value
+        //             DataContainerType Temp(mSize[1]);
+        //             for (std::size_t j = 0; j < mSize[1]; ++j)
+        //                 Temp[j] = this->GetValue(i, j, k);
+
+        //             // assign the reverse value
+        //             for (std::size_t j = 0; j < mSize[1]; ++j)
+        //                 this->SetValue(i, j, k, Temp[mSize[1]-1-j]);
+        //         }
+        //     }
+        // }
+        // else if (idir == 2)
+        // {
+        //     for (std::size_t i = 0; i < mSize[0]; ++i)
+        //     {
+        //         for (std::size_t j = 0; j < mSize[1]; ++j)
+        //         {
+        //             // extract the value
+        //             DataContainerType Temp(mSize[2]);
+        //             for (std::size_t k = 0; k < mSize[2]; ++k)
+        //                 Temp[k] = this->GetValue(i, j, k);
+
+        //             // assign the reverse value
+        //             for (std::size_t k = 0; k < mSize[2]; ++k)
+        //                 this->SetValue(i, j, k, Temp[mSize[2]-1-k]);
+        //         }
+        //     }
+        // }
+
+        BSplinesIndexingUtility::Reverse<3, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir);
     }
 
     /// Get the layer of control grid from the boundary, if the level = 0, the control grid on the boundary will be extracted.
@@ -737,13 +864,13 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         rOStream << " Data:\n (";
-        for (std::size_t i = 0; i < mSize[0]; ++i)
+        for (std::size_t k = 0; k < mSize[2]; ++k)
         {
             rOStream << " (";
             for (std::size_t j = 0; j < mSize[1]; ++j)
             {
                 rOStream << " (";
-                for (std::size_t k = 0; k < mSize[2]; ++k)
+                for (std::size_t i = 0; i < mSize[0]; ++i)
                 {
                     rOStream << " " << GetValue(i, j, k);
                 }

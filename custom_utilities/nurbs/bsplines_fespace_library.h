@@ -71,7 +71,7 @@ public:
     /// The knot vector only contains 0 and 1, i.e [0 0 0 ... 1 1 1].
     /// All the weights are 1.
     template<int TDim>
-    static typename BSplinesFESpace<TDim>::Pointer CreateRegularFESpace(const std::vector<std::size_t>& Orders)
+    static typename BSplinesFESpace<TDim>::Pointer CreatePrimitiveFESpace(const std::vector<std::size_t>& Orders)
     {
         typename BSplinesFESpace<TDim>::Pointer pFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
 
@@ -80,6 +80,27 @@ public:
             knot_container_t knot_vector = CreatePrimitiveOpenKnotVector(Orders[dim]);
             pFESpace->SetKnotVector(dim, knot_vector);
             pFESpace->SetInfo(dim, Orders[dim]+1, Orders[dim]);
+        }
+
+        pFESpace->ResetFunctionIndices();
+
+        return pFESpace;
+    }
+
+    /// Generate regular BSplines patch. For 2D, it's rectangle and for 3D it's a cube.
+    /// The knot vector is assumed open and uniform.
+    /// All the weights are 1.
+    template<int TDim>
+    static typename BSplinesFESpace<TDim>::Pointer CreateUniformFESpace(const std::vector<std::size_t>& Numbers,
+        const std::vector<std::size_t>& Orders)
+    {
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
+
+        for (std::size_t dim = 0; dim < TDim; ++dim)
+        {
+            knot_container_t knot_vector = CreateUniformOpenKnotVector(Numbers[dim], Orders[dim]);
+            pFESpace->SetKnotVector(dim, knot_vector);
+            pFESpace->SetInfo(dim, Numbers[dim], Orders[dim]);
         }
 
         pFESpace->ResetFunctionIndices();

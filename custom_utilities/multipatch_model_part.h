@@ -21,17 +21,19 @@
 #include "includes/model_part.h"
 #include "utilities/openmp_utils.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/control_grid_utility.h"
 #include "custom_utilities/multipatch_utility.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "isogeometric_application/isogeometric_application.h"
 
 #define ENABLE_PROFILING
+// #define DEBUG_GEN_ENTITY
 
 namespace Kratos
 {
 
 /**
-Coupling between KRATOS model_part and multipatch structure
+ * Coupling between KRATOS model_part and multipatch structure
  */
 template<int TDim>
 class MultiPatchModelPart
@@ -120,8 +122,7 @@ public:
         #endif
     }
 
-    /// create the conditions out from the patch and add to the model_part
-    /// TODO find the way to parallelize this
+    /// create the elements out from the patch and add to the model_part
     ModelPart::ElementsContainerType AddElements(typename Patch<TDim>::Pointer pPatch, const std::string& element_name,
             const std::size_t& starting_id, Properties::Pointer pProperties)
     {
@@ -155,6 +156,40 @@ public:
         return pNewElements;
     }
 
+    /// create the conditions out from the patch and add to the model_part
+    ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim>::Pointer pPatch, const std::string& condition_name,
+            const std::size_t& starting_id, Properties::Pointer pProperties)
+    {
+        if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
+
+        #ifdef ENABLE_PROFILING
+        double start = OpenMPUtils::GetCurrentTime();
+        #endif
+
+        // get the grid function for control points
+        const GridFunction<TDim, ControlPointType>& rControlPointGridFunction = pPatch->ControlPointGridFunction();
+
+        // create new elements and add to the model_part
+        ModelPart::ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<Condition, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), condition_name, starting_id, pProperties);
+
+        for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
+        {
+            mpModelPart->Conditions().push_back(*it);
+        }
+
+        // sort the element container and make it consistent
+        mpModelPart->Conditions().Unique();
+
+        #ifdef ENABLE_PROFILING
+        std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
+        #else
+        std::cout << __FUNCTION__ << " completed, ";
+        #endif
+        std::cout << pNewConditions.size() << " conditions of type " << condition_name << " are generated for patch " << pPatch->Id() << std::endl;
+
+        return pNewConditions;
+    }
+
     /// create the conditions out from the boundary of the patch and add to the model_part
     ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim>::Pointer pPatch, const BoundarySide& side,
             const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
@@ -175,9 +210,21 @@ public:
         // create new conditions and add to the model_part
         ModelPart::ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<Condition, FESpace<TDim-1>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), condition_name, starting_id, pProperties);
 
+        // std::cout << "model_part nodes:" << std::endl;
+        // for(ModelPart::NodeIterator i = mpModelPart->NodesBegin() ; i != mpModelPart->NodesEnd() ; i++)
+        //     std::cout << " " << i->Id() << ": " << i->X0() << " " << i->Y0() << " " << i->Z0() << std::endl;
+
         for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
             mpModelPart->Conditions().push_back(*it);
+
+            // std::cout << "condition nodes:" << std::endl;
+            // for (std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i)
+            //     std::cout << " " << (*it)->GetGeometry()[i].Id() << ":"
+            //               << " " << (*it)->GetGeometry()[i].X0()
+            //               << " " << (*it)->GetGeometry()[i].Y0()
+            //               << " " << (*it)->GetGeometry()[i].Z0()
+            //               << std::endl;
         }
 
         // sort the condition container and make it consistent
@@ -243,8 +290,8 @@ public:
             // check if the grid function existed in the patch
             if (!it->template HasGridFunction<TVariableType>(rVariable))
             {
-                // if not then create the new grid function
-                typename ControlGrid<typename TVariableType::Type>::Pointer pNewControlGrid = UnstructuredControlGrid<typename TVariableType::Type>::Create(it->pFESpace()->TotalNumber());
+                // --> if not then create the new grid function
+                typename ControlGrid<typename TVariableType::Type>::Pointer pNewControlGrid = ControlGridUtility::CreateControlGrid<TDim, TVariableType>(it->pFESpace(), rVariable);
                 it->template CreateGridFunction<TVariableType>(rVariable, pNewControlGrid);
             }
 
@@ -340,6 +387,8 @@ public:
 
             // create the geometry
             p_temp_geometry = boost::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
+            if (p_temp_geometry == NULL)
+                KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
 
             p_temp_geometry->AssignGeometryData(dummy,
                                                 dummy,
@@ -351,6 +400,17 @@ public:
                                                 static_cast<int>(pFESpace->Order(1)),
                                                 static_cast<int>(pFESpace->Order(2)),
                                                 max_integration_method);
+
+            #ifdef DEBUG_GEN_ENTITY
+            for (int irule = 0; irule < max_integration_method; ++irule)
+            {
+                std::cout << "integration points for rule " << irule << ":" << std::endl;
+                typedef typename IsogeometricGeometryType::IntegrationPointsArrayType IntegrationPointsArrayType;
+                const IntegrationPointsArrayType& integration_points = p_temp_geometry->IntegrationPoints((GeometryData::IntegrationMethod) irule);
+                for (std::size_t i = 0; i < integration_points.size(); ++i)
+                    std::cout << " " << i << ": " << integration_points[i] << std::endl;
+            }
+            #endif
 
             // create the element and add to the list
             typename TEntityType::Pointer pNewElement = r_clone_element.Create(cnt++, p_temp_geometry, p_temp_properties);

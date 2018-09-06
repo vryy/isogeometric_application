@@ -22,8 +22,47 @@
 namespace Kratos
 {
 
+template<int TDim, typename TDataType>
+struct GridFunction_GetDerivative_Helper
+{
+    typedef FESpace<TDim> FESpaceType;
+    typedef ControlGrid<TDataType> ControlGridType;
+
+    template<typename TCoordinatesType>
+    static void GetDerivative(std::vector<TDataType>& dv, const TCoordinatesType& xi,
+        const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
+    {
+        // firstly get the values and derivatives of all the basis functions
+        std::vector<std::vector<double> > f_derivatives;
+        rFESpace.GetDerivative(f_derivatives, xi);
+
+        // rFESpace.PrintInfo(std::cout); std::cout << std::endl;
+
+        // for (int i = 0; i < f_derivatives.size(); ++i)
+        // {
+        //     std::cout << "f_derivatives[" << i << "]:";
+        //     for (int j = 0; j < f_derivatives[i].size(); ++j)
+        //         std::cout << " " << f_derivatives[i][j];
+        //     std::cout << std::endl;
+        // }
+
+        // then interpolate the derivative at local coordinates using the control values
+        if (dv.size() != TDim)
+            dv.resize(TDim);
+
+        for (int dim = 0; dim < TDim; ++dim)
+            dv[dim] = f_derivatives[0][dim] * r_control_grid.GetData(0);
+
+        for (std::size_t i = 1; i < r_control_grid.size(); ++i)
+        {
+            for (int dim = 0; dim < TDim; ++dim)
+                dv[dim] += f_derivatives[i][dim] * r_control_grid.GetData(i);
+        }
+    }
+};
+
 /**
-A grid function is a function defined over the parametric domain. It takes the control values at grid point and interpolate the corresponding physical terms.
+ * A grid function is a function defined over the parametric domain. It takes the control values at grid point and interpolate the corresponding physical terms.
  */
 template<int TDim, typename TDataType>
 class GridFunction
@@ -33,54 +72,91 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(GridFunction);
 
     /// Type definition
+    typedef TDataType DataType;
     typedef std::vector<TDataType> DataContainerType;
+    typedef FESpace<TDim> FESpaceType;
+    typedef ControlGrid<TDataType> ControlGridType;
 
     /// Default constructor
-    GridFunction(typename FESpace<TDim>::Pointer pFESpace, typename ControlGrid<TDataType>::Pointer pControlGrid)
+    GridFunction(typename FESpaceType::Pointer pFESpace, typename ControlGridType::Pointer pControlGrid)
     : mpFESpace(pFESpace), mpControlGrid(pControlGrid) {}
 
     /// Destructor
     virtual ~GridFunction() {}
 
     /// Helper to create the new instance of grid function
-    static typename GridFunction<TDim, TDataType>::Pointer Create(typename FESpace<TDim>::Pointer pFESpace, typename ControlGrid<TDataType>::Pointer pControlGrid)
+    static typename GridFunction<TDim, TDataType>::Pointer Create(typename FESpaceType::Pointer pFESpace, typename ControlGridType::Pointer pControlGrid)
     {
         return typename GridFunction<TDim, TDataType>::Pointer(new GridFunction<TDim, TDataType>(pFESpace, pControlGrid));
     }
 
     /// Set the FESpace
-    void SetFESpace(typename FESpace<TDim>::Pointer pNewFESpace) {mpFESpace = pNewFESpace;} // use this with care
+    void SetFESpace(typename FESpaceType::Pointer pNewFESpace) {mpFESpace = pNewFESpace;} // use this with care
 
     /// Get the FESpace pointer
-    typename FESpace<TDim>::Pointer pFESpace() {return mpFESpace;}
+    typename FESpaceType::Pointer pFESpace() {return mpFESpace;}
 
     /// Get the FESpace pointer
-    typename FESpace<TDim>::ConstPointer pFESpace() const {return mpFESpace;}
+    typename FESpaceType::ConstPointer pFESpace() const {return mpFESpace;}
 
     /// Set the control grid
-    void SetControlGrid(typename ControlGrid<TDataType>::Pointer pNewControlGrid) {mpControlGrid = pNewControlGrid;} // use this with care
+    /// Remarks: this function will effectively replace the underlying control grid, so use this with care
+    void SetControlGrid(typename ControlGridType::Pointer pNewControlGrid) {mpControlGrid = pNewControlGrid;}
 
     /// Get the control grid pointer
-    typename ControlGrid<TDataType>::Pointer pControlGrid() {return mpControlGrid;}
+    typename ControlGridType::Pointer pControlGrid() {return mpControlGrid;}
 
     /// Get the control grid pointer
-    typename ControlGrid<TDataType>::ConstPointer pControlGrid() const {return mpControlGrid;}
+    typename ControlGridType::ConstPointer pControlGrid() const {return mpControlGrid;}
+
+    /// Get the value of the grid at specific local coordinates
+    /// The function values to interpolate the grid value are provided by FESpace. In the case of NURBS,
+    /// either FESpace or grid value must contain weight information. For examples, if TDataType is CONTROL_POINT,
+    /// the FESpace must be an unweighted one.
+    template<typename TCoordinatesType>
+    void GetValue(TDataType& v, const TCoordinatesType& xi) const
+    {
+        // firstly get the values of all the basis functions
+        std::vector<double> f_values;
+        pFESpace()->GetValue(f_values, xi);
+
+        // then interpolate the value at local coordinates using the control values
+        const ControlGridType& r_control_grid = *pControlGrid();
+
+        v = f_values[0] * r_control_grid.GetData(0);
+        for (std::size_t i = 1; i < r_control_grid.size(); ++i)
+            v += f_values[i] * r_control_grid.GetData(i);
+    }
 
     /// Get the value of the grid at specific local coordinates
     template<typename TCoordinatesType>
     TDataType GetValue(const TCoordinatesType& xi) const
     {
-        // firstly get the values of all the basis functions
-        std::vector<double> f_values = pFESpace()->GetValue(xi);
-
-        // then interpolate the value at local coordinates using the control values
-        const ControlGrid<TDataType>& r_control_grid = *pControlGrid();
-
-        TDataType v = f_values[0] * r_control_grid.GetData(0);
-        for (std::size_t i = 1; i < r_control_grid.size(); ++i)
-            v += f_values[i] * r_control_grid.GetData(i);
-
+        TDataType v;
+        this->GetValue(v, xi);
         return v;
+    }
+
+    /// Get the derivatives of the grid at specific local coordinates
+    /// The output values has the form: d_values(xi) / d_xi_0, d_values(xi) / d_xi_1, ...
+    /// The function derivatives to interpolate the grid value are provided by FESpace. Hence, the TDataType must
+    /// be unweighted type, in order to have correct derivative values. Because, homogeous transformation
+    /// is not applied for derivatives. If TDataType is a weighted type, e.g. CONTROL_POINT, one must change to
+    /// use the unweighted one, e.g. CONTROL_POINT_COORDINATES.
+    template<typename TCoordinatesType>
+    void GetDerivative(std::vector<TDataType>& dv, const TCoordinatesType& xi) const
+    {
+        GridFunction_GetDerivative_Helper<TDim, TDataType>::GetDerivative(dv, xi, *pFESpace(), *pControlGrid());
+    }
+
+    /// Get the derivatives of the grid at specific local coordinates
+    /// The return values has the form: d_values(xi) / d_xi_0, d_values(xi) / d_xi_1, ...
+    template<typename TCoordinatesType>
+    std::vector<TDataType> GetDerivative(const TCoordinatesType& xi) const
+    {
+        std::vector<TDataType> dv(TDim);
+        this->GetDerivative(dv, xi);
+        return dv;
     }
 
     /// Check the compatibility between the underlying control grid and fe space.
@@ -111,7 +187,7 @@ public:
     std::string Info() const
     {
         std::stringstream ss;
-        ss << "GridFunction" << TDim << "D";
+        ss << "GridFunction" << TDim << "D_" << mpControlGrid->Name();
         return ss.str();
     }
 
@@ -132,10 +208,11 @@ public:
 
 private:
 
-    typename FESpace<TDim>::Pointer mpFESpace;
-    typename ControlGrid<TDataType>::Pointer mpControlGrid;
+    typename FESpaceType::Pointer mpFESpace;
+    typename ControlGridType::Pointer mpControlGrid;
 
 };
+
 
 /// output stream function
 template<int TDim, typename TDataType>

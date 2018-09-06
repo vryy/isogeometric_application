@@ -59,7 +59,11 @@ public:
 
     /// Destructor
     virtual ~CellManager()
-    {}
+    {
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+        this->PrintInfo(std::cout); std::cout << ", Addr = " << this << " is destroyed" << std::endl;
+        #endif
+    }
 
     /// Set the tolerance for the internal searching algorithm
     void SetTolerance(const double& Tol) {mTol = Tol;}
@@ -155,7 +159,11 @@ public:
         {
             iterator it_cell = this->begin();
             hit = this->CollapseCells(it_cell, this->end());
-            if (hit) this->erase(*it_cell);
+            if (hit)
+            {
+                (*it_cell)->ClearTrace();
+                this->erase(*it_cell);
+            }
         } while (hit);
     }
 
@@ -172,6 +180,7 @@ public:
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
+        rOStream << "CellManager";
     }
 
     virtual void PrintData(std::ostream& rOStream) const

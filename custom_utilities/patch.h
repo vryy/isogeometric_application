@@ -29,8 +29,6 @@
 #include "custom_utilities/control_grid_utility.h"
 #include "isogeometric_application/isogeometric_application.h"
 
-#define DEBUG_DESTROY
-
 #define CONVERT_INDEX_IGA_TO_KRATOS(n) (n+1)
 #define CONVERT_INDEX_KRATOS_TO_IGA(n) (n-1)
 
@@ -57,6 +55,8 @@ public:
     typedef ControlPoint<double> ControlPointType;
     typedef Transformation<double> TransformationType;
 
+    typedef std::map<std::string, boost::any> GridFunctionContainerType;
+
     typedef GridFunction<TDim, double> DoubleGridFunctionType;
     typedef std::vector<typename DoubleGridFunctionType::Pointer> DoubleGridFunctionContainerType;
 
@@ -78,12 +78,12 @@ public:
     typedef FESpace<TDim> FESpaceType;
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : mId(Id), mpFESpace(NULL)
+    Patch(const std::size_t& Id) : mId(Id), mpFESpace(NULL), mPrefix("Patch")
     {
     }
 
     /// Constructor with id and FESpace
-    Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace) : mId(Id), mpFESpace(pFESpace)
+    Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace) : mId(Id), mpFESpace(pFESpace), mPrefix("Patch")
     {
         if (mpFESpace == NULL)
             KRATOS_THROW_ERROR(std::logic_error, "Invalid FESpace is provided", "")
@@ -92,7 +92,7 @@ public:
     /// Destructor
     virtual ~Patch()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Id = " << Id()
                   << ", " << mpFESpace->Type()
                   << ", Addr = " << this << " is destroyed" << std::endl;
@@ -108,8 +108,22 @@ public:
     /// Get the working space dimension of the patch
     std::size_t WorkingSpaceDimension() const {return TDim;}
 
+    /// Set the prefix for the patch
+    void SetPrefix(const std::string& prefix) {mPrefix = prefix;}
+
+    /// Get the prefix of the patch
+    const std::string& Prefix() const {return mPrefix;}
+
     /// Set the Id of this patch
     void SetId(const std::size_t& Id) {mId = Id;}
+
+    /// Get the name of the patch. The name is prefix + id
+    std::string Name() const
+    {
+        std::stringstream ss;
+        ss << mPrefix << "_" << mId;
+        return ss.str();
+    }
 
     /// Get the Id of this patch
     const std::size_t& Id() const {return mId;}
@@ -173,7 +187,16 @@ public:
         CheckSize(*pControlPointGrid, __FUNCTION__);
         pControlPointGrid->SetName("CONTROL_POINT");
         typename GridFunction<TDim, ControlPointType>::Pointer pNewGridFunc = GridFunction<TDim, ControlPointType>::Create(mpFESpace, pControlPointGrid);
-        mpGridFunctions.push_back(pNewGridFunc);
+        mpGridFunctions["CONTROL_POINT"] = pNewGridFunc;
+
+        // create additional grid for control point coordinates, in order to compute the derivatives
+        typedef typename ControlPointType::CoordinatesType CoordinatesType;
+        ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
+        pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
+        typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
+        typename GridFunction<TDim, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
+        mpGridFunctions["CONTROL_POINT_COORDINATES"] = pNewCoordinatesGridFunc;
+
         return pNewGridFunc;
     }
 
@@ -216,7 +239,7 @@ public:
         CheckSize(*pControlGrid, __FUNCTION__);
         typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
         typename GridFunction<TDim, TDataType>::Pointer pNewGridFunc = GridFunction<TDim, TDataType>::Create(pNewFESpace, pControlGrid);
-        mpGridFunctions.push_back(pNewGridFunc);
+        mpGridFunctions[pControlGrid->Name()] = pNewGridFunc;
         return pNewGridFunc;
     }
 
@@ -234,11 +257,11 @@ public:
     typename GridFunction<TDim, typename TVariableType::Type>::Pointer pGetGridFunction(const TVariableType& rVariable)
     {
         typedef typename GridFunction<TDim, typename TVariableType::Type>::Pointer GridFunctionPointerType;
-        for (std::size_t i = 0; i < mpGridFunctions.size(); ++i)
+        for (GridFunctionContainerType::iterator it = mpGridFunctions.begin(); it != mpGridFunctions.end(); ++it)
         {
             try
             {
-                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(mpGridFunctions[i]);
+                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
                 if (pGridFunc->pControlGrid()->Name() == rVariable.Name())
                     return pGridFunc;
             }
@@ -258,11 +281,11 @@ public:
     typename GridFunction<TDim, typename TVariableType::Type>::ConstPointer pGetGridFunction(const TVariableType& rVariable) const
     {
         typedef typename GridFunction<TDim, typename TVariableType::Type>::Pointer GridFunctionPointerType;
-        for (std::size_t i = 0; i < mpGridFunctions.size(); ++i)
+        for (GridFunctionContainerType::const_iterator it = mpGridFunctions.begin(); it != mpGridFunctions.end(); ++it)
         {
             try
             {
-                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(mpGridFunctions[i]);
+                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
                 if (pGridFunc->pControlGrid()->Name() == rVariable.Name())
                     return pGridFunc;
             }
@@ -374,6 +397,7 @@ public:
         std::vector<std::size_t> local_ids = this->pFESpace()->LocalId(pBFESpace->FunctionIndices());
 
         // transfer the control values
+        std::cout << "Control point grid function " << this->pControlPointGridFunction()->pControlGrid()->Name() << " will be constructed" << std::endl;
 //        typename ControlGrid<ControlPointType>::Pointer pBoundaryControlPointGrid = ControlGridUtility::ExtractSubGrid<ControlPointType>(this->pControlPointGridFunction()->pControlGrid(), local_ids);
         typename ControlGrid<ControlPointType>::Pointer pBoundaryControlPointGrid = ControlGridUtility::ExtractSubGrid<TDim, ControlPointType>(this->pControlPointGridFunction()->pControlGrid(), *(this->pFESpace()), *pBFESpace);
         pBPatch->CreateControlPointGridFunction(pBoundaryControlPointGrid);
@@ -383,27 +407,31 @@ public:
         for (typename DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
                 it != DoubleGridFunctions_.end(); ++it)
         {
+            std::cout << "Double grid function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
 //            typename ControlGrid<double>::Pointer pBoundaryDoubleControlGrid = ControlGridUtility::ExtractSubGrid<double>((*it)->pControlGrid(), local_ids);
             typename ControlGrid<double>::Pointer pBoundaryDoubleControlGrid = ControlGridUtility::ExtractSubGrid<TDim, double>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
-            pBPatch->CreateGridFunction<double>(pBoundaryDoubleControlGrid);
+            pBPatch->template CreateGridFunction<double>(pBoundaryDoubleControlGrid);
         }
 
         Array1DGridFunctionContainerType Array1DGridFunctions_ = this->Array1DGridFunctions();
         for (typename Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
                 it != Array1DGridFunctions_.end(); ++it)
         {
+            if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
+            std::cout << "Array1D function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
 //            typename ControlGrid<array_1d<double, 3> >::Pointer pBoundaryArray1DControlGrid = ControlGridUtility::ExtractSubGrid<array_1d<double, 3> >((*it)->pControlGrid(), local_ids);
             typename ControlGrid<array_1d<double, 3> >::Pointer pBoundaryArray1DControlGrid = ControlGridUtility::ExtractSubGrid<TDim, array_1d<double, 3> >((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
-            pBPatch->CreateGridFunction<array_1d<double, 3> >(pBoundaryArray1DControlGrid);
+            pBPatch->template CreateGridFunction<array_1d<double, 3> >(pBoundaryArray1DControlGrid);
         }
 
         VectorGridFunctionContainerType VectorGridFunctions_ = this->VectorGridFunctions();
         for (typename VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
                 it != VectorGridFunctions_.end(); ++it)
         {
+            std::cout << "Vector grid function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
 //            typename ControlGrid<Vector>::Pointer pBoundaryVectorControlGrid = ControlGridUtility::ExtractSubGrid<Vector>((*it)->pControlGrid(), local_ids);
             typename ControlGrid<Vector>::Pointer pBoundaryVectorControlGrid = ControlGridUtility::ExtractSubGrid<TDim, Vector>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
-            pBPatch->CreateGridFunction<Vector>(pBoundaryVectorControlGrid);
+            pBPatch->template CreateGridFunction<Vector>(pBoundaryVectorControlGrid);
         }
 
         return pBPatch;
@@ -446,6 +474,21 @@ public:
     /// Add an interface to the patch
     void AddInterface(typename PatchInterface<TDim>::Pointer pInterface)
     {
+        if (&(*(pInterface->pPatch1())) != this)
+        {
+            std::cout << "WARNING: the patch 1 of the interface is not the same as this patch, skipped." << std::endl;
+            return;
+        }
+
+        for (std::size_t i = 0; i < mpInterfaces.size(); ++i)
+        {
+            if (*mpInterfaces[i] == *pInterface)
+            {
+                std::cout << "WARNING: the interface exist in this patch, skipped." << std::endl;
+                return;
+            }
+        }
+
         mpInterfaces.push_back(pInterface);
     }
 
@@ -664,13 +707,14 @@ public:
 private:
 
     std::size_t mId;
+    std::string mPrefix;
 
     // FESpace contains the shape function information and various information with regards to the functional space.
     // Because the control point grid is in homogeneous coordinates, the FESpace shall be an unweighted spaces
     typename FESpace<TDim>::Pointer mpFESpace;
 
     // container to contain all the grid functions
-    std::vector<boost::any> mpGridFunctions; // using boost::any to store pointer to grid function
+    GridFunctionContainerType mpGridFunctions; // using boost::any to store pointer to grid function
 
     /**
      * interface data
@@ -711,17 +755,17 @@ private:
 
     /// Helper to extract the grid functions out from boost::any
     template<class TContainerType>
-    TContainerType ExtractGridFunctions(const std::vector<boost::any>& pGridFunctions) const
+    TContainerType ExtractGridFunctions(const GridFunctionContainerType& pGridFunctions) const
     {
         TContainerType GridFuncs;
 
         typedef typename TContainerType::value_type GridFunctionPointerType;
 
-        for (std::size_t i = 0; i < pGridFunctions.size(); ++i)
+        for (GridFunctionContainerType::const_iterator it = pGridFunctions.begin(); it != pGridFunctions.end(); ++it)
         {
             try
             {
-                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(pGridFunctions[i]);
+                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
                 GridFuncs.push_back(pGridFunc);
             }
             catch (boost::bad_any_cast& e)
@@ -735,11 +779,11 @@ private:
 
     /// Helper to extract the variables out from Grid functions. It is important that the variable is already registered to the Kratos kernel.
     template<class TVariableType>
-    std::vector<TVariableType*> ExtractVariables(const std::vector<boost::any>& pGridFunctions) const
+    std::vector<TVariableType*> ExtractVariables(const GridFunctionContainerType& pGridFunctions) const
     {
         typedef GridFunction<TDim, typename TVariableType::Type> GridFunctionType;
-        typedef std::vector<typename GridFunctionType::Pointer> GridFunctionContainerType;
-        GridFunctionContainerType GridFuncs = this->ExtractGridFunctions<GridFunctionContainerType>(pGridFunctions);
+        typedef std::vector<typename GridFunctionType::Pointer> GridFunctionVectorContainerType;
+        GridFunctionVectorContainerType GridFuncs = this->ExtractGridFunctions<GridFunctionVectorContainerType>(pGridFunctions);
 
         std::vector<TVariableType*> var_list;
         for (std::size_t i = 0; i < GridFuncs.size(); ++i)
@@ -1058,8 +1102,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Patch<TDim>& rThi
 }
 
 } // namespace Kratos.
-
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PATCH_H_INCLUDED defined
 

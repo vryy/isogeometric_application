@@ -358,7 +358,7 @@ public:
 
     virtual GeometryData::KratosGeometryFamily GetGeometryFamily()
     {
-        return GeometryData::Kratos_generic_family;
+        return GeometryData::Kratos_NURBS;
     }
 
     virtual GeometryData::KratosGeometryType GetGeometryType()
@@ -480,7 +480,7 @@ public:
     }
 
     /**
-     * TODO
+     * Compute the Jacobian in reference configuration
      */
     virtual JacobiansType& Jacobian0( JacobiansType& rResult, IntegrationMethod ThisMethod ) const
     {
@@ -488,6 +488,9 @@ public:
         return rResult;
     }
 
+    /**
+     * Compute the global coordinates in "[TODO]" configuration
+     */
     virtual CoordinatesArrayType& GlobalCoordinates( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
     {
         noalias( rResult ) = ZeroVector( 3 );
@@ -504,17 +507,38 @@ public:
         return rResult;
     }
 
+    /**
+     * Compute the local coordinates of points
+     */
     virtual Matrix& PointsLocalCoordinates( Matrix& rResult ) const
     {
         KRATOS_THROW_ERROR( std::logic_error, "This function is not available for isogeometric geometry" , "" );
         return rResult;
     }
 
-    virtual void ExtractLocalCoordinates(PointsArrayType& rPoints)
+    /**
+     * Extract the control points from NURBS/Bezier geometry
+     */
+    virtual void ExtractControlPoints(PointsArrayType& rPoints)
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
     }
 
+    /**
+     * Extract the control values from NURBS/Bezier geometry
+     */
+    virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues)
+    {
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+    }
+
+    /**
+     * Extract the control values from NURBS/Bezier geometry
+     */
+    virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues)
+    {
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+    }
 
     /******************************************************
         OVERRIDE FROM GEOMETRY

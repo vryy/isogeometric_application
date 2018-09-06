@@ -16,7 +16,6 @@
 // Project includes
 #include "custom_utilities/patch_interface.h"
 
-#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -103,7 +102,7 @@ public:
     /// Destructor
     virtual ~BSplinesPatchInterface()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "BSplinesPatchInterface" << TDim << "D, Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
@@ -192,7 +191,4 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesPatchInte
 
 } // namespace Kratos.
 
-#undef DEBUG_DESTROY
-
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BSPLINES_PATCH_INTERFACE_H_INCLUDED defined
-

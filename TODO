@@ -1,6 +1,1 @@
-+ implement the multipatch conforming structure (in the reference coordinates) - WIP, good progress
-+ multipatch hierarchical NURBS - WIP
-+ export to GiD the multipatch results
-+ regenerate the model_part from multipatch structure
-
-
++ HB basis function: change to use weak pointer for cells and children basis functions

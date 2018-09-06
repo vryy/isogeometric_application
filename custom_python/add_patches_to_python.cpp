@@ -59,6 +59,18 @@ void Patch_SetId(TPatchType& rDummy, const std::size_t& Id)
 }
 
 template<class TPatchType>
+std::string Patch_GetPrefix(TPatchType& rDummy)
+{
+    return rDummy.Prefix();
+}
+
+template<class TPatchType>
+void Patch_SetPrefix(TPatchType& rDummy, const std::string& Prefix)
+{
+    rDummy.SetPrefix(Prefix);
+}
+
+template<class TPatchType>
 typename TPatchType::FESpaceType::Pointer Patch_pFESpace(TPatchType& rDummy)
 {
     return rDummy.pFESpace();
@@ -74,6 +86,19 @@ template<int TDim, class TVariableType>
 typename GridFunction<TDim, typename TVariableType::Type>::Pointer Patch_GridFunction(Patch<TDim>& rDummy, const TVariableType& rVariable)
 {
     return rDummy.template pGetGridFunction<TVariableType>(rVariable);
+}
+
+template<int TDim>
+typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, const std::size_t& i)
+{
+    return rDummy.pInterface(i);
+}
+
+template<int TDim>
+typename Patch<TDim-1>::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, const std::size_t& iside)
+{
+    BoundarySide side = static_cast<BoundarySide>(iside);
+    return rDummy.ConstructBoundaryPatch(side);
 }
 
 template<class TMultiPatchType>
@@ -116,6 +141,30 @@ std::size_t MultiPatch_Enumerate2(MultiPatch<TDim>& rDummy, const std::size_t& s
     return system_size;
 }
 
+template<int TDim>
+typename Patch<TDim>::Pointer PatchInterface_pPatch1(PatchInterface<TDim>& rDummy)
+{
+    return rDummy.pPatch1();
+}
+
+template<class TPatchInterfaceType>
+BoundarySide PatchInterface_Side1(TPatchInterfaceType& rDummy)
+{
+    return rDummy.Side1();
+}
+
+template<int TDim>
+typename Patch<TDim>::Pointer PatchInterface_pPatch2(PatchInterface<TDim>& rDummy)
+{
+    return rDummy.pPatch2();
+}
+
+template<class TPatchInterfaceType>
+BoundarySide PatchInterface_Side2(TPatchInterfaceType& rDummy)
+{
+    return rDummy.Side2();
+}
+
 ////////////////////////////////////////
 
 template<int TDim>
@@ -129,7 +178,9 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     // class_<Patch<TDim>, typename Patch<TDim>::Pointer >
     (ss.str().c_str(), init<const std::size_t&, typename FESpace<TDim>::Pointer>())
     .add_property("Id", &Patch_GetId<Patch<TDim> >, &Patch_SetId<Patch<TDim> >)
+    .add_property("Prefix", &Patch_GetPrefix<Patch<TDim> >, &Patch_SetPrefix<Patch<TDim> >)
     .def("WorkingSpaceDimension", &Patch<TDim>::WorkingSpaceDimension)
+    .def("Name", &Patch<TDim>::Name)
     .def("CreateControlPointGridFunction", &Patch<TDim>::CreateControlPointGridFunction)
     .def("CreateGridFunction", &Patch_CreateGridFunction<TDim, double>)
     .def("CreateGridFunction", &Patch_CreateGridFunction<TDim, array_1d<double, 3> >)
@@ -142,6 +193,10 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("Order", &Patch<TDim>::Order)
     .def("TotalNumber", &Patch<TDim>::TotalNumber)
     .def("FESpace", &Patch_pFESpace<Patch<TDim> >)
+    .def("NumberOfInterfaces", &Patch<TDim>::NumberOfInterfaces)
+    .def("AddInterface", &Patch<TDim>::AddInterface)
+    .def("GetInterface", &Patch_GetInterface<TDim>)
+    .def("ConstructBoundaryPatch", &Patch_ConstructBoundaryPatch<TDim>)
     .def(self_ns::str(self))
     ;
 
@@ -159,11 +214,15 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
 
     ss.str(std::string());
     ss << "PatchInterface" << TDim << "D";
-    class_<PatchInterface<TDim> >
-    // class_<PatchInterface<TDim>, typename PatchInterface<TDim>::Pointer >
+    // class_<PatchInterface<TDim> >
+    class_<PatchInterface<TDim>, typename PatchInterface<TDim>::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def(init<typename Patch<TDim>::Pointer, const BoundarySide&, typename Patch<TDim>::Pointer, const BoundarySide&>())
-    // .def(self_ns::str(self))
+    .def("Patch1", &PatchInterface_pPatch1<TDim>)
+    .def("Patch2", &PatchInterface_pPatch2<TDim>)
+    .def("Side1", &PatchInterface_Side1<PatchInterface<TDim> >)
+    .def("Side2", &PatchInterface_Side2<PatchInterface<TDim> >)
+    .def(self_ns::str(self))
     ;
 
     ss.str(std::string());
@@ -285,6 +344,7 @@ void IsogeometricApplication_AddPatchesToPython()
 
     enum_<IsogeometricEchoFlags>("IsogeometricEchoFlags")
     .value("ECHO_REFINEMENT", ECHO_REFINEMENT)
+    .value("ECHO_REFINEMENT_DETAIL", ECHO_REFINEMENT_DETAIL)
     ;
 
     IsogeometricApplication_AddPatchesToPython_Helper<1>();

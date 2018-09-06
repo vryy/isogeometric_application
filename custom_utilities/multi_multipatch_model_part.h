@@ -149,8 +149,7 @@ public:
         #endif
     }
 
-    /// create the conditions out from the patches and add to the model_part
-    /// TODO find the way to parallelize this
+    /// create the elements out from the patches and add to the model_part
     ModelPart::ElementsContainerType AddElements(std::vector<typename Patch<TDim>::Pointer> pPatches,
             const std::string& element_name,
             const std::size_t& starting_id, Properties::Pointer pProperties)
@@ -196,6 +195,54 @@ public:
         #endif
 
         return pNewElements;
+    }
+
+    /// create the elements out from the patches and add to the model_part
+    ModelPart::ConditionsContainerType AddConditions(std::vector<typename Patch<TDim>::Pointer> pPatches,
+            const std::string& condition_name,
+            const std::size_t& starting_id, Properties::Pointer pProperties)
+    {
+        if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding elements
+
+        #ifdef ENABLE_PROFILING
+        double start = OpenMPUtils::GetCurrentTime();
+        #endif
+
+        // get the list of FESpaces and control grids
+        std::vector<typename FESpace<TDim>::ConstPointer> pFESpaces;
+        std::vector<typename ControlGrid<ControlPointType>::ConstPointer> pControlGrids;
+
+        for (std::size_t i = 0; i < pPatches.size(); ++i)
+        {
+            pFESpaces.push_back(pPatches[i]->pFESpace());
+            const GridFunction<TDim, ControlPointType>& rControlPointGridFunction = pPatches[i]->ControlPointGridFunction();
+            pControlGrids.push_back(rControlPointGridFunction.pControlGrid());
+        }
+
+        // create new elements and add to the model_part
+        ModelPart::ConditionsContainerType pNewConditions = this->CreateEntitiesFromFESpace<Condition, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(
+            pFESpaces,
+            pControlGrids,
+            mpModelPart->Nodes(),
+            condition_name,
+            starting_id,
+            pProperties);
+
+        for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
+        {
+            mpModelPart->Conditions().push_back(*it);
+        }
+
+        // sort the element container and make it consistent
+        mpModelPart->Conditions().Unique();
+
+        #ifdef ENABLE_PROFILING
+        std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, " << pNewConditions.size() << " conditions of type " << condition_name << " are generated" << std::endl;
+        #else
+        std::cout << __FUNCTION__ << " completed" << std::endl;
+        #endif
+
+        return pNewConditions;
     }
 
     /// create the conditions out from the boundary of the patch and add to the model_part
@@ -431,6 +478,8 @@ private:
                 // create the geometry
                 typename IsogeometricGeometryType::Pointer p_temp_geometry
                     = boost::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
+                if (p_temp_geometry == NULL)
+                    KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
 
                 p_temp_geometry->AssignGeometryData(dummy,
                                                     dummy,

@@ -15,6 +15,15 @@
 namespace Kratos
 {
 
+#if defined(__GNUC__) || defined(__clang__)
+#define IGA_DEPRECATED __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define IGA_DEPRECATED __declspec(deprecated)
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#define IGA_DEPRECATED
+#endif
+
 enum BoundarySide
 {
     _BLEFT_   = 0,
@@ -128,9 +137,34 @@ struct ParameterDirection<3>
     }
 };
 
+struct ReversedBoundarySide
+{
+    static BoundarySide Get(const BoundarySide& side)
+    {
+        switch(side)
+        {
+            case _BLEFT_:    return _BRIGHT_;
+            case _BRIGHT_:   return _BLEFT_;
+            case _BFRONT_:   return _BBACK_;
+            case _BBACK_:    return _BFRONT_;
+            case _BTOP_:     return _BBOTTOM_;
+            case _BBOTTOM_:  return _BTOP_;
+        }
+    }
+};
+
 enum IsogeometricEchoFlags
 {
     ECHO_REFINEMENT   = 0b0000000000000001,
+    ECHO_REFINEMENT_DETAIL   = 0b0000000000000010,
+};
+
+struct IsogeometricEchoCheck
+{
+    static bool Has(const int& echo_level, const int& echo_flag)
+    {
+        return ((echo_level & echo_flag) == echo_flag);
+    }
 };
 
 enum PreElementType

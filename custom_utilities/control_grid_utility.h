@@ -19,10 +19,12 @@
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/fespace.h"
-#include "custom_utilities/nurbs/bsplines_fespace.h"
 #include "custom_utilities/unstructured_control_grid.h"
-#include "custom_utilities/nurbs/structured_control_grid.h"
 #include "custom_utilities/point_based_control_grid.h"
+#include "custom_utilities/nurbs/bsplines_fespace.h"
+#include "custom_utilities/nurbs/structured_control_grid.h"
+#include "custom_utilities/hbsplines/hbsplines_fespace.h"
+
 
 namespace Kratos
 {
@@ -161,6 +163,42 @@ public:
 
 
 
+    /// Helper function to create a control grid that is compatible with the FESpace
+    template<int TDim, class TVariableType>
+    static typename ControlGrid<typename TVariableType::Type>::Pointer CreateControlGrid(
+        const typename FESpace<TDim>::Pointer pFESpace, const TVariableType& rVariable)
+    {
+        if (typeid(*pFESpace) == typeid(BSplinesFESpace<TDim>))
+        {
+            const BSplinesFESpace<TDim>& rFESpace = dynamic_cast<const BSplinesFESpace<TDim>&>(*pFESpace);
+            return StructuredControlGrid<TDim, typename TVariableType::Type>::Create(rFESpace.Numbers());
+        }
+        else if (typeid(*pFESpace) == typeid(HBSplinesFESpace<TDim>))
+        {
+            typename HBSplinesFESpace<TDim>::Pointer pHbFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pFESpace);
+            return CreatePointBasedControlGrid<typename TVariableType::Type, HBSplinesFESpace<TDim> >(rVariable, pHbFESpace);
+        }
+        else
+            return UnstructuredControlGrid<typename TVariableType::Type>::Create(pFESpace->TotalNumber());
+    }
+
+
+
+    /// Helper function to create the unstructured control value grid
+    template<typename TControlValueType>
+    static typename ControlGrid<typename TControlValueType::DataType>::Pointer CreateControlPointValueGrid(
+            typename ControlGrid<TControlValueType>::ConstPointer pControlPointGrid)
+    {
+        typedef ControlGrid<typename TControlValueType::DataType> ControlPointValueGridType;
+        typename ControlPointValueGridType::Pointer pControlPointValueGrid
+            = typename ControlPointValueGridType::Pointer(new UnstructuredControlGrid<typename TControlValueType::DataType>(pControlPointGrid->size()));
+        for (std::size_t i = 0; i < pControlPointGrid->size(); ++i)
+            pControlPointValueGrid->SetData(i, pControlPointGrid->GetData(i).V());
+        return pControlPointValueGrid;
+    }
+
+
+
     /// Helper function to extract some control values to a new control grid based on indices
     /// The returned grid is assumed to be unstructured by default
     template<typename TDataType>
@@ -169,7 +207,18 @@ public:
     {
         typename UnstructuredControlGrid<TDataType>::Pointer pNewControlGrid = UnstructuredControlGrid<TDataType>::Create(indices.size());
         for (std::size_t i = 0; i < indices.size(); ++i)
+        {
+            if (indices[i] >= pControlGrid->Size())
+            {
+                std::stringstream ss;
+                ss << "index " << indices[i] << " exceeds the size (" << pControlGrid->Size() << ") of the control grid" << std::endl;
+                ss << "indices:";
+                for (std::size_t j = 0; j < indices.size(); ++j)
+                    ss << " " << indices[j];
+                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            }
             pNewControlGrid->SetData(i, pControlGrid->GetData(indices[i]));
+        }
         return pNewControlGrid;
     }
 
@@ -180,6 +229,21 @@ public:
     static typename ControlGrid<TDataType>::Pointer ExtractSubGrid(typename ControlGrid<TDataType>::ConstPointer pControlGrid,
             const FESpace<TDim>& rFESpace, const FESpace<TDim-1>& rSubFESpace)
     {
+        std::cout << "rFESpace.FunctionIndices:";
+        for (int i = 0; i < rFESpace.FunctionIndices().size(); ++i)
+            std::cout << " " << rFESpace.FunctionIndices()[i];
+        std::cout << std::endl;
+
+        std::cout << "rSubFESpace.FunctionIndices:";
+        for (int i = 0; i < rSubFESpace.FunctionIndices().size(); ++i)
+            std::cout << " " << rSubFESpace.FunctionIndices()[i];
+        std::cout << std::endl;
+
+        std::cout << "pControlGrid " << " type: " << typeid(*pControlGrid).name() << " (" << pControlGrid->Name() << ") (" << pControlGrid->Size() << "):";
+        for (int i = 0; i < pControlGrid->Size(); ++i)
+            std::cout << "\n " << pControlGrid->GetData(i);
+        std::cout << std::endl;
+
         std::vector<std::size_t> local_ids = rFESpace.LocalId(rSubFESpace.FunctionIndices());
         typename ControlGrid<TDataType>::Pointer pTmpControlGrid = ExtractSubGrid<TDataType>(pControlGrid, local_ids);
 

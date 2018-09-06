@@ -89,6 +89,21 @@ std::size_t MultiPatchUtility_GetEquationId(MultiPatchUtility& rDummy, ModelPart
     return rDummy.GetEquationId(rNode, rVariable);
 }
 
+std::size_t MultiPatchUtility_BoundaryFlag(MultiPatchUtility& rDummy, const BoundarySide& side)
+{
+    return BOUNDARY_FLAG(side);
+}
+
+std::size_t MultiPatchUtility_BoundaryFlag2D(MultiPatchUtility& rDummy, const BoundarySide2D& side)
+{
+    return BOUNDARY_FLAG(side);
+}
+
+std::size_t MultiPatchUtility_BoundaryFlag3D(MultiPatchUtility& rDummy, const BoundarySide3D& side)
+{
+    return BOUNDARY_FLAG(side);
+}
+
 template<class TClassType>
 void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassType::Pointer pInstance)
 {
@@ -206,6 +221,23 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatch(BSplines
     return BSplinesPatchUtility::CreateConnectedPatch<TDim>(pPatch1, pPatch2);
 }
 
+template<int TDim>
+typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatch2(BSplinesPatchUtility& dummy,
+        boost::python::list patch_list, const int& order)
+{
+    std::vector<typename Patch<TDim-1>::Pointer> pPatches;
+
+    typedef boost::python::stl_input_iterator<typename Patch<TDim-1>::Pointer> iterator_value_type;
+    BOOST_FOREACH(const typename iterator_value_type::value_type& pPatch,
+                std::make_pair(iterator_value_type(patch_list), // begin
+                iterator_value_type() ) ) // end
+    {
+        pPatches.push_back(pPatch);
+    }
+
+    return BSplinesPatchUtility::CreateConnectedPatch<TDim>(pPatches, order);
+}
+
 boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility& dummy,
         const std::string& filename)
 {
@@ -239,6 +271,13 @@ void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
     BoundarySide side2 = static_cast<BoundarySide>(iside2);
     rDummy.MakeInterface3D(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
+}
+
+template<int TDim>
+void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
+    typename Patch<TDim>::Pointer pPatch, const std::size_t& idir)
+{
+    rDummy.Reverse<TDim>(pPatch, idir);
 }
 
 //////////////////////////////////////////////////
@@ -301,6 +340,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("ListModelPart", &MultiPatchUtility_ListModelPart)
     .def("GetEquationId", &MultiPatchUtility_GetEquationId<Variable<double> >)
     .def("GetEquationId", &MultiPatchUtility_GetEquationId<Kratos::VariableComponent<Kratos::VectorComponentAdaptor<Kratos::array_1d<double, 3> > > >)
+    .def("BoundaryFlag", &MultiPatchUtility_BoundaryFlag)
+    .def("BoundaryFlag", &MultiPatchUtility_BoundaryFlag2D)
+    .def("BoundaryFlag", &MultiPatchUtility_BoundaryFlag3D)
     .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<1> >)
     .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<2> >)
     .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<3> >)
@@ -311,9 +353,12 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<1>)
     .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<2>)
     .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<3>)
-    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<1>)
-    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<2>)
-    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<3>)
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<1>) // deprecated
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<2>) // deprecated
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<3>) // deprecated
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<1>)
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<2>)
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<3>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<1>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<2>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<3>)
@@ -323,9 +368,14 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     ("BSplinesPatchUtility", init<>())
     .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<2>)
     .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<3>)
+    .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch2<2>)
+    .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch2<3>)
     .def("CreatePatchFromGeo", &BSplinesPatchUtility_CreatePatchFromGeo)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface3D)
+    // .def("Reverse", &BSplinesPatchUtility_Reverse<1>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<2>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<3>)
     ;
 
     class_<BendingStripUtility, BendingStripUtility::Pointer, boost::noncopyable>

@@ -18,7 +18,6 @@
 // Project includes
 #include "includes/define.h"
 #include "containers/array_1d.h"
-#include "containers/pointer_vector_set.h"
 #include "custom_utilities/bezier_utils.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/fespace.h"
@@ -34,7 +33,6 @@
 #include "custom_utilities/hbsplines/hbsplines_basis_function.h"
 
 #define DEBUG_GEN_CELL
-#define DEBUG_DESTROY
 
 namespace Kratos
 {
@@ -90,7 +88,7 @@ public:
     /// Destructor
     virtual ~HBSplinesFESpace()
     {
-        #ifdef DEBUG_DESTROY
+        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
@@ -209,26 +207,88 @@ public:
 
     /// Get the values of the basis function i at point xi
     /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
-    virtual double GetValue(const std::size_t& i, const std::vector<double>& xi) const
+    virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
     {
         std::size_t j = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if (j == i) return (*it)->GetValue(xi);
+            if (j == i)
+            {
+                v = (*it)->GetValue(xi);
+                return;
+            }
             ++j;
         }
-        return 0.0;
+        v = 0.0;
     }
 
     /// Get the values of the basis functions at point xi
     /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
-    virtual std::vector<double> GetValue(const std::vector<double>& xi) const
+    virtual void GetValue(std::vector<double>& values, const std::vector<double>& xi) const
     {
-        std::vector<double> values(this->TotalNumber());
+        if (values.size() != this->TotalNumber())
+            values.resize(this->TotalNumber());
         std::size_t i = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
             values[i++] = (*it)->GetValue(xi);
-        return values;
+    }
+
+    /// Get the derivative of the basis function i at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
+    virtual void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
+    {
+        std::size_t j = 0;
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            if (j == i)
+            {
+                (*it)->GetDerivative(values, xi);
+                return;
+            }
+            ++j;
+        }
+        if (values.size() != TDim)
+            values.resize(TDim);
+        for (int dim = 0; dim < TDim; ++dim) values[dim] = 0.0;
+    }
+
+    /// Get the derivative of the basis functions at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
+    virtual void GetDerivative(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    {
+        if (values.size() != this->TotalNumber())
+            values.resize(this->TotalNumber());
+        std::size_t i = 0;
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            if (values[i].size() != TDim)
+                values[i].resize(TDim);
+            (*it)->GetDerivative(values[i], xi);
+            ++i;
+        }
+    }
+
+    /// Get the values and derivatives of the basis functions at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
+    virtual void GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+    {
+        if (values.size() != this->TotalNumber())
+            values.resize(this->TotalNumber());
+        if (derivatives.size() != this->TotalNumber())
+            derivatives.resize(this->TotalNumber());
+
+        std::size_t i = 0;
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            values[i] = (*it)->GetValue(xi);
+            if (derivatives[i].size() != TDim)
+                derivatives[i].resize(TDim);
+            (*it)->GetDerivative(derivatives[i], xi);
+            ++i;
+        }
     }
 
     /// Compare between two BSplines patches in terms of parametric information
@@ -286,7 +346,7 @@ public:
         }
     }
 
-    /// Reset the function indices to a given values.
+    /// Reset the function indices to -1.
     /// This is useful when assigning the id for the boundary patch.
     virtual void ResetFunctionIndices()
     {
@@ -319,8 +379,9 @@ public:
         }
     }
 
-    /// Enumerate the dofs of each grid function. The enumeration algorithm is pretty straightforward.
-    /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
+    /// Enumerate the dofs of each grid function. This function is used to initialize the equation id for all basis functions.
+    /// It shall not be used after refinement.
+    /// If the dof does not have pre-existing value, which assumes -1, it will be assigned the incremental value.
     virtual std::size_t& Enumerate(std::size_t& start)
     {
         BaseType::mGlobalToLocal.clear();
@@ -418,6 +479,52 @@ public:
         return last_id;
     }
 
+    /// Get the basis functions based on boundary flag. This allows to extract the corner bf.
+    std::vector<bf_t> ExtractBoundaryBfsByFlag(const std::size_t& boundary_id) const
+    {
+        // firstly we organize the basis functions based on its equation_id
+        // it may happen that one bf is encountered twice, so we use a map here
+        std::map<std::size_t, bf_t> map_bfs;
+        for (bf_iterator it_bf = bf_begin(); it_bf != bf_end(); ++it_bf)
+        {
+            if ((*it_bf)->IsOnSide(boundary_id))
+            {
+                typename std::map<std::size_t, bf_t>::iterator it = map_bfs.find((*it_bf)->EquationId());
+                if (it == map_bfs.end())
+                    map_bfs[(*it_bf)->EquationId()] = (*it_bf);
+                else
+                    if (it->second != (*it_bf))
+                        KRATOS_THROW_ERROR(std::logic_error, "There are two bfs with the same equation_id. This is not valid.", "")
+            }
+        }
+
+        // then we can extract the equation_id
+        std::vector<bf_t> bf_list(map_bfs.size());
+        std::size_t cnt = 0;
+        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
+        {
+            bf_list[cnt++] = it->second;
+        }
+
+        return bf_list;
+    }
+
+    /// Extract the index of the functions on the boundaries
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(const int& boundary_id) const
+    {
+        std::vector<bf_t> bfs = this->ExtractBoundaryBfsByFlag(boundary_id);
+
+        // then we can extract the equation_id
+        std::vector<std::size_t> func_indices(bfs.size());
+        std::size_t cnt = 0;
+        for (typename std::vector<bf_t>::iterator it = bfs.begin(); it != bfs.end(); ++it)
+        {
+            func_indices[cnt++] = (*it)->EquationId();
+        }
+
+        return func_indices;
+    }
+
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
     {
@@ -467,6 +574,8 @@ public:
         typedef HBSplinesFESpace<TDim-1> BoundaryFESpaceType;
         typename BoundaryFESpaceType::Pointer pBFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
 
+        std::map<std::size_t, std::size_t> ident_indices_map;
+
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
             if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
@@ -491,9 +600,14 @@ public:
                 }
 
                 pBFESpace->AddBf(pNewSubBf);
+                ident_indices_map[pNewSubBf->EquationId()] = pNewSubBf->EquationId();
             }
         }
 
+        // update the global to local map
+        pBFESpace->UpdateFunctionIndices(ident_indices_map);
+
+        // set the B-Splines information
         if (TDim == 2)
         {
             if ((side == _BLEFT_) || (side == _BRIGHT_))
@@ -598,6 +712,18 @@ public:
         // collapse the overlapping cells
         pBFESpace->pCellManager()->CollapseCells();
 
+        // update the cell support and extraction operator
+        pBFESpace->UpdateCells();
+
+        // re-add the supporting cells
+        for(typename BoundaryFESpaceType::cell_container_t::iterator it_cell = pBFESpace->pCellManager()->begin(); it_cell != pBFESpace->pCellManager()->end(); ++it_cell)
+        {
+            for(typename BoundaryFESpaceType::CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
+            {
+                (*it_bf).lock()->AddCell(*it_cell);
+            }
+        }
+
         return pBFESpace;
     }
 
@@ -614,18 +740,27 @@ public:
     /// Get the underlying cell manager
     typename cell_container_t::ConstPointer pCellManager() const {return mpCellManager;}
 
+    /// Clean the internal data of all the cells
+    void ResetCells()
+    {
+        for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
+            (*it_cell)->Reset();
+    }
+
     /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
     void UpdateCells()
     {
+        this->ResetCells();
+
         // for each cell compute the extraction operator and add to the anchor
         Vector Crow;
         for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
         {
-            (*it_cell)->Reset();
             for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
-                (*it_bf)->ComputeExtractionOperator(Crow, *it_cell);
-                (*it_cell)->AddAnchor((*it_bf)->Id(), (*it_bf)->GetValue(CONTROL_POINT).W(), Crow);
+                BasisFunctionType& bf = *(it_bf->lock());
+                bf.ComputeExtractionOperator(Crow, *it_cell);
+                (*it_cell)->AddAnchor(bf.EquationId(), bf.GetValue(CONTROL_POINT).W(), Crow);
             }
         }
     }
@@ -647,28 +782,6 @@ public:
             pCompatCellManager->insert(*it_cell);
 
         return pCompatCellManager;
-    }
-
-    /// Get the basis functions on side
-    std::vector<bf_t> GetBoundaryBfs(const std::size_t& boundary_id) const
-    {
-        // firstly we organize the basis functions based on its equation_id
-        std::map<std::size_t, bf_t> map_bfs;
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
-        {
-            if ((*it)->IsOnSide(boundary_id))
-                map_bfs[(*it)->EquationId()] = (*it);
-        }
-
-        // then we can extract the equation_id
-        std::vector<bf_t> bf_list(map_bfs.size());
-        std::size_t cnt = 0;
-        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
-        {
-            bf_list[cnt++] = it->second;
-        }
-
-        return bf_list;
     }
 
     /// Overload operator[], this allows to access the basis function randomly based on index
@@ -733,11 +846,13 @@ public:
 
     virtual void PrintData(std::ostream& rOStream) const
     {
+        BaseType::PrintData(rOStream);
+        rOStream << std::endl;
+        rOStream << "###################" << std::endl;
+
         // print the basis functions
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
-        {
             rOStream << *(*it) << std::endl;
-        }
 
         // print the cells in each level
         for (std::size_t level = 1; level < mLastLevel+1; ++level)
@@ -878,6 +993,9 @@ public:
     /// Get the underlying cell manager
     typename cell_container_t::ConstPointer pCellManager() const {return mpCellManager;}
 
+    /// Update the function indices using a map. The map shall be the mapping from old index to new index.
+    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map) {}
+
     /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
     void UpdateCells() {}
 
@@ -904,6 +1022,5 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesFESpace<
 } // namespace Kratos.
 
 #undef DEBUG_GEN_CELL    /// Get the underlying cell manager
-#undef DEBUG_DESTROY
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_FESPACE_H_INCLUDED defined

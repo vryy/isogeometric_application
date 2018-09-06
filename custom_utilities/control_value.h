@@ -29,6 +29,10 @@ template<typename TDataType, typename TWeightType>
 class ControlValue
 {
 public:
+    /// Type definitions
+    typedef TDataType DataType;
+    typedef TWeightType WeightType;
+
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(ControlValue);
 

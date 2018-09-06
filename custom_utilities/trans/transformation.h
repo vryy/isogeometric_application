@@ -19,7 +19,8 @@
 
 // Project includes
 #include "includes/define.h"
-#include "containers/array_1d.h"
+#include "utilities/math_utils.h"
+
 
 namespace Kratos
 {
@@ -36,15 +37,85 @@ public:
 
     /// Type definitions
     typedef boost::numeric::ublas::matrix<TDataType> MatrixType;
+    typedef boost::numeric::ublas::vector<TDataType> VectorType;
     typedef boost::numeric::ublas::zero_matrix<TDataType> ZeroMatrixType;
     typedef boost::numeric::ublas::identity_matrix<TDataType> IdentityMatrixType;
 
     /// Default constructor
     Transformation()
     {
-        mTransMat.resize(4, 4);
+        mTransMat.resize(4, 4, false);
         noalias(mTransMat) = IdentityMatrixType(4, 4);
     }
+
+    /// Constructor from location and three directional vectors
+    /// B & N are the normal vectors, T is tangent vector
+    Transformation(const VectorType& B, const VectorType& N, const VectorType& T, const VectorType& P)
+    {
+        mTransMat.resize(4, 4, false);
+        noalias(column(mTransMat, 0)) = B;
+        noalias(column(mTransMat, 1)) = N;
+        noalias(column(mTransMat, 2)) = T;
+        noalias(column(mTransMat, 3)) = P;
+        mTransMat(3, 0) = 0.0;
+        mTransMat(3, 1) = 0.0;
+        mTransMat(3, 2) = 0.0;
+        mTransMat(3, 3) = 1.0;
+    }
+
+    /// Constructor from location and three directional vectors
+    /// B & N are the normal vectors, T is tangent vector
+    Transformation(const array_1d<TDataType, 3>& B, const array_1d<TDataType, 3>& N, const array_1d<TDataType, 3>& T, const array_1d<TDataType, 3>& P)
+    {
+        mTransMat.resize(4, 4, false);
+        noalias(column(mTransMat, 0)) = B;
+        noalias(column(mTransMat, 1)) = N;
+        noalias(column(mTransMat, 2)) = T;
+        noalias(column(mTransMat, 3)) = P;
+        mTransMat(3, 0) = 0.0;
+        mTransMat(3, 1) = 0.0;
+        mTransMat(3, 2) = 0.0;
+        mTransMat(3, 3) = 1.0;
+    }
+
+    /// Constructor from location and two directional vectors. The remaining one is computed by cross product.
+    Transformation(const VectorType& B, const VectorType& T, const VectorType& P)
+    {
+        VectorType N = MathUtils<TDataType>::CrossProduct(T, B);
+        N *= 1.0/norm_2(N);
+
+        mTransMat.resize(4, 4, false);
+        noalias(column(mTransMat, 0)) = B;
+        noalias(column(mTransMat, 1)) = N;
+        noalias(column(mTransMat, 2)) = T;
+        noalias(column(mTransMat, 3)) = P;
+        mTransMat(3, 0) = 0.0;
+        mTransMat(3, 1) = 0.0;
+        mTransMat(3, 2) = 0.0;
+        mTransMat(3, 3) = 1.0;
+    }
+
+    /// Constructor from location and two directional vectors. The remaining one is computed by cross product.
+    Transformation(const array_1d<TDataType, 3>& B, const array_1d<TDataType, 3>& T, const array_1d<TDataType, 3>& P)
+    {
+        VectorType N = MathUtils<TDataType>::CrossProduct(T, B);
+        N *= 1.0/norm_2(N);
+
+        mTransMat.resize(4, 4);
+        noalias(column(mTransMat, 0)) = B;
+        noalias(column(mTransMat, 1)) = N;
+        noalias(column(mTransMat, 2)) = T;
+        noalias(column(mTransMat, 3)) = P;
+        mTransMat(3, 0) = 0.0;
+        mTransMat(3, 1) = 0.0;
+        mTransMat(3, 2) = 0.0;
+        mTransMat(3, 3) = 1.0;
+    }
+
+    /// Copy constructor
+    Transformation(const Transformation& rOther)
+    : mTransMat(rOther.mTransMat)
+    {}
 
     /// Destructor
     virtual ~Transformation() {}
@@ -52,18 +123,25 @@ public:
     /// Get the homogeneous transformation matrix
     const MatrixType& Mat() const {return mTransMat;}
 
+    /// Prepend the transformation
+    void PrependTransformation(const Transformation& rOther)
+    {
+        Matrix tmp = prod(this->mTransMat, rOther.Mat());
+        noalias(this->mTransMat) = tmp;
+    }
+
     /// Append the transformation
     void AppendTransformation(const Transformation& rOther)
     {
-        MatrixType temp = prod(rOther.Mat(), this->mTransMat);
-        noalias(this->mTransMat) = temp;
+        Matrix tmp = prod(rOther.Mat(), this->mTransMat);
+        noalias(this->mTransMat) = tmp;
     }
 
     /// Apply the transformation for a point in 3D
     template<typename TVectorType>
     void ApplyTransformation(TVectorType& value) const
     {
-        double new_value[3];
+        TDataType new_value[3];
         for (std::size_t i = 0; i < 3; ++i)
         {
             new_value[i] = 0.0;
@@ -73,6 +151,38 @@ public:
         }
         for (std::size_t i = 0; i < 3; ++i)
             value[i] = new_value[i];
+    }
+
+    /// Get the origin point
+    array_1d<TDataType, 3> P() const
+    {
+        array_1d<TDataType, 3> V;
+        noalias(V) = subrange(column(mTransMat, 3), 0, 3);
+        return V;
+    }
+
+    /// Get the first vector
+    array_1d<TDataType, 3> V1() const
+    {
+        array_1d<TDataType, 3> V;
+        noalias(V) = subrange(column(mTransMat, 0), 0, 3);
+        return V;
+    }
+
+    /// Get the second vector
+    array_1d<TDataType, 3> V2() const
+    {
+        array_1d<TDataType, 3> V;
+        noalias(V) = subrange(column(mTransMat, 1), 0, 3);
+        return V;
+    }
+
+    /// Get the third vector
+    array_1d<TDataType, 3> V3() const
+    {
+        array_1d<TDataType, 3> V;
+        noalias(V) = subrange(column(mTransMat, 2), 0, 3);
+        return V;
     }
 
     /// overload operator ()
@@ -97,7 +207,8 @@ public:
     /// Multiplication operator
     Transformation& operator*=(const Transformation& rOther)
     {
-        noalias(this->mTransMat) = prod(rOther.mTransMat, this->mTransMat);
+        Matrix tmp = prod(rOther.mTransMat, this->mTransMat);
+        noalias(this->mTransMat) = tmp;
         return *this;
     }
 
@@ -117,7 +228,6 @@ public:
 
     virtual void PrintData(std::ostream& rOStream) const
     {
-        // print the control point in homogeneous coordinates
         rOStream << mTransMat;
     }
 

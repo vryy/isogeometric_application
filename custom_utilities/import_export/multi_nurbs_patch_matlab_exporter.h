@@ -60,7 +60,7 @@ public:
     virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const
     {
         rOStream << std::setprecision(BaseType::Accuracy());
-        this->ExportMatlab(rOStream, pPatch, std::string("nurbs"));
+        this->ExportMatlab(rOStream, pPatch, pPatch->Name());
     }
 
     /// Export a multipatch
@@ -69,11 +69,7 @@ public:
         rOStream << std::setprecision(BaseType::Accuracy());
 
         for (typename MultiPatch<TDim>::PatchContainerType::ptr_const_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
-        {
-            std::stringstream patch_name;
-            patch_name << "patch" << (*it)->Id();
-            this->ExportMatlab(rOStream, *it, patch_name.str());
-        }
+            this->ExportMatlab(rOStream, *it, (*it)->Name());
     }
 
 private:
@@ -84,6 +80,8 @@ private:
             KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
 
         typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+        if (pFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
         if (TDim == 1)
         {
@@ -133,6 +131,8 @@ void MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<1>(std::ostre
     typedef Patch<1>::ControlPointType ControlPointType;
     typename StructuredControlGrid<1, ControlPointType>::ConstPointer pControlPointGrid
         = boost::dynamic_pointer_cast<const StructuredControlGrid<1, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+    if (pControlPointGrid == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
     for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
     {
@@ -149,6 +149,8 @@ void MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<2>(std::ostre
     typedef Patch<2>::ControlPointType ControlPointType;
     typename StructuredControlGrid<2, ControlPointType>::ConstPointer pControlPointGrid
         = boost::dynamic_pointer_cast<const StructuredControlGrid<2, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+    if (pControlPointGrid == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
     for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
     {
@@ -168,6 +170,8 @@ void MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<3>(std::ostre
     typedef Patch<3>::ControlPointType ControlPointType;
     typename StructuredControlGrid<3, ControlPointType>::ConstPointer pControlPointGrid
         = boost::dynamic_pointer_cast<const StructuredControlGrid<3, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+    if (pControlPointGrid == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
     for (std::size_t nw = 0; nw < pControlPointGrid->Size(2); ++nw)
     {

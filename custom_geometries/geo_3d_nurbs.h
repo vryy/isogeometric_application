@@ -1204,7 +1204,7 @@ public:
         noalias( rResult ) = ZeroMatrix( mNumber1 * mNumber2 * mNumber3, 3 );
 
         // compute the b-spline shape functions & first derivatives
-        int NumberOfDerivatives = 1;
+        const int NumberOfDerivatives = 1;
         Matrix ShapeFunctionsValuesAndDerivatives1(NumberOfDerivatives + 1, mOrder1 + 1);
         Matrix ShapeFunctionsValuesAndDerivatives2(NumberOfDerivatives + 1, mOrder2 + 1);
         Matrix ShapeFunctionsValuesAndDerivatives3(NumberOfDerivatives + 1, mOrder3 + 1);
@@ -1214,9 +1214,9 @@ public:
         int Start1 = Span1 - mOrder1;
         int Start2 = Span2 - mOrder2;
         int Start3 = Span3 - mOrder3;
-        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives1, Span1, rPoint[0], mOrder1, mKnots1, NumberOfDerivatives);
-        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives2, Span2, rPoint[1], mOrder2, mKnots2, NumberOfDerivatives);
-        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives3, Span3, rPoint[2], mOrder3, mKnots3, NumberOfDerivatives);
+        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives1, Span1, rPoint[0], mOrder1, mKnots1, NumberOfDerivatives, BSplineUtils::MatrixOp());
+        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives2, Span2, rPoint[1], mOrder2, mKnots2, NumberOfDerivatives, BSplineUtils::MatrixOp());
+        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives3, Span3, rPoint[2], mOrder3, mKnots3, NumberOfDerivatives, BSplineUtils::MatrixOp());
         double Denom = 0.0;
         double Denom_der1 = 0.0;
         double Denom_der2 = 0.0;
@@ -1308,7 +1308,7 @@ public:
         #endif
 
         //compute the b-spline shape functions & first derivatives
-        int NumberOfDerivatives = 1;
+        const int NumberOfDerivatives = 1;
         Matrix ShapeFunctionsValuesAndDerivatives1(NumberOfDerivatives + 1, mOrder1 + 1);
         Matrix ShapeFunctionsValuesAndDerivatives2(NumberOfDerivatives + 1, mOrder2 + 1);
         Matrix ShapeFunctionsValuesAndDerivatives3(NumberOfDerivatives + 1, mOrder3 + 1);
@@ -1325,9 +1325,9 @@ public:
         KRATOS_WATCH(Span3)
         #endif
 
-        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives1, Span1, rPoint[0], mOrder1, mKnots1, NumberOfDerivatives);
-        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives2, Span2, rPoint[1], mOrder2, mKnots2, NumberOfDerivatives);
-        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives3, Span3, rPoint[2], mOrder3, mKnots3, NumberOfDerivatives);
+        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives1, Span1, rPoint[0], mOrder1, mKnots1, NumberOfDerivatives, BSplineUtils::MatrixOp());
+        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives2, Span2, rPoint[1], mOrder2, mKnots2, NumberOfDerivatives, BSplineUtils::MatrixOp());
+        BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives3, Span3, rPoint[2], mOrder3, mKnots3, NumberOfDerivatives, BSplineUtils::MatrixOp());
         double Denom = 0.0;
         double Denom_der1 = 0.0;
         double Denom_der2 = 0.0;

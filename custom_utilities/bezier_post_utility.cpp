@@ -5,16 +5,15 @@
 
 namespace Kratos
 {
-    double BezierPostUtility::CalculateOnPoint(
+    double& BezierPostUtility_Helper<double>::CalculateOnPoint(
         const Variable<double>& rVariable,
         double& rResult,
         Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates
-    )
+        const Element::GeometryType::CoordinatesArrayType& rCoordinates)
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
-        
+
         rResult = 0.0;
         for(unsigned int i = 0; i < pElement->GetGeometry().size(); ++i)
         {
@@ -24,20 +23,19 @@ namespace Kratos
         return rResult;
     }
 
-    Vector& BezierPostUtility::CalculateOnPoint(
+    Vector& BezierPostUtility_Helper<Vector>::CalculateOnPoint(
         const Variable<Vector>& rVariable,
         Vector& rResult,
         Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates
-    )
+        const Element::GeometryType::CoordinatesArrayType& rCoordinates)
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
-        
+
         for(unsigned int i = 0; i < pElement->GetGeometry().size(); ++i)
         {
             Vector& NodalValues = pElement->GetGeometry()[i].GetSolutionStepValue(rVariable);
-            
+
             if(i == 0)
             {
                 rResult = N( i ) * NodalValues;
@@ -49,17 +47,16 @@ namespace Kratos
         }
         return rResult;
     }
-    
-    array_1d<double, 3>& BezierPostUtility::CalculateOnPoint(
+
+    array_1d<double, 3>& BezierPostUtility_Helper<array_1d<double, 3> >::CalculateOnPoint(
         const Variable<array_1d<double, 3> >& rVariable,
         array_1d<double, 3>& rResult,
         Element::Pointer& pElement,
-        const CoordinatesArrayType& rCoordinates
-    )
+        const Element::GeometryType::CoordinatesArrayType& rCoordinates)
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
-        
+
         rResult[0] = 0.0;
         rResult[1] = 0.0;
         rResult[2] = 0.0;
@@ -68,13 +65,13 @@ namespace Kratos
             array_1d<double, 3> NodalValues = pElement->GetGeometry()[i].GetSolutionStepValue(rVariable);
             rResult += N( i ) * NodalValues;
         }
-        
+
         return rResult;
     }
-    
+
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
                                                            ModelPart& r_model_part,
-                                                           const Variable<double>& rThisVariable)
+                                                           const Variable<double>& rThisVariable) const
     {
         ElementsArrayType& ElementsArray= r_model_part.Elements();
 
@@ -82,10 +79,10 @@ namespace Kratos
         int NumberOfNodes = r_model_part.NumberOfNodes();
         SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
         noalias(M)= ZeroMatrix(NumberOfNodes, NumberOfNodes);
-        
+
         SerialSparseSpaceType::VectorType g(NumberOfNodes);
         noalias(g)= ZeroVector(NumberOfNodes);
-        
+
         SerialSparseSpaceType::VectorType b(NumberOfNodes);
         noalias(b)= ZeroVector(NumberOfNodes);
 
@@ -97,18 +94,18 @@ namespace Kratos
 
         // create the structure for M a priori
         ConstructMatrixStructure(M, ElementsArray, MapNodeIdToVec, r_model_part.GetProcessInfo());
-        
+
         // Transfer of GaussianVariables to Nodal Variables via L_2-Minimization
         // see Jiao + Heath "Common-refinement-based data tranfer ..."
         // International Journal for numerical methods in engineering 61 (2004) 2402--2427
         // for general description of L_2-Minimization
-        
+
         // set up the system of equations
         //create a partition of the element array
         int number_of_threads = omp_get_max_threads();
         vector<unsigned int> element_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
-        
+
         KRATOS_WATCH( number_of_threads )
         KRATOS_WATCH( element_partition )
 
@@ -126,7 +123,7 @@ namespace Kratos
 
             typename ElementsArrayType::ptr_iterator it_begin = ElementsArray.ptr_begin() + element_partition[k];
             typename ElementsArrayType::ptr_iterator it_end = ElementsArray.ptr_begin() + element_partition[k + 1];
-            
+
             for( ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it )
             {
                 if(!(*it)->GetValue(IS_INACTIVE))
@@ -135,13 +132,13 @@ namespace Kratos
                     = (*it)->GetGeometry().IntegrationPoints((*it)->GetIntegrationMethod());
 
                     GeometryType::JacobiansType J(integration_points.size());
-                    
+
     //                J = (*it)->GetGeometry().Jacobian(J, (*it)->GetIntegrationMethod());
     //                const Matrix& Ncontainer = (*it)->GetGeometry().ShapeFunctionsValues((*it)->GetIntegrationMethod());
 
                     IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>((*it)->GetGeometry());
                     J = rIsogeometricGeometry.Jacobian0(J, (*it)->GetIntegrationMethod());
-                    
+
                     GeometryType::ShapeFunctionsGradientsType DN_De;
                     Matrix Ncontainer;
                     rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
@@ -194,13 +191,13 @@ namespace Kratos
                 }
             }
         }
-        
+
         for(unsigned int i = 0; i < NumberOfNodes; ++i)
             omp_destroy_lock(&lock_array[i]);
 
         // solver the system
         pSolver->Solve(M, g, b);
-        
+
         // transfer the solution to the nodal variables
         for(ModelPart::NodeIterator it = r_model_part.NodesBegin(); it != r_model_part.NodesEnd(); ++it)
         {
@@ -213,7 +210,7 @@ namespace Kratos
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
                                                            ModelPart& r_model_part,
                                                            const Variable<Vector>& rThisVariable,
-                                                           std::size_t ncomponents)
+                                                           std::size_t ncomponents) const
     {
         ElementsArrayType& ElementsArray = r_model_part.Elements();
 
@@ -236,14 +233,14 @@ namespace Kratos
         SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
         noalias(M)= ZeroMatrix(NumberOfNodes, NumberOfNodes);
         ConstructMatrixStructure(M, ElementsArray, MapNodeIdToVec, r_model_part.GetProcessInfo());
-        
+
         #ifdef ENABLE_PROFILING
         end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "ConstructMatrixStructure completed: " << end_compute - start_compute << " s" << std::endl;
         start_compute = end_compute;
         #endif
 
-        // create and initialize vectors        
+        // create and initialize vectors
         SerialDenseSpaceType::MatrixType g(NumberOfNodes, ncomponents);
         noalias(g)= ZeroMatrix(NumberOfNodes, ncomponents);
         SerialDenseSpaceType::MatrixType b(NumberOfNodes, ncomponents);
@@ -330,12 +327,12 @@ namespace Kratos
                     for(unsigned int prim = 0; prim < (*it)->GetGeometry().size(); ++prim)
                     {
                         row = MapNodeIdToVec[(*it)->GetGeometry()[prim].Id()];
-                            
+
                         omp_set_lock(&lock_array[row]);
-                                
+
 //                        for(unsigned int i = 0; i < ncomponents; ++i)
 //                            b(row, i) += 0.0;
-                                
+
                         for(unsigned int sec = 0; sec < (*it)->GetGeometry().size(); ++sec)
                         {
                             col = MapNodeIdToVec[(*it)->GetGeometry()[sec].Id()];
@@ -350,7 +347,7 @@ namespace Kratos
                 }
             }
         }
-        
+
         for(unsigned int i = 0; i < NumberOfNodes; ++i)
             omp_destroy_lock(&lock_array[i]);
 
@@ -386,3 +383,4 @@ namespace Kratos
     }
 
 }
+

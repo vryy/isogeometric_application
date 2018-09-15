@@ -64,8 +64,6 @@ def CreateSmallArc(center, axis, radius, start_angle, end_angle):
     ctrl_grid = grid_lib.CreateLinearControlPointGrid(0.0, 0.0, 0.0, fes.Number(0), radius, 0.0, 0.0)
 
     sweep = end_angle - start_angle
-#    if abs(sweep > 90):
-#        raise ValueError('the open angle must be in [-90, 90] degrees, sweep =', sweep)
 
     dsweep = 0.5*sweep/180.0*math.pi
     wm = math.cos(dsweep)
@@ -178,6 +176,7 @@ def ExportLocalFrenetFrameToMatlab(trans_list, fn, s = 1.0):
     ifile = open(fn, "w")
     cnt = 1
     ifile.write("s = " + str(s) + ";\n")
+    ifile.write("C = {}; B = {}; T = {}; N = {};\n")
     for trans in trans_list:
         P = trans.P()
         B = trans.V1()

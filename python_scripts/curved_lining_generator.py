@@ -12,11 +12,10 @@ class CurvedLiningGenerator():
     def __init__(self, params):
         self.bsplines_patch_util = BSplinesPatchUtility()
         self.params = params
-        
 
     ### Reconstruct the segment based on given data
     ### REF: Bui et al, BIM-based Modelling and Simulation of Segmental Tunnel Lining by means of Isogeometric Analysis
-    def CreateSegment(self, segment_data):
+    def CreateSegment(self, segment_data, initial_trans = None):
         ## segment data
         rin = segment_data['inner_radii']
         rout = segment_data['outer_radii']
@@ -40,9 +39,25 @@ class CurvedLiningGenerator():
         ## generate the local Frenet frame along the trajectory
         npoints = self.params["number_of_sweep_sampling"]
         trans_list = geometry_factory.GenerateLocalFrenetFrame(curve, npoints)
-#        for trans in trans_list:
+
+        if initial_trans == None:
+            new_trans_list = trans_list
+        else:
+            # transform the first frame to initial_trans and subsequently other trans to ensure continuity
+            new_trans_list = []
+            for i in range(0, len(trans_list)):
+                trans = Transformation()
+                if i == 0:
+                    trans.AppendTransformation(initial_trans)
+                else:
+                    trans.AppendTransformation(trans_list[i])
+                    trans.AppendTransformation(trans_list[0].Inverse())
+                    trans.AppendTransformation(initial_trans)
+                new_trans_list.append(trans)
+
+#        for trans in new_trans_list:
 #            print(trans)
-#        geometry_factory.ExportLocalFrenetFrameToMatlab(trans_list, "frame.m", 2e-1)
+#        geometry_factory.ExportLocalFrenetFrameToMatlab(new_trans_list, "frame.m", 2e-1)
 
         ## generate a list of cut section
         sections_ptr = []
@@ -52,7 +67,7 @@ class CurvedLiningGenerator():
             section_ptr = geometry_factory.CreateSmallRing([0.0, 0.0, 0.0], 'z', rin, rout, start_angle, end_angle)
             section = section_ptr.GetReference()
             section.Id = i+1
-            section.ApplyTransformation(trans_list[i])
+            section.ApplyTransformation(new_trans_list[i])
             # mpatch_export3.Export(section, section.Name() + "_def.m")
             sections_ptr.append(section_ptr)
 
@@ -60,6 +75,6 @@ class CurvedLiningGenerator():
         ## create the sweep volume
         order_w = self.params['sweep_order']
         segment_ptr = bsplines_patch_util.CreateConnectedPatch(sections_ptr, order_w)
-        return segment_ptr
+        return [segment_ptr, new_trans_list]
 
 

@@ -153,35 +153,61 @@ public:
             value[i] = new_value[i];
     }
 
+    /// Compute the inverse of the transformation matrix
+    /// REF: https://www.springer.com/cda/content/document/cda_downloaddocument/9783319197876-c2.pdf?SGWID=0-0-45-1514078-p177405814
+    Transformation Inverse() const
+    {
+        Transformation trans;
+
+        array_1d<TDataType, 3> s, n, a, r;
+        this->V1(s);
+        this->V2(n);
+        this->V3(a);
+        this->P(r);
+
+        for (std::size_t i = 0; i < 3; ++i)
+            for (std::size_t j = 0; j < 3; ++j)
+                trans(i, j) = mTransMat(j, i);
+        trans(0, 3) = -inner_prod(s, r);
+        trans(1, 3) = -inner_prod(n, r);
+        trans(2, 3) = -inner_prod(a, r);
+
+        return trans;
+    }
+
     /// Get the origin point
+    void P(array_1d<TDataType, 3>& V) const { noalias(V) = subrange(column(mTransMat, 3), 0, 3); }
     array_1d<TDataType, 3> P() const
     {
         array_1d<TDataType, 3> V;
-        noalias(V) = subrange(column(mTransMat, 3), 0, 3);
+        this->P(V);
         return V;
     }
 
     /// Get the first vector
+    void V1(array_1d<TDataType, 3>& V) const { noalias(V) = subrange(column(mTransMat, 0), 0, 3); }
     array_1d<TDataType, 3> V1() const
     {
         array_1d<TDataType, 3> V;
-        noalias(V) = subrange(column(mTransMat, 0), 0, 3);
+        this->V1(V);
         return V;
     }
 
     /// Get the second vector
+    void V2(array_1d<TDataType, 3>& V) const { noalias(V) = subrange(column(mTransMat, 1), 0, 3); }
     array_1d<TDataType, 3> V2() const
     {
         array_1d<TDataType, 3> V;
-        noalias(V) = subrange(column(mTransMat, 1), 0, 3);
+        this->V2(V);
         return V;
     }
 
     /// Get the third vector
+    void V3(array_1d<TDataType, 3>& V) const { noalias(V) = subrange(column(mTransMat, 2), 0, 3); }
     array_1d<TDataType, 3> V3() const
     {
         array_1d<TDataType, 3> V;
-        noalias(V) = subrange(column(mTransMat, 2), 0, 3);
+        this->V3(V);
         return V;
     }
 

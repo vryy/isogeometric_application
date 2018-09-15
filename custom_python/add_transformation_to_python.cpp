@@ -86,6 +86,30 @@ boost::python::list Transformation_Apply2(Transformation<TDataType>& rDummy, boo
     return res;
 }
 
+template<typename TDataType>
+array_1d<TDataType, 3> Transformation_P(Transformation<TDataType>& rDummy)
+{
+    return rDummy.P();
+}
+
+template<typename TDataType>
+array_1d<TDataType, 3> Transformation_V1(Transformation<TDataType>& rDummy)
+{
+    return rDummy.V1();
+}
+
+template<typename TDataType>
+array_1d<TDataType, 3> Transformation_V2(Transformation<TDataType>& rDummy)
+{
+    return rDummy.V2();
+}
+
+template<typename TDataType>
+array_1d<TDataType, 3> Transformation_V3(Transformation<TDataType>& rDummy)
+{
+    return rDummy.V3();
+}
+
 //////////////////////////////////////////////////
 
 void IsogeometricApplication_AddTransformationToPython()
@@ -100,11 +124,12 @@ void IsogeometricApplication_AddTransformationToPython()
     .def(init<const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&>())
     .def("AppendTransformation", &Transformation<double>::AppendTransformation)
     .def("PrependTransformation", &Transformation<double>::PrependTransformation)
+    .def("Inverse", &Transformation<double>::Inverse)
     // .def(boost::python::operators<boost::python::op_mul>());
-    .def("P", &Transformation<double>::P)
-    .def("V1", &Transformation<double>::V1)
-    .def("V2", &Transformation<double>::V2)
-    .def("V3", &Transformation<double>::V3)
+    .def("P", &Transformation_P<double>)
+    .def("V1", &Transformation_V1<double>)
+    .def("V2", &Transformation_V2<double>)
+    .def("V3", &Transformation_V3<double>)
     .def("SetValue", &Transformation_SetValue<double>)
     .def("GetValue", &Transformation_GetValue<double>)
     .def("Apply", &Transformation_Apply<double, Vector>)

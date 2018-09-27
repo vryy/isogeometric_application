@@ -52,6 +52,13 @@ namespace Kratos
     KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS( LOCAL_COORDINATES )
     KRATOS_CREATE_3D_VARIABLE_WITH_COMPONENTS( CONTROL_POINT_COORDINATES )
 
+    KRATOS_CREATE_VARIABLE( double, KNOT_LEFT )
+    KRATOS_CREATE_VARIABLE( double, KNOT_RIGHT )
+    KRATOS_CREATE_VARIABLE( double, KNOT_TOP )
+    KRATOS_CREATE_VARIABLE( double, KNOT_BOTTOM )
+    KRATOS_CREATE_VARIABLE( double, KNOT_FRONT )
+    KRATOS_CREATE_VARIABLE( double, KNOT_BACK )
+
     KratosIsogeometricApplication::KratosIsogeometricApplication()
     : mDummyConditionBezier( 0, Element::GeometryType::Pointer( new Geo1dBezier<Node<3> >() ) )
     , mDummyConditionBezier2D( 0, Element::GeometryType::Pointer( new Geo2dBezier<Node<3> >() ) )
@@ -86,6 +93,12 @@ namespace Kratos
         KRATOS_REGISTER_VARIABLE( EXTRACTION_OPERATOR_CSR_COLIND )
         KRATOS_REGISTER_VARIABLE( EXTRACTION_OPERATOR_CSR_VALUES )
         KRATOS_REGISTER_VARIABLE( CONTROL_POINT )
+        KRATOS_REGISTER_VARIABLE( KNOT_LEFT )
+        KRATOS_REGISTER_VARIABLE( KNOT_RIGHT )
+        KRATOS_REGISTER_VARIABLE( KNOT_TOP )
+        KRATOS_REGISTER_VARIABLE( KNOT_BOTTOM )
+        KRATOS_REGISTER_VARIABLE( KNOT_FRONT )
+        KRATOS_REGISTER_VARIABLE( KNOT_BACK )
 
         // to make sure the variable imported from other application is registered
         KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( LOCAL_COORDINATES )

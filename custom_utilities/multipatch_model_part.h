@@ -421,6 +421,13 @@ public:
             pNewElement->Set(ACTIVE, true);
             pNewElements.push_back(pNewElement);
 
+            pNewElement->SetValue( KNOT_LEFT, (*it_cell)->LeftValue() );
+            pNewElement->SetValue( KNOT_RIGHT, (*it_cell)->RightValue() );
+            pNewElement->SetValue( KNOT_BOTTOM, (*it_cell)->DownValue() );
+            pNewElement->SetValue( KNOT_TOP, (*it_cell)->UpValue() );
+            pNewElement->SetValue( KNOT_FRONT, (*it_cell)->BelowValue() );
+            pNewElement->SetValue( KNOT_BACK, (*it_cell)->AboveValue() );
+
             std::cout << "Entity " << element_name << " " << pNewElement->Id() << " is created" << std::endl;
             std::cout << "  Connectivity:";
             for (unsigned int i = 0; i < p_temp_geometry->size(); ++i)

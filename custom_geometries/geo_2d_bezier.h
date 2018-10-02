@@ -334,9 +334,7 @@ public:
         #endif
 
         IndexType NumberOfIntegrationPoints = this->IntegrationPointsNumber(ThisMethod);
-
         shape_functions_values.resize(NumberOfIntegrationPoints, this->PointsNumber(), false);
-
         shape_functions_local_gradients.resize(NumberOfIntegrationPoints);
         std::fill(shape_functions_local_gradients.begin(), shape_functions_local_gradients.end(), MatrixType(this->PointsNumber(), 2));
 
@@ -358,7 +356,7 @@ public:
             = mpBezierGeometryData->ShapeFunctionsLocalGradients( ThisMethod );
 
         VectorType temp_bezier_values(bezier_functions_values.size2());
-        VectorType bezier_weights(mExtractionOperator.size2());
+        VectorType bezier_weights(mNumber1*mNumber2);
         double denom, tmp1, tmp2;
         VectorType tmp_gradients1(this->PointsNumber());
         VectorType tmp_gradients2(this->PointsNumber());
@@ -847,7 +845,7 @@ public:
     virtual void ExtractControlPoints(PointsArrayType& rPoints)
     {
         std::size_t number_of_points = this->PointsNumber();
-        std::size_t number_of_local_points = mExtractionOperator.size2();
+        std::size_t number_of_local_points = mNumber1*mNumber2;
         rPoints.clear();
         rPoints.reserve(number_of_local_points);
 
@@ -888,7 +886,7 @@ public:
     void ExtractControlValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues)
     {
         std::size_t number_of_points = this->PointsNumber();
-        std::size_t number_of_local_points = mExtractionOperator.size2();
+        std::size_t number_of_local_points = mNumber1*mNumber2;
         if (rValues.size() != number_of_local_points)
             rValues.resize(number_of_local_points);
 
@@ -988,8 +986,10 @@ public:
         // size checking
         if(mExtractionOperator.size1() != this->PointsNumber())
             KRATOS_THROW_ERROR(std::logic_error, "The number of row of extraction operator must be equal to number of nodes, mExtractionOperator.size1() =", mExtractionOperator.size1())
-        if(mExtractionOperator.size2() != (mOrder1 + 1) * (mOrder2 + 1))
+        if(mExtractionOperator.size2() != mNumber1*mNumber2)
             KRATOS_THROW_ERROR(std::logic_error, "The number of column of extraction operator must be equal to (p_u+1) * (p_v+1), mExtractionOperator.size2() =", mExtractionOperator.size2())
+        if(mCtrlWeights.size() != this->PointsNumber())
+            KRATOS_THROW_ERROR(std::logic_error, "The number of weights must be equal to number of nodes", __FUNCTION__)
 
         if(NumberOfIntegrationMethod > 0)
         {

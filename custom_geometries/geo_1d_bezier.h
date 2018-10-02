@@ -778,7 +778,7 @@ public:
             const CoordinatesArrayType& rPoint ) const
     {
         //compute all Bezier shape functions & derivatives at rPoint
-        VectorType bezier_functions_values(mOrder + 1);
+        VectorType bezier_functions_values(mNumber);
         BezierUtils::bernstein(bezier_functions_values, mOrder, rPoint[0]);
 
         //compute the Bezier weight
@@ -786,7 +786,7 @@ public:
         double denom = inner_prod(bezier_functions_values, bezier_weights);
 
         //compute the shape function values
-        VectorType shape_functions_values(mNumber);
+        VectorType shape_functions_values(this->PointsNumber());
         noalias( shape_functions_values ) = prod(mExtractionOperator, bezier_functions_values);
 
         return shape_functions_values(ShapeFunctionIndex) *
@@ -804,7 +804,7 @@ public:
             const CoordinatesArrayType& rPoint ) const
     {
         //compute all Bezier shape functions & derivatives at rPoint
-        VectorType bezier_functions_values(mOrder + 1);
+        VectorType bezier_functions_values(mNumber);
         BezierUtils::bernstein(bezier_functions_values, mOrder, rPoint[0]);
 
         //compute the Bezier weight
@@ -812,10 +812,10 @@ public:
         double denom = inner_prod(bezier_functions_values, bezier_weights);
 
         //compute the shape function values
-        rResults.resize(mNumber);
+        rResults.resize(this->PointsNumber(), false);
         noalias( rResults ) = prod(mExtractionOperator, bezier_functions_values);
 
-        for(unsigned int i = 0; i < mNumber; ++i)
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
             rResults(i) *= (mCtrlWeights(i) / denom);
 
         return rResults;
@@ -828,8 +828,8 @@ public:
             const CoordinatesArrayType& rPoint ) const
     {
         //compute all Bezier shape functions & derivatives at rPoint
-        VectorType bezier_functions_values(mOrder + 1);
-        VectorType bezier_functions_derivatives(mOrder + 1);
+        VectorType bezier_functions_values(mNumber);
+        VectorType bezier_functions_derivatives(mNumber);
         BezierUtils::bernstein(bezier_functions_values, bezier_functions_derivatives, mOrder, rPoint[0]);
 
         //compute the Bezier weight
@@ -837,12 +837,13 @@ public:
         double denom = inner_prod(bezier_functions_values, bezier_weights);
 
         //compute the shape function values
-        VectorType shape_functions_values = prod(mExtractionOperator, bezier_functions_values);
-        for(int i = 0; i < mNumber; ++i)
+        VectorType shape_functions_values(this->PointsNumber());
+        noalias(shape_functions_values) = prod(mExtractionOperator, bezier_functions_values);
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
             shape_functions_values(i) *= (mCtrlWeights(i) / denom);
 
         //compute the shape function local gradients
-        rResult.resize(mNumber, 1);
+        rResult.resize(this->PointsNumber(), 1, false);
         double tmp = inner_prod(bezier_functions_derivatives, bezier_weights);
         VectorType tmp_gradients =
             prod(
@@ -850,7 +851,7 @@ public:
                     (1 / denom) * bezier_functions_derivatives -
                         (tmp / pow(denom, 2)) * bezier_functions_values
             );
-        for(int i = 0; i < mNumber; ++i)
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
             rResult(i, 0) = tmp_gradients(i) * mCtrlWeights(i);
 
         return rResult;
@@ -860,8 +861,8 @@ public:
             MatrixType& shape_functions_local_gradients, const CoordinatesArrayType& rPoint ) const
     {
         //compute all Bezier shape functions & derivatives at rPoint
-        VectorType bezier_functions_values(mOrder + 1);
-        VectorType bezier_functions_derivatives(mOrder + 1);
+        VectorType bezier_functions_values(mNumber);
+        VectorType bezier_functions_derivatives(mNumber);
         BezierUtils::bernstein(bezier_functions_values, bezier_functions_derivatives, mOrder, rPoint[0]);
 
         //compute the Bezier weight
@@ -869,13 +870,13 @@ public:
         double denom = inner_prod(bezier_functions_values, bezier_weights);
 
         //compute the shape function values
-        shape_functions_values.resize(mNumber);
+        shape_functions_values.resize(this->PointsNumber(), false);
         noalias( shape_functions_values ) = prod(mExtractionOperator, bezier_functions_values);
-        for(int i = 0; i < mNumber; ++i)
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
             shape_functions_values(i) *= (mCtrlWeights(i) / denom);
 
         //compute the shape function local gradients
-        shape_functions_local_gradients.resize(mNumber, 1);
+        shape_functions_local_gradients.resize(this->PointsNumber(), 1);
         double tmp = inner_prod(bezier_functions_derivatives, bezier_weights);
         VectorType tmp_gradients =
             prod(
@@ -883,7 +884,7 @@ public:
                     (1 / denom) * bezier_functions_derivatives -
                         (tmp / pow(denom, 2)) * bezier_functions_values
             );
-        for(int i = 0; i < mNumber; ++i)
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
             shape_functions_local_gradients(i, 0) = tmp_gradients(i) * mCtrlWeights(i);
     }
 
@@ -975,8 +976,10 @@ public:
         // size checking
         if(mExtractionOperator.size1() != this->PointsNumber())
             KRATOS_THROW_ERROR(std::logic_error, "The number of row of extraction operator must be equal to number of nodes", __FUNCTION__)
-        if(mExtractionOperator.size2() != (mOrder + 1))
+        if(mExtractionOperator.size2() != mNumber)
             KRATOS_THROW_ERROR(std::logic_error, "The number of column of extraction operator must be equal to (p_u+1)", __FUNCTION__)
+        if(mCtrlWeights.size() != this->PointsNumber())
+            KRATOS_THROW_ERROR(std::logic_error, "The number of weights must be equal to number of nodes", __FUNCTION__)
 
         // find the existing integration rule or create new one if not existed
         BezierUtils::RegisterIntegrationRule<2, 2, 2>(NumberOfIntegrationMethod, Degree1);
@@ -1002,11 +1005,11 @@ private:
 
     MatrixType mExtractionOperator;
 
-    ValuesContainerType mCtrlWeights;//weight of control points
+    ValuesContainerType mCtrlWeights; // weight of control points
 
-    int mOrder;//order of the curve
+    int mOrder; // order of the curve
 
-    int mNumber;//number of shape functions define the curve
+    int mNumber; // number of Bezier shape functions
 
     ///@}
     ///@name Serialization
@@ -1046,13 +1049,13 @@ private:
         //number of integration points
         const int integration_points_number = integration_points.size();
         //setting up return matrix
-        MatrixType shape_functions_values( integration_points_number, mNumber );
+        MatrixType shape_functions_values( integration_points_number, this->PointsNumber() );
         //loop over all integration points
 
         //TODO: this can be optimized
-        for(unsigned int pnt = 0; pnt < integration_points_number; ++pnt)
+        for(IndexType pnt = 0; pnt < integration_points_number; ++pnt)
         {
-            for(unsigned int node = 0; node < mNumber; node++)
+            for(IndexType node = 0; node < this->PointsNumber(); ++node)
             {
                 shape_functions_values( pnt, node ) = ShapeFunctionValue(node, integration_points[pnt]);
             }
@@ -1076,9 +1079,9 @@ private:
     {
         const IntegrationPointsArrayType& integration_points = BaseType::IntegrationPoints(ThisMethod);
         ShapeFunctionsGradientsType DN_De( integration_points.size() );
-        std::fill( DN_De.begin(), DN_De.end(), MatrixType( mNumber, 1 ) );
+        std::fill( DN_De.begin(), DN_De.end(), MatrixType( this->PointsNumber(), 1 ) );
 
-        for ( unsigned int it_gp = 0; it_gp < integration_points.size(); it_gp++ )
+        for(IndexType it_gp = 0; it_gp < integration_points.size(); ++it_gp )
         {
             ShapeFunctionsLocalGradients(DN_De[it_gp], integration_points[it_gp]);
         }
@@ -1096,11 +1099,13 @@ private:
         const IntegrationPointsArrayType& integration_points
     ) const
     {
-        shape_functions_local_gradients.resize(integration_points.size());
+        if(shape_functions_local_gradients.size() != integration_points.size())
+            shape_functions_local_gradients.resize(integration_points.size());
         std::fill(shape_functions_local_gradients.begin(), shape_functions_local_gradients.end(), MatrixType());
-        shape_functions_values.resize(integration_points.size(), mNumber);
+        if(shape_functions_values.size1() != integration_points.size() || shape_functions_values.size2() != this->PointsNumber())
+            shape_functions_values.resize(integration_points.size(), this->PointsNumber(), false);
 
-        for (unsigned int it_gp = 0; it_gp < integration_points.size(); ++it_gp)
+        for(IndexType it_gp = 0; it_gp < integration_points.size(); ++it_gp)
         {
             VectorType temp_values;
             ShapeFunctionsValuesAndLocalGradients(
@@ -1108,7 +1113,7 @@ private:
                 shape_functions_local_gradients[it_gp],
                 integration_points[it_gp]
             );
-            for(unsigned int node = 0; node < mNumber; ++node)
+            for(IndexType node = 0; node < this->PointsNumber(); ++node)
             {
                 shape_functions_values( it_gp, node ) = temp_values(node);
             }

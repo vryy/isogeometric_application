@@ -1,5 +1,5 @@
 %% plot the hierarchical NURBS geometry using Cox-de-Boor formula
-function plot_geom_hnurbs_cdb(Xi,Eta,P,W,params)
+function plot_geom_hbsplines_2d_cdb(Xi,Eta,P,W,params)
 min_xi = params.min_xi;
 max_xi = params.max_xi;
 min_eta = params.min_eta;
@@ -28,7 +28,7 @@ for i = 1:num_points1
          Z(i,j) = Z(i,j) / Denom;
      end
 end
-surf(X,Y,Z)
+surf(X,Y,Z);
 
 % params.num_points1 = 11;
 % params.num_points2 = 11;

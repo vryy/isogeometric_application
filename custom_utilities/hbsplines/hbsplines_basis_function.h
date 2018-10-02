@@ -356,15 +356,13 @@ public:
     void GetValue(double& res, const std::vector<double>& xi) const
     {
         res = 1.0;
-
         for (std::size_t dim = 0; dim < TDim; ++dim)
         {
             std::vector<double> value(1);
             std::vector<double> local_knots;
             this->LocalKnots(dim, local_knots);
             int order = this->Order(dim);
-            double v = BSplineUtils::CoxDeBoor(xi[dim], 0, order, local_knots);
-            res *= v;
+            res *= BSplineUtils::CoxDeBoor(xi[dim], 0, order, local_knots);
         }
     }
 

@@ -189,6 +189,31 @@ public:
         rOStream << ",P" << patch_id << "_params);\n";
         rOStream << "\n";
 
+        rOStream << "% visualize the control points\n";
+        rOStream << "figure\n";
+        rOStream << "plot_ctrl_points_hbsplines_" << TDim << "d(P" << patch_id << "_P,P" << patch_id << "_W,P" << patch_id << "_EqId+1,P" << patch_id << "_params);\n";
+        rOStream << "\n";
+
+        rOStream << "% visualize the cells\n";
+        rOStream << "P" << patch_id << "_cell_params.tol = 1.0e-6;\n";
+        rOStream << "P" << patch_id << "_cell_params.p1 = " << pFESpace->Order(0) << ";\n";
+        rOStream << "P" << patch_id << "_cell_params.max_xi = 1.0;\n";
+        if (TDim > 1)
+        {
+            rOStream << "P" << patch_id << "_cell_params.p2 = " << pFESpace->Order(1) << ";\n";
+            rOStream << "P" << patch_id << "_cell_params.max_eta = 1.0;\n";
+        }
+        if (TDim > 2)
+        {
+            rOStream << "P" << patch_id << "_cell_params.p3 = " << pFESpace->Order(2) << ";\n";
+            rOStream << "P" << patch_id << "_cell_params.max_zeta = 1.0;\n";
+        }
+        rOStream << "P" << patch_id << "_cell_params.method = 'bezier';\n";
+        rOStream << "P" << patch_id << "_cell_params.adjust = 1;\n";
+        rOStream << "figure\n";
+        rOStream << "plot_sampling_hbsplines_cells_" << TDim << "d(P" << patch_id << "_Xi,P" << patch_id << "_Eta,P" << patch_id << "_P,P" << patch_id << "_W,P" << patch_id << "_EqId,P" << patch_id << "_S,P" << patch_id << "_C,P" << patch_id << "_N,P" << patch_id << "_cell_params);\n";
+        rOStream << "\n";
+
         rOStream << std::endl;
     }
 
@@ -230,9 +255,9 @@ public:
         outfile << "%% hierarchical B-Splines mesh information, (c) Hoang Giang Bui, " << (now->tm_year + 1900) << "\n";
         outfile << "clc\n";
         outfile << "clear\n";
-/*        outfile << "close all\n";*/
-/*        outfile << "hold on\n";*/
-/*        outfile << "axis equal\n\n";*/
+        outfile << "%close all\n";
+        outfile << "%hold on\n";
+        outfile << "%axis equal\n\n";
 
         MultiHBSplinesPatchMatlabExporterWriter<TDim> dummy;
         dummy.Export(pPatch, outfile);
@@ -253,9 +278,9 @@ public:
         outfile << "%% hierarchical B-Splines mesh information, (c) Hoang Giang Bui, " << (now->tm_year + 1900) << "\n";
         outfile << "clc\n";
         outfile << "clear\n";
-/*        outfile << "close all\n";*/
-/*        outfile << "hold on\n";*/
-/*        outfile << "axis equal\n\n";*/
+        outfile << "%close all\n";
+        outfile << "%hold on\n";
+        outfile << "%axis equal\n\n";
 
         MultiHBSplinesPatchMatlabExporterWriter<TDim> dummy;
         dummy.Export(pMultiPatch, outfile);

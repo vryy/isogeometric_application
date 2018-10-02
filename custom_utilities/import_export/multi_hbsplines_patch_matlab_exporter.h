@@ -43,7 +43,7 @@ public:
         typedef ControlPoint<double> ControlPointType;
 
         std::size_t patch_id = pPatch->Id();
-        rOStream << "%%Information on hierarchical B-Splines patch " << patch_id << "\n\n";
+        rOStream << "%%Information on hierarchical B-Splines<" << TDim << "> patch " << patch_id << "\n\n";
 
         /* export the basis function information */
         std::size_t cnt = 0;
@@ -62,28 +62,32 @@ public:
 
         rOStream << "% Degree" << std::endl;
         rOStream << "P" << patch_id << "_params.p1 = " << pFESpace->Order(0) << ";\n";
-        rOStream << "P" << patch_id << "_params.p2 = " << pFESpace->Order(1) << ";\n";
-        if (TDim == 3)
+        if (TDim > 1)
+            rOStream << "P" << patch_id << "_params.p2 = " << pFESpace->Order(1) << ";\n";
+        if (TDim > 2)
             rOStream << "P" << patch_id << "_params.p3 = " << pFESpace->Order(2) << ";\n";
         rOStream << "\n";
 
         for (typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
         {
             (*it_bf)->LocalKnots(0, local_knots[0]);
-            (*it_bf)->LocalKnots(1, local_knots[1]);
-            if (TDim == 3) (*it_bf)->LocalKnots(2, local_knots[2]);
+            if (TDim > 1) (*it_bf)->LocalKnots(1, local_knots[1]);
+            if (TDim > 2) (*it_bf)->LocalKnots(2, local_knots[2]);
 
             double min_xi_bf = *std::min_element(local_knots[0].begin(), local_knots[0].end());
             double max_xi_bf = *std::max_element(local_knots[0].begin(), local_knots[0].end());
             if (min_xi_bf < min_xi) min_xi = min_xi_bf;
             if (max_xi_bf > max_xi) max_xi = max_xi_bf;
 
-            double min_eta_bf = *std::min_element(local_knots[1].begin(), local_knots[1].end());
-            double max_eta_bf = *std::max_element(local_knots[1].begin(), local_knots[1].end());
-            if (min_eta_bf < min_eta) min_eta = min_eta_bf;
-            if (max_eta_bf > max_eta) max_eta = max_eta_bf;
+            if (TDim > 1)
+            {
+                double min_eta_bf = *std::min_element(local_knots[1].begin(), local_knots[1].end());
+                double max_eta_bf = *std::max_element(local_knots[1].begin(), local_knots[1].end());
+                if (min_eta_bf < min_eta) min_eta = min_eta_bf;
+                if (max_eta_bf > max_eta) max_eta = max_eta_bf;
+            }
 
-            if(TDim == 3)
+            if(TDim > 2)
             {
                 double min_zeta_bf = *std::min_element(local_knots[2].begin(), local_knots[2].end());
                 double max_zeta_bf = *std::max_element(local_knots[2].begin(), local_knots[2].end());
@@ -99,12 +103,15 @@ public:
                 rOStream << " " << local_knots[0][i];
             rOStream << "];\n";
 
-            rOStream << "P" << patch_id << "_Eta{" << cnt << "} = [";
-            for(std::size_t i = 0; i < local_knots[1].size(); ++i)
-                rOStream << " " << local_knots[1][i];
-            rOStream << "];\n";
+            if (TDim > 1)
+            {
+                rOStream << "P" << patch_id << "_Eta{" << cnt << "} = [";
+                for(std::size_t i = 0; i < local_knots[1].size(); ++i)
+                    rOStream << " " << local_knots[1][i];
+                rOStream << "];\n";
+            }
 
-            if(TDim == 3)
+            if(TDim > 2)
             {
                 rOStream << "P" << patch_id << "_Zeta{" << cnt << "} = [";
                 for(std::size_t i = 0; i < local_knots[2].size(); ++i)
@@ -131,8 +138,10 @@ public:
 
             // write the boundary of the cell
             rOStream << "% cell " << cnt << " information" << std::endl;
-            rOStream << "P" << patch_id << "_S{" << cnt << "} = [" << (*it_cell)->LeftValue() << " " << (*it_cell)->RightValue() << ";";
-            rOStream << (*it_cell)->DownValue() << " " << (*it_cell)->UpValue() << "];\n";
+            rOStream << "P" << patch_id << "_S{" << cnt << "} = [" << (*it_cell)->LeftValue() << " " << (*it_cell)->RightValue();
+            if (TDim > 1) rOStream << "; " << (*it_cell)->DownValue() << " " << (*it_cell)->UpValue();
+            if (TDim > 2) rOStream << "; " << (*it_cell)->BelowValue() << " " << (*it_cell)->AboveValue();
+            rOStream << "];\n";
 
             // write the extraction operator
             Matrix C = (*it_cell)->GetExtractionOperator();
@@ -153,6 +162,32 @@ public:
                 rOStream << " " << bfs[i];
             rOStream << "];\n" << std::endl;
         }
+
+        /* visualization */
+        rOStream << "% visualize the geometry\n";
+        rOStream << "P" << patch_id << "_params.min_xi = " << min_xi << ";\n";
+        rOStream << "P" << patch_id << "_params.max_xi = " << 0.999999*max_xi << ";\n";
+        rOStream << "P" << patch_id << "_params.num_points1 = 100;\n";
+        if (TDim > 1)
+        {
+            rOStream << "P" << patch_id << "_params.min_eta = " << min_eta << ";\n";
+            rOStream << "P" << patch_id << "_params.max_eta = " << 0.999999*max_eta << ";\n";
+            rOStream << "P" << patch_id << "_params.num_points2 = 100;\n";
+        }
+        if (TDim > 2)
+        {
+            rOStream << "P" << patch_id << "_params.min_zeta = " << min_zeta << ";\n";
+            rOStream << "P" << patch_id << "_params.max_zeta = " << 0.999999*max_zeta << ";\n";
+            rOStream << "P" << patch_id << "_params.num_points3 = 100;\n";
+        }
+        rOStream << "plot_geom_hbsplines_" << TDim << "d_cdb(";
+        rOStream << "P" << patch_id << "_Xi";
+        if (TDim > 1) rOStream << ",P" << patch_id << "_Eta";
+        if (TDim > 2) rOStream << ",P" << patch_id << "_Zeta";
+        rOStream << ",P" << patch_id << "_P";
+        rOStream << ",P" << patch_id << "_W";
+        rOStream << ",P" << patch_id << "_params);\n";
+        rOStream << "\n";
 
         rOStream << std::endl;
     }

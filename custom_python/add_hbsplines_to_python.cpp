@@ -283,8 +283,10 @@ void IsogeometricApplication_AddHBSplinesToPython()
 
     class_<MultiHBSplinesPatchMatlabExporter, MultiHBSplinesPatchMatlabExporter::Pointer, boost::noncopyable>
     ("MultiHBSplinesPatchMatlabExporter", init<>())
+    .def("Export", &MultiPatchExporter_Export<1, MultiHBSplinesPatchMatlabExporter, Patch<1> >)
     .def("Export", &MultiPatchExporter_Export<2, MultiHBSplinesPatchMatlabExporter, Patch<2> >)
     .def("Export", &MultiPatchExporter_Export<3, MultiHBSplinesPatchMatlabExporter, Patch<3> >)
+    .def("Export", &MultiPatchExporter_Export<1, MultiHBSplinesPatchMatlabExporter, MultiPatch<1> >)
     .def("Export", &MultiPatchExporter_Export<2, MultiHBSplinesPatchMatlabExporter, MultiPatch<2> >)
     .def("Export", &MultiPatchExporter_Export<3, MultiHBSplinesPatchMatlabExporter, MultiPatch<3> >)
     .def(self_ns::str(self))

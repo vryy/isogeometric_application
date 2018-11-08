@@ -21,6 +21,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/nurbs/cell.h"
 
@@ -29,7 +30,7 @@ namespace Kratos
 {
 
 /**
-    Represent a cell in hierarchical B-Splines topology
+ *  Represent a cell in hierarchical B-Splines topology
  */
 template<class TBasisFuncType>
 class HBCell : public Cell
@@ -43,8 +44,10 @@ public:
 
     typedef Cell BaseType;
 
-    typedef typename TBasisFuncType::Pointer bf_t;
-    typedef typename TBasisFuncType::WeakPointer bf_wt;
+/*    typedef typename TBasisFuncType::Pointer bf_t;*/
+/*    typedef typename TBasisFuncType::WeakPointer bf_wt;*/
+    typedef typename Isogeometric_Pointer_Helper<TBasisFuncType>::Pointer bf_t;
+    typedef typename Isogeometric_Pointer_Helper<TBasisFuncType>::WeakPointer bf_wt;
     typedef std::set<bf_wt> bf_container_t;
     typedef typename bf_container_t::iterator bf_iterator;
     typedef typename bf_container_t::const_iterator bf_const_iterator;

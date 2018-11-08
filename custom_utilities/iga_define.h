@@ -181,6 +181,18 @@ enum PostElementType
     _HEXAHEDRA_ = 3
 };
 
+/**
+ * Helper struct to extract the pointer type
+ * One case use typename Isogeometric_Pointer_Helper<TType>::Pointer as replacement for typename TType::Pointer
+ * This is useful when TType is used in nested template argument, e.g. template<..., typename type_t<TType> >
+ */
+template<class TType>
+struct Isogeometric_Pointer_Helper
+{
+    KRATOS_CLASS_POINTER_DEFINITION(TType);
+};
+
+
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_IGA_DEFINE_H_INCLUDED defined

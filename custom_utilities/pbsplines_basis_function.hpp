@@ -6,8 +6,8 @@
 //
 //
 
-#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_BASIS_FUNCTION_HPP_INCLUDED )
-#define  KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_BASIS_FUNCTION_HPP_INCLUDED
+#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_PBSPLINES_BASIS_FUNCTION_HPP_INCLUDED )
+#define  KRATOS_ISOGEOMETRIC_APPLICATION_PBSPLINES_BASIS_FUNCTION_HPP_INCLUDED
 
 #include "custom_utilities/bezier_utils.h"
 #include "custom_utilities/bspline_utils.h"
@@ -17,7 +17,7 @@ namespace Kratos
 
 template<>
 template<typename TVectorType, typename TIArrayType, typename TKnotContainerType, class TCellType>
-inline void HBSplinesBasisFunction_Helper<1>::ComputeExtractionOperator(TVectorType& Crow,
+inline void PBSplinesBasisFunction_Helper<1>::ComputeExtractionOperator(TVectorType& Crow,
         const TIArrayType& orders, const TKnotContainerType& local_knots, const TCellType& r_cell)
 {
     // a priori check
@@ -124,7 +124,7 @@ inline void HBSplinesBasisFunction_Helper<1>::ComputeExtractionOperator(TVectorT
 
 template<>
 template<typename TVectorType, typename TIArrayType, typename TKnotContainerType, class TCellType>
-inline void HBSplinesBasisFunction_Helper<2>::ComputeExtractionOperator(TVectorType& Crow,
+inline void PBSplinesBasisFunction_Helper<2>::ComputeExtractionOperator(TVectorType& Crow,
         const TIArrayType& orders, const TKnotContainerType& local_knots, const TCellType& r_cell)
 {
     // a priori check
@@ -308,7 +308,7 @@ inline void HBSplinesBasisFunction_Helper<2>::ComputeExtractionOperator(TVectorT
 
 template<>
 template<typename TVectorType, typename TIArrayType, typename TKnotContainerType, class TCellType>
-inline void HBSplinesBasisFunction_Helper<3>::ComputeExtractionOperator(TVectorType& Crow,
+inline void PBSplinesBasisFunction_Helper<3>::ComputeExtractionOperator(TVectorType& Crow,
         const TIArrayType& orders, const TKnotContainerType& local_knots, const TCellType& r_cell)
 {
     // a priori check
@@ -554,14 +554,14 @@ inline void HBSplinesBasisFunction_Helper<3>::ComputeExtractionOperator(TVectorT
 }
 
 template<>
-inline bool HBSplinesBasisFunction_Helper<1>::CheckBoundingBox(const std::vector<double>& bounding_box,
+inline bool PBSplinesBasisFunction_Helper<1>::CheckBoundingBox(const std::vector<double>& bounding_box,
     const std::vector<std::vector<double> >& window)
 {
     return (bounding_box[0] >= window[0][0] && bounding_box[1] <= window[0][1]);
 }
 
 template<>
-inline bool HBSplinesBasisFunction_Helper<2>::CheckBoundingBox(const std::vector<double>& bounding_box,
+inline bool PBSplinesBasisFunction_Helper<2>::CheckBoundingBox(const std::vector<double>& bounding_box,
     const std::vector<std::vector<double> >& window)
 {
     return (bounding_box[0] >= window[0][0] && bounding_box[1] <= window[0][1]
@@ -569,7 +569,7 @@ inline bool HBSplinesBasisFunction_Helper<2>::CheckBoundingBox(const std::vector
 }
 
 template<>
-inline bool HBSplinesBasisFunction_Helper<3>::CheckBoundingBox(const std::vector<double>& bounding_box,
+inline bool PBSplinesBasisFunction_Helper<3>::CheckBoundingBox(const std::vector<double>& bounding_box,
     const std::vector<std::vector<double> >& window)
 {
     return (bounding_box[0] >= window[0][0] && bounding_box[1] <= window[0][1]
@@ -578,7 +578,7 @@ inline bool HBSplinesBasisFunction_Helper<3>::CheckBoundingBox(const std::vector
 }
 
 template<class TBasisFunctionType>
-struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<double> >
+struct PBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<double> >
 {
     static inline void Initialize(TBasisFunctionType& r_bf, const Variable<double>& rVariable)
     {
@@ -588,7 +588,7 @@ struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variabl
 };
 
 template<class TBasisFunctionType>
-struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<array_1d<double, 3> > >
+struct PBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<array_1d<double, 3> > >
 {
     static inline void Initialize(TBasisFunctionType& r_bf, const Variable<array_1d<double, 3> >& rVariable)
     {
@@ -602,7 +602,7 @@ struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variabl
 };
 
 template<class TBasisFunctionType>
-struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<Vector> >
+struct PBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variable<Vector> >
 {
     static inline void Initialize(TBasisFunctionType& r_bf, const Variable<Vector>& rVariable, typename TBasisFunctionType::Pointer p_ref_bf)
     {
@@ -617,5 +617,5 @@ struct HBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variabl
 
 }// namespace Kratos.
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_BASIS_FUNCTION_HPP_INCLUDED
+#endif // KRATOS_ISOGEOMETRIC_APPLICATION_PBSPLINES_BASIS_FUNCTION_HPP_INCLUDED
 

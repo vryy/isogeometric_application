@@ -309,11 +309,11 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                 // and initialize its value
                 for (std::size_t i = 0; i < double_variables.size(); ++i)
-                    HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<double> >::Initialize(*pnew_bf, *double_variables[i]);
+                    PBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<double> >::Initialize(*pnew_bf, *double_variables[i]);
                 for (std::size_t i = 0; i < array_1d_variables.size(); ++i)
-                    HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<array_1d<double, 3> > >::Initialize(*pnew_bf, *array_1d_variables[i]);
+                    PBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<array_1d<double, 3> > >::Initialize(*pnew_bf, *array_1d_variables[i]);
                 for (std::size_t i = 0; i < vector_variables.size(); ++i)
-                    HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<Vector> >::Initialize(*pnew_bf, *vector_variables[i], p_bf);
+                    PBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<Vector> >::Initialize(*pnew_bf, *vector_variables[i], p_bf);
 
                 // add to the new bf list and set the boundary information
                 pnew_bfs.push_back(pnew_bf);
@@ -448,11 +448,11 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                     // and initialize its value
                     for (std::size_t i = 0; i < double_variables.size(); ++i)
-                        HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<double> >::Initialize(*pnew_bf, *double_variables[i]);
+                        PBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<double> >::Initialize(*pnew_bf, *double_variables[i]);
                     for (std::size_t i = 0; i < array_1d_variables.size(); ++i)
-                        HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<array_1d<double, 3> > >::Initialize(*pnew_bf, *array_1d_variables[i]);
+                        PBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<array_1d<double, 3> > >::Initialize(*pnew_bf, *array_1d_variables[i]);
                     for (std::size_t i = 0; i < vector_variables.size(); ++i)
-                        HBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<Vector> >::Initialize(*pnew_bf, *vector_variables[i], p_bf);
+                        PBSplinesBasisFunction_InitializeValue_Helper<BasisFunctionType, Variable<Vector> >::Initialize(*pnew_bf, *vector_variables[i], p_bf);
 
                     // add to the new bf list and set the boundary information
                     pnew_bfs.push_back(pnew_bf);
@@ -777,7 +777,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch
 
         // check if the bounding box lie in the refined domain
         // Remarks: this can be changed by a refinement indicator (i.e from error estimator)
-        if( HBSplinesBasisFunction_Helper<TDim>::CheckBoundingBox(bounding_box, window) )
+        if( PBSplinesBasisFunction_Helper<TDim>::CheckBoundingBox(bounding_box, window) )
         {
             bf_list.push_back((*it_bf)->Id());
         }

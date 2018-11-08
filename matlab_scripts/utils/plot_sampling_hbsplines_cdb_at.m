@@ -1,4 +1,10 @@
 %% plot the hierarchical B-Splines sampling points using Cox-de-Boor formula
+% Pts (npoints x 2): sampling points in parametric coordinates
+% Xi: cell structure containing the local knot vector in u-direction. E.g. Xi = {}; Xi{1} = [0 0 1]; ...
+% Eta: cell structure containing the local knot vector in v-direction. E.g. Eta = {}; Eta{1} = [0 1 1]; ...
+% P (npoints x 3): array containing physical coordinates of the control points.
+% W (npoints): array containing weight of the control points.
+% params: .p1 and .p2 is the order in u- and v-direction
 function Pip=plot_sampling_hbsplines_cdb_at(Pts,Xi,Eta,P,W,params)
 p1 = params.p1;
 p2 = params.p2;

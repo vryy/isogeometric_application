@@ -25,6 +25,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/control_point.h"
+#include "custom_utilities/control_grid.h"
+#include "custom_utilities/control_grid_utility.h"
 
 
 namespace Kratos
@@ -102,6 +104,51 @@ struct ControlValue_Helper<array_1d<double, 3> >
     {
     }
 };
+
+template<typename TType>
+std::size_t Isogeometric_GetId(TType& rDummy)
+{
+    return rDummy.Id();
+}
+
+template<typename TType>
+void Isogeometric_SetId(TType& rDummy, std::size_t Id)
+{
+    rDummy.SetId(Id);
+}
+
+template<typename TType>
+std::size_t Isogeometric_GetEquationId(TType& rDummy)
+{
+    return rDummy.EquationId();
+}
+
+template<typename TType>
+void Isogeometric_SetEquationId(TType& rDummy, std::size_t EquationId)
+{
+    rDummy.SetEquationId(EquationId);
+}
+
+
+template<typename TFESpaceType>
+boost::python::list FESpace_ExtractBoundaryBfsByFlag(TFESpaceType& rDummy, std::size_t boundary_id)
+{
+    typedef typename TFESpaceType::bf_t bf_t;
+
+    std::vector<bf_t> bf_list = rDummy.ExtractBoundaryBfsByFlag(boundary_id);
+
+    boost::python::list Output;
+    for (std::size_t i = 0; i < bf_list.size(); ++i)
+        Output.append(bf_list[i]);
+
+    return Output;
+}
+
+template<typename TFESpaceType>
+typename TFESpaceType::bf_t FESpace_GetItem(TFESpaceType& rDummy, std::size_t i)
+{
+    return rDummy[i];
+}
 
 void  IsogeometricApplication_AddBackendUtilitiesToPython();
 void  IsogeometricApplication_AddFrontendUtilitiesToPython();

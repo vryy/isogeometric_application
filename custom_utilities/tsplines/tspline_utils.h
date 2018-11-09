@@ -97,13 +97,13 @@ public:
             tmesh.SetOrder(dim, order);
             
         }
-KRATOS_WATCH(__LINE__)
+
         for(dim = 0;  dim < 2; ++dim){
             const knot_container_t& knot_vec = rFESpace.KnotVector(dim);
             for(std::size_t i = 0; i < knot_vec.size(); ++i)
                 tmesh.InsertKnot(dim, knot_vec[i]);
         }
-KRATOS_WATCH(__LINE__)   
+ 
         // assign the index to the knot vectors
         int cnt = -1;
         for(std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
@@ -111,8 +111,7 @@ KRATOS_WATCH(__LINE__)
         cnt = -1;
         for(std::size_t i = 0; i < tmesh.NumberOfKnots(1); ++i)
             tmesh.GetKnot(1, i)->UpdateIndex(++cnt);
-        
-KRATOS_WATCH(__LINE__)  
+         
         // create the vertex list
         std::set<std::pair<int, int> > VertexList;
         for(std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
@@ -123,7 +122,6 @@ KRATOS_WATCH(__LINE__)
             }
         }
         
-KRATOS_WATCH(__LINE__)
         // insert the vertices to the T-spline mesh
         std::map<std::pair<int, int>, TsVertex::Pointer> VertexMap;
         for(std::set<std::pair<int, int> >::iterator it = VertexList.begin(); it != VertexList.end(); ++it)
@@ -137,8 +135,7 @@ KRATOS_WATCH(__LINE__)
         {
             std::cout << "VertexMap[" << it->first.first << ", " << it->first.second << "]: " << *(it->second) << std::endl;
         }
-
-KRATOS_WATCH(__LINE__)            
+            
         // insert outer h-edges
         int p_u = tmesh.Order(0);
         int n_u = tmesh.NumberOfKnots(0) - p_u - 1;
@@ -148,25 +145,25 @@ KRATOS_WATCH(__LINE__)
         std::cout << "n_u = " << n_u << std::endl ;
         std::cout << "p_v = " << p_v << std::endl ;
         std::cout << "n_v = " << n_v << std::endl ;
-KRATOS_WATCH(__LINE__)     
+
         for(std::size_t i = 0; i < p_u; ++i)
         {
             TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, i)];
-            KRATOS_WATCH(pV1);
-            std::cout << "n+p-i = " << n_u+p_u-i << std::endl ;
+            //KRATOS_WATCH(pV1);
+            //std::cout << "n+p-i = " << n_u+p_u-i << std::endl ;
             TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u+p_u-i, i)];
             
-            KRATOS_WATCH(pV2);
+            //KRATOS_WATCH(pV2);
             tmesh.AddHEdge(pV1, pV2);
         }
-KRATOS_WATCH(__LINE__)        
+ 
         for(std::size_t i = 0; i < p_u; ++i)
         {
             TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, n_v+p_v-i)];
             TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u+p_u-i, n_v+p_v-i)];
             tmesh.AddHEdge(pV1, pV2);
         }
-KRATOS_WATCH(__LINE__)        
+
         // insert the inner h-edges        
         for(std::size_t i = p_u; i < n_u; ++i)
         {
@@ -177,7 +174,7 @@ KRATOS_WATCH(__LINE__)
                 tmesh.AddHEdge(pV1, pV2);
             }
         }
-KRATOS_WATCH(__LINE__)
+
         // insert outer v-edges       
         for(std::size_t i = 0; i < p_v; ++i)
         {
@@ -192,7 +189,7 @@ KRATOS_WATCH(__LINE__)
             TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u+p_u-i, n_v+p_v-i)];
             tmesh.AddVEdge(pV1, pV2);
         }
-KRATOS_WATCH(__LINE__)        
+
         // insert the inner v-edges
         for(std::size_t i = p_u; i < n_u+1; ++i)
         {
@@ -343,7 +340,7 @@ KRATOS_WATCH(__LINE__)
         outfile << "axis equal" << std::endl;
         outfile << "close all" << std::endl;
         outfile << "hold on" << std::endl << std::endl;
-KRATOS_WATCH(__LINE__)
+
         // plot edges
         if(mesh_type == std::string("topology"))
         {
@@ -351,13 +348,11 @@ KRATOS_WATCH(__LINE__)
             {
                 if((*it)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE || (*it)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE)
                 {
-                KRATOS_WATCH(__LINE__)
                     outfile << "line([" << (*it)->pV1()->Index1() << " " << (*it)->pV2()->Index1() << "],";
                     outfile << "[" << (*it)->pV1()->Index2() << " " << (*it)->pV2()->Index2() << "],'LineStyle',':');" << std::endl;
                 }
                 else
                 {
-                KRATOS_WATCH(__LINE__)
                     outfile << "line([" << (*it)->pV1()->Index1() << " " << (*it)->pV2()->Index1() << "],";
                     outfile << "[" << (*it)->pV1()->Index2() << " " << (*it)->pV2()->Index2() << "]);" << std::endl;
                 }
@@ -370,34 +365,31 @@ KRATOS_WATCH(__LINE__)
             {
                 if((*it)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE || (*it)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE)
                 {
-                KRATOS_WATCH(__LINE__)
                     outfile << "line([" << (*it)->pV1()->pXi()->Value() << " " << (*it)->pV2()->pXi()->Value() << "],";
                     outfile << "[" << (*it)->pV1()->pEta()->Value() << " " << (*it)->pV2()->pEta()->Value() << "],'LineStyle',':');" << std::endl;
                 }
                 else
                 {
-                KRATOS_WATCH(__LINE__)
                     outfile << "line([" << (*it)->pV1()->pXi()->Value() << " " << (*it)->pV2()->pXi()->Value() << "],";
                     outfile << "[" << (*it)->pV1()->pEta()->Value() << " " << (*it)->pV2()->pEta()->Value() << "]);" << std::endl;
                 }
             }
         }
-KRATOS_WATCH(__LINE__)
+
         outfile << std::endl;
 
         // find all anchors in the current topology mesh
         std::vector<anchor_t> Anchors;
         tmesh.FindAnchors(Anchors);
-KRATOS_WATCH(__LINE__)
+
         // export the knot vectors for each anchors
         std::vector<double> Knots1;
         std::vector<double> Knots2;
         int cnt = 0;
         for(std::size_t i = 0; i < Anchors.size(); ++i)
         {
-        KRATOS_WATCH(__LINE__)
             tmesh.FindKnots<1, double>(Anchors[i].first, Anchors[i].second, Knots1, Knots2);
-            KRATOS_WATCH(__LINE__)
+
             outfile << "local_knots(" << ++cnt << ",:,:) = [";
             for(std::size_t i = 0; i < Knots1.size(); ++i)
                 outfile << " " << Knots1[i];
@@ -408,15 +400,15 @@ KRATOS_WATCH(__LINE__)
                 
             outfile << "];" << std::endl;
         }
-KRATOS_WATCH(__LINE__)
+
         outfile.close();
         std::cout << "Exported to " << fn << " completed!" << std::endl;
-KRATOS_WATCH(__LINE__)
+
         std::cout << "Find cells in the T-splines topology mesh...";
         std::set<cell_t> cells;
         tmesh.FindCells(cells);
         std::cout << "OK!" << std::endl;
-KRATOS_WATCH(__LINE__)
+
         std::cout << "Find cells in the extended T-splines topology mesh...";
         cells.clear();
         tmesh.FindCells(cells, true);

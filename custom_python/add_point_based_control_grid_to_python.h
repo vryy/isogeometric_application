@@ -44,7 +44,7 @@ struct IsogeometricApplication_AddPointBasedControlGrid_Helper
 };
 
 template<class TFESpaceType>
-struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<double>, TFESpaceType >
+struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<double>, TFESpaceType>
 {
     typedef Variable<double> VariableType;
     typedef ControlGrid<typename VariableType::Type> ControlGridType;
@@ -62,7 +62,7 @@ struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<double>,
 };
 
 template<class TFESpaceType>
-struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<array_1d<double, 3> >, TFESpaceType >
+struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<array_1d<double, 3> >, TFESpaceType>
 {
     typedef Variable<array_1d<double, 3> > VariableType;
     typedef ControlGrid<typename VariableType::Type> ControlGridType;
@@ -80,7 +80,7 @@ struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<array_1d
 };
 
 template<class TFESpaceType>
-struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<Vector>, TFESpaceType >
+struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<Vector>, TFESpaceType>
 {
     typedef Variable<Vector> VariableType;
     typedef ControlGrid<typename VariableType::Type> ControlGridType;

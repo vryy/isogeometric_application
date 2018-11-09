@@ -59,6 +59,7 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
     IsogeometricApplication_AddGridFunctionsToPython<3>();
     IsogeometricApplication_AddPatchesToPython();
     IsogeometricApplication_AddNURBSToPython();
+    IsogeometricApplication_AddPBSplinesToPython();
     IsogeometricApplication_AddHBSplinesToPython();
     IsogeometricApplication_AddTSplinesToPython();
     IsogeometricApplication_AddMeshAndModelPartToPython();

@@ -108,11 +108,13 @@ public:
     void RemoveCell(cell_t p_cell)
     {
         for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
+        {
             if(*it == p_cell)
             {
                 mpCells.erase(it);
                 break;
             }
+        }
     }
 
     /// Remove the cell from the list

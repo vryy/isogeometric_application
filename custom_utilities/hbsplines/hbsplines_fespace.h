@@ -102,6 +102,24 @@ public:
         return p_bf;
     }
 
+    /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
+    virtual void UpdateCells()
+    {
+        this->ResetCells();
+
+        // for each cell compute the extraction operator and add to the anchor
+        Vector Crow;
+        for(typename cell_container_t::iterator it_cell = BaseType::mpCellManager->begin(); it_cell != BaseType::mpCellManager->end(); ++it_cell)
+        {
+            for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
+            {
+                BasisFunctionType& bf = *(it_bf->lock());
+                bf.ComputeExtractionOperator(Crow, *it_cell);
+                (*it_cell)->AddAnchor(bf.EquationId(), bf.GetValue(CONTROL_POINT).W(), Crow);
+            }
+        }
+    }
+
     /// Get the last refinement level ain the hierarchical mesh
     const std::size_t& LastLevel() const {return mLastLevel;}
 

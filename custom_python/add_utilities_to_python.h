@@ -25,8 +25,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/control_point.h"
-#include "custom_utilities/control_grid.h"
-#include "custom_utilities/control_grid_utility.h"
 
 
 namespace Kratos
@@ -115,6 +113,12 @@ template<typename TType>
 void Isogeometric_SetId(TType& rDummy, std::size_t Id)
 {
     rDummy.SetId(Id);
+}
+
+template<typename TType>
+void Isogeometric_DoNotSetId(TType& rDummy, std::size_t Id)
+{
+    // DO NOTHING
 }
 
 template<typename TType>

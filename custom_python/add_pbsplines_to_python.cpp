@@ -30,7 +30,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
 #include "custom_python/add_import_export_to_python.h"
-#include "custom_python/add_control_grids_to_python.h"
 
 
 namespace Kratos
@@ -52,7 +51,7 @@ void IsogeometricApplication_AddPBSplinesSpaceToPython()
     typedef PBSplinesBasisFunction<TDim, Cell> PBSplinesBasisFunctionType;
     class_<PBSplinesBasisFunctionType, typename PBSplinesBasisFunctionType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<const std::size_t&>())
-    .add_property("Id", Isogeometric_GetId<PBSplinesBasisFunctionType>, Isogeometric_SetId<PBSplinesBasisFunctionType>)
+    .add_property("Id", Isogeometric_GetId<PBSplinesBasisFunctionType>, Isogeometric_DoNotSetId<PBSplinesBasisFunctionType>)
     .add_property("EquationId", Isogeometric_GetEquationId<PBSplinesBasisFunctionType>, Isogeometric_SetEquationId<PBSplinesBasisFunctionType>)
     .def("Weight", &PBSplinesBasisFunctionType::Weight)
     .def(self_ns::str(self))
@@ -87,19 +86,6 @@ void IsogeometricApplication_AddPBSplinesToPython()
     IsogeometricApplication_AddPBSplinesSpaceToPython<1>();
     IsogeometricApplication_AddPBSplinesSpaceToPython<2>();
     IsogeometricApplication_AddPBSplinesSpaceToPython<3>();
-
-    class_<ControlGridUtility, ControlGridUtility::Pointer, boost::noncopyable>
-    ("PointBasedControlGridUtility", init<>())
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBSplinesFESpace<1, PBSplinesBasisFunction<1, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBSplinesFESpace<2, PBSplinesBasisFunction<2, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBSplinesFESpace<3, PBSplinesBasisFunction<3, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBSplinesFESpace<1, PBSplinesBasisFunction<1, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBSplinesFESpace<2, PBSplinesBasisFunction<2, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBSplinesFESpace<3, PBSplinesBasisFunction<3, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBSplinesFESpace<1, PBSplinesBasisFunction<1, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBSplinesFESpace<2, PBSplinesBasisFunction<2, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBSplinesFESpace<3, PBSplinesBasisFunction<3, Cell> > >)
-    ;
 
 }
 

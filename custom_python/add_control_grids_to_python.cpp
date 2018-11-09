@@ -24,6 +24,10 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/define.h"
 #include "includes/model_part.h"
 #include "includes/variables.h"
+#include "custom_utilities/pbsplines_basis_function.h"
+#include "custom_utilities/pbsplines_fespace.h"
+#include "custom_utilities/hbsplines/hbsplines_basis_function.h"
+#include "custom_utilities/hbsplines/hbsplines_fespace.h"
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_control_grids_to_python.h"
 
@@ -36,6 +40,139 @@ namespace Python
 {
 
 using namespace boost::python;
+
+ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateLinearControlPointGrid(
+        ControlGridLibrary& rDummy,
+        const double& start_x, const double& start_y, const double& start_z,
+        const std::size_t& n_points_u,
+        const double& end_x, const double& end_y, const double& end_z)
+{
+    std::vector<double> start(3);
+    start[0] = start_x;
+    start[1] = start_y;
+    start[2] = start_z;
+
+    std::vector<std::size_t> ngrid(1);
+    ngrid[0] = n_points_u;
+
+    std::vector<double> end(3);
+    end[0] = end_x;
+    end[1] = end_y;
+    end[2] = end_z;
+
+    return rDummy.CreateStructuredControlPointGrid<1>(start, ngrid, end);
+}
+
+ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangularControlPointGrid1(
+        ControlGridLibrary& rDummy,
+        const double& start_x, const double& start_y,
+        const std::size_t& n_points_u, const std::size_t& n_points_v,
+        const double& end_x, const double& end_y)
+{
+    std::vector<double> start(2);
+    start[0] = start_x;
+    start[1] = start_y;
+
+    std::vector<std::size_t> ngrid(2);
+    ngrid[0] = n_points_u;
+    ngrid[1] = n_points_v;
+
+    std::vector<double> end(2);
+    end[0] = end_x;
+    end[1] = end_y;
+
+    return rDummy.CreateStructuredControlPointGrid<2>(start, ngrid, end);
+}
+
+ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangularControlPointGrid2(
+        ControlGridLibrary& rDummy,
+        const double& start_x, const double& start_y, const double& start_z,
+        const std::size_t& n_points_u, const std::size_t& n_points_v,
+        const double& space1_x, const double& space1_y, const double& space1_z,
+        const double& space2_x, const double& space2_y, const double& space2_z)
+{
+    std::vector<double> start(3);
+    start[0] = start_x;
+    start[1] = start_y;
+    start[2] = start_z;
+
+    std::vector<std::size_t> ngrid(2);
+    ngrid[0] = n_points_u;
+    ngrid[1] = n_points_v;
+
+    std::vector<double> space1(3);
+    space1[0] = space1_x;
+    space1[1] = space1_y;
+    space1[2] = space1_z;
+
+    std::vector<double> space2(3);
+    space2[0] = space2_x;
+    space2[1] = space2_y;
+    space2[2] = space2_z;
+
+    std::vector<std::vector<double> > spacing_vectors(2);
+    spacing_vectors[0] = space1;
+    spacing_vectors[1] = space2;
+
+    return rDummy.CreateStructuredControlPointGrid<2>(start, ngrid, spacing_vectors);
+}
+
+ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicControlPointGrid1(
+        ControlGridLibrary& rDummy,
+        const double& start_x, const double& start_y, const double& start_z,
+        const std::size_t& n_points_u, const std::size_t& n_points_v, const std::size_t& n_points_w,
+        const double& end_x, const double& end_y, const double& end_z)
+{
+    std::vector<double> start(3);
+    start[0] = start_x;
+    start[1] = start_y;
+    start[2] = start_z;
+
+    std::vector<std::size_t> ngrid(3);
+    ngrid[0] = n_points_u;
+    ngrid[1] = n_points_v;
+    ngrid[2] = n_points_w;
+
+    std::vector<double> end(3);
+    end[0] = end_x;
+    end[1] = end_y;
+    end[2] = end_z;
+
+    return rDummy.CreateStructuredControlPointGrid<3>(start, ngrid, end);
+}
+
+ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicControlPointGrid2(
+        ControlGridLibrary& rDummy,
+        const double& start_x, const double& start_y, const double& start_z,
+        const std::size_t& n_points_u, const std::size_t& n_points_v, const std::size_t& n_points_w,
+        boost::python::list spacing_vectors_data)
+{
+    std::vector<double> start(3);
+    start[0] = start_x;
+    start[1] = start_y;
+    start[2] = start_z;
+
+    std::vector<std::size_t> ngrid(3);
+    ngrid[0] = n_points_u;
+    ngrid[1] = n_points_v;
+    ngrid[2] = n_points_w;
+
+    std::vector<std::vector<double> > spacing_vectors;
+    std::size_t cnt1 = 0, cnt2 = 0;
+    typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
+    BOOST_FOREACH(const iterator_value_type::value_type& vect, std::make_pair(iterator_value_type(spacing_vectors_data), iterator_value_type() ) )
+    {
+        typedef boost::python::stl_input_iterator<double> iterator_value_type2;
+        std::vector<double> space_vect;
+        BOOST_FOREACH(const iterator_value_type2::value_type& v, std::make_pair(iterator_value_type2(vect), iterator_value_type2() ) )
+        {
+            space_vect.push_back(v);
+        }
+        spacing_vectors.push_back(space_vect);
+    }
+
+    return rDummy.CreateStructuredControlPointGrid<3>(start, ngrid, spacing_vectors);
+}
 
 void IsogeometricApplication_AddControlPoint()
 {
@@ -150,6 +287,33 @@ void IsogeometricApplication_AddControlGridsToPython()
     .def("CreateLinearZeroArray1DControlGrid", &ControlGridLibrary_CreateLinearZeroControlGridWithVariable<Variable<array_1d<double, 3> > >)
     .def("CreateRectangularZeroArray1DControlGrid", &ControlGridLibrary_CreateRectangularZeroControlGridWithVariable<Variable<array_1d<double, 3> > >)
     .def("CreateCubicZeroArray1DControlGrid", &ControlGridLibrary_CreateCubicZeroControlGridWithVariable<Variable<array_1d<double, 3> > >)
+    ;
+
+    /////////////////////////////////////////////////////////////////
+    ///////////////////////CONTROL GRID UTILITIY/////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    class_<ControlGridUtility, ControlGridUtility::Pointer, boost::noncopyable>
+    ("PointBasedControlGridUtility", init<>())
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBSplinesFESpace<1, PBSplinesBasisFunction<1, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBSplinesFESpace<2, PBSplinesBasisFunction<2, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBSplinesFESpace<3, PBSplinesBasisFunction<3, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBSplinesFESpace<1, PBSplinesBasisFunction<1, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBSplinesFESpace<2, PBSplinesBasisFunction<2, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBSplinesFESpace<3, PBSplinesBasisFunction<3, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBSplinesFESpace<1, PBSplinesBasisFunction<1, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBSplinesFESpace<2, PBSplinesBasisFunction<2, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBSplinesFESpace<3, PBSplinesBasisFunction<3, Cell> > >)
+    ////
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, HBSplinesFESpace<1> >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, HBSplinesFESpace<2> >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, HBSplinesFESpace<3> >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, HBSplinesFESpace<1> >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, HBSplinesFESpace<2> >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, HBSplinesFESpace<3> >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, HBSplinesFESpace<1> >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, HBSplinesFESpace<2> >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, HBSplinesFESpace<3> >)
     ;
 
 }

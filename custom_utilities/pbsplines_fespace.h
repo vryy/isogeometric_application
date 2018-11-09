@@ -530,19 +530,18 @@ public:
     }
 
     /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
-    void UpdateCells()
+    virtual void UpdateCells()
     {
         this->ResetCells();
 
         // for each cell compute the extraction operator and add to the anchor
         Vector Crow;
-        for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
+            for (typename BasisFunctionType::cell_iterator it_cell = (*it)->cell_begin(); it_cell != (*it)->cell_end(); ++it_cell)
             {
-                BasisFunctionType& bf = *(it_bf->lock());
-                bf.ComputeExtractionOperator(Crow, *it_cell);
-                (*it_cell)->AddAnchor(bf.EquationId(), bf.GetValue(CONTROL_POINT).W(), Crow);
+                (*it)->ComputeExtractionOperator(Crow, *it_cell);
+                (*it_cell)->AddAnchor((*it)->EquationId(), (*it)->GetValue(CONTROL_POINT).W(), Crow);
             }
         }
     }

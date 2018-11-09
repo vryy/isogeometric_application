@@ -293,6 +293,7 @@ public:
     void GetDerivative(std::vector<double>& res, const std::vector<double>& xi) const
     {
         // TODO
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
     }
 
     /// Access the internal data container, be very careful with this function

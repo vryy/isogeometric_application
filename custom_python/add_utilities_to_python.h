@@ -109,6 +109,7 @@ void  IsogeometricApplication_AddTransformationToPython();
 void  IsogeometricApplication_AddControlGridsToPython();
 void  IsogeometricApplication_AddPatchesToPython();
 void  IsogeometricApplication_AddNURBSToPython();
+void  IsogeometricApplication_AddPBSplinesToPython();
 void  IsogeometricApplication_AddHBSplinesToPython();
 void  IsogeometricApplication_AddTSplinesToPython();
 void  IsogeometricApplication_AddMeshAndModelPartToPython();

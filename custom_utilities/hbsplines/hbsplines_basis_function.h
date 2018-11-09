@@ -159,7 +159,8 @@ public:
     bf_iterator bf_end() {return mpChilds.end();}
     bf_const_iterator bf_end() const {return mpChilds.end();}
 
-    /// Get the level of this basis function
+    /// Get and set the level of this basis function
+    void SetLevel(const std::size_t& Level) {mLevel = Level;}
     const std::size_t& Level() const {return mLevel;}
 
     /// Get the refined coefficient of a child

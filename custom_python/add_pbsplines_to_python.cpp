@@ -25,8 +25,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/model_part.h"
 #include "python/pointer_vector_set_python_interface.h"
 #include "custom_utilities/patch.h"
-#include "custom_utilities/pbsplines_basis_function.h"
-#include "custom_utilities/pbsplines_fespace.h"
+#include "custom_utilities/pbbsplines_basis_function.h"
+#include "custom_utilities/pbbsplines_fespace.h"
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
 #include "custom_python/add_import_export_to_python.h"
@@ -41,51 +41,51 @@ namespace Python
 using namespace boost::python;
 
 template<int TDim>
-void IsogeometricApplication_AddPBSplinesSpaceToPython()
+void IsogeometricApplication_AddPBBSplinesSpaceToPython()
 {
 
     std::stringstream ss;
 
     ss.str(std::string());
-    ss << "PBSplinesBasisFunction" << TDim << "D";
-    typedef PBSplinesBasisFunction<TDim, Cell> PBSplinesBasisFunctionType;
-    class_<PBSplinesBasisFunctionType, typename PBSplinesBasisFunctionType::Pointer, boost::noncopyable>
+    ss << "PBBSplinesBasisFunction" << TDim << "D";
+    typedef PBBSplinesBasisFunction<TDim, Cell> PBBSplinesBasisFunctionType;
+    class_<PBBSplinesBasisFunctionType, typename PBBSplinesBasisFunctionType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<const std::size_t&>())
-    .add_property("Id", Isogeometric_GetId<PBSplinesBasisFunctionType>, Isogeometric_DoNotSetId<PBSplinesBasisFunctionType>)
-    .add_property("EquationId", Isogeometric_GetEquationId<PBSplinesBasisFunctionType>, Isogeometric_SetEquationId<PBSplinesBasisFunctionType>)
-    .def("Weight", &PBSplinesBasisFunctionType::Weight)
+    .add_property("Id", Isogeometric_GetId<PBBSplinesBasisFunctionType>, Isogeometric_DoNotSetId<PBBSplinesBasisFunctionType>)
+    .add_property("EquationId", Isogeometric_GetEquationId<PBBSplinesBasisFunctionType>, Isogeometric_SetEquationId<PBBSplinesBasisFunctionType>)
+    .def("Weight", &PBBSplinesBasisFunctionType::Weight)
     .def(self_ns::str(self))
     ;
 
     ss.str(std::string());
-    ss << "PBSplinesFESpace" << TDim << "D";
+    ss << "PBBSplinesFESpace" << TDim << "D";
     typedef FESpace<TDim> FESpaceType;
-    typedef PBSplinesFESpace<TDim, PBSplinesBasisFunctionType> PBSplinesFESpaceType;
-    class_<PBSplinesFESpaceType, typename PBSplinesFESpaceType::Pointer, bases<FESpaceType>, boost::noncopyable>
+    typedef PBBSplinesFESpace<TDim, PBBSplinesBasisFunctionType> PBBSplinesFESpaceType;
+    class_<PBBSplinesFESpaceType, typename PBBSplinesFESpaceType::Pointer, bases<FESpaceType>, boost::noncopyable>
     (ss.str().c_str(), init<>())
-    .def("__getitem__", &FESpace_GetItem<PBSplinesFESpaceType>)
-    .def("UpdateCells", &PBSplinesFESpaceType::UpdateCells)
+    .def("__getitem__", &FESpace_GetItem<PBBSplinesFESpaceType>)
+    .def("UpdateCells", &PBBSplinesFESpaceType::UpdateCells)
     .def(self_ns::str(self))
     ;
 
-    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<double>, PBSplinesFESpaceType>::Execute();
-    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<array_1d<double, 3> >, PBSplinesFESpaceType>::Execute();
-    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<Vector>, PBSplinesFESpaceType>::Execute();
+    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<double>, PBBSplinesFESpaceType>::Execute();
+    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<array_1d<double, 3> >, PBBSplinesFESpaceType>::Execute();
+    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<Vector>, PBBSplinesFESpaceType>::Execute();
 
 }
 
 ////////////////////////////////////////
 
-void IsogeometricApplication_AddPBSplinesToPython()
+void IsogeometricApplication_AddPBBSplinesToPython()
 {
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////Point-based BSplines//////////////////////
     /////////////////////////////////////////////////////////////////
 
-    IsogeometricApplication_AddPBSplinesSpaceToPython<1>();
-    IsogeometricApplication_AddPBSplinesSpaceToPython<2>();
-    IsogeometricApplication_AddPBSplinesSpaceToPython<3>();
+    IsogeometricApplication_AddPBBSplinesSpaceToPython<1>();
+    IsogeometricApplication_AddPBBSplinesSpaceToPython<2>();
+    IsogeometricApplication_AddPBBSplinesSpaceToPython<3>();
 
 }
 

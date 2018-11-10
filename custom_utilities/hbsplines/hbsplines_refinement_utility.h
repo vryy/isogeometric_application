@@ -777,7 +777,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch
 
         // check if the bounding box lie in the refined domain
         // Remarks: this can be changed by a refinement indicator (i.e from error estimator)
-        if( PBSplinesBasisFunction_Helper<TDim>::CheckBoundingBox(bounding_box, window) )
+        if( PBBSplinesBasisFunction_Helper<TDim>::CheckBoundingBox(bounding_box, window) )
         {
             bf_list.push_back((*it_bf)->Id());
         }

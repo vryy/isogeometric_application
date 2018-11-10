@@ -24,8 +24,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/define.h"
 #include "includes/model_part.h"
 #include "includes/variables.h"
-#include "custom_utilities/pbsplines_basis_function.h"
-#include "custom_utilities/pbsplines_fespace.h"
+#include "custom_utilities/pbbsplines_basis_function.h"
+#include "custom_utilities/pbbsplines_fespace.h"
 #include "custom_utilities/hbsplines/hbsplines_basis_function.h"
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
 #include "custom_python/add_utilities_to_python.h"
@@ -295,15 +295,15 @@ void IsogeometricApplication_AddControlGridsToPython()
 
     class_<ControlGridUtility, ControlGridUtility::Pointer, boost::noncopyable>
     ("PointBasedControlGridUtility", init<>())
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBSplinesFESpace<1, PBSplinesBasisFunction<1, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBSplinesFESpace<2, PBSplinesBasisFunction<2, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBSplinesFESpace<3, PBSplinesBasisFunction<3, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBSplinesFESpace<1, PBSplinesBasisFunction<1, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBSplinesFESpace<2, PBSplinesBasisFunction<2, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBSplinesFESpace<3, PBSplinesBasisFunction<3, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBSplinesFESpace<1, PBSplinesBasisFunction<1, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBSplinesFESpace<2, PBSplinesBasisFunction<2, Cell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBSplinesFESpace<3, PBSplinesBasisFunction<3, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<1, PBBSplinesBasisFunction<1, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<2, PBBSplinesBasisFunction<2, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<3, PBBSplinesBasisFunction<3, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBBSplinesFESpace<1, PBBSplinesBasisFunction<1, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBBSplinesFESpace<2, PBBSplinesBasisFunction<2, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBBSplinesFESpace<3, PBBSplinesBasisFunction<3, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBBSplinesFESpace<1, PBBSplinesBasisFunction<1, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBBSplinesFESpace<2, PBBSplinesBasisFunction<2, Cell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBBSplinesFESpace<3, PBBSplinesBasisFunction<3, Cell> > >)
     ////
     .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, HBSplinesFESpace<1> >)
     .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, HBSplinesFESpace<2> >)

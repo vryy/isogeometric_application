@@ -35,7 +35,7 @@
 #include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/control_point.h"
-#include "custom_utilities/pbsplines_basis_function.h"
+#include "custom_utilities/pbbsplines_basis_function.h"
 #include "custom_utilities/hbsplines/hb_cell.h"
 #include "isogeometric_application/isogeometric_application.h"
 
@@ -48,14 +48,14 @@ Class represents a basis function in hierarchical B-Splines mesh.
 Each basis function associates with a control point via CONTROL_POINT variable.
 */
 template<int TDim>
-class HBSplinesBasisFunction : public PBSplinesBasisFunction<TDim, HBCell<HBSplinesBasisFunction<TDim> > >
+class HBSplinesBasisFunction : public PBBSplinesBasisFunction<TDim, HBCell<HBSplinesBasisFunction<TDim> > >
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(HBSplinesBasisFunction);
 
     /// Type definition
-    typedef PBSplinesBasisFunction<TDim, HBCell<HBSplinesBasisFunction<TDim> > > BaseType;
+    typedef PBBSplinesBasisFunction<TDim, HBCell<HBSplinesBasisFunction<TDim> > > BaseType;
     typedef typename BaseType::ControlPointType ControlPointType;
     typedef typename BaseType::knot_t knot_t;
 

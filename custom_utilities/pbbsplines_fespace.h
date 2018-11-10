@@ -6,8 +6,8 @@
 //
 //
 
-#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_PBSPLINES_FESPACE_H_INCLUDED )
-#define  KRATOS_ISOGEOMETRIC_APPLICATION_PBSPLINES_FESPACE_H_INCLUDED
+#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_PBBSPLINES_FESPACE_H_INCLUDED )
+#define  KRATOS_ISOGEOMETRIC_APPLICATION_PBBSPLINES_FESPACE_H_INCLUDED
 
 // System includes
 #include <vector>
@@ -31,14 +31,14 @@ namespace Kratos
 {
 
 /**
- * This class represents the FESpace for a single point-based BSplines patch defined over parametric domain.
+ * Abstract class represents the FESpace for a single point-based Splines patch.
  */
 template<int TDim, typename TBasisFunctionType>
-class PBSplinesFESpace : public FESpace<TDim>
+class PBBSplinesFESpace : public FESpace<TDim>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(PBSplinesFESpace);
+    KRATOS_CLASS_POINTER_DEFINITION(PBBSplinesFESpace);
 
     /// Type definition
     typedef FESpace<TDim> BaseType;
@@ -59,7 +59,7 @@ public:
     typedef std::map<std::size_t, bf_t> function_map_t;
 
     /// Default constructor
-    PBSplinesFESpace() : BaseType(), m_function_map_is_created(false)
+    PBBSplinesFESpace() : BaseType(), m_function_map_is_created(false)
     {
         if (TDim == 1)
         {
@@ -76,17 +76,17 @@ public:
     }
 
     /// Destructor
-    virtual ~PBSplinesFESpace()
+    virtual ~PBBSplinesFESpace()
     {
         #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Addr = " << this << " is destroyed" << std::endl;
         #endif
     }
 
-    /// Helper to create new PBSplinesFESpace pointer
-    static typename PBSplinesFESpace<TDim, TBasisFunctionType>::Pointer Create()
+    /// Helper to create new PBBSplinesFESpace pointer
+    static typename PBBSplinesFESpace<TDim, TBasisFunctionType>::Pointer Create()
     {
-        return typename PBSplinesFESpace<TDim, TBasisFunctionType>::Pointer(new PBSplinesFESpace());
+        return typename PBBSplinesFESpace<TDim, TBasisFunctionType>::Pointer(new PBBSplinesFESpace());
     }
 
     /// Add a already constructed basis function to the internal list
@@ -172,11 +172,11 @@ public:
     static std::string StaticType()
     {
         std::stringstream ss;
-        ss << "PBSplinesFESpace" << TDim << "D";
+        ss << "PBBSplinesFESpace" << TDim << "D";
         return ss.str();
     }
 
-    /// Validate the PBSplinesFESpace
+    /// Validate the PBBSplinesFESpace
     virtual bool Validate() const
     {
         // TODO validate more
@@ -192,7 +192,7 @@ public:
         {
             if (j == i)
             {
-                v = (*it)->GetValue(xi);
+                v = (*it)->GetValueAt(xi);
                 return;
             }
             ++j;
@@ -208,7 +208,7 @@ public:
             values.resize(this->TotalNumber());
         std::size_t i = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
-            values[i++] = (*it)->GetValue(xi);
+            values[i++] = (*it)->GetValueAt(xi);
     }
 
     /// Get the derivative of the basis function i at point xi
@@ -221,7 +221,7 @@ public:
         {
             if (j == i)
             {
-                (*it)->GetDerivative(values, xi);
+                (*it)->GetDerivativeAt(values, xi);
                 return;
             }
             ++j;
@@ -243,7 +243,7 @@ public:
         {
             if (values[i].size() != TDim)
                 values[i].resize(TDim);
-            (*it)->GetDerivative(values[i], xi);
+            (*it)->GetDerivativeAt(values[i], xi);
             ++i;
         }
     }
@@ -261,10 +261,10 @@ public:
         std::size_t i = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            values[i] = (*it)->GetValue(xi);
+            values[i] = (*it)->GetValueAt(xi);
             if (derivatives[i].size() != TDim)
                 derivatives[i].resize(TDim);
-            (*it)->GetDerivative(derivatives[i], xi);
+            (*it)->GetDerivativeAt(derivatives[i], xi);
             ++i;
         }
     }
@@ -280,14 +280,14 @@ public:
             return false;
         }
 
-        const PBSplinesFESpace<TDim, TBasisFunctionType>& rOtherPBSplinesFESpace = dynamic_cast<const PBSplinesFESpace<TDim, TBasisFunctionType>&>(rOtherFESpace);
+        const PBBSplinesFESpace<TDim, TBasisFunctionType>& rOtherPBBSplinesFESpace = dynamic_cast<const PBBSplinesFESpace<TDim, TBasisFunctionType>&>(rOtherFESpace);
 
         // compare the knot vectors and order information
         for (std::size_t i = 0; i < TDim; ++i)
         {
-            if (!(this->Order(i)) == rOtherPBSplinesFESpace.Order(i))
+            if (!(this->Order(i)) == rOtherPBBSplinesFESpace.Order(i))
                 return false;
-            if (!(this->KnotVector(i) == rOtherPBSplinesFESpace.KnotVector(i)))
+            if (!(this->KnotVector(i) == rOtherPBBSplinesFESpace.KnotVector(i)))
                 return false;
         }
 
@@ -546,7 +546,7 @@ public:
         }
     }
 
-    /// Create the cell manager for all the cells in the support domain of the PBSplinesFESpace
+    /// Create the cell manager for all the cells in the support domain of the PBBSplinesFESpace
     virtual typename BaseType::cell_container_t::Pointer ConstructCellManager() const
     {
         // create the compatible cell manager and add to the list
@@ -589,7 +589,7 @@ public:
     }
 
     /// Overload assignment operator
-    PBSplinesFESpace<TDim, TBasisFunctionType>& operator=(const PBSplinesFESpace<TDim, TBasisFunctionType>& rOther)
+    PBBSplinesFESpace<TDim, TBasisFunctionType>& operator=(const PBBSplinesFESpace<TDim, TBasisFunctionType>& rOther)
     {
         // TODO copy more
         KRATOS_THROW_ERROR(std::logic_error, "The assignment operator is not complete", "")
@@ -600,7 +600,7 @@ public:
     /// Clone this FESpace, this is a deep copy operation
     virtual typename FESpace<TDim>::Pointer Clone() const
     {
-        typename PBSplinesFESpace<TDim, TBasisFunctionType>::Pointer pNewFESpace = typename PBSplinesFESpace<TDim, TBasisFunctionType>::Pointer(new PBSplinesFESpace<TDim, TBasisFunctionType>());
+        typename PBBSplinesFESpace<TDim, TBasisFunctionType>::Pointer pNewFESpace = typename PBBSplinesFESpace<TDim, TBasisFunctionType>::Pointer(new PBBSplinesFESpace<TDim, TBasisFunctionType>());
         *pNewFESpace = *this;
         return pNewFESpace;
     }
@@ -660,14 +660,14 @@ protected:
 
 /// output stream function
 template<int TDim, typename TBasisFunctionType>
-inline std::ostream& operator <<(std::ostream& rOStream, const PBSplinesFESpace<TDim, TBasisFunctionType>& rThis)
+inline std::ostream& operator <<(std::ostream& rOStream, const PBBSplinesFESpace<TDim, TBasisFunctionType>& rThis)
 {
-    rOStream << "-------------Begin PBSplinesFESpace Info-------------" << std::endl;
+    rOStream << "-------------Begin PBBSplinesFESpace Info-------------" << std::endl;
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
     rThis.PrintData(rOStream);
     rOStream << std::endl;
-    rOStream << "-------------End PBSplinesFESpace Info-------------" << std::endl;
+    rOStream << "-------------End PBBSplinesFESpace Info-------------" << std::endl;
     return rOStream;
 }
 
@@ -675,4 +675,4 @@ inline std::ostream& operator <<(std::ostream& rOStream, const PBSplinesFESpace<
 
 #undef DEBUG_GEN_CELL    /// Get the underlying cell manager
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_PBSPLINES_FESPACE_H_INCLUDED defined
+#endif // KRATOS_ISOGEOMETRIC_APPLICATION_PBBSPLINES_FESPACE_H_INCLUDED defined

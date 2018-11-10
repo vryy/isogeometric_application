@@ -138,9 +138,9 @@ public:
 
             // write the boundary of the cell
             rOStream << "% cell " << cnt << " information" << std::endl;
-            rOStream << "P" << patch_id << "_S{" << cnt << "} = [" << (*it_cell)->LeftValue() << " " << (*it_cell)->RightValue();
-            if (TDim > 1) rOStream << "; " << (*it_cell)->DownValue() << " " << (*it_cell)->UpValue();
-            if (TDim > 2) rOStream << "; " << (*it_cell)->BelowValue() << " " << (*it_cell)->AboveValue();
+            rOStream << "P" << patch_id << "_S{" << cnt << "} = [" << (*it_cell)->XiMinValue() << " " << (*it_cell)->XiMaxValue();
+            if (TDim > 1) rOStream << "; " << (*it_cell)->EtaMinValue() << " " << (*it_cell)->EtaMaxValue();
+            if (TDim > 2) rOStream << "; " << (*it_cell)->ZetaMinValue() << " " << (*it_cell)->ZetaMaxValue();
             rOStream << "];\n";
 
             // write the extraction operator

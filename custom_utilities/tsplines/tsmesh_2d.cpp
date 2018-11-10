@@ -945,10 +945,10 @@ namespace Kratos
                     //          anchor w.r.t any cell sequentially. I know it is repetitive and expensive. I know it is approximately (this->Order(0)+1)(this->Order(1)+1) times more expensive than computing the extraction operator once for each anchor.
                     // TODO: to improve the algorithm of this method
                     // firstly we know the knot span of this cell
-                    int left  = (*it2)->LeftIndex();
-                    int right = (*it2)->RightIndex();
-                    int up    = (*it2)->UpIndex();
-                    int down  = (*it2)->DownIndex();
+                    int left  = (*it2)->XiMinIndex();
+                    int right = (*it2)->XiMaxIndex();
+                    int up    = (*it2)->EtaMaxIndex();
+                    int down  = (*it2)->EtaMinIndex();
                     std::cout << "At anchor " << *(*it) << ", found " << *(*it2) << " with spans = (";
                     std::cout << mKnots[0][left]->Value() << ", " << mKnots[0][right]->Value() << ", ";
                     std::cout << mKnots[1][down]->Value() << ", " << mKnots[1][up]->Value() << ")" << std::endl;

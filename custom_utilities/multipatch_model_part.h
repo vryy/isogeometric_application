@@ -202,7 +202,7 @@ public:
 
         // construct the boundary patch
         typename Patch<TDim-1>::Pointer pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
-        // KRATOS_WATCH(*pBoundaryPatch)
+        KRATOS_WATCH(*pBoundaryPatch)
 
         // get the grid function for control points
         const GridFunction<TDim-1, ControlPointType>& rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
@@ -421,12 +421,12 @@ public:
             pNewElement->Set(ACTIVE, true);
             pNewElements.push_back(pNewElement);
 
-            pNewElement->SetValue( KNOT_LEFT, (*it_cell)->LeftValue() );
-            pNewElement->SetValue( KNOT_RIGHT, (*it_cell)->RightValue() );
-            pNewElement->SetValue( KNOT_BOTTOM, (*it_cell)->DownValue() );
-            pNewElement->SetValue( KNOT_TOP, (*it_cell)->UpValue() );
-            pNewElement->SetValue( KNOT_FRONT, (*it_cell)->BelowValue() );
-            pNewElement->SetValue( KNOT_BACK, (*it_cell)->AboveValue() );
+            pNewElement->SetValue( KNOT_LEFT, (*it_cell)->XiMinValue() );
+            pNewElement->SetValue( KNOT_RIGHT, (*it_cell)->XiMaxValue() );
+            pNewElement->SetValue( KNOT_BOTTOM, (*it_cell)->EtaMinValue() );
+            pNewElement->SetValue( KNOT_TOP, (*it_cell)->EtaMaxValue() );
+            pNewElement->SetValue( KNOT_FRONT, (*it_cell)->ZetaMinValue() );
+            pNewElement->SetValue( KNOT_BACK, (*it_cell)->ZetaMaxValue() );
 
             std::cout << "Entity " << element_name << " " << pNewElement->Id() << " is created" << std::endl;
             std::cout << "  Connectivity:";

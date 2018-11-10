@@ -8,22 +8,22 @@ namespace Kratos
     {
         // a priori check
         for(std::size_t i = 0; i < mpLocalKnots1.size(); ++i)
-            if(mpLocalKnots1[i]->Value() > p_cell->LeftValue() && mpLocalKnots1[i]->Value() < p_cell->RightValue())
+            if(mpLocalKnots1[i]->Value() > p_cell->XiMinValue() && mpLocalKnots1[i]->Value() < p_cell->XiMaxValue())
             {
                 std::stringstream ss;
                 ss << "Error: the cell is not contained in one knot span in u-direction of the basis function" << std::endl;
-                ss << "LeftValue: " << p_cell->LeftValue() << ", RightValue: " << p_cell->RightValue() << std::endl;
+                ss << "XiMinValue: " << p_cell->XiMinValue() << ", XiMaxValue: " << p_cell->XiMaxValue() << std::endl;
                 ss << "mpLocalKnots1:";
                 for(std::size_t j = 0; j < mpLocalKnots1.size(); ++j)
                     ss << " " << mpLocalKnots1[j];
                 KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
             }
         for(std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
-            if(mpLocalKnots2[i]->Value() > p_cell->DownValue() && mpLocalKnots2[i]->Value() < p_cell->UpValue())
+            if(mpLocalKnots2[i]->Value() > p_cell->EtaMinValue() && mpLocalKnots2[i]->Value() < p_cell->EtaMaxValue())
             {
                 std::stringstream ss;
                 ss << "Error: the cell is not contained in one knot span in v-direction of the basis function" << std::endl;
-                ss << "DownValue: " << p_cell->DownValue() << ", UpValue: " << p_cell->UpValue() << std::endl;
+                ss << "EtaMinValue: " << p_cell->EtaMinValue() << ", EtaMaxValue: " << p_cell->EtaMaxValue() << std::endl;
                 ss << "mpLocalKnots2:";
                 for(std::size_t j = 0; j < mpLocalKnots2.size(); ++j)
                     ss << " " << mpLocalKnots2[j];
@@ -40,26 +40,26 @@ namespace Kratos
         for(std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
             std::cout << " " << mpLocalKnots2[i]->Value();
         std::cout << std::endl;
-        KRATOS_WATCH(p_cell->LeftValue())
-        KRATOS_WATCH(p_cell->RightValue())
-        KRATOS_WATCH(p_cell->DownValue())
-        KRATOS_WATCH(p_cell->UpValue())
+        KRATOS_WATCH(p_cell->XiMinValue())
+        KRATOS_WATCH(p_cell->XiMaxValue())
+        KRATOS_WATCH(p_cell->EtaMinValue())
+        KRATOS_WATCH(p_cell->EtaMaxValue())
         #endif
 
         // compute the inserted knot vector
         std::vector<double> ins_knots1;
 //        std::vector<int> ins_span1;
         for(std::size_t i = 0; i < mpLocalKnots1.size() - 1; ++i)
-            if(p_cell->LeftValue() > mpLocalKnots1[i]->Value() && p_cell->LeftValue() < mpLocalKnots1[i+1]->Value())
+            if(p_cell->XiMinValue() > mpLocalKnots1[i]->Value() && p_cell->XiMinValue() < mpLocalKnots1[i+1]->Value())
             {
-                ins_knots1.push_back(p_cell->LeftValue());
+                ins_knots1.push_back(p_cell->XiMinValue());
 //                ins_span1.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
         for(std::size_t i = 0; i < mpLocalKnots1.size() - 1; ++i)
-            if(p_cell->RightValue() > mpLocalKnots1[i]->Value() && p_cell->RightValue() < mpLocalKnots1[i+1]->Value())
+            if(p_cell->XiMaxValue() > mpLocalKnots1[i]->Value() && p_cell->XiMaxValue() < mpLocalKnots1[i+1]->Value())
             {
-                ins_knots1.push_back(p_cell->RightValue());
+                ins_knots1.push_back(p_cell->XiMaxValue());
 //                ins_span1.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
@@ -67,16 +67,16 @@ namespace Kratos
         std::vector<double> ins_knots2;
 //        std::vector<int> ins_span2;
         for(std::size_t i = 0; i < mpLocalKnots2.size() - 1; ++i)
-            if(p_cell->DownValue() > mpLocalKnots2[i]->Value() && p_cell->DownValue() < mpLocalKnots2[i+1]->Value())
+            if(p_cell->EtaMinValue() > mpLocalKnots2[i]->Value() && p_cell->EtaMinValue() < mpLocalKnots2[i+1]->Value())
             {
-                ins_knots2.push_back(p_cell->DownValue());
+                ins_knots2.push_back(p_cell->EtaMinValue());
 //                ins_span2.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
         for(std::size_t i = 0; i < mpLocalKnots2.size() - 1; ++i)
-            if(p_cell->UpValue() > mpLocalKnots2[i]->Value() && p_cell->UpValue() < mpLocalKnots2[i+1]->Value())
+            if(p_cell->EtaMaxValue() > mpLocalKnots2[i]->Value() && p_cell->EtaMaxValue() < mpLocalKnots2[i+1]->Value())
             {
-                ins_knots2.push_back(p_cell->UpValue());
+                ins_knots2.push_back(p_cell->EtaMaxValue());
 //                ins_span2.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
@@ -154,8 +154,8 @@ namespace Kratos
         std::set<double> Ubar_eta_unique(Ubar_eta.begin(), Ubar_eta.end());
         std::vector<double> Ubar_xi_unique_vector(Ubar_xi_unique.begin(), Ubar_xi_unique.end());
         std::vector<double> Ubar_eta_unique_vector(Ubar_eta_unique.begin(), Ubar_eta_unique.end());
-        span1 = this->FindSpanLocal(p_cell->LeftValue(), Ubar_xi_unique_vector) - 1;
-        span2 = this->FindSpanLocal(p_cell->DownValue(), Ubar_eta_unique_vector) - 1;
+        span1 = this->FindSpanLocal(p_cell->XiMinValue(), Ubar_xi_unique_vector) - 1;
+        span2 = this->FindSpanLocal(p_cell->EtaMinValue(), Ubar_eta_unique_vector) - 1;
 
         #ifdef DEBUG_BEZIER_EXTRACTION
         KRATOS_WATCH(span1)
@@ -179,33 +179,33 @@ namespace Kratos
     {
         // a priori check
         for(std::size_t i = 0; i < mpLocalKnots1.size(); ++i)
-            if(mpLocalKnots1[i]->Value() > p_cell->LeftValue() && mpLocalKnots1[i]->Value() < p_cell->RightValue())
+            if(mpLocalKnots1[i]->Value() > p_cell->XiMinValue() && mpLocalKnots1[i]->Value() < p_cell->XiMaxValue())
             {
                 std::stringstream ss;
                 ss << "Error: the cell is not contained in one knot span in u-direction of the basis function" << std::endl;
-                ss << "LeftValue: " << p_cell->LeftValue() << ", RightValue: " << p_cell->RightValue() << std::endl;
+                ss << "XiMinValue: " << p_cell->XiMinValue() << ", XiMaxValue: " << p_cell->XiMaxValue() << std::endl;
                 ss << "mpLocalKnots1:";
                 for(std::size_t j = 0; j < mpLocalKnots1.size(); ++j)
                     ss << " " << mpLocalKnots1[j];
                 KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
             }
         for(std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
-            if(mpLocalKnots2[i]->Value() > p_cell->DownValue() && mpLocalKnots2[i]->Value() < p_cell->UpValue())
+            if(mpLocalKnots2[i]->Value() > p_cell->EtaMinValue() && mpLocalKnots2[i]->Value() < p_cell->EtaMaxValue())
             {
                 std::stringstream ss;
                 ss << "Error: the cell is not contained in one knot span in v-direction of the basis function" << std::endl;
-                ss << "DownValue: " << p_cell->DownValue() << ", UpValue: " << p_cell->UpValue() << std::endl;
+                ss << "EtaMinValue: " << p_cell->EtaMinValue() << ", EtaMaxValue: " << p_cell->EtaMaxValue() << std::endl;
                 ss << "mpLocalKnots2:";
                 for(std::size_t j = 0; j < mpLocalKnots2.size(); ++j)
                     ss << " " << mpLocalKnots2[j];
                 KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
             }
         for(std::size_t i = 0; i < mpLocalKnots3.size(); ++i)
-            if(mpLocalKnots3[i]->Value() > p_cell->BelowValue() && mpLocalKnots3[i]->Value() < p_cell->AboveValue())
+            if(mpLocalKnots3[i]->Value() > p_cell->ZetaMinValue() && mpLocalKnots3[i]->Value() < p_cell->ZetaMaxValue())
             {
                 std::stringstream ss;
                 ss << "Error: the cell is not contained in one knot span in w-direction of the basis function" << std::endl;
-                ss << "BelowValue: " << p_cell->BelowValue() << ", AboveValue: " << p_cell->AboveValue() << std::endl;
+                ss << "ZetaMinValue: " << p_cell->ZetaMinValue() << ", ZetaMaxValue: " << p_cell->ZetaMaxValue() << std::endl;
                 ss << "mpLocalKnots3:";
                 for(std::size_t j = 0; j < mpLocalKnots3.size(); ++j)
                     ss << " " << mpLocalKnots3[j];
@@ -226,28 +226,28 @@ namespace Kratos
         for(std::size_t i = 0; i < mpLocalKnots3.size(); ++i)
             std::cout << " " << mpLocalKnots3[i]->Value();
         std::cout << std::endl;
-        KRATOS_WATCH(p_cell->LeftValue())
-        KRATOS_WATCH(p_cell->RightValue())
-        KRATOS_WATCH(p_cell->DownValue())
-        KRATOS_WATCH(p_cell->UpValue())
-        KRATOS_WATCH(p_cell->BelowValue())
-        KRATOS_WATCH(p_cell->AboveValue())
+        KRATOS_WATCH(p_cell->XiMinValue())
+        KRATOS_WATCH(p_cell->XiMaxValue())
+        KRATOS_WATCH(p_cell->EtaMinValue())
+        KRATOS_WATCH(p_cell->EtaMaxValue())
+        KRATOS_WATCH(p_cell->ZetaMinValue())
+        KRATOS_WATCH(p_cell->ZetaMaxValue())
         #endif
 
         // compute the inserted knot vector
         std::vector<double> ins_knots1;
 //        std::vector<int> ins_span1;
         for(std::size_t i = 0; i < mpLocalKnots1.size() - 1; ++i)
-            if(p_cell->LeftValue() > mpLocalKnots1[i]->Value() && p_cell->LeftValue() < mpLocalKnots1[i+1]->Value())
+            if(p_cell->XiMinValue() > mpLocalKnots1[i]->Value() && p_cell->XiMinValue() < mpLocalKnots1[i+1]->Value())
             {
-                ins_knots1.push_back(p_cell->LeftValue());
+                ins_knots1.push_back(p_cell->XiMinValue());
 //                ins_span1.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
         for(std::size_t i = 0; i < mpLocalKnots1.size() - 1; ++i)
-            if(p_cell->RightValue() > mpLocalKnots1[i]->Value() && p_cell->RightValue() < mpLocalKnots1[i+1]->Value())
+            if(p_cell->XiMaxValue() > mpLocalKnots1[i]->Value() && p_cell->XiMaxValue() < mpLocalKnots1[i+1]->Value())
             {
-                ins_knots1.push_back(p_cell->RightValue());
+                ins_knots1.push_back(p_cell->XiMaxValue());
 //                ins_span1.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
@@ -255,16 +255,16 @@ namespace Kratos
         std::vector<double> ins_knots2;
 //        std::vector<int> ins_span2;
         for(std::size_t i = 0; i < mpLocalKnots2.size() - 1; ++i)
-            if(p_cell->DownValue() > mpLocalKnots2[i]->Value() && p_cell->DownValue() < mpLocalKnots2[i+1]->Value())
+            if(p_cell->EtaMinValue() > mpLocalKnots2[i]->Value() && p_cell->EtaMinValue() < mpLocalKnots2[i+1]->Value())
             {
-                ins_knots2.push_back(p_cell->DownValue());
+                ins_knots2.push_back(p_cell->EtaMinValue());
 //                ins_span2.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
         for(std::size_t i = 0; i < mpLocalKnots2.size() - 1; ++i)
-            if(p_cell->UpValue() > mpLocalKnots2[i]->Value() && p_cell->UpValue() < mpLocalKnots2[i+1]->Value())
+            if(p_cell->EtaMaxValue() > mpLocalKnots2[i]->Value() && p_cell->EtaMaxValue() < mpLocalKnots2[i+1]->Value())
             {
-                ins_knots2.push_back(p_cell->UpValue());
+                ins_knots2.push_back(p_cell->EtaMaxValue());
 //                ins_span2.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
@@ -272,16 +272,16 @@ namespace Kratos
         std::vector<double> ins_knots3;
 //        std::vector<int> ins_span3;
         for(std::size_t i = 0; i < mpLocalKnots3.size() - 1; ++i)
-            if(p_cell->BelowValue() > mpLocalKnots3[i]->Value() && p_cell->BelowValue() < mpLocalKnots3[i+1]->Value())
+            if(p_cell->ZetaMinValue() > mpLocalKnots3[i]->Value() && p_cell->ZetaMinValue() < mpLocalKnots3[i+1]->Value())
             {
-                ins_knots3.push_back(p_cell->BelowValue());
+                ins_knots3.push_back(p_cell->ZetaMinValue());
 //                ins_span3.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
         for(std::size_t i = 0; i < mpLocalKnots3.size() - 1; ++i)
-            if(p_cell->AboveValue() > mpLocalKnots3[i]->Value() && p_cell->AboveValue() < mpLocalKnots3[i+1]->Value())
+            if(p_cell->ZetaMaxValue() > mpLocalKnots3[i]->Value() && p_cell->ZetaMaxValue() < mpLocalKnots3[i+1]->Value())
             {
-                ins_knots3.push_back(p_cell->AboveValue());
+                ins_knots3.push_back(p_cell->ZetaMaxValue());
 //                ins_span3.push_back(i+1); // +1 because the bezier_extraction_tsplines_2d takes based-1 index
                 break;
             }
@@ -378,9 +378,9 @@ namespace Kratos
         std::vector<double> Ubar_xi_unique_vector(Ubar_xi_unique.begin(), Ubar_xi_unique.end());
         std::vector<double> Ubar_eta_unique_vector(Ubar_eta_unique.begin(), Ubar_eta_unique.end());
         std::vector<double> Ubar_zeta_unique_vector(Ubar_zeta_unique.begin(), Ubar_zeta_unique.end());
-        span1 = this->FindSpanLocal(p_cell->LeftValue(), Ubar_xi_unique_vector) - 1;
-        span2 = this->FindSpanLocal(p_cell->DownValue(), Ubar_eta_unique_vector) - 1;
-        span3 = this->FindSpanLocal(p_cell->BelowValue(), Ubar_zeta_unique_vector) - 1;
+        span1 = this->FindSpanLocal(p_cell->XiMinValue(), Ubar_xi_unique_vector) - 1;
+        span2 = this->FindSpanLocal(p_cell->EtaMinValue(), Ubar_eta_unique_vector) - 1;
+        span3 = this->FindSpanLocal(p_cell->ZetaMinValue(), Ubar_zeta_unique_vector) - 1;
 
         #ifdef DEBUG_BEZIER_EXTRACTION
         KRATOS_WATCH(span1)

@@ -390,18 +390,18 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 // create the cells for the basis function
                 for(std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
                 {
-                    knot_t pLeft = pnew_local_knots[0][i + i1];
-                    knot_t pRight = pnew_local_knots[0][i + i1 + 1];
+                    knot_t pXiMin = pnew_local_knots[0][i + i1];
+                    knot_t pXiMax = pnew_local_knots[0][i + i1 + 1];
                     for(std::size_t j1 = 0; j1 < pFESpace->Order(1) + 1; ++j1)
                     {
-                        knot_t pDown = pnew_local_knots[1][j + j1];
-                        knot_t pUp = pnew_local_knots[1][j + j1 + 1];
+                        knot_t pEtaMin = pnew_local_knots[1][j + j1];
+                        knot_t pEtaMax = pnew_local_knots[1][j + j1 + 1];
 
                         // check if the cell domain area is nonzero
-                        double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value());
+                        double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value());
                         if(sqrt(fabs(area)) > cell_tol)
                         {
-                            std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp};
+                            std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax};
                             cell_t pnew_cell = pFESpace->pCellManager()->CreateCell(pKnots);
                             pnew_cell->SetLevel(next_level);
                             pnew_bf->AddCell(pnew_cell);
@@ -524,24 +524,24 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     // create the cells for the basis function
                     for(std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
                     {
-                        knot_t pLeft = pnew_local_knots[0][i + i1];
-                        knot_t pRight = pnew_local_knots[0][i + i1 + 1];
+                        knot_t pXiMin = pnew_local_knots[0][i + i1];
+                        knot_t pXiMax = pnew_local_knots[0][i + i1 + 1];
 
                         for(std::size_t j1 = 0; j1 < pFESpace->Order(1) + 1; ++j1)
                         {
-                            knot_t pDown = pnew_local_knots[1][j + j1];
-                            knot_t pUp = pnew_local_knots[1][j + j1 + 1];
+                            knot_t pEtaMin = pnew_local_knots[1][j + j1];
+                            knot_t pEtaMax = pnew_local_knots[1][j + j1 + 1];
 
                             for(std::size_t l1 = 0; l1 < pFESpace->Order(2) + 1; ++l1)
                             {
-                                knot_t pBelow = pnew_local_knots[2][l + l1];
-                                knot_t pAbove = pnew_local_knots[2][l + l1 + 1];
+                                knot_t pZetaMin = pnew_local_knots[2][l + l1];
+                                knot_t pZetaMax = pnew_local_knots[2][l + l1 + 1];
 
                                 // check if the cell domain volume is nonzero
-                                double volume = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value()) * (pAbove->Value() - pBelow->Value());
+                                double volume = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value()) * (pZetaMax->Value() - pZetaMin->Value());
                                 if(pow(fabs(volume), 1.0/3) > cell_tol)
                                 {
-                                    std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp, pBelow, pAbove};
+                                    std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax};
                                     cell_t pnew_cell = pFESpace->pCellManager()->CreateCell(pKnots);
                                     pnew_cell->SetLevel(next_level);
                                     pnew_bf->AddCell(pnew_cell);
@@ -837,24 +837,24 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
                     {
                         if(TDim == 1)
                         {
-                            p_domain->AddXcoord((*it_cell)->LeftValue());
-                            p_domain->AddXcoord((*it_cell)->RightValue());
+                            p_domain->AddXcoord((*it_cell)->XiMinValue());
+                            p_domain->AddXcoord((*it_cell)->XiMaxValue());
                         }
                         else if(TDim == 2)
                         {
-                            p_domain->AddXcoord((*it_cell)->LeftValue());
-                            p_domain->AddXcoord((*it_cell)->RightValue());
-                            p_domain->AddYcoord((*it_cell)->DownValue());
-                            p_domain->AddYcoord((*it_cell)->UpValue());
+                            p_domain->AddXcoord((*it_cell)->XiMinValue());
+                            p_domain->AddXcoord((*it_cell)->XiMaxValue());
+                            p_domain->AddYcoord((*it_cell)->EtaMinValue());
+                            p_domain->AddYcoord((*it_cell)->EtaMaxValue());
                         }
                         else if(TDim == 3)
                         {
-                            p_domain->AddXcoord((*it_cell)->LeftValue());
-                            p_domain->AddXcoord((*it_cell)->RightValue());
-                            p_domain->AddYcoord((*it_cell)->DownValue());
-                            p_domain->AddYcoord((*it_cell)->UpValue());
-                            p_domain->AddZcoord((*it_cell)->BelowValue());
-                            p_domain->AddZcoord((*it_cell)->AboveValue());
+                            p_domain->AddXcoord((*it_cell)->XiMinValue());
+                            p_domain->AddXcoord((*it_cell)->XiMaxValue());
+                            p_domain->AddYcoord((*it_cell)->EtaMinValue());
+                            p_domain->AddYcoord((*it_cell)->EtaMaxValue());
+                            p_domain->AddZcoord((*it_cell)->ZetaMinValue());
+                            p_domain->AddZcoord((*it_cell)->ZetaMaxValue());
                         }
                     }
                 }
@@ -872,17 +872,17 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
                     {
                         if(TDim == 1)
                         {
-                            std::vector<double> box = {(*it_cell)->LeftValue(), (*it_cell)->RightValue()};
+                            std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue()};
                             p_domain->AddCell(box);
                         }
                         else if(TDim == 2)
                         {
-                            std::vector<double> box = {(*it_cell)->LeftValue(), (*it_cell)->RightValue(), (*it_cell)->DownValue(), (*it_cell)->UpValue()};
+                            std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue()};
                             p_domain->AddCell(box);
                         }
                         else if(TDim == 3)
                         {
-                            std::vector<double> box = {(*it_cell)->LeftValue(), (*it_cell)->RightValue(), (*it_cell)->DownValue(), (*it_cell)->UpValue(), (*it_cell)->BelowValue(), (*it_cell)->AboveValue()};
+                            std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue(), (*it_cell)->ZetaMinValue(), (*it_cell)->ZetaMaxValue()};
                             p_domain->AddCell(box);
                         }
                     }

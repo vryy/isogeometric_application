@@ -455,18 +455,18 @@ namespace Kratos
                     // create the cells for the basis function
                     for(std::size_t i1 = 0; i1 < mOrder1 + 1; ++i1)
                     {
-                        knot_t pLeft = mKnots1.pKnotAt(i + i1);
-                        knot_t pRight = mKnots1.pKnotAt(i + i1 + 1);
+                        knot_t pXiMin = mKnots1.pKnotAt(i + i1);
+                        knot_t pXiMax = mKnots1.pKnotAt(i + i1 + 1);
                         for(std::size_t j1 = 0; j1 < mOrder2 + 1; ++j1)
                         {
-                            knot_t pDown = mKnots2.pKnotAt(j + j1);
-                            knot_t pUp = mKnots2.pKnotAt(j + j1 + 1);
+                            knot_t pEtaMin = mKnots2.pKnotAt(j + j1);
+                            knot_t pEtaMax = mKnots2.pKnotAt(j + j1 + 1);
 
                             // check if the cell domain area is nonzero
-                            double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value());
+                            double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value());
                             if(fabs(area) > area_tol)
                             {
-                                std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp};
+                                std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax};
                                 cell_t p_cell = mpCellManager->CreateCell(pKnots);
                                 p_cell->SetLevel(level);
                                 p_bf->AddCell(p_cell);
@@ -513,22 +513,22 @@ namespace Kratos
                         // create the cells for the basis function
                         for(std::size_t i1 = 0; i1 < mOrder1 + 1; ++i1)
                         {
-                            knot_t pLeft = mKnots1.pKnotAt(i + i1);
-                            knot_t pRight = mKnots1.pKnotAt(i + i1 + 1);
+                            knot_t pXiMin = mKnots1.pKnotAt(i + i1);
+                            knot_t pXiMax = mKnots1.pKnotAt(i + i1 + 1);
                             for(std::size_t j1 = 0; j1 < mOrder2 + 1; ++j1)
                             {
-                                knot_t pDown = mKnots2.pKnotAt(j + j1);
-                                knot_t pUp = mKnots2.pKnotAt(j + j1 + 1);
+                                knot_t pEtaMin = mKnots2.pKnotAt(j + j1);
+                                knot_t pEtaMax = mKnots2.pKnotAt(j + j1 + 1);
                                 for(std::size_t l1 = 0; l1 < mOrder3 + 1; ++l1)
                                 {
-                                    knot_t pBelow = mKnots3.pKnotAt(l + l1);
-                                    knot_t pAbove = mKnots3.pKnotAt(l + l1 + 1);
+                                    knot_t pZetaMin = mKnots3.pKnotAt(l + l1);
+                                    knot_t pZetaMax = mKnots3.pKnotAt(l + l1 + 1);
 
                                     // check if the cell domain area is nonzero
-                                    double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value()) * (pAbove->Value() - pBelow->Value());
+                                    double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value()) * (pZetaMax->Value() - pZetaMin->Value());
                                     if(fabs(area) > area_tol)
                                     {
-                                        std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp, pBelow, pAbove};
+                                        std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax};
                                         cell_t p_cell = mpCellManager->CreateCell(pKnots);
                                         p_cell->SetLevel(level);
                                         p_bf->AddCell(p_cell);
@@ -689,18 +689,18 @@ namespace Kratos
                     // create the cells for the basis function
                     for(std::size_t i1 = 0; i1 < mOrder1 + 1; ++i1)
                     {
-                        knot_t pLeft = pnew_local_knots[0][i + i1];
-                        knot_t pRight = pnew_local_knots[0][i + i1 + 1];
+                        knot_t pXiMin = pnew_local_knots[0][i + i1];
+                        knot_t pXiMax = pnew_local_knots[0][i + i1 + 1];
                         for(std::size_t j1 = 0; j1 < mOrder2 + 1; ++j1)
                         {
-                            knot_t pDown = pnew_local_knots[1][j + j1];
-                            knot_t pUp = pnew_local_knots[1][j + j1 + 1];
+                            knot_t pEtaMin = pnew_local_knots[1][j + j1];
+                            knot_t pEtaMax = pnew_local_knots[1][j + j1 + 1];
 
                             // check if the cell domain area is nonzero
-                            double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value());
+                            double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value());
                             if(fabs(area) > area_tol)
                             {
-                                std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp};
+                                std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax};
                                 cell_t pnew_cell = mpCellManager->CreateCell(pKnots);
                                 pnew_cell->SetLevel(next_level);
                                 pnew_bf->AddCell(pnew_cell);
@@ -749,22 +749,22 @@ namespace Kratos
                         // create the cells for the basis function
                         for(std::size_t i1 = 0; i1 < mOrder1 + 1; ++i1)
                         {
-                            knot_t pLeft = pnew_local_knots[0][i + i1];
-                            knot_t pRight = pnew_local_knots[0][i + i1 + 1];
+                            knot_t pXiMin = pnew_local_knots[0][i + i1];
+                            knot_t pXiMax = pnew_local_knots[0][i + i1 + 1];
                             for(std::size_t j1 = 0; j1 < mOrder2 + 1; ++j1)
                             {
-                                knot_t pDown = pnew_local_knots[1][j + j1];
-                                knot_t pUp = pnew_local_knots[1][j + j1 + 1];
+                                knot_t pEtaMin = pnew_local_knots[1][j + j1];
+                                knot_t pEtaMax = pnew_local_knots[1][j + j1 + 1];
                                 for(std::size_t l1 = 0; l1 < mOrder3 + 1; ++l1)
                                 {
-                                    knot_t pBelow = pnew_local_knots[2][l + l1];
-                                    knot_t pAbove = pnew_local_knots[2][l + l1 + 1];
+                                    knot_t pZetaMin = pnew_local_knots[2][l + l1];
+                                    knot_t pZetaMax = pnew_local_knots[2][l + l1 + 1];
 
                                     // check if the cell domain area is nonzero
-                                    double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value()) * (pAbove->Value() - pBelow->Value());
+                                    double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value()) * (pZetaMax->Value() - pZetaMin->Value());
                                     if(fabs(area) > area_tol)
                                     {
-                                        std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp, pBelow, pAbove};
+                                        std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax};
                                         cell_t pnew_cell = mpCellManager->CreateCell(pKnots);
                                         pnew_cell->SetLevel(next_level);
                                         pnew_bf->AddCell(pnew_cell);
@@ -978,19 +978,19 @@ namespace Kratos
                         for(DeprecatedHBBasisFunction::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
                             if(TDim == 2)
                             {
-                                p_domain->AddXcoord((*it_cell)->LeftValue());
-                                p_domain->AddXcoord((*it_cell)->RightValue());
-                                p_domain->AddYcoord((*it_cell)->DownValue());
-                                p_domain->AddYcoord((*it_cell)->UpValue());
+                                p_domain->AddXcoord((*it_cell)->XiMinValue());
+                                p_domain->AddXcoord((*it_cell)->XiMaxValue());
+                                p_domain->AddYcoord((*it_cell)->EtaMinValue());
+                                p_domain->AddYcoord((*it_cell)->EtaMaxValue());
                             }
                             else if(TDim == 3)
                             {
-                                p_domain->AddXcoord((*it_cell)->LeftValue());
-                                p_domain->AddXcoord((*it_cell)->RightValue());
-                                p_domain->AddYcoord((*it_cell)->DownValue());
-                                p_domain->AddYcoord((*it_cell)->UpValue());
-                                p_domain->AddZcoord((*it_cell)->BelowValue());
-                                p_domain->AddZcoord((*it_cell)->AboveValue());
+                                p_domain->AddXcoord((*it_cell)->XiMinValue());
+                                p_domain->AddXcoord((*it_cell)->XiMaxValue());
+                                p_domain->AddYcoord((*it_cell)->EtaMinValue());
+                                p_domain->AddYcoord((*it_cell)->EtaMaxValue());
+                                p_domain->AddZcoord((*it_cell)->ZetaMinValue());
+                                p_domain->AddZcoord((*it_cell)->ZetaMaxValue());
                             }
 
             // add the cells to the domain manager
@@ -1000,12 +1000,12 @@ namespace Kratos
                         for(DeprecatedHBBasisFunction::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
                             if(TDim == 2)
                             {
-                                std::vector<double> box = {(*it_cell)->LeftValue(), (*it_cell)->RightValue(), (*it_cell)->DownValue(), (*it_cell)->UpValue()};
+                                std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue()};
                                 p_domain->AddCell(box);
                             }
                             else if(TDim == 3)
                             {
-                                std::vector<double> box = {(*it_cell)->LeftValue(), (*it_cell)->RightValue(), (*it_cell)->DownValue(), (*it_cell)->UpValue(), (*it_cell)->BelowValue(), (*it_cell)->AboveValue()};
+                                std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue(), (*it_cell)->ZetaMinValue(), (*it_cell)->ZetaMaxValue()};
                                 p_domain->AddCell(box);
                             }
 
@@ -1118,44 +1118,44 @@ namespace Kratos
             cell_t p_cell = (*it);
             if(TDim == 2)
             {
-//                outfile << "line([" << p_cell->LeftValue() << " " << p_cell->RightValue() << "],[" << p_cell->DownValue() << " " << p_cell->DownValue() << "]);\n";
-//                outfile << "line([" << p_cell->LeftValue() << " " << p_cell->RightValue() << "],[" << p_cell->UpValue() << " " << p_cell->UpValue() << "]);\n";
-//                outfile << "line([" << p_cell->LeftValue() << " " << p_cell->LeftValue() << "],[" << p_cell->DownValue() << " " << p_cell->UpValue() << "]);\n";
-//                outfile << "line([" << p_cell->RightValue() << " " << p_cell->RightValue() << "],[" << p_cell->DownValue() << " " << p_cell->UpValue() << "]);\n";
+//                outfile << "line([" << p_cell->XiMinValue() << " " << p_cell->XiMaxValue() << "],[" << p_cell->EtaMinValue() << " " << p_cell->EtaMinValue() << "]);\n";
+//                outfile << "line([" << p_cell->XiMinValue() << " " << p_cell->XiMaxValue() << "],[" << p_cell->EtaMaxValue() << " " << p_cell->EtaMaxValue() << "]);\n";
+//                outfile << "line([" << p_cell->XiMinValue() << " " << p_cell->XiMinValue() << "],[" << p_cell->EtaMinValue() << " " << p_cell->EtaMaxValue() << "]);\n";
+//                outfile << "line([" << p_cell->XiMaxValue() << " " << p_cell->XiMaxValue() << "],[" << p_cell->EtaMinValue() << " " << p_cell->EtaMaxValue() << "]);\n";
 
-                outfile << "verts = [" << p_cell->LeftValue() << " " << p_cell->DownValue() << ";"
-                                       << p_cell->RightValue() << " " << p_cell->DownValue() << ";"
-                                       << p_cell->RightValue() << " " << p_cell->UpValue() << ";"
-                                       << p_cell->LeftValue() << " " << p_cell->UpValue() << "];\n";
+                outfile << "verts = [" << p_cell->XiMinValue() << " " << p_cell->EtaMinValue() << ";"
+                                       << p_cell->XiMaxValue() << " " << p_cell->EtaMinValue() << ";"
+                                       << p_cell->XiMaxValue() << " " << p_cell->EtaMaxValue() << ";"
+                                       << p_cell->XiMinValue() << " " << p_cell->EtaMaxValue() << "];\n";
                 outfile << "faces = [1 2 3 4];\n";
                 outfile << "patch('Faces',faces,'Vertices',verts,'FaceColor','white');\n";
 
-//                outfile << "rectangle('Position',[" << p_cell->LeftValue() << "," << p_cell->DownValue()
-//                        << (p_cell->RightValue() - p_cell->LeftValue()) << ","
-//                        << (p_cell->UpValue() - p_cell-DownValue()) << "]);\n";
+//                outfile << "rectangle('Position',[" << p_cell->XiMinValue() << "," << p_cell->EtaMinValue()
+//                        << (p_cell->XiMaxValue() - p_cell->XiMinValue()) << ","
+//                        << (p_cell->EtaMaxValue() - p_cell-EtaMinValue()) << "]);\n";
 
                 if(cell_numbering)
-                    outfile << "text(" << 0.5*(p_cell->LeftValue() + p_cell->RightValue()) << ","
-                                       << 0.5*(p_cell->DownValue() + p_cell->UpValue()) << ",'"
+                    outfile << "text(" << 0.5*(p_cell->XiMinValue() + p_cell->XiMaxValue()) << ","
+                                       << 0.5*(p_cell->EtaMinValue() + p_cell->EtaMaxValue()) << ",'"
                                        << p_cell->Id() << "');\n";
             }
             else if(TDim == 3)
             {
-                outfile << "verts = [" << p_cell->LeftValue() << " " << p_cell->DownValue() << " " << p_cell->BelowValue() << ";"
-                                       << p_cell->RightValue() << " " << p_cell->DownValue() << " " << p_cell->BelowValue() << ";"
-                                       << p_cell->RightValue() << " " << p_cell->UpValue() << " " << p_cell->BelowValue() << ";"
-                                       << p_cell->LeftValue() << " " << p_cell->UpValue() << " " << p_cell->BelowValue() << ";"
-                                       << p_cell->LeftValue() << " " << p_cell->DownValue() << " " << p_cell->AboveValue() << ";"
-                                       << p_cell->RightValue() << " " << p_cell->DownValue() << " " << p_cell->AboveValue() << ";"
-                                       << p_cell->RightValue() << " " << p_cell->UpValue() << " " << p_cell->AboveValue() << ";"
-                                       << p_cell->LeftValue() << " " << p_cell->UpValue() << " " << p_cell->AboveValue() << "];\n";
+                outfile << "verts = [" << p_cell->XiMinValue() << " " << p_cell->EtaMinValue() << " " << p_cell->ZetaMinValue() << ";"
+                                       << p_cell->XiMaxValue() << " " << p_cell->EtaMinValue() << " " << p_cell->ZetaMinValue() << ";"
+                                       << p_cell->XiMaxValue() << " " << p_cell->EtaMaxValue() << " " << p_cell->ZetaMinValue() << ";"
+                                       << p_cell->XiMinValue() << " " << p_cell->EtaMaxValue() << " " << p_cell->ZetaMinValue() << ";"
+                                       << p_cell->XiMinValue() << " " << p_cell->EtaMinValue() << " " << p_cell->ZetaMaxValue() << ";"
+                                       << p_cell->XiMaxValue() << " " << p_cell->EtaMinValue() << " " << p_cell->ZetaMaxValue() << ";"
+                                       << p_cell->XiMaxValue() << " " << p_cell->EtaMaxValue() << " " << p_cell->ZetaMaxValue() << ";"
+                                       << p_cell->XiMinValue() << " " << p_cell->EtaMaxValue() << " " << p_cell->ZetaMaxValue() << "];\n";
                 outfile << "faces = [1 2 3 4;2 6 7 3;4 3 7 8;1 5 8 4;1 2 6 5;5 6 7 8];\n";
                 outfile << "patch('Faces',faces,'Vertices',verts,'FaceColor','white','FaceAlpha',0.5);\n";
 
                 if(cell_numbering)
-                    outfile << "text(" << 0.5*(p_cell->LeftValue() + p_cell->RightValue()) << ","
-                                       << 0.5*(p_cell->DownValue() + p_cell->UpValue()) << ","
-                                       << 0.5*(p_cell->BelowValue() + p_cell->AboveValue()) << ",'"
+                    outfile << "text(" << 0.5*(p_cell->XiMinValue() + p_cell->XiMaxValue()) << ","
+                                       << 0.5*(p_cell->EtaMinValue() + p_cell->EtaMaxValue()) << ","
+                                       << 0.5*(p_cell->ZetaMinValue() + p_cell->ZetaMaxValue()) << ",'"
                                        << p_cell->Id() << "');\n";
             }
         }
@@ -1373,8 +1373,8 @@ namespace Kratos
             ++cnt;
 
             // write the boundary of the cell
-            outfile << "S{" << cnt << "} = [" << (*it_cell)->LeftValue() << " " << (*it_cell)->RightValue() << ";";
-            outfile << (*it_cell)->DownValue() << " " << (*it_cell)->UpValue() << "];\n";
+            outfile << "S{" << cnt << "} = [" << (*it_cell)->XiMinValue() << " " << (*it_cell)->XiMaxValue() << ";";
+            outfile << (*it_cell)->EtaMinValue() << " " << (*it_cell)->EtaMaxValue() << "];\n";
 
             // write the extraction operator
             Matrix C = (*it_cell)->GetExtractionOperator();
@@ -1787,8 +1787,8 @@ namespace Kratos
                             found = true;
 
                             // compute the local coordinates of the sampling point
-                            double local_xi = (SamplingKnots1[i] - (*it_cell)->LeftValue()) / ((*it_cell)->RightValue() - (*it_cell)->LeftValue());
-                            double local_eta = (SamplingKnots2[j] - (*it_cell)->DownValue()) / ((*it_cell)->UpValue() - (*it_cell)->DownValue());
+                            double local_xi = (SamplingKnots1[i] - (*it_cell)->XiMinValue()) / ((*it_cell)->XiMaxValue() - (*it_cell)->XiMinValue());
+                            double local_eta = (SamplingKnots2[j] - (*it_cell)->EtaMinValue()) / ((*it_cell)->EtaMaxValue() - (*it_cell)->EtaMinValue());
 //                            KRATOS_WATCH(local_xi)
 //                            KRATOS_WATCH(local_eta)
 
@@ -1894,9 +1894,9 @@ namespace Kratos
                                 found = true;
 
                                 // compute the local coordinates of the sampling point
-                                double local_xi = (SamplingKnots1[i] - (*it_cell)->LeftValue()) / ((*it_cell)->RightValue() - (*it_cell)->LeftValue());
-                                double local_eta = (SamplingKnots2[j] - (*it_cell)->DownValue()) / ((*it_cell)->UpValue() - (*it_cell)->DownValue());
-                                double local_zeta = (SamplingKnots3[k] - (*it_cell)->BelowValue()) / ((*it_cell)->AboveValue() - (*it_cell)->BelowValue());
+                                double local_xi = (SamplingKnots1[i] - (*it_cell)->XiMinValue()) / ((*it_cell)->XiMaxValue() - (*it_cell)->XiMinValue());
+                                double local_eta = (SamplingKnots2[j] - (*it_cell)->EtaMinValue()) / ((*it_cell)->EtaMaxValue() - (*it_cell)->EtaMinValue());
+                                double local_zeta = (SamplingKnots3[k] - (*it_cell)->ZetaMinValue()) / ((*it_cell)->ZetaMaxValue() - (*it_cell)->ZetaMinValue());
 //                                KRATOS_WATCH(local_xi)
 //                                KRATOS_WATCH(local_eta)
 //                                KRATOS_WATCH(local_zeta)
@@ -2191,10 +2191,10 @@ namespace Kratos
         {
             if(TDim == 2)
             {
-                unsigned int V1 = Binning.AddNode((*it)->LeftValue(), (*it)->DownValue(), 0.0);
-                unsigned int V2 = Binning.AddNode((*it)->RightValue(), (*it)->DownValue(), 0.0);
-                unsigned int V3 = Binning.AddNode((*it)->LeftValue(), (*it)->UpValue(), 0.0);
-                unsigned int V4 = Binning.AddNode((*it)->RightValue(), (*it)->UpValue(), 0.0);
+                unsigned int V1 = Binning.AddNode((*it)->XiMinValue(), (*it)->EtaMinValue(), 0.0);
+                unsigned int V2 = Binning.AddNode((*it)->XiMaxValue(), (*it)->EtaMinValue(), 0.0);
+                unsigned int V3 = Binning.AddNode((*it)->XiMinValue(), (*it)->EtaMaxValue(), 0.0);
+                unsigned int V4 = Binning.AddNode((*it)->XiMaxValue(), (*it)->EtaMaxValue(), 0.0);
 
                 MapVertexToCell[V1] = (*it);
                 MapVertexToCell[V2] = (*it);
@@ -2207,14 +2207,14 @@ namespace Kratos
             }
             else if(TDim == 3)
             {
-                unsigned int V1 = Binning.AddNode((*it)->LeftValue(), (*it)->DownValue(), (*it)->BelowValue());
-                unsigned int V2 = Binning.AddNode((*it)->RightValue(), (*it)->DownValue(), (*it)->BelowValue());
-                unsigned int V3 = Binning.AddNode((*it)->LeftValue(), (*it)->UpValue(), (*it)->BelowValue());
-                unsigned int V4 = Binning.AddNode((*it)->RightValue(), (*it)->UpValue(), (*it)->BelowValue());
-                unsigned int V5 = Binning.AddNode((*it)->LeftValue(), (*it)->DownValue(), (*it)->AboveValue());
-                unsigned int V6 = Binning.AddNode((*it)->RightValue(), (*it)->DownValue(), (*it)->AboveValue());
-                unsigned int V7 = Binning.AddNode((*it)->LeftValue(), (*it)->UpValue(), (*it)->AboveValue());
-                unsigned int V8 = Binning.AddNode((*it)->RightValue(), (*it)->UpValue(), (*it)->AboveValue());
+                unsigned int V1 = Binning.AddNode((*it)->XiMinValue(), (*it)->EtaMinValue(), (*it)->ZetaMinValue());
+                unsigned int V2 = Binning.AddNode((*it)->XiMaxValue(), (*it)->EtaMinValue(), (*it)->ZetaMinValue());
+                unsigned int V3 = Binning.AddNode((*it)->XiMinValue(), (*it)->EtaMaxValue(), (*it)->ZetaMinValue());
+                unsigned int V4 = Binning.AddNode((*it)->XiMaxValue(), (*it)->EtaMaxValue(), (*it)->ZetaMinValue());
+                unsigned int V5 = Binning.AddNode((*it)->XiMinValue(), (*it)->EtaMinValue(), (*it)->ZetaMaxValue());
+                unsigned int V6 = Binning.AddNode((*it)->XiMaxValue(), (*it)->EtaMinValue(), (*it)->ZetaMaxValue());
+                unsigned int V7 = Binning.AddNode((*it)->XiMinValue(), (*it)->EtaMaxValue(), (*it)->ZetaMaxValue());
+                unsigned int V8 = Binning.AddNode((*it)->XiMaxValue(), (*it)->EtaMaxValue(), (*it)->ZetaMaxValue());
 
                 MapVertexToCell[V1] = (*it);
                 MapVertexToCell[V2] = (*it);
@@ -2250,12 +2250,12 @@ namespace Kratos
             else if(TDim == 3)
                 zeta = Binning.GetZ(Id);
 
-            local_xi = (xi - p_cell->LeftValue()) / (p_cell->RightValue() - p_cell->LeftValue());
-            local_eta = (eta - p_cell->DownValue()) / (p_cell->UpValue() - p_cell->DownValue());
+            local_xi = (xi - p_cell->XiMinValue()) / (p_cell->XiMaxValue() - p_cell->XiMinValue());
+            local_eta = (eta - p_cell->EtaMinValue()) / (p_cell->EtaMaxValue() - p_cell->EtaMinValue());
             if(TDim == 2)
                 local_zeta = 0.0;
             else if(TDim == 3)
-                local_zeta = (zeta - p_cell->BelowValue()) / (p_cell->AboveValue() - p_cell->BelowValue());
+                local_zeta = (zeta - p_cell->ZetaMinValue()) / (p_cell->ZetaMaxValue() - p_cell->ZetaMinValue());
 
             // compute the Bernstein basis function on the local coordinates
             Vector B;

@@ -53,18 +53,18 @@ public:
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
     /// Constructor for 1D
-    HBCell(const std::size_t& Id, knot_t pLeft, knot_t pRight)
-    : BaseType(Id, pLeft, pRight)
+    HBCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax)
+    : BaseType(Id, pXiMin, pXiMax)
     {}
 
     /// Constructor for 2D
-    HBCell(const std::size_t& Id, knot_t pLeft, knot_t pRight, knot_t pDown, knot_t pUp)
-    : BaseType(Id, pLeft, pRight, pDown, pUp)
+    HBCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
+    : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax)
     {}
 
     /// Constructor for 3D
-    HBCell(const std::size_t& Id, knot_t pLeft, knot_t pRight, knot_t pDown, knot_t pUp, knot_t pBelow, knot_t pAbove)
-    : BaseType(Id, pLeft, pRight, pDown, pUp, pBelow, pAbove)
+    HBCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
+    : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax)
     {}
 
     /// Destructor

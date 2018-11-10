@@ -33,9 +33,9 @@ struct Cell_Helper
 };
 
 /**
-    Represent a cell in NURBS/hierarchical B-Splines/T-splines mesh topology.
-    A cell is the smaller unit in the isogeometric topology mesh (e.g. it represents an element, or Bezier element of the T-splines basis function).
-    A cell is determined by its topology index of its vertices.
+ * Abstract class for a cell in NURBS/hierarchical B-Splines/T-splines mesh topology.
+ * A cell is the smaller unit in the isogeometric topology mesh (e.g. it represents an element, or Bezier element of the T-splines basis function).
+ * A cell is determined by its topology index of its vertices.
  */
 class Cell
 {
@@ -50,18 +50,18 @@ public:
     // typedef boost::numeric::ublas::vector<double> SparseVectorType;
 
     /// Constructor with knots
-    Cell(const std::size_t& Id, knot_t pLeft, knot_t pRight)
-    : mId(Id), mpLeft(pLeft), mpRight(pRight), mpUp(new KnotType(0.0)), mpDown(new KnotType(0.0)), mpAbove(new KnotType(0.0)), mpBelow(new KnotType(0.0))
+    Cell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax)
+    : mId(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(new KnotType(0.0)), mpEtaMin(new KnotType(0.0)), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
-    Cell(const std::size_t& Id, knot_t pLeft, knot_t pRight, knot_t pDown, knot_t pUp)
-    : mId(Id), mpLeft(pLeft), mpRight(pRight), mpUp(pUp), mpDown(pDown), mpAbove(new KnotType(0.0)), mpBelow(new KnotType(0.0))
+    Cell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
+    : mId(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
-    Cell(const std::size_t& Id, knot_t pLeft, knot_t pRight, knot_t pDown, knot_t pUp, knot_t pBelow, knot_t pAbove)
-    : mId(Id), mpLeft(pLeft), mpRight(pRight), mpUp(pUp), mpDown(pDown), mpAbove(pAbove), mpBelow(pBelow)
+    Cell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
+    : mId(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(pZetaMax), mpZetaMin(pZetaMin)
     {}
 
     /// Destructor
@@ -71,29 +71,29 @@ public:
     std::size_t Id() const {return mId;}
 
     /// Get the coordinates
-    knot_t Left() const {return mpLeft;}
-    int LeftIndex() const {return mpLeft->Index();}
-    double LeftValue() const {return mpLeft->Value();}
+    knot_t XiMin() const {return mpXiMin;}
+    int XiMinIndex() const {return mpXiMin->Index();}
+    double XiMinValue() const {return mpXiMin->Value();}
 
-    knot_t Right() const {return mpRight;}
-    int RightIndex() const {return mpRight->Index();}
-    double RightValue() const {return mpRight->Value();}
+    knot_t XiMax() const {return mpXiMax;}
+    int XiMaxIndex() const {return mpXiMax->Index();}
+    double XiMaxValue() const {return mpXiMax->Value();}
 
-    knot_t Up() const {return mpUp;}
-    int UpIndex() const {return mpUp->Index();}
-    double UpValue() const {return mpUp->Value();}
+    knot_t EtaMax() const {return mpEtaMax;}
+    int EtaMaxIndex() const {return mpEtaMax->Index();}
+    double EtaMaxValue() const {return mpEtaMax->Value();}
 
-    knot_t Down() const {return mpDown;}
-    int DownIndex() const {return mpDown->Index();}
-    double DownValue() const {return mpDown->Value();}
+    knot_t EtaMin() const {return mpEtaMin;}
+    int EtaMinIndex() const {return mpEtaMin->Index();}
+    double EtaMinValue() const {return mpEtaMin->Value();}
 
-    knot_t Above() const {return mpAbove;}
-    int AboveIndex() const {return mpAbove->Index();}
-    double AboveValue() const {return mpAbove->Value();}
+    knot_t ZetaMax() const {return mpZetaMax;}
+    int ZetaMaxIndex() const {return mpZetaMax->Index();}
+    double ZetaMaxValue() const {return mpZetaMax->Value();}
 
-    knot_t Below() const {return mpBelow;}
-    int BelowIndex() const {return mpBelow->Index();}
-    double BelowValue() const {return mpBelow->Value();}
+    knot_t ZetaMin() const {return mpZetaMin;}
+    int ZetaMinIndex() const {return mpZetaMin->Index();}
+    double ZetaMinValue() const {return mpZetaMin->Value();}
 
     /// Check if the cell is covered by knot spans; the comparison is based on indexing, so the knot vectors must be sorted a priori
     template<typename TIndexType>
@@ -102,8 +102,8 @@ public:
         TIndexType anchor_cover_xi_min  = *std::min_element(rKnotsIndex1.begin(), rKnotsIndex1.end());
         TIndexType anchor_cover_xi_max  = *std::max_element(rKnotsIndex1.begin(), rKnotsIndex1.end());
 
-        if(     LeftIndex()  >= anchor_cover_xi_min
-            && RightIndex() <= anchor_cover_xi_max  )
+        if(     XiMinIndex()  >= anchor_cover_xi_min
+            && XiMaxIndex() <= anchor_cover_xi_max  )
         {
             return true;
         }
@@ -119,10 +119,10 @@ public:
         TIndexType anchor_cover_eta_min = *std::min_element(rKnotsIndex2.begin(), rKnotsIndex2.end());
         TIndexType anchor_cover_eta_max = *std::max_element(rKnotsIndex2.begin(), rKnotsIndex2.end());
 
-        if(     LeftIndex()  >= anchor_cover_xi_min
-            && RightIndex() <= anchor_cover_xi_max
-            && DownIndex()  >= anchor_cover_eta_min
-            && UpIndex()    <= anchor_cover_eta_max )
+        if(     XiMinIndex()  >= anchor_cover_xi_min
+            && XiMaxIndex() <= anchor_cover_xi_max
+            && EtaMinIndex()  >= anchor_cover_eta_min
+            && EtaMaxIndex()    <= anchor_cover_eta_max )
         {
             return true;
         }
@@ -141,12 +141,12 @@ public:
         TIndexType anchor_cover_zeta_min = *std::min_element(rKnotsIndex3.begin(), rKnotsIndex3.end());
         TIndexType anchor_cover_zeta_max = *std::max_element(rKnotsIndex3.begin(), rKnotsIndex3.end());
 
-        if(     LeftIndex()  >= anchor_cover_xi_min
-            && RightIndex() <= anchor_cover_xi_max
-            && DownIndex()  >= anchor_cover_eta_min
-            && UpIndex()    <= anchor_cover_eta_max
-            && BelowIndex()  >= anchor_cover_zeta_min
-            && AboveIndex()    <= anchor_cover_zeta_max )
+        if(     XiMinIndex()  >= anchor_cover_xi_min
+            && XiMaxIndex() <= anchor_cover_xi_max
+            && EtaMinIndex()  >= anchor_cover_eta_min
+            && EtaMaxIndex()    <= anchor_cover_eta_max
+            && ZetaMinIndex()  >= anchor_cover_zeta_min
+            && ZetaMaxIndex()    <= anchor_cover_zeta_max )
         {
             return true;
         }
@@ -163,8 +163,8 @@ public:
     /// Check if this cell cover a point in knot space
     bool IsCoverage(const double& rXi, const double& rEta) const
     {
-        if(    LeftValue()  <= rXi  && RightValue() >= rXi
-            && DownValue()  <= rEta && UpValue()    >= rEta )
+        if(    XiMinValue()  <= rXi  && XiMaxValue() >= rXi
+            && EtaMinValue()  <= rEta && EtaMaxValue()    >= rEta )
             return true;
         return false;
     }
@@ -172,9 +172,9 @@ public:
     /// Check if this cell cover a point in knot space
     bool IsCoverage(const double& rXi, const double& rEta, const double& rZeta) const
     {
-        if(    LeftValue()  <= rXi   && RightValue() >= rXi
-            && DownValue()  <= rEta  && UpValue()    >= rEta
-            && BelowValue() <= rZeta && AboveValue() >= rZeta )
+        if(    XiMinValue()  <= rXi   && XiMaxValue() >= rXi
+            && EtaMinValue()  <= rEta  && EtaMaxValue()    >= rEta
+            && ZetaMinValue() <= rZeta && ZetaMaxValue() >= rZeta )
             return true;
         return false;
     }
@@ -182,12 +182,12 @@ public:
     /// check if this cell is the same as the reference cell. Two cells are the same if it has the same bounding knot values.
     bool IsSame(const Cell::Pointer p_cell, const double& tol) const
     {
-        if(    fabs( LeftValue()  - p_cell->LeftValue()  ) < tol
-            && fabs( RightValue() - p_cell->RightValue() ) < tol
-            && fabs( DownValue()  - p_cell->DownValue()  ) < tol
-            && fabs( UpValue()    - p_cell->UpValue()    ) < tol
-            && fabs( BelowValue() - p_cell->BelowValue() ) < tol
-            && fabs( AboveValue() - p_cell->AboveValue() ) < tol )
+        if(    fabs( XiMinValue()  - p_cell->XiMinValue()  ) < tol
+            && fabs( XiMaxValue() - p_cell->XiMaxValue() ) < tol
+            && fabs( EtaMinValue()  - p_cell->EtaMinValue()  ) < tol
+            && fabs( EtaMaxValue()    - p_cell->EtaMaxValue()    ) < tol
+            && fabs( ZetaMinValue() - p_cell->ZetaMinValue() ) < tol
+            && fabs( ZetaMaxValue() - p_cell->ZetaMaxValue() ) < tol )
                 return true;
         return false;
     }
@@ -307,8 +307,8 @@ public:
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "{Id:" << Id() << ",range:([" << LeftIndex() << " " << RightIndex() << "];[" << DownIndex() << " " << UpIndex() << "];[" << BelowIndex() << " " << AboveIndex() << "])";
-        rOStream << "<=>([" << LeftValue() << " " << RightValue() << "];[" << DownValue() << " " << UpValue() << "];[" << BelowValue() << " " << AboveValue() << "])}";
+        rOStream << "{Id:" << Id() << ",range:([" << XiMinIndex() << " " << XiMaxIndex() << "];[" << EtaMinIndex() << " " << EtaMaxIndex() << "];[" << ZetaMinIndex() << " " << ZetaMaxIndex() << "])";
+        rOStream << "<=>([" << XiMinValue() << " " << XiMaxValue() << "];[" << EtaMinValue() << " " << EtaMaxValue() << "];[" << ZetaMinValue() << " " << ZetaMaxValue() << "])}";
     }
 
     virtual void PrintData(std::ostream& rOStream) const
@@ -323,12 +323,12 @@ public:
 private:
 
     std::size_t mId;
-    knot_t mpLeft;
-    knot_t mpRight;
-    knot_t mpUp;
-    knot_t mpDown;
-    knot_t mpAbove;
-    knot_t mpBelow;
+    knot_t mpXiMin;
+    knot_t mpXiMax;
+    knot_t mpEtaMax;
+    knot_t mpEtaMin;
+    knot_t mpZetaMax;
+    knot_t mpZetaMin;
     std::vector<std::size_t> mSupportedAnchors;
     std::vector<double> mAnchorWeights; // weight of the anchor
     std::vector<SparseVectorType> mCrows; // bezier extraction operator row to each anchor
@@ -337,7 +337,7 @@ private:
 template<>
 inline bool Cell_Helper<1>::IsCovered(const Cell& this_cell, const Cell& other_cell)
 {
-    if(    this_cell.LeftValue()  >= other_cell.LeftValue() && this_cell.RightValue() <= other_cell.RightValue() )
+    if(    this_cell.XiMinValue() >= other_cell.XiMinValue() && this_cell.XiMaxValue() <= other_cell.XiMaxValue() )
         return true;
     return false;
 }
@@ -345,8 +345,8 @@ inline bool Cell_Helper<1>::IsCovered(const Cell& this_cell, const Cell& other_c
 template<>
 inline bool Cell_Helper<2>::IsCovered(const Cell& this_cell, const Cell& other_cell)
 {
-    if(    this_cell.LeftValue()  >= other_cell.LeftValue() && this_cell.RightValue() <= other_cell.RightValue()
-        && this_cell.DownValue()  >= other_cell.DownValue() && this_cell.UpValue()    <= other_cell.UpValue() )
+    if(    this_cell.XiMinValue()  >= other_cell.XiMinValue()  && this_cell.XiMaxValue()  <= other_cell.XiMaxValue()
+        && this_cell.EtaMinValue() >= other_cell.EtaMinValue() && this_cell.EtaMaxValue() <= other_cell.EtaMaxValue() )
         return true;
     return false;
 }
@@ -354,9 +354,9 @@ inline bool Cell_Helper<2>::IsCovered(const Cell& this_cell, const Cell& other_c
 template<>
 inline bool Cell_Helper<3>::IsCovered(const Cell& this_cell, const Cell& other_cell)
 {
-    if(    this_cell.LeftValue()  >= other_cell.LeftValue() && this_cell.RightValue() <= other_cell.RightValue()
-        && this_cell.DownValue()  >= other_cell.DownValue() && this_cell.UpValue()    <= other_cell.UpValue()
-        && this_cell.BelowValue() >= other_cell.BelowValue() && this_cell.AboveValue() <= other_cell.AboveValue() )
+    if(    this_cell.XiMinValue()   >= other_cell.XiMinValue()   && this_cell.XiMaxValue()   <= other_cell.XiMaxValue()
+        && this_cell.EtaMinValue()  >= other_cell.EtaMinValue()  && this_cell.EtaMaxValue()  <= other_cell.EtaMaxValue()
+        && this_cell.ZetaMinValue() >= other_cell.ZetaMinValue() && this_cell.ZetaMaxValue() <= other_cell.ZetaMaxValue() )
         return true;
     return false;
 }

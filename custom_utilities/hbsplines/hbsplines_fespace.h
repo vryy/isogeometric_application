@@ -102,7 +102,7 @@ public:
         return p_bf;
     }
 
-    /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
+    /// EtaMaxdate the basis functions for all cells. This function must be called before any operation on cell is required.
     virtual void UpdateCells()
     {
         this->ResetCells();
@@ -300,14 +300,14 @@ public:
             {
                 for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
                 {
-                    knot_t pLeft = (*it)->LocalKnots(0)[i1];
-                    knot_t pRight = (*it)->LocalKnots(0)[i1 + 1];
+                    knot_t pXiMin = (*it)->LocalKnots(0)[i1];
+                    knot_t pXiMax = (*it)->LocalKnots(0)[i1 + 1];
 
                     // check if the cell domain length is nonzero
-                    double length = (pRight->Value() - pLeft->Value());
+                    double length = (pXiMax->Value() - pXiMin->Value());
                     if(fabs(length) > cell_tol)
                     {
-                        std::vector<knot_t> pKnots = {pLeft, pRight};
+                        std::vector<knot_t> pKnots = {pXiMin, pXiMax};
                         typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
                         pnew_cell->SetLevel(this->LastLevel());
                         (*it)->AddCell(pnew_cell);
@@ -325,19 +325,19 @@ public:
             {
                 for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
                 {
-                    knot_t pLeft = (*it)->LocalKnots(0)[i1];
-                    knot_t pRight = (*it)->LocalKnots(0)[i1 + 1];
+                    knot_t pXiMin = (*it)->LocalKnots(0)[i1];
+                    knot_t pXiMax = (*it)->LocalKnots(0)[i1 + 1];
 
                     for(std::size_t j1 = 0; j1 < pBFESpace->Order(1) + 1; ++j1)
                     {
-                        knot_t pDown = (*it)->LocalKnots(1)[j1];
-                        knot_t pUp = (*it)->LocalKnots(1)[j1 + 1];
+                        knot_t pEtaMin = (*it)->LocalKnots(1)[j1];
+                        knot_t pEtaMax = (*it)->LocalKnots(1)[j1 + 1];
 
                         // check if the cell domain area is nonzero
-                        double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value());
+                        double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value());
                         if(sqrt(fabs(area)) > cell_tol)
                         {
-                            std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp};
+                            std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax};
                             typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
                             pnew_cell->SetLevel(this->LastLevel());
                             (*it)->AddCell(pnew_cell);

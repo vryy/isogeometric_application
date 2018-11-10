@@ -70,10 +70,10 @@ public:
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future.
         for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
-            if( (*it)->Left()  == pKnots[0] // left
-             && (*it)->Right() == pKnots[1] // right
-             && (*it)->Down()  == pKnots[2] // down
-             && (*it)->Up()    == pKnots[3] ) // up
+            if( (*it)->XiMin()  == pKnots[0] // left
+             && (*it)->XiMax()  == pKnots[1] // right
+             && (*it)->EtaMin() == pKnots[2] // down
+             && (*it)->EtaMax() == pKnots[3] ) // up
                 return *it;
         }
 
@@ -107,8 +107,8 @@ public:
 
         #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
-        double cmin[] = {p_cell->LeftValue(), p_cell->DownValue()};
-        double cmax[] = {p_cell->RightValue(), p_cell->UpValue()};
+        double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue()};
+        double cmax[] = {p_cell->XiMaxValue(), p_cell->EtaMaxValue()};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
         #endif
 
@@ -126,8 +126,8 @@ public:
 
                 #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
                 // update the r-tree
-                double cmin[] = {p_cell->LeftValue(), p_cell->DownValue(), p_cell->BelowValue()};
-                double cmax[] = {p_cell->RightValue(), p_cell->UpValue(), p_cell->AboveValue()};
+                double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue(), p_cell->ZetaMinValue()};
+                double cmax[] = {p_cell->XiMaxValue(), p_cell->EtaMaxValue(), p_cell->ZetaMaxValue()};
                 rtree_cells.Remove(cmin, cmax, p_cell->Id());
                 #endif
 
@@ -152,8 +152,8 @@ public:
         #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // determine the overlapping cells; for now, this only works in 3D
         std::vector<std::size_t> OverlappingCells;
-        double cmin[] = {p_cell->LeftValue(), p_cell->DownValue()};
-        double cmax[] = {p_cell->RightValue(), p_cell->UpValue()};
+        double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue()};
+        double cmax[] = {p_cell->XiMaxValue(), p_cell->EtaMaxValue()};
         int nhits = rtree_cells.Search(cmin, cmax, CellManager_RtreeSearchCallback, (void*)(&OverlappingCells));
 //        printf("Search resulted in %d hits\n", nhits);
 

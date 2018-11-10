@@ -132,18 +132,18 @@ public:
         double Zmax = -Zmin;
         for(cell_iterator it = BaseType::cell_begin(); it != BaseType::cell_end(); ++it)
         {
-            if((*it)->LeftValue() < Xmin)
-                Xmin = (*it)->LeftValue();
-            if((*it)->RightValue() > Xmax)
-                Xmax = (*it)->RightValue();
-            if((*it)->DownValue() < Ymin)
-                Ymin = (*it)->DownValue();
-            if((*it)->UpValue() > Ymax)
-                Ymax = (*it)->UpValue();
-            if((*it)->BelowValue() < Zmin)
-                Zmin = (*it)->BelowValue();
-            if((*it)->AboveValue() > Zmax)
-                Zmax = (*it)->AboveValue();
+            if((*it)->XiMinValue() < Xmin)
+                Xmin = (*it)->XiMinValue();
+            if((*it)->XiMaxValue() > Xmax)
+                Xmax = (*it)->XiMaxValue();
+            if((*it)->EtaMinValue() < Ymin)
+                Ymin = (*it)->EtaMinValue();
+            if((*it)->EtaMaxValue() > Ymax)
+                Ymax = (*it)->EtaMaxValue();
+            if((*it)->ZetaMinValue() < Zmin)
+                Zmin = (*it)->ZetaMinValue();
+            if((*it)->ZetaMaxValue() > Zmax)
+                Zmax = (*it)->ZetaMaxValue();
         }
 
         if (TDim == 1)

@@ -125,11 +125,11 @@ struct ParameterDirection<3>
     {
         switch(side)
         {
-            case _BLEFT_:    return std::vector<int>{1, 2};
+            case _BLEFT_:    return std::vector<int>{1, 2}; // v, w
             case _BRIGHT_:   return std::vector<int>{1, 2};
-            case _BFRONT_:   return std::vector<int>{0, 2};
+            case _BFRONT_:   return std::vector<int>{0, 2}; // u, w
             case _BBACK_:    return std::vector<int>{0, 2};
-            case _BTOP_:     return std::vector<int>{0, 1};
+            case _BTOP_:     return std::vector<int>{0, 1}; // u, v
             case _BBOTTOM_:  return std::vector<int>{0, 1};
             default:        return std::vector<int>{-1, -1};
         }

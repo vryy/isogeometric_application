@@ -17,7 +17,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "custom_utilities/patch.h"
+#include "custom_utilities/multipatch.h"
 
 namespace Kratos
 {

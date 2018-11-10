@@ -1,5 +1,7 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/custom_cmake_modules")
+
 message("**** configuring KratosIsogeometricApplication ****")
 
 include_directories( ${CMAKE_SOURCE_DIR})
@@ -53,6 +55,17 @@ if(DEFINED GISMO_ROOT)
     add_definitions(-DISOGEOMETRIC_USE_GISMO)
 endif()
 
+set(ISOGEOMETRIC_USE_TSPLINE FALSE)
+if(DEFINED TSPLINE_DIR)
+    FIND_PACKAGE(TSPLINE REQUIRED)
+    if(TSPLINE_FOUND MATCHES "YES")
+        message("TSPLINE_LIBRARIES:" ${TSPLINE_LIBRARIES})
+        INCLUDE_DIRECTORIES(${TSPLINE_INCLUDE_DIR})
+        set(ISOGEOMETRIC_USE_TSPLINE TRUE)
+        add_definitions(-DISOGEOMETRIC_USE_TSPLINE)
+    endif()
+endif()
+
 if(EXISTS ${CMAKE_SOURCE_DIR}/kratos/solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation.h)
     add_definitions(-D_residualbased_elimination_builder_and_solver_deactivation_existed_)
 endif()
@@ -76,6 +89,7 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/hbsplines/deprecated_hb_mesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/tsplines/tsmesh_2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/import_export/multi_nurbs_patch_geo_importer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/import_export/tspline_patch_tsm_importer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_conditions/dummy_isogeometric_condition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/isogeometric_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_io_to_python.cpp
@@ -113,6 +127,9 @@ if(${ISOGEOMETRIC_USE_MPI} MATCHES TRUE)
 endif()
 if(${ISOGEOMETRIC_USE_GISMO} MATCHES TRUE)
     target_link_libraries(KratosIsogeometricApplication ${GISMO_LIBRARY})
+endif()
+if(${ISOGEOMETRIC_USE_TSPLINE} MATCHES TRUE)
+    target_link_libraries(KratosIsogeometricApplication ${TSPLINE_LIBRARIES})
 endif()
 
 set_target_properties(KratosIsogeometricApplication PROPERTIES PREFIX "")

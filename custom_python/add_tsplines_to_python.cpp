@@ -27,6 +27,9 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/tsplines/tspline_utils.h"
 #include "custom_utilities/tsplines/tsmesh_2d.h"
 #include "custom_python/add_import_export_to_python.h"
+#ifdef ISOGEOMETRIC_USE_TSPLINE
+#include "custom_utilities/import_export/tspline_patch_tsm_importer.h"
+#endif
 
 
 namespace Kratos
@@ -99,6 +102,18 @@ void IsogeometricApplication_AddTSplinesToPython()
     .def("ExportMDPA", &TSplineUtils_ExportMDPA2)
     .def(self_ns::str(self))
     ;
+
+    /////////////////////////////////////////////////////////////////
+    /////////////////////////IMPORT/EXPORT///////////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    #ifdef ISOGEOMETRIC_USE_TSPLINE
+    class_<TSplinePatchTSMImporter, TSplinePatchTSMImporter::Pointer, boost::noncopyable>
+    ("TSplinePatchTSMImporter", init<>())
+    .def("ImportSingle", &TSplinePatchTSMImporter::ImportSingle)
+    .def(self_ns::str(self))
+    ;
+    #endif
 
 }
 

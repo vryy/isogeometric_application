@@ -86,16 +86,16 @@ public:
     static void CreateFromBSplines(TsMesh2D& tmesh, const BSplinesFESpace<2>& rFESpace)
     {
         typedef typename BSplinesFESpace<2>::knot_container_t knot_container_t;
- 
+
         tmesh.BeginConstruct();
         int dim = 0;
         std::vector<std::pair<int, std::pair<int, int> > >HEdgeList;
         std::vector<std::pair<int, std::pair<int, int> > >VEdgeList;
-        
+
         for(dim = 0;  dim < 2; ++dim){
             int order = rFESpace.Order(dim);
             tmesh.SetOrder(dim, order);
-            
+
         }
 
         for(dim = 0;  dim < 2; ++dim){
@@ -103,7 +103,7 @@ public:
             for(std::size_t i = 0; i < knot_vec.size(); ++i)
                 tmesh.InsertKnot(dim, knot_vec[i]);
         }
- 
+
         // assign the index to the knot vectors
         int cnt = -1;
         for(std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
@@ -111,7 +111,7 @@ public:
         cnt = -1;
         for(std::size_t i = 0; i < tmesh.NumberOfKnots(1); ++i)
             tmesh.GetKnot(1, i)->UpdateIndex(++cnt);
-         
+
         // create the vertex list
         std::set<std::pair<int, int> > VertexList;
         for(std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
@@ -121,7 +121,7 @@ public:
                 VertexList.insert(std::pair<int, int>(i, j));
             }
         }
-        
+
         // insert the vertices to the T-spline mesh
         std::map<std::pair<int, int>, TsVertex::Pointer> VertexMap;
         for(std::set<std::pair<int, int> >::iterator it = VertexList.begin(); it != VertexList.end(); ++it)
@@ -129,13 +129,12 @@ public:
             TsVertex::Pointer pV = tmesh.AddVertex(tmesh.GetKnot(0, it->first), tmesh.GetKnot(1, it->second));
             VertexMap[std::pair<int, int>(it->first, it->second)] = pV;
         }
-        
 
         for(std::map<std::pair<int, int>, TsVertex::Pointer>::iterator it = VertexMap.begin(); it != VertexMap.end(); ++it)
         {
             std::cout << "VertexMap[" << it->first.first << ", " << it->first.second << "]: " << *(it->second) << std::endl;
         }
-            
+
         // insert outer h-edges
         int p_u = tmesh.Order(0);
         int n_u = tmesh.NumberOfKnots(0) - p_u - 1;
@@ -152,11 +151,11 @@ public:
             //KRATOS_WATCH(pV1);
             //std::cout << "n+p-i = " << n_u+p_u-i << std::endl ;
             TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u+p_u-i, i)];
-            
+
             //KRATOS_WATCH(pV2);
             tmesh.AddHEdge(pV1, pV2);
         }
- 
+
         for(std::size_t i = 0; i < p_u; ++i)
         {
             TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, n_v+p_v-i)];
@@ -164,7 +163,7 @@ public:
             tmesh.AddHEdge(pV1, pV2);
         }
 
-        // insert the inner h-edges        
+        // insert the inner h-edges
         for(std::size_t i = p_u; i < n_u; ++i)
         {
             for(std::size_t j = p_v; j < n_v+1; ++j)
@@ -175,14 +174,14 @@ public:
             }
         }
 
-        // insert outer v-edges       
+        // insert outer v-edges
         for(std::size_t i = 0; i < p_v; ++i)
         {
             TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, i)];
             TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(i, n_v+p_v-i)];
             tmesh.AddVEdge(pV1, pV2);
         }
-        
+
         for(std::size_t i = 0; i < p_v; ++i)
         {
             TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(n_u+p_u-i, i)];
@@ -199,8 +198,8 @@ public:
                 TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(i, j+1)];
                 tmesh.AddVEdge(pV1, pV2);
             }
-        }        
-        
+        }
+
         tmesh.EndConstruct();
     }
 
@@ -274,7 +273,7 @@ public:
                     int u  = atoi(words[0].c_str());
                     int v1 = atoi(words[1].c_str());
                     int v2 = atoi(words[2].c_str());
-                    VEdgeList.push_back(std::pair<int, std::pair<int, int> >(u, std::pair<int, int>(v1, v2)));                                                                                              
+                    VEdgeList.push_back(std::pair<int, std::pair<int, int> >(u, std::pair<int, int>(v1, v2)));
                 }
             }
         }
@@ -393,11 +392,11 @@ public:
             outfile << "local_knots(" << ++cnt << ",:,:) = [";
             for(std::size_t i = 0; i < Knots1.size(); ++i)
                 outfile << " " << Knots1[i];
-                
+
             outfile << std::endl;
             for(std::size_t i = 0; i < Knots2.size(); ++i)
                 outfile << " " << Knots2[i];
-                
+
             outfile << "];" << std::endl;
         }
 

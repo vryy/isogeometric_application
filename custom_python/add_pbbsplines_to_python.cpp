@@ -25,8 +25,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/model_part.h"
 #include "python/pointer_vector_set_python_interface.h"
 #include "custom_utilities/patch.h"
-#include "custom_utilities/pbbsplines_basis_function.h"
-#include "custom_utilities/pbbsplines_fespace.h"
+#include "custom_utilities/nurbs/pbbsplines_basis_function.h"
+#include "custom_utilities/nurbs/pbbsplines_fespace.h"
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
 #include "custom_python/add_import_export_to_python.h"
@@ -48,7 +48,7 @@ void IsogeometricApplication_AddPBBSplinesSpaceToPython()
 
     ss.str(std::string());
     ss << "PBBSplinesBasisFunction" << TDim << "D";
-    typedef PBBSplinesBasisFunction<TDim, Cell> PBBSplinesBasisFunctionType;
+    typedef PBBSplinesBasisFunction<TDim, BCell> PBBSplinesBasisFunctionType;
     class_<PBBSplinesBasisFunctionType, typename PBBSplinesBasisFunctionType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<const std::size_t&>())
     .add_property("Id", Isogeometric_GetId<PBBSplinesBasisFunctionType>, Isogeometric_DoNotSetId<PBBSplinesBasisFunctionType>)

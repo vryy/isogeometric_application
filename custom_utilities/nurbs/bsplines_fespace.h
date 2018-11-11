@@ -24,6 +24,8 @@
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/nurbs/bsplines_indexing_utility.h"
+#include "custom_utilities/nurbs/bcell.h"
+#include "custom_utilities/nurbs/cell_manager.h"
 #include "custom_utilities/nurbs/cell_manager_1d.h"
 #include "custom_utilities/nurbs/cell_manager_2d.h"
 #include "custom_utilities/nurbs/cell_manager_3d.h"
@@ -47,7 +49,7 @@ public:
     typedef FESpace<TDim> BaseType;
     typedef KnotArray1D<double> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
-    typedef typename BaseType::cell_container_t cell_container_t;
+    typedef CellManager<BCell> cell_container_t;
 
     /// Default constructor
     BSplinesFESpace() : BaseType() {}
@@ -878,7 +880,7 @@ public:
 
         if (TDim == 1)
         {
-            pCellManager = typename cell_container_t::Pointer(new CellManager1D<Cell>());
+            pCellManager = typename cell_container_t::Pointer(new CellManager1D<BCell>());
 
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;
@@ -919,7 +921,7 @@ public:
 
                 // add the cell
                 std::tuple<knot_t, knot_t> span1 = this->KnotVector(0).span(i+1);
-                Cell::Pointer p_cell = Cell::Pointer(new Cell(cnt, std::get<0>(span1), std::get<1>(span1)));
+                BCell::Pointer p_cell = BCell::Pointer(new BCell(cnt, std::get<0>(span1), std::get<1>(span1)));
                 double W = 1.0; // here we set to one because B-Splines space does not have weight
                 for (std::size_t r = 0; r < (p1+1); ++r)
                     p_cell->AddAnchor(func_indices[anchors[r]], W, row(C[cnt], r));
@@ -929,7 +931,7 @@ public:
         }
         else if (TDim == 2)
         {
-            pCellManager = typename cell_container_t::Pointer(new CellManager2D<Cell>());
+            pCellManager = typename cell_container_t::Pointer(new CellManager2D<BCell>());
 
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;
@@ -989,7 +991,7 @@ public:
                     // add the cell
                     std::tuple<knot_t, knot_t> span1 = this->KnotVector(0).span(i+1);
                     std::tuple<knot_t, knot_t> span2 = this->KnotVector(1).span(j+1);
-                    Cell::Pointer p_cell = Cell::Pointer(new Cell(cnt, std::get<0>(span1), std::get<1>(span1), std::get<0>(span2), std::get<1>(span2)));
+                    BCell::Pointer p_cell = BCell::Pointer(new BCell(cnt, std::get<0>(span1), std::get<1>(span1), std::get<0>(span2), std::get<1>(span2)));
                     double W = 1.0; // here we set to one because B-Splines space does not have weight
                     for (std::size_t r = 0; r < (p1+1)*(p2+1); ++r)
                         p_cell->AddAnchor(func_indices[anchors[r]], W, row(C[cnt], r));
@@ -1000,7 +1002,7 @@ public:
         }
         else if(TDim == 3)
         {
-            pCellManager = typename cell_container_t::Pointer(new CellManager3D<Cell>());
+            pCellManager = typename cell_container_t::Pointer(new CellManager3D<BCell>());
 
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;
@@ -1078,7 +1080,7 @@ public:
                         std::tuple<knot_t, knot_t> span1 = this->KnotVector(0).span(i+1);
                         std::tuple<knot_t, knot_t> span2 = this->KnotVector(1).span(j+1);
                         std::tuple<knot_t, knot_t> span3 = this->KnotVector(2).span(k+1);
-                        Cell::Pointer p_cell = Cell::Pointer(new Cell(cnt, std::get<0>(span1), std::get<1>(span1),
+                        BCell::Pointer p_cell = BCell::Pointer(new BCell(cnt, std::get<0>(span1), std::get<1>(span1),
                                 std::get<0>(span2), std::get<1>(span2), std::get<0>(span3), std::get<1>(span3)));
                         double W = 1.0; // here we set to one because B-Splines space does not have weight
                         for (std::size_t r = 0; r < (p1+1)*(p2+1)*(p3+1); ++r)

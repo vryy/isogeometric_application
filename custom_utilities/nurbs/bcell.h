@@ -24,12 +24,12 @@
 namespace Kratos
 {
 
-class Cell;
+class BCell;
 
 template<int TDim>
-struct Cell_Helper
+struct BCell_Helper
 {
-    static bool IsCovered(const Cell& this_cell, const Cell& other_cell);
+    static bool IsCovered(const BCell& this_cell, const BCell& other_cell);
 };
 
 /**
@@ -37,11 +37,11 @@ struct Cell_Helper
  * A cell is the smaller unit in the isogeometric topology mesh (e.g. it represents an element, or Bezier element of the T-splines basis function).
  * A cell is determined by its topology index of its vertices.
  */
-class Cell
+class BCell
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Cell);
+    KRATOS_CLASS_POINTER_DEFINITION(BCell);
 
     /// Type definitions
     typedef Knot<double> KnotType;
@@ -50,22 +50,22 @@ public:
     // typedef boost::numeric::ublas::vector<double> SparseVectorType;
 
     /// Constructor with knots
-    Cell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax)
+    BCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax)
     : mId(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(new KnotType(0.0)), mpEtaMin(new KnotType(0.0)), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
-    Cell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
+    BCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
     : mId(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
-    Cell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
+    BCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
     : mId(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(pZetaMax), mpZetaMin(pZetaMin)
     {}
 
     /// Destructor
-    virtual ~Cell() {}
+    virtual ~BCell() {}
 
     /// Get the Id
     std::size_t Id() const {return mId;}
@@ -155,9 +155,9 @@ public:
 
     /// Check if this cell is covered by another cell
     template<int TDim>
-    bool IsCovered(Cell::ConstPointer p_cell) const
+    bool IsCovered(BCell::ConstPointer p_cell) const
     {
-        return Cell_Helper<TDim>::IsCovered(*this, *p_cell);
+        return BCell_Helper<TDim>::IsCovered(*this, *p_cell);
     }
 
     /// Check if this cell cover a point in knot space
@@ -180,7 +180,7 @@ public:
     }
 
     /// check if this cell is the same as the reference cell. Two cells are the same if it has the same bounding knot values.
-    bool IsSame(const Cell::Pointer p_cell, const double& tol) const
+    bool IsSame(const BCell::Pointer p_cell, const double& tol) const
     {
         if(    fabs( XiMinValue()  - p_cell->XiMinValue()  ) < tol
             && fabs( XiMaxValue() - p_cell->XiMaxValue() ) < tol
@@ -218,7 +218,7 @@ public:
     }
 
     /// Absorb the information from the other cell
-    virtual void Absorb(Cell::Pointer pOther)
+    virtual void Absorb(BCell::Pointer pOther)
     {
         for (std::size_t i = 0; i < pOther->NumberOfAnchors(); ++i)
         {
@@ -229,7 +229,7 @@ public:
         }
     }
 
-    /// This action is called when the cell is removed from the cell manager, see hb_cell.
+    /// This action is called when the cell is removed from the cell manager, see e.g. hb_cell.
     virtual void ClearTrace()
     {
         // DO NOTHING
@@ -294,12 +294,12 @@ public:
     }
 
     /// Implement relational operator for automatic arrangement in container
-    inline bool operator==(const Cell& rA) const
+    inline bool operator==(const BCell& rA) const
     {
         return this->Id() == rA.Id();
     }
 
-    inline bool operator<(const Cell& rA) const
+    inline bool operator<(const BCell& rA) const
     {
         return this->Id() < rA.Id();
     }
@@ -335,7 +335,7 @@ private:
 };
 
 template<>
-inline bool Cell_Helper<1>::IsCovered(const Cell& this_cell, const Cell& other_cell)
+inline bool BCell_Helper<1>::IsCovered(const BCell& this_cell, const BCell& other_cell)
 {
     if(    this_cell.XiMinValue() >= other_cell.XiMinValue() && this_cell.XiMaxValue() <= other_cell.XiMaxValue() )
         return true;
@@ -343,7 +343,7 @@ inline bool Cell_Helper<1>::IsCovered(const Cell& this_cell, const Cell& other_c
 }
 
 template<>
-inline bool Cell_Helper<2>::IsCovered(const Cell& this_cell, const Cell& other_cell)
+inline bool BCell_Helper<2>::IsCovered(const BCell& this_cell, const BCell& other_cell)
 {
     if(    this_cell.XiMinValue()  >= other_cell.XiMinValue()  && this_cell.XiMaxValue()  <= other_cell.XiMaxValue()
         && this_cell.EtaMinValue() >= other_cell.EtaMinValue() && this_cell.EtaMaxValue() <= other_cell.EtaMaxValue() )
@@ -352,7 +352,7 @@ inline bool Cell_Helper<2>::IsCovered(const Cell& this_cell, const Cell& other_c
 }
 
 template<>
-inline bool Cell_Helper<3>::IsCovered(const Cell& this_cell, const Cell& other_cell)
+inline bool BCell_Helper<3>::IsCovered(const BCell& this_cell, const BCell& other_cell)
 {
     if(    this_cell.XiMinValue()   >= other_cell.XiMinValue()   && this_cell.XiMaxValue()   <= other_cell.XiMaxValue()
         && this_cell.EtaMinValue()  >= other_cell.EtaMinValue()  && this_cell.EtaMaxValue()  <= other_cell.EtaMaxValue()
@@ -362,7 +362,7 @@ inline bool Cell_Helper<3>::IsCovered(const Cell& this_cell, const Cell& other_c
 }
 
 /// output stream function
-inline std::ostream& operator <<(std::ostream& rOStream, const Cell& rThis)
+inline std::ostream& operator <<(std::ostream& rOStream, const BCell& rThis)
 {
     rOStream << "cell ";
     rThis.PrintInfo(rOStream);

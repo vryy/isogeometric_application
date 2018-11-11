@@ -19,7 +19,7 @@
 #include "includes/define.h"
 #include "includes/serializer.h"
 #include "custom_utilities/iga_define.h"
-#include "custom_utilities/nurbs/cell.h"
+#include "custom_utilities/nurbs/bcell.h"
 #include "custom_utilities/nurbs/cell_manager.h"
 
 namespace Kratos
@@ -36,7 +36,7 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
 
     /// Type definition
-    typedef CellManager<Cell> cell_container_t;
+    typedef CellManager<BCell> cell_container_t;
 
     /// Default constructor
     FESpace() {}
@@ -388,9 +388,6 @@ class FESpace<0>
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
-
-    // Type definitions
-    typedef CellManager<Cell> cell_container_t;
 
     /// Default constructor
     FESpace() : mFunctionId(-1) {}

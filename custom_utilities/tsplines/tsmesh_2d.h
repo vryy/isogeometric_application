@@ -26,7 +26,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
-#include "custom_utilities/nurbs/cell.h"
+#include "custom_utilities/nurbs/bcell.h"
 #include "custom_utilities/tsplines/tsedge.h"
 #include "custom_utilities/tsplines/tsanchor.h"
 
@@ -71,7 +71,7 @@ public:
     typedef Knot<double>::Pointer           knot_t;
 
     typedef std::vector<knot_t>             knot_container_t;
-    typedef std::list<Cell::Pointer>        cell_container_t;
+    typedef std::list<BCell::Pointer>       cell_container_t;
     typedef std::list<TsAnchor::Pointer>    anchor_container_t;
     typedef std::list<TsVertex::Pointer>    vertex_container_t;
     typedef std::list<TsEdge::Pointer>      edge_container_t;

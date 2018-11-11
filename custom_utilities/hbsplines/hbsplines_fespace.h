@@ -20,7 +20,7 @@
 #include "containers/array_1d.h"
 #include "custom_utilities/bezier_utils.h"
 #include "custom_utilities/bspline_utils.h"
-#include "custom_utilities/pbbsplines_fespace.h"
+#include "custom_utilities/nurbs/pbbsplines_fespace.h"
 #include "custom_utilities/nurbs/domain_manager.h"
 #include "custom_utilities/nurbs/domain_manager_2d.h"
 #include "custom_utilities/nurbs/domain_manager_3d.h"

@@ -23,7 +23,7 @@
 #include "includes/ublas_interface.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/nurbs/knot.h"
-#include "custom_utilities/nurbs/cell.h"
+#include "custom_utilities/nurbs/bcell.h"
 
 
 namespace Kratos
@@ -33,7 +33,7 @@ namespace Kratos
  *  Represent a cell in hierarchical B-Splines topology
  */
 template<class TBasisFuncType>
-class HBCell : public Cell
+class HBCell : public BCell
 {
 public:
     /// Pointer definition
@@ -42,7 +42,7 @@ public:
     /// Type definitions
     typedef Knot<double>::Pointer knot_t;
 
-    typedef Cell BaseType;
+    typedef BCell BaseType;
 
 /*    typedef typename TBasisFuncType::Pointer bf_t;*/
 /*    typedef typename TBasisFuncType::WeakPointer bf_wt;*/

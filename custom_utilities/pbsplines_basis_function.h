@@ -355,7 +355,5 @@ inline std::ostream& operator <<(std::ostream& rOStream, const PBSplinesBasisFun
 
 }// namespace Kratos.
 
-#include "pbbsplines_basis_function.hpp"
-
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PBSPLINES_BASIS_FUNCTION_H_INCLUDED
 

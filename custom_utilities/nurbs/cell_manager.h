@@ -29,7 +29,7 @@ namespace Kratos
 bool CellManager_RtreeSearchCallback(std::size_t id, void* arg);
 
 /**
-A cell manager is a collection of cells. It provides facility to search for cells, or obtain cells in the consistent manner.
+ * Abstract cell manager for management of collection of cells. It provides facility to search for cells, or obtain cells in the consistent manner.
  */
 template<class TCellType>
 class CellManager

@@ -35,7 +35,7 @@
 #include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/control_point.h"
-#include "custom_utilities/pbbsplines_basis_function.h"
+#include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/hbsplines/hb_cell.h"
 #include "isogeometric_application/isogeometric_application.h"
 

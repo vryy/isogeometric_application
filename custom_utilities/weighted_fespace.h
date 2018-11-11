@@ -36,7 +36,6 @@ public:
 
     /// Type definition
     typedef FESpace<TDim> BaseType;
-    typedef typename BaseType::cell_container_t cell_container_t;
 
     /// Default constructor
     WeightedFESpace(typename BaseType::Pointer pFESpace, const std::vector<double>& weights)
@@ -320,17 +319,6 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /// Create the cell manager for all the cells in the support domain of the WeightedFESpace
-    virtual typename cell_container_t::Pointer ConstructCellManager() const
-    {
-        typename cell_container_t::Pointer pCellManager = mpFESpace->ConstructCellManager();
-        // TODO add weight information to the cells
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not completed")
-        return pCellManager;
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /// Overload assignment operator
     WeightedFESpace<TDim>& operator=(const WeightedFESpace<TDim>& rOther)
     {
@@ -394,9 +382,6 @@ class WeightedFESpace<0> : public FESpace<0>
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
-
-    // Type definitions
-    typedef CellManager<Cell> cell_container_t;
 
     /// Default constructor
     WeightedFESpace(FESpace<0>::Pointer pFESpace, const std::vector<double>& weights) : mFunctionId(-1) {}

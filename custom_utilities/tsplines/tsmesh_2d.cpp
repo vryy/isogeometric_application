@@ -884,7 +884,7 @@ namespace Kratos
         // secondly find all the cells of the extended T-splines topology mesh
         std::set<cell_t> cell_covers;
         this->FindCells(cell_covers, true);
-        Cell::Pointer pCell;
+        BCell::Pointer pCell;
         double tol = 1.0e-6;
         int LastCell = 0;
         for(std::set<cell_t>::iterator it = cell_covers.begin(); it != cell_covers.end(); ++it)
@@ -895,7 +895,7 @@ namespace Kratos
                           fabs(mKnots[1][(*it).second.first]->Value() - mKnots[1][(*it).second.second]->Value());
             if(area > tol)
             {
-                pCell = Cell::Pointer(new Cell(++LastCell,
+                pCell = BCell::Pointer(new BCell(++LastCell,
                                                mKnots[0][(*it).first.first],
                                                mKnots[0][(*it).first.second],
                                                mKnots[1][(*it).second.first],

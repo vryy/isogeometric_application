@@ -20,9 +20,7 @@
 #include "containers/array_1d.h"
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
-#include "custom_utilities/nurbs/bcell_manager_1d.h"
-#include "custom_utilities/nurbs/bcell_manager_2d.h"
-#include "custom_utilities/nurbs/bcell_manager_3d.h"
+#include "custom_utilities/nurbs/bcell_manager.h"
 #include "isogeometric_application/isogeometric_application.h"
 
 #define DEBUG_GEN_CELL
@@ -53,7 +51,7 @@ public:
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
     typedef typename TBasisFunctionType::CellType CellType;
-    typedef BCellManager<CellType> cell_container_t;
+    typedef BCellManager<TDim, CellType> cell_container_t;
     typedef typename cell_container_t::cell_t cell_t;
 
     typedef std::map<std::size_t, bf_t> function_map_t;
@@ -61,18 +59,7 @@ public:
     /// Default constructor
     PBBSplinesFESpace() : BaseType(), m_function_map_is_created(false)
     {
-        if (TDim == 1)
-        {
-            mpCellManager = typename cell_container_t::Pointer(new BCellManager1D<CellType>());
-        }
-        else if (TDim == 2)
-        {
-            mpCellManager = typename cell_container_t::Pointer(new BCellManager2D<CellType>());
-        }
-        else if(TDim == 3)
-        {
-            mpCellManager = typename cell_container_t::Pointer(new BCellManager3D<CellType>());
-        }
+        mpCellManager = typename cell_container_t::Pointer(new BCellManager<TDim, CellType>());
     }
 
     /// Destructor
@@ -549,20 +536,7 @@ public:
     /// Create the cell manager for all the cells in the support domain of the PBBSplinesFESpace
     virtual typename BaseType::cell_container_t::Pointer ConstructCellManager() const
     {
-        // create the compatible cell manager and add to the list
-        typename cell_container_t::Pointer pCompatCellManager;
-
-        if (TDim == 1)
-            pCompatCellManager = BCellManager1D<CellType>::Create();
-        else if (TDim == 2)
-            pCompatCellManager = BCellManager2D<CellType>::Create();
-        else if (TDim == 3)
-            pCompatCellManager = BCellManager3D<CellType>::Create();
-
-        for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
-            pCompatCellManager->insert(*it_cell);
-
-        return pCompatCellManager;
+        return mpCellManager;
     }
 
     /// Overload operator[], this allows to access the basis function randomly based on index

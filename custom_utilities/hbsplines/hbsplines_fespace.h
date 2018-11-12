@@ -292,10 +292,10 @@ public:
         typename BoundaryFESpaceType::cell_container_t::Pointer pnew_cells;
         double cell_tol = pBFESpace->pCellManager()->GetTolerance();
 
+        pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new BCellManager<TDim-1, typename BoundaryFESpaceType::CellType>());
+
         if (TDim == 2)
         {
-            pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new BCellManager1D<typename BoundaryFESpaceType::CellType>());
-
             for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
                 for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
@@ -319,8 +319,6 @@ public:
         }
         else if (TDim == 3)
         {
-            pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new BCellManager2D<typename BoundaryFESpaceType::CellType>());
-
             for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
                 for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
@@ -449,7 +447,7 @@ public:
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
     typedef HBCell<HBSplinesBasisFunction<0> > CellType;
-    typedef BCellManager<CellType> cell_container_t;
+    typedef BaseBCellManager<CellType> cell_container_t;
     typedef typename cell_container_t::cell_t cell_t;
 
     /// Default constructor

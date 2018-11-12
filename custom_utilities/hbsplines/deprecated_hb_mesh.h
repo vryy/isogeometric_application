@@ -134,7 +134,7 @@ public:
 
     typedef HBCell<DeprecatedHBBasisFunction> CellType;
     typedef typename CellType::Pointer cell_t;
-    typedef BCellManager<CellType> cell_container_t;
+    typedef BCellManager<TDim, CellType> cell_container_t;
 
     typedef DeprecatedHBBasisFunction::Pointer bf_t;
     typedef DeprecatedBasisFunctionManager<DeprecatedHBBasisFunction> bf_container_t;

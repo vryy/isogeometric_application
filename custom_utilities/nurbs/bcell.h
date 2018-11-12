@@ -47,8 +47,6 @@ public:
     typedef Cell BaseType;
     typedef Knot<double> KnotType;
     typedef KnotType::Pointer knot_t;
-    typedef BaseType::SparseVectorType SparseVectorType;
-    // typedef boost::numeric::ublas::vector<double> SparseVectorType;
 
     /// Constructor with knots
     BCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax)
@@ -161,8 +159,8 @@ public:
     /// Check if this cell cover a point in knot space
     bool IsCoverage(const double& rXi, const double& rEta) const
     {
-        if(    XiMinValue()  <= rXi  && XiMaxValue() >= rXi
-            && EtaMinValue()  <= rEta && EtaMaxValue()    >= rEta )
+        if(    XiMinValue()  <= rXi  && XiMaxValue()  >= rXi
+            && EtaMinValue() <= rEta && EtaMaxValue() >= rEta )
             return true;
         return false;
     }
@@ -170,8 +168,8 @@ public:
     /// Check if this cell cover a point in knot space
     bool IsCoverage(const double& rXi, const double& rEta, const double& rZeta) const
     {
-        if(    XiMinValue()  <= rXi   && XiMaxValue() >= rXi
-            && EtaMinValue()  <= rEta  && EtaMaxValue()    >= rEta
+        if(    XiMinValue()   <= rXi   && XiMaxValue()   >= rXi
+            && EtaMinValue()  <= rEta  && EtaMaxValue()  >= rEta
             && ZetaMinValue() <= rZeta && ZetaMaxValue() >= rZeta )
             return true;
         return false;
@@ -180,10 +178,10 @@ public:
     /// check if this cell is the same as the reference cell. Two cells are the same if it has the same bounding knot values.
     bool IsSame(const BCell::Pointer p_cell, const double& tol) const
     {
-        if(    fabs( XiMinValue()  - p_cell->XiMinValue()  ) < tol
-            && fabs( XiMaxValue() - p_cell->XiMaxValue() ) < tol
+        if(    fabs( XiMinValue()   - p_cell->XiMinValue() )   < tol
+            && fabs( XiMaxValue()   - p_cell->XiMaxValue() )   < tol
             && fabs( EtaMinValue()  - p_cell->EtaMinValue()  ) < tol
-            && fabs( EtaMaxValue()    - p_cell->EtaMaxValue()    ) < tol
+            && fabs( EtaMaxValue()  - p_cell->EtaMaxValue()  ) < tol
             && fabs( ZetaMinValue() - p_cell->ZetaMinValue() ) < tol
             && fabs( ZetaMaxValue() - p_cell->ZetaMaxValue() ) < tol )
                 return true;
@@ -199,11 +197,7 @@ public:
 
     virtual void PrintData(std::ostream& rOStream) const
     {
-        rOStream << ", supporting anchors: ";
-        rOStream << "(";
-        for(std::vector<std::size_t>::const_iterator it = mSupportedAnchors.begin(); it != mSupportedAnchors.end(); ++it)
-            rOStream << " " << (*it);
-        rOStream << ")";
+        BaseType::PrintData(rOStream);
     }
 
 private:

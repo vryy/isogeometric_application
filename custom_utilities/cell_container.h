@@ -28,7 +28,7 @@ namespace Kratos
 {
 
 /**
- * TODO
+ * CellContainer provides general container to stores Cell's. It provides the iterator interface and the methods to insert or remove cells.
  */
 class CellContainer
 {

@@ -26,9 +26,6 @@
 #include "custom_utilities/nurbs/bsplines_indexing_utility.h"
 #include "custom_utilities/nurbs/bcell.h"
 #include "custom_utilities/nurbs/bcell_manager.h"
-#include "custom_utilities/nurbs/bcell_manager_1d.h"
-#include "custom_utilities/nurbs/bcell_manager_2d.h"
-#include "custom_utilities/nurbs/bcell_manager_3d.h"
 
 // #define DEBUG_GEN_CELL
 
@@ -49,7 +46,7 @@ public:
     typedef FESpace<TDim> BaseType;
     typedef KnotArray1D<double> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
-    typedef BCellManager<BCell> cell_container_t;
+    typedef BCellManager<TDim, BCell> cell_container_t;
 
     /// Default constructor
     BSplinesFESpace() : BaseType() {}
@@ -878,10 +875,10 @@ public:
 
         std::vector<std::size_t> func_indices = this->FunctionIndices();
 
+        pCellManager = typename cell_container_t::Pointer(new BCellManager<TDim, BCell>());
+
         if (TDim == 1)
         {
-            pCellManager = typename cell_container_t::Pointer(new BCellManager1D<BCell>());
-
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;
             int ne1;
@@ -931,8 +928,6 @@ public:
         }
         else if (TDim == 2)
         {
-            pCellManager = typename cell_container_t::Pointer(new BCellManager2D<BCell>());
-
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;
             int ne1, ne2;
@@ -1002,8 +997,6 @@ public:
         }
         else if(TDim == 3)
         {
-            pCellManager = typename cell_container_t::Pointer(new BCellManager3D<BCell>());
-
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;
             int ne1, ne2, ne3;

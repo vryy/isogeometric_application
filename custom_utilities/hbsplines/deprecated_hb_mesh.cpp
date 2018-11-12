@@ -6,8 +6,7 @@
 #include "utilities/openmp_utils.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/bezier_utils.h"
-#include "custom_utilities/nurbs/bcell_manager_2d.h"
-#include "custom_utilities/nurbs/bcell_manager_3d.h"
+#include "custom_utilities/nurbs/bcell_manager.h"
 #include "custom_utilities/triangulation_utils.h"
 #include "custom_utilities/isogeometric_math_utils.h"
 #include "utilities/auto_collapse_spatial_binning.h"
@@ -416,10 +415,7 @@ namespace Kratos
         }
 
         // initialize the cell container
-        if(TDim == 2)
-            mpCellManager = cell_container_t::Pointer(new BCellManager2D<CellType>());
-        else if(TDim == 3)
-            mpCellManager = cell_container_t::Pointer(new BCellManager3D<CellType>());
+        mpCellManager = typename cell_container_t::Pointer(new BCellManager<TDim, CellType>());
 
         // create bfs for the first level
         unsigned int lastID = 0;
@@ -651,10 +647,7 @@ namespace Kratos
             mLastLevel = next_level;
         double area_tol = 1.0e-6; // tolerance to accept the nonzero-area cell. We should parameterize it.
         typename cell_container_t::Pointer pnew_cells;
-        if(TDim == 2)
-            pnew_cells = cell_container_t::Pointer(new BCellManager2D<CellType>());
-        else if(TDim == 3)
-            pnew_cells = cell_container_t::Pointer(new BCellManager3D<CellType>());
+        pnew_cells = typename cell_container_t::Pointer(new BCellManager<TDim, CellType>());
         double father_weight = p_bf->GetControlPoint().W();
         double father_X = p_bf->GetControlPoint().X();
         double father_Y = p_bf->GetControlPoint().Y();
@@ -786,17 +779,14 @@ namespace Kratos
 
         /* remove the cells of the old basis function (remove only the cell in the current level) */
         typename cell_container_t::Pointer pcells_to_remove;
-        if(TDim == 2)
-            pcells_to_remove = cell_container_t::Pointer(new BCellManager2D<CellType>());
-        else if(TDim == 3)
-            pcells_to_remove = cell_container_t::Pointer(new BCellManager3D<CellType>());
+        pcells_to_remove = typename cell_container_t::Pointer(new BCellManager<TDim, CellType>());
 
         // firstly we check if the cell c of the current bf in the current level cover any sub-cells. Then the sub-cell includes all bfs of the cell c.
         for(DeprecatedHBBasisFunction::cell_iterator it_cell = p_bf->cell_begin(); it_cell != p_bf->cell_end(); ++it_cell)
         {
             if((*it_cell)->Level() == p_bf->Level())
             {
-                for(cell_container_t::iterator it_subcell = pnew_cells->begin(); it_subcell != pnew_cells->end(); ++it_subcell)
+                for(typename cell_container_t::iterator it_subcell = pnew_cells->begin(); it_subcell != pnew_cells->end(); ++it_subcell)
                 {
                     if((*it_subcell)->template IsCovered<TDim>(*it_cell))
                     {
@@ -814,7 +804,7 @@ namespace Kratos
         }
 
         // secondly, it happens that new cell c cover several existing cells. In this case cell c must be removed, and its bfs will be transferred to sub-cells.
-        for(cell_container_t::iterator it_cell = pnew_cells->begin(); it_cell != pnew_cells->end(); ++it_cell)
+        for(typename cell_container_t::iterator it_cell = pnew_cells->begin(); it_cell != pnew_cells->end(); ++it_cell)
         {
             std::vector<cell_t> p_cells = mpCellManager->GetCells(*it_cell);
             if(p_cells.size() > 0)
@@ -840,7 +830,7 @@ namespace Kratos
         }
 
         /* remove the cells */
-        for(cell_container_t::iterator it_cell = pcells_to_remove->begin(); it_cell != pcells_to_remove->end(); ++it_cell)
+        for(typename cell_container_t::iterator it_cell = pcells_to_remove->begin(); it_cell != pcells_to_remove->end(); ++it_cell)
         {
             mpCellManager->erase(*it_cell);
             for(bf_container_t::iterator it_bf = mBasisFuncs.begin(); it_bf != mBasisFuncs.end(); ++it_bf)
@@ -848,7 +838,7 @@ namespace Kratos
         }
 
         /* remove the basis function from all the cells */
-        for(cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
+        for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
             (*it_cell)->RemoveBf(p_bf);
 
         /* remove the old basis function */
@@ -1073,7 +1063,7 @@ namespace Kratos
     void DeprecatedHBMesh<TDim>::BuildMesh()
     {
         Vector Crow;
-        for(cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
+        for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
         {
             (*it_cell)->Reset();
             for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
@@ -1368,7 +1358,7 @@ namespace Kratos
 
         // export the cell information
         cnt = 0;
-        for(cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
+        for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
         {
             ++cnt;
 
@@ -1780,7 +1770,7 @@ namespace Kratos
                 {
                     // check if this point lie in which cell
                     bool found = false;
-                    for(cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
+                    for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
                     {
                         if((*it_cell)->IsCoverage(SamplingKnots1[i], SamplingKnots2[j]))
                         {
@@ -1887,7 +1877,7 @@ namespace Kratos
                     {
                         // check if this point lie in which cell
                         bool found = false;
-                        for(cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
+                        for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
                         {
                             if((*it_cell)->IsCoverage(SamplingKnots1[i], SamplingKnots2[j], SamplingKnots3[k]))
                             {
@@ -2187,7 +2177,7 @@ namespace Kratos
         AutoCollapseSpatialBinning Binning(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0e-6);
         std::map<unsigned int, cell_t> MapVertexToCell; // this container map from vertex id to the cell contain it
         std::map<unsigned int, std::vector<unsigned int> > MapCellToNodes; // this container contains the vertex Ids in each cell
-        for(cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
+        for(typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
         {
             if(TDim == 2)
             {
@@ -2326,7 +2316,7 @@ namespace Kratos
         }
 
         // compute the middle nodes in cell and generate the internal mesh for each cell
-        for(cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
+        for(typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
         {
             // we check each edge in each cell, if the edge/face contain any vertex, that vertex will be includes in the middle nodes. These cells will be filled with triangular mesh.
 

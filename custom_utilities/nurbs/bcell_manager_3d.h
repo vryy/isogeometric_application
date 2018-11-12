@@ -6,8 +6,8 @@
 //
 //
 
-#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_CELL_MANAGER_3D_H_INCLUDED )
-#define  KRATOS_ISOGEOMETRIC_APPLICATION_CELL_MANAGER_3D_H_INCLUDED
+#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_MANAGER_3D_H_INCLUDED )
+#define  KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_MANAGER_3D_H_INCLUDED
 
 // System includes
 #include <string>
@@ -21,7 +21,7 @@
 
 // Project includes
 #include "includes/define.h"
-#include "custom_utilities/nurbs/cell_manager.h"
+#include "custom_utilities/nurbs/bcell_manager.h"
 
 // #define USE_BRUTE_FORCE_TO_SEARCH_FOR_CELLS
 #define USE_R_TREE_TO_SEARCH_FOR_CELLS
@@ -37,29 +37,30 @@ namespace Kratos
  * Cell Manager in 3D
  */
 template<class TCellType>
-class CellManager3D : public CellManager<TCellType>
+class BCellManager3D : public BCellManager<TCellType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(CellManager3D);
+    KRATOS_CLASS_POINTER_DEFINITION(BCellManager3D);
 
     /// Type definitions
-    typedef CellManager<TCellType> BaseType;
+    typedef BCellManager<TCellType> BaseType;
+    typedef typename BaseType::BaseType SuperType;
     typedef typename BaseType::CellType CellType;
     typedef typename BaseType::cell_t cell_t;
     typedef typename BaseType::knot_t knot_t;
     typedef typename BaseType::iterator iterator;
 
     /// Default constructor
-    CellManager3D() : BaseType()
+    BCellManager3D() : BaseType()
     {}
 
     /// Destructor
-    virtual ~CellManager3D()
+    virtual ~BCellManager3D()
     {}
 
     /// Helper function to create new instance of cell manager
-    static typename BaseType::Pointer Create() {return typename BaseType::Pointer(new CellManager3D<CellType>());}
+    static typename BaseType::Pointer Create() {return typename BaseType::Pointer(new BCellManager3D<CellType>());}
 
     /// Check if the cell exists in the list; otherwise create new cell and return
     virtual cell_t CreateCell(const std::vector<knot_t>& pKnots)
@@ -82,6 +83,7 @@ public:
         // otherwise create new cell
         cell_t p_cell = cell_t(new TCellType(++BaseType::mLastId, pKnots[0], pKnots[1], pKnots[2], pKnots[3], pKnots[4], pKnots[5]));
         BaseType::mpCells.insert(p_cell);
+        SuperType::insert(&(*p_cell));
         BaseType::cell_map_is_created = false;
 
         #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
@@ -105,6 +107,7 @@ public:
 
         // otherwise insert new cell
         iterator it = BaseType::mpCells.insert(p_cell).first;
+        SuperType::insert(&(*p_cell));
         BaseType::cell_map_is_created = false;
 
         #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
@@ -125,6 +128,7 @@ public:
             if(*it == p_cell)
             {
                 BaseType::mpCells.erase(it);
+                SuperType::erase(&(**it));
 
                 #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
                 // update the r-tree
@@ -156,7 +160,7 @@ public:
         std::vector<std::size_t> OverlappingCells;
         double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue(), p_cell->ZetaMinValue()};
         double cmax[] = {p_cell->XiMaxValue(), p_cell->EtaMaxValue(), p_cell->ZetaMaxValue()};
-        int nhits = rtree_cells.Search(cmin, cmax, CellManager_RtreeSearchCallback, (void*)(&OverlappingCells));
+        int nhits = rtree_cells.Search(cmin, cmax, BCellManager_RtreeSearchCallback, (void*)(&OverlappingCells));
 //        printf("Search resulted in %d hits\n", nhits);
 
         // check within overlapping cells the one covered in p_cell
@@ -175,7 +179,7 @@ public:
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "CellManager3D";
+        rOStream << "BCellManager3D";
     }
 
     virtual void PrintData(std::ostream& rOStream) const
@@ -190,7 +194,7 @@ private:
 
 /// output stream function
 template<class TCellType>
-inline std::ostream& operator <<(std::ostream& rOStream, const CellManager3D<TCellType>& rThis)
+inline std::ostream& operator <<(std::ostream& rOStream, const BCellManager3D<TCellType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rThis.PrintData(rOStream);
@@ -202,5 +206,5 @@ inline std::ostream& operator <<(std::ostream& rOStream, const CellManager3D<TCe
 #undef USE_BRUTE_FORCE_TO_SEARCH_FOR_CELLS
 #undef USE_R_TREE_TO_SEARCH_FOR_CELLS
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_MANAGER_3D_H_INCLUDED
+#endif // KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_MANAGER_3D_H_INCLUDED
 

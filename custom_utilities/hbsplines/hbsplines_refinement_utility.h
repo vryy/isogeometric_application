@@ -284,7 +284,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
     if (TDim == 2)
     {
-        pnew_cells = typename cell_container_t::Pointer(new CellManager2D<CellType>());
+        pnew_cells = typename cell_container_t::Pointer(new BCellManager2D<CellType>());
 
         numbers[0] = pnew_local_knots[0].size() - pFESpace->Order(0) - 1;
         numbers[1] = pnew_local_knots[1].size() - pFESpace->Order(1) - 1;
@@ -415,7 +415,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     }
     else if (TDim == 3)
     {
-        pnew_cells = typename cell_container_t::Pointer(new CellManager3D<CellType>());
+        pnew_cells = typename cell_container_t::Pointer(new BCellManager3D<CellType>());
 
         numbers[0] = pnew_local_knots[0].size() - pFESpace->Order(0) - 1;
         numbers[1] = pnew_local_knots[1].size() - pFESpace->Order(1) - 1;
@@ -597,9 +597,9 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     /* remove the cells of the old basis function (remove only the cell in the current level) */
     typename cell_container_t::Pointer pcells_to_remove;
     if (TDim == 2)
-        pcells_to_remove = typename cell_container_t::Pointer(new CellManager2D<CellType>());
+        pcells_to_remove = typename cell_container_t::Pointer(new BCellManager2D<CellType>());
     else if (TDim == 3)
-        pcells_to_remove = typename cell_container_t::Pointer(new CellManager3D<CellType>());
+        pcells_to_remove = typename cell_container_t::Pointer(new BCellManager3D<CellType>());
 
     // firstly we check if the cell c of the current bf in the current level cover any sub-cells. Then the sub-cell includes all bfs of the cell c.
     for(typename HBSplinesFESpace<TDim>::BasisFunctionType::cell_iterator it_cell = p_bf->cell_begin(); it_cell != p_bf->cell_end(); ++it_cell)

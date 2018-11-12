@@ -19,8 +19,10 @@
 #include "includes/define.h"
 #include "includes/serializer.h"
 #include "custom_utilities/iga_define.h"
-#include "custom_utilities/nurbs/bcell.h"
-#include "custom_utilities/nurbs/cell_manager.h"
+// #include "custom_utilities/nurbs/bcell.h"
+// #include "custom_utilities/nurbs/cell_manager.h"
+#include "custom_utilities/cell_container.h"
+
 
 namespace Kratos
 {
@@ -36,7 +38,7 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
 
     /// Type definition
-    typedef CellManager<BCell> cell_container_t;
+    typedef CellContainer cell_container_t;
 
     /// Default constructor
     FESpace() {}
@@ -313,7 +315,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Create the cell manager for all the cells in the support domain of the FESpace
-    virtual typename cell_container_t::Pointer ConstructCellManager() const
+    virtual cell_container_t::Pointer ConstructCellManager() const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }

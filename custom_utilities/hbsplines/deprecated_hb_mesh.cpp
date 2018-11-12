@@ -6,8 +6,8 @@
 #include "utilities/openmp_utils.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/bezier_utils.h"
-#include "custom_utilities/nurbs/cell_manager_2d.h"
-#include "custom_utilities/nurbs/cell_manager_3d.h"
+#include "custom_utilities/nurbs/bcell_manager_2d.h"
+#include "custom_utilities/nurbs/bcell_manager_3d.h"
 #include "custom_utilities/triangulation_utils.h"
 #include "custom_utilities/isogeometric_math_utils.h"
 #include "utilities/auto_collapse_spatial_binning.h"
@@ -417,9 +417,9 @@ namespace Kratos
 
         // initialize the cell container
         if(TDim == 2)
-            mpCellManager = cell_container_t::Pointer(new CellManager2D<CellType>());
+            mpCellManager = cell_container_t::Pointer(new BCellManager2D<CellType>());
         else if(TDim == 3)
-            mpCellManager = cell_container_t::Pointer(new CellManager3D<CellType>());
+            mpCellManager = cell_container_t::Pointer(new BCellManager3D<CellType>());
 
         // create bfs for the first level
         unsigned int lastID = 0;
@@ -652,9 +652,9 @@ namespace Kratos
         double area_tol = 1.0e-6; // tolerance to accept the nonzero-area cell. We should parameterize it.
         typename cell_container_t::Pointer pnew_cells;
         if(TDim == 2)
-            pnew_cells = cell_container_t::Pointer(new CellManager2D<CellType>());
+            pnew_cells = cell_container_t::Pointer(new BCellManager2D<CellType>());
         else if(TDim == 3)
-            pnew_cells = cell_container_t::Pointer(new CellManager3D<CellType>());
+            pnew_cells = cell_container_t::Pointer(new BCellManager3D<CellType>());
         double father_weight = p_bf->GetControlPoint().W();
         double father_X = p_bf->GetControlPoint().X();
         double father_Y = p_bf->GetControlPoint().Y();
@@ -787,9 +787,9 @@ namespace Kratos
         /* remove the cells of the old basis function (remove only the cell in the current level) */
         typename cell_container_t::Pointer pcells_to_remove;
         if(TDim == 2)
-            pcells_to_remove = cell_container_t::Pointer(new CellManager2D<CellType>());
+            pcells_to_remove = cell_container_t::Pointer(new BCellManager2D<CellType>());
         else if(TDim == 3)
-            pcells_to_remove = cell_container_t::Pointer(new CellManager3D<CellType>());
+            pcells_to_remove = cell_container_t::Pointer(new BCellManager3D<CellType>());
 
         // firstly we check if the cell c of the current bf in the current level cover any sub-cells. Then the sub-cell includes all bfs of the cell c.
         for(DeprecatedHBBasisFunction::cell_iterator it_cell = p_bf->cell_begin(); it_cell != p_bf->cell_end(); ++it_cell)

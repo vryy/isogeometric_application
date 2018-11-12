@@ -82,7 +82,7 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bezier_post_utility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/bsplines_indexing_utility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/bsplines_fespace.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/cell_manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/bcell_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/domain_manager_2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/domain_manager_3d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/hbsplines/deprecated_hb_basis_function.cpp

@@ -20,9 +20,9 @@
 #include "containers/array_1d.h"
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
-#include "custom_utilities/nurbs/cell_manager_1d.h"
-#include "custom_utilities/nurbs/cell_manager_2d.h"
-#include "custom_utilities/nurbs/cell_manager_3d.h"
+#include "custom_utilities/nurbs/bcell_manager_1d.h"
+#include "custom_utilities/nurbs/bcell_manager_2d.h"
+#include "custom_utilities/nurbs/bcell_manager_3d.h"
 #include "isogeometric_application/isogeometric_application.h"
 
 #define DEBUG_GEN_CELL
@@ -53,7 +53,7 @@ public:
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
     typedef typename TBasisFunctionType::CellType CellType;
-    typedef CellManager<CellType> cell_container_t;
+    typedef BCellManager<CellType> cell_container_t;
     typedef typename cell_container_t::cell_t cell_t;
 
     typedef std::map<std::size_t, bf_t> function_map_t;
@@ -63,15 +63,15 @@ public:
     {
         if (TDim == 1)
         {
-            mpCellManager = typename cell_container_t::Pointer(new CellManager1D<CellType>());
+            mpCellManager = typename cell_container_t::Pointer(new BCellManager1D<CellType>());
         }
         else if (TDim == 2)
         {
-            mpCellManager = typename cell_container_t::Pointer(new CellManager2D<CellType>());
+            mpCellManager = typename cell_container_t::Pointer(new BCellManager2D<CellType>());
         }
         else if(TDim == 3)
         {
-            mpCellManager = typename cell_container_t::Pointer(new CellManager3D<CellType>());
+            mpCellManager = typename cell_container_t::Pointer(new BCellManager3D<CellType>());
         }
     }
 
@@ -550,14 +550,14 @@ public:
     virtual typename BaseType::cell_container_t::Pointer ConstructCellManager() const
     {
         // create the compatible cell manager and add to the list
-        typename BaseType::cell_container_t::Pointer pCompatCellManager;
+        typename cell_container_t::Pointer pCompatCellManager;
 
         if (TDim == 1)
-            pCompatCellManager = CellManager1D<typename BaseType::cell_container_t::CellType>::Create();
+            pCompatCellManager = BCellManager1D<CellType>::Create();
         else if (TDim == 2)
-            pCompatCellManager = CellManager2D<typename BaseType::cell_container_t::CellType>::Create();
+            pCompatCellManager = BCellManager2D<CellType>::Create();
         else if (TDim == 3)
-            pCompatCellManager = CellManager3D<typename BaseType::cell_container_t::CellType>::Create();
+            pCompatCellManager = BCellManager3D<CellType>::Create();
 
         for(typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
             pCompatCellManager->insert(*it_cell);

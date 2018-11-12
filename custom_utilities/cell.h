@@ -14,11 +14,13 @@
 #include <vector>
 #include <iostream>
 
+// Project includes
+#include "includes/define.h"
+#include "includes/ublas_interface.h"
+
 // External includes
 #include <boost/numeric/ublas/vector_sparse.hpp>
 
-// Project includes
-#include "includes/define.h"
 
 namespace Kratos
 {

@@ -25,10 +25,10 @@
 #include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/nurbs/bsplines_indexing_utility.h"
 #include "custom_utilities/nurbs/bcell.h"
-#include "custom_utilities/nurbs/cell_manager.h"
-#include "custom_utilities/nurbs/cell_manager_1d.h"
-#include "custom_utilities/nurbs/cell_manager_2d.h"
-#include "custom_utilities/nurbs/cell_manager_3d.h"
+#include "custom_utilities/nurbs/bcell_manager.h"
+#include "custom_utilities/nurbs/bcell_manager_1d.h"
+#include "custom_utilities/nurbs/bcell_manager_2d.h"
+#include "custom_utilities/nurbs/bcell_manager_3d.h"
 
 // #define DEBUG_GEN_CELL
 
@@ -49,7 +49,7 @@ public:
     typedef FESpace<TDim> BaseType;
     typedef KnotArray1D<double> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
-    typedef CellManager<BCell> cell_container_t;
+    typedef BCellManager<BCell> cell_container_t;
 
     /// Default constructor
     BSplinesFESpace() : BaseType() {}
@@ -872,7 +872,7 @@ public:
     }
 
     /// Create the cell manager for all the cells in the support domain of the BSplinesFESpace
-    virtual typename cell_container_t::Pointer ConstructCellManager() const
+    virtual typename BaseType::cell_container_t::Pointer ConstructCellManager() const
     {
         typename cell_container_t::Pointer pCellManager;
 
@@ -880,7 +880,7 @@ public:
 
         if (TDim == 1)
         {
-            pCellManager = typename cell_container_t::Pointer(new CellManager1D<BCell>());
+            pCellManager = typename cell_container_t::Pointer(new BCellManager1D<BCell>());
 
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;
@@ -931,7 +931,7 @@ public:
         }
         else if (TDim == 2)
         {
-            pCellManager = typename cell_container_t::Pointer(new CellManager2D<BCell>());
+            pCellManager = typename cell_container_t::Pointer(new BCellManager2D<BCell>());
 
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;
@@ -1002,7 +1002,7 @@ public:
         }
         else if(TDim == 3)
         {
-            pCellManager = typename cell_container_t::Pointer(new CellManager3D<BCell>());
+            pCellManager = typename cell_container_t::Pointer(new BCellManager3D<BCell>());
 
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;

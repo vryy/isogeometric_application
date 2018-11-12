@@ -23,6 +23,7 @@
 #include "custom_utilities/patch.h"
 #include "custom_utilities/control_grid_utility.h"
 #include "custom_utilities/multipatch_utility.h"
+#include "custom_utilities/nurbs/bcell.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "isogeometric_application/isogeometric_application.h"
 
@@ -421,12 +422,20 @@ public:
             pNewElement->Set(ACTIVE, true);
             pNewElements.push_back(pNewElement);
 
-            pNewElement->SetValue( KNOT_LEFT, (*it_cell)->XiMinValue() );
-            pNewElement->SetValue( KNOT_RIGHT, (*it_cell)->XiMaxValue() );
-            pNewElement->SetValue( KNOT_BOTTOM, (*it_cell)->EtaMinValue() );
-            pNewElement->SetValue( KNOT_TOP, (*it_cell)->EtaMaxValue() );
-            pNewElement->SetValue( KNOT_FRONT, (*it_cell)->ZetaMinValue() );
-            pNewElement->SetValue( KNOT_BACK, (*it_cell)->ZetaMaxValue() );
+            try
+            {
+                BCell& c = dynamic_cast<BCell&>(**it_cell);
+                pNewElement->SetValue( KNOT_LEFT, c.XiMinValue() );
+                pNewElement->SetValue( KNOT_RIGHT, c.XiMaxValue() );
+                pNewElement->SetValue( KNOT_BOTTOM, c.EtaMinValue() );
+                pNewElement->SetValue( KNOT_TOP, c.EtaMaxValue() );
+                pNewElement->SetValue( KNOT_FRONT, c.ZetaMinValue() );
+                pNewElement->SetValue( KNOT_BACK, c.ZetaMaxValue() );
+            }
+            catch (std::bad_cast& bc)
+            {
+                std::cout << "WARNING: cell " << (*it_cell)->Id() << " cannot be casted to BCell" << std::endl;
+            }
 
             std::cout << "Entity " << element_name << " " << pNewElement->Id() << " is created" << std::endl;
             std::cout << "  Connectivity:";

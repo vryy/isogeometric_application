@@ -15,7 +15,6 @@
 #include <iostream>
 
 // External includes
-#include <boost/numeric/ublas/vector_sparse.hpp>
 
 // Project includes
 #include "includes/define.h"

@@ -442,13 +442,17 @@ private:
         if (p_temp_properties->Has(NUM_IGA_INTEGRATION_METHOD))
             max_integration_method = (*p_temp_properties)[NUM_IGA_INTEGRATION_METHOD];
 
-        for (std::size_t ic = 0; ic < pCellManagers[0]->size(); ++ic)
+        std::size_t ic = 0; // this is to mark the location of the iterator
+        for (typename cell_container_t::iterator it_dummy = pCellManagers[0]->begin(); it_dummy != pCellManagers[0]->end(); ++it_dummy)
         {
             std::vector<Element::GeometryType::Pointer> p_temp_geometries;
 
+            // fill the vector of geometries
             for (std::size_t ip = 0; ip < pFESpaces.size(); ++ip)
             {
-                typename cell_container_t::cell_t pcell = pCellManagers[ip]->operator[](ic);
+                typename cell_container_t::iterator it_cell = pCellManagers[ip]->begin();
+                std::advance(it_cell, ic);
+                typename cell_container_t::cell_t pcell = *it_cell;
                 // KRATOS_WATCH(*pcell)
 
                 // get new nodes
@@ -493,6 +497,8 @@ private:
                                                     max_integration_method);
                 p_temp_geometries.push_back(p_temp_geometry);
             }
+
+            ++ic;
 
             // create the element and add to the list
             typename TEntityType::Pointer pNewElement = r_clone_element.Create(cnt++, p_temp_geometries, p_temp_properties);

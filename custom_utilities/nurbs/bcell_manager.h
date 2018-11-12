@@ -6,8 +6,8 @@
 //
 //
 
-#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_CELL_MANAGER_H_INCLUDED )
-#define  KRATOS_ISOGEOMETRIC_APPLICATION_CELL_MANAGER_H_INCLUDED
+#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_MANAGER_H_INCLUDED )
+#define  KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_MANAGER_H_INCLUDED
 
 // System includes
 #include <string>
@@ -17,31 +17,34 @@
 #include <iostream>
 
 // External includes
-#include <omp.h>
 
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/nurbs/knot.h"
+#include "custom_utilities/cell_container.h"
+
 
 namespace Kratos
 {
 
-bool CellManager_RtreeSearchCallback(std::size_t id, void* arg);
+bool BCellManager_RtreeSearchCallback(std::size_t id, void* arg);
 
 /**
  * Abstract cell manager for management of collection of cells. It provides facility to search for cells, or obtain cells in the consistent manner.
+ * TCellType must be sub-class of BCell
  */
 template<class TCellType>
-class CellManager
+class BCellManager : public CellContainer
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(CellManager);
+    KRATOS_CLASS_POINTER_DEFINITION(BCellManager);
 
     /// Type definitions
     typedef Knot<double> KnotType;
     typedef KnotType::Pointer knot_t;
 
+    typedef CellContainer BaseType;
     typedef TCellType CellType;
     typedef typename CellType::Pointer cell_t;
     struct cell_compare
@@ -54,11 +57,11 @@ public:
     typedef typename cell_container_t::const_iterator const_iterator;
 
     /// Default constructor
-    CellManager() : mTol(1.0e-10), mLastId(0)
+    BCellManager() : mTol(1.0e-10), mLastId(0)
     {}
 
     /// Destructor
-    virtual ~CellManager()
+    virtual ~BCellManager()
     {
         #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         this->PrintInfo(std::cout); std::cout << ", Addr = " << this << " is destroyed" << std::endl;
@@ -120,7 +123,7 @@ public:
     }
 
     /// Overload comparison operator
-    bool operator==(const CellManager<TCellType>& rOther)
+    bool operator==(const BCellManager<TCellType>& rOther)
     {
         if (this->size() != rOther.size())
             return false;
@@ -140,7 +143,7 @@ public:
     }
 
     /// Overload comparison operator
-    bool operator!=(const CellManager<TCellType>& rOther)
+    bool operator!=(const BCellManager<TCellType>& rOther)
     {
         return !(*this == rOther);
     }
@@ -180,7 +183,7 @@ public:
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "CellManager";
+        rOStream << "BCellManager";
     }
 
     virtual void PrintData(std::ostream& rOStream) const
@@ -231,7 +234,7 @@ private:
 
 /// output stream function
 template<class TCellType>
-inline std::ostream& operator <<(std::ostream& rOStream, const CellManager<TCellType>& rThis)
+inline std::ostream& operator <<(std::ostream& rOStream, const BCellManager<TCellType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rThis.PrintData(rOStream);
@@ -240,5 +243,5 @@ inline std::ostream& operator <<(std::ostream& rOStream, const CellManager<TCell
 
 }// namespace Kratos.
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_MANAGER_H_INCLUDED
+#endif // KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_MANAGER_H_INCLUDED
 

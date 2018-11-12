@@ -35,7 +35,7 @@
 #include "includes/ublas_interface.h"
 #include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
-#include "custom_utilities/nurbs/cell_manager.h"
+#include "custom_utilities/nurbs/bcell_manager.h"
 #include "custom_utilities/nurbs/domain_manager_2d.h"
 #include "custom_utilities/nurbs/domain_manager_3d.h"
 #include "custom_utilities/patch.h"
@@ -134,7 +134,7 @@ public:
 
     typedef HBCell<DeprecatedHBBasisFunction> CellType;
     typedef typename CellType::Pointer cell_t;
-    typedef CellManager<CellType> cell_container_t;
+    typedef BCellManager<CellType> cell_container_t;
 
     typedef DeprecatedHBBasisFunction::Pointer bf_t;
     typedef DeprecatedBasisFunctionManager<DeprecatedHBBasisFunction> bf_container_t;

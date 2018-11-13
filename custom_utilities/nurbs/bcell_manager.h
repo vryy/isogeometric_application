@@ -20,7 +20,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/cell_container.h"
 
 
@@ -41,11 +40,9 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(BaseBCellManager);
 
     /// Type definitions
-    typedef Knot<double> KnotType;
-    typedef KnotType::Pointer knot_t;
-
     typedef CellContainer BaseType;
     typedef TCellType CellType;
+    typedef typename CellType::knot_t knot_t;
     typedef typename CellType::Pointer cell_t;
     struct cell_compare
     {

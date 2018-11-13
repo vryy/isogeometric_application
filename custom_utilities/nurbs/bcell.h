@@ -19,7 +19,7 @@
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/cell.h"
-#include "custom_utilities/nurbs/knot.h"
+#include "custom_utilities/nurbs/knot_array_1d.h"
 
 namespace Kratos
 {
@@ -45,8 +45,9 @@ public:
 
     /// Type definitions
     typedef Cell BaseType;
-    typedef Knot<double> KnotType;
-    typedef KnotType::Pointer knot_t;
+    typedef KnotArray1D<double> knot_container_t;
+    typedef typename knot_container_t::knot_t knot_t;
+    typedef typename knot_container_t::KnotType KnotType;
 
     /// Constructor with knots
     BCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax)
@@ -186,6 +187,12 @@ public:
             && fabs( ZetaMaxValue() - p_cell->ZetaMaxValue() ) < tol )
                 return true;
         return false;
+    }
+
+    /// Helper function to get out the value of the knot
+    static double GetValue(knot_t p_knot)
+    {
+        return p_knot->Value();
     }
 
     /// Information

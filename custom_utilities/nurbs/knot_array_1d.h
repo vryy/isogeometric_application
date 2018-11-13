@@ -6,8 +6,8 @@
 //
 //
 
-#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_KnotArray1D_ARRAY_1D_H_INCLUDED )
-#define  KRATOS_ISOGEOMETRIC_APPLICATION_KnotArray1D_ARRAY_1D_H_INCLUDED
+#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_KNOT_ARRAY_1D_H_INCLUDED )
+#define  KRATOS_ISOGEOMETRIC_APPLICATION_KNOT_ARRAY_1D_H_INCLUDED
 
 // System includes
 #include <deque>
@@ -411,5 +411,5 @@ inline std::ostream& operator <<(std::ostream& rOStream, const KnotArray1D<TData
 
 }// namespace Kratos.
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_KnotArray1D_H_INCLUDED
+#endif // KRATOS_ISOGEOMETRIC_APPLICATION_KNOT_ARRAY_1D_H_INCLUDED
 

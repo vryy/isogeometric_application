@@ -25,6 +25,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/model_part.h"
 #include "python/pointer_vector_set_python_interface.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/tsplines/tcell.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/nurbs/pbbsplines_fespace.h"
 #include "custom_python/add_utilities_to_python.h"
@@ -48,7 +49,7 @@ void IsogeometricApplication_AddPBBSplinesSpaceToPython()
 
     ss.str(std::string());
     ss << "PBBSplinesBasisFunction" << TDim << "D";
-    typedef PBBSplinesBasisFunction<TDim, BCell> PBBSplinesBasisFunctionType;
+    typedef PBBSplinesBasisFunction<TDim, TCell> PBBSplinesBasisFunctionType;
     class_<PBBSplinesBasisFunctionType, typename PBBSplinesBasisFunctionType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<const std::size_t&>())
     .add_property("Id", Isogeometric_GetId<PBBSplinesBasisFunctionType>, Isogeometric_DoNotSetId<PBBSplinesBasisFunctionType>)
@@ -60,7 +61,7 @@ void IsogeometricApplication_AddPBBSplinesSpaceToPython()
     ss.str(std::string());
     ss << "PBBSplinesFESpace" << TDim << "D";
     typedef FESpace<TDim> FESpaceType;
-    typedef PBBSplinesFESpace<TDim, PBBSplinesBasisFunctionType> PBBSplinesFESpaceType;
+    typedef PBBSplinesFESpace<TDim, PBBSplinesBasisFunctionType, BCellManager<TDim, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
     class_<PBBSplinesFESpaceType, typename PBBSplinesFESpaceType::Pointer, bases<FESpaceType>, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def("__getitem__", &FESpace_GetItem<PBBSplinesFESpaceType>)

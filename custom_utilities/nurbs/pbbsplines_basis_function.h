@@ -54,8 +54,8 @@ public:
     /// Type definition
     typedef PBSplinesBasisFunction<TCellType> BaseType;
     typedef typename BaseType::ControlPointType ControlPointType;
-    typedef Knot<double>::Pointer knot_t;
     typedef typename BaseType::CellType CellType;
+    typedef typename CellType::knot_t knot_t;
     typedef typename BaseType::cell_t cell_t;
     typedef typename BaseType::const_cell_t const_cell_t;
     typedef typename BaseType::cell_container_t cell_container_t;
@@ -76,6 +76,11 @@ public:
         #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "PBBSplinesBasisFunction" << TDim << "D " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;
         #endif
+    }
+
+    static typename PBBSplinesBasisFunction::Pointer Create(const std::size_t& Id)
+    {
+        return typename PBBSplinesBasisFunction::Pointer(new PBBSplinesBasisFunction(Id));
     }
 
     /**************************************************************************
@@ -110,7 +115,7 @@ public:
         if(rKnots.size() != mpLocalKnots[dim].size())
             rKnots.resize(mpLocalKnots[dim].size());
         for(std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
-            rKnots[i] = mpLocalKnots[dim][i]->Value();
+            rKnots[i] = CellType::GetValue(mpLocalKnots[dim][i]);
     }
 
     /// Set the local knot vectors to this basis function
@@ -276,7 +281,8 @@ public:
         {
             rOStream << "  " << dim+1 << ":";
             for(std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
-                rOStream << " " << mpLocalKnots[dim][i]->Value();
+                // rOStream << " " << mpLocalKnots[dim][i]->Value();
+                rOStream << " " << CellType::GetValue(mpLocalKnots[dim][i]);
             rOStream << std::endl;
         }
 

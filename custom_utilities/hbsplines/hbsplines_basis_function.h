@@ -93,6 +93,16 @@ public:
         #endif
     }
 
+    static typename HBSplinesBasisFunction::Pointer Create(const std::size_t& Id)
+    {
+        return typename HBSplinesBasisFunction::Pointer(new HBSplinesBasisFunction(Id));
+    }
+
+    static typename HBSplinesBasisFunction::Pointer Create(const std::size_t& Id, const std::size_t& Level)
+    {
+        return typename HBSplinesBasisFunction::Pointer(new HBSplinesBasisFunction(Id, Level));
+    }
+
     /**************************************************************************
                             MODIFICATION SUBROUTINES
     **************************************************************************/

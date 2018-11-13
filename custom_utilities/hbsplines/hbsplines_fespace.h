@@ -20,6 +20,7 @@
 #include "containers/array_1d.h"
 #include "custom_utilities/bezier_utils.h"
 #include "custom_utilities/bspline_utils.h"
+#include "custom_utilities/nurbs/bcell_manager.h"
 #include "custom_utilities/nurbs/pbbsplines_fespace.h"
 #include "custom_utilities/nurbs/domain_manager.h"
 #include "custom_utilities/nurbs/domain_manager_2d.h"
@@ -36,14 +37,14 @@ namespace Kratos
 This class represents the FESpace for a single hierarchical BSplines patch defined over parametric domain.
  */
 template<int TDim>
-class HBSplinesFESpace : public PBBSplinesFESpace<TDim, HBSplinesBasisFunction<TDim> >
+class HBSplinesFESpace : public PBBSplinesFESpace<TDim, HBSplinesBasisFunction<TDim>, BCellManager<TDim, typename HBSplinesBasisFunction<TDim>::CellType> >
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(HBSplinesFESpace);
 
     /// Type definition
-    typedef PBBSplinesFESpace<TDim, HBSplinesBasisFunction<TDim> > BaseType;
+    typedef PBBSplinesFESpace<TDim, HBSplinesBasisFunction<TDim>, BCellManager<TDim, typename HBSplinesBasisFunction<TDim>::CellType> > BaseType;
     typedef typename BaseType::knot_container_t knot_container_t;
     typedef typename BaseType::knot_t knot_t;
 

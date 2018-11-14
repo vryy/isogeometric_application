@@ -129,13 +129,6 @@ public:
     /// Get the number of basis functions defined over the BSplines
     virtual const std::size_t TotalNumber() const {return mpBasisFuncs.size();}
 
-    /// Get the knot vector in i-direction, i=0..Dim
-    /// User must be careful to use this function because it can modify the internal knot vectors
-    knot_container_t& KnotVector(const std::size_t& i) {return mKnotVectors[i];}
-
-    /// Get the knot vector in i-direction, i=0..Dim
-    const knot_container_t& KnotVector(const std::size_t& i) const {return mKnotVectors[i];}
-
     /// Get the weights of all the basis functions
     std::vector<double> GetWeights() const
     {
@@ -270,8 +263,6 @@ public:
         for (std::size_t i = 0; i < TDim; ++i)
         {
             if (!(this->Order(i)) == rOtherPBBSplinesFESpace.Order(i))
-                return false;
-            if (!(this->KnotVector(i) == rOtherPBBSplinesFESpace.KnotVector(i)))
                 return false;
         }
 
@@ -583,16 +574,7 @@ public:
         rOStream << ", p = (";
         for (std::size_t dim = 0; dim < TDim; ++dim)
             rOStream << " " << this->Order(dim);
-
-        rOStream << "###############Begin knot vectors################" << std::endl;
-        for (int dim = 0; dim < TDim; ++dim)
-        {
-            rOStream << "knot vector " << dim+1 << ":";
-            for (std::size_t i = 0; i < this->KnotVector(dim).size(); ++i)
-                rOStream << " " << this->KnotVector(dim)[i];
-            rOStream << std::endl;
-        }
-        rOStream << "###############End knot vectors##################" << std::endl;
+        rOStream << ")";
     }
 
     virtual void PrintData(std::ostream& rOStream) const
@@ -602,8 +584,14 @@ public:
         rOStream << "###################" << std::endl;
 
         // print the basis functions
+        rOStream << "Basis functions:" << std::endl;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
-            rOStream << *(*it) << std::endl;
+            rOStream << " >> " << *(*it) << std::endl;
+
+        // print the cells
+        rOStream << "Cells:" << std::endl;
+        for(typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
+            rOStream << " >> " << *(*it) << std::endl;
     }
 
 protected:
@@ -611,8 +599,6 @@ protected:
     unsigned int mEchoLevel;
 
     boost::array<std::size_t, TDim> mOrders;
-
-    boost::array<knot_container_t, TDim> mKnotVectors;
 
     typename cell_container_t::Pointer mpCellManager;
 

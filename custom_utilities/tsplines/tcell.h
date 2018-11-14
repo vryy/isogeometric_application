@@ -181,7 +181,7 @@ inline bool TCell_Helper<3>::IsCovered(const TCell& this_cell, const TCell& othe
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream, const TCell& rThis)
 {
-    rOStream << "cell ";
+    rOStream << "tcell ";
     rThis.PrintInfo(rOStream);
     rThis.PrintData(rOStream);
     return rOStream;

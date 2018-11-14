@@ -57,6 +57,12 @@ public:
         return typename FESpace<TDim>::Pointer(new FESpace());
     }
 
+    /// Get the dimension of the FESpace
+    static constexpr int Dim()
+    {
+        return TDim;
+    }
+
     /// Get the number of basis functions defined over the FESpace
     virtual const std::size_t TotalNumber() const
     {

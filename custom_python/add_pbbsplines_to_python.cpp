@@ -25,9 +25,11 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/model_part.h"
 #include "python/pointer_vector_set_python_interface.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/multipatch.h"
 #include "custom_utilities/tsplines/tcell.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/nurbs/pbbsplines_fespace.h"
+#include "custom_utilities/import_export/multi_pbbsplines_patch_matlab_exporter.h"
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
 #include "custom_python/add_import_export_to_python.h"
@@ -87,6 +89,17 @@ void IsogeometricApplication_AddPBBSplinesToPython()
     IsogeometricApplication_AddPBBSplinesSpaceToPython<1>();
     IsogeometricApplication_AddPBBSplinesSpaceToPython<2>();
     IsogeometricApplication_AddPBBSplinesSpaceToPython<3>();
+
+    class_<MultiPBBSplinesPatchMatlabExporter, MultiPBBSplinesPatchMatlabExporter::Pointer, boost::noncopyable>
+    ("MultiPBBSplinesPatchMatlabExporter", init<>())
+    .def("Export", &MultiPatchExporter_Export<1, MultiPBBSplinesPatchMatlabExporter, Patch<1> >)
+    .def("Export", &MultiPatchExporter_Export<2, MultiPBBSplinesPatchMatlabExporter, Patch<2> >)
+    .def("Export", &MultiPatchExporter_Export<3, MultiPBBSplinesPatchMatlabExporter, Patch<3> >)
+    .def("Export", &MultiPatchExporter_Export<1, MultiPBBSplinesPatchMatlabExporter, MultiPatch<1> >)
+    .def("Export", &MultiPatchExporter_Export<2, MultiPBBSplinesPatchMatlabExporter, MultiPatch<2> >)
+    .def("Export", &MultiPatchExporter_Export<3, MultiPBBSplinesPatchMatlabExporter, MultiPatch<3> >)
+    .def(self_ns::str(self))
+    ;
 
 }
 

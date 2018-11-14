@@ -121,6 +121,13 @@ public:
         }
     }
 
+    /// Get the knot vector in i-direction, i=0..Dim
+    /// User must be careful to use this function because it can modify the internal knot vectors
+    knot_container_t& KnotVector(const std::size_t& i) {return mKnotVectors[i];}
+
+    /// Get the knot vector in i-direction, i=0..Dim
+    const knot_container_t& KnotVector(const std::size_t& i) const {return mKnotVectors[i];}
+
     /// Get the last refinement level ain the hierarchical mesh
     const std::size_t& LastLevel() const {return mLastLevel;}
 
@@ -396,6 +403,15 @@ public:
         BaseType::PrintInfo(rOStream);
         rOStream << "Number of levels = " << mLastLevel << std::endl;
 
+        rOStream << "###############Begin knot vectors################" << std::endl;
+        for (int dim = 0; dim < TDim; ++dim)
+        {
+            rOStream << "knot vector " << dim+1 << ":";
+            for (std::size_t i = 0; i < this->KnotVector(dim).size(); ++i)
+                rOStream << " " << this->KnotVector(dim)[i];
+            rOStream << std::endl;
+        }
+        rOStream << "###############End knot vectors##################" << std::endl;
     }
 
     virtual void PrintData(std::ostream& rOStream) const
@@ -420,6 +436,8 @@ private:
 
     std::size_t mLastLevel;
     std::size_t mMaxLevel;
+
+    boost::array<knot_container_t, TDim> mKnotVectors;
 
     domain_container_t mSupportDomains; // this domain manager manages the support of all bfs in each level
 

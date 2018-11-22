@@ -584,37 +584,26 @@ public:
         BaseType::mNumber1 = BaseType::mOrder1 + 1;
         BaseType::mNumber2 = BaseType::mOrder2 + 1;
 
-        // select the type of extraction operator to save in memory
-        if(ExtractionOperator.size1() == 2 && ExtractionOperator.size2() != 2)
-        // extraction operator is stored as compressed matrix
-        {
-            unsigned int size_ex_n = (unsigned int)(ExtractionOperator(0, 0) - 1);
-            unsigned int size_ex_nz = ExtractionOperator.size2() - 1;
-            if( ( (double)(size_ex_nz) ) / (size_ex_n * size_ex_n) < 0.2 )
-            {
-                BaseType::mExtractionOperator = IsogeometricMathUtils::MCSR2CSR(ExtractionOperator);
-            }
-            else
-                BaseType::mExtractionOperator = IsogeometricMathUtils::MCSR2MAT(ExtractionOperator);
-        }
-        else if((ExtractionOperator.size1() != 2) && (ExtractionOperator.size1() == ExtractionOperator.size2()))
-        // extraction operator is stored as full matrix
-            BaseType::mExtractionOperator = ExtractionOperator;
-        else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid extraction operator", __FUNCTION__)
+        // TODO we have to check here if the compressed_matrix copy is called or not. Otherwise, maybe the full matrix is populated.
+        BaseType::mExtractionOperator = ExtractionOperator;
 
         // size checking
-        if(BaseType::mNumber1 * BaseType::mNumber2 != this->size())
+        if(BaseType::mExtractionOperator.size1() != this->PointsNumber())
+            KRATOS_THROW_ERROR(std::logic_error, "The number of row of extraction operator must be equal to number of nodes, mExtractionOperator.size1() =", BaseType::mExtractionOperator.size1())
+        if(BaseType::mExtractionOperator.size2() != BaseType::mNumber1*BaseType::mNumber2)
+            KRATOS_THROW_ERROR(std::logic_error, "The number of column of extraction operator must be equal to (p_u+1) * (p_v+1), mExtractionOperator.size2() =", BaseType::mExtractionOperator.size2())
+        if(BaseType::mCtrlWeights.size() != this->PointsNumber())
+            KRATOS_THROW_ERROR(std::logic_error, "The number of weights must be equal to number of nodes", __FUNCTION__)
+
+        if (NumberOfIntegrationMethod > 0)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "The parametric parameters is not compatible.", __FUNCTION__)
+            // find the existing integration rule or create new one if not existed
+            BezierUtils::RegisterIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
+
+            // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
+            BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
+            BaseType::BaseType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
         }
-
-        // find the existing integration rule or create new one if not existed
-        BezierUtils::RegisterIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
-
-        // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
-        BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
-        BaseType::BaseType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
     }
 
 protected:

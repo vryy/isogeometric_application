@@ -6,8 +6,8 @@
 //
 //
 
-#if !defined(KRATOS_TSPLINE_UTILS_H_INCLUDED )
-#define  KRATOS_TSPLINE_UTILS_H_INCLUDED
+#if !defined(KRATOS_TSPLINES_UTILS_H_INCLUDED )
+#define  KRATOS_TSPLINES_UTILS_H_INCLUDED
 
 // System includes
 #include <string>
@@ -52,25 +52,25 @@ namespace Kratos
 /**
  * Utility for various operations on Tsplines
  */
-class TSplineUtils
+class TSplinesUtils
 {
 public:
     ///@name Type Definitions
     ///@{
 
-    /// Pointer definition of TSplineUtils
-    KRATOS_CLASS_POINTER_DEFINITION(TSplineUtils);
+    /// Pointer definition of TSplinesUtils
+    KRATOS_CLASS_POINTER_DEFINITION(TSplinesUtils);
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    TSplineUtils()
+    TSplinesUtils()
     {}
 
     /// Destructor.
-    virtual ~TSplineUtils()
+    virtual ~TSplinesUtils()
     {
     }
 
@@ -569,7 +569,7 @@ public:
     /// Turn back information as a string.
     virtual std::string Info() const
     {
-        return "TSplineUtils";
+        return "TSplinesUtils";
     }
 
     /// Print information about this object.
@@ -647,19 +647,19 @@ private:
     ///@{
 
     /// Assignment operator.
-    TSplineUtils& operator=(TSplineUtils const& rOther)
+    TSplinesUtils& operator=(TSplinesUtils const& rOther)
     {
         return *this;
     }
 
     /// Copy constructor.
-    TSplineUtils(TSplineUtils const& rOther)
+    TSplinesUtils(TSplinesUtils const& rOther)
     {
     }
 
     ///@}
 
-}; // Class TSplineUtils
+}; // Class TSplinesUtils
 
 ///@}
 
@@ -671,14 +671,14 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream& operator >>(std::istream& rIStream, TSplineUtils& rThis)
+inline std::istream& operator >>(std::istream& rIStream, TSplinesUtils& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const TSplineUtils& rThis)
+        const TSplinesUtils& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -692,4 +692,4 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 }// namespace Kratos.
 
-#endif // KRATOS_TSPLINE_UTILS_H_INCLUDED  defined
+#endif // KRATOS_TSPLINES_UTILS_H_INCLUDED  defined

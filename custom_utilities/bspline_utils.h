@@ -130,7 +130,7 @@ public:
     // knot vectors, nonetheless the results should
     // be EXACTLY the same if U is nonperiodic
     // sample: rN = 4, rP = 2, rU = [0 0 0 0.5 1 1 1], rXi = 0.1 (rU.size() == rN + rP + 1)
-    // note: this only works with open knot vector (i.e. 0  and 1 is repeated p + 1 times)
+    // note: this only works with open knot vector (i.e. 0  and 1 are repeated p + 1 times)
     template<class ValuesContainerType>
     static int FindSpan(
             const int& rN,
@@ -184,7 +184,7 @@ public:
 
     /// Find the span of knot in the local knot vector
     /// Remarks: it will give the based-1 index
-    ///          it only works if U is non-repeated
+    ///          it only works when U is non-repeated
     template<typename TDataType, class TValuesContainerType>
     static std::size_t FindSpanLocal(const TDataType& Xi, const TValuesContainerType& U)
     {
@@ -501,11 +501,11 @@ public:
             else
                 y = 0.0;
 
-            if (i+2 <= knots.size()-1)
-            {
-                if (u >= knots[i+1] && knots[i+2] == knots[i+1])
-                    y = 1.0;
-            }
+            // if (i+2 <= knots.size()-1)
+            // {
+            //     if (u >= knots[i+1] && knots[i+2] == knots[i+1])
+            //         y = 1.0;
+            // }
 
             return y;
         }
@@ -517,6 +517,69 @@ public:
             y = y + (knots[i+p+1] - u) / (knots[i+p+1] - knots[i+1]) * CoxDeBoor(u, i+1, p-1, knots);
 
         return y;
+    }
+
+    /// Compute the B-spline basis function based on Cox-de-Boor algorithm
+    /// This version is more stable with tolerance to improve the accuracy
+    //    % Input:
+    //    %   u       knot to be compute the function value
+    //    %   i       index of the basis function; for local knot vector, it must be 0
+    //    %   p       B-spline degree
+    //    %   knots   local knot vector, must be ascending
+    //    % Output: function value
+    template<class ValuesContainerType>
+    static double CoxDeBoor2(const double& u, const int& i, const int& p, const ValuesContainerType& knots, const double TOL = 1.0e-10)
+    {
+        double y = 0.0;
+
+        if (p == 0)
+        {
+            if ((u >= knots[i]) && (u < knots[i+1]+TOL))
+                y = 1.0;
+            else
+                y = 0.0;
+
+            return y;
+        }
+
+        if (fabs(knots[i+p] - knots[i]) > TOL)
+            y = y + (u - knots[i]) / (knots[i+p] - knots[i]) * CoxDeBoor2(u, i, p-1, knots);
+
+        if (fabs(knots[i+p+1] - knots[i+1]) > TOL)
+            y = y + (knots[i+p+1] - u) / (knots[i+p+1] - knots[i+1]) * CoxDeBoor2(u, i+1, p-1, knots);
+
+        return y;
+    }
+
+    /// Compute the B-spline basis function based on Cox-de-Boor algorithm
+    /// This version uses the extended knot vector and is more robust than other versions, although more expensive
+    //    % Input:
+    //    %   u       knot to be compute the function value
+    //    %   i       index of the basis function; for local knot vector, it must be 0
+    //    %   p       B-spline degree
+    //    %   knots   local knot vector, must be ascending
+    //    % Output: function value
+    template<class ValuesContainerType>
+    static double CoxDeBoor3(const double& u, const int& i, const int& p, const ValuesContainerType& knots)
+    {
+        double last_knot = *(knots.end()-1);
+        double first_knot = *(knots.begin());
+        if ((u > last_knot) || (u < first_knot))
+            return 0.0;
+
+        // compute the extended knot vector
+        ValuesContainerType ubar;
+        int nt;
+        IsogeometricMathUtils::compute_extended_knot_vector(ubar, nt, knots, p);
+
+        // find span
+        int s = BSplineUtils::FindSpan(ubar.size()-p-1, p, u, ubar);
+
+        // evaluate the basis functions
+        ValuesContainerType N(p+1);
+        BSplineUtils::BasisFuns(N, s, u, p, ubar);
+
+        return N[nt-s+p];
     }
 
     /// Compute the refinement coefficients for one knot insertion B-Splines refinement in 1D

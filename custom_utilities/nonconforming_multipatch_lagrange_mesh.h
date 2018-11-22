@@ -150,7 +150,7 @@ public:
                         std::cout << "p_ref: " << p_ref[0] << " " << p_ref[1] << std::endl;
                         #endif
 
-                        this->CreateNode(p_ref, *it, r_model_part, NodeCounter);
+                        CreateNode(p_ref, *it, r_model_part, NodeCounter);
                         ++NodeCounter;
                     }
                 }
@@ -219,7 +219,7 @@ public:
                         {
                             p_ref[2] = ((double) k) / NumDivision3;
 
-                            this->CreateNode(p_ref, *it, r_model_part, NodeCounter);
+                            CreateNode(p_ref, *it, r_model_part, NodeCounter);
                             ++NodeCounter;
                         }
                     }
@@ -277,29 +277,8 @@ public:
         }
     }
 
-    /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
-    {
-        rOStream << "NonConformingMultipatchLagrangeMesh";
-    }
-
-    virtual void PrintData(std::ostream& rOStream) const
-    {
-    }
-
-private:
-
-    typename MultiPatch<TDim>::Pointer mpMultiPatch;
-
-    std::map<std::size_t, boost::array<std::size_t, TDim> > mNumDivision;
-
-    std::string mBaseElementName;
-    std::size_t mLastNodeId;
-    std::size_t mLastElemId;
-    std::size_t mLastPropId;
-
     /// Helper function to create new node from patch and add to the model_part. The control values will be carried.
-    void CreateNode(const std::vector<double>& p_ref, const Patch<TDim>& rPatch, ModelPart& r_model_part, const std::size_t& NodeCounter) const
+    static void CreateNode(const std::vector<double>& p_ref, const Patch<TDim>& rPatch, ModelPart& r_model_part, const std::size_t& NodeCounter)
     {
         typedef typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctionContainerType;
         typedef typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctionContainerType;
@@ -363,6 +342,27 @@ private:
             }
         }
     }
+
+    /// Information
+    virtual void PrintInfo(std::ostream& rOStream) const
+    {
+        rOStream << "NonConformingMultipatchLagrangeMesh";
+    }
+
+    virtual void PrintData(std::ostream& rOStream) const
+    {
+    }
+
+private:
+
+    typename MultiPatch<TDim>::Pointer mpMultiPatch;
+
+    std::map<std::size_t, boost::array<std::size_t, TDim> > mNumDivision;
+
+    std::string mBaseElementName;
+    std::size_t mLastNodeId;
+    std::size_t mLastElemId;
+    std::size_t mLastPropId;
 
 };
 

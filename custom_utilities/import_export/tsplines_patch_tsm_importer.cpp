@@ -7,10 +7,10 @@
 //
 
 // Project includes
-#include "custom_utilities/import_export/tspline_patch_tsm_importer.h"
+#include "custom_utilities/import_export/tsplines_patch_tsm_importer.h"
 #include "custom_utilities/tsplines/tcell.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
-#include "custom_utilities/nurbs/pbbsplines_fespace.h"
+#include "custom_utilities/tsplines/tsplines_fespace.h"
 
 // External includes
 #include "rhbuilder.h"
@@ -19,19 +19,22 @@
 namespace Kratos
 {
 
-Patch<2>::Pointer TSplinePatchTSMImporter::ImportSingle(const std::string& filename) const
+Patch<2>::Pointer TSplinesPatchTSMImporter::ImportSingle(const std::string& filename) const
 {
+    std::cout << "Start reading TSM in " << filename << std::endl;
     RhBuilderPtr reader = TSPLINE::makePtr<RhBuilder>(filename);
+    std::cout << "Start to find T-Splines in " << filename << std::endl;
     TSplinePtr tspline = reader->findTSpline();
+    std::cout << "Reading T-Splines in " << filename << " completed" << std::endl;
 
     // create the PBSplinesFESpaceType
     typedef PBBSplinesBasisFunction<2, TCell> PBBSplinesBasisFunctionType;
-    typedef PBBSplinesFESpace<2, PBBSplinesBasisFunctionType, BCellManager<2, TCell> > PBBSplinesFESpaceType;
+    typedef TSplinesFESpace<2, PBBSplinesBasisFunctionType, BCellManager<2, TCell> > TSplinesFESpaceType;
     typedef typename Patch<2>::ControlPointType ControlPointType;
-    typedef typename PBBSplinesFESpaceType::knot_t knot_t;
-    typedef typename PBBSplinesFESpaceType::cell_t cell_t;
+    typedef typename TSplinesFESpaceType::knot_t knot_t;
+    typedef typename TSplinesFESpaceType::cell_t cell_t;
 
-    typename PBBSplinesFESpaceType::Pointer pNewFESpace = PBBSplinesFESpaceType::Create();
+    typename TSplinesFESpaceType::Pointer pNewFESpace = TSplinesFESpaceType::Create();
 
     // set order information
     pNewFESpace->SetInfo(0, tspline->getSDegree());
@@ -139,29 +142,29 @@ Patch<2>::Pointer TSplinePatchTSMImporter::ImportSingle(const std::string& filen
         pnew_bf->SetValue(CONTROL_POINT, c);
     }
 
-    // /** create faces **/
-    // TImagePtr timage = tspline->getTImage();
-    // // WATCH(timage->sizeFaces())
-    // double xi_min, xi_max, eta_min, eta_max;
-    // for (TFacVIterator fit = timage->faceIteratorBegin(); fit != timage->faceIteratorEnd(); ++fit)
-    // {
-    //     xi_min = (*fit)->northWest().s();
-    //     xi_max = (*fit)->southEast().s();
-    //     eta_min = (*fit)->southEast().t();
-    //     eta_max = (*fit)->northWest().t();
-    //     std::vector<double> knots = {xi_min, xi_max, eta_min, eta_max};
-    //     cell_t p_cell = pNewFESpace->pCellManager()->CreateCell(knots);
+    /** create faces **/
+    TImagePtr timage = tspline->getTImage();
+    // WATCH(timage->sizeFaces())
+    double xi_min, xi_max, eta_min, eta_max;
+    for (TFacVIterator fit = timage->faceIteratorBegin(); fit != timage->faceIteratorEnd(); ++fit)
+    {
+        xi_min = ((*fit)->northWest().s() - min_xi_min) / (max_xi_max - min_xi_min);
+        xi_max = ((*fit)->southEast().s() - min_xi_min) / (max_xi_max - min_xi_min);
+        eta_min = ((*fit)->southEast().t() - min_eta_min) / (max_eta_max - min_eta_min);
+        eta_max = ((*fit)->northWest().t() - min_eta_min) / (max_eta_max - min_eta_min);
+        std::vector<double> knots = {xi_min, xi_max, eta_min, eta_max};
+        cell_t p_cell = pNewFESpace->pFaceManager()->CreateCell(knots);
 
-    //     // std::cout << "checking cell " << xi_min << " " << xi_max << " " << eta_min << " " << eta_max << std::endl;
+        // std::cout << "checking cell " << xi_min << " " << xi_max << " " << eta_min << " " << eta_max << std::endl;
 
-    //     // adding the cell information to the basis functions
-    //     for (TNodVIterator nit = (*fit)->blendingNodeIteratorBegin(); nit != (*fit)->blendingNodeIteratorEnd(); ++nit)
-    //     {
-    //         id = (*nit)->getTPoint()->getId();
-    //         typename PBBSplinesBasisFunctionType::Pointer p_bf = pNewFESpace->operator()(id);
-    //         p_bf->AddCell(p_cell);
-    //     }
-    // }
+        // // adding the cell information to the basis functions
+        // for (TNodVIterator nit = (*fit)->blendingNodeIteratorBegin(); nit != (*fit)->blendingNodeIteratorEnd(); ++nit)
+        // {
+        //     id = (*nit)->getTPoint()->getId();
+        //     typename PBBSplinesBasisFunctionType::Pointer p_bf = pNewFESpace->operator()(id);
+        //     p_bf->AddCell(p_cell);
+        // }
+    }
 
     // create and return patch
     std::size_t patch_id = 1;
@@ -169,7 +172,7 @@ Patch<2>::Pointer TSplinePatchTSMImporter::ImportSingle(const std::string& filen
 
     // set control points grid function
     typename ControlGrid<ControlPointType>::Pointer pControlPointGrid
-        = ControlGridUtility::CreatePointBasedControlGrid<ControlPointType, PBBSplinesFESpaceType>(CONTROL_POINT, pNewFESpace);
+        = ControlGridUtility::CreatePointBasedControlGrid<ControlPointType, TSplinesFESpaceType>(CONTROL_POINT, pNewFESpace);
     pNewPatch->CreateControlPointGridFunction(pControlPointGrid);
 
     std::cout << "Import T-splines from " << filename << " successfully" << std::endl;
@@ -177,7 +180,7 @@ Patch<2>::Pointer TSplinePatchTSMImporter::ImportSingle(const std::string& filen
     return pNewPatch;
 }
 
-MultiPatch<2>::Pointer TSplinePatchTSMImporter::Import(const std::string& filename) const
+MultiPatch<2>::Pointer TSplinesPatchTSMImporter::Import(const std::string& filename) const
 {
     KRATOS_THROW_ERROR(std::logic_error, "TSM reader does not support multipatch", "")
 }

@@ -27,7 +27,7 @@ namespace Kratos
 {
 
 /**
- * Abstract class represents the FESpace for a single point-based Splines patch.
+ * Abstract class represents the FESpace for a single point-based B-Splines patch.
  */
 template<int TDim, typename TBasisFunctionType, typename TCellManagerType>
 class PBBSplinesFESpace : public FESpace<TDim>

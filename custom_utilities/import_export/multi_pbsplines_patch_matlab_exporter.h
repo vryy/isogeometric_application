@@ -32,11 +32,13 @@ public:
 
     virtual void Export(typename Patch<TFESpaceType::Dim()>::Pointer pPatch, std::ostream& rOStream)
     {
-        if (pPatch->pFESpace()->Type() != TFESpaceType::StaticType())
+        // extract the point-based B-Splines space
+        typename TFESpaceType::Pointer pFESpace = boost::dynamic_pointer_cast<TFESpaceType>(pPatch->pFESpace());
+        if (pFESpace == NULL)
         {
             std::stringstream ss;
-            ss << __FUNCTION__ << "only support the " << TFESpaceType::StaticType() << " patch";
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            ss << "The cast to " << TFESpaceType::StaticType() << " is failed.";
+            KRATOS_THROW_ERROR(std::runtime_error, ss.str(), "")
         }
 
         // Type definitions
@@ -57,15 +59,6 @@ public:
         double max_eta = -min_eta;
         double min_zeta = min_xi;
         double max_zeta = -min_zeta;
-
-        // extract the point-based B-Splines space
-        typename TFESpaceType::Pointer pFESpace = boost::dynamic_pointer_cast<TFESpaceType>(pPatch->pFESpace());
-        if (pFESpace == NULL)
-        {
-            std::stringstream ss;
-            ss << "The cast to " << TFESpaceType::StaticType() << " is failed.";
-            KRATOS_THROW_ERROR(std::runtime_error, ss.str(), "")
-        }
 
         rOStream << "% Degree" << std::endl;
         rOStream << "P" << patch_id << "_params.p1 = " << pFESpace->Order(0) << ";\n";

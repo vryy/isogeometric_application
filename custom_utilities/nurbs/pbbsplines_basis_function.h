@@ -188,14 +188,25 @@ public:
     virtual void GetValueAt(double& res, const std::vector<double>& xi) const
     {
         res = 1.0;
+        // std::cout << "----------" << std::endl;
+        // KRATOS_WATCH(this->Id())
+        // std::cout << "xi: " << xi[0] << " " << xi[1] << std::endl;
         for (std::size_t dim = 0; dim < TDim; ++dim)
         {
-            std::vector<double> value(1);
             std::vector<double> local_knots;
             this->LocalKnots(dim, local_knots);
+            // std::cout << "local_knots " << dim << ":";
+            // for (int i = 0; i < local_knots.size(); ++i)
+            //     std::cout << " " << local_knots[i];
+            // std::cout << std::endl;
             int order = this->Order(dim);
-            res *= BSplineUtils::CoxDeBoor(xi[dim], 0, order, local_knots);
+            // double val = BSplineUtils::CoxDeBoor(xi[dim], 0, order, local_knots);
+            // double val = CoxDeBoor2(xi[dim], 0, order, local_knots);
+            double val = BSplineUtils::CoxDeBoor3(xi[dim], 0, order, local_knots);
+            // KRATOS_WATCH(val)
+            res *= val;
         }
+        // KRATOS_WATCH(res)
     }
 
     /// Get the derivative of point-based B-splines basis function
@@ -218,7 +229,7 @@ public:
     **************************************************************************/
 
     /// Compute the Bezier extraction operator of this basis function on the cell
-    void ComputeExtractionOperator(Vector& Crow, const_cell_t p_cell)
+    virtual void ComputeExtractionOperator(Vector& Crow, const_cell_t p_cell)
     {
         std::vector<std::vector<double> > LocalKnots(TDim);
         std::vector<std::size_t> orders(TDim);

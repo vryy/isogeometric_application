@@ -6,8 +6,8 @@
 //
 //
 
-#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_TSPLINE_PATCH_TSM_IMPORTER_H_INCLUDED)
-#define  KRATOS_ISOGEOMETRIC_APPLICATION_TSPLINE_PATCH_TSM_IMPORTER_H_INCLUDED
+#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_TSPLINES_PATCH_TSM_IMPORTER_H_INCLUDED)
+#define  KRATOS_ISOGEOMETRIC_APPLICATION_TSPLINES_PATCH_TSM_IMPORTER_H_INCLUDED
 
 // System includes
 #include <vector>
@@ -24,10 +24,10 @@
 namespace Kratos
 {
 
-class TSplinePatchTSMImporter : public MultiPatchImporter<2>
+class TSplinesPatchTSMImporter : public MultiPatchImporter<2>
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TSplinePatchTSMImporter);
+    KRATOS_CLASS_POINTER_DEFINITION(TSplinesPatchTSMImporter);
 
     virtual Patch<2>::Pointer ImportSingle(const std::string& filename) const;
 
@@ -36,7 +36,7 @@ public:
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "TSplinePatchTSMImporter";
+        rOStream << "TSplinesPatchTSMImporter";
     }
 
     virtual void PrintData(std::ostream& rOStream) const
@@ -46,7 +46,7 @@ public:
 };
 
 /// output stream function
-inline std::ostream& operator <<(std::ostream& rOStream, const TSplinePatchTSMImporter& rThis)
+inline std::ostream& operator <<(std::ostream& rOStream, const TSplinesPatchTSMImporter& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -56,5 +56,5 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TSplinePatchTSMIm
 
 } // namespace Kratos.
 
-#endif // KRATOS_ISOGEOMETRIC_APPLICATION_TSPLINE_PATCH_TSM_IMPORTER_H_INCLUDED defined
+#endif // KRATOS_ISOGEOMETRIC_APPLICATION_TSPLINES_PATCH_TSM_IMPORTER_H_INCLUDED defined
 

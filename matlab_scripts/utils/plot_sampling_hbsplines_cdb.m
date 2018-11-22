@@ -23,7 +23,8 @@ for i = 1:num_points1
          Pip(num,:) = R * P;
      end
 end
-scatter(Pip(:,1),Pip(:,2));
+%scatter(Pip(:,1),Pip(:,2));
+scatter3(Pip(:,1),Pip(:,2),Pip(:,3));
 
 % params.num_points1 = 11;
 % params.num_points2 = 11;

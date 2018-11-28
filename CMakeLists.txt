@@ -89,7 +89,17 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/hbsplines/deprecated_hb_mesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/tsplines/tsmesh_2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/import_export/multi_nurbs_patch_geo_importer.cpp
+)
+
+if(${ISOGEOMETRIC_USE_TSPLINE} MATCHES TRUE)
+set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
+    ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/import_export/tsplines_patch_tsm_importer.cpp
+   )
+endif()
+
+set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
+    ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_conditions/dummy_isogeometric_condition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/isogeometric_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_io_to_python.cpp

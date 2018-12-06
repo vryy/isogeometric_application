@@ -34,6 +34,7 @@
 #include "custom_utilities/isogeometric_math_utils.h"
 
 #define ENABLE_PROFILING
+#define USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION
 
 namespace Kratos
 {
@@ -990,8 +991,14 @@ public:
         ///////////////////////////////////////////////////////////////
         // Remarks: this current implementation supports integration with order up to 9
         IndexType k, j1, j2, offset1, offset2;
+        #ifdef USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION
+        unsigned int IntOrder = std::max(Order1, Order2);
+        IndexType base_offset1 = 1 + IntOrder / 2;
+        IndexType base_offset2 = 1 + IntOrder / 2;
+        #else
         IndexType base_offset1 = 1 + Order1 / 2;
         IndexType base_offset2 = 1 + Order2 / 2;
+        #endif
 
         IntegrationPointsContainerType integration_points;
         for (k = 0; k < NumberOfIntegrationMethod; ++k)
@@ -1042,6 +1049,12 @@ public:
         ///////////////////////////////////////////////////////////////
         // Remarks: this current implementation supports integration with order up to 9
         IndexType k, j1, j2, j3, offset1, offset2, offset3;
+        #ifdef USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION
+        unsigned int IntOrder = std::max(std::max(Order1, Order2), Order3);
+        IndexType base_offset1 = 1 + IntOrder / 2;
+        IndexType base_offset2 = 1 + IntOrder / 2;
+        IndexType base_offset3 = 1 + IntOrder / 2;
+        #else
 //        IndexType base_offset1 = 1 + Order1 / 2;
 //        IndexType base_offset2 = 1 + Order2 / 2;
 //        IndexType base_offset3 = 1 + Order3 / 2;
@@ -1051,6 +1064,7 @@ public:
 //        IndexType base_offset1 = (Order1 / 2 >= 1) ? (Order1 / 2 - 1) : 0;
 //        IndexType base_offset2 = (Order2 / 2 >= 1) ? (Order2 / 2 - 1) : 0;
 //        IndexType base_offset3 = (Order3 / 2 >= 1) ? (Order3 / 2 - 1) : 0;
+        #endif
 
         IntegrationPointsContainerType integration_points;
         for (k = 0; k < NumberOfIntegrationMethod; ++k)
@@ -1805,4 +1819,8 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 }// namespace Kratos.
 
+#undef ENABLE_PROFILING
+#undef USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION
+
 #endif // KRATOS_BEZIER_UTILS_H_INCLUDED  defined
+

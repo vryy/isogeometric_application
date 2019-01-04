@@ -459,7 +459,7 @@ public:
         outfile << "End Elements\n\n";
 
         // write weights
-        outfile << "Begin ElementalData NURBS_WEIGHT\n";
+        outfile << "Begin ElementalData NURBS_WEIGHTS\n";
         std::vector<double> AnchorWeights;
         for(cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
         {

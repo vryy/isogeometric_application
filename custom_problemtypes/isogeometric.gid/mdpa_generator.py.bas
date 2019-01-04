@@ -283,7 +283,7 @@ def GenerateMdpa(filename, model_data):
         model_data['nurbs_data'][i]['Node Indices'] = nurbs_indices[i]
     fid.write('End Elements\n\n')
     
-    fid.write('Begin ElementalData NURBS_WEIGHT\n')
+    fid.write('Begin ElementalData NURBS_WEIGHTS\n')
     cnt = 1
     for i in range(0, len(model_data['nurbs_data'])):
         fid.write(str(cnt))

@@ -72,7 +72,7 @@ for i = 1:n1-p1
 end
 fprintf(fid, 'End Elements\n\n');
 
-fprintf(fid, 'Begin ElementalData NURBS_WEIGHT\n');
+fprintf(fid, 'Begin ElementalData NURBS_WEIGHTS\n');
 cnt = 1;
 for i = 1:n1-p1
     for j = 1:n2-p2

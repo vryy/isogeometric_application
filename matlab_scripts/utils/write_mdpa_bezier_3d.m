@@ -125,7 +125,7 @@ end
 fprintf(fid, 'End Elements\n\n');
 fprintf('number of elements = %d\n', cnt - 1);
 
-fprintf(fid, 'Begin ElementalData NURBS_WEIGHT\n');
+fprintf(fid, 'Begin ElementalData NURBS_WEIGHTS\n');
 cnt = 1;
 b1 = p1 + 1;
 sum_mul1 = 0;

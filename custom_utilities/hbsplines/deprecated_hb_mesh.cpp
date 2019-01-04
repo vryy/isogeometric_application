@@ -1458,7 +1458,7 @@ namespace Kratos
         outfile << "End Elements\n\n";
 
         // write weights
-        outfile << "Begin ElementalData NURBS_WEIGHT\n";
+        outfile << "Begin ElementalData NURBS_WEIGHTS\n";
         for(typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
         {
             const std::vector<double>& weights = (*it)->GetAnchorWeights();

@@ -39,7 +39,7 @@ for i = 1:u_dim
 end
 fprintf(fid, '\nEnd Elements\n\n');
 
-fprintf(fid, 'Begin ElementalData NURBS_WEIGHT\n');
+fprintf(fid, 'Begin ElementalData NURBS_WEIGHTS\n');
 cnt = 1;
 fprintf(fid, '%d [%d] (', cnt, u_dim * v_dim * w_dim);
 for i = 1:w_dim

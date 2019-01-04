@@ -154,7 +154,7 @@ for i = 1:ne1
         cnt = cnt + 1;
     end
 end
-fprintf(fid, '\t\tcurrent_entity_info[''NURBS_WEIGHT''] = temp\n\n');
+fprintf(fid, '\t\tcurrent_entity_info[''NURBS_WEIGHTS''] = temp\n\n');
 
 fprintf(fid, '\t\ttemp = {}\n');
 cnt = 1;

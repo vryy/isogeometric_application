@@ -54,7 +54,7 @@ for i = 1:ne
 end
 fprintf(fid, 'End Elements\n\n');
 
-fprintf(fid, 'Begin ElementalData NURBS_WEIGHT\n');
+fprintf(fid, 'Begin ElementalData NURBS_WEIGHTS\n');
 cnt = 1;
 b = p + 1;
 sum_mul = 0;

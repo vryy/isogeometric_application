@@ -20,13 +20,48 @@
 
 // Project includes
 #include "includes/define.h"
+#include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/cell_container.h"
+
+// #define USE_BRUTE_FORCE_TO_SEARCH_FOR_CELLS
+#define USE_R_TREE_TO_SEARCH_FOR_CELLS
+
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#include "custom_external_libraries/RTree.h"
+#endif
 
 
 namespace Kratos
 {
 
 bool BCellManager_RtreeSearchCallback(std::size_t id, void* arg);
+
+struct BCellManager_Helper
+{
+    template<typename knot_t>
+    static inline double GetKnotValue(const knot_t& p_knot)
+    {
+        return 0.0;
+    }
+};
+
+template<>
+inline double BCellManager_Helper::GetKnotValue<double>(const double& r_knot)
+{
+    return r_knot;
+}
+
+template<>
+inline double BCellManager_Helper::GetKnotValue<Knot<double> >(const Knot<double>& r_knot)
+{
+    return r_knot.Value();
+}
+
+template<>
+inline double BCellManager_Helper::GetKnotValue<typename Knot<double>::Pointer>(const typename Knot<double>::Pointer& p_knot)
+{
+    return p_knot->Value();
+}
 
 /**
  * Abstract cell manager for management of collection of b-cells. It provides facility to search for cells, or obtain cells in the consistent manner.
@@ -292,8 +327,8 @@ public:
 
         #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
-        double cmin[] = {pKnots[0]->Value()};
-        double cmax[] = {pKnots[1]->Value()};
+        double cmin[] = {BCellManager_Helper::GetKnotValue(pKnots[0])};
+        double cmax[] = {BCellManager_Helper::GetKnotValue(pKnots[1])};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
         #endif
 
@@ -451,8 +486,8 @@ public:
 
         #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
-        double cmin[] = {pKnots[0]->Value(), pKnots[2]->Value()};
-        double cmax[] = {pKnots[1]->Value(), pKnots[3]->Value()};
+        double cmin[] = {BCellManager_Helper::GetKnotValue(pKnots[0]), BCellManager_Helper::GetKnotValue(pKnots[2])};
+        double cmax[] = {BCellManager_Helper::GetKnotValue(pKnots[1]), BCellManager_Helper::GetKnotValue(pKnots[3])};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
         #endif
 
@@ -612,8 +647,8 @@ public:
 
         #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
-        double cmin[] = {pKnots[0]->Value(), pKnots[2]->Value(), pKnots[4]->Value()};
-        double cmax[] = {pKnots[1]->Value(), pKnots[3]->Value(), pKnots[5]->Value()};
+        double cmin[] = {BCellManager_Helper::GetKnotValue(pKnots[0]), BCellManager_Helper::GetKnotValue(pKnots[2]), BCellManager_Helper::GetKnotValue(pKnots[4])};
+        double cmax[] = {BCellManager_Helper::GetKnotValue(pKnots[1]), BCellManager_Helper::GetKnotValue(pKnots[3]), BCellManager_Helper::GetKnotValue(pKnots[5])};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
         #endif
 

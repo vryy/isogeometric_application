@@ -11,6 +11,7 @@
 
 // System includes
 #include <vector>
+#include <iomanip>
 
 // External includes
 #include <boost/array.hpp>
@@ -27,6 +28,7 @@
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
 
 #define ENABLE_PROFILING
+#define CHECK_REFINEMENT_COEFFICIENTS
 
 namespace Kratos
 {
@@ -189,6 +191,9 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     bool echo_refinement = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT);
     bool echo_refinement_detail = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT_DETAIL);
 
+    if (echo_refinement)
+        std::cout << "Basis function " << p_bf->Id() << " will be refined" << std::endl;
+
     // save the equation_id
     std::size_t equation_id = p_bf->EquationId();
 
@@ -220,13 +225,13 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             {
                 if(fabs((*it2)->Value() - (*it)->Value()) > cell_tol)
                 {
-                    // now we just add the middle one, but in the general we can add arbitrary values
+                    // now we just add the middle one, but in general we can add arbitrary values
                     // TODO find the way to generalize this or parameterize this
                     double ins_knot = 0.5 * ((*it)->Value() + (*it2)->Value());
-                    knot_t p_new_knot;
-                    p_new_knot = pFESpace->KnotVector(dim).pCreateUniqueKnot(ins_knot, cell_tol);
-                    pnew_local_knots[dim].push_back(p_new_knot);
-                    ins_knots[dim].push_back(p_new_knot->Value());
+                    knot_t pnew_knot;
+                    pnew_knot = pFESpace->KnotVector(dim).pCreateUniqueKnot(ins_knot, cell_tol);
+                    pnew_local_knots[dim].push_back(pnew_knot);
+                    ins_knots[dim].push_back(pnew_knot->Value());
                 }
             }
         }
@@ -255,7 +260,12 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             local_knots[0], local_knots[1], local_knots[2],
             ins_knots[0], ins_knots[1], ins_knots[2]);
     }
-    // KRATOS_WATCH(RefinedCoeffs)
+
+    if (echo_refinement)
+    {
+//        std::cout << std::fixed << std::setprecision(15);
+        KRATOS_WATCH(RefinedCoeffs)
+    }
 
     #ifdef ENABLE_PROFILING
     double time_1 = OpenMPUtils::GetCurrentTime() - start;
@@ -272,7 +282,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     std::vector<bf_t> pnew_bfs;
 
     // start to enumerate from the last equation id in the multipatch
-    // we always assign an incremental equation_id for the new refined bfs, so that the bfs on the boundary will automaticall match
+    // we always assign an incremental equation_id for the new refined bfs, so that the bfs on the boundary will automatically match
     std::size_t starting_id;
     if (pPatch->pParentMultiPatch() != NULL)
     {
@@ -289,6 +299,23 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     {
         numbers[0] = pnew_local_knots[0].size() - pFESpace->Order(0) - 1;
         numbers[1] = pnew_local_knots[1].size() - pFESpace->Order(1) - 1;
+
+        if (echo_refinement_detail)
+        {
+            std::cout << "refined basis functions of the next level:" << std::endl;
+            for(std::size_t j = 0; j < numbers[1]; ++j)
+            {
+                for(std::size_t i = 0; i < numbers[0]; ++i)
+                {
+                    for(std::size_t k = 0; k < pFESpace->Order(1) + 2; ++k)
+                        std::cout << " " << pnew_local_knots[1][j + k]->Value();
+                    std::cout << ";";
+                    for(std::size_t k = 0; k < pFESpace->Order(0) + 2; ++k)
+                        std::cout << " " << pnew_local_knots[0][i + k]->Value();
+                    std::cout << std::endl;
+                }
+            }
+        }
 
         for(std::size_t j = 0; j < numbers[1]; ++j)
         {
@@ -555,6 +582,32 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         }
     }
 
+    #ifdef CHECK_REFINEMENT_COEFFICIENTS
+    // check the refinement coefficients
+    std::vector<double> xi(TDim);
+    const std::size_t nsampling = 100;
+    double error = 0.0;
+    if (TDim == 2)
+    {
+        for (std::size_t i = 0; i < nsampling; ++i)
+        {
+            xi[0] = ((double)i) / (nsampling-1);
+            for (std::size_t j = 0; j < nsampling; ++j)
+            {
+                xi[1] = ((double)j) / (nsampling-1);
+                double f = p_bf->GetValueAt(xi);
+
+                double fs = 0.0;
+                for (std::size_t k = 0; k < pnew_bfs.size(); ++k)
+                    fs += RefinedCoeffs[k] * pnew_bfs[k]->GetValueAt(xi);
+
+                error += std::pow(f - fs, 2);
+            }
+        }
+    }
+    std::cout << "Error of computed refinement based on function evaluation: " << std::sqrt(error) << std::endl;
+    #endif
+
     // update the weight information for all the grid functions (except the control point grid function)
     std::vector<double> Weights = pFESpace->GetWeights();
 
@@ -696,7 +749,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         #endif
     }
 
-    // refine also the neighbors
+    // refine also the neighbor patches
     for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
     {
         typename PatchInterface<TDim>::Pointer pInterface = pPatch->pInterface(i);
@@ -916,7 +969,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
                 std::cout << "Additional Bf";
                 for(std::size_t i = 0; i < refined_bfs.size(); ++i)
                     std::cout << " " << refined_bfs[i];
-                std::cout << " of level " << level << " will be refined to maintain the linear independence..." << std::endl;
+                std::cout << " of level " << level << " will be refined to maintain the linear independence ..." << std::endl;
             }
 
             for(std::size_t i = 0; i < refined_bfs.size(); ++i)
@@ -940,6 +993,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
 } // namespace Kratos.
 
 #undef ENABLE_PROFILING
+#undef CHECK_REFINEMENT_COEFFICIENTS
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_REFINEMENT_UTILITY_H_INCLUDED defined
 

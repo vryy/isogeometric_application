@@ -60,6 +60,12 @@ void HBSplinesBasisFunction_SetId(HBSplinesBasisFunction<TDim>& rDummy, std::siz
 }
 
 template<int TDim>
+std::size_t HBSplinesBasisFunction_GetLevel(HBSplinesBasisFunction<TDim>& rDummy)
+{
+    return rDummy.Level();
+}
+
+template<int TDim>
 std::size_t HBSplinesBasisFunction_GetEquationId(HBSplinesBasisFunction<TDim>& rDummy)
 {
     return rDummy.EquationId();
@@ -111,6 +117,13 @@ typename Patch<TDim>::Pointer HBSplinesPatchUtility_CreatePatchFromBSplines(HBSp
     typename Patch<TDim>::Pointer pPatch)
 {
     return HBSplinesPatchUtility::CreatePatchFromBSplines<TDim>(pPatch);
+}
+
+template<int TDim>
+typename HBSplinesFESpace<TDim>::bf_t HBSplinesPatchUtility_GetBfByEquationId(HBSplinesPatchUtility& rDummy,
+    typename MultiPatch<TDim>::Pointer pMultiPatch, const std::size_t& EquationId)
+{
+    return rDummy.GetBfByEquationId<TDim>(pMultiPatch, EquationId);
 }
 
 ////////////////////////////////////////
@@ -175,6 +188,7 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     .add_property("Id", HBSplinesBasisFunction_GetId<TDim>, HBSplinesBasisFunction_SetId<TDim>)
     .add_property("EquationId", HBSplinesBasisFunction_GetEquationId<TDim>, HBSplinesBasisFunction_SetEquationId<TDim>)
     .def("Weight", &HBSplinesBasisFunction<TDim>::Weight)
+    .def("Level", &HBSplinesBasisFunction_GetLevel<TDim>)
     .def(self_ns::str(self))
     ;
 
@@ -262,6 +276,8 @@ void IsogeometricApplication_AddHBSplinesToPython()
     .def("CreatePatchFromBSplines", &HBSplinesPatchUtility_CreatePatchFromBSplines<3>)
     .def("ListBoundaryBfs", &HBSplinesPatchUtility_ListBoundaryBfs<2>)
     .def("ListBoundaryBfs", &HBSplinesPatchUtility_ListBoundaryBfs<3>)
+    .def("GetBfByEquationId", &HBSplinesPatchUtility_GetBfByEquationId<2>)
+    .def("GetBfByEquationId", &HBSplinesPatchUtility_GetBfByEquationId<3>)
     .def(self_ns::str(self))
     ;
 

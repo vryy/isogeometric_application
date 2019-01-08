@@ -69,16 +69,41 @@ public:
         rOStream << "Listing of boundary basis function on " << BoundarySideName(side) << " side of hierarchical B-Splines space:" << std::endl;
         rOStream << "<<<<<" << std::endl;
 
-//        for (bf_iterator it = pFESpace->bf_begin(); it != pFESpace->bf_end(); ++it)
-//        {
-//            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
-//            {
-//                // rOStream << "  bf " << (*it)->Id() << ", eq_id: " << (*it)->EquationId() << std::endl;
-//                rOStream << *(*it) << std::endl;
-//            }
-//        }
+        for (bf_iterator it = pFESpace->bf_begin(); it != pFESpace->bf_end(); ++it)
+        {
+            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
+            {
+                // rOStream << "  bf " << (*it)->Id() << ", eq_id: " << (*it)->EquationId() << std::endl;
+                rOStream << *(*it) << std::endl;
+            }
+        }
 
         rOStream << ">>>>>" << std::endl;
+    }
+
+    /// Get the basis function based on equation id
+    template<int TDim>
+    static typename HBSplinesFESpace<TDim>::bf_t GetBfByEquationId(typename MultiPatch<TDim>::Pointer pMultiPatch,
+        const std::size_t& EquationId)
+    {
+        typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
+
+        for (typename MultiPatch<TDim>::PatchContainerType::iterator it = pMultiPatch->begin();
+                it != pMultiPatch->end(); ++it)
+        {
+            typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
+            if (pFESpace == NULL)
+                KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+
+            if (pFESpace->HasBfByEquationId(EquationId))
+                return pFESpace->pGetBfByEquationId(EquationId);
+        }
+
+        std::stringstream ss;
+        ss << "The basis function with global id " << EquationId << " does not exist" << std::endl;
+        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+
+        return NULL;
     }
 
     /// Information

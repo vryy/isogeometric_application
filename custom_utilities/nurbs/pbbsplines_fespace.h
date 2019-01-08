@@ -550,6 +550,18 @@ public:
             KRATOS_THROW_ERROR(std::runtime_error, "Access index is not found:", Id)
     }
 
+    /// Check if the functional space has the EquationId
+    bool HasBfByEquationId(const std::size_t& EquationId) const
+    {
+        return (BaseType::mGlobalToLocal.find(EquationId) != BaseType::mGlobalToLocal.end());
+    }
+
+    /// Get the basis function by equation id
+    bf_t pGetBfByEquationId(const std::size_t& EquationId)
+    {
+        return this->operator[](BaseType::mGlobalToLocal[EquationId]);
+    }
+
     /// Overload assignment operator
     PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>& operator=(const PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>& rOther)
     {
@@ -630,6 +642,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const PBBSplinesFESpace
 
 } // namespace Kratos.
 
-#undef DEBUG_GEN_CELL    /// Get the underlying cell manager
+#undef DEBUG_GEN_CELL
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PBBSPLINES_FESPACE_H_INCLUDED defined

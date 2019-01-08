@@ -115,6 +115,7 @@ public:
             // KRATOS_WATCH(point)
 
             ModelPart::NodeType::Pointer pNewNode = mpModelPart->CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(idof), point.X(), point.Y(), point.Z());
+            pNewNode->SetValue(NURBS_WEIGHT, point.W());
         }
 
         #ifdef ENABLE_PROFILING
@@ -454,6 +455,9 @@ public:
                 std::cout << "WARNING: cell " << (*it_cell)->Id() << " cannot be casted to TCell" << std::endl;
             }
             //////////
+
+            // set the level
+            pNewElement->SetValue(HIERARCHICAL_LEVEL, (*it_cell)->Level());
 
             std::cout << "Entity " << element_name << " " << pNewElement->Id() << " is created" << std::endl;
             std::cout << "  Connectivity:";

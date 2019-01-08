@@ -67,6 +67,9 @@ public:
     /// Destructor
     virtual ~BCell() {}
 
+    /// Get the level of this cell
+    virtual std::size_t Level() const {return 1;}
+
     /// Get the coordinates
     knot_t XiMin() const {return mpXiMin;}
     int XiMinIndex() const {return mpXiMin->Index();}

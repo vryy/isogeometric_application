@@ -49,6 +49,12 @@ public:
     /// Get the Id
     std::size_t Id() const {return mId;}
 
+    /// Get the level of this cell
+    virtual std::size_t Level() const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+    }
+
     /// Clear internal data of this cell
     virtual void Reset()
     {

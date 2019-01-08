@@ -79,7 +79,7 @@ public:
     void SetLevel(const std::size_t& Level) {mLevel = Level;}
 
     /// Get the level of this cell
-    const std::size_t& Level() const {return mLevel;}
+    virtual std::size_t Level() const {return mLevel;}
 
     /// Add the basis function to the set. If it does exist in the set, return the internal one.
     /// Typically one shall add the basis function that has support domain covering this cell.

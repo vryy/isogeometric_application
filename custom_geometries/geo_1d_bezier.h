@@ -982,10 +982,10 @@ public:
             KRATOS_THROW_ERROR(std::logic_error, "The number of weights must be equal to number of nodes", __FUNCTION__)
 
         // find the existing integration rule or create new one if not existed
-        BezierUtils::RegisterIntegrationRule<2, 2, 2>(NumberOfIntegrationMethod, Degree1);
+        BezierUtils::RegisterIntegrationRule<1, 3, 1>(NumberOfIntegrationMethod, Degree1);
 
         // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
-        mpGeometryData = BezierUtils::RetrieveIntegrationRule<2, 2, 2>(NumberOfIntegrationMethod, Degree1);
+        mpGeometryData = BezierUtils::RetrieveIntegrationRule<1, 3, 1>(NumberOfIntegrationMethod, Degree1);
         BaseType::mpGeometryData = &(*mpGeometryData);
     }
 

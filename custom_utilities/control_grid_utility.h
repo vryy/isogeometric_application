@@ -25,6 +25,7 @@
 #include "custom_utilities/nurbs/structured_control_grid.h"
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
 
+//#define DEBUG_SUB_GRID
 
 namespace Kratos
 {
@@ -206,6 +207,7 @@ public:
             const std::vector<std::size_t>& indices)
     {
         typename UnstructuredControlGrid<TDataType>::Pointer pNewControlGrid = UnstructuredControlGrid<TDataType>::Create(indices.size());
+        pNewControlGrid->SetName(pControlGrid->Name());
         for (std::size_t i = 0; i < indices.size(); ++i)
         {
             if (indices[i] >= pControlGrid->Size())
@@ -229,6 +231,7 @@ public:
     static typename ControlGrid<TDataType>::Pointer ExtractSubGrid(typename ControlGrid<TDataType>::ConstPointer pControlGrid,
             const FESpace<TDim>& rFESpace, const FESpace<TDim-1>& rSubFESpace)
     {
+        #ifdef DEBUG_SUB_GRID
         std::cout << "rFESpace.FunctionIndices:";
         for (int i = 0; i < rFESpace.FunctionIndices().size(); ++i)
             std::cout << " " << rFESpace.FunctionIndices()[i];
@@ -243,6 +246,7 @@ public:
         for (int i = 0; i < pControlGrid->Size(); ++i)
             std::cout << "\n " << pControlGrid->GetData(i);
         std::cout << std::endl;
+        #endif
 
         std::vector<std::size_t> local_ids = rFESpace.LocalId(rSubFESpace.FunctionIndices());
         typename ControlGrid<TDataType>::Pointer pTmpControlGrid = ExtractSubGrid<TDataType>(pControlGrid, local_ids);
@@ -251,6 +255,7 @@ public:
         {
             const BSplinesFESpace<TDim-1>& rSubFESpace_ = dynamic_cast<const BSplinesFESpace<TDim-1>& >(rSubFESpace);
             typename StructuredControlGrid<TDim-1, TDataType>::Pointer pNewControlGrid = StructuredControlGrid<TDim-1, TDataType>::Create(rSubFESpace_.Numbers());
+            pNewControlGrid->SetName(pControlGrid->Name());
             pNewControlGrid->CopyFrom(*pTmpControlGrid);
             return pNewControlGrid;
         }
@@ -281,6 +286,8 @@ inline std::ostream& operator <<(std::ostream& rOStream, const ControlGridUtilit
 }
 
 } // namespace Kratos.
+
+#undef DEBUG_SUB_GRID
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CONTROL_GRID_UTILITY_H_INCLUDED defined
 

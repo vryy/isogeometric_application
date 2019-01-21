@@ -62,6 +62,7 @@ namespace Kratos
 
     KRATOS_CREATE_VARIABLE( int, HIERARCHICAL_LEVEL )
     KRATOS_CREATE_VARIABLE( int, BASIS_FUNCTION_INDEX )
+    KRATOS_CREATE_VARIABLE( int, EQUATION_INDEX )
 
     KratosIsogeometricApplication::KratosIsogeometricApplication()
     : mDummyConditionBezier( 0, Element::GeometryType::Pointer( new Geo1dBezier<Node<3> >() ) )
@@ -106,6 +107,7 @@ namespace Kratos
         KRATOS_REGISTER_VARIABLE( KNOT_BACK )
         KRATOS_REGISTER_VARIABLE( HIERARCHICAL_LEVEL )
         KRATOS_REGISTER_VARIABLE( BASIS_FUNCTION_INDEX )
+        KRATOS_REGISTER_VARIABLE( EQUATION_INDEX )
 
         // to make sure the variable imported from other application is registered
         KRATOS_REGISTER_3D_VARIABLE_WITH_COMPONENTS( LOCAL_COORDINATES )

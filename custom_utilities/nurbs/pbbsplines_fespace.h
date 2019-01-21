@@ -550,10 +550,16 @@ public:
             KRATOS_THROW_ERROR(std::runtime_error, "Access index is not found:", Id)
     }
 
-    /// Check if the functional space has the EquationId
+    /// Check if the functional space has the function with equation id
     bool HasBfByEquationId(const std::size_t& EquationId) const
     {
         return (BaseType::mGlobalToLocal.find(EquationId) != BaseType::mGlobalToLocal.end());
+    }
+
+    /// Check if the functional space has the function with Id
+    bool HasBfById(const std::size_t& Id) const
+    {
+        return (mFunctionsMap.find(Id) != mFunctionsMap.end());
     }
 
     /// Get the basis function by equation id

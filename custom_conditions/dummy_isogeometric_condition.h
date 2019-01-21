@@ -58,6 +58,8 @@ class DummyIsogeometricCondition : public Condition
         virtual Condition::Pointer Create(IndexType NewId, GeometryType::Pointer pGeom,
                                 PropertiesType::Pointer pProperties) const;
 
+        IntegrationMethod GetIntegrationMethod() const;
+
         /**
          * Calculates the local system contributions for this contact element
          */
@@ -96,6 +98,8 @@ class DummyIsogeometricCondition : public Condition
     private:
 
         IsogeometricGeometryType::Pointer mpIsogeometricGeometry;
+
+        IntegrationMethod mThisIntegrationMethod;
 
         friend class Serializer;
 

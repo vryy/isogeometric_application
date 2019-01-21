@@ -116,6 +116,13 @@ boost::python::list FESpace_BoundaryShiftedFunctionIndices(FESpace<TDim>& rDummy
 }
 
 template<int TDim>
+typename FESpace<TDim-1>::Pointer FESpace_ConstructBoundaryFESpace(FESpace<TDim>& rDummy, const int& iside)
+{
+    BoundarySide side = static_cast<BoundarySide>(iside);
+    return rDummy.ConstructBoundaryFESpace(side);
+}
+
+template<int TDim>
 void IsogeometricApplication_AddFESpacesToPython()
 {
 
@@ -134,6 +141,7 @@ void IsogeometricApplication_AddFESpacesToPython()
     .def("BoundaryFunctionIndices", &FESpace_BoundaryFunctionIndices<TDim>)
     .def("BoundaryFunctionIndicesByFlag", &FESpace_BoundaryFunctionIndicesByFlag<TDim>)
     .def("BoundaryShiftedFunctionIndices", &FESpace_BoundaryShiftedFunctionIndices<TDim>)
+    .def("ConstructBoundaryFESpace", &FESpace_ConstructBoundaryFESpace<TDim>)
     .def(self_ns::str(self))
     ;
 

@@ -136,10 +136,16 @@ void HBSplinesRefinementUtility_Refine(HBSplinesRefinementUtility& rDummy,
 }
 
 template<int TDim>
+void HBSplinesRefinementUtility_RefineBf(HBSplinesRefinementUtility& rDummy,
+        typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, const int& EchoLevel)
+{
+    rDummy.Refine<TDim>(pPatch, p_bf, EchoLevel);
+}
+
+template<int TDim>
 void HBSplinesRefinementUtility_RefineWindow(HBSplinesRefinementUtility& rDummy,
         typename Patch<TDim>::Pointer pPatch, boost::python::list& window, const int& EchoLevel)
 {
-
     std::vector<std::vector<double> > window_vector;
     std::size_t cnt1 = 0, cnt2 = 0;
     typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
@@ -194,18 +200,21 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
 
     ss.str(std::string());
     ss << "HBSplinesFESpace" << TDim << "D";
-    typename FESpace<TDim-1>::Pointer(HBSplinesFESpace<TDim>::*pointer_to_ConstructBoundaryFESpace1)(const BoundarySide& side) const = &HBSplinesFESpace<TDim>::ConstructBoundaryFESpace;
+//    typename FESpace<TDim-1>::Pointer(HBSplinesFESpace<TDim>::*pointer_to_ConstructBoundaryFESpace1)(const BoundarySide& side) const = &HBSplinesFESpace<TDim>::ConstructBoundaryFESpace;
     // typename FESpace<TDim-1>::Pointer(HBSplinesFESpace<TDim>::*pointer_to_ConstructBoundaryFESpace2)(const BoundarySide& side, const BoundaryRotation& rotation) const = &HBSplinesFESpace<TDim>::ConstructBoundaryFESpace;
     class_<HBSplinesFESpace<TDim>, typename HBSplinesFESpace<TDim>::Pointer, bases<FESpace<TDim> >, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def("__getitem__", &HBSplinesFESpace_GetItem<TDim>)
     .def("GetBoundaryBfs", &HBSplinesFESpace_ExtractBoundaryBfsByFlag<TDim>) // deprecated
     .def("ExtractBoundaryBfsByFlag", &HBSplinesFESpace_ExtractBoundaryBfsByFlag<TDim>)
-    .def("ConstructBoundaryFESpace", pointer_to_ConstructBoundaryFESpace1)
+//    .def("ConstructBoundaryFESpace", pointer_to_ConstructBoundaryFESpace1)
     // .def("ConstructBoundaryFESpace", pointer_to_ConstructBoundaryFESpace2)
     .def("UpdateCells", &HBSplinesFESpace<TDim>::UpdateCells)
     .def("MaxLevel", &HBSplinesFESpace_MaxLevel<TDim>)
     .def("SetMaxLevel", &HBSplinesFESpace<TDim>::SetMaxLevel)
+    .def("GetBfByEquationId", &HBSplinesFESpace<TDim>::pGetBfByEquationId)
+    .def("HasBfByEquationId", &HBSplinesFESpace<TDim>::HasBfByEquationId)
+    .def("HasBfById", &HBSplinesFESpace<TDim>::HasBfById)
     .def(self_ns::str(self))
     ;
 
@@ -285,6 +294,8 @@ void IsogeometricApplication_AddHBSplinesToPython()
     ("HBSplinesRefinementUtility", init<>())
     .def("Refine", &HBSplinesRefinementUtility_Refine<2>)
     .def("Refine", &HBSplinesRefinementUtility_Refine<3>)
+    .def("Refine", &HBSplinesRefinementUtility_RefineBf<2>)
+    .def("Refine", &HBSplinesRefinementUtility_RefineBf<3>)
     .def("RefineWindow", &HBSplinesRefinementUtility_RefineWindow<2>)
     .def("RefineWindow", &HBSplinesRefinementUtility_RefineWindow<3>)
     .def("LinearDependencyRefine", &HBSplinesRefinementUtility_LinearDependencyRefine<2>)

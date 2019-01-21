@@ -179,6 +179,7 @@ public:
 
     /**************************************************************************
                             CONTROL VALUES
+      IT IS IMPORTANT TO NOTE THAT THE CONTROL VALUE MUST BE THE WEIGHTED ONE
     **************************************************************************/
 
     template<class TVariableType>

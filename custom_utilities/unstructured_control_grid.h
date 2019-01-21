@@ -45,7 +45,10 @@ public:
     virtual ~UnstructuredControlGrid() {}
 
     /// Create a new control grid pointer
-    static typename UnstructuredControlGrid::Pointer Create(const std::size_t& size) {return typename UnstructuredControlGrid::Pointer(new UnstructuredControlGrid(size));}
+    static typename UnstructuredControlGrid::Pointer Create(const std::size_t& size)
+    {
+        return typename UnstructuredControlGrid::Pointer(new UnstructuredControlGrid(size));
+    }
 
     /// Clone this grid function
     virtual typename BaseType::Pointer const Clone()

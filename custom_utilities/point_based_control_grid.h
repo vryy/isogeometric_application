@@ -78,6 +78,7 @@ public:
     }
 
     /// Get the data at specific point
+    /// It is noted that the return value is unweighted one
     virtual DataType GetData(const std::size_t& i) const
     {
         // TODO Get and Set data in the sequential manner can be expensive if the underlying FESPace uses std::set to store the basis functions.
@@ -86,7 +87,7 @@ public:
     }
 
     /// Set the data at specific point
-    /// Be careful with this method. You can destroy the coherency of internal data.
+    /// It is noted that the setting value is unweighted one
     virtual void SetData(const std::size_t& i, const DataType& value)
     {
         // TODO see comment in GetData

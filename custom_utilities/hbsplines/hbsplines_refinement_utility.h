@@ -44,6 +44,8 @@ struct HBSplinesRefinementUtility_Helper
 
     static void Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& echo_level);
 
+    static void Refine(typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, const int& echo_level);
+
     static std::pair<std::vector<std::size_t>, std::vector<bf_t> > Refine(typename Patch<TDim>::Pointer pPatch,
             typename HBSplinesFESpace<TDim>::bf_t p_bf, std::set<std::size_t>& refined_patches, const int& echo_level);
 
@@ -75,14 +77,19 @@ public:
         HBSplinesRefinementUtility_Helper<TDim>::Refine(pPatch, Id, echo_level);
     }
 
+    /// Refine a single B-Splines basis function
+    template<int TDim>
+    static void Refine(typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, const int& echo_level)
+    {
+        HBSplinesRefinementUtility_Helper<TDim>::Refine(pPatch, p_bf, echo_level);
+    }
 
-    /// Refine the basis functions in a region
+    /// Refine all basis functions in a region
     template<int TDim>
     static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, const int& echo_level)
     {
         HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(pPatch, window, echo_level);
     }
-
 
     /// Perform additional refinement to ensure linear independence
     /// In this algorithm, every bf in each level will be checked. If the support domain of a bf contained in the domain_manager of that level, this bf will be refined. According to the paper of Vuong et al, this will produce a linear independent bases.
@@ -91,7 +98,6 @@ public:
     {
         HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(pPatch, refine_cycle, echo_level);
     }
-
 
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
@@ -112,6 +118,33 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesRefineme
     rOStream << std::endl;
     rThis.PrintData(rOStream);
     return rOStream;
+}
+
+template<int TDim>
+inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>::Pointer pPatch,
+        typename HBSplinesFESpace<TDim>::bf_t p_bf, const int& echo_level)
+{
+    typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
+    typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
+
+    if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
+
+    // extract the hierarchical B-Splines space
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    if (pFESpace == NULL)
+        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+
+    // does not refine if maximum level is reached
+    if(p_bf->Level() == pFESpace->MaxLevel())
+    {
+        std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " is skipped." << std::endl;
+        return;
+    }
+
+    // refine the patch
+    std::set<std::size_t> refined_patches;
+    Refine(pPatch, p_bf, refined_patches, echo_level);
 }
 
 template<int TDim>
@@ -192,7 +225,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     bool echo_refinement_detail = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT_DETAIL);
 
     if (echo_refinement)
-        std::cout << "Basis function " << p_bf->Id() << " will be refined" << std::endl;
+        std::cout << "Basis function " << p_bf->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
 
     // save the equation_id
     std::size_t equation_id = p_bf->EquationId();
@@ -518,6 +551,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                     // transfer the control point information
                     const ControlPointType& oldC = p_bf->GetValue(CONTROL_POINT);
+                    const double& weight = oldC.W();
                     ControlPointType& newC = pnew_bf->GetValue(CONTROL_POINT);
                     newC += RefinedCoeffs[i_func] * oldC;
                     // pnew_bf->SetValue(CONTROL_POINT, newC);
@@ -607,39 +641,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     }
     std::cout << "Error of computed refinement based on function evaluation: " << std::sqrt(error) << std::endl;
     #endif
-
-    // update the weight information for all the grid functions (except the control point grid function)
-    std::vector<double> Weights = pFESpace->GetWeights();
-
-    typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
-    for (typename Patch<TDim>::DoubleGridFunctionContainerType::iterator it = DoubleGridFunctions_.begin();
-            it != DoubleGridFunctions_.end(); ++it)
-    {
-        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
-        if (pThisFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
-        pThisFESpace->SetWeights(Weights);
-    }
-
-    typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
-    for (typename Patch<TDim>::Array1DGridFunctionContainerType::iterator it = Array1DGridFunctions_.begin();
-            it != Array1DGridFunctions_.end(); ++it)
-    {
-        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
-        if (pThisFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
-        pThisFESpace->SetWeights(Weights);
-    }
-
-    typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
-    for (typename Patch<TDim>::VectorGridFunctionContainerType::iterator it = VectorGridFunctions_.begin();
-            it != VectorGridFunctions_.end(); ++it)
-    {
-        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
-        if (pThisFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
-        pThisFESpace->SetWeights(Weights);
-    }
 
     #ifdef ENABLE_PROFILING
     double time_2 = OpenMPUtils::GetCurrentTime() - start;
@@ -738,6 +739,41 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     }
     */
 
+    // update the weight information for all the grid functions (except the control point grid function)
+    std::vector<double> Weights = pFESpace->GetWeights();
+    std::cout << "weights size at refinement: " << Weights.size() << std::endl;
+
+    typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
+    for (typename Patch<TDim>::DoubleGridFunctionContainerType::iterator it = DoubleGridFunctions_.begin();
+            it != DoubleGridFunctions_.end(); ++it)
+    {
+        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
+        if (pThisFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
+        pThisFESpace->SetWeights(Weights);
+    }
+
+    typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
+    for (typename Patch<TDim>::Array1DGridFunctionContainerType::iterator it = Array1DGridFunctions_.begin();
+            it != Array1DGridFunctions_.end(); ++it)
+    {
+        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
+        if (pThisFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
+        pThisFESpace->SetWeights(Weights);
+    }
+
+    typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
+    for (typename Patch<TDim>::VectorGridFunctionContainerType::iterator it = VectorGridFunctions_.begin();
+            it != VectorGridFunctions_.end(); ++it)
+    {
+        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
+        if (pThisFESpace == NULL)
+            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
+        pThisFESpace->SetWeights(Weights);
+    }
+
+    // record the refinement history
     pFESpace->RecordRefinementHistory(p_bf->Id());
     if(echo_refinement)
     {
@@ -750,6 +786,9 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     }
 
     // refine also the neighbor patches
+    if(echo_refinement)
+        std::cout << "Patch " << pPatch->Id() << " number of interfaces: " << pPatch->NumberOfInterfaces() << std::endl;
+
     for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
     {
         typename PatchInterface<TDim>::Pointer pInterface = pPatch->pInterface(i);
@@ -777,10 +816,17 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         {
             if(echo_refinement)
             {
+                std::cout << "######################################" << std::endl;
                 std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
             }
 
             Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
+
+            if(echo_refinement)
+            {
+                std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " is refined" << std::endl;
+                std::cout << "######################################" << std::endl;
+            }
         }
     }
 
@@ -966,7 +1012,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
         {
             if(echo_refinement)
             {
-                std::cout << "Additional Bf";
+                std::cout << "Additional Bf of patch " << pPatch->Id() << ":";
                 for(std::size_t i = 0; i < refined_bfs.size(); ++i)
                     std::cout << " " << refined_bfs[i];
                 std::cout << " of level " << level << " will be refined to maintain the linear independence ..." << std::endl;

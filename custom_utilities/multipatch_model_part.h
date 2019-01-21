@@ -205,7 +205,9 @@ public:
 
         // construct the boundary patch
         typename Patch<TDim-1>::Pointer pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
+        #ifdef DEBUG_GEN_ENTITY
         KRATOS_WATCH(*pBoundaryPatch)
+        #endif
 
         // get the grid function for control points
         const GridFunction<TDim-1, ControlPointType>& rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();

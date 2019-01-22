@@ -112,7 +112,7 @@ public:
             // KRATOS_WATCH(local_id)
 
             const ControlPointType& point = mpMultiPatch->pGetPatch(patch_id)->pControlPointGridFunction()->pControlGrid()->GetData(local_id);
-            // KRATOS_WATCH(point)
+//            std::cout << "dof " << idof << ": point " << point << ", patch " << patch_id << std::endl;
 
             ModelPart::NodeType::Pointer pNewNode = mpModelPart->CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(idof), point.X(), point.Y(), point.Z());
             pNewNode->SetValue(NURBS_WEIGHT, point.W());
@@ -460,6 +460,7 @@ public:
 
             // set the level
             pNewElement->SetValue(HIERARCHICAL_LEVEL, (*it_cell)->Level());
+            pNewElement->SetValue(CELL_INDEX, (*it_cell)->Id());
 
             std::cout << "Entity " << element_name << " " << pNewElement->Id() << " is created" << std::endl;
             std::cout << "  Connectivity:";

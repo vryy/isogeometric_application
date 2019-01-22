@@ -106,6 +106,76 @@ public:
         return NULL;
     }
 
+    /// This subroutine finds the equation id that are duplicated among patches and print it out. It is useful to check for refinement.
+    template<int TDim>
+    static void ReportDuplicatedEquationId(typename MultiPatch<TDim>::Pointer pMultiPatch, const bool& throw_error)
+    {
+        std::cout << "At " << __FUNCTION__ << std::endl;
+        typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
+        typedef typename HBSplinesFESpace<TDim>::bf_iterator bf_iterator;
+
+        // collect all dofs in each patch
+        typedef std::map<std::size_t, std::vector<std::pair<std::size_t, std::size_t> > > map_t;
+        map_t dofs_map;
+
+        for (typename MultiPatch<TDim>::PatchContainerType::iterator it = pMultiPatch->begin();
+                it != pMultiPatch->end(); ++it)
+        {
+            typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
+            if (pFESpace == NULL)
+                KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+
+            for (bf_iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
+            {
+                dofs_map[(*it_bf)->EquationId()].push_back(std::make_pair(it->Id(), (*it_bf)->Id()));
+            }
+        }
+
+        for (map_t::iterator it = dofs_map.begin(); it != dofs_map.end(); ++it)
+        {
+            if (it->second.size() > 1)
+            {
+                std::cout << "dof " << it->first << " has the bf:" << std::endl;
+                double x = 0.0, y = 0.0, z = 0.0;
+                for (std::size_t i = 0; i < it->second.size(); ++i)
+                {
+                    typename Patch<TDim>::Pointer pPatch = pMultiPatch->pGetPatch(it->second[i].first);
+                    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+
+                    bf_t p_bf = pFESpace->operator()(it->second[i].second);
+                    std::cout << " patch " << pPatch->Id() << ", bf " << p_bf->Id()
+                              << ", lvl: " << p_bf->Level()
+                              << ", control point: " << p_bf->GetValue(CONTROL_POINT) << std::endl;
+                    x += p_bf->GetValue(CONTROL_POINT).X();
+                    y += p_bf->GetValue(CONTROL_POINT).Y();
+                    z += p_bf->GetValue(CONTROL_POINT).Z();
+                }
+
+                x /= it->second.size();
+                y /= it->second.size();
+                z /= it->second.size();
+
+                if (throw_error)
+                {
+                    const double tol = 1.0e-10;
+                    for (std::size_t i = 0; i < it->second.size(); ++i)
+                    {
+                        typename Patch<TDim>::Pointer pPatch = pMultiPatch->pGetPatch(it->second[i].first);
+                        typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+
+                        bf_t p_bf = pFESpace->operator()(it->second[i].second);
+
+                        double err = std::sqrt(std::pow(p_bf->GetValue(CONTROL_POINT).X() - x, 2) + std::pow(p_bf->GetValue(CONTROL_POINT).Y() - y, 2) + std::pow(p_bf->GetValue(CONTROL_POINT).Z() - z, 2));
+                        if (err > tol)
+                            KRATOS_THROW_ERROR(std::logic_error, "The CONTROL_POINT is not consistent at dof", it->first)
+                    }
+                }
+            }
+        }
+
+        std::cout << __FUNCTION__ << " completed" << std::endl;
+    }
+
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {

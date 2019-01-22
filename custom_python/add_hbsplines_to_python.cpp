@@ -126,6 +126,13 @@ typename HBSplinesFESpace<TDim>::bf_t HBSplinesPatchUtility_GetBfByEquationId(HB
     return rDummy.GetBfByEquationId<TDim>(pMultiPatch, EquationId);
 }
 
+template<int TDim>
+void HBSplinesPatchUtility_ReportDuplicatedEquationId(HBSplinesPatchUtility& rDummy,
+    typename MultiPatch<TDim>::Pointer pMultiPatch, const bool& throw_error)
+{
+    return rDummy.ReportDuplicatedEquationId<TDim>(pMultiPatch, throw_error);
+}
+
 ////////////////////////////////////////
 
 template<int TDim>
@@ -287,6 +294,8 @@ void IsogeometricApplication_AddHBSplinesToPython()
     .def("ListBoundaryBfs", &HBSplinesPatchUtility_ListBoundaryBfs<3>)
     .def("GetBfByEquationId", &HBSplinesPatchUtility_GetBfByEquationId<2>)
     .def("GetBfByEquationId", &HBSplinesPatchUtility_GetBfByEquationId<3>)
+    .def("ReportDuplicatedEquationId", &HBSplinesPatchUtility_ReportDuplicatedEquationId<2>)
+    .def("ReportDuplicatedEquationId", &HBSplinesPatchUtility_ReportDuplicatedEquationId<3>)
     .def(self_ns::str(self))
     ;
 

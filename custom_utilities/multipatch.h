@@ -234,7 +234,7 @@ public:
             if ((*it)->IsPrimary() == true)
             {
                 last = (*it)->pFESpace()->Enumerate(last);
-                std::cout << "At " << __FUNCTION__ << ", last: " << last << std::endl;
+                // std::cout << "At " << __FUNCTION__ << ", last: " << last << std::endl;
 
                 // enumerate the interface
                 for (std::size_t i = 0; i < (*it)->NumberOfInterfaces(); ++i)

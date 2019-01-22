@@ -303,8 +303,8 @@ public:
     }
 
     /// Enumerate the dofs of each grid function. This function is used to initialize the equation id for all basis functions.
-    /// It shall not be used after refinement.
     /// If the dof does not have pre-existing value, which assumes -1, it will be assigned the incremental value.
+    /// This function can be used after refinement, providing that all the -1 are overrided, and the start value must be the latest one on the multipatch.
     virtual std::size_t& Enumerate(std::size_t& start)
     {
         BaseType::mGlobalToLocal.clear();

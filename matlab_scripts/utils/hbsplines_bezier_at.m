@@ -49,4 +49,46 @@ for i = 1:num_points
     Ne = C{e} * B;
     Re = We .* Ne / dot(We,Ne);
     Pip(i,:) = Re' * Pe;
+
+
+%    % compute the derivatives w.r.t xi by numerical differentiation
+%    dxi = 1.0e-6;
+%    for k = 0:p1
+%        y_xi = bezier(local_xi+dxi,k,p1);
+%        for l = 0:p2
+%            y_eta  = bezier(local_eta,l,p2);
+%            num = k*(p2+1)+l+1;
+%            B(num) = y_xi * y_eta;
+%        end
+%    end
+
+%    Ne1 = C{e} * B;
+%    Re1 = We .* Ne1 / dot(We,Ne1);
+%    dRe1 = (Re1 - Re) / dxi
+
+%    % compute the derivatives w.r.t eta by numerical differentiation
+%    deta = 1.0e-6;
+%    for k = 0:p1
+%        y_xi = bezier(local_xi,k,p1);
+%        for l = 0:p2
+%            y_eta  = bezier(local_eta+deta,l,p2);
+%            num = k*(p2+1)+l+1;
+%            B(num) = y_xi * y_eta;
+%        end
+%    end
+
+%    Ne2 = C{e} * B;
+%    Re2 = We .* Ne2 / dot(We,Ne2);
+%    dRe2 = (Re2 - Re) / dxi
+
+%    % compute the Jacobian
+%    Pe
+%    jac1 = [0.0 0.0];
+%    jac1 = jac1 + dRe1'*Pe(:,1:2);
+%    jac2 = [0.0 0.0];
+%    jac2 = jac2 + dRe2'*Pe(:,1:2);
+%    jac1
+%    jac2
+%    jac = [jac1;jac2]
+%    det(jac)
 end

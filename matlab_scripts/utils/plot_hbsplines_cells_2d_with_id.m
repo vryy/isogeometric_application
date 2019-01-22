@@ -1,15 +1,11 @@
-%% plot the hierarchical B-Splines sampling points using Cox-de-Boor formula
-function plot_sampling_hbsplines_cells_2d(Xi,Eta,P,W,Id,S,C,N,params)
-Pts = zeros(length(S),2);
+%% plot the hierarchical B-Splines cells
+function plot_hbsplines_cells_2d_with_id(Xi,Eta,P,W,Id,S,C,N,CId,params)
+Pts = zeros(4,2);
 for c = 1:length(S)
-    Pts(1,1) = S{c}(1,1);
-    Pts(1,2) = S{c}(2,1);
-    Pts(2,1) = S{c}(1,2);
-    Pts(2,2) = S{c}(2,1);
-    Pts(3,1) = S{c}(1,2);
-    Pts(3,2) = S{c}(2,2);
-    Pts(4,1) = S{c}(1,1);
-    Pts(4,2) = S{c}(2,2);
+    Pts(1,:) = [S{c}(1,1) S{c}(2,1)];
+    Pts(2,:) = [S{c}(1,2) S{c}(2,1)];
+    Pts(3,:) = [S{c}(1,2) S{c}(2,2)];
+    Pts(4,:) = [S{c}(1,1) S{c}(2,2)];
 
     % Pts
     if isfield(params,'adjust')
@@ -30,7 +26,6 @@ for c = 1:length(S)
             end
         end
     end
-%    Pts
 
     if strcmp(params.method, 'cdb')
         Pip = hbsplines_cdb_at(Pts,Xi,Eta,P,W,params);
@@ -43,6 +38,10 @@ for c = 1:length(S)
     line([Pip(2,1) Pip(3,1)],[Pip(2,2) Pip(3,2)]);
     line([Pip(3,1) Pip(4,1)],[Pip(3,2) Pip(4,2)]);
     line([Pip(4,1) Pip(1,1)],[Pip(4,2) Pip(1,2)]);
+
+    tx = (Pip(1,1) + Pip(2,1) + Pip(3,1) + Pip(4,1)) / 4;
+    ty = (Pip(1,2) + Pip(2,2) + Pip(3,2) + Pip(4,2)) / 4;
+    text(tx, ty, num2str(CId{c}));
 end
 
 % params.num_points1 = 11;

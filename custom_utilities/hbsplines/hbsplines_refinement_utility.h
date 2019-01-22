@@ -135,10 +135,10 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
-    // does not refine if maximum level is reached
-    if(p_bf->Level() == pFESpace->MaxLevel())
+    // do not refine if maximum level is reached
+    if(p_bf->Level() >= pFESpace->MaxLevel())
     {
-        std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " is skipped." << std::endl;
+        std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " of patch " << pPatch->Id() << " is skipped." << std::endl;
         return;
     }
 
@@ -180,9 +180,9 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     }
 
     // does not refine if maximum level is reached
-    if(p_bf->Level() == pFESpace->MaxLevel())
+    if(p_bf->Level() >= pFESpace->MaxLevel())
     {
-        std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " is skipped." << std::endl;
+        std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " of patch " << pPatch->Id() << " is skipped." << std::endl;
         return;
     }
 
@@ -225,7 +225,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     bool echo_refinement_detail = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT_DETAIL);
 
     if (echo_refinement)
-        std::cout << "Basis function " << p_bf->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
+        std::cout << "Basis function " << p_bf->Id() << " (lvl: " << p_bf->Level() << ") of patch " << pPatch->Id() << " will be refined" << std::endl;
 
     // save the equation_id
     std::size_t equation_id = p_bf->EquationId();
@@ -383,21 +383,26 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 std::size_t i_func = j * numbers[0] + i;
 
                 // set the boundary information
-                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))
-                    if (i == 0)
-                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
+//                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))
+//                    if (i == 0)
+//                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
 
-                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BRIGHT_)))
-                    if (i == numbers[0]-1)
-                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+//                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BRIGHT_)))
+//                    if (i == numbers[0]-1)
+//                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
 
-                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))
-                    if (j == 0)
-                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
+//                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))
+//                    if (j == 0)
+//                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
 
-                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BTOP_)))
-                    if (j == numbers[1]-1)
-                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BTOP_));
+//                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BTOP_)))
+//                    if (j == numbers[1]-1)
+//                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BTOP_));
+
+                if (knot_container_t::IsOnLeft(pLocalKnots1, pFESpace->Order(0))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
+                if (knot_container_t::IsOnRight(pLocalKnots1, pFESpace->Order(0))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+                if (knot_container_t::IsOnLeft(pLocalKnots2, pFESpace->Order(1))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
+                if (knot_container_t::IsOnRight(pLocalKnots2, pFESpace->Order(1))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
 
                 // assign new equation id
                 pnew_bf->SetEquationId(++starting_id);
@@ -520,29 +525,36 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     std::size_t i_func = (l * numbers[1] + j) * numbers[0] + i;
 
                     // set the boundary information
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))
-                        if (i == 0)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
+//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))
+//                        if (i == 0)
+//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BRIGHT_)))
-                        if (i == numbers[0]-1)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BRIGHT_)))
+//                        if (i == numbers[0]-1)
+//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BFRONT_)))
-                        if (j == 0)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BFRONT_));
+//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BFRONT_)))
+//                        if (j == 0)
+//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BFRONT_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBACK_)))
-                        if (j == numbers[1]-1)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBACK_));
+//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBACK_)))
+//                        if (j == numbers[1]-1)
+//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBACK_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))
-                        if (l == 0)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
+//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))
+//                        if (l == 0)
+//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
 
-                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BTOP_)))
-                        if (l == numbers[2]-1)
-                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BTOP_));
+//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BTOP_)))
+//                        if (l == numbers[2]-1)
+//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BTOP_));
+
+                    if (knot_container_t::IsOnLeft(pLocalKnots1, pFESpace->Order(0))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
+                    if (knot_container_t::IsOnRight(pLocalKnots1, pFESpace->Order(0))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+                    if (knot_container_t::IsOnLeft(pLocalKnots2, pFESpace->Order(1))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BFRONT_));
+                    if (knot_container_t::IsOnRight(pLocalKnots2, pFESpace->Order(1))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BBACK_));
+                    if (knot_container_t::IsOnLeft(pLocalKnots3, pFESpace->Order(2))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
+                    if (knot_container_t::IsOnRight(pLocalKnots3, pFESpace->Order(2))) pnew_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
 
                     // assign new equation id
                     pnew_bf->SetEquationId(++starting_id);

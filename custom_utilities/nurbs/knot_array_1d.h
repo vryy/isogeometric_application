@@ -310,6 +310,27 @@ public:
         return reversed_knots;
     }
 
+    /// Check if a local knot vector is on the left side. It is on the left side if the outer left knots are repeated (p+1) times.
+    /// It is assumed that the input local knot vector must have size (p+2).
+    static bool IsOnLeft(const std::vector<knot_t>& knots, const std::size_t& p)
+    {
+        for (std::size_t i = 0; i < p; ++i)
+            if (knots[i+1]->Value() != knots[i]->Value())
+                return false;
+        return true;
+    }
+
+    /// Check if a local knot vector is on the right side. It is on the right side if the outer right knots are repeated (p+1) times.
+    /// It is assumed that the input local knot vector must have size (p+2).
+    static bool IsOnRight(const std::vector<knot_t>& knots, const std::size_t& p)
+    {
+        std::size_t last = knots.size() - 1;
+        for (std::size_t i = 0; i < p; ++i)
+            if (knots[last-i]->Value() != knots[last-1-i]->Value())
+                return false;
+        return true;
+    }
+
     /// Compare the two knot vectors
     bool operator==(const KnotArray1D<TDataType>& rOther) const
     {

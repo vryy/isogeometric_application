@@ -13,6 +13,7 @@
 #include <ctime>
 #include <vector>
 #include <fstream>
+#include <iomanip>
 
 // External includes
 
@@ -46,6 +47,9 @@ public:
         typedef typename TFESpaceType::bf_container_t bf_container_t;
         typedef typename TFESpaceType::cell_container_t cell_container_t;
         typedef ControlPoint<double> ControlPointType;
+
+        // set the export accuracy
+        rOStream << std::setprecision(15);
 
         std::size_t patch_id = pPatch->Id();
         rOStream << "%%Information on " << pPatch->pFESpace()->Type() << " patch " << patch_id << "\n\n";
@@ -138,6 +142,7 @@ public:
 
             // write the boundary of the cell
             rOStream << "% cell " << cnt << " information" << std::endl;
+            rOStream << "P" << patch_id << "_CId{" << cnt << "} = " << (*it_cell)->Id() << ";\n";
             rOStream << "P" << patch_id << "_S{" << cnt << "} = [" << (*it_cell)->XiMinValue() << " " << (*it_cell)->XiMaxValue();
             if (TFESpaceType::Dim() > 1) rOStream << "; " << (*it_cell)->EtaMinValue() << " " << (*it_cell)->EtaMaxValue();
             if (TFESpaceType::Dim() > 2) rOStream << "; " << (*it_cell)->ZetaMinValue() << " " << (*it_cell)->ZetaMaxValue();
@@ -211,7 +216,16 @@ public:
         rOStream << "P" << patch_id << "_cell_params.method = 'bezier';\n";
         rOStream << "P" << patch_id << "_cell_params.adjust = 1;\n";
         rOStream << "figure\n";
-        rOStream << "plot_sampling_hbsplines_cells_" << TFESpaceType::Dim() << "d(P" << patch_id << "_Xi,P" << patch_id << "_Eta,P" << patch_id << "_P,P" << patch_id << "_W,P" << patch_id << "_EqId,P" << patch_id << "_S,P" << patch_id << "_C,P" << patch_id << "_N,P" << patch_id << "_cell_params);\n";
+        rOStream << "plot_hbsplines_cells_" << TFESpaceType::Dim() << "d_with_id(P" << patch_id << "_Xi"
+                 << ",P" << patch_id << "_Eta"
+                 << ",P" << patch_id << "_P"
+                 << ",P" << patch_id << "_W"
+                 << ",P" << patch_id << "_EqId"
+                 << ",P" << patch_id << "_S"
+                 << ",P" << patch_id << "_C"
+                 << ",P" << patch_id << "_N"
+                 << ",P" << patch_id << "_CId"
+                 << ",P" << patch_id << "_cell_params);\n";
         rOStream << "\n";
 
         rOStream << std::endl;

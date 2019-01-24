@@ -12,7 +12,7 @@
 // Project includes
 #include "custom_utilities/multipatch_refinement_utility.h"
 
-//#ifdef DEBUG_INS_KNOTS
+#define DEBUG_INS_KNOTS
 
 namespace Kratos
 {
@@ -28,24 +28,15 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the NURBS patch")
 
-    #ifdef DEBUG_INS_KNOTS
-    std::cout << "ins_knots:";
-    for (unsigned int i = 0; i < ins_knots.size(); ++i)
-    {
-        for (unsigned int j = 0; j < ins_knots[i].size(); ++j)
-        {
-            std::cout << " " << ins_knots[i][j];
-        }
-        std::cout << ";";
-    }
-    std::cout << std::endl;
-    #endif
-
     bool to_refine = false;
     if (refined_patches.find( pPatch->Id() ) == refined_patches.end())
     // the patch is not yet refined
     {
-        to_refine = true;
+        for (unsigned int i = 0; i < TDim; ++i)
+        {
+            if ( ins_knots[i].size() != 0 )
+                to_refine = true;
+        }
     }
     else
     // the patch is refined but it has some unrefined directions
@@ -59,6 +50,24 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
     if (to_refine)
     {
+        std::cout << "patch " << pPatch->Id() << " will be refined" << std::endl;
+//        std::cout << " ins_knots.size:";
+//        for (unsigned int i = 0; i < TDim; ++i)
+//            std::cout << " " << ins_knots[i].size();
+//        std::cout << std::endl;
+        #ifdef DEBUG_INS_KNOTS
+        std::cout << " ins_knots:";
+        for (unsigned int i = 0; i < ins_knots.size(); ++i)
+        {
+            for (unsigned int j = 0; j < ins_knots[i].size(); ++j)
+            {
+                std::cout << " " << ins_knots[i][j];
+            }
+            std::cout << ";";
+        }
+        std::cout << std::endl;
+        #endif
+
         // create new patch with same Id
         typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
         pNewPatch->SetPrefix(pPatch->Prefix());
@@ -201,9 +210,11 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
                 std::vector<int> param_dirs_1 = ParameterDirection<3>::Get(pInterface->Side1());
                 std::vector<int> param_dirs_2 = ParameterDirection<3>::Get(pInterface->Side2());
 
-                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(0) ] ] = KnotArray1D<double>::CloneKnots(ins_knots[param_dirs_1[0]], pInterface->Direction(0));
-                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(1) ] ] = KnotArray1D<double>::CloneKnots(ins_knots[param_dirs_1[1]], pInterface->Direction(1));
+                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(0) ] ] = KnotArray1D<double>::CloneKnotsWithPivot(new_knots[param_dirs_1[0]].back(), ins_knots[param_dirs_1[0]], pInterface->Direction(0));
+                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(1) ] ] = KnotArray1D<double>::CloneKnotsWithPivot(new_knots[param_dirs_1[1]].back(), ins_knots[param_dirs_1[1]], pInterface->Direction(1));
             }
+
+            std::cout << "Neighbor patch " << pNeighbor->Id() << " of patch " << pPatch->Id() << " is accounted" << std::endl;
 
             InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots, trans_mats, record_trans_mat);
 

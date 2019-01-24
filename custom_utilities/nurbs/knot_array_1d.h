@@ -301,13 +301,33 @@ public:
         return std::vector<TDataType>{};
     }
 
+    /// Compute the knots in the respective direction
+    static std::vector<TDataType> CloneKnotsWithPivot(const TDataType& pivot, const std::vector<TDataType>& knots, const BoundaryDirection& direction)
+    {
+        if (direction == _FORWARD_)
+        {
+            return knots;
+        }
+        else if (direction == _REVERSED_)
+        {
+            return ReverseKnotsWithPivot(pivot, knots);
+        }
+        return std::vector<TDataType>{};
+    }
+
     /// Compute the reversed knots, i.e. 1-k
-    static std::vector<TDataType> ReverseKnots(const std::vector<TDataType>& knots)
+    static std::vector<TDataType> ReverseKnotsWithPivot(const TDataType& pivot, const std::vector<TDataType>& knots)
     {
         std::vector<TDataType> reversed_knots(knots.size());
         for (std::size_t i = 0; i < reversed_knots.size(); ++i)
-            reversed_knots[i] = knots.back() - knots[i];
+            reversed_knots[i] = pivot - knots[i];
         return reversed_knots;
+    }
+
+    /// Compute the reversed knots, i.e. 1-k
+    static std::vector<TDataType> ReverseKnots(const std::vector<TDataType>& knots)
+    {
+        return ReverseKnotsWithPivot(knots.back(), knots);
     }
 
     /// Check if a local knot vector is on the left side. It is on the left side if the outer left knots are repeated (p+1) times.

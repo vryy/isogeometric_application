@@ -34,6 +34,8 @@ public:
     typedef typename Patch<TDim>::edge_t edge_t;
     typedef typename Patch<TDim>::face_t face_t;
     typedef typename Patch<TDim>::volume_t volume_t;
+    typedef typename Patch<TDim>::interface_iterator interface_iterator;
+    typedef typename Patch<TDim>::interface_const_iterator interface_const_iterator;
 
     /// Default constructor
     MultiPatch() : mEquationSystemSize(0) {}
@@ -46,6 +48,39 @@ public:
     {
         mpPatches.push_back(pPatch);
         pPatch->pSetParentMultiPatch(this->shared_from_this());
+    }
+
+    /// Add the patch
+    void RemovePatch(typename Patch<TDim>::Pointer pPatch)
+    {
+//        std::cout << "Patch " << pPatch->Id() << " interfaces will be selected and removed" << std::endl;
+        // look for all interfaces and remove the corresponding interfaces in other patches
+        for (interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
+        {
+            typename Patch<TDim>::Pointer pNeighborPatch = (*it)->pPatch2();
+//            std::cout << " Checking neighbor Patch " << pNeighborPatch->Id() << " of Patch " << pPatch->Id() << std::endl;
+            for (interface_iterator it2 = pNeighborPatch->InterfaceBegin(); it2 != pNeighborPatch->InterfaceEnd(); ++it2)
+            {
+                if ((*it2)->pPatch2() == pPatch)
+                {
+//                    std::cout << " *** " << pNeighborPatch->Id() << ", " << *it2 << std::endl;
+                    pNeighborPatch->RemoveInterface(*it2);
+                    break;
+                }
+            }
+        }
+
+        // remove the patch
+        mpPatches.erase(pPatch->Id());
+
+        // modify the global to patch map data
+        for (std::map<std::size_t, std::size_t>::iterator it = mGlobalIdToPatchId.begin(); it != mGlobalIdToPatchId.end();)
+        {
+            if (it->second == pPatch->Id())
+                mGlobalIdToPatchId.erase(it++);
+            else
+                ++it;
+        }
     }
 
     /// Reset Id for all the patches
@@ -71,13 +106,13 @@ public:
     /// IMPORTANT: user must make sure that the multipatch is fully enumerated by checking IsEnumerated()
     std::tuple<std::size_t, std::size_t> EquationIdLocation(const std::size_t& global_id) const
     {
-        std::map<std::size_t, std::size_t>::const_iterator it = mGlobalToPatch.find(global_id);
-        if (it == mGlobalToPatch.end())
+        std::map<std::size_t, std::size_t>::const_iterator it = mGlobalIdToPatchId.find(global_id);
+        if (it == mGlobalIdToPatchId.end())
         {
             KRATOS_WATCH(global_id)
             KRATOS_WATCH(mEquationSystemSize)
             std::cout << "global_to_patch map:" << std::endl;
-            for (std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalToPatch.begin(); it2 != mGlobalToPatch.end(); ++it2)
+            for (std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalIdToPatchId.begin(); it2 != mGlobalIdToPatchId.end(); ++it2)
                 std::cout << " " << it2->first << ": " << it2->second << std::endl;
             KRATOS_THROW_ERROR(std::logic_error, "The global id does not exist in the global_to_patch map.", "")
         }
@@ -97,9 +132,9 @@ public:
             if (!check)
                 return false;
 
-            for (std::size_t i = 0; i < it->NumberOfInterfaces(); ++i)
+            for (interface_const_iterator it2 = it->InterfaceBegin(); it2 != it->InterfaceEnd(); ++it2)
             {
-                bool check2 = it->pInterface(i)->Validate();
+                bool check2 = (*it2)->Validate();
                 if (!check2)
                     return false;
             }
@@ -231,14 +266,19 @@ public:
         std::size_t last = start;
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
+//            std::cout << "Patch " << (*it)->Id() << " is enumerated" << std::endl;
+//            std::cout << "Patch " << (*it)->Id() << " number of interfaces: " << (*it)->NumberOfInterfaces() << std::endl;
             if ((*it)->IsPrimary() == true)
             {
                 last = (*it)->pFESpace()->Enumerate(last);
                 // std::cout << "At " << __FUNCTION__ << ", last: " << last << std::endl;
 
                 // enumerate the interface
-                for (std::size_t i = 0; i < (*it)->NumberOfInterfaces(); ++i)
-                    (*it)->pInterface(i)->Enumerate();
+                for (interface_iterator it2 = (*it)->InterfaceBegin(); it2 != (*it)->InterfaceEnd(); ++it2)
+                {
+//                    std::cout << " Interface " << (*it2) << " of Patch " << (*it)->Id() << " is enumerated" << std::endl;
+                    (*it2)->Enumerate();
+                }
             }
         }
 
@@ -274,12 +314,12 @@ public:
         }
 
         // rebuild the global to patch map
-        mGlobalToPatch.clear();
+        mGlobalIdToPatchId.clear();
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
             std::vector<std::size_t> global_indices = (*it)->pFESpace()->FunctionIndices();
             for (std::size_t i = 0; i < global_indices.size(); ++i)
-                mGlobalToPatch[global_indices[i]] = (*it)->Id();
+                mGlobalIdToPatchId[global_indices[i]] = (*it)->Id();
         }
 
         return start + mEquationSystemSize;
@@ -302,7 +342,7 @@ private:
 
     PatchContainerType mpPatches; // container for all the patches
     std::size_t mEquationSystemSize; // this is the number of equation id in this multipatch
-    std::map<std::size_t, std::size_t> mGlobalToPatch; // this is to map each global id to a patch id
+    std::map<std::size_t, std::size_t> mGlobalIdToPatchId; // this is to map each global id to a patch id
 
 };
 

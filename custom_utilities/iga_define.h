@@ -24,6 +24,14 @@ namespace Kratos
 #define IGA_DEPRECATED
 #endif
 
+enum ParametricAxis
+{
+    _PA_U_   = 0,
+    _PA_V_   = 1,
+    _PA_W_   = 2,
+    _NUMBER_OF_PARAMETRIC_AXIS = 3
+};
+
 enum BoundarySide
 {
     _BLEFT_   = 0,
@@ -103,10 +111,10 @@ struct ParameterDirection<2>
     {
         switch(side)
         {
-            case _BLEFT_:    return 1;
-            case _BRIGHT_:   return 1;
-            case _BTOP_:     return 0;
-            case _BBOTTOM_:  return 0;
+            case _BLEFT_:    return _PA_V_;
+            case _BRIGHT_:   return _PA_V_;
+            case _BTOP_:     return _PA_U_;
+            case _BBOTTOM_:  return _PA_U_;
             default:        return -1;
         }
         return -1;
@@ -125,12 +133,12 @@ struct ParameterDirection<3>
     {
         switch(side)
         {
-            case _BLEFT_:    return std::vector<int>{1, 2}; // v, w
-            case _BRIGHT_:   return std::vector<int>{1, 2};
-            case _BFRONT_:   return std::vector<int>{0, 2}; // u, w
-            case _BBACK_:    return std::vector<int>{0, 2};
-            case _BTOP_:     return std::vector<int>{0, 1}; // u, v
-            case _BBOTTOM_:  return std::vector<int>{0, 1};
+            case _BLEFT_:    return std::vector<int>{_PA_V_, _PA_W_}; // v, w
+            case _BRIGHT_:   return std::vector<int>{_PA_V_, _PA_W_};
+            case _BFRONT_:   return std::vector<int>{_PA_U_, _PA_W_}; // u, w
+            case _BBACK_:    return std::vector<int>{_PA_U_, _PA_W_};
+            case _BTOP_:     return std::vector<int>{_PA_U_, _PA_V_}; // u, v
+            case _BBOTTOM_:  return std::vector<int>{_PA_U_, _PA_V_};
             default:        return std::vector<int>{-1, -1};
         }
         return std::vector<int>{-1, -1};

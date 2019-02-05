@@ -11,6 +11,7 @@
 
 // System includes
 #include <vector>
+#include <list>
 #include <tuple>
 
 // External includes
@@ -67,6 +68,11 @@ public:
     typedef std::vector<typename VectorGridFunctionType::Pointer> VectorGridFunctionContainerType;
 
     typedef std::vector<typename Patch<TDim>::Pointer> NeighborPatchContainerType;
+
+//    typedef std::vector<typename PatchInterface<TDim>::Pointer> InterfaceContainerType;
+    typedef std::list<typename PatchInterface<TDim>::Pointer> InterfaceContainerType;
+    typedef typename InterfaceContainerType::iterator interface_iterator;
+    typedef typename InterfaceContainerType::const_iterator interface_const_iterator;
 
     typedef std::size_t vertex_t;
     typedef std::tuple<std::size_t, std::size_t, std::size_t, int> edge_t;
@@ -442,31 +448,32 @@ public:
     /// Search for the neighbor
     typename Patch<TDim>::Pointer pNeighbor(const BoundarySide& side)
     {
-        for (std::size_t i = 0; i < this->NumberOfInterfaces(); ++i)
+        for (interface_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
-            if (this->pInterface(i)->Side1() == side)
-                return this->pInterface(i)->pPatch2();
+            if ((*it)->Side1() == side)
+                return (*it)->pPatch2();
         }
         return NULL;
     }
 
+    /// Search for the neighbor
     typename Patch<TDim>::ConstPointer pNeighbor(const BoundarySide& side) const
     {
-        for (std::size_t i = 0; i < this->NumberOfInterfaces(); ++i)
+        for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
-            if (this->pInterface(i)->Side1() == side)
-                return this->pInterface(i)->pPatch2();
+            if ((*it)->Side1() == side)
+                return (*it)->pPatch2();
         }
         return NULL;
     }
 
-    /// Seach for the boundary side of the neighor patch, if it exists
+    /// Search for the boundary side (in the current patch) of the neighbor patch, if it exists
     int FindBoundarySide(typename Patch<TDim>::ConstPointer pPatch) const
     {
-        for (std::size_t i = 0; i < this->NumberOfInterfaces(); ++i)
+        for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
-            if (this->pNeighbor(i)->pPatch2() == pPatch)
-                return this->pNeighbor(i)->Side1();
+            if ((*it)->pPatch2() == pPatch)
+                return (*it)->Side1();
         }
         return -1;
     }
@@ -480,9 +487,9 @@ public:
             return;
         }
 
-        for (std::size_t i = 0; i < mpInterfaces.size(); ++i)
+        for (interface_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
-            if (*mpInterfaces[i] == *pInterface)
+            if ((*it) == pInterface)
             {
                 std::cout << "WARNING: the interface exist in this patch, skipped." << std::endl;
                 return;
@@ -492,21 +499,63 @@ public:
         mpInterfaces.push_back(pInterface);
     }
 
+    /// Remove an interface from the patch
+    void RemoveInterface(typename PatchInterface<TDim>::Pointer pInterface)
+    {
+        if (&(*(pInterface->pPatch1())) != this)
+        {
+            std::cout << "WARNING: the patch 1 of the interface is not the same as this patch, skipped." << std::endl;
+            return;
+        }
+
+        for (interface_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
+        {
+            if ((*it) == pInterface)
+            {
+                std::cout << "REMARK: Interface " << (*it) << " is removed from patch " << Id() << std::endl;
+                mpInterfaces.erase(it);
+                return;
+            }
+        }
+    }
+
     /// Get the number of interfaces
     std::size_t NumberOfInterfaces() const
     {
         return mpInterfaces.size();
     }
 
+    /// Interface iterators
+    interface_iterator InterfaceBegin() {return mpInterfaces.begin();}
+    interface_const_iterator InterfaceBegin() const {return mpInterfaces.begin();}
+    interface_iterator InterfaceEnd() {return mpInterfaces.end();}
+    interface_const_iterator InterfaceEnd() const {return mpInterfaces.end();}
+
     /// Get the interface
     typename PatchInterface<TDim>::Pointer pInterface(const std::size_t& i)
     {
-        return mpInterfaces[i];
+        std::size_t cnt = 0;
+        for (interface_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
+        {
+            if (cnt == i)
+                return (*it);
+            else
+                ++cnt;
+        }
+        return NULL;
     }
 
     typename PatchInterface<TDim>::ConstPointer pInterface(const std::size_t& i) const
     {
-        return mpInterfaces[i];
+        std::size_t cnt = 0;
+        for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
+        {
+            if (cnt == i)
+                return (*it);
+            else
+                ++cnt;
+        }
+        return NULL;
     }
 
     /// Get/Set the parent multipatch
@@ -696,10 +745,10 @@ public:
         }
 
         rOStream << "Interfaces (" << this->NumberOfInterfaces() << "):" << std::endl;
-        for (std::size_t i = 0; i < this->NumberOfInterfaces(); ++i)
+        for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
             rOStream << "  ";
-            this->pInterface(i)->PrintInfo(rOStream);
+            (*it)->PrintInfo(rOStream);
             rOStream << std::endl;
         }
     }
@@ -719,7 +768,7 @@ private:
     /**
      * interface data
      */
-    std::vector<typename PatchInterface<TDim>::Pointer> mpInterfaces;
+    InterfaceContainerType mpInterfaces;
 
     /**
      * pointer to parent multipatch

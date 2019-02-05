@@ -195,8 +195,10 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("FESpace", &Patch_pFESpace<Patch<TDim> >)
     .def("NumberOfInterfaces", &Patch<TDim>::NumberOfInterfaces)
     .def("AddInterface", &Patch<TDim>::AddInterface)
+    .def("RemoveInterface", &Patch<TDim>::RemoveInterface)
     .def("GetInterface", &Patch_GetInterface<TDim>)
     .def("ConstructBoundaryPatch", &Patch_ConstructBoundaryPatch<TDim>)
+    .def("FindBoundarySide", &Patch<TDim>::FindBoundarySide)
     .def(self_ns::str(self))
     ;
 
@@ -231,6 +233,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     (ss.str().c_str(), init<>())
     // .def("ResetId", &MultiPatch<TDim>::ResetId) // this function is not really useful. One shall keep control over the id of the patch.
     .def("AddPatch", &MultiPatch<TDim>::AddPatch)
+    .def("RemovePatch", &MultiPatch<TDim>::RemovePatch)
     .def("Patches", &MultiPatch_GetPatches<MultiPatch<TDim> >)
     .def("__getitem__", &MultiPatch_GetItem<Patch<TDim>, MultiPatch<TDim> >)
     .def("__len__", &MultiPatch_Len<MultiPatch<TDim> >)
@@ -302,6 +305,12 @@ void IsogeometricApplication_AddPatchesToPython()
     /////////////////////////////////////////////////////////////////
     ///////////////////////PATCHES///////////////////////////////////
     /////////////////////////////////////////////////////////////////
+
+    enum_<ParametricAxis>("ParametricAxis")
+    .value("U", _PA_U_)
+    .value("V", _PA_V_)
+    .value("W", _PA_W_)
+    ;
 
     enum_<BoundarySide>("BoundarySide")
     .value("Left", _BLEFT_)

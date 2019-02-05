@@ -399,10 +399,17 @@ public:
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
     {
+        std::vector<std::size_t> size_info;
+        return this->ExtractBoundaryFunctionIndices(size_info, side);
+    }
+
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(std::vector<std::size_t>& size_info, const BoundarySide& side) const
+    {
         std::vector<std::size_t> func_indices;
 
         if (TDim == 1)
         {
+            size_info.resize(0);
             func_indices.resize(1);
             if (side == _BLEFT_)
             {
@@ -415,8 +422,10 @@ public:
         }
         else if (TDim == 2)
         {
+            size_info.resize(1);
             if (side == _BLEFT_)
             {
+                size_info[0] = this->Number(1);
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
@@ -424,6 +433,7 @@ public:
             }
             else if (side == _BRIGHT_)
             {
+                size_info[0] = this->Number(1);
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
@@ -431,6 +441,7 @@ public:
             }
             else if (side == _BBOTTOM_)
             {
+                size_info[0] = this->Number(0);
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
@@ -438,6 +449,7 @@ public:
             }
             else if (side == _BTOP_)
             {
+                size_info[0] = this->Number(0);
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
@@ -446,8 +458,11 @@ public:
         }
         else if (TDim == 3)
         {
+            size_info.resize(2);
             if (side == _BLEFT_)
             {
+                size_info[0] = this->Number(1);
+                size_info[1] = this->Number(2);
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
@@ -456,6 +471,8 @@ public:
             }
             else if (side == _BRIGHT_)
             {
+                size_info[0] = this->Number(1);
+                size_info[1] = this->Number(2);
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
@@ -464,6 +481,8 @@ public:
             }
             else if (side == _BBOTTOM_)
             {
+                size_info[0] = this->Number(0);
+                size_info[1] = this->Number(1);
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
@@ -472,6 +491,8 @@ public:
             }
             else if (side == _BTOP_)
             {
+                size_info[0] = this->Number(0);
+                size_info[1] = this->Number(1);
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
@@ -480,6 +501,8 @@ public:
             }
             else if (side == _BFRONT_)
             {
+                size_info[0] = this->Number(0);
+                size_info[1] = this->Number(2);
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
@@ -488,6 +511,8 @@ public:
             }
             else if (side == _BBACK_)
             {
+                size_info[0] = this->Number(0);
+                size_info[1] = this->Number(2);
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)

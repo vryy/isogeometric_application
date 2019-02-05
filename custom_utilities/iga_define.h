@@ -66,7 +66,8 @@ enum BoundarySide3D
 enum BoundaryDirection
 {
     _FORWARD_ = 0,
-    _REVERSED_ = 1
+    _REVERSED_ = 1,
+    _UNDEFINED_DIR_ = -1
 };
 
 enum BoundaryFlag

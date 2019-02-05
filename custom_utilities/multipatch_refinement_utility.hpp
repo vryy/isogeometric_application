@@ -176,9 +176,9 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
             }
         }
 
-        for (std::size_t ii = 0; ii < pPatch->NumberOfInterfaces(); ++ii)
+        for (typename Patch<TDim>::interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(ii));
+            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
             if (pInterface == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesPatchInterface is failed", "")
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
@@ -196,7 +196,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
                 int dir1 = ParameterDirection<2>::Get_(pInterface->Side1());
                 int dir2 = ParameterDirection<2>::Get_(pInterface->Side2());
 
-                neib_ins_knots[dir2] = KnotArray1D<double>::CloneKnots(ins_knots[dir1], pInterface->Direction(0));
+                neib_ins_knots[dir2] = ins_knots[dir1];
                 #ifdef DEBUG_INS_KNOTS
                 std::cout << "Propagate [";
                 for (unsigned int i = 0; i < neib_ins_knots[dir2].size(); ++i)
@@ -210,8 +210,8 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
                 std::vector<int> param_dirs_1 = ParameterDirection<3>::Get(pInterface->Side1());
                 std::vector<int> param_dirs_2 = ParameterDirection<3>::Get(pInterface->Side2());
 
-                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(0) ] ] = KnotArray1D<double>::CloneKnotsWithPivot(new_knots[param_dirs_1[0]].back(), ins_knots[param_dirs_1[0]], pInterface->Direction(0));
-                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(1) ] ] = KnotArray1D<double>::CloneKnotsWithPivot(new_knots[param_dirs_1[1]].back(), ins_knots[param_dirs_1[1]], pInterface->Direction(1));
+                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(0) ] ] = ins_knots[param_dirs_1[0]];
+                neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(1) ] ] = ins_knots[param_dirs_1[1]];
             }
 
             std::cout << "Neighbor patch " << pNeighbor->Id() << " of patch " << pPatch->Id() << " is accounted" << std::endl;
@@ -384,9 +384,9 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             }
         }
 
-        for (std::size_t ii = 0; ii < pPatch->NumberOfInterfaces(); ++ii)
+        for (typename Patch<TDim>::interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(ii));
+            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
             if (pInterface == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesPatchInterface is failed", "")
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();

@@ -53,17 +53,15 @@ public:
     /// Add the patch
     void RemovePatch(typename Patch<TDim>::Pointer pPatch)
     {
-//        std::cout << "Patch " << pPatch->Id() << " interfaces will be selected and removed" << std::endl;
         // look for all interfaces and remove the corresponding interfaces in other patches
         for (interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
         {
             typename Patch<TDim>::Pointer pNeighborPatch = (*it)->pPatch2();
-//            std::cout << " Checking neighbor Patch " << pNeighborPatch->Id() << " of Patch " << pPatch->Id() << std::endl;
+
             for (interface_iterator it2 = pNeighborPatch->InterfaceBegin(); it2 != pNeighborPatch->InterfaceEnd(); ++it2)
             {
                 if ((*it2)->pPatch2() == pPatch)
                 {
-//                    std::cout << " *** " << pNeighborPatch->Id() << ", " << *it2 << std::endl;
                     pNeighborPatch->RemoveInterface(*it2);
                     break;
                 }
@@ -266,17 +264,13 @@ public:
         std::size_t last = start;
         for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
-//            std::cout << "Patch " << (*it)->Id() << " is enumerated" << std::endl;
-//            std::cout << "Patch " << (*it)->Id() << " number of interfaces: " << (*it)->NumberOfInterfaces() << std::endl;
             if ((*it)->IsPrimary() == true)
             {
                 last = (*it)->pFESpace()->Enumerate(last);
-                // std::cout << "At " << __FUNCTION__ << ", last: " << last << std::endl;
 
                 // enumerate the interface
                 for (interface_iterator it2 = (*it)->InterfaceBegin(); it2 != (*it)->InterfaceEnd(); ++it2)
                 {
-//                    std::cout << " Interface " << (*it2) << " of Patch " << (*it)->Id() << " is enumerated" << std::endl;
                     (*it2)->Enumerate();
                 }
             }

@@ -58,6 +58,11 @@ public:
     typedef IsogeometricGeometry<TPointType> BaseType;
 
     /**
+     * The original geometry type
+     */
+    typedef typename BaseType::GeometryType GeometryType;
+
+    /**
      * Pointer definition of Geo2dBezier
      */
     KRATOS_CLASS_POINTER_DEFINITION( Geo2dBezier );
@@ -124,15 +129,13 @@ public:
      * A third order tensor used as shape functions' values
      * container.
      */
-    typedef typename BaseType::ShapeFunctionsValuesContainerType
-    ShapeFunctionsValuesContainerType;
+    typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
      * A fourth order tensor used as shape functions' local
      * gradients container in geometry.
      */
-    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType
-    ShapeFunctionsLocalGradientsContainerType;
+    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
      * A third order tensor to hold jacobian matrices evaluated at
@@ -153,8 +156,7 @@ public:
      * ShapefunctionsLocalGradients function return this
      * type as its result.
      */
-    typedef typename BaseType::ShapeFunctionsSecondDerivativesType
-    ShapeFunctionsSecondDerivativesType;
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -277,7 +279,7 @@ public:
      * Operations
      */
 
-    typename BaseType::BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
     {
         Geo2dBezier::Pointer pNewGeom = Geo2dBezier::Pointer( new Geo2dBezier( ThisPoints ) );
         ValuesContainerType DummyKnots;
@@ -914,6 +916,18 @@ public:
         return false;
     }
 
+    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
+    {
+        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
+
+        double tol = 1.0e-6;
+        if ( (rResult[0] > -tol) && (rResult[0] < 1 + tol) )
+            if ( (rResult[1] > -tol) && (rResult[1] < 1 + tol) )
+                return true;
+
+        return false;
+    }
+
     /**
      * Input and output
      */
@@ -998,7 +1012,7 @@ public:
 
             // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
             mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 2, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
-            BaseType::mpGeometryData = &(*mpBezierGeometryData);
+            GeometryType::mpGeometryData = &(*mpBezierGeometryData);
         }
     }
 

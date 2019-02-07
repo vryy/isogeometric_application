@@ -116,18 +116,18 @@ public:
     ///@{
 
     /// This IsogeometricGeometry type.
-    typedef IsogeometricGeometry<TPointType> GeometryType;
+    typedef IsogeometricGeometry<TPointType> IsogeometricGeometryType;
 
     /// Pointer definition of IsogeometricGeometry
     KRATOS_CLASS_POINTER_DEFINITION( IsogeometricGeometry );
 
     /** Base type for geometry.
     */
-    typedef Geometry<TPointType> BaseType;
+    typedef Geometry<TPointType> GeometryType;
 
 
     /** The bounding box */
-    /*typedef BoundingBox<TPointType, GeometryType>  BoundingBoxType; */
+    /*typedef BoundingBox<TPointType, IsogeometricGeometryType>  BoundingBoxType; */
 
     /** Array of counted pointers to point. This type used to hold
     geometry's points.
@@ -141,11 +141,11 @@ public:
     /** A Vector of counted pointers to Geometries. Used for
     returning edges of the geometry.
      */
-    typedef PointerVector<GeometryType> GeometriesArrayType;
+    typedef PointerVector<IsogeometricGeometryType> GeometriesArrayType;
 
     /** Redefinition of geometry template parameter TPointType as this geometry point type.
      */
-    typedef typename BaseType::PointType PointType;
+    typedef typename GeometryType::PointType PointType;
 
     /** Type used for indexing in geometry class.std::size_t used for indexing
     point or integration point access methods and also all other
@@ -160,76 +160,76 @@ public:
     */
     typedef std::size_t SizeType;
 
-    typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
+    typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
 
     /** This type used for representing an integration point in
     geometry. This integration point is a point with an
     additional weight component.
     */
-    typedef typename BaseType::IntegrationPointType IntegrationPointType;
+    typedef typename GeometryType::IntegrationPointType IntegrationPointType;
 
     /** A Vector of IntegrationPointType which used to hold
     integration points related to an integration
     method. IntegrationPoints functions used this type to return
     their results.
     */
-    typedef typename BaseType::IntegrationPointsArrayType IntegrationPointsArrayType;
+    typedef typename GeometryType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
     /** A Vector of IntegrationPointsArrayType which used to hold
     integration points related to different integration method
     implemented in geometry.
     */
-    typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
+    typedef typename GeometryType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
     /** A third order tensor used as shape functions' values
     continer.
     */
-    typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
+    typedef typename GeometryType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /** A fourth order tensor used as shape functions' local
     gradients container in geometry.
     */
-    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
+    typedef typename GeometryType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /** A third order tensor to hold jacobian matrices evaluated at
     integration points. Jacobian and InverseOfJacobian functions
     return this type as their result.
     */
-    typedef typename BaseType::JacobiansType JacobiansType;
+    typedef typename GeometryType::JacobiansType JacobiansType;
 
     /** A third order tensor to hold shape functions'  gradients.
     ShapefunctionsGradients function return this
     type as its result.
     */
-    typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
+    typedef typename GeometryType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
     /** A third order tensor to hold shape functions' local second derivatives.
     ShapefunctionsLocalGradients function return this
     type as its result.
     */
-    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+    typedef typename GeometryType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
     /** A fourth order tensor to hold shape functions' local third order derivatives
      */
-    typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
+    typedef typename GeometryType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
     /** Type of the normal vector used for normal to edges in geomety.
      */
-    typedef typename BaseType::NormalType NormalType;
+    typedef typename GeometryType::NormalType NormalType;
 
     typedef Vector ValuesContainerType;
 
     /**
      * Type of iterators
      */
-    typedef typename BaseType::iterator                     iterator;
-    typedef typename BaseType::const_iterator               const_iterator;
-    typedef typename BaseType::reverse_iterator             reverse_iterator;
-    typedef typename BaseType::const_reverse_iterator       const_reverse_iterator;
-    typedef typename BaseType::ptr_iterator                 ptr_iterator;
-    typedef typename BaseType::ptr_const_iterator           ptr_const_iterator;
-    typedef typename BaseType::ptr_reverse_iterator         ptr_reverse_iterator;
-    typedef typename BaseType::ptr_const_reverse_iterator   ptr_const_reverse_iterator;
+    typedef typename GeometryType::iterator                     iterator;
+    typedef typename GeometryType::const_iterator               const_iterator;
+    typedef typename GeometryType::reverse_iterator             reverse_iterator;
+    typedef typename GeometryType::const_reverse_iterator       const_reverse_iterator;
+    typedef typename GeometryType::ptr_iterator                 ptr_iterator;
+    typedef typename GeometryType::ptr_const_iterator           ptr_const_iterator;
+    typedef typename GeometryType::ptr_reverse_iterator         ptr_reverse_iterator;
+    typedef typename GeometryType::ptr_const_reverse_iterator   ptr_const_reverse_iterator;
 
     /**
      * Type of Matrix
@@ -245,7 +245,7 @@ public:
     ///@name Life Cycle
     ///@{
 
-    IsogeometricGeometry() : BaseType()
+    IsogeometricGeometry() : GeometryType()
     #ifndef ENABLE_PRECOMPUTE
     , mIsInitialized(false)
     #endif
@@ -268,7 +268,7 @@ public:
     */
     IsogeometricGeometry( const PointsArrayType& ThisPoints,
               GeometryData const* pThisGeometryData = 0 )
-    : BaseType( ThisPoints, pThisGeometryData )
+    : GeometryType( ThisPoints, pThisGeometryData )
     #ifndef ENABLE_PRECOMPUTE
     , mIsInitialized(false)
     #endif
@@ -284,7 +284,7 @@ public:
     source geometry's points too.
     */
     IsogeometricGeometry( const IsogeometricGeometry& rOther )
-    : BaseType( rOther )
+    : GeometryType( rOther )
     #ifndef ENABLE_PRECOMPUTE
     , mIsInitialized(false)
     #endif
@@ -303,7 +303,7 @@ public:
     source geometry's points too.
     */
     template<class TOtherPointType> IsogeometricGeometry( IsogeometricGeometry<TOtherPointType> const & rOther )
-    : BaseType( rOther.begin(), rOther.end() )
+    : GeometryType( rOther.begin(), rOther.end() )
     #ifndef ENABLE_PRECOMPUTE
     , mIsInitialized(false)
     #endif
@@ -329,7 +329,7 @@ public:
     */
     IsogeometricGeometry& operator=( const IsogeometricGeometry& rOther )
     {
-        BaseType::operator=( rOther );
+        GeometryType::operator=( rOther );
 
         return *this;
     }
@@ -347,7 +347,7 @@ public:
     template<class TOtherPointType>
     IsogeometricGeometry& operator=( IsogeometricGeometry<TOtherPointType> const & rOther )
     {
-        BaseType::operator=( rOther );
+        GeometryType::operator=( rOther );
 
         return *this;
     }
@@ -366,10 +366,10 @@ public:
         return GeometryData::Kratos_generic_type;
     }
 
-//    virtual typename BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const
-//    {
-//        return BaseType::Pointer( new IsogeometricGeometry( ThisPoints, BaseType::mpGeometryData ) );
-//    }
+    virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    {
+        return typename GeometryType::Pointer( new IsogeometricGeometryType( ThisPoints ) );
+    }
 
 //    virtual boost::shared_ptr< Geometry< Point<3> > > Clone() const
 //    {
@@ -508,15 +508,6 @@ public:
     }
 
     /**
-     * Compute the local coordinates of points
-     */
-    virtual Matrix& PointsLocalCoordinates( Matrix& rResult ) const
-    {
-        KRATOS_THROW_ERROR( std::logic_error, "This function is not available for isogeometric geometry" , "" );
-        return rResult;
-    }
-
-    /**
      * Extract the control points from NURBS/Bezier geometry
      */
     virtual void ExtractControlPoints(PointsArrayType& rPoints)
@@ -596,12 +587,12 @@ public:
     #else
     virtual const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const
     {
-        return BaseType::ShapeFunctionsValues( ThisMethod );
+        return GeometryType::ShapeFunctionsValues( ThisMethod );
     }
 
     virtual const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const
     {
-        return BaseType::ShapeFunctionsLocalGradients( ThisMethod );
+        return GeometryType::ShapeFunctionsLocalGradients( ThisMethod );
     }
     #endif
 
@@ -635,9 +626,9 @@ public:
     virtual std::string Info() const
     {
         std::stringstream buffer;
-        buffer << BaseType::Dimension()
+        buffer << GeometryType::Dimension()
                << " dimensional isogeometric geometry in "
-               << BaseType::WorkingSpaceDimension()
+               << GeometryType::WorkingSpaceDimension()
                << "D space";
         return buffer.str();
     }
@@ -650,9 +641,9 @@ public:
     */
     virtual void PrintInfo( std::ostream& rOStream ) const
     {
-        rOStream << BaseType::Dimension()
+        rOStream << GeometryType::Dimension()
                  << " dimensional isogeometric geometry in "
-                 << BaseType::WorkingSpaceDimension()
+                 << GeometryType::WorkingSpaceDimension()
                  << "D space";
     }
 
@@ -666,7 +657,7 @@ public:
     */
     virtual void PrintData( std::ostream& rOStream ) const
     {
-        BaseType::PrintData(rOStream);
+        GeometryType::PrintData(rOStream);
     }
 
 
@@ -745,13 +736,13 @@ private:
 
     virtual void save( Serializer& rSerializer ) const
     {
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, GeometryType );
 //        rSerializer.save( "IsogeometricGeometry Data", mpGeometryData );
     }
 
     virtual void load( Serializer& rSerializer )
     {
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, GeometryType );
 //        rSerializer.load( "IsogeometricGeometry Data", const_cast<GeometryData*>( mpGeometryData ) );
     }
 

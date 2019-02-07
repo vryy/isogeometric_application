@@ -58,6 +58,11 @@ public:
     typedef Geo2dBezier<TPointType> BaseType;
 
     /**
+     * The original geometry type
+     */
+    typedef typename BaseType::GeometryType GeometryType;
+
+    /**
      * Pointer definition of Geo2dBezier3
      */
     KRATOS_CLASS_POINTER_DEFINITION( Geo2dBezier3 );
@@ -124,15 +129,13 @@ public:
      * A third order tensor used as shape functions' values
      * container.
      */
-    typedef typename BaseType::ShapeFunctionsValuesContainerType
-    ShapeFunctionsValuesContainerType;
+    typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
      * A fourth order tensor used as shape functions' local
      * gradients container in geometry.
      */
-    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType
-    ShapeFunctionsLocalGradientsContainerType;
+    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
      * A third order tensor to hold jacobian matrices evaluated at
@@ -153,8 +156,7 @@ public:
      * ShapefunctionsLocalGradients function return this
      * type as its result.
      */
-    typedef typename BaseType::ShapeFunctionsSecondDerivativesType
-    ShapeFunctionsSecondDerivativesType;
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -273,7 +275,7 @@ public:
      * Operations
      */
 
-    typename BaseType::BaseType::BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
     {
         Geo2dBezier3::Pointer pNewGeom = Geo2dBezier3::Pointer( new Geo2dBezier3( ThisPoints ) );
         ValuesContainerType DummyKnots;
@@ -602,7 +604,7 @@ public:
 
             // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
             BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
-            BaseType::BaseType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
+            GeometryType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
         }
     }
 

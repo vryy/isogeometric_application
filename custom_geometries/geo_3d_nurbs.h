@@ -89,6 +89,11 @@ public:
     typedef IsogeometricGeometry<TPointType> BaseType;
 
     /**
+     * The original geometry type
+     */
+    typedef typename BaseType::GeometryType GeometryType;
+
+    /**
      * Pointer definition of Geo3dNURBS
      */
     KRATOS_CLASS_POINTER_DEFINITION( Geo3dNURBS );
@@ -155,15 +160,13 @@ public:
      * A third order tensor used as shape functions' values
      * container.
      */
-    typedef typename BaseType::ShapeFunctionsValuesContainerType
-    ShapeFunctionsValuesContainerType;
+    typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
      * A fourth order tensor used as shape functions' local
      * gradients container in geometry.
      */
-    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType
-    ShapeFunctionsLocalGradientsContainerType;
+    typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
      * A third order tensor to hold jacobian matrices evaluated at
@@ -296,10 +299,10 @@ public:
      * Operations
      */
 
-    typename BaseType::BaseType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
     {
 //        KRATOS_WATCH("At geometry Create")
-        return typename BaseType::BaseType::Pointer( new Geo3dNURBS( ThisPoints ) );
+        return typename GeometryType::Pointer( new Geo3dNURBS( ThisPoints ) );
     }
 
 //    virtual boost::shared_ptr< Geometry< Point<3> > > Clone() const
@@ -1631,7 +1634,7 @@ public:
 //        );
 
         mpGeometryData.swap(pNewGeometryData);
-        BaseType::mpGeometryData = &(*mpGeometryData);
+        GeometryType::mpGeometryData = &(*mpGeometryData);
     }
 
 protected:

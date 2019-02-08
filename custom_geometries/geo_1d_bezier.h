@@ -210,8 +210,7 @@ public:
 
     Geo1dBezier(const PointsArrayType& ThisPoints)
     : BaseType( ThisPoints )
-    {
-    }
+    {}
 
     /**
      * Copy constructor.
@@ -224,7 +223,13 @@ public:
      */
     Geo1dBezier( Geo1dBezier const& rOther )
     : BaseType( rOther )
+    , mpBezierGeometryData(rOther.mpBezierGeometryData)
+    , mOrder(rOther.mOrder)
+    , mNumber(rOther.mNumber)
+    , mExtractionOperator(rOther.mExtractionOperator)
+    , mCtrlWeights(rOther.mCtrlWeights)
     {
+        GeometryType::mpGeometryData = &(*mpBezierGeometryData);
     }
 
     /**
@@ -239,8 +244,14 @@ public:
      * source geometry's points too.
      */
     template<class TOtherPointType> Geo1dBezier( Geo1dBezier<TOtherPointType> const& rOther )
-    : BaseType( rOther )
+    : IsogeometricGeometry<TOtherPointType>( rOther )
+    , mpBezierGeometryData(rOther.mpBezierGeometryData)
+    , mOrder(rOther.mOrder)
+    , mNumber(rOther.mNumber)
+    , mExtractionOperator(rOther.mExtractionOperator)
+    , mCtrlWeights(rOther.mCtrlWeights)
     {
+        Geometry<TOtherPointType>::mpGeometryData = &(*mpBezierGeometryData);
     }
 
     /**
@@ -266,6 +277,12 @@ public:
     Geo1dBezier& operator=( const Geo1dBezier& rOther )
     {
         BaseType::operator=( rOther );
+        this->mpBezierGeometryData = rOther.mpBezierGeometryData;
+        GeometryType::mpGeometryData = &(*(this->mpBezierGeometryData));
+        this->mOrder = rOther.mOrder;
+        this->mNumber = rOther.mNumber;
+        this->mExtractionOperator = rOther.mExtractionOperator;
+        this->mCtrlWeights = rOther.mCtrlWeights;
         return *this;
     }
 
@@ -283,8 +300,13 @@ public:
     template<class TOtherPointType>
     Geo1dBezier& operator=( Geo1dBezier<TOtherPointType> const & rOther )
     {
-        BaseType::operator=( rOther );
-
+        IsogeometricGeometry<TOtherPointType>::operator=( rOther );
+        this->mpBezierGeometryData = rOther.mpBezierGeometryData;
+        Geometry<TOtherPointType>::mpGeometryData = &(*(this->mpBezierGeometryData));
+        this->mOrder = rOther.mOrder;
+        this->mNumber = rOther.mNumber;
+        this->mExtractionOperator = rOther.mExtractionOperator;
+        this->mCtrlWeights = rOther.mCtrlWeights;
         return *this;
     }
 
@@ -294,7 +316,15 @@ public:
 
     virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
     {
-        return typename GeometryType::Pointer( new Geo1dBezier( ThisPoints ) );
+        Geo1dBezier::Pointer pNewGeom = Geo1dBezier::Pointer( new Geo1dBezier( ThisPoints ) );
+        ValuesContainerType DummyKnots;
+        if (mpBezierGeometryData != NULL)
+        {
+            pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
+                mCtrlWeights, mExtractionOperator, mOrder, 0, 0,
+                static_cast<int>(mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
+        }
+        return pNewGeom;
     }
 
 //    virtual boost::shared_ptr< Geometry< Point<3> > > Clone() const
@@ -986,8 +1016,8 @@ public:
         BezierUtils::RegisterIntegrationRule<1, 3, 1>(NumberOfIntegrationMethod, Degree1);
 
         // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
-        mpGeometryData = BezierUtils::RetrieveIntegrationRule<1, 3, 1>(NumberOfIntegrationMethod, Degree1);
-        BaseType::mpGeometryData = &(*mpGeometryData);
+        mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<1, 3, 1>(NumberOfIntegrationMethod, Degree1);
+        BaseType::mpGeometryData = &(*mpBezierGeometryData);
     }
 
 protected:
@@ -1002,7 +1032,7 @@ private:
      * Member Variables
      */
 
-    GeometryData::Pointer mpGeometryData;
+    GeometryData::Pointer mpBezierGeometryData;
 
     MatrixType mExtractionOperator;
 

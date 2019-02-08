@@ -188,12 +188,10 @@ public:
      */
 
     Geo2dBezier3()
-//    : BaseType( PointsArrayType(), &msGeometryData )
     : BaseType( PointsArrayType() )
     {}
 
     Geo2dBezier3( const PointsArrayType& ThisPoints )
-//    : BaseType( ThisPoints, &msGeometryData )
     : BaseType( ThisPoints )
     {
     }
@@ -223,7 +221,7 @@ public:
      * source geometry's points too.
      */
     template<class TOtherPointType> Geo2dBezier3( Geo2dBezier3<TOtherPointType> const& rOther )
-    : BaseType( rOther )
+    : Geo2dBezier<TOtherPointType>( rOther )
     {}
 
     /**
@@ -266,8 +264,7 @@ public:
     template<class TOtherPointType>
     Geo2dBezier3& operator=( Geo2dBezier3<TOtherPointType> const & rOther )
     {
-        BaseType::operator=( rOther );
-
+        Geo2dBezier<TOtherPointType>::operator=( rOther );
         return *this;
     }
 

@@ -187,12 +187,10 @@ public:
      */
 
     Geo3dBezier()
-//    : BaseType( PointsArrayType(), &msGeometryData )
     : BaseType( PointsArrayType() ), mpBezierGeometryData(NULL)
     {}
 
     Geo3dBezier( const PointsArrayType& ThisPoints )
-//    : BaseType( ThisPoints, &msGeometryData )
     : BaseType( ThisPoints ), mpBezierGeometryData(NULL)
     {
     }
@@ -207,8 +205,19 @@ public:
      * source geometry's points too.
      */
     Geo3dBezier( Geo3dBezier const& rOther )
-    : BaseType( rOther ), mpBezierGeometryData(NULL)
-    {}
+    : BaseType( rOther )
+    , mpBezierGeometryData(rOther.mpBezierGeometryData)
+    , mOrder1(rOther.mOrder1)
+    , mOrder2(rOther.mOrder2)
+    , mOrder3(rOther.mOrder3)
+    , mNumber1(rOther.mNumber1)
+    , mNumber2(rOther.mNumber2)
+    , mNumber3(rOther.mNumber3)
+    , mExtractionOperator(rOther.mExtractionOperator)
+    , mCtrlWeights(rOther.mCtrlWeights)
+    {
+        GeometryType::mpGeometryData = &(*mpBezierGeometryData);
+    }
 
     /**
      * Copy constructor from a geometry with other point type.
@@ -222,8 +231,19 @@ public:
      * source geometry's points too.
      */
     template<class TOtherPointType> Geo3dBezier( Geo3dBezier<TOtherPointType> const& rOther )
-    : BaseType( rOther ), mpBezierGeometryData(NULL)
-    {}
+    : IsogeometricGeometry<TOtherPointType>( rOther )
+    , mpBezierGeometryData(rOther.mpBezierGeometryData)
+    , mOrder1(rOther.mOrder1)
+    , mOrder2(rOther.mOrder2)
+    , mOrder3(rOther.mOrder3)
+    , mNumber1(rOther.mNumber1)
+    , mNumber2(rOther.mNumber2)
+    , mNumber3(rOther.mNumber3)
+    , mExtractionOperator(rOther.mExtractionOperator)
+    , mCtrlWeights(rOther.mCtrlWeights)
+    {
+        Geometry<TOtherPointType>::mpGeometryData = &(*mpBezierGeometryData);
+    }
 
     /**
      * Destructor. Does nothing!!!
@@ -248,6 +268,16 @@ public:
     Geo3dBezier& operator=( const Geo3dBezier& rOther )
     {
         BaseType::operator=( rOther );
+        this->mpBezierGeometryData = rOther.mpBezierGeometryData;
+        GeometryType::mpGeometryData = &(*(this->mpBezierGeometryData));
+        this->mOrder1 = rOther.mOrder1;
+        this->mOrder2 = rOther.mOrder2;
+        this->mOrder3 = rOther.mOrder3;
+        this->mNumber1 = rOther.mNumber1;
+        this->mNumber2 = rOther.mNumber2;
+        this->mNumber3 = rOther.mNumber3;
+        this->mExtractionOperator = rOther.mExtractionOperator;
+        this->mCtrlWeights = rOther.mCtrlWeights;
         return *this;
     }
 
@@ -265,8 +295,17 @@ public:
     template<class TOtherPointType>
     Geo3dBezier& operator=( Geo3dBezier<TOtherPointType> const & rOther )
     {
-        BaseType::operator=( rOther );
-
+        IsogeometricGeometry<TOtherPointType>::operator=( rOther );
+        this->mpBezierGeometryData = rOther.mpBezierGeometryData;
+        Geometry<TOtherPointType>::mpGeometryData = &(*(this->mpBezierGeometryData));
+        this->mOrder1 = rOther.mOrder1;
+        this->mOrder2 = rOther.mOrder2;
+        this->mOrder3 = rOther.mOrder3;
+        this->mNumber1 = rOther.mNumber1;
+        this->mNumber2 = rOther.mNumber2;
+        this->mNumber3 = rOther.mNumber3;
+        this->mExtractionOperator = rOther.mExtractionOperator;
+        this->mCtrlWeights = rOther.mCtrlWeights;
         return *this;
     }
 
@@ -1542,23 +1581,6 @@ template<class TPointType> inline std::ostream& operator <<(
 
     return rOStream;
 }
-
-/**
- * static initialisation for geometry_data
- * TODO: to be deleted; the geometry_data is obtained by register with the BezierUtils
- * the static initialization is not applicable for Bezier geometry since each geometry are not the same
- */
-// template<class TPointType>
-// const GeometryData Geo3dBezier<TPointType>::msGeometryData
-// (
-//    3,
-//    3,
-//    3,
-//    GeometryData::GI_GAUSS_2,
-//    IntegrationPointsContainerType(),
-//    ShapeFunctionsValuesContainerType(),
-//    ShapeFunctionsLocalGradientsContainerType()
-// );
 
 }    // namespace Kratos.
 

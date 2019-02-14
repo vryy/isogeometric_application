@@ -68,7 +68,8 @@ public:
     {
         rOStream << std::setprecision(BaseType::Accuracy());
 
-        for (typename MultiPatch<TDim>::PatchContainerType::ptr_const_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
+        typedef typename MultiPatch<TDim>::patch_ptr_const_iterator patch_ptr_const_iterator;
+        for (patch_ptr_const_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
             this->ExportMatlab(rOStream, *it, (*it)->Name());
     }
 

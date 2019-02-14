@@ -121,8 +121,8 @@ public:
         rOStream << "vertices\n" << nvertices << "\n\n";
 
         rOStream << "patches\n\n";
-        for (typename MultiPatch<TDim>::PatchContainerType::iterator it = pMultiPatch->Patches().begin();
-                it != pMultiPatch->Patches().end(); ++it)
+        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        for (patch_iterator it = pMultiPatch->Patches().begin(); it != pMultiPatch->Patches().end(); ++it)
         {
             rOStream << "# patch " << it->Id() << "\n\n";
             rOStream << "knotvectors\n" << TDim << "\n";
@@ -173,7 +173,7 @@ private:
         typedef typename Patch<TDim>::edge_t edge_t;
         typedef typename Patch<TDim>::face_t face_t;
         typedef typename Patch<TDim>::volume_t volume_t;
-        typedef typename MultiPatch<TDim>::PatchContainerType PatchContainerType;
+        typedef typename MultiPatch<TDim>::patch_const_iterator patch_const_iterator;
 
         std::map<std::size_t, std::vector<vertex_t> > patch_vertices;
         std::map<std::size_t, std::vector<edge_t> > patch_edges;
@@ -185,7 +185,7 @@ private:
         std::size_t start_vertex_id = 0;
         std::size_t start_knotv_id = 0;
         std::map<std::size_t, std::vector<double> > all_knotvec;
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
             it->GenerateTopolgyData(start_vertex_id, patch_vertices[id], patch_edges[id], patch_faces[id], patch_volumes[id], start_knotv_id, patch_knotv[id]);
@@ -203,7 +203,7 @@ private:
         }
 
         #ifdef DEBUG_GLVIS_EXPORT
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
 
@@ -220,7 +220,7 @@ private:
         #endif
 
         // for all patch, account for the corners and then renumbering the vertex and edge
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
 
@@ -332,7 +332,7 @@ private:
         }
 
         #ifdef DEBUG_GLVIS_EXPORT
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
 
@@ -350,7 +350,7 @@ private:
 
         // collect all the vertices in the multipatch
         std::set<vertex_t> all_vertices;
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
             all_vertices.insert(patch_vertices[id].begin(), patch_vertices[id].end());
@@ -363,7 +363,7 @@ private:
             old_to_new[*it] = start_vertex_id++;
 
         // finally reassign the new id for all patches
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
 
@@ -401,7 +401,7 @@ private:
 
         // collect all the knot vector index in all the patches
         std::set<std::size_t> all_knotvs;
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
             for (std::size_t i = 0; i < TDim; ++i)
@@ -422,7 +422,7 @@ private:
             old_to_new_knotv[*it] = start_knotv_id++;
 
         // finally reassign the new id for all patches
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
             for (std::size_t i = 0; i < TDim; ++i)
@@ -430,7 +430,7 @@ private:
         }
 
         // reassign the knot vector index in each edge
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
             for (std::size_t i = 0; i < patch_edges[id].size(); ++i)
@@ -440,7 +440,7 @@ private:
         }
 
         // assign the knot vector accordingly
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
             for (std::size_t i = 0; i < TDim; ++i)
@@ -449,7 +449,7 @@ private:
 
         // collect all the edges in all the patches
         std::set<edge_t> all_edges;
-        for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+        for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             const std::size_t& id = it->Id();
             for (std::size_t i = 0; i < patch_edges[id].size(); ++i)
@@ -466,7 +466,7 @@ private:
 
         if (TDim == 2)
         {
-            for (typename PatchContainerType::const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
+            for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
             {
                 const std::size_t& id = it->Id();
 

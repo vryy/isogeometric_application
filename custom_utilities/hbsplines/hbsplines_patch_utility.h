@@ -88,7 +88,8 @@ public:
     {
         typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
-        for (typename MultiPatch<TDim>::PatchContainerType::iterator it = pMultiPatch->begin();
+        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        for (patch_iterator it = pMultiPatch->begin();
                 it != pMultiPatch->end(); ++it)
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
@@ -118,7 +119,8 @@ public:
         typedef std::map<std::size_t, std::vector<std::pair<std::size_t, std::size_t> > > map_t;
         map_t dofs_map;
 
-        for (typename MultiPatch<TDim>::PatchContainerType::iterator it = pMultiPatch->begin();
+        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        for (patch_iterator it = pMultiPatch->begin();
                 it != pMultiPatch->end(); ++it)
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());

@@ -233,9 +233,9 @@ public:
 
     virtual void Export(typename MultiPatch<TFESpaceType::Dim()>::Pointer pMultiPatch, std::ostream& rOStream)
     {
-        typedef typename MultiPatch<TFESpaceType::Dim()>::PatchContainerType PatchContainerType;
+        typedef typename MultiPatch<TFESpaceType::Dim()>::patch_ptr_iterator patch_ptr_iterator;
 
-        for (typename PatchContainerType::ptr_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
+        for (patch_ptr_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
         {
             this->Export(*it, rOStream);
         }

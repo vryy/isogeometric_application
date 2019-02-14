@@ -54,8 +54,8 @@ public:
     /// Note that if the division is changed, the post_model_part must be generated again
     void SetUniformDivision(const std::size_t& num_division)
     {
-        for (typename MultiPatch<TDim>::PatchContainerType::iterator it = mpMultiPatch->begin();
-                it != mpMultiPatch->end(); ++it)
+        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             for (std::size_t dim = 0; dim < TDim; ++dim)
                 mNumDivision[it->Id()][dim] = num_division;
@@ -117,8 +117,8 @@ public:
         std::size_t ElementCounter = mLastElemId;
         // std::size_t PropertiesCounter = mLastPropId;
         std::vector<double> p_ref(TDim);
-        for (typename MultiPatch<TDim>::PatchContainerType::iterator it = mpMultiPatch->begin();
-                it != mpMultiPatch->end(); ++it)
+        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             // create new properties and add to model_part
             // Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));

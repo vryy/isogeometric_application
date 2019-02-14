@@ -34,6 +34,12 @@ public:
     typedef typename Patch<TDim>::edge_t edge_t;
     typedef typename Patch<TDim>::face_t face_t;
     typedef typename Patch<TDim>::volume_t volume_t;
+
+    typedef typename PatchContainerType::iterator patch_iterator;
+    typedef typename PatchContainerType::const_iterator patch_const_iterator;
+    typedef typename PatchContainerType::ptr_iterator patch_ptr_iterator;
+    typedef typename PatchContainerType::ptr_const_iterator patch_ptr_const_iterator;
+
     typedef typename Patch<TDim>::interface_iterator interface_iterator;
     typedef typename Patch<TDim>::interface_const_iterator interface_const_iterator;
 
@@ -85,7 +91,7 @@ public:
     void ResetId()
     {
         std::size_t Id = 0;
-        for (typename PatchContainerType::iterator it = this->begin(); it != this->end(); ++it)
+        for (patch_iterator it = this->begin(); it != this->end(); ++it)
         {
             it->SetId(++Id);
         }
@@ -124,7 +130,7 @@ public:
     /// Validate the MultiPatch
     virtual bool Validate() const
     {
-        for (typename PatchContainerType::const_iterator it = this->begin(); it != this->end(); ++it)
+        for (patch_const_iterator it = this->begin(); it != this->end(); ++it)
         {
             bool check = it->Validate();
             if (!check)
@@ -144,7 +150,7 @@ public:
     /// Get the patch with specific Id
     typename PatchType::Pointer pGetPatch(const std::size_t& Id)
     {
-        typename PatchContainerType::ptr_iterator it_patch = mpPatches.find(Id).base();
+        patch_ptr_iterator it_patch = mpPatches.find(Id).base();
         if(it_patch == mpPatches.ptr_end())
         {
             std::stringstream ss;
@@ -175,10 +181,10 @@ public:
     const PatchContainerType& Patches() const {return mpPatches;}
 
     /// iterators
-    typename PatchContainerType::iterator begin() {return mpPatches.begin();}
-    typename PatchContainerType::const_iterator begin() const {return mpPatches.begin();}
-    typename PatchContainerType::iterator end() {return mpPatches.end();}
-    typename PatchContainerType::const_iterator end() const {return mpPatches.end();}
+    patch_iterator begin() {return mpPatches.begin();}
+    patch_const_iterator begin() const {return mpPatches.begin();}
+    patch_iterator end() {return mpPatches.end();}
+    patch_const_iterator end() const {return mpPatches.end();}
 
     /// Get the number of patches
     std::size_t size() const {return mpPatches.size();}
@@ -188,7 +194,7 @@ public:
     {
         std::size_t first_id;
 
-        for (typename PatchContainerType::const_iterator it = this->begin(); it != this->end(); ++it)
+        for (patch_const_iterator it = this->begin(); it != this->end(); ++it)
         {
             std::size_t patch_first_id = it->pFESpace()->GetFirstEquationId();
 
@@ -219,7 +225,7 @@ public:
         std::size_t last_id = -1;
         bool hit = false;
 
-        for (typename PatchContainerType::const_iterator it = this->begin(); it != this->end(); ++it)
+        for (patch_const_iterator it = this->begin(); it != this->end(); ++it)
         {
             std::size_t patch_last_id = it->pFESpace()->GetLastEquationId();
 
@@ -245,7 +251,7 @@ public:
     /// In principle, it initializes all the equation_id to -1
     void ResetFunctionIndices()
     {
-        for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
+        for (patch_ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
             (*it)->pFESpace()->ResetFunctionIndices();
         }
@@ -262,7 +268,7 @@ public:
     {
         // enumerate each patch
         std::size_t last = start;
-        for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
+        for (patch_ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
             if ((*it)->IsPrimary() == true)
             {
@@ -277,7 +283,7 @@ public:
         }
 
         // check if a patch is not a primary patch, then that patch must be enumerated again using the enumeration info from the other patches
-        for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
+        for (patch_ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
             if ((*it)->IsPrimary() == false)
             {
@@ -287,7 +293,7 @@ public:
 
         // collect all the enumerated numbers and reassign with new to make it consecutive
         std::set<std::size_t> all_indices;
-        for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
+        for (patch_ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
             std::vector<std::size_t> func_indices = (*it)->pFESpace()->FunctionIndices();
             all_indices.insert(func_indices.begin(), func_indices.end());
@@ -302,14 +308,14 @@ public:
         }
 
         // reassign the new indices to each patch
-        for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
+        for (patch_ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
             (*it)->pFESpace()->UpdateFunctionIndices(new_indices);
         }
 
         // rebuild the global to patch map
         mGlobalIdToPatchId.clear();
-        for (typename PatchContainerType::ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
+        for (patch_ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
             std::vector<std::size_t> global_indices = (*it)->pFESpace()->FunctionIndices();
             for (std::size_t i = 0; i < global_indices.size(); ++i)
@@ -328,7 +334,7 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         rOStream << "MultiPatch details:" << std::endl;
-        for (typename PatchContainerType::const_iterator it = this->begin(); it != this->end(); ++it)
+        for (patch_const_iterator it = this->begin(); it != this->end(); ++it)
             rOStream << (*it) << std::endl;
     }
 

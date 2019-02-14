@@ -287,7 +287,8 @@ public:
         if (!IsReady()) return;
 
         // loop through each patch, we construct a map from each function id to the patch id
-        for (typename MultiPatch<TDim>::PatchContainerType::iterator it = mpMultiPatch->begin();
+        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        for (patch_iterator it = mpMultiPatch->begin();
                 it != mpMultiPatch->end(); ++it)
         {
             std::vector<std::size_t> func_ids = it->pFESpace()->FunctionIndices();

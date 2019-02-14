@@ -120,14 +120,29 @@ public:
     void SetInfo(const std::size_t& i, const std::size_t& order) {mOrders[i] = order;}
 
     /// Get the order of the BSplines patch in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& i) const
     {
         if (i >= TDim) return 0;
         else return mOrders[i];
     }
 
     /// Get the number of basis functions defined over the BSplines
-    virtual const std::size_t TotalNumber() const {return mpBasisFuncs.size();}
+    virtual std::size_t TotalNumber() const {return mpBasisFuncs.size();}
+
+    /// Get the lower and upper bound of the parametric space in a specific direction
+    virtual std::vector<double> ParametricBounds(const std::size_t& di) const
+    {
+        std::vector<double> bound = {1.0e99, -1.0e99};
+
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
+            std::vector<double> bb = (*it)->GetBoundingBox();
+            if (bound[0] > bb[2*di]) bound[0] = bb[2*di];
+            if (bound[1] < bb[2*di+1]) bound[1] = bb[2*di+1];
+        }
+
+        return bound;
+    }
 
     /// Get the weights of all the basis functions
     std::vector<double> GetWeights() const

@@ -66,10 +66,10 @@ public:
     }
 
     /// Get the order of the BSplines patch in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& idir) const
     {
-        if (i >= TDim) return 0;
-        else return mOrders[i];
+        if (idir >= TDim) return 0;
+        else return mOrders[idir];
     }
 
     /// Get the number of control points of the BSplines in all direction
@@ -82,15 +82,24 @@ public:
     }
 
     /// Get the number of control points of the BSplines in specific direction
-    const std::size_t Number(const std::size_t& i) const {return mNumbers[i];}
+    std::size_t Number(const std::size_t& idir) const {return mNumbers[idir];}
 
     /// Get the number of basis functions defined over the BSplines
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         std::size_t Number = 1;
         for (std::size_t i = 0; i < TDim; ++i)
             Number *= mNumbers[i];
         return Number;
+    }
+
+    /// Get the lower and upper bound of the parametric space in a specific direction
+    virtual std::vector<double> ParametricBounds(const std::size_t& idir) const
+    {
+        std::vector<double> bound(2);
+        bound[0] = (*(mKnotVectors[idir].begin()))->Value();
+        bound[1] = (*(mKnotVectors[idir].end()-1))->Value();
+        return bound;
     }
 
     /// Get the string representing the type of the patch
@@ -108,23 +117,23 @@ public:
     }
 
     /// Set the knot vector in direction i.
-    void SetKnotVector(const std::size_t& i, const knot_container_t& p_knot_vector)
+    void SetKnotVector(const std::size_t& idir, const knot_container_t& p_knot_vector)
     {
-        mKnotVectors[i] = p_knot_vector;
+        mKnotVectors[idir] = p_knot_vector;
     }
 
     /// Create and set the knot vector in direction i.
-    void SetKnotVector(const std::size_t& i, const std::vector<double>& values)
+    void SetKnotVector(const std::size_t& idir, const std::vector<double>& values)
     {
-        if (i >= TDim)
+        if (idir >= TDim)
         {
             KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension", "")
         }
         else
         {
-            mKnotVectors[i].clear();
+            mKnotVectors[idir].clear();
             for (std::size_t j = 0; j < values.size(); ++j)
-                mKnotVectors[i].pCreateKnot(values[j]);
+                mKnotVectors[idir].pCreateKnot(values[j]);
         }
     }
 
@@ -1225,13 +1234,13 @@ public:
     virtual ~BSplinesFESpace() {}
 
     /// Get the order of the BSplines patch in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const {return 0;}
+    virtual std::size_t Order(const std::size_t& i) const {return 0;}
 
     /// Get the number of basis functions defined over the BSplines BSplinesFESpace on one direction
-    virtual const std::size_t Number(const std::size_t& i) const {return 0;}
+    virtual std::size_t Number(const std::size_t& i) const {return 0;}
 
     /// Get the number of basis functions defined over the BSplines BSplinesFESpace
-    virtual const std::size_t Number() const {return 0;}
+    virtual std::size_t Number() const {return 0;}
 
     /// Get the string describing the type of the patch
     virtual std::string Type() const

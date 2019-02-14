@@ -60,13 +60,13 @@ public:
     }
 
     /// Get the number of basis functions defined over the WeightedFESpace
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return mpFESpace->TotalNumber();
     }
 
     /// Get the order of the WeightedFESpace in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& i) const
     {
         return mpFESpace->Order(i);
     }
@@ -390,13 +390,13 @@ public:
     virtual ~WeightedFESpace() {}
 
     /// Get the number of basis functions defined over the WeightedFESpace
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return 0;
     }
 
     /// Get the order of the WeightedFESpace in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& i) const
     {
         return 0;
     }
@@ -500,13 +500,13 @@ public:
     virtual ~WeightedFESpace() {}
 
     /// Get the number of basis functions defined over the WeightedFESpace
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return 0;
     }
 
     /// Get the order of the WeightedFESpace in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& i) const
     {
         return 0;
     }
@@ -577,13 +577,13 @@ public:
     virtual ~WeightedFESpace() {}
 
     /// Get the number of basis functions defined over the WeightedFESpace
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return 0;
     }
 
     /// Get the order of the WeightedFESpace in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& i) const
     {
         return 0;
     }

@@ -476,10 +476,10 @@ public:
     virtual ~HBSplinesFESpace() {}
 
     /// Get the order of the BSplines patch in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const {return 0;}
+    virtual std::size_t Order(const std::size_t& i) const {return 0;}
 
     /// Get the number of basis functions defined over the BSplines HBSplinesFESpace
-    virtual const std::size_t Number() const {return 0;}
+    virtual std::size_t Number() const {return 0;}
 
     /// Get the string describing the type of the patch
     virtual std::string Type() const

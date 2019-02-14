@@ -64,13 +64,19 @@ public:
     }
 
     /// Get the number of basis functions defined over the FESpace
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Get the order of the FESpace in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& di) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
+
+    /// Get the lower and upper bound of the parametric space in a specific direction
+    virtual std::vector<double> ParametricBounds(const std::size_t& di) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
@@ -410,13 +416,13 @@ public:
     virtual ~FESpace() {}
 
     /// Get the number of basis functions defined over the FESpace
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return 0;
     }
 
     /// Get the order of the FESpace in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& i) const
     {
         return 0;
     }
@@ -520,13 +526,13 @@ public:
     virtual ~FESpace() {}
 
     /// Get the number of basis functions defined over the FESpace
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return 0;
     }
 
     /// Get the order of the FESpace in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& i) const
     {
         return 0;
     }
@@ -597,13 +603,13 @@ public:
     virtual ~FESpace() {}
 
     /// Get the number of basis functions defined over the FESpace
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return 0;
     }
 
     /// Get the order of the FESpace in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(const std::size_t& i) const
     {
         return 0;
     }

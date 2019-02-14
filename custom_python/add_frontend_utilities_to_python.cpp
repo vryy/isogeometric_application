@@ -31,6 +31,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/multipatch_utility.h"
 #include "custom_utilities/multipatch_refinement_utility.h"
 #include "custom_utilities/bending_strip_utility.h"
+#include "custom_utilities/trim/isogeometric_intersection_utility.h"
 
 
 namespace Kratos
@@ -319,6 +320,83 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
 }
 
 //////////////////////////////////////////////////
+
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Two_Curves(IsogeometricIntersectionUtility& rDummy,
+    double starting_point_1,
+    double starting_point_2,
+    Patch<1>::Pointer pPatch1,
+    Patch<1>::Pointer pPatch2,
+    int max_iters,
+    double TOL,
+    int option_space)
+{
+    double intersection_point_1, intersection_point_2;
+
+    int stat = rDummy.ComputeIntersection(starting_point_1, starting_point_2,
+        intersection_point_1, intersection_point_2,
+        pPatch1, pPatch2, max_iters, TOL, option_space);
+
+    boost::python::list point;
+    point.append(intersection_point_1);
+    point.append(intersection_point_2);
+
+    boost::python::list output;
+    output.append(stat);
+    output.append(point);
+    return output;
+}
+
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Plane(IsogeometricIntersectionUtility& rDummy,
+    double starting_point,
+    Patch<1>::Pointer pPatch,
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
+{
+    double intersection_point;
+
+    int stat = rDummy.ComputeIntersection(starting_point, intersection_point,
+        pPatch, A, B, C, D, max_iters, TOL);
+
+    boost::python::list point;
+    point.append(intersection_point);
+
+    boost::python::list output;
+    output.append(stat);
+    output.append(point);
+    return output;
+}
+
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Surface(IsogeometricIntersectionUtility& rDummy,
+    double starting_point_1,
+    double starting_point_2_1,
+    double starting_point_2_2,
+    Patch<1>::Pointer pPatch1,
+    Patch<2>::Pointer pPatch2,
+    int max_iters,
+    double TOL)
+{
+    double intersection_point_1;
+    std::vector<double> starting_point_2(2), intersection_point_2(2);
+
+    starting_point_2[0] = starting_point_2_1;
+    starting_point_2[1] = starting_point_2_2;
+
+    int stat = rDummy.ComputeIntersection(starting_point_1, starting_point_2,
+        intersection_point_1, intersection_point_2,
+        pPatch1, pPatch2, max_iters, TOL);
+
+    boost::python::list point;
+    point.append(intersection_point_2[0]);
+    point.append(intersection_point_2[1]);
+
+    boost::python::list output;
+    output.append(stat);
+    output.append(intersection_point_1);
+    output.append(point);
+    return output;
+}
+
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
@@ -384,6 +462,12 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CreateBendingStripNURBSPatch", &BendingStripUtility_CreateBendingStripNURBSPatch1<3>)
     .def("CreateBendingStripNURBSPatch", &BendingStripUtility_CreateBendingStripNURBSPatch2<2>)
     .def("CreateBendingStripNURBSPatch", &BendingStripUtility_CreateBendingStripNURBSPatch2<3>)
+    ;
+
+    class_<IsogeometricIntersectionUtility, IsogeometricIntersectionUtility::Pointer, boost::noncopyable>
+    ("IsogeometricIntersectionUtility", init<>())
+    .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Two_Curves)
+    .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Curve_Plane)
     ;
 
 }

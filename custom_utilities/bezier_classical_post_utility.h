@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 2013-10-12 $
 //   Revision:            $Revision: 1.0 $
@@ -14,7 +14,7 @@
 #include <vector>
 #include <iostream>
 
-// External includes 
+// External includes
 #include <omp.h>
 #include "boost/progress.hpp"
 
@@ -37,6 +37,7 @@
 #include "utilities/auto_collapse_spatial_binning.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_geometries/isogeometric_geometry.h"
+#include "custom_utilities/isogeometric_utility.h"
 #include "custom_utilities/isogeometric_post_utility.h"
 #include "isogeometric_application/isogeometric_application.h"
 
@@ -77,7 +78,7 @@ template<> void AddToModelPart<Condition>(ModelPart& rModelPart, typename Condit
 {
     rModelPart.AddCondition(pC);
 }
-    
+
 ///@}
 ///@name Kratos Classes
 ///@{
@@ -94,35 +95,35 @@ public:
     ///@{
 
     typedef boost::numeric::ublas::vector<double> ValuesContainerType;
-    
+
     typedef boost::numeric::ublas::matrix<double> ValuesArrayContainerType;
-    
+
     typedef typename ModelPart::NodesContainerType NodesArrayType;
-    
+
     typedef typename ModelPart::ElementsContainerType ElementsArrayType;
 
     typedef typename ModelPart::ConditionsContainerType ConditionsArrayType;
-    
+
     typedef typename Element::GeometryType GeometryType;
 
     typedef typename GeometryType::PointType NodeType;
 
     typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
-    
+
     typedef typename GeometryType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
     typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
 
     typedef typename NodeType::DofsContainerType DofsContainerType;
-    
+
     typedef UblasSpace<double, CompressedMatrix, Vector> SerialSparseSpaceType;
 
     typedef UblasSpace<double, Matrix, Vector> SerialDenseSpaceType;
-    
+
     typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType> LinearSolverType;
-    
+
     typedef std::size_t IndexType;
-    
+
     /// Pointer definition of BezierClassicalPostUtility
     KRATOS_CLASS_POINTER_DEFINITION(BezierClassicalPostUtility);
 
@@ -148,7 +149,7 @@ public:
     ///@}
     ///@name Operations
     ///@{
-    
+
     /// Generate the post model_part from reference model_part
     /// Deprecated
     void GenerateModelPart(ModelPart::Pointer pModelPartPost, PostElementType postElementType)
@@ -202,21 +203,21 @@ public:
 //                std::cout << "Element " << (*it)->Id() << " is inactive" << std::endl;
                 continue;
             }
-        
+
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension();
             int NodeCounter_old = NodeCounter;
-            
+
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(Dim)
             #endif
-            
+
             //get the properties
             Properties::Pointer pDummyProperties = (*it)->pGetProperties();
-            
+
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(*pDummyProperties)
             #endif
-            
+
             // generate list of nodes
             if(Dim == 1)
             {
@@ -229,13 +230,13 @@ public:
                 int i, j;
                 CoordinatesArrayType p_ref;
                 CoordinatesArrayType p;
-                
+
                 #ifdef DEBUG_LEVEL1
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
                 std::cout << "Generating Nodes..." << std::endl;
                 #endif
-                
+
                 // create and add nodes
                 p_ref[2] = 0.0;
                 for(i = 0; i <= NumDivision1; ++i)
@@ -244,12 +245,12 @@ public:
                     for(j = 0; j <= NumDivision2; ++j)
                     {
                         p_ref[1] = ((double) j) / NumDivision2;
-                        
+
                         p = GlobalCoordinates((*it)->GetGeometry(), p, p_ref);
-                        
+
                         NodeType::Pointer pNewNode( new NodeType( 0, p ) );
                         pNewNode->SetId(++NodeCounter);
-                        
+
                         #ifdef DEBUG_GENERATE_MESH
 //                        if(NodeCounter == 585 || NodeCounter == 588 || NodeCounter == 589)
                         if(NodeCounter)
@@ -257,7 +258,7 @@ public:
                             std::cout << "Node " << NodeCounter << " p_ref: " << p_ref << ", p: " << p << std::endl;
                         }
                         #endif
-                        
+
                         // Giving model part's variables list to the node
                         pNewNode->SetSolutionStepVariablesList(&pModelPartPost->GetNodalSolutionStepVariablesList());
 
@@ -265,15 +266,15 @@ public:
                         pNewNode->SetBufferSize(pModelPartPost->GetBufferSize());
 
                         pModelPartPost->AddNode(pNewNode);
-                        
+
                         mNodeToLocalCoordinates(pNewNode->Id()) = p_ref;
                         mNodeToElement(pNewNode->Id()) = (*it)->Id();
                     }
                 }
-                
+
                 //for correct mapping to element, the repetitive node is allowed.
 //                pModelPartPost->Nodes().Unique();
-                
+
                 #ifdef DEBUG_LEVEL1
                 KRATOS_WATCH(pModelPartPost->Nodes().size())
                 std::cout << "Generating Elements..." << std::endl;
@@ -297,16 +298,16 @@ public:
                             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
                             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
                             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                            
+
                             Element::Pointer NewElement1 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
                             pModelPartPost->AddElement(NewElement1);
                             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
-                            
+
                             temp_element_nodes.clear();
                             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
                             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
                             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
-                            
+
                             Element::Pointer NewElement2 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
                             pModelPartPost->AddElement(NewElement2);
                             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
@@ -326,9 +327,9 @@ public:
                         }
                     }
                 }
-                
+
                 pModelPartPost->Elements().Unique();
-                
+
                 #ifdef DEBUG_LEVEL1
                 KRATOS_WATCH(pModelPartPost->Elements().size())
                 #endif
@@ -341,7 +342,7 @@ public:
                 int i, j, k;
                 CoordinatesArrayType p_ref;
                 CoordinatesArrayType p;
-                
+
                 #ifdef DEBUG_LEVEL1
                 KRATOS_WATCH((*it)->Id())
                 KRATOS_WATCH(NumDivision1)
@@ -349,7 +350,7 @@ public:
                 KRATOS_WATCH(NumDivision3)
                 std::cout << "Generating Nodes..." << std::endl;
                 #endif
-                
+
                 // create and add nodes
                 for(i = 0; i <= NumDivision1; ++i)
                 {
@@ -360,19 +361,19 @@ public:
                         for(k = 0; k <= NumDivision3; ++k)
                         {
                             p_ref[2] = ((double) k) / NumDivision3;
-                            
+
                             p = GlobalCoordinates((*it)->GetGeometry(), p, p_ref);
-                            
+
                             NodeType::Pointer pNewNode( new NodeType( 0, p ) );
                             pNewNode->SetId(++NodeCounter);
-                            
+
                             #ifdef DEBUG_GENERATE_MESH
                             if(NodeCounter)
                             {
                                 std::cout << "Node " << NodeCounter << " p_ref: " << p_ref << ", p: " << p << std::endl;
                             }
                             #endif
-                            
+
                             // Giving model part's variables list to the node
                             pNewNode->SetSolutionStepVariablesList(&pModelPartPost->GetNodalSolutionStepVariablesList());
 
@@ -380,21 +381,21 @@ public:
                             pNewNode->SetBufferSize(pModelPartPost->GetBufferSize());
 
                             pModelPartPost->AddNode(pNewNode);
-                            
+
                             mNodeToLocalCoordinates(pNewNode->Id()) = p_ref;
                             mNodeToElement(pNewNode->Id()) = (*it)->Id();
                         }
                     }
                 }
-                
+
                 //for correct mapping to element, the repetitive node is allowed.
 //                pModelPartPost->Nodes().Unique();
-                
+
                 #ifdef DEBUG_LEVEL1
                 KRATOS_WATCH(pModelPartPost->Nodes().size())
                 std::cout << "Generating Elements..." << std::endl;
                 #endif
-                
+
                 // create and add element
                 Element::NodesArrayType temp_element_nodes;
                 for(i = 0; i < NumDivision1; ++i)
@@ -428,7 +429,7 @@ public:
                                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node6, NodeKey).base()));
                                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node8, NodeKey).base()));
                                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node7, NodeKey).base()));
-                                
+
                                 Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
                                 pModelPartPost->AddElement(NewElement);
                                 mOldToNewElements[(*it)->Id()].insert(ElementCounter);
@@ -445,7 +446,7 @@ public:
             }
             ++show_progress;
         }
-        
+
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "GeneratePostModelPart completed: " << (end_compute - start_compute) << " s" << std::endl;
@@ -454,7 +455,7 @@ public:
         #endif
         std::cout << NodeCounter << " nodes and " << ElementCounter << " elements are created" << std::endl;
     }
-    
+
     /// Generate the post model_part from reference model_part
     /// this is the improved version of GenerateModelPart
     /// which uses template function to generate post Elements for both Element and Condition
@@ -463,16 +464,16 @@ public:
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
         #endif
-        
+
         #ifdef DEBUG_LEVEL1
         std::cout << typeid(*this).name() << "::GenerateModelPart" << std::endl;
         #endif
-    
+
         ElementsArrayType& pElements = mpModelPart->Elements();
         ConditionsArrayType& pConditions = mpModelPart->Conditions();
-        
+
         std::string NodeKey = std::string("Node");
-        
+
         int NodeCounter = 0;
         int ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
@@ -638,18 +639,18 @@ public:
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
         #endif
-        
+
         #ifdef DEBUG_LEVEL1
         std::cout << typeid(*this).name() << "::GenerateModelPart" << std::endl;
         #endif
 
         AutoCollapseSpatialBinning collapse_util(0.0, 0.0, 0.0, dx, dy, dz, tol);
-        
+
         ElementsArrayType& pElements = mpModelPart->Elements();
         ConditionsArrayType& pConditions = mpModelPart->Conditions();
-        
+
         std::string NodeKey = std::string("Node");
-        
+
         int NodeCounter = 0;
         int ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
@@ -662,16 +663,16 @@ public:
                 ++show_progress;
                 continue;
             }
-        
+
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
             int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
             int NodeCounter_old = NodeCounter;
-            
+
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(Dim)
             KRATOS_WATCH(ReducedDim)
             #endif
-            
+
             //select the correct post element type
             std::string element_name;
             if(Dim == 2 && ReducedDim == 2)
@@ -707,14 +708,14 @@ public:
                                                          NodeCounter,
                                                          ElementCounter,
                                                          NodeKey);
-            
+
             ++show_progress;
         }
-        
+
         #ifdef DEBUG_LEVEL1
         std::cout << "Done generating for elements" << std::endl;
         #endif
-        
+
         int ConditionCounter = 0;
         boost::progress_display show_progress2( pConditions.size() );
         for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
@@ -725,11 +726,11 @@ public:
                 ++show_progress2;
                 continue;
             }
-        
+
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
             int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
             int NodeCounter_old = NodeCounter;
-            
+
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(typeid((*it)->GetGeometry()).name())
             KRATOS_WATCH(Dim)
@@ -774,7 +775,7 @@ public:
 
             ++show_progress2;
         }
-        
+
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "Generate PostModelPart completed: " << (end_compute - start_compute) << " s" << std::endl;
@@ -783,7 +784,7 @@ public:
         #endif
         std::cout << NodeCounter << " nodes and " << ElementCounter << " elements" << ", " << ConditionCounter << " conditions are created" << std::endl;
     }
-    
+
     /**
      * Utility function to generate elements/conditions for element/condition
      * if T==Element, type must be 1; if T==Condition, type is 2
@@ -940,19 +941,19 @@ public:
                     for(k = 0; k <= NumDivision3; ++k)
                     {
                         p_ref[2] = ((double) k) / NumDivision3;
-                        
+
                         p = GlobalCoordinates(rE.GetGeometry(), p, p_ref);
-                        
+
                         NodeType::Pointer pNewNode( new NodeType( 0, p ) );
                         pNewNode->SetId(++NodeCounter);
-                        
+
                         #ifdef DEBUG_GENERATE_MESH
                         if(NodeCounter)
                         {
                             std::cout << "Node " << NodeCounter << " p_ref: " << p_ref << ", p: " << p << std::endl;
                         }
                         #endif
-                        
+
                         // Giving model part's variables list to the node
                         pNewNode->SetSolutionStepVariablesList(&rModelPart.GetNodalSolutionStepVariablesList());
 
@@ -960,7 +961,7 @@ public:
                         pNewNode->SetBufferSize(rModelPart.GetBufferSize());
 
                         rModelPart.AddNode(pNewNode);
-                        
+
                         if(type == 1)
                         {
                             mNodeToLocalCoordinates(pNewNode->Id()) = p_ref;
@@ -1019,7 +1020,7 @@ public:
                     }
                 }
             }
-            
+
             if(type == 1)
                 rModelPart.Elements().Unique();
             else if(type == 2)
@@ -1052,10 +1053,10 @@ public:
     {
 //        int ReducedDim = rE.GetGeometry().WorkingSpaceDimension();
         int ReducedDim = rE.GetGeometry().Dimension();
-        
+
         //get the properties
         Properties::Pointer pDummyProperties = rE.pGetProperties();
-        
+
         #ifdef DEBUG_LEVEL1
         if(type == 1)
             std::cout << "Generating for element " << rE.Id() << std::endl;
@@ -1063,7 +1064,7 @@ public:
             std::cout << "Generating for condition " << rE.Id() << std::endl;
         KRATOS_WATCH(*pDummyProperties)
         #endif
-        
+
         // generate list of nodes
         if(ReducedDim == 1)
         {
@@ -1076,13 +1077,13 @@ public:
             int i, j;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
-            
+
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(NumDivision1)
             KRATOS_WATCH(NumDivision2)
             std::cout << "Generating Nodes..." << std::endl;
             #endif
-            
+
             // create and add nodes
             p_ref[2] = 0.0;
             for(i = 0; i <= NumDivision1; ++i)
@@ -1091,19 +1092,19 @@ public:
                 for(j = 0; j <= NumDivision2; ++j)
                 {
                     p_ref[1] = ((double) j) / NumDivision2;
-                    
+
                     p = GlobalCoordinates(rE.GetGeometry(), p, p_ref);
-                    
+
                     int id = collapse_util.AddNode(p[0], p[1], p[2]);
                     ++NodeCounter;
                     rMapToCollapseNode[NodeCounter] = id;
-                    
+
                     if(rModelPart.Nodes().find(id) == rModelPart.Nodes().end())
                     {
                         // this is a new node
                         NodeType::Pointer pNewNode( new NodeType( 0, p ) );
                         pNewNode->SetId(id);
-                        
+
                         // Giving model part's variables list to the node
                         pNewNode->SetSolutionStepVariablesList(&rModelPart.GetNodalSolutionStepVariablesList());
 
@@ -1117,7 +1118,7 @@ public:
                         // this is an old node, not required to add to model_part
                         // so do nothing
                     }
-                    
+
                     // in this way, the node will always point to the last local coodinates and element
                     if(type == 1)
                     {
@@ -1126,10 +1127,10 @@ public:
                     }
                 }
             }
-            
+
             //for correct mapping to element, the repetitive node is allowed.
 //            rModelPart.Nodes().Unique();
-            
+
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(rModelPart.Nodes().size())
             if(type == 1)
@@ -1137,7 +1138,7 @@ public:
             else
                 std::cout << "Generating Conditions..." << std::endl;
             #endif
-            
+
             // create and add element
             typename T::NodesArrayType temp_nodes;
             for(i = 0; i < NumDivision1; ++i)
@@ -1164,12 +1165,12 @@ public:
                         mOldToNewConditions[rE.Id()].insert(EntityCounter);
                 }
             }
-            
+
             if(type == 1)
                 rModelPart.Elements().Unique();
             else if(type == 2)
                 rModelPart.Conditions().Unique();
-            
+
             #ifdef DEBUG_LEVEL1
             if(type == 1)
                 KRATOS_WATCH(rModelPart.Elements().size())
@@ -1185,7 +1186,7 @@ public:
             int i, j, k;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
-            
+
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(rE.Id())
             KRATOS_WATCH(NumDivision1)
@@ -1193,7 +1194,7 @@ public:
             KRATOS_WATCH(NumDivision3)
             std::cout << "Generating Nodes..." << std::endl;
             #endif
-            
+
             // create and add nodes
             for(i = 0; i <= NumDivision1; ++i)
             {
@@ -1204,26 +1205,26 @@ public:
                     for(k = 0; k <= NumDivision3; ++k)
                     {
                         p_ref[2] = ((double) k) / NumDivision3;
-                        
+
                         p = GlobalCoordinates(rE.GetGeometry(), p, p_ref);
-                        
+
                         int id = collapse_util.AddNode(p[0], p[1], p[2]);
                         ++NodeCounter;
                         rMapToCollapseNode[NodeCounter] = id;
-                        
+
                         if(rModelPart.Nodes().find(id) == rModelPart.Nodes().end())
                         {
                             // this is a new node
                             NodeType::Pointer pNewNode( new NodeType( 0, p ) );
                             pNewNode->SetId(id);
-                            
+
                             #ifdef DEBUG_GENERATE_MESH
                             if(NodeCounter)
                             {
                                 std::cout << "Node " << NodeCounter << " p_ref: " << p_ref << ", p: " << p << std::endl;
                             }
                             #endif
-                            
+
                             // Giving model part's variables list to the node
                             pNewNode->SetSolutionStepVariablesList(&rModelPart.GetNodalSolutionStepVariablesList());
 
@@ -1237,7 +1238,7 @@ public:
                             // this is an old node, not required to add to model_part
                             // so do nothing
                         }
-                        
+
                         // in this way, the node will always point to the last local coodinates and element
                         if(type == 1)
                         {
@@ -1247,10 +1248,10 @@ public:
                     }
                 }
             }
-                
+
             //for correct mapping to element, the repetitive node is allowed.
 //           rModelPart.Nodes().Unique();
-            
+
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(rModelPart.Nodes().size())
             if(type == 1)
@@ -1258,7 +1259,7 @@ public:
             else
                 std::cout << "Generating Conditions..." << std::endl;
             #endif
-            
+
             // create and add element
             typename T::NodesArrayType temp_nodes;
             for(i = 0; i < NumDivision1; ++i)
@@ -1286,7 +1287,7 @@ public:
                         temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node6], NodeKey).base()));
                         temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node8], NodeKey).base()));
                         temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node7], NodeKey).base()));
-                        
+
                         typename T::Pointer NewEntity = rSample.Create(++EntityCounter, temp_nodes, pDummyProperties);
                         AddToModelPart<T>(rModelPart, NewEntity);
                         if(type == 1)
@@ -1296,12 +1297,12 @@ public:
                     }
                 }
             }
-            
+
             if(type == 1)
                 rModelPart.Elements().Unique();
             else if(type == 2)
                 rModelPart.Conditions().Unique();
-            
+
             #ifdef DEBUG_LEVEL1
             if(type == 1)
                 KRATOS_WATCH(rModelPart.Elements().size())
@@ -1333,7 +1334,7 @@ public:
             }
         }
     }
-    
+
     // transfer the elemental data
     template<class TVariableType>
     void TransferElementalData(const TVariableType& rThisVariable, ModelPart::Pointer pModelPartPost)
@@ -1348,7 +1349,7 @@ public:
             }
         }
     }
-    
+
     // transfer the conditional data
     template<class TVariableType>
     void TransferConditionalData(const TVariableType& rThisVariable, ModelPart::Pointer pModelPartPost)
@@ -1363,7 +1364,7 @@ public:
             }
         }
     }
-    
+
     // Synchronize post model_part with the reference model_part
     template<class TVariableType>
     void TransferNodalResults(
@@ -1376,13 +1377,13 @@ public:
         #endif
 
         NodesArrayType& pTargetNodes = pModelPartPost->Nodes();
-        
+
         ElementsArrayType& pElements = mpModelPart->Elements();
-        
+
         typename TVariableType::Type Results;
         CoordinatesArrayType LocalPos;
         int ElementId;
-        
+
 //        #pragma omp parallel for
         //TODO: check this. This is not parallelized.
         for(NodesArrayType::ptr_iterator it = pTargetNodes.ptr_begin(); it != pTargetNodes.ptr_end(); ++it)
@@ -1399,13 +1400,13 @@ public:
                 }
             }
         }
-        
+
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "Transfer nodal point results for " << rThisVariable.Name() << " completed: " << end_compute - start_compute << " s" << std::endl;
         #endif
     }
-    
+
     // Synchronize post model_part with the reference model_part
     template<class TVariableType>
     void TransferIntegrationPointResults(
@@ -1423,7 +1424,7 @@ public:
 
         // firstly transfer rThisVariable from integration points of reference model_part to its nodes
         TransferVariablesToNodes(pSolver, mpModelPart, rThisVariable);
-        
+
         // secondly transfer new nodal variables results to the post model_part
         TransferNodalResults(rThisVariable, pModelPartPost);
 
@@ -1450,9 +1451,9 @@ public:
         std::cout << "Transfer integration point results to nodes for "
                   << rThisVariable.Name() << " starts" << std::endl;
         #endif
-        
+
         TransferVariablesToNodes(pSolver, pModelPart, rThisVariable);
-        
+
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "Transfer integration point results to nodes for "
@@ -1472,7 +1473,7 @@ public:
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-        // gather the number of nodes on each process        
+        // gather the number of nodes on each process
         int NumberOfNodes[size];
         int MyNumberOfNodes = pModelPartPost->NumberOfNodes();
         MPI_Allgather(&MyNumberOfNodes, 1, MPI_INT, NumberOfNodes, 1, MPI_INT, MPI_COMM_WORLD);
@@ -1480,12 +1481,12 @@ public:
 //        for(int i = 0; i < size; ++i)
 //            std::cout << " " << NumberOfNodes[i];
 //        std::cout << std::endl;
-        
+
         // compute the numbering offset
         int offset = 0;
         for(int i = 0; i < rank; ++i)
             offset += NumberOfNodes[i];
-        
+
         // renumber the nodes of the current process
         for(ModelPart::NodeIterator it = pModelPartPost->NodesBegin(); it != pModelPartPost->NodesEnd(); ++it)
         {
@@ -1571,7 +1572,7 @@ private:
     ///@name Member Variables
     ///@{
     ModelPart::Pointer mpModelPart; // pointer variable to a model_part
-    
+
     VectorMap<int, CoordinatesArrayType> mNodeToLocalCoordinates; // vector map to store local coordinates of node on a NURBS entity
     VectorMap<int, int> mNodeToElement; // vector map to store local coordinates of node on a NURBS entity
     std::map<int, std::set<int> > mOldToNewElements; // vector map to store id map from old element to new elements
@@ -1584,7 +1585,7 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
-    
+
     /**
      * Calculate global coodinates w.r.t initial configuration
      */
@@ -1597,17 +1598,17 @@ private:
         noalias( rResult ) = ZeroVector( 3 );
 
         Vector ShapeFunctionsValues;
-        
+
         rGeometry.ShapeFunctionsValues(ShapeFunctionsValues, LocalCoordinates);
-        
+
         for ( IndexType i = 0 ; i < rGeometry.size() ; ++i )
         {
             noalias( rResult ) += ShapeFunctionsValues( i ) * rGeometry.GetPoint( i ).GetInitialPosition();
         }
-        
+
         return rResult;
     }
-    
+
     /**
      * Interpolation on element
      */
@@ -1620,7 +1621,7 @@ private:
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
-        
+
         rResult = 0.0;
         for(unsigned int i = 0; i < pElement->GetGeometry().size(); ++i)
         {
@@ -1632,7 +1633,7 @@ private:
 
     /**
      * Interpolation on element
-     */    
+     */
     Vector& CalculateOnPoint(
         const Variable<Vector>& rVariable,
         Vector& rResult,
@@ -1642,11 +1643,11 @@ private:
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
-        
+
         for(unsigned int i = 0; i < pElement->GetGeometry().size(); ++i)
         {
             Vector& NodalValues = pElement->GetGeometry()[i].GetSolutionStepValue(rVariable);
-            
+
             if(i == 0)
             {
                 rResult = N( i ) * NodalValues;
@@ -1671,7 +1672,7 @@ private:
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
-        
+
         rResult[0] = 0.0;
         rResult[1] = 0.0;
         rResult[2] = 0.0;
@@ -1680,13 +1681,13 @@ private:
             array_1d<double, 3> NodalValues = pElement->GetGeometry()[i].GetSolutionStepValue(rVariable);
             rResult += N( i ) * NodalValues;
         }
-        
+
         return rResult;
     }
-    
+
     /**
      * Transfer variable at integration points to nodes
-     * 
+     *
      * @param pSolver       the solver used for solving the local system matrix
      * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
      * @param rThisVariable the variable need to transfer the respected values
@@ -1711,7 +1712,7 @@ private:
         noalias(b)= ZeroVector(NumberOfNodes);
 
         // create the structure for M a priori
-        ConstructMatrixStructure(M, ElementsArray, pModelPart->GetProcessInfo());
+        ConstructL2MatrixStructure<Element>(M, ElementsArray);
 
         // Transfer of GaussianVariables to Nodal Variables via L_2-Minimization
         // see Jiao + Heath "Common-refinement-based data tranfer ..."
@@ -1722,7 +1723,7 @@ private:
         //create a partition of the element array
         int number_of_threads = omp_get_max_threads();
         vector<unsigned int> element_partition;
-        CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
+        OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
 
         KRATOS_WATCH( number_of_threads )
         KRATOS_WATCH( element_partition )
@@ -1741,7 +1742,7 @@ private:
 
             typename ElementsArrayType::ptr_iterator it_begin = ElementsArray.ptr_begin() + element_partition[k];
             typename ElementsArrayType::ptr_iterator it_end = ElementsArray.ptr_begin() + element_partition[k + 1];
-            
+
             for( ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it )
             {
                 if(!(*it)->GetValue(IS_INACTIVE))
@@ -1822,7 +1823,7 @@ private:
             it->GetSolutionStepValue(rThisVariable) = g((it->Id()-1));
         }
     }
-    
+
     /**
      * Transfer of rThisVariable defined on integration points to corresponding
      * nodal values. The transformation is done in a form that ensures a minimization
@@ -1876,7 +1877,7 @@ private:
         noalias(M)= ZeroMatrix(NumberOfNodes, NumberOfNodes);
 
         // create the structure for M a priori
-        ConstructMatrixStructure(M, ElementsArray, pModelPart->GetProcessInfo());
+        ConstructL2MatrixStructure<Element>(M, ElementsArray);
 
         #ifdef ENABLE_PROFILING
         end_compute = OpenMPUtils::GetCurrentTime();
@@ -1897,7 +1898,7 @@ private:
         //create a partition of the element array
         int number_of_threads = omp_get_max_threads();
         vector<unsigned int> element_partition;
-        CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
+        OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
 
         KRATOS_WATCH( number_of_threads )
         KRATOS_WATCH( element_partition )
@@ -1975,7 +1976,7 @@ private:
 
 //                        for(unsigned int i = 0; i < VariableSize; ++i)
 //                            b(row, i) += 0.0;
-                                
+
                         for(unsigned int sec = 0; sec < (*it)->GetGeometry().size(); ++sec)
                         {
                             col = (*it)->GetGeometry()[sec].Id() - 1;
@@ -2033,82 +2034,6 @@ private:
     ///@}
     ///@name Private Inquiry
     ///@{
-
-    void ConstructMatrixStructure (
-        SerialSparseSpaceType::MatrixType& A,
-        ElementsArrayType& rElements,
-        ProcessInfo& CurrentProcessInfo
-    )
-    {
-        std::size_t equation_size = A.size1();
-        std::vector<std::vector<std::size_t> > indices(equation_size);
-
-        Element::EquationIdVectorType ids;
-        for(typename ElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
-        {
-            ids.resize((i_element)->GetGeometry().size());
-            for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
-                ids[i] = (i_element)->GetGeometry()[i].Id() - 1;
-
-            for(std::size_t i = 0 ; i < ids.size() ; ++i)
-            {
-                if(ids[i] < equation_size)
-                {
-                    std::vector<std::size_t>& row_indices = indices[ids[i]];
-                    for(std::size_t j = 0 ; j < ids.size() ; ++j)
-                    {
-                        if(ids[j] < equation_size)
-                            AddUnique(row_indices, ids[j]);
-                    }
-                }
-            }
-        }
-
-        //allocating the memory needed
-        int data_size = 0;
-        for(std::size_t i = 0 ; i < indices.size() ; ++i)
-        {
-            data_size += indices[i].size();
-        }
-        A.reserve(data_size, false);
-
-        //filling with zero the matrix (creating the structure)
-#ifndef _OPENMP
-        for(std::size_t i = 0 ; i < indices.size() ; i++)
-        {
-            std::vector<std::size_t>& row_indices = indices[i];
-            std::sort(row_indices.begin(), row_indices.end());
-
-            for(std::vector<std::size_t>::iterator it= row_indices.begin(); it != row_indices.end() ; it++)
-            {
-                A.push_back(i, *it, 0.00);
-            }
-            row_indices.clear();
-        }
-#else
-        int number_of_threads = omp_get_max_threads();
-        vector<unsigned int> matrix_partition;
-        CreatePartition(number_of_threads, indices.size(), matrix_partition);
-        for( int k=0; k < number_of_threads; ++k )
-        {
-            #pragma omp parallel
-            if( omp_get_thread_num() == k )
-            {
-                for( std::size_t i = matrix_partition[k]; i < matrix_partition[k+1]; i++ )
-                {
-                    std::vector<std::size_t>& row_indices = indices[i];
-                    std::sort(row_indices.begin(), row_indices.end());
-
-                    for(std::vector<std::size_t>::iterator it= row_indices.begin(); it != row_indices.end() ; it++)
-                    {
-                        A.push_back(i, *it, 0.00);
-                    }
-                    row_indices.clear();
-                }
-            }
-        }
-#endif
-    }
 
     ///@}
     ///@name Un accessible methods

@@ -61,6 +61,49 @@ public:
         rOStream << "//This file is created on " << current_time() << std::endl << std::endl;
     }
 
+    // void IsogeometricMathUtils::compute_extended_knot_vector(
+    //    Vector& Ubar,       // extended knot vector (OUTPUT)
+    //    int& nt,            // relative location of the basis function w.r.t extended knot vector (OUTPUT)
+    //    const std::vector<double>& Xi,   // local knot vector (INPUT)
+    //    const int p)        // degree of the basis function (INPUT)
+    // {
+    //     // count the multiplicity of the first knot
+    //     int n = Xi.size();
+    //     int a = 0;
+    //     for(std::size_t i = 0; i < n; ++i)
+    //     {
+    //        if(Xi[i] == Xi[0])
+    //            ++a;
+    //        else
+    //            break;
+    //     }
+
+    //     // compute the index of the basis function w.r.t the extended knot vector
+    //     nt = p - a + 1;
+
+    //     // count the multiplicity of the last knot
+    //     int b = 0;
+    //     for(std::size_t i = n - 1; i >= 0; --i)
+    //     {
+    //        if(Xi[i] == Xi[n-1])
+    //            ++b;
+    //        else
+    //            break;
+    //     }
+
+    //     // compute the extended knot vector
+    //     Ubar.resize(nt + n + (p-b+1));
+
+    //     for(std::size_t i = 0; i < nt; ++i)
+    //        Ubar[i] = Xi[0];
+
+    //     for(std::size_t i = nt; i < nt + n; ++i)
+    //        Ubar[i] = Xi[i - nt];
+
+    //     for(std::size_t i = nt + n; i < nt + n + (p-b+1); ++i)
+    //        Ubar[i] = Xi[n-1];
+    // }
+
     /**
      Compute the extended knot vector for a local knot vector
      */

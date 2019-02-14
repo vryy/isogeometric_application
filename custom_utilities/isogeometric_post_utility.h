@@ -28,15 +28,9 @@
 #include "includes/node.h"
 #include "includes/element.h"
 #include "includes/properties.h"
-#include "includes/ublas_interface.h"
-#include "includes/legacy_structural_app_vars.h"
-#include "spaces/ublas_space.h"
-#include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/isogeometric_utility.h"
-#include "custom_geometries/isogeometric_geometry.h"
-#include "isogeometric_application/isogeometric_application.h"
 
 
 namespace Kratos
@@ -74,10 +68,6 @@ public:
     ///@name Type Definitions
     ///@{
 
-    typedef boost::numeric::ublas::vector<double> ValuesContainerType;
-
-    typedef boost::numeric::ublas::matrix<double> ValuesArrayContainerType;
-
     typedef typename ModelPart::NodesContainerType NodesArrayType;
 
     typedef typename ModelPart::ElementsContainerType ElementsArrayType;
@@ -95,12 +85,6 @@ public:
     typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
 
     typedef typename NodeType::DofsContainerType DofsContainerType;
-
-    typedef UblasSpace<double, CompressedMatrix, Vector> SerialSparseSpaceType;
-
-    typedef UblasSpace<double, Matrix, Vector> SerialDenseSpaceType;
-
-    typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType> LinearSolverType;
 
     typedef std::size_t IndexType;
 
@@ -175,22 +159,105 @@ public:
     }
 
     //**********AUXILIARY FUNCTION**************************************************************
+    // Construct the matrix structure for high performance assembling
+    // This subroutine shall only be used to construct the matrix structure for L2 projection
+    // using in post-processing
     //******************************************************************************************
-    static void ConstructMatrixStructure (
-        SerialSparseSpaceType::MatrixType& A,
+    template<typename TElementType, typename TCompressedMatrixType, typename ElementsArrayType>
+    static void ConstructL2MatrixStructure (
+        TCompressedMatrixType& A,
         ElementsArrayType& rElements,
-        std::map<unsigned int, unsigned int> MapNodeIdToVec,
-        ProcessInfo& CurrentProcessInfo)
+        std::map<unsigned int, unsigned int> MapNodeIdToVec)
     {
         std::size_t equation_size = A.size1();
         std::vector<std::vector<std::size_t> > indices(equation_size);
 
-        Element::EquationIdVectorType ids;
+        typename TElementType::EquationIdVectorType ids;
         for(typename ElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
         {
             ids.resize((i_element)->GetGeometry().size());
             for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
                 ids[i] = MapNodeIdToVec[(i_element)->GetGeometry()[i].Id()];
+
+            for(std::size_t i = 0 ; i < ids.size() ; ++i)
+            {
+                if(ids[i] < equation_size)
+                {
+                    std::vector<std::size_t>& row_indices = indices[ids[i]];
+                    for(std::size_t j = 0 ; j < ids.size() ; ++j)
+                    {
+                        if(ids[j] < equation_size)
+                            AddUnique(row_indices, ids[j]);
+                    }
+                }
+            }
+        }
+
+        //allocating the memory needed
+        int data_size = 0;
+        for(std::size_t i = 0 ; i < indices.size() ; ++i)
+        {
+            data_size += indices[i].size();
+        }
+        A.reserve(data_size, false);
+
+        //filling with zero the matrix (creating the structure)
+#ifndef _OPENMP
+        for(std::size_t i = 0 ; i < indices.size() ; ++i)
+        {
+            std::vector<std::size_t>& row_indices = indices[i];
+            std::sort(row_indices.begin(), row_indices.end());
+
+            for(std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end() ; ++it)
+            {
+                A.push_back(i, *it, 0.00);
+            }
+            row_indices.clear();
+        }
+#else
+        int number_of_threads = omp_get_max_threads();
+        vector<unsigned int> matrix_partition;
+        OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
+        for( int k=0; k < number_of_threads; ++k )
+        {
+            #pragma omp parallel
+            if( omp_get_thread_num() == k )
+            {
+                for( std::size_t i = matrix_partition[k]; i < matrix_partition[k+1]; i++ )
+                {
+                    std::vector<std::size_t>& row_indices = indices[i];
+                    std::sort(row_indices.begin(), row_indices.end());
+
+                    for(std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end() ; ++it)
+                    {
+                        A.push_back(i, *it, 0.00);
+                    }
+                    row_indices.clear();
+                }
+            }
+        }
+#endif
+    }
+
+    //**********AUXILIARY FUNCTION**************************************************************
+    // Construct the matrix structure for high performance assembling
+    // This subroutine shall only be used to construct the matrix structure for L2 projection
+    // using in post-processing
+    //******************************************************************************************
+    template<typename TElementType, typename TCompressedMatrixType, typename ElementsArrayType>
+    static void ConstructL2MatrixStructure (
+        TCompressedMatrixType& A,
+        ElementsArrayType& rElements)
+    {
+        std::size_t equation_size = A.size1();
+        std::vector<std::vector<std::size_t> > indices(equation_size);
+
+        typename TElementType::EquationIdVectorType ids;
+        for(typename ElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
+        {
+            ids.resize((i_element)->GetGeometry().size());
+            for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
+                ids[i] = (i_element)->GetGeometry()[i].Id() - 1;
 
             for(std::size_t i = 0 ; i < ids.size() ; ++i)
             {
@@ -253,6 +320,7 @@ public:
     }
 
     //**********AUXILIARY FUNCTION**************************************************************
+    // Support function for ConstructMatrixStructure
     //******************************************************************************************
     static inline void AddUnique(std::vector<std::size_t>& v, const std::size_t& candidate)
     {
@@ -266,18 +334,6 @@ public:
         {
             v.push_back(candidate);
         }
-    }
-
-    //**********AUXILIARY FUNCTION**************************************************************
-    //******************************************************************************************
-    static inline void CreatePartition(const unsigned int& number_of_threads, const unsigned int& number_of_rows, vector<unsigned int>& partitions)
-    {
-        partitions.resize(number_of_threads + 1);
-        unsigned int partition_size = number_of_rows / number_of_threads;
-        partitions[0] = 0;
-        partitions[number_of_threads] = number_of_rows;
-        for(unsigned int i = 1; i < number_of_threads; ++i)
-            partitions[i] = partitions[i-1] + partition_size ;
     }
 
     //**********AUXILIARY FUNCTION**************************************************************

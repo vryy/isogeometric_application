@@ -1,4 +1,5 @@
 #include "includes/deprecated_variables.h"
+#include "custom_utilities/isogeometric_math_utils.h"
 #include "custom_utilities/bezier_post_utility.h"
 
 //#define DEBUG_MULTISOLVE
@@ -78,13 +79,13 @@ namespace Kratos
         // create and initialize matrix and vectors
         int NumberOfNodes = r_model_part.NumberOfNodes();
         SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
-        noalias(M)= ZeroMatrix(NumberOfNodes, NumberOfNodes);
+        noalias(M) = ZeroMatrix(NumberOfNodes, NumberOfNodes);
 
         SerialSparseSpaceType::VectorType g(NumberOfNodes);
-        noalias(g)= ZeroVector(NumberOfNodes);
+        noalias(g) = ZeroVector(NumberOfNodes);
 
         SerialSparseSpaceType::VectorType b(NumberOfNodes);
-        noalias(b)= ZeroVector(NumberOfNodes);
+        noalias(b) = ZeroVector(NumberOfNodes);
 
         // create a map from node Id to matrix/vector row
         std::map<unsigned int, unsigned int> MapNodeIdToVec;
@@ -93,7 +94,7 @@ namespace Kratos
             MapNodeIdToVec[it->Id()] = cnt++;
 
         // create the structure for M a priori
-        ConstructMatrixStructure(M, ElementsArray, MapNodeIdToVec, r_model_part.GetProcessInfo());
+        ConstructL2MatrixStructure<Element>(M, ElementsArray, MapNodeIdToVec);
 
         // Transfer of GaussianVariables to Nodal Variables via L_2-Minimization
         // see Jiao + Heath "Common-refinement-based data tranfer ..."
@@ -232,7 +233,7 @@ namespace Kratos
         unsigned int NumberOfNodes = r_model_part.NumberOfNodes();
         SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
         noalias(M)= ZeroMatrix(NumberOfNodes, NumberOfNodes);
-        ConstructMatrixStructure(M, ElementsArray, MapNodeIdToVec, r_model_part.GetProcessInfo());
+        ConstructL2MatrixStructure<Element>(M, ElementsArray, MapNodeIdToVec);
 
         #ifdef ENABLE_PROFILING
         end_compute = OpenMPUtils::GetCurrentTime();

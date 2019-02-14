@@ -60,7 +60,7 @@
 #include "integration/quadrature.h"
 #include "integration/line_gauss_legendre_integration_points.h"
 #include "custom_utilities/bezier_utils.h"
-#include "custom_utilities/isogeometric_math_utils.h"
+
 
 namespace Kratos
 {

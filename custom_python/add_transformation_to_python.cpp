@@ -27,6 +27,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/trans/transformation.h"
 #include "custom_utilities/trans/translation.h"
 #include "custom_utilities/trans/rotation.h"
+#include "custom_utilities/trans/mirror.h"
 #include "custom_utilities/trans/transformation_utility.h"
 
 
@@ -155,6 +156,21 @@ void IsogeometricApplication_AddTransformationToPython()
 
     class_<Rotation<2, double>, Rotation<2, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
     ("RotationZ", init<const double&>())
+    .def(self_ns::str(self))
+    ;
+
+    class_<Mirror<0, double>, Mirror<0, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
+    ("MirrorX", init<>())
+    .def(self_ns::str(self))
+    ;
+
+    class_<Mirror<1, double>, Mirror<1, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
+    ("MirrorY", init<>())
+    .def(self_ns::str(self))
+    ;
+
+    class_<Mirror<2, double>, Mirror<2, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
+    ("MirrorZ", init<>())
     .def(self_ns::str(self))
     ;
 

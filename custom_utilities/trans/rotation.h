@@ -22,10 +22,19 @@
 namespace Kratos
 {
 
-template<int TDim, typename TMatrixType, typename TDataType>
-void ComputeRotationalTransformationMatrix(TMatrixType& trans_mat, const TDataType& angle)
+template<int TAxis, typename TMatrixType, typename TDataType>
+struct ComputeRotationalTransformationMatrix_Helper
 {
-    if (TDim == 0)
+    static void Execute(TMatrixType& trans_mat, const TDataType& angle)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+    }
+};
+
+template<typename TMatrixType, typename TDataType>
+struct ComputeRotationalTransformationMatrix_Helper<0, TMatrixType, TDataType>
+{
+    static void Execute(TMatrixType& trans_mat, const TDataType& angle)
     {
         TDataType c = std::cos(angle/180.0*M_PI);
         TDataType s = std::sin(angle/180.0*M_PI);
@@ -34,7 +43,12 @@ void ComputeRotationalTransformationMatrix(TMatrixType& trans_mat, const TDataTy
         trans_mat(2, 1) = s;
         trans_mat(2, 2) = c;
     }
-    else if (TDim == 1)
+};
+
+template<typename TMatrixType, typename TDataType>
+struct ComputeRotationalTransformationMatrix_Helper<1, TMatrixType, TDataType>
+{
+    static void Execute(TMatrixType& trans_mat, const TDataType& angle)
     {
         TDataType c = std::cos(angle/180.0*M_PI);
         TDataType s = std::sin(angle/180.0*M_PI);
@@ -43,7 +57,12 @@ void ComputeRotationalTransformationMatrix(TMatrixType& trans_mat, const TDataTy
         trans_mat(2, 0) = -s;
         trans_mat(2, 2) = c;
     }
-    else if (TDim == 2)
+};
+
+template<typename TMatrixType, typename TDataType>
+struct ComputeRotationalTransformationMatrix_Helper<2, TMatrixType, TDataType>
+{
+    static void Execute(TMatrixType& trans_mat, const TDataType& angle)
     {
         TDataType c = std::cos(angle/180.0*M_PI);
         TDataType s = std::sin(angle/180.0*M_PI);
@@ -52,18 +71,13 @@ void ComputeRotationalTransformationMatrix(TMatrixType& trans_mat, const TDataTy
         trans_mat(1, 0) = s;
         trans_mat(1, 1) = c;
     }
-    else
-    {
-        std::stringstream ss;
-        ss << __FUNCTION__ << " is not implemented for dimension " << TDim;
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
-    }
-}
+};
 
 /**
-Represent a Rotation in homogeneous coordinates
+ * Represent a Rotation in homogeneous coordinates
+ * TAxis represent the axis of rotation
  */
-template<int TDim, typename TDataType>
+template<int TAxis, typename TDataType>
 class Rotation : public Transformation<TDataType>
 {
 public:
@@ -77,7 +91,7 @@ public:
     /// Default constructor
     Rotation(const TDataType& angle) : BaseType()
     {
-        ComputeRotationalTransformationMatrix<TDim, MatrixType, TDataType>(BaseType::mTransMat, angle);
+        ComputeRotationalTransformationMatrix_Helper<TAxis, MatrixType, TDataType>::Execute(BaseType::mTransMat, angle);
     }
 
     /// Destructor
@@ -87,19 +101,19 @@ public:
     virtual void PrintInfo(std::ostream& rOStream) const
     {
         rOStream << "Homogeneous Rotation";
-        if (TDim == 0)
+        if (TAxis == 0)
             rOStream << "_X";
-        else if (TDim == 1)
+        else if (TAxis == 1)
             rOStream << "_Y";
-        else if (TDim == 2)
+        else if (TAxis == 2)
             rOStream << "_Z";
     }
 
 };
 
 /// output stream function
-template<int TDim, class TDataType>
-inline std::ostream& operator <<(std::ostream& rOStream, const Rotation<TDim, TDataType>& rThis)
+template<int TAxis, class TDataType>
+inline std::ostream& operator <<(std::ostream& rOStream, const Rotation<TAxis, TDataType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << ": ";

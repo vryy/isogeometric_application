@@ -118,7 +118,16 @@ public:
     {
         // firstly get the values of all the basis functions
         std::vector<double> f_values;
-        pFESpace()->GetValue(f_values, xi);
+        if (typeid(TCoordinatesType) == typeid(std::vector<double>))
+        {
+            pFESpace()->GetValue(f_values, xi);
+        }
+        else
+        {
+            std::vector<double> xin(xi.size());
+            std::copy(xi.begin(), xi.end(), xin.begin());
+            pFESpace()->GetValue(f_values, xin);
+        }
 
         // then interpolate the value at local coordinates using the control values
         const ControlGridType& r_control_grid = *pControlGrid();
@@ -138,7 +147,7 @@ public:
     }
 
     /// Get the derivatives of the grid at specific local coordinates
-    /// The output values has the form: d_values(xi) / d_xi_0, d_values(xi) / d_xi_1, ...
+    /// The output values has the form: d(values(xi)) / d(xi_0), d(values(xi)) / d(xi_1), ...
     /// The function derivatives to interpolate the grid value are provided by FESpace. Hence, the TDataType must
     /// be unweighted type, in order to have correct derivative values. Because, homogeous transformation
     /// is not applied for derivatives. If TDataType is a weighted type, e.g. CONTROL_POINT, one must change to

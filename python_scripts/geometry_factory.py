@@ -41,7 +41,7 @@ def CreateLine(start_point, end_point, order = 1):
     patch.CreateControlPointGridFunction(ctrl_grid)
     return patch_ptr
 
-### Create a curve from the point list, given as [ [x0, y0, z0], ... ]
+### Create a curve from the control point list, given as [ [x0, y0, z0], ... ]
 ### All the weight is assumed 1
 def CreateCurve(points, order):
     Id = 0

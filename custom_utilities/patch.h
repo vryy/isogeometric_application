@@ -519,6 +519,12 @@ public:
         }
     }
 
+    /// Remove all interfaces associated with patch
+    void ClearInterface()
+    {
+        mpInterfaces.clear();
+    }
+
     /// Get the number of interfaces
     std::size_t NumberOfInterfaces() const
     {

@@ -105,10 +105,15 @@ public:
     {
         std::vector<double> values;
         mpFESpace->GetValue(values, xi);
+
         double sum_value = 0.0;
         for (std::size_t j = 0; j < values.size(); ++j)
             sum_value += mWeights[j] * values[j];
-        v = mWeights[i]*values[i] / sum_value;
+
+        if (sum_value == 0.0)
+            v = 0.0;
+        else
+            v = mWeights[i]*values[i] / sum_value;
     }
 
     /// Get the values of the basis functions at point xi
@@ -123,8 +128,12 @@ public:
         double sum_value = 0.0;
         for (std::size_t i = 0; i < values.size(); ++i)
             sum_value += mWeights[i] * values[i];
-        for (std::size_t i = 0; i < new_values.size(); ++i)
-            new_values[i] = mWeights[i]*values[i] / sum_value;
+
+        if (sum_value == 0.0)
+            std::fill(new_values.begin(), new_values.end(), 0.0);
+        else
+            for (std::size_t i = 0; i < new_values.size(); ++i)
+                new_values[i] = mWeights[i]*values[i] / sum_value;
     }
 
     /// Get the derivatives of the basis function i at point xi
@@ -133,6 +142,9 @@ public:
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
         mpFESpace->GetValueAndDerivative(values, dvalues, xi);
+
+        if (new_dvalues.size() != TDim)
+            new_dvalues.resize(TDim);
 
         double sum_value = 0.0;
         std::vector<double> dsum_value(TDim);
@@ -144,13 +156,11 @@ public:
                 dsum_value[dim] += mWeights[j] * dvalues[j][dim];
         }
 
-        if (new_dvalues.size() != TDim)
-            new_dvalues.resize(TDim);
-
-        for (int dim = 0; dim < TDim; ++dim)
-        {
-            new_dvalues[dim] = mWeights[i] * (dvalues[i][dim]/sum_value - values[i]*dsum_value[dim]/pow(sum_value, 2));
-        }
+        if (sum_value == 0.0)
+            std::fill(new_dvalues.begin(), new_dvalues.end(), 0.0);
+        else
+            for (int dim = 0; dim < TDim; ++dim)
+                new_dvalues[dim] = mWeights[i] * (dvalues[i][dim]/sum_value - values[i]*dsum_value[dim]/pow(sum_value, 2));
     }
 
     /// Get the derivatives of the basis functions at point xi
@@ -160,6 +170,12 @@ public:
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
         mpFESpace->GetValueAndDerivative(values, dvalues, xi);
+
+        if (new_dvalues.size() != dvalues.size())
+            new_dvalues.resize(dvalues.size());
+        for (std::size_t i = 0; i < new_dvalues.size(); ++i)
+            if (new_dvalues[i].size() != TDim)
+                new_dvalues[i].resize(TDim);
 
         double sum_value = 0.0;
         std::vector<double> dsum_value(TDim);
@@ -174,17 +190,21 @@ public:
         // KRATOS_WATCH(sum_value)
         // KRATOS_WATCH(dsum_value[0])
 
-        if (new_dvalues.size() != dvalues.size())
-            new_dvalues.resize(dvalues.size());
-        for (std::size_t i = 0; i < new_dvalues.size(); ++i)
-            if (new_dvalues[i].size() != TDim)
-                new_dvalues[i].resize(TDim);
-
-        for (std::size_t i = 0; i < new_dvalues.size(); ++i)
+        if (sum_value == 0.0)
         {
-            for (int dim = 0; dim < TDim; ++dim)
+            for (std::size_t i = 0; i < new_dvalues.size(); ++i)
             {
-                new_dvalues[i][dim] = mWeights[i] * (dvalues[i][dim]/sum_value - values[i]*dsum_value[dim]/pow(sum_value, 2));
+                std::fill(new_dvalues[i].begin(), new_dvalues[i].end(), 0.0);
+            }
+        }
+        else
+        {
+            for (std::size_t i = 0; i < new_dvalues.size(); ++i)
+            {
+                for (int dim = 0; dim < TDim; ++dim)
+                {
+                    new_dvalues[i][dim] = mWeights[i] * (dvalues[i][dim]/sum_value - values[i]*dsum_value[dim]/pow(sum_value, 2));
+                }
             }
         }
 

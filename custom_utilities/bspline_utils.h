@@ -139,7 +139,8 @@ public:
             const ValuesContainerType& rU
     )
     {
-        if(rXi == rU[rN]) return rN - 1;
+        if(rXi < rU[0]) return 0;
+        if(rXi >= rU[rN]) return rN - 1;
 
         int low = rP;
         int high = rN;

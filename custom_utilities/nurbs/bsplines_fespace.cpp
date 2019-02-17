@@ -21,19 +21,22 @@ namespace Kratos
 template<>
 void BSplinesFESpace<1>::GetValue(std::vector<double>& values, const std::vector<double>& xi) const
 {
+    // initialize the shape functions
+    if (values.size() != this->TotalNumber())
+        values.resize(this->TotalNumber());
+    std::fill(values.begin(), values.end(), 0.0);
+
     // locate the knot span
     int Span;
     Span = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
+
+    if ((Span >= this->Number(0)-1) || (Span == 0))
+        return;
 
     // compute the non-zero shape function values
     std::vector<double> ShapeFunctionValues(this->Order(0) + 1);
 
     BSplineUtils::BasisFuns(ShapeFunctionValues, Span, xi[0], this->Order(0), this->KnotVector(0));
-
-    // rearrange the shape functions
-    if (values.size() != this->TotalNumber())
-        values.resize(this->TotalNumber());
-    std::fill(values.begin(), values.end(), 0.0);
 
     int Start;
     Start = Span - this->Order(0);
@@ -54,25 +57,7 @@ void BSplinesFESpace<1>::GetValue(std::vector<double>& values, const std::vector
 template<>
 void BSplinesFESpace<1>::GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
 {
-    // locate the knot span
-    int Span;
-    Span = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
-
-    // compute the non-zero shape function values and derivatives
-    const int NumberOfDerivatives = 1;
-    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives;
-
-    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives, Span, xi[0], this->Order(0), this->KnotVector(0), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
-
-    // for (int i = 0; i < ShapeFunctionsValuesAndDerivatives.size(); ++i)
-    // {
-    //     std::cout << "ShapeFunctionsValuesAndDerivatives[" << i << "]:";
-    //     for (int j = 0; j < ShapeFunctionsValuesAndDerivatives[i].size(); ++j)
-    //         std::cout << " " << ShapeFunctionsValuesAndDerivatives[i][j];
-    //     std::cout << std::endl;
-    // }
-
-    // rearrange the shape functions
+    // initialize the shape functions and derivatives
     if (values.size() != this->TotalNumber())
         values.resize(this->TotalNumber());
     std::fill(values.begin(), values.end(), 0.0);
@@ -88,7 +73,28 @@ void BSplinesFESpace<1>::GetValueAndDerivative(std::vector<double>& values, std:
         }
     }
 
-    // compute
+    // locate the knot span
+    int Span;
+    Span = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
+
+    if ((Span >= this->Number(0)-1) || (Span == 0))
+        return;
+
+    // compute the non-zero shape function values and derivatives
+    const int NumberOfDerivatives = 1;
+    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives;
+
+    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives, Span, xi[0], this->Order(0), this->KnotVector(0), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
+
+    // for (int i = 0; i < ShapeFunctionsValuesAndDerivatives.size(); ++i)
+    // {
+    //     std::cout << "ShapeFunctionsValuesAndDerivatives[" << i << "]:";
+    //     for (int j = 0; j < ShapeFunctionsValuesAndDerivatives[i].size(); ++j)
+    //         std::cout << " " << ShapeFunctionsValuesAndDerivatives[i][j];
+    //     std::cout << std::endl;
+    // }
+
+    // distribute it into the array
 
     int Start;
     Start = Span - this->Order(0);
@@ -111,10 +117,19 @@ void BSplinesFESpace<1>::GetValueAndDerivative(std::vector<double>& values, std:
 template<>
 void BSplinesFESpace<2>::GetValue(std::vector<double>& values, const std::vector<double>& xi) const
 {
+    // inititialize the shape functions
+    if (values.size() != this->TotalNumber())
+        values.resize(this->TotalNumber());
+    std::fill(values.begin(), values.end(), 0.0);
+
     // locate the knot span
     int Span[2];
     Span[0] = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
     Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
+
+    if ((Span[0] >= this->Number(0)-1) || (Span[0] == 0)
+     || (Span[1] >= this->Number(1)-1) || (Span[1] == 0))
+        return;
 
     // compute the non-zero shape function values
     std::vector<double> ShapeFunctionValues1(this->Order(0) + 1);
@@ -122,11 +137,6 @@ void BSplinesFESpace<2>::GetValue(std::vector<double>& values, const std::vector
 
     BSplineUtils::BasisFuns(ShapeFunctionValues1, Span[0], xi[0], this->Order(0), this->KnotVector(0));
     BSplineUtils::BasisFuns(ShapeFunctionValues2, Span[1], xi[1], this->Order(1), this->KnotVector(1));
-
-    // rearrange the shape functions
-    if (values.size() != this->TotalNumber())
-        values.resize(this->TotalNumber());
-    std::fill(values.begin(), values.end(), 0.0);
 
     int Start[2];
     Start[0] = Span[0] - this->Order(0);
@@ -152,20 +162,7 @@ void BSplinesFESpace<2>::GetValue(std::vector<double>& values, const std::vector
 template<>
 void BSplinesFESpace<2>::GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
 {
-    // locate the knot span
-    int Span[2];
-    Span[0] = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
-    Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
-
-    // compute the non-zero shape function values and derivatives
-    const int NumberOfDerivatives = 1;
-    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives1;
-    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives2;
-
-    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives1, Span[0], xi[0], this->Order(0), this->KnotVector(0), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
-    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives2, Span[1], xi[1], this->Order(1), this->KnotVector(1), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
-
-    // rearrange the shape functions
+    // initialize the shape functions and derivatives
     if (values.size() != this->TotalNumber())
         values.resize(this->TotalNumber());
     std::fill(values.begin(), values.end(), 0.0);
@@ -182,7 +179,24 @@ void BSplinesFESpace<2>::GetValueAndDerivative(std::vector<double>& values, std:
         }
     }
 
-    // compute
+    // locate the knot span
+    int Span[2];
+    Span[0] = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
+    Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
+
+    if ((Span[0] >= this->Number(0)-1) || (Span[0] == 0)
+     || (Span[1] >= this->Number(1)-1) || (Span[1] == 0))
+        return;
+
+    // compute the non-zero shape function values and derivatives
+    const int NumberOfDerivatives = 1;
+    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives1;
+    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives2;
+
+    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives1, Span[0], xi[0], this->Order(0), this->KnotVector(0), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
+    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives2, Span[1], xi[1], this->Order(1), this->KnotVector(1), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
+
+    // distribute the values to arrays
 
     int Start[2];
     Start[0] = Span[0] - this->Order(0);
@@ -212,11 +226,21 @@ void BSplinesFESpace<2>::GetValueAndDerivative(std::vector<double>& values, std:
 template<>
 void BSplinesFESpace<3>::GetValue(std::vector<double>& values, const std::vector<double>& xi) const
 {
+    // initialize the shape functions
+    if (values.size() != this->TotalNumber())
+        values.resize(this->TotalNumber());
+    std::fill(values.begin(), values.end(), 0.0);
+
     // locate the knot span
     int Span[3];
     Span[0] = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
     Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
     Span[2] = BSplineUtils::FindSpan(this->Number(2), this->Order(2), xi[2], this->KnotVector(2));
+
+    if ((Span[0] >= this->Number(0)-1) || (Span[0] == 0)
+     || (Span[1] >= this->Number(1)-1) || (Span[1] == 0)
+     || (Span[2] >= this->Number(2)-1) || (Span[2] == 0))
+        return;
 
     // compute the non-zero shape function values
     std::vector<double> ShapeFunctionValues1(this->Order(0) + 1);
@@ -226,11 +250,6 @@ void BSplinesFESpace<3>::GetValue(std::vector<double>& values, const std::vector
     BSplineUtils::BasisFuns(ShapeFunctionValues1, Span[0], xi[0], this->Order(0), this->KnotVector(0));
     BSplineUtils::BasisFuns(ShapeFunctionValues2, Span[1], xi[1], this->Order(1), this->KnotVector(1));
     BSplineUtils::BasisFuns(ShapeFunctionValues3, Span[2], xi[2], this->Order(2), this->KnotVector(2));
-
-    // rearrange the shape functions
-    if (values.size() != this->TotalNumber())
-        values.resize(this->TotalNumber());
-    std::fill(values.begin(), values.end(), 0.0);
 
     int Start[3];
     Start[0] = Span[0] - this->Order(0);
@@ -261,23 +280,7 @@ void BSplinesFESpace<3>::GetValue(std::vector<double>& values, const std::vector
 template<>
 void BSplinesFESpace<3>::GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
 {
-    // locate the knot span
-    int Span[3];
-    Span[0] = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
-    Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
-    Span[2] = BSplineUtils::FindSpan(this->Number(2), this->Order(2), xi[2], this->KnotVector(2));
-
-    // compute the non-zero shape function values and derivatives
-    const int NumberOfDerivatives = 1;
-    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives1;
-    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives2;
-    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives3;
-
-    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives1, Span[0], xi[0], this->Order(0), this->KnotVector(0), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
-    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives2, Span[1], xi[1], this->Order(1), this->KnotVector(1), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
-    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives3, Span[2], xi[2], this->Order(2), this->KnotVector(2), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
-
-    // rearrange the shape functions
+    // initialize the shape functions and derivatives
     if (values.size() != this->TotalNumber())
         values.resize(this->TotalNumber());
     std::fill(values.begin(), values.end(), 0.0);
@@ -295,7 +298,28 @@ void BSplinesFESpace<3>::GetValueAndDerivative(std::vector<double>& values, std:
         }
     }
 
-    // compute
+    // locate the knot span
+    int Span[3];
+    Span[0] = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
+    Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
+    Span[2] = BSplineUtils::FindSpan(this->Number(2), this->Order(2), xi[2], this->KnotVector(2));
+
+    if ((Span[0] >= this->Number(0)-1) || (Span[0] == 0)
+     || (Span[1] >= this->Number(1)-1) || (Span[1] == 0)
+     || (Span[2] >= this->Number(2)-1) || (Span[2] == 0))
+        return;
+
+    // compute the non-zero shape function values and derivatives
+    const int NumberOfDerivatives = 1;
+    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives1;
+    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives2;
+    std::vector<std::vector<double> > ShapeFunctionsValuesAndDerivatives3;
+
+    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives1, Span[0], xi[0], this->Order(0), this->KnotVector(0), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
+    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives2, Span[1], xi[1], this->Order(1), this->KnotVector(1), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
+    BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives3, Span[2], xi[2], this->Order(2), this->KnotVector(2), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
+
+    // distribute the values to arrays
 
     int Start[3];
     Start[0] = Span[0] - this->Order(0);

@@ -24,6 +24,10 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/define.h"
 #include "includes/model_part.h"
 #include "includes/variables.h"
+#include "custom_utilities/control_point.h"
+#include "custom_utilities/control_grid.h"
+#include "custom_utilities/control_grid_library.h"
+#include "custom_utilities/control_grid_utility.h"
 #include "custom_utilities/tsplines/tcell.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/nurbs/pbbsplines_fespace.h"
@@ -175,27 +179,59 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicContro
     return rDummy.CreateStructuredControlPointGrid<3>(start, ngrid, spacing_vectors);
 }
 
-void IsogeometricApplication_AddControlPoint()
-{
-    class_<ControlPoint<double>, ControlPoint<double>::Pointer>
-    ("ControlPoint", init<>())
-    .def(init<const double&, const double&, const double&, const double&>())
-    .add_property("WX", ControlPoint_GetWX, ControlPoint_SetWX)
-    .add_property("WY", ControlPoint_GetWY, ControlPoint_SetWY)
-    .add_property("WZ", ControlPoint_GetWZ, ControlPoint_SetWZ)
-    .add_property("W", ControlPoint_GetW, ControlPoint_SetW)
-    .def("ApplyTransformation", &ControlPoint_ApplyTransformation)
-    .def(self_ns::str(self))
-    ;
+////////////////////////////////////////
 
-    class_<Variable<ControlPoint<double> >, bases<VariableData>, boost::noncopyable >( "ControlPointVariable", no_init )
-    .def( self_ns::str( self ) )
-    ;
+template<class TVariableType>
+inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_CreateLinearZeroControlGridWithVariable(
+        ControlGridLibrary& rDummy,
+        const TVariableType& rVariable,
+        const std::size_t& n_points_u)
+{
+    std::vector<std::size_t> ngrid(1);
+    ngrid[0] = n_points_u;
+    return rDummy.CreateStructuredZeroControlGrid<1, TVariableType>(rVariable, ngrid);
 }
 
-void IsogeometricApplication_AddControlGrids()
+template<class TVariableType>
+inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_CreateRectangularZeroControlGridWithVariable(
+        ControlGridLibrary& rDummy,
+        const TVariableType& rVariable,
+        const std::size_t& n_points_u, const std::size_t& n_points_v)
 {
-    /////////////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<std::size_t> ngrid(2);
+    ngrid[0] = n_points_u;
+    ngrid[1] = n_points_v;
+    return rDummy.CreateStructuredZeroControlGrid<2, TVariableType>(rVariable, ngrid);
+}
+
+template<class TVariableType>
+inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_CreateCubicZeroControlGridWithVariable(
+        ControlGridLibrary& rDummy,
+        const TVariableType& rVariable,
+        const std::size_t& n_points_u, const std::size_t& n_points_v, const std::size_t& n_points_w)
+{
+    std::vector<std::size_t> ngrid(3);
+    ngrid[0] = n_points_u;
+    ngrid[1] = n_points_v;
+    ngrid[2] = n_points_w;
+    return rDummy.CreateStructuredZeroControlGrid<3, TVariableType>(rVariable, ngrid);
+}
+
+template<typename TDataType, class TFESpaceType>
+inline typename ControlGrid<TDataType>::Pointer ControlGridUtility_CreatePointBasedControlGrid(
+        ControlGridUtility& rDummy,
+        const Variable<TDataType>& rVariable, typename TFESpaceType::Pointer pFESpace)
+{
+    return rDummy.CreatePointBasedControlGrid<TDataType, TFESpaceType>(rVariable, pFESpace);
+}
+
+////////////////////////////////////////
+
+void IsogeometricApplication_AddControlGridsToPython()
+{
+    /////////////////////////////////////////////////////////////////
+    ///////////////////////CONTROL GRIDS/////////////////////////////
+    /////////////////////////////////////////////////////////////////
 
     class_<ControlGrid<ControlPoint<double> >, ControlGrid<ControlPoint<double> >::Pointer, boost::noncopyable>
     ("ControlPointControlGrid", init<>())
@@ -256,24 +292,6 @@ void IsogeometricApplication_AddControlGrids()
     ;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
-}
-
-void IsogeometricApplication_AddControlGridsToPython()
-{
-
-    /////////////////////////////////////////////////////////////////
-    ///////////////////CONTROL POINT/////////////////////////////////
-    /////////////////////////////////////////////////////////////////
-
-    IsogeometricApplication_AddControlPoint();
-
-    /////////////////////////////////////////////////////////////////
-    ///////////////////////CONTROL GRIDS/////////////////////////////
-    /////////////////////////////////////////////////////////////////
-
-    IsogeometricApplication_AddControlGrids();
-
-    /////////////////////////////////////////////////////////////////
 
     class_<ControlGridLibrary, ControlGridLibrary::Pointer, boost::noncopyable>
     ("ControlGridLibrary", init<>())
@@ -289,6 +307,8 @@ void IsogeometricApplication_AddControlGridsToPython()
     .def("CreateRectangularZeroArray1DControlGrid", &ControlGridLibrary_CreateRectangularZeroControlGridWithVariable<Variable<array_1d<double, 3> > >)
     .def("CreateCubicZeroArray1DControlGrid", &ControlGridLibrary_CreateCubicZeroControlGridWithVariable<Variable<array_1d<double, 3> > >)
     ;
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////CONTROL GRID UTILITIY/////////////////////
@@ -316,7 +336,6 @@ void IsogeometricApplication_AddControlGridsToPython()
     .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, HBSplinesFESpace<2> >)
     .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, HBSplinesFESpace<3> >)
     ;
-
 }
 
 }  // namespace Python.

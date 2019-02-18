@@ -107,6 +107,7 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_backend_utilities_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_frontend_utilities_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_transformation_to_python.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_control_point_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_control_grids_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_nurbs_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_pbbsplines_to_python.cpp

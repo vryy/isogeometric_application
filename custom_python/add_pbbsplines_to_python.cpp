@@ -30,7 +30,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/nurbs/pbbsplines_fespace.h"
 #include "custom_utilities/import_export/multi_pbbsplines_patch_matlab_exporter.h"
-#include "custom_python/add_utilities_to_python.h"
+#include "custom_python/iga_define_python.h"
+#include "custom_python/add_pbbsplines_to_python.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
 #include "custom_python/add_import_export_to_python.h"
 

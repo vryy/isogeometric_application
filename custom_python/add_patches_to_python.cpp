@@ -22,7 +22,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 // Project includes
 #include "includes/define.h"
-#include "includes/model_part.h"
 #include "includes/variables.h"
 #include "python/pointer_vector_set_python_interface.h"
 #include "custom_utilities/patch.h"
@@ -32,8 +31,9 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/import_export/multi_nurbs_patch_geo_importer.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_matlab_exporter.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_glvis_exporter.h"
+#include "custom_python/iga_define_python.h"
 #include "custom_python/add_import_export_to_python.h"
-#include "custom_python/add_utilities_to_python.h"
+#include "custom_python/add_patches_to_python.h"
 
 
 namespace Kratos

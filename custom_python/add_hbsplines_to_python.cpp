@@ -32,7 +32,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/hbsplines/hbsplines_patch_utility.h"
 #include "custom_utilities/hbsplines/hbsplines_refinement_utility.h"
 #include "custom_utilities/import_export/multi_hbsplines_patch_matlab_exporter.h"
-#include "custom_python/add_utilities_to_python.h"
+#include "custom_python/iga_define_python.h"
+#include "custom_python/add_hbsplines_to_python.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
 #include "custom_python/add_import_export_to_python.h"
 
@@ -47,11 +48,11 @@ using namespace boost::python;
 
 ////////////////////////////////////////
 
-template<int TDim>
-std::size_t HBSplinesBasisFunction_GetId(HBSplinesBasisFunction<TDim>& rDummy)
-{
-    return rDummy.Id();
-}
+// template<int TDim>
+// std::size_t HBSplinesBasisFunction_GetId(HBSplinesBasisFunction<TDim>& rDummy)
+// {
+//     return rDummy.Id();
+// }
 
 template<int TDim>
 void HBSplinesBasisFunction_SetId(HBSplinesBasisFunction<TDim>& rDummy, std::size_t Id)
@@ -65,17 +66,17 @@ std::size_t HBSplinesBasisFunction_GetLevel(HBSplinesBasisFunction<TDim>& rDummy
     return rDummy.Level();
 }
 
-template<int TDim>
-std::size_t HBSplinesBasisFunction_GetEquationId(HBSplinesBasisFunction<TDim>& rDummy)
-{
-    return rDummy.EquationId();
-}
+// template<int TDim>
+// std::size_t HBSplinesBasisFunction_GetEquationId(HBSplinesBasisFunction<TDim>& rDummy)
+// {
+//     return rDummy.EquationId();
+// }
 
-template<int TDim>
-void HBSplinesBasisFunction_SetEquationId(HBSplinesBasisFunction<TDim>& rDummy, std::size_t EquationId)
-{
-    rDummy.SetEquationId(EquationId);
-}
+// template<int TDim>
+// void HBSplinesBasisFunction_SetEquationId(HBSplinesBasisFunction<TDim>& rDummy, std::size_t EquationId)
+// {
+//     rDummy.SetEquationId(EquationId);
+// }
 
 template<int TDim>
 boost::python::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<TDim>& rDummy, std::size_t boundary_id)
@@ -198,8 +199,10 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     ss << "HBSplinesBasisFunction" << TDim << "D";
     class_<HBSplinesBasisFunction<TDim>, typename HBSplinesBasisFunction<TDim>::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<const std::size_t&, const std::size_t&>())
-    .add_property("Id", HBSplinesBasisFunction_GetId<TDim>, HBSplinesBasisFunction_SetId<TDim>)
-    .add_property("EquationId", HBSplinesBasisFunction_GetEquationId<TDim>, HBSplinesBasisFunction_SetEquationId<TDim>)
+    // .add_property("Id", HBSplinesBasisFunction_GetId<TDim>, HBSplinesBasisFunction_SetId<TDim>)
+    .add_property("Id", Isogeometric_GetId<HBSplinesBasisFunction<TDim> >, HBSplinesBasisFunction_SetId<TDim>)
+    // .add_property("EquationId", HBSplinesBasisFunction_GetEquationId<TDim>, HBSplinesBasisFunction_SetEquationId<TDim>)
+    .add_property("EquationId", Isogeometric_GetEquationId<HBSplinesBasisFunction<TDim>>, Isogeometric_SetEquationId<HBSplinesBasisFunction<TDim>>)
     .def("Weight", &HBSplinesBasisFunction<TDim>::Weight)
     .def("Level", &HBSplinesBasisFunction_GetLevel<TDim>)
     .def(self_ns::str(self))

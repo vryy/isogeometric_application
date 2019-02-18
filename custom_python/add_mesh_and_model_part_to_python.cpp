@@ -23,11 +23,11 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
-#include "custom_python/add_utilities_to_python.h"
 #include "custom_utilities/nonconforming_multipatch_lagrange_mesh.h"
 #include "custom_utilities/nonconforming_variable_multipatch_lagrange_mesh.h"
 #include "custom_utilities/multipatch_model_part.h"
 #include "custom_utilities/multi_multipatch_model_part.h"
+#include "custom_python/add_mesh_and_model_part_to_python.h"
 
 
 namespace Kratos

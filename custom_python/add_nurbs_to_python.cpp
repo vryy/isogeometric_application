@@ -22,9 +22,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 // Project includes
 #include "includes/define.h"
-#include "includes/model_part.h"
 #include "includes/variables.h"
-#include "custom_python/add_utilities_to_python.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/fespace.h"
@@ -35,6 +33,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/nurbs/bsplines_fespace.h"
 #include "custom_utilities/nurbs/bsplines_fespace_library.h"
 #include "custom_utilities/nurbs/bending_strip_nurbs_patch.h"
+#include "custom_python/iga_define_python.h"
+#include "custom_python/add_nurbs_to_python.h"
 
 
 namespace Kratos
@@ -295,7 +295,7 @@ struct StructuredControlGrid_Helper<3, TDataType>
     }
 };
 
-void IsogeometricApplication_AddStructuredControlGrids()
+void IsogeometricApplication_AddStructuredControlGridsToPython()
 {
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -493,7 +493,7 @@ void IsogeometricApplication_AddNURBSToPython()
     ///////////////////////CONTROL GRIDS/////////////////////////////
     /////////////////////////////////////////////////////////////////
 
-    IsogeometricApplication_AddStructuredControlGrids();
+    IsogeometricApplication_AddStructuredControlGridsToPython();
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////FESpace///////////////////////////////////

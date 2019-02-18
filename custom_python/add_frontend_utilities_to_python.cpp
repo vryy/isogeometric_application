@@ -353,6 +353,8 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Pl
     int max_iters,
     double TOL)
 {
+    std::cout << "invoking " << __FUNCTION__ << std::endl;
+
     double intersection_point;
 
     int stat = rDummy.ComputeIntersection(starting_point, intersection_point,
@@ -367,6 +369,91 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Pl
     return output;
 }
 
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Patch2_Plane(IsogeometricIntersectionUtility& rDummy,
+    boost::python::list list_starting_points,
+    Patch<2>::Pointer pPatch,
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
+{
+    std::cout << "invoking " << __FUNCTION__ << std::endl;
+
+    std::vector<double> starting_points;
+    typedef boost::python::stl_input_iterator<double> iterator_value_type;
+    BOOST_FOREACH(const iterator_value_type::value_type& v,
+               std::make_pair(iterator_value_type(list_starting_points), // begin
+               iterator_value_type() ) ) // end
+    {
+        starting_points.push_back(v);
+    }
+
+    std::vector<std::vector<double> > intersection_points;
+
+    std::vector<int> stat = rDummy.ComputeIntersection(starting_points, intersection_points,
+        pPatch, A, B, C, D, max_iters, TOL);
+
+    boost::python::list list_points;
+    for (std::size_t i = 0; i < intersection_points.size(); ++i)
+    {
+        boost::python::list point;
+        point.append(intersection_points[i][0]);
+        point.append(intersection_points[i][1]);
+        list_points.append(point);
+    }
+
+    boost::python::list list_stat;
+    for (std::size_t i = 0; i < stat.size(); ++i)
+        list_stat.append(stat[i]);
+
+    boost::python::list output;
+    output.append(list_stat);
+    output.append(list_points);
+    return output;
+}
+
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
+    boost::python::list list_starting_points,
+    Patch<3>::Pointer pPatch,
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
+{
+    std::cout << "invoking " << __FUNCTION__ << std::endl;
+
+    std::vector<double> starting_points;
+    typedef boost::python::stl_input_iterator<double> iterator_value_type;
+    BOOST_FOREACH(const iterator_value_type::value_type& v,
+               std::make_pair(iterator_value_type(list_starting_points), // begin
+               iterator_value_type() ) ) // end
+    {
+        starting_points.push_back(v);
+    }
+
+    std::vector<std::vector<double> > intersection_points;
+
+    std::vector<int> stat = rDummy.ComputeIntersection(starting_points, intersection_points,
+        pPatch, A, B, C, D, max_iters, TOL);
+
+    boost::python::list list_points;
+    for (std::size_t i = 0; i < intersection_points.size(); ++i)
+    {
+        boost::python::list point;
+        point.append(intersection_points[i][0]);
+        point.append(intersection_points[i][1]);
+        point.append(intersection_points[i][2]);
+        list_points.append(point);
+    }
+
+    boost::python::list list_stat;
+    for (std::size_t i = 0; i < stat.size(); ++i)
+        list_stat.append(stat[i]);
+
+    boost::python::list output;
+    output.append(list_stat);
+    output.append(list_points);
+    return output;
+}
+
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Surface(IsogeometricIntersectionUtility& rDummy,
     double starting_point_1,
     double starting_point_2_1,
@@ -376,6 +463,8 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Su
     int max_iters,
     double TOL)
 {
+    std::cout << "invoking " << __FUNCTION__ << std::endl;
+
     double intersection_point_1;
     std::vector<double> starting_point_2(2), intersection_point_2(2);
 
@@ -468,6 +557,8 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     ("IsogeometricIntersectionUtility", init<>())
     .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Two_Curves)
     .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Curve_Plane)
+    .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Patch2_Plane)
+    .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Patch3_Plane)
     ;
 
 }

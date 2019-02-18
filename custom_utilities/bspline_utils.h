@@ -140,7 +140,8 @@ public:
     )
     {
         if(rXi < rU[0]) return 0;
-        if(rXi >= rU[rN]) return rN - 1;
+        if(rXi == rU[rN]) return rN - 1;
+        if(rXi > rU[rN]) return rN + rP; // this is a dummy value to flag that the knot fall outside the support domain
 
         int low = rP;
         int high = rN;
@@ -166,9 +167,9 @@ public:
     // Note: this implementation has linear, rather than log complexity
     template<class ValuesContainerType>
     static int FindSpan2(
-            const int rN,
-            const int rP,
-            const double rXi,
+            const int& rN,
+            const int& rP,
+            const double& rXi,
             const ValuesContainerType& rU
     )
     {

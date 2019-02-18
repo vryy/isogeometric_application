@@ -30,7 +30,7 @@ void BSplinesFESpace<1>::GetValue(std::vector<double>& values, const std::vector
     int Span;
     Span = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
 
-    if ((Span >= this->Number(0)-1) || (Span == 0))
+    if ((Span >= this->Number(0) + this->Order(0)) || (Span == 0))
         return;
 
     // compute the non-zero shape function values
@@ -77,7 +77,7 @@ void BSplinesFESpace<1>::GetValueAndDerivative(std::vector<double>& values, std:
     int Span;
     Span = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
 
-    if ((Span >= this->Number(0)-1) || (Span == 0))
+    if ((Span >= this->Number(0) + this->Order(0)) || (Span == 0))
         return;
 
     // compute the non-zero shape function values and derivatives
@@ -127,8 +127,8 @@ void BSplinesFESpace<2>::GetValue(std::vector<double>& values, const std::vector
     Span[0] = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
     Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
 
-    if ((Span[0] >= this->Number(0)-1) || (Span[0] == 0)
-     || (Span[1] >= this->Number(1)-1) || (Span[1] == 0))
+    if ((Span[0] >= this->Number(0) + this->Order(0)) || (Span[0] == 0)
+     || (Span[1] >= this->Number(1) + this->Order(1)) || (Span[1] == 0))
         return;
 
     // compute the non-zero shape function values
@@ -184,8 +184,8 @@ void BSplinesFESpace<2>::GetValueAndDerivative(std::vector<double>& values, std:
     Span[0] = BSplineUtils::FindSpan(this->Number(0), this->Order(0), xi[0], this->KnotVector(0));
     Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
 
-    if ((Span[0] >= this->Number(0)-1) || (Span[0] == 0)
-     || (Span[1] >= this->Number(1)-1) || (Span[1] == 0))
+    if ((Span[0] >= this->Number(0) + this->Order(0)) || (Span[0] == 0)
+     || (Span[1] >= this->Number(1) + this->Order(1)) || (Span[1] == 0))
         return;
 
     // compute the non-zero shape function values and derivatives
@@ -237,9 +237,9 @@ void BSplinesFESpace<3>::GetValue(std::vector<double>& values, const std::vector
     Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
     Span[2] = BSplineUtils::FindSpan(this->Number(2), this->Order(2), xi[2], this->KnotVector(2));
 
-    if ((Span[0] >= this->Number(0)-1) || (Span[0] == 0)
-     || (Span[1] >= this->Number(1)-1) || (Span[1] == 0)
-     || (Span[2] >= this->Number(2)-1) || (Span[2] == 0))
+    if ((Span[0] >= this->Number(0) + this->Order(0)) || (Span[0] == 0)
+     || (Span[1] >= this->Number(1) + this->Order(1)) || (Span[1] == 0)
+     || (Span[2] >= this->Number(2) + this->Order(2)) || (Span[2] == 0))
         return;
 
     // compute the non-zero shape function values
@@ -304,9 +304,9 @@ void BSplinesFESpace<3>::GetValueAndDerivative(std::vector<double>& values, std:
     Span[1] = BSplineUtils::FindSpan(this->Number(1), this->Order(1), xi[1], this->KnotVector(1));
     Span[2] = BSplineUtils::FindSpan(this->Number(2), this->Order(2), xi[2], this->KnotVector(2));
 
-    if ((Span[0] >= this->Number(0)-1) || (Span[0] == 0)
-     || (Span[1] >= this->Number(1)-1) || (Span[1] == 0)
-     || (Span[2] >= this->Number(2)-1) || (Span[2] == 0))
+    if ((Span[0] >= this->Number(0) + this->Order(0)) || (Span[0] == 0)
+     || (Span[1] >= this->Number(1) + this->Order(1)) || (Span[1] == 0)
+     || (Span[2] >= this->Number(2) + this->Order(2)) || (Span[2] == 0))
         return;
 
     // compute the non-zero shape function values and derivatives

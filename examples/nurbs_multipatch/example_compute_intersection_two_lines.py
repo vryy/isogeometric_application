@@ -42,8 +42,16 @@ def main():
     intersect_util = IsogeometricIntersectionUtility()
     [stat, points] = intersect_util.ComputeIntersection(0.5, 0.5, curve1_ptr, curve2_ptr, 30, 1.0e-6, 0)
 
-    print("stat:", stat)
+    print("stat:", stat) # 0 is OK
     print("points:", points)
+
+    gf1 = curve1.GridFunction(CONTROL_POINT)
+    P1 = gf1.GetValue([points[0]])
+    print("P1:", str(P1))
+
+    gf2 = curve2.GridFunction(CONTROL_POINT)
+    P2 = gf2.GetValue([points[1]])
+    print("P2:", str(P2))
 
 if __name__ == "__main__":
     main()

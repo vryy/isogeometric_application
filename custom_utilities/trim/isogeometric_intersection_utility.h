@@ -19,6 +19,7 @@
 #include "utilities/math_utils.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/multipatch_utility.h"
 
 
 namespace Kratos
@@ -264,7 +265,17 @@ public:
     {
         // extract the control point grid function of both curves
         typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
-        // KRATOS_WATCH(typeid(*pGridFunc->pFESpace()).name())
+        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+        KRATOS_WATCH(typeid(*pGridFunc->pFESpace()).name())
+        #endif
+
+        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+        std::vector<double> weights = pPatch->GetControlWeights();
+        std::cout << "weights:";
+        for (std::size_t i = 0; i < weights.size(); ++i)
+            std::cout << " " << weights[i];
+        std::cout << std::endl;
+        #endif
 
         std::vector<double> xi(1);
         xi[0] = starting_point;
@@ -275,13 +286,19 @@ public:
         // determine the intersection point in flat plane
         bool converged = false;
         int it = 0;
-        // KRATOS_WATCH(xi[0])
         while (!converged && (it++ < max_iters))
         {
+            #ifdef DEBUG_INTERSECT_CURVE_PLANE
+            KRATOS_WATCH(xi[0])
+            #endif
             pGridFunc->GetValue(p, xi);
-            // KRATOS_WATCH(p)
+            #ifdef DEBUG_INTERSECT_CURVE_PLANE
+            KRATOS_WATCH(p)
+            #endif
             pGridFunc->GetDerivative(dp, xi);
-            // KRATOS_WATCH(dp[0])
+            #ifdef DEBUG_INTERSECT_CURVE_PLANE
+            KRATOS_WATCH(dp[0])
+            #endif
 
             res = A*p[0] + B*p[1] + C*p[2] + D;
             J = A*dp[0][0] + B*dp[0][1] + C*dp[0][2];
@@ -292,8 +309,13 @@ public:
                 break;
             }
 
+            #ifdef DEBUG_INTERSECT_CURVE_PLANE
             KRATOS_WATCH(res)
-            // KRATOS_WATCH(J)
+            KRATOS_WATCH(J)
+            #endif
+
+            if (std::fabs(J) < TOL)
+                return 2;
 
             xi[0] -= res/J;
         }
@@ -303,8 +325,10 @@ public:
             return 2;
         }
 
-        // KRATOS_WATCH(it)
-        // KRATOS_WATCH(max_iters)
+        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+        KRATOS_WATCH(it)
+        KRATOS_WATCH(max_iters)
+        #endif
 
         intersection_point = xi[0];
 
@@ -319,6 +343,98 @@ public:
             return 1;
 
         return -1; // should not come here, just to make the compiler happy
+    }
+
+    /**
+     * Compute the intersection between boundaries of a 2D patch and a plane.
+     * The plane is defined by equation Ax + By + Cz + D = 0.
+     * It is assumed that the curve does not lie on the plane. Otherwise the starting point will be returned.
+     * This subroutine uses the Newton-Raphson procedure to compute the intersection point. A starting value in the curve must be given.
+     * On the return, the status code of each intersection in each boundary will be return.
+     */
+    static std::vector<int> ComputeIntersection(const std::vector<double>& starting_points,
+            std::vector<std::vector<double> >& intersection_points,
+            Patch<2>::Pointer pPatch,
+            const double& A, const double& B, const double& C, const double& D,
+            const int& max_iters,
+            const double& TOL)
+    {
+        if (intersection_points.size() != 4)
+            intersection_points.resize(4);
+
+        for (std::size_t i = 0; i < 4; ++i)
+            if (intersection_points[i].size() != 2)
+                intersection_points[i].resize(2);
+
+        std::vector<int> status(4);
+
+        Patch<1>::Pointer pBoundaryPatch;
+
+        pBoundaryPatch = pPatch->ConstructBoundaryPatch(_BLEFT_);
+        intersection_points[0][0] = 0.0;
+        status[0] = ComputeIntersection(starting_points[0], intersection_points[0][1], pBoundaryPatch, A, B, C, D, max_iters, TOL);
+
+        pBoundaryPatch = pPatch->ConstructBoundaryPatch(_BRIGHT_);
+        intersection_points[1][0] = 1.0;
+        status[1] = ComputeIntersection(starting_points[1], intersection_points[1][1], pBoundaryPatch, A, B, C, D, max_iters, TOL);
+
+        pBoundaryPatch = pPatch->ConstructBoundaryPatch(_BBOTTOM_);
+        intersection_points[2][1] = 0.0;
+        status[2] = ComputeIntersection(starting_points[2], intersection_points[2][0], pBoundaryPatch, A, B, C, D, max_iters, TOL);
+
+        pBoundaryPatch = pPatch->ConstructBoundaryPatch(_BTOP_);
+        intersection_points[3][1] = 1.0;
+        status[3] = ComputeIntersection(starting_points[3], intersection_points[3][0], pBoundaryPatch, A, B, C, D, max_iters, TOL);
+
+        return status;
+    }
+
+    /**
+     * Compute the intersection between boundaries of a 3D patch and a plane.
+     * The plane is defined by equation Ax + By + Cz + D = 0.
+     * It is assumed that the curve does not lie on the plane. Otherwise the starting point will be returned.
+     * This subroutine uses the Newton-Raphson procedure to compute the intersection point. A starting value in the curve must be given.
+     * On the return, the status code of each intersection in each boundary will be return.
+     */
+    static std::vector<int> ComputeIntersection(const std::vector<double>& starting_points,
+            std::vector<std::vector<double> >& intersection_points,
+            Patch<3>::Pointer pPatch,
+            const double& A, const double& B, const double& C, const double& D,
+            const int& max_iters,
+            const double& TOL)
+    {
+        std::vector<Patch<1>::Pointer> pEdgePatches = MultiPatchUtility::ConstructEdgePatches(pPatch);
+
+        std::size_t nedges = pEdgePatches.size();
+        if (intersection_points.size() != nedges)
+            intersection_points.resize(nedges);
+
+        for (std::size_t i = 0; i < nedges; ++i)
+            if (intersection_points[i].size() != 3)
+                intersection_points[i].resize(3);
+
+        std::vector<int> status(nedges);
+
+        for (std::size_t i = 0; i < nedges; ++i)
+        {
+            double tmp_point;
+            status[i] = ComputeIntersection(starting_points[i], tmp_point, pEdgePatches[i], A, B, C, D, max_iters, TOL);
+
+            if (i == 0) {intersection_points[i][0] = 0.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 0.0;}
+            else if (i == 1) {intersection_points[i][0] = 1.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 0.0;}
+            else if (i == 2) {intersection_points[i][0] = tmp_point; intersection_points[i][1] = 0.0; intersection_points[i][2] = 0.0;}
+            else if (i == 3) {intersection_points[i][0] = tmp_point; intersection_points[i][1] = 1.0; intersection_points[i][2] = 0.0;}
+            else if (i == 4) {intersection_points[i][0] = 0.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 1.0;}
+            else if (i == 5) {intersection_points[i][0] = 1.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 1.0;}
+            else if (i == 6) {intersection_points[i][0] = tmp_point; intersection_points[i][1] = 0.0; intersection_points[i][2] = 1.0;}
+            else if (i == 7) {intersection_points[i][0] = tmp_point; intersection_points[i][1] = 1.0; intersection_points[i][2] = 1.0;}
+            else if (i == 8) {intersection_points[i][0] = 0.0; intersection_points[i][1] = 0.0; intersection_points[i][2] = tmp_point;}
+            else if (i == 9) {intersection_points[i][0] = 0.0; intersection_points[i][1] = 1.0; intersection_points[i][2] = tmp_point;}
+            else if (i == 10) {intersection_points[i][0] = 1.0; intersection_points[i][1] = 0.0; intersection_points[i][2] = tmp_point;}
+            else if (i == 11) {intersection_points[i][0] = 1.0; intersection_points[i][1] = 1.0; intersection_points[i][2] = tmp_point;}
+        }
+
+        return status;
     }
 
     /**
@@ -396,6 +512,9 @@ public:
             // KRATOS_WATCH(norm_2(res))
             // KRATOS_WATCH(J)
             MathUtils<double>::InvertMatrix(J, InvJ, DetJ);
+
+            if (std::fabs(DetJ) < TOL)
+                return 3;
 
             noalias(dxi) = prod(InvJ, res);
             // KRATOS_WATCH(dxi)

@@ -22,8 +22,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 // Project includes
 #include "includes/define.h"
-#include "includes/model_part.h"
-#include "includes/variables.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/control_grid_library.h"

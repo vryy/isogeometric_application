@@ -19,7 +19,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 // Project includes
 #include "includes/define.h"
-#include "includes/variables.h"
+#include "containers/variable.h"
 #include "custom_utilities/control_point.h"
 #include "custom_python/add_control_point_to_python.h"
 

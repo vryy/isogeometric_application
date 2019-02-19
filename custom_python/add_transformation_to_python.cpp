@@ -22,7 +22,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 // Project includes
 #include "includes/define.h"
-#include "includes/variables.h"
+#include "containers/array_1d.h"
+#include "includes/ublas_interface.h"
 #include "custom_utilities/trans/transformation.h"
 #include "custom_utilities/trans/translation.h"
 #include "custom_utilities/trans/rotation.h"

@@ -23,7 +23,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
-#include "includes/variables.h"
 #include "python/pointer_vector_set_python_interface.h"
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_utilities/patch.h"

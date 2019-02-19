@@ -44,7 +44,7 @@ public:
     /// Destructor
     virtual ~MultiPatchUtility() {}
 
-    /// Create new patch and wrap it with pointer
+    /// Create new patch from a FESpace and wrap it with pointer
     template<int TDim>
     static typename Patch<TDim>::Pointer CreatePatchPointer(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
     {
@@ -68,6 +68,34 @@ public:
 
         pPatch1->AddInterface(pInterface12);
         pPatch2->AddInterface(pInterface21);
+    }
+
+    /// Construct the 12 edge patches of a 3D patch
+    static std::vector<Patch<1>::Pointer> ConstructEdgePatches(Patch<3>::Pointer pPatch)
+    {
+        Patch<2>::Pointer pTopPatch = pPatch->ConstructBoundaryPatch(_BTOP_);
+        Patch<2>::Pointer pBottomPatch = pPatch->ConstructBoundaryPatch(_BBOTTOM_);
+        Patch<2>::Pointer pLeftPatch = pPatch->ConstructBoundaryPatch(_BLEFT_);
+        Patch<2>::Pointer pRightPatch = pPatch->ConstructBoundaryPatch(_BRIGHT_);
+
+        std::vector<Patch<1>::Pointer> pEdgePatches;
+
+        pEdgePatches.push_back(pBottomPatch->ConstructBoundaryPatch(_BLEFT_));
+        pEdgePatches.push_back(pBottomPatch->ConstructBoundaryPatch(_BRIGHT_));
+        pEdgePatches.push_back(pBottomPatch->ConstructBoundaryPatch(_BBOTTOM_));
+        pEdgePatches.push_back(pBottomPatch->ConstructBoundaryPatch(_BTOP_));
+
+        pEdgePatches.push_back(pTopPatch->ConstructBoundaryPatch(_BLEFT_));
+        pEdgePatches.push_back(pTopPatch->ConstructBoundaryPatch(_BRIGHT_));
+        pEdgePatches.push_back(pTopPatch->ConstructBoundaryPatch(_BBOTTOM_));
+        pEdgePatches.push_back(pTopPatch->ConstructBoundaryPatch(_BTOP_));
+
+        pEdgePatches.push_back(pLeftPatch->ConstructBoundaryPatch(_BLEFT_));
+        pEdgePatches.push_back(pLeftPatch->ConstructBoundaryPatch(_BRIGHT_));
+        pEdgePatches.push_back(pRightPatch->ConstructBoundaryPatch(_BLEFT_));
+        pEdgePatches.push_back(pRightPatch->ConstructBoundaryPatch(_BRIGHT_));
+
+        return pEdgePatches;
     }
 
     virtual void PrintInfo(std::ostream& rOStream) const

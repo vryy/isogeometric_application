@@ -99,7 +99,8 @@ public:
     /// Export a single patch
     virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, std::ostream& rOStream) const
     {
-        BaseType::Export(pMultiPatch, rOStream); // this will eventually throw an error
+        // BaseType::Export(pMultiPatch, rOStream); // this will eventually throw an error
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplented function", __FUNCTION__)
     }
 }; // end class MultiNURBSPatchGeoExporterWriter
 

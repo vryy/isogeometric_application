@@ -113,6 +113,21 @@ public:
     ///@name Operations
     ///@{
 
+    /// Find the entity of the same type in the list of entities
+    template<class TEntityType, class TEntitiesContainerType>
+    static TEntitiesContainerType FindEntities(TEntitiesContainerType& pEntities, TEntityType const& r_sample_entity)
+    {
+        TEntitiesContainerType pFoundEntities;
+
+        for (typename TEntitiesContainerType::ptr_iterator it = pEntities.ptr_begin(); it != pEntities.ptr_end(); ++it)
+        {
+            if (typeid(*(*it)) == typeid(r_sample_entity))
+                pFoundEntities.push_back(*it);
+        }
+
+        return pFoundEntities;
+    }
+
     /// Create a list of entities (element/condition) (from a model_part) to another model_part
     /// It is noted that the newly created entities are not added to the other model_part. User must do it manually.
     template<class TEntityType, class TEntitiesContainerType>

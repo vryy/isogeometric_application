@@ -192,6 +192,8 @@ void NURBSTestUtils_ProbeJacobian3(
     dummy.ProbeJacobian(pElement, X, Y, Z);
 }
 
+//////////////////////////////////////////////////////////
+
 ModelPart::ElementsContainerType IsogeometricPostUtility_TransferElements(IsogeometricPostUtility& rDummy, ModelPart::ElementsContainerType& pElements,
     ModelPart& r_other_model_part, const std::string& sample_element_name, Properties::Pointer pProperties)
 {
@@ -225,6 +227,22 @@ ModelPart::ConditionsContainerType IsogeometricPostUtility_TransferConditions(Is
 
     return pNewConditions;
 }
+
+ModelPart::ElementsContainerType IsogeometricPostUtility_FindElements(IsogeometricPostUtility& rDummy,
+    ModelPart::ElementsContainerType& pElements, const std::string& sample_element_name)
+{
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+    return IsogeometricPostUtility::FindEntities(pElements, r_clone_element);
+}
+
+ModelPart::ConditionsContainerType IsogeometricPostUtility_FindConditions(IsogeometricPostUtility& rDummy,
+    ModelPart::ConditionsContainerType& pConditions, const std::string& sample_condition_name)
+{
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+    return IsogeometricPostUtility::FindEntities(pConditions, r_clone_condition);
+}
+
+//////////////////////////////////////////////////////////
 
 void BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& dummy,
         ModelPart& rModelPart,
@@ -279,6 +297,8 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     class_<IsogeometricPostUtility,IsogeometricPostUtility::Pointer, boost::noncopyable>("IsogeometricPostUtility", init<>())
     .def("TransferElements", &IsogeometricPostUtility_TransferElements)
     .def("TransferConditions", &IsogeometricPostUtility_TransferConditions)
+    .def("FindElements", &IsogeometricPostUtility_FindElements)
+    .def("FindConditions", &IsogeometricPostUtility_FindConditions)
     ;
 
     class_<BezierClassicalPostUtility, BezierClassicalPostUtility::Pointer, boost::noncopyable>("BezierClassicalPostUtility", init<ModelPart::Pointer>())

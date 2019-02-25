@@ -74,6 +74,20 @@ boost::python::list FESpace_GetValue(FESpace<TDim>& rDummy, boost::python::list 
 }
 
 template<int TDim>
+bool FESpace_IsInside(FESpace<TDim>& rDummy, boost::python::list xi_list)
+{
+    std::vector<double> xi;
+
+    typedef boost::python::stl_input_iterator<double> iterator_value_type;
+    BOOST_FOREACH(const typename iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi_list), iterator_value_type() ) )
+    {
+        xi.push_back(v);
+    }
+
+    return rDummy.IsInside(xi);
+}
+
+template<int TDim>
 boost::python::list FESpace_FunctionIndices(FESpace<TDim>& rDummy)
 {
     boost::python::list indices;
@@ -135,6 +149,7 @@ void IsogeometricApplication_AddFESpacesToPython()
     .def("Order", &FESpace<TDim>::Order)
     .def("TotalNumber", &FESpace<TDim>::TotalNumber)
     .def("GetValue", &FESpace_GetValue<TDim>)
+    .def("IsInside", &FESpace_IsInside<TDim>)
     .def("ResetFunctionIndices", &FESpace_ResetFunctionIndices<TDim>)
     .def("Enumerate", &FESpace_Enumerate<TDim>)
     .def("FunctionIndices", &FESpace_FunctionIndices<TDim>)

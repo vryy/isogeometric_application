@@ -168,6 +168,14 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /// Check if a point lies inside the parametric domain of the FESpace
+    virtual bool IsInside(const std::vector<double>& xi) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /// Reset all the dof numbers for each grid function to -1.
     virtual void ResetFunctionIndices()
     {

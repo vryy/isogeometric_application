@@ -287,6 +287,14 @@ public:
         return true;
     }
 
+    /// Check if a knot is inside the knot vector
+    bool IsInside(const TDataType& knot) const
+    {
+        const TDataType& min = mpKnots.front()->Value();
+        const TDataType& max = mpKnots.back()->Value();
+        return (knot >= min) && (knot <= max);
+    }
+
     /// Compute the knots in the respective direction
     static std::vector<TDataType> CloneKnots(const std::vector<TDataType>& knots, const BoundaryDirection& direction)
     {

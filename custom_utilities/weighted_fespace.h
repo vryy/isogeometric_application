@@ -214,6 +214,14 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /// Check if a point lies inside the parametric domain of the BSplinesFESpace
+    virtual bool IsInside(const std::vector<double>& xi) const
+    {
+        return mpFESpace->IsInside(xi);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /// Reset all the dof numbers for each grid function to -1.
     virtual void ResetFunctionIndices()
     {

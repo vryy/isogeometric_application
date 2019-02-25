@@ -261,6 +261,13 @@ public:
         }
     }
 
+    /// Check if a point lies inside the parametric domain of the BSplinesFESpace
+    virtual bool IsInside(const std::vector<double>& xi) const
+    {
+        // TODO
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+    }
+
     /// Compare between two BSplines patches in terms of parametric information
     virtual bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const
     {

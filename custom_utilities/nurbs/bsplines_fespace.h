@@ -218,6 +218,18 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "GetValueAndDerivative is not implemented for dimension", TDim)
     }
 
+    /// Check if a point lies inside the parametric domain of the BSplinesFESpace
+    virtual bool IsInside(const std::vector<double>& xi) const
+    {
+        bool is_inside = true;
+        for (std::size_t i = 0; i < TDim; ++i)
+        {
+            is_inside = is_inside && mKnotVectors[i].IsInside(xi[i]);
+            if (!is_inside) break;
+        }
+        return is_inside;
+    }
+
     /// Compare between two BSplines patches in terms of parametric information
     virtual bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const
     {

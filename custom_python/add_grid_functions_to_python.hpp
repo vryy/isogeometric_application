@@ -93,6 +93,21 @@ boost::python::list GridFunction_GetDerivative(TGridFrunctionType& rDummy, const
     return results;
 }
 
+template<class TGridFrunctionType, typename TCoordinatesType>
+boost::python::list GridFunction_LocalCoordinates(TGridFrunctionType& rDummy,
+        const typename TGridFrunctionType::DataType& v, const TCoordinatesType& xi0)
+{
+    TCoordinatesType xi = xi0;
+    int stat = rDummy.LocalCoordinates(v, xi);
+    // KRATOS_WATCH(v)
+    // KRATOS_WATCH(stat)
+    // KRATOS_WATCH(xi)
+    boost::python::list output;
+    output.append(stat);
+    output.append(xi);
+    return output;
+}
+
 ///////////////////////////////////////////////////////
 
 template<int TDim>
@@ -133,6 +148,7 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     .add_property("ControlGrid", GridFunction_GetControlGrid<Array1DGridFunctionType>, GridFunction_SetControlGrid<Array1DGridFunctionType>)
     .def("GetValue", &GridFunction_GetValue<Array1DGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative<Array1DGridFunctionType>)
+    .def("LocalCoordinates", &GridFunction_LocalCoordinates<Array1DGridFunctionType, array_1d<double, 3> >)
     .def(self_ns::str(self))
     ;
 
@@ -145,6 +161,7 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     .add_property("ControlGrid", GridFunction_GetControlGrid<VectorGridFunctionType>, GridFunction_SetControlGrid<VectorGridFunctionType>)
     .def("GetValue", &GridFunction_GetValue<VectorGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative<VectorGridFunctionType>)
+    .def("LocalCoordinates", &GridFunction_LocalCoordinates<VectorGridFunctionType, array_1d<double, 3> >)
     .def(self_ns::str(self))
     ;
 }

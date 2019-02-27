@@ -36,6 +36,12 @@ def main():
     B = 0.0
     C = 0.0
     D = -0.5
+
+    # firstly, check the intersection
+    stat = intersect_util.CheckIntersection(patch_ptr, A, B, C, D)
+    print("intersection info: " + str(stat))
+
+    # secondly, compute the intersection
     [stats, points] = intersect_util.ComputeIntersection([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], patch_ptr, A, B, C, D, 30, 1.0e-6)
     print("stat:", stats) # 0 is OK
     print("point:", points)

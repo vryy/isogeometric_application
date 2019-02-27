@@ -75,6 +75,42 @@ public:
     }
 
     /**
+     * Check if a plane intersects with a patch. A plane does not intersect with the patch if all control points of the patch are on one side of the plane
+     * Return 0 if the patch intersects with the plane; 1 if the patch is on the positive side; -1 if on the negative side
+     * In the case TOption == 0, the patch intersects the plane if there is a point lie on the plane
+     */
+    template<int TDim, int TOption = 0>
+    static int CheckIntersection(typename Patch<TDim>::Pointer pPatch, const double& A, const double& B, const double& C, const double& D)
+    {
+        typedef GridFunction<TDim, array_1d<double, 3> > GridFunctionType;
+
+        typename GridFunctionType::ConstPointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+
+        typename GridFunctionType::ControlGridType::ConstPointer pControlGrid = pGridFunc->pControlGrid();
+
+        std::size_t nneg = 0, npos = 0, nzero = 0, npoints = pControlGrid->size();
+        for (std::size_t i = 0; i < npoints; ++i)
+        {
+            const array_1d<double, 3>& point = (*pControlGrid)[i];
+            double f = A*point[0] + B*point[1] + C*point[2] + D;
+            if (f > 0.0) ++npos;
+            else if (f < 0.0) ++nneg;
+            else ++nzero;
+        }
+
+        if (TOption != 0)
+            if (nzero != 0)
+                return 0;
+
+        if (nneg + nzero == npoints)
+            return -1;
+        else if (npos + nzero == npoints)
+            return 1;
+        else
+            return 0;
+    }
+
+    /**
      * Compute the intersection between two 1D patch
      * This subroutine uses the Newton-Raphson procedure to compute the intersection point. A starting value in each curve must be given.
      * If the option_space = 0, the intersection point will be search in XY plane, and then check again on the Z direction.
@@ -439,6 +475,7 @@ public:
 
     /**
      * Compute the intersection between a 1D patch and a 2D patch
+     * A 1D patch representes a 3D curve and a 2D patch represents a 3D surface. In case that the curve and surface is co-planar, the result may be unpredictable.
      * This subroutine uses the Newton-Raphson procedure to compute the intersection point. A starting value in the curve and surface must be given.
      * Return code definition:
      *   0: the intersection point is found and will be returned

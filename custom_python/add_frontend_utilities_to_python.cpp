@@ -485,6 +485,14 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Su
     return output;
 }
 
+template<int TDim>
+int IsogeometricIntersectionUtility_CheckIntersection(IsogeometricIntersectionUtility& rDummy,
+    typename Patch<TDim>::Pointer pPatch,
+    const double& A, const double& B, const double& C, const double& D)
+{
+    return rDummy.CheckIntersection<TDim, 0>(pPatch, A, B, C, D);
+}
+
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
@@ -558,6 +566,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Curve_Plane)
     .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Patch2_Plane)
     .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Patch3_Plane)
+    .def("CheckIntersection", &IsogeometricIntersectionUtility_CheckIntersection<1>)
+    .def("CheckIntersection", &IsogeometricIntersectionUtility_CheckIntersection<2>)
+    .def("CheckIntersection", &IsogeometricIntersectionUtility_CheckIntersection<3>)
     ;
 
 }

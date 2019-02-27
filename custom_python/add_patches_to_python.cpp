@@ -87,6 +87,76 @@ typename GridFunction<TDim, typename TVariableType::Type>::Pointer Patch_GridFun
     return rDummy.template pGetGridFunction<TVariableType>(rVariable);
 }
 
+template<class TPatchType>
+boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, boost::python::list& P, boost::python::list& xi0)
+{
+    typedef boost::python::stl_input_iterator<double> iterator_value_type;
+
+    std::vector<double> xi0_vec;
+    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi0), iterator_value_type() ) )
+    {
+        xi0_vec.push_back(v);
+    }
+
+    std::vector<double> P_vec;
+    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
+    {
+        P_vec.push_back(v);
+    }
+
+    array_1d<double, 3> point, xi;
+    noalias(point) = ZeroVector(3);
+    noalias(xi) = ZeroVector(3);
+
+    for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+        point[i] = P_vec[i];
+
+    for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi0_vec.size()); ++i)
+        xi[i] = xi0_vec[i];
+
+    int stat = rDummy.LocalCoordinates(point, xi);
+
+    boost::python::list out_point;
+    out_point.append(xi[0]);
+    out_point.append(xi[1]);
+    out_point.append(xi[2]);
+
+    boost::python::list output;
+    output.append(stat);
+    output.append(out_point);
+    return output;
+}
+
+template<class TPatchType>
+bool Patch_IsInside(TPatchType& rDummy, boost::python::list& P, boost::python::list& xi0)
+{
+    typedef boost::python::stl_input_iterator<double> iterator_value_type;
+
+    std::vector<double> xi0_vec;
+    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi0), iterator_value_type() ) )
+    {
+        xi0_vec.push_back(v);
+    }
+
+    std::vector<double> P_vec;
+    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
+    {
+        P_vec.push_back(v);
+    }
+
+    array_1d<double, 3> point, xi;
+    noalias(point) = ZeroVector(3);
+    noalias(xi) = ZeroVector(3);
+
+    for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+        point[i] = P_vec[i];
+
+    for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi0_vec.size()); ++i)
+        xi[i] = xi0_vec[i];
+
+    return rDummy.IsInside(point, xi);
+}
+
 template<int TDim>
 typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, const std::size_t& i)
 {
@@ -192,6 +262,8 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("Order", &Patch<TDim>::Order)
     .def("TotalNumber", &Patch<TDim>::TotalNumber)
     .def("FESpace", &Patch_pFESpace<Patch<TDim> >)
+    .def("LocalCoordinates", &Patch_LocalCoordinates<Patch<TDim> >)
+    .def("IsInside", &Patch_IsInside<Patch<TDim> >)
     .def("NumberOfInterfaces", &Patch<TDim>::NumberOfInterfaces)
     .def("AddInterface", &Patch<TDim>::AddInterface)
     .def("RemoveInterface", &Patch<TDim>::RemoveInterface)

@@ -132,6 +132,16 @@ def CreateRectangle(start_point, end_point):
     face_ptr = bsplines_patch_util.CreateConnectedPatch(line1, line2)
     return face_ptr
 
+### Create the 2D rectangle
+###   P4---P3
+###   |    |
+###   P1---P2
+def CreateRectangle(P1, P2, P3, P4):
+    line1 = CreateLine(P1, P2)
+    line2 = CreateLine(P4, P3)
+    face_ptr = bsplines_patch_util.CreateConnectedPatch(line1, line2)
+    return face_ptr
+
 ### Create the 3D slab aligned with Cartesian axes
 def CreateSlab(start_point, end_point):
     line1 = CreateLine(start_point, [end_point[0], start_point[1], start_point[2]])

@@ -233,6 +233,14 @@ public:
     {
         typename ControlGrid<ControlPointType>::Pointer pControlPointGrid = pControlPointGridFunction()->pControlGrid();
         ControlGridUtility::ApplyTransformation(*pControlPointGrid, trans);
+
+        // transform the control point coordinates grid
+        typedef typename ControlPointType::CoordinatesType CoordinatesType;
+        ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
+        pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
+        typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
+        typename GridFunction<TDim, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
+        mpGridFunctions["CONTROL_POINT_COORDINATES"] = pNewCoordinatesGridFunc;
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,7 +286,7 @@ public:
         }
         // shall not come here
         std::stringstream ss;
-        ss << "The grid function with control grid " << rVariable.Name() << " does not exist in the database";
+        ss << "The grid function with control grid " << rVariable.Name() << " does not exist in the database of patch " << Id();
         KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 
@@ -302,7 +310,7 @@ public:
         }
         // shall not come here
         std::stringstream ss;
-        ss << "The grid function with control grid " << rVariable.Name() << " does not exist in the database";
+        ss << "The grid function with control grid " << rVariable.Name() << " does not exist in the database of patch " << Id();
         KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
     }
 

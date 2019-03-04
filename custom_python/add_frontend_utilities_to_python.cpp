@@ -320,7 +320,7 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
 
 //////////////////////////////////////////////////
 
-boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Two_Curves(IsogeometricIntersectionUtility& rDummy,
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Two_Curves(IsogeometricIntersectionUtility& rDummy,
     double starting_point_1,
     double starting_point_2,
     Patch<1>::Pointer pPatch1,
@@ -331,7 +331,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Two_Curv
 {
     double intersection_point_1, intersection_point_2;
 
-    int stat = rDummy.ComputeIntersection(starting_point_1, starting_point_2,
+    int stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_point_1, starting_point_2,
         intersection_point_1, intersection_point_2,
         pPatch1, pPatch2, max_iters, TOL, option_space);
 
@@ -345,7 +345,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Two_Curv
     return output;
 }
 
-boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Plane(IsogeometricIntersectionUtility& rDummy,
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Curve_Plane(IsogeometricIntersectionUtility& rDummy,
     double starting_point,
     Patch<1>::Pointer pPatch,
     double A, double B, double C, double D,
@@ -354,10 +354,9 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Pl
 {
     std::cout << "invoking " << __FUNCTION__ << std::endl;
 
-    double intersection_point;
+    double intersection_point = starting_point;
 
-    int stat = rDummy.ComputeIntersection(starting_point, intersection_point,
-        pPatch, A, B, C, D, max_iters, TOL);
+    int stat = rDummy.ComputeIntersectionByNewtonRaphson(intersection_point, pPatch, A, B, C, D, max_iters, TOL);
 
     boost::python::list point;
     point.append(intersection_point);
@@ -368,7 +367,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Pl
     return output;
 }
 
-boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Patch2_Plane(IsogeometricIntersectionUtility& rDummy,
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch2_Plane(IsogeometricIntersectionUtility& rDummy,
     boost::python::list list_starting_points,
     Patch<2>::Pointer pPatch,
     double A, double B, double C, double D,
@@ -388,7 +387,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Patch2_P
 
     std::vector<std::vector<double> > intersection_points;
 
-    std::vector<int> stat = rDummy.ComputeIntersection(starting_points, intersection_points,
+    std::vector<int> stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_points, intersection_points,
         pPatch, A, B, C, D, max_iters, TOL);
 
     boost::python::list list_points;
@@ -410,7 +409,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Patch2_P
     return output;
 }
 
-boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
     boost::python::list list_starting_points,
     Patch<3>::Pointer pPatch,
     double A, double B, double C, double D,
@@ -430,8 +429,40 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Patch3_P
 
     std::vector<std::vector<double> > intersection_points;
 
-    std::vector<int> stat = rDummy.ComputeIntersection(starting_points, intersection_points,
+    std::vector<int> stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_points, intersection_points,
         pPatch, A, B, C, D, max_iters, TOL);
+
+    boost::python::list list_points;
+    for (std::size_t i = 0; i < intersection_points.size(); ++i)
+    {
+        boost::python::list point;
+        point.append(intersection_points[i][0]);
+        point.append(intersection_points[i][1]);
+        point.append(intersection_points[i][2]);
+        list_points.append(point);
+    }
+
+    boost::python::list list_stat;
+    for (std::size_t i = 0; i < stat.size(); ++i)
+        list_stat.append(stat[i]);
+
+    boost::python::list output;
+    output.append(list_stat);
+    output.append(list_points);
+    return output;
+}
+
+boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByBisection_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
+    Patch<3>::Pointer pPatch,
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
+{
+    std::cout << "invoking " << __FUNCTION__ << std::endl;
+
+    std::vector<std::vector<double> > intersection_points;
+
+    std::vector<int> stat = rDummy.ComputeIntersectionByBisection(intersection_points, pPatch, A, B, C, D, max_iters, TOL);
 
     boost::python::list list_points;
     for (std::size_t i = 0; i < intersection_points.size(); ++i)
@@ -470,7 +501,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Su
     starting_point_2[0] = starting_point_2_1;
     starting_point_2[1] = starting_point_2_2;
 
-    int stat = rDummy.ComputeIntersection(starting_point_1, starting_point_2,
+    int stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_point_1, starting_point_2,
         intersection_point_1, intersection_point_2,
         pPatch1, pPatch2, max_iters, TOL);
 
@@ -486,11 +517,18 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Su
 }
 
 template<int TDim>
-int IsogeometricIntersectionUtility_CheckIntersection(IsogeometricIntersectionUtility& rDummy,
+boost::python::list IsogeometricIntersectionUtility_CheckIntersection(IsogeometricIntersectionUtility& rDummy,
     typename Patch<TDim>::Pointer pPatch,
     const double& A, const double& B, const double& C, const double& D)
 {
-    return rDummy.CheckIntersection<TDim, 0>(pPatch, A, B, C, D);
+    std::pair<int, std::vector<int> > result = rDummy.CheckIntersection<TDim, 0>(pPatch, A, B, C, D);
+    boost::python::list output;
+    output.append(result.first);
+    boost::python::list tmp;
+    for (std::size_t i = 0; i < result.second.size(); ++i)
+        tmp.append(result.second[i]);
+    output.append(tmp);
+    return output;
 }
 
 //////////////////////////////////////////////////
@@ -562,10 +600,11 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
 
     class_<IsogeometricIntersectionUtility, IsogeometricIntersectionUtility::Pointer, boost::noncopyable>
     ("IsogeometricIntersectionUtility", init<>())
-    .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Two_Curves)
-    .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Curve_Plane)
-    .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Patch2_Plane)
-    .def("ComputeIntersection", &IsogeometricIntersectionUtility_ComputeIntersection_Patch3_Plane)
+    .def("ComputeIntersectionByNewtonRaphson", &IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Two_Curves)
+    .def("ComputeIntersectionByNewtonRaphson", &IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Curve_Plane)
+    .def("ComputeIntersectionByNewtonRaphson", &IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch2_Plane)
+    .def("ComputeIntersectionByNewtonRaphson", &IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch3_Plane)
+    .def("ComputeIntersectionByBisection", &IsogeometricIntersectionUtility_ComputeIntersectionByBisection_Patch3_Plane)
     .def("CheckIntersection", &IsogeometricIntersectionUtility_CheckIntersection<1>)
     .def("CheckIntersection", &IsogeometricIntersectionUtility_CheckIntersection<2>)
     .def("CheckIntersection", &IsogeometricIntersectionUtility_CheckIntersection<3>)

@@ -22,6 +22,9 @@
 #include "custom_utilities/multipatch_utility.h"
 
 
+#define DEBUG_INTERSECT_CURVE_PLANE
+
+
 namespace Kratos
 {
 ///@addtogroup IsogeometricApplication
@@ -80,7 +83,7 @@ public:
      * In the case TOption == 0, the patch intersects the plane if there is a point lie on the plane
      */
     template<int TDim, int TOption = 0>
-    static int CheckIntersection(typename Patch<TDim>::Pointer pPatch, const double& A, const double& B, const double& C, const double& D)
+    static std::pair<int, std::vector<int> > CheckIntersection(typename Patch<TDim>::Pointer pPatch, const double& A, const double& B, const double& C, const double& D)
     {
         typedef GridFunction<TDim, array_1d<double, 3> > GridFunctionType;
 
@@ -99,15 +102,43 @@ public:
         }
 
         if (TOption != 0)
+        {
             if (nzero != 0)
-                return 0;
+            {
+                std::pair<int, std::vector<int> > output;
+                output.first = 0;
+                output.second.push_back(nzero);
+                output.second.push_back(nneg);
+                output.second.push_back(npos);
+                return output;
+            }
+        }
 
         if (nneg + nzero == npoints)
-            return -1;
+        {
+            std::pair<int, std::vector<int> > output;
+            output.first = -1;
+            output.second.push_back(nzero);
+            output.second.push_back(nneg);
+            return output;
+        }
         else if (npos + nzero == npoints)
-            return 1;
+        {
+            std::pair<int, std::vector<int> > output;
+            output.first = 1;
+            output.second.push_back(nzero);
+            output.second.push_back(npos);
+            return output;
+        }
         else
-            return 0;
+        {
+            std::pair<int, std::vector<int> > output;
+            output.first = 0;
+            output.second.push_back(nzero);
+            output.second.push_back(nneg);
+            output.second.push_back(npos);
+            return output;
+        }
     }
 
     /**
@@ -124,7 +155,7 @@ public:
      *   4: the intersection point is not found. It is because the curves intersect in the specified plane, but does not cut in the remaining direction.
      *   5: the Newton-Raphson iteration does not converge within maximum iterations. The existence of intersection point is unknown.
      */
-    static int ComputeIntersection(const double& starting_point_1,
+    static int ComputeIntersectionByNewtonRaphson(const double& starting_point_1,
             const double& starting_point_2,
             double& intersection_point_1,
             double& intersection_point_2,
@@ -292,8 +323,7 @@ public:
      *   1: the intersection point is found but does not lie in the parametric boundary of the patch (usually [0, 1])
      *   2: the Newton-Raphson iteration does not converge within maximum iterations. The existence of intersection point is unknown.
      */
-    static int ComputeIntersection(const double& starting_point,
-            double& intersection_point,
+    static int ComputeIntersectionByNewtonRaphson(double& intersection_point,
             Patch<1>::Pointer pPatch,
             const double& A, const double& B, const double& C, const double& D,
             const int& max_iters,
@@ -303,6 +333,7 @@ public:
         typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
         #ifdef DEBUG_INTERSECT_CURVE_PLANE
         KRATOS_WATCH(typeid(*pGridFunc->pFESpace()).name())
+        KRATOS_WATCH(*pPatch)
         #endif
 
         #ifdef DEBUG_INTERSECT_CURVE_PLANE
@@ -314,7 +345,7 @@ public:
         #endif
 
         std::vector<double> xi(1);
-        xi[0] = starting_point;
+        xi[0] = intersection_point;
         double res, J;
         array_1d<double, 3> p;
         std::vector<array_1d<double, 3> > dp;
@@ -382,13 +413,124 @@ public:
     }
 
     /**
+     * Compute the intersection between 1D patch and a plane.
+     * The plane is defined by equation Ax + By + Cz + D = 0.
+     * It is assumed that the curve does not lie on the plane. Otherwise the starting point will be returned.
+     * This subroutine uses the bisection procedure to compute the intersection point. The two end points of the curve must lie on other side of the surface in order to return a value.
+     * Return code definition:
+     *   0: the intersection point is found and will be returned
+     *   1: the intersection point is found but does not lie in the parametric boundary of the patch (usually [0, 1])
+     *   2: the Newton-Raphson iteration does not converge within maximum iterations. The existence of intersection point is unknown.
+     *   3: the two end point is on the same side of the plane. The intersection point can't be found.
+     */
+    static int ComputeIntersectionByBisection(double& intersection_point,
+            Patch<1>::Pointer pPatch,
+            const double& A, const double& B, const double& C, const double& D,
+            const int& max_iters,
+            const double& TOL)
+    {
+        // extract the control point grid function of both curves
+        typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+        KRATOS_WATCH(typeid(*pGridFunc->pFESpace()).name())
+        KRATOS_WATCH(*pPatch)
+        #endif
+
+        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+        std::vector<double> weights = pPatch->GetControlWeights();
+        std::cout << "weights:";
+        for (std::size_t i = 0; i < weights.size(); ++i)
+            std::cout << " " << weights[i];
+        std::cout << std::endl;
+        #endif
+
+        std::vector<double> xi(1);
+        double left = 0.0, right = 1.0, mid, fleft, fright, fmid;
+        array_1d<double, 3> p;
+
+        xi[0] = left;
+        pGridFunc->GetValue(p, xi);
+        fleft = A*p[0] + B*p[1] + C*p[2] + D;
+
+        xi[0] = right;
+        pGridFunc->GetValue(p, xi);
+        fright = A*p[0] + B*p[1] + C*p[2] + D;
+
+        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+        KRATOS_WATCH(fleft)
+        KRATOS_WATCH(fright)
+        #endif
+
+        if (std::fabs(fleft) < TOL)
+        {
+            xi[0] = left;
+            return 0;
+        }
+
+        if (std::fabs(fright) < TOL)
+        {
+            xi[0] = right;
+            return 0;
+        }
+
+        if (fleft*fright > 0.0)
+            return 3;
+
+        // determine the intersection point in flat plane
+        bool converged = false;
+        int it = 0;
+        while (!converged && (it++ < max_iters))
+        {
+            mid = 0.5*(left + right);
+            xi[0] = mid;
+            pGridFunc->GetValue(p, xi);
+            fmid = A*p[0] + B*p[1] + C*p[2] + D;
+
+            if (std::fabs(fmid) < TOL)
+            {
+                converged = true;
+                break;
+            }
+
+            if (fleft*fmid > 0.0)
+                left = mid;
+            else
+                right = mid;
+        }
+
+        if (!converged && (it >= max_iters))
+        {
+            return 2;
+        }
+
+        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+        KRATOS_WATCH(it)
+        KRATOS_WATCH(max_iters)
+        #endif
+
+        intersection_point = xi[0];
+
+        // KRATOS_WATCH(typeid(*pPatch->pFESpace()).name())
+        std::vector<double> pb = pPatch->pFESpace()->ParametricBounds(0);
+        // KRATOS_WATCH(pb[0])
+        // KRATOS_WATCH(pb[1])
+
+        if ( ( (intersection_point >= pb[0]) && (intersection_point <= pb[1]) ) )
+            return 0;
+        else
+            return 1;
+
+        return -1; // should not come here, just to make the compiler happy
+    }
+
+    /**
      * Compute the intersection between boundaries of a 2D patch and a plane.
      * The plane is defined by equation Ax + By + Cz + D = 0.
      * It is assumed that the curve does not lie on the plane. Otherwise the starting point will be returned.
      * This subroutine uses the Newton-Raphson procedure to compute the intersection point. A starting value in the curve must be given.
      * On the return, the status code of each intersection in each boundary will be return.
      */
-    static std::vector<int> ComputeIntersection(const std::vector<double>& starting_points,
+    static std::vector<int> ComputeIntersectionByNewtonRaphson(const std::vector<double>& starting_points,
             std::vector<std::vector<double> >& intersection_points,
             Patch<2>::Pointer pPatch,
             const double& A, const double& B, const double& C, const double& D,
@@ -408,19 +550,23 @@ public:
 
         pBoundaryPatch = pPatch->ConstructBoundaryPatch(_BLEFT_);
         intersection_points[0][0] = 0.0;
-        status[0] = ComputeIntersection(starting_points[0], intersection_points[0][1], pBoundaryPatch, A, B, C, D, max_iters, TOL);
+        intersection_points[0][1] = starting_points[0];
+        status[0] = ComputeIntersectionByNewtonRaphson(intersection_points[0][1], pBoundaryPatch, A, B, C, D, max_iters, TOL);
 
         pBoundaryPatch = pPatch->ConstructBoundaryPatch(_BRIGHT_);
         intersection_points[1][0] = 1.0;
-        status[1] = ComputeIntersection(starting_points[1], intersection_points[1][1], pBoundaryPatch, A, B, C, D, max_iters, TOL);
+        intersection_points[1][1] = starting_points[1];
+        status[1] = ComputeIntersectionByNewtonRaphson(intersection_points[1][1], pBoundaryPatch, A, B, C, D, max_iters, TOL);
 
         pBoundaryPatch = pPatch->ConstructBoundaryPatch(_BBOTTOM_);
         intersection_points[2][1] = 0.0;
-        status[2] = ComputeIntersection(starting_points[2], intersection_points[2][0], pBoundaryPatch, A, B, C, D, max_iters, TOL);
+        intersection_points[2][0] = starting_points[2];
+        status[2] = ComputeIntersectionByNewtonRaphson(intersection_points[2][0], pBoundaryPatch, A, B, C, D, max_iters, TOL);
 
         pBoundaryPatch = pPatch->ConstructBoundaryPatch(_BTOP_);
         intersection_points[3][1] = 1.0;
-        status[3] = ComputeIntersection(starting_points[3], intersection_points[3][0], pBoundaryPatch, A, B, C, D, max_iters, TOL);
+        intersection_points[3][0] = starting_points[3];
+        status[3] = ComputeIntersectionByNewtonRaphson(intersection_points[3][0], pBoundaryPatch, A, B, C, D, max_iters, TOL);
 
         return status;
     }
@@ -432,7 +578,7 @@ public:
      * This subroutine uses the Newton-Raphson procedure to compute the intersection point. A starting value in the curve must be given.
      * On the return, the status code of each intersection in each boundary will be return.
      */
-    static std::vector<int> ComputeIntersection(const std::vector<double>& starting_points,
+    static std::vector<int> ComputeIntersectionByNewtonRaphson(const std::vector<double>& starting_points,
             std::vector<std::vector<double> >& intersection_points,
             Patch<3>::Pointer pPatch,
             const double& A, const double& B, const double& C, const double& D,
@@ -453,8 +599,55 @@ public:
 
         for (std::size_t i = 0; i < nedges; ++i)
         {
+            double tmp_point = starting_points[i];
+            status[i] = ComputeIntersectionByNewtonRaphson(tmp_point, pEdgePatches[i], A, B, C, D, max_iters, TOL);
+
+            if (i == 0) {intersection_points[i][0] = 0.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 0.0;}
+            else if (i == 1) {intersection_points[i][0] = 1.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 0.0;}
+            else if (i == 2) {intersection_points[i][0] = tmp_point; intersection_points[i][1] = 0.0; intersection_points[i][2] = 0.0;}
+            else if (i == 3) {intersection_points[i][0] = tmp_point; intersection_points[i][1] = 1.0; intersection_points[i][2] = 0.0;}
+            else if (i == 4) {intersection_points[i][0] = 0.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 1.0;}
+            else if (i == 5) {intersection_points[i][0] = 1.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 1.0;}
+            else if (i == 6) {intersection_points[i][0] = tmp_point; intersection_points[i][1] = 0.0; intersection_points[i][2] = 1.0;}
+            else if (i == 7) {intersection_points[i][0] = tmp_point; intersection_points[i][1] = 1.0; intersection_points[i][2] = 1.0;}
+            else if (i == 8) {intersection_points[i][0] = 0.0; intersection_points[i][1] = 0.0; intersection_points[i][2] = tmp_point;}
+            else if (i == 9) {intersection_points[i][0] = 0.0; intersection_points[i][1] = 1.0; intersection_points[i][2] = tmp_point;}
+            else if (i == 10) {intersection_points[i][0] = 1.0; intersection_points[i][1] = 0.0; intersection_points[i][2] = tmp_point;}
+            else if (i == 11) {intersection_points[i][0] = 1.0; intersection_points[i][1] = 1.0; intersection_points[i][2] = tmp_point;}
+        }
+
+        return status;
+    }
+
+    /**
+     * Compute the intersection between boundaries of a 3D patch and a plane.
+     * The plane is defined by equation Ax + By + Cz + D = 0.
+     * It is assumed that the curve does not lie on the plane. Otherwise the starting point will be returned.
+     * This subroutine uses the Newton-Raphson procedure to compute the intersection point. A starting value in the curve must be given.
+     * On the return, the status code of each intersection in each boundary will be return.
+     */
+    static std::vector<int> ComputeIntersectionByBisection(std::vector<std::vector<double> >& intersection_points,
+            Patch<3>::Pointer pPatch,
+            const double& A, const double& B, const double& C, const double& D,
+            const int& max_iters,
+            const double& TOL)
+    {
+        std::vector<Patch<1>::Pointer> pEdgePatches = MultiPatchUtility::ConstructEdgePatches(pPatch);
+
+        std::size_t nedges = pEdgePatches.size();
+        if (intersection_points.size() != nedges)
+            intersection_points.resize(nedges);
+
+        for (std::size_t i = 0; i < nedges; ++i)
+            if (intersection_points[i].size() != 3)
+                intersection_points[i].resize(3);
+
+        std::vector<int> status(nedges);
+
+        for (std::size_t i = 0; i < nedges; ++i)
+        {
             double tmp_point;
-            status[i] = ComputeIntersection(starting_points[i], tmp_point, pEdgePatches[i], A, B, C, D, max_iters, TOL);
+            status[i] = ComputeIntersectionByBisection(tmp_point, pEdgePatches[i], A, B, C, D, max_iters, TOL);
 
             if (i == 0) {intersection_points[i][0] = 0.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 0.0;}
             else if (i == 1) {intersection_points[i][0] = 1.0; intersection_points[i][1] = tmp_point; intersection_points[i][2] = 0.0;}
@@ -483,7 +676,7 @@ public:
      *   2: the intersection point is found but intersection point on the surface does not lie in the parametric boundary of the patch (usually [0, 1] x [0, 1])
      *   3: the Newton-Raphson iteration does not converge within maximum iterations. The existence of intersection point is unknown.
      */
-    static int ComputeIntersection(const double& starting_point_1,
+    static int ComputeIntersectionByNewtonRaphson(const double& starting_point_1,
             const std::vector<double>& starting_point_2,
             double& intersection_point_1,
             std::vector<double>& intersection_point_2,
@@ -745,6 +938,8 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 ///@} addtogroup block
 
 }// namespace Kratos.
+
+#undef DEBUG_INTERSECT_CURVE_PLANE
 
 #endif // KRATOS_ISOGEOMETRIC_INTERSECTION_UTILITY_H_INCLUDED
 

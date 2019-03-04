@@ -1,15 +1,15 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 7 Dec 2017$
 //   Revision:            $Revision: 1.0 $
 //
 //
-// System includes 
+// System includes
 
-// External includes 
+// External includes
 
-// Project includes 
+// Project includes
 #include "custom_conditions/dummy_isogeometric_condition.h"
 #include "includes/deprecated_variables.h"
 #include "includes/legacy_structural_app_vars.h"
@@ -27,13 +27,13 @@ DummyIsogeometricCondition::DummyIsogeometricCondition()
 {
 }
 
-DummyIsogeometricCondition::DummyIsogeometricCondition( IndexType NewId, 
+DummyIsogeometricCondition::DummyIsogeometricCondition( IndexType NewId,
                               GeometryType::Pointer pGeometry)
 : Condition( NewId, pGeometry )
 {
 }
 
-DummyIsogeometricCondition::DummyIsogeometricCondition( IndexType NewId, 
+DummyIsogeometricCondition::DummyIsogeometricCondition( IndexType NewId,
                               GeometryType::Pointer pGeometry,
                               PropertiesType::Pointer pProperties)
 : Condition( NewId, pGeometry, pProperties )
@@ -130,21 +130,21 @@ void DummyIsogeometricCondition::Initialize()
     KRATOS_CATCH("")
 }
 
-//************************************************************************************ 
+//************************************************************************************
 //************************************************************************************
 /**
  * calculates only the RHS vector (certainly to be removed due to contact algorithm)
  */
-void DummyIsogeometricCondition::CalculateRightHandSide( VectorType& rRightHandSideVector, 
+void DummyIsogeometricCondition::CalculateRightHandSide( VectorType& rRightHandSideVector,
         ProcessInfo& rCurrentProcessInfo)
 {
     //calculation flags
     bool CalculateStiffnessMatrixFlag = false;
     bool CalculateResidualVectorFlag = true;
     MatrixType matrix = Matrix();
-    CalculateAll( matrix, rRightHandSideVector, 
+    CalculateAll( matrix, rRightHandSideVector,
                   rCurrentProcessInfo,
-                  CalculateStiffnessMatrixFlag, 
+                  CalculateStiffnessMatrixFlag,
                   CalculateResidualVectorFlag);
 }
 
@@ -153,8 +153,8 @@ void DummyIsogeometricCondition::CalculateRightHandSide( VectorType& rRightHandS
 /**
  * calculates this contact element's local contributions
  */
-void DummyIsogeometricCondition::CalculateLocalSystem( MatrixType& rLeftHandSideMatrix, 
-                                          VectorType& rRightHandSideVector, 
+void DummyIsogeometricCondition::CalculateLocalSystem( MatrixType& rLeftHandSideMatrix,
+                                          VectorType& rRightHandSideVector,
                                           ProcessInfo& rCurrentProcessInfo)
 {
     //calculation flags
@@ -169,10 +169,10 @@ void DummyIsogeometricCondition::CalculateLocalSystem( MatrixType& rLeftHandSide
 /**
  * This function calculates all system contributions due to the contact problem
  * with regard to the current master and slave partners.
- * All Conditions are assumed to be defined in 2D/3D space and having 2/3 DOFs per node 
+ * All Conditions are assumed to be defined in 2D/3D space and having 2/3 DOFs per node
  */
-void DummyIsogeometricCondition::CalculateAll( MatrixType& rLeftHandSideMatrix, 
-                                  VectorType& rRightHandSideVector, 
+void DummyIsogeometricCondition::CalculateAll( MatrixType& rLeftHandSideMatrix,
+                                  VectorType& rRightHandSideVector,
                                   ProcessInfo& rCurrentProcessInfo,
                                   bool CalculateStiffnessMatrixFlag,
                                   bool CalculateResidualVectorFlag)
@@ -188,11 +188,11 @@ void DummyIsogeometricCondition::CalculateAll( MatrixType& rLeftHandSideMatrix,
 //************************************************************************************
 //************************************************************************************
 /**
- * Setting up the EquationIdVector for the current partners.    
+ * Setting up the EquationIdVector for the current partners.
  * All conditions are assumed to be defined in 2D/3D space with 2/3 DOFs per node.
  * All Equation IDs are given Master first, Slave second
  */
-void DummyIsogeometricCondition::EquationIdVector( EquationIdVectorType& rResult, 
+void DummyIsogeometricCondition::EquationIdVector( EquationIdVectorType& rResult,
                                       ProcessInfo& CurrentProcessInfo)
 {
     rResult.resize(0);

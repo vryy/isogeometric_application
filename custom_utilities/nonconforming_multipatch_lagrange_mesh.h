@@ -99,7 +99,7 @@ public:
         else if (TDim == 3)
             element_name = element_name + "3D8N";
 
-        std::string NodeKey = std::string("Node");
+        const std::string NodeKey = std::string("Node");
 
         if(!KratosComponents<Element>::Has(element_name))
         {

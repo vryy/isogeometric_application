@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 7 Dec 17 $
 //   Revision:            $Revision: 1.0 $
@@ -9,7 +9,7 @@
 #define  KRATOS_DUMMY_ISOGEOMETRIC_CONDITION_H_INCLUDED
 
 
-// External includes 
+// External includes
 #include "boost/smart_ptr.hpp"
 
 // Project includes
@@ -33,10 +33,10 @@ class DummyIsogeometricCondition : public Condition
         KRATOS_CLASS_POINTER_DEFINITION(DummyIsogeometricCondition);
 
         typedef GeometryData::IntegrationMethod IntegrationMethod;
-    
+
         typedef IsogeometricGeometry<GeometryType::PointType> IsogeometricGeometryType;
 
-        /** 
+        /**
          * Default constructor.
          */
         DummyIsogeometricCondition();
@@ -47,7 +47,7 @@ class DummyIsogeometricCondition : public Condition
          * Destructor.
          */
         virtual ~DummyIsogeometricCondition();
-  
+
         /**
          * Operations.
          */
@@ -63,14 +63,14 @@ class DummyIsogeometricCondition : public Condition
         /**
          * Calculates the local system contributions for this contact element
          */
-        virtual void CalculateLocalSystem( MatrixType& rLeftHandSideMatrix, 
-                                   VectorType& rRightHandSideVector, 
+        virtual void CalculateLocalSystem( MatrixType& rLeftHandSideMatrix,
+                                   VectorType& rRightHandSideVector,
                                    ProcessInfo& rCurrentProcessInfo);
 
-        virtual void CalculateRightHandSide( VectorType& rRightHandSideVector, 
+        virtual void CalculateRightHandSide( VectorType& rRightHandSideVector,
                                      ProcessInfo& rCurrentProcessInfo);
 
-        virtual void EquationIdVector( EquationIdVectorType& rResult, 
+        virtual void EquationIdVector( EquationIdVectorType& rResult,
                                ProcessInfo& rCurrentProcessInfo);
 
         virtual void GetDofList( DofsVectorType& ConditionalDofList,
@@ -82,7 +82,7 @@ class DummyIsogeometricCondition : public Condition
          * (DEACTIVATED)
          */
         //std::string Info();
-  
+
         /**
          * Print information about this object.
          * (DEACTIVATED)
@@ -94,7 +94,7 @@ class DummyIsogeometricCondition : public Condition
          * (DEACTIVATED)
          */
         //virtual void PrintData(std::ostream& rOStream) const;
-  
+
     private:
 
         IsogeometricGeometryType::Pointer mpIsogeometricGeometry;
@@ -113,16 +113,16 @@ class DummyIsogeometricCondition : public Condition
             KRATOS_SERIALIZE_LOAD_BASE_CLASS ( rSerializer, Condition )
         }
 
-        void CalculateAll( MatrixType& rLeftHandSideMatrix, 
+        void CalculateAll( MatrixType& rLeftHandSideMatrix,
                            VectorType& rRightHandSideVector,
                            ProcessInfo& rCurrentProcessInfo,
                            bool CalculateStiffnessMatrixFlag,
                            bool CalculateResidualVectorFlag);
 
-}; // Class DummyIsogeometricCondition 
+}; // Class DummyIsogeometricCondition
 
 }  // namespace Kratos.
-  
 
-#endif // KRATOS_DUMMY_ISOGEOMETRIC_CONDITION_H_INCLUDED defined 
+
+#endif // KRATOS_DUMMY_ISOGEOMETRIC_CONDITION_H_INCLUDED defined
 

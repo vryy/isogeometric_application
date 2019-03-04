@@ -11,8 +11,6 @@
 
 #include "includes/define.h"
 
-using namespace std;
-
 namespace Kratos
 {
 
@@ -26,7 +24,7 @@ class TriangulationUtils
 public:
     TriangulationUtils() {}
     virtual ~TriangulationUtils() {}
-    
+
     void ComputeDelaunayTriangulation(std::vector<double>& XYlist,
                                       std::vector<std::vector<unsigned int> >& Connectivities)
     {
@@ -60,7 +58,7 @@ public:
         // free up the memory
         free(triangle_node);
         free(triangle_neighbor);
-//        std::cout << "ComputeDelaunayTriangulation completed, " <<  triangle_num << " triangles are generated" << std::endl;
+//        std::std::cout << "ComputeDelaunayTriangulation completed, " <<  triangle_num << " triangles are generated" << std::endl;
     }
 
 private:
@@ -1026,9 +1024,9 @@ int i4_modp ( int i, int j )
 
   if ( j == 0 )
   {
-    cout << "\n";
-    cout << "I4_MODP - Fatal error!\n";
-    cout << "  I4_MODP ( I, J ) called with J = " << j << "\n";
+    std::cout << "\n";
+    std::cout << "I4_MODP - Fatal error!\n";
+    std::cout << "  I4_MODP ( I, J ) called with J = " << j << "\n";
     exit ( 1 );
   }
 
@@ -1081,9 +1079,9 @@ int i4_power ( int i, int j )
     }
     else if ( i == 0 )
     {
-      cout << "\n";
-      cout << "I4_POWER - Fatal error!\n";
-      cout << "  I^J requested, with I = 0 and J negative.\n";
+      std::cout << "\n";
+      std::cout << "I4_POWER - Fatal error!\n";
+      std::cout << "  I^J requested, with I = 0 and J negative.\n";
       exit ( 1 );
     }
     else
@@ -1095,9 +1093,9 @@ int i4_power ( int i, int j )
   {
     if ( i == 0 )
     {
-      cout << "\n";
-      cout << "I4_POWER - Fatal error!\n";
-      cout << "  I^J requested, with I = 0 and J = 0.\n";
+      std::cout << "\n";
+      std::cout << "I4_POWER - Fatal error!\n";
+      std::cout << "  I^J requested, with I = 0 and J = 0.\n";
       exit ( 1 );
     }
     else
@@ -1265,9 +1263,9 @@ int i4_uniform ( int a, int b, int *seed )
 
   if ( *seed == 0 )
   {
-    cerr << "\n";
-    cerr << "I4_UNIFORM - Fatal error!\n";
-    cerr << "  Input value of SEED = 0.\n";
+    std::cerr << "\n";
+    std::cerr << "I4_UNIFORM - Fatal error!\n";
+    std::cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
   }
 
@@ -1430,33 +1428,33 @@ int i4col_compare ( int m, int n, int a[], int i, int j )
 //
   if ( i < 1 )
   {
-    cout << "\n";
-    cout << "I4COL_COMPARE - Fatal error!\n";
-    cout << "  Column index I = " << i << " is less than 1.\n";
+    std::cout << "\n";
+    std::cout << "I4COL_COMPARE - Fatal error!\n";
+    std::cout << "  Column index I = " << i << " is less than 1.\n";
     exit ( 1 );
   }
 
   if ( n < i )
   {
-    cout << "\n";
-    cout << "I4COL_COMPARE - Fatal error!\n";
-    cout << "  N = " << n << " is less than column index I = " << i << ".\n";
+    std::cout << "\n";
+    std::cout << "I4COL_COMPARE - Fatal error!\n";
+    std::cout << "  N = " << n << " is less than column index I = " << i << ".\n";
     exit ( 1 );
   }
 
   if ( j < 1 )
   {
-    cout << "\n";
-    cout << "I4COL_COMPARE - Fatal error!\n";
-    cout << "  Column index J = " << j << " is less than 1.\n";
+    std::cout << "\n";
+    std::cout << "I4COL_COMPARE - Fatal error!\n";
+    std::cout << "  Column index J = " << j << " is less than 1.\n";
     exit ( 1 );
   }
 
   if ( n < j )
   {
-    cout << "\n";
-    cout << "I4COL_COMPARE - Fatal error!\n";
-    cout << "  N = " << n << " is less than column index J = " << j << ".\n";
+    std::cout << "\n";
+    std::cout << "I4COL_COMPARE - Fatal error!\n";
+    std::cout << "  N = " << n << " is less than column index J = " << j << ".\n";
     exit ( 1 );
   }
 
@@ -1684,17 +1682,17 @@ void i4col_swap ( int m, int n, int a[], int icol1, int icol2 )
 //
   if ( icol1 - OFFSET < 0 || n-1 < icol1 - OFFSET )
   {
-    cout << "\n";
-    cout << "I4COL_SWAP - Fatal error!\n";
-    cout << "  ICOL1 is out of range.\n";
+    std::cout << "\n";
+    std::cout << "I4COL_SWAP - Fatal error!\n";
+    std::cout << "  ICOL1 is out of range.\n";
     exit ( 1 );
   }
 
   if ( icol2 - OFFSET < 0 || n-1 < icol2 - OFFSET )
   {
-    cout << "\n";
-    cout << "I4COL_SWAP - Fatal error!\n";
-    cout << "  ICOL2 is out of range.\n";
+    std::cout << "\n";
+    std::cout << "I4COL_SWAP - Fatal error!\n";
+    std::cout << "  ICOL2 is out of range.\n";
     exit ( 1 );
   }
 
@@ -1714,7 +1712,7 @@ void i4col_swap ( int m, int n, int a[], int icol1, int icol2 )
 }
 //****************************************************************************80
 
-void i4mat_transpose_print ( int m, int n, int a[], string title )
+void i4mat_transpose_print ( int m, int n, int a[], std::string title )
 
 //****************************************************************************80
 //
@@ -1756,7 +1754,7 @@ void i4mat_transpose_print ( int m, int n, int a[], string title )
 //****************************************************************************80
 
 void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
-  int ihi, int jhi, string title )
+  int ihi, int jhi, std::string title )
 
 //****************************************************************************80
 //
@@ -1805,8 +1803,8 @@ void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
   int j2hi;
   int j2lo;
 
-  cout << "\n";
-  cout << title << "\n";
+  std::cout << "\n";
+  std::cout << title << "\n";
 //
 //  Print the columns of the matrix, in strips of INCX.
 //
@@ -1816,20 +1814,20 @@ void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
     i2hi = i4_min ( i2hi, m );
     i2hi = i4_min ( i2hi, ihi );
 
-    cout << "\n";
+    std::cout << "\n";
 //
 //  For each row I in the current range...
 //
 //  Write the header.
 //
-    cout << "  Row: ";
+    std::cout << "  Row: ";
     for ( i = i2lo; i <= i2hi; i++ )
     {
-      cout << setw(6) << i << "  ";
+      std::cout << std::setw(6) << i << "  ";
     }
-    cout << "\n";
-    cout << "  Col\n";
-    cout << "\n";
+    std::cout << "\n";
+    std::cout << "  Col\n";
+    std::cout << "\n";
 //
 //  Determine the range of the rows in this strip.
 //
@@ -1841,12 +1839,12 @@ void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
 //
 //  Print out (up to INCX) entries in column J, that lie in the current strip.
 //
-      cout << setw(5) << j << "  ";
+      std::cout << std::setw(5) << j << "  ";
       for ( i = i2lo; i <= i2hi; i++ )
       {
-        cout << setw(6) << a[i-1+(j-1)*m] << "  ";
+        std::cout << std::setw(6) << a[i-1+(j-1)*m] << "  ";
       }
-      cout << "\n";
+      std::cout << "\n";
     }
   }
 
@@ -2082,7 +2080,7 @@ int i4vec_min ( int n, int a[] )
 }
 //****************************************************************************80
 
-void i4vec_print ( int n, int a[], string title )
+void i4vec_print ( int n, int a[], std::string title )
 
 //****************************************************************************80
 //
@@ -2117,13 +2115,13 @@ void i4vec_print ( int n, int a[], string title )
 {
   int i;
 
-  cout << "\n";
-  cout << title << "\n";
-  cout << "\n";
+  std::cout << "\n";
+  std::cout << title << "\n";
+  std::cout << "\n";
   for ( i = 0; i < n; i++ )
   {
-    cout << "  " << setw(8) << i
-         << "  " << setw(8) << a[i]  << "\n";
+    std::cout << "  " << std::setw(8) << i
+         << "  " << std::setw(8) << a[i]  << "\n";
   }
   return;
 }
@@ -2621,7 +2619,7 @@ int lrline ( double xu, double yu, double xv1, double yv1, double xv2,
 }
 //****************************************************************************80
 
-void lvec_print ( int n, bool a[], string title )
+void lvec_print ( int n, bool a[], std::string title )
 
 //****************************************************************************80
 //
@@ -2652,13 +2650,13 @@ void lvec_print ( int n, bool a[], string title )
 {
   int i;
 
-  cout << "\n";
-  cout << title << "\n";
-  cout << "\n";
+  std::cout << "\n";
+  std::cout << title << "\n";
+  std::cout << "\n";
   for ( i = 0; i < n; i++ )
   {
-    cout << "  " << setw(8) << i
-         << "  " << setw(1) << a[i]  << "\n";
+    std::cout << "  " << std::setw(8) << i
+         << "  " << std::setw(1) << a[i]  << "\n";
   }
 
   return;
@@ -2731,10 +2729,10 @@ void mesh_base_one ( int node_num, int element_order, int element_num,
   }
   if ( node_min == 0 && node_max == node_num - 1 )
   {
-    cout << "\n";
-    cout << "MESH_BASE_ONE:\n";
-    cout << "  The element indexing appears to be 0-based!\n";
-    cout << "  This will be converted to 1-based.\n";
+    std::cout << "\n";
+    std::cout << "MESH_BASE_ONE:\n";
+    std::cout << "  The element indexing appears to be 0-based!\n";
+    std::cout << "  This will be converted to 1-based.\n";
     for ( element = 0; element < element_num; element++ )
     {
       for ( order = 0; order < element_order; order++ )
@@ -2746,19 +2744,19 @@ void mesh_base_one ( int node_num, int element_order, int element_num,
   }
   else if ( node_min == 1 && node_max == node_num )
   {
-    cout << "\n";
-    cout << "MESH_BASE_ONE:\n";
-    cout << "  The element indexing appears to be 1-based!\n";
-    cout << "  No conversion is necessary.\n";
+    std::cout << "\n";
+    std::cout << "MESH_BASE_ONE:\n";
+    std::cout << "  The element indexing appears to be 1-based!\n";
+    std::cout << "  No conversion is necessary.\n";
   }
   else
   {
-    cout << "\n";
-    cout << "MESH_BASE_ONE - Warning!\n";
-    cout << "  The element indexing is not of a recognized type.\n";
-    cout << "  NODE_MIN = " << node_min << "\n";
-    cout << "  NODE_MAX = " << node_max << "\n";
-    cout << "  NODE_NUM = " << node_num << "\n";
+    std::cout << "\n";
+    std::cout << "MESH_BASE_ONE - Warning!\n";
+    std::cout << "  The element indexing is not of a recognized type.\n";
+    std::cout << "  NODE_MIN = " << node_min << "\n";
+    std::cout << "  NODE_MAX = " << node_max << "\n";
+    std::cout << "  NODE_NUM = " << node_num << "\n";
   }
   return;
 }
@@ -2834,17 +2832,17 @@ void mesh_base_zero ( int node_num, int element_order, int element_num,
 
   if ( node_min == 0 && node_max == node_num - 1 )
   {
-    cout << "\n";
-    cout << "MESH_BASE_ZERO:\n";
-    cout << "  The element indexing appears to be 0-based!\n";
-    cout << "  No conversion is necessary.\n";
+    std::cout << "\n";
+    std::cout << "MESH_BASE_ZERO:\n";
+    std::cout << "  The element indexing appears to be 0-based!\n";
+    std::cout << "  No conversion is necessary.\n";
   }
   else if ( node_min == 1 && node_max == node_num )
   {
-    cout << "\n";
-    cout << "MESH_BASE_ZERO:\n";
-    cout << "  The element indexing appears to be 1-based!\n";
-    cout << "  This will be converted to 0-based.\n";
+    std::cout << "\n";
+    std::cout << "MESH_BASE_ZERO:\n";
+    std::cout << "  The element indexing appears to be 1-based!\n";
+    std::cout << "  This will be converted to 0-based.\n";
     for ( element = 0; element < element_num; element++ )
     {
       for ( order = 0; order < element_order; order++ )
@@ -2856,12 +2854,12 @@ void mesh_base_zero ( int node_num, int element_order, int element_num,
   }
   else
   {
-    cout << "\n";
-    cout << "MESH_BASE_ZERO - Warning!\n";
-    cout << "  The element indexing is not of a recognized type.\n";
-    cout << "  NODE_MIN = " << node_min << "\n";
-    cout << "  NODE_MAX = " << node_max << "\n";
-    cout << "  NODE_NUM = " << node_num << "\n";
+    std::cout << "\n";
+    std::cout << "MESH_BASE_ZERO - Warning!\n";
+    std::cout << "  The element indexing is not of a recognized type.\n";
+    std::cout << "  NODE_MIN = " << node_min << "\n";
+    std::cout << "  NODE_MAX = " << node_max << "\n";
+    std::cout << "  NODE_NUM = " << node_num << "\n";
   }
   return;
 }
@@ -4024,9 +4022,9 @@ void perm_inverse ( int n, int p[] )
 
   if ( n <= 0 )
   {
-    cout << "\n";
-    cout << "PERM_INVERSE - Fatal error!\n";
-    cout << "  Input value of N = " << n << "\n";
+    std::cout << "\n";
+    std::cout << "PERM_INVERSE - Fatal error!\n";
+    std::cout << "  Input value of N = " << n << "\n";
     exit ( 1 );
   }
 //
@@ -4044,9 +4042,9 @@ void perm_inverse ( int n, int p[] )
 //
   if ( !perm_check2 ( n, p, base ) )
   {
-    cerr << "\n";
-    cerr << "PERM_INVERSE - Fatal error!\n";
-    cerr << "  PERM_CHECK rejects this permutation.\n";
+    std::cerr << "\n";
+    std::cerr << "PERM_INVERSE - Fatal error!\n";
+    std::cerr << "  PERM_CHECK rejects this permutation.\n";
     exit ( 1 );
   }
 //
@@ -4413,9 +4411,9 @@ void points_hull_2d ( int node_num, double node_xy[], int *hull_num,
 
     if ( node_num < *hull_num + 1 )
     {
-      cout << "\n";
-      cout << "POINTS_HULL_2D - Fatal error!\n";
-      cout << "  The algorithm failed.\n";
+      std::cout << "\n";
+      std::cout << "POINTS_HULL_2D - Fatal error!\n";
+      std::cout << "  The algorithm failed.\n";
       exit ( 1 );
     }
 //
@@ -5185,9 +5183,9 @@ double r8_uniform_01 ( int *seed )
 
   if ( *seed == 0 )
   {
-    cerr << "\n";
-    cerr << "R8_UNIFORM_01 - Fatal error!\n";
-    cerr << "  Input value of SEED = 0.\n";
+    std::cerr << "\n";
+    std::cerr << "R8_UNIFORM_01 - Fatal error!\n";
+    std::cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
   }
 
@@ -5277,9 +5275,9 @@ void r82vec_permute ( int n, int p[], int base, double a[] )
 
   if ( !perm_check2 ( n, p, base ) )
   {
-    cerr << "\n";
-    cerr << "R82VEC_PERMUTE - Fatal error!\n";
-    cerr << "  PERM_CHECK rejects this permutation.\n";
+    std::cerr << "\n";
+    std::cerr << "R82VEC_PERMUTE - Fatal error!\n";
+    std::cerr << "  PERM_CHECK rejects this permutation.\n";
     exit ( 1 );
   }
 //
@@ -5322,10 +5320,10 @@ void r82vec_permute ( int n, int p[], int base, double a[] )
 
         if ( iget < 1 || n < iget )
         {
-          cout << "\n";
-          cout << "R82VEC_PERMUTE - Fatal error!\n";
-          cout << "  Entry IPUT = " << iput << " of the permutation has\n";
-          cout << "  an illegal value IGET = " << iget << ".\n";
+          std::cout << "\n";
+          std::cout << "R82VEC_PERMUTE - Fatal error!\n";
+          std::cout << "  Entry IPUT = " << iput << " of the permutation has\n";
+          std::cout << "  an illegal value IGET = " << iget << ".\n";
           exit ( 1 );
         }
 
@@ -5508,7 +5506,7 @@ int *r82vec_sort_heap_index_a ( int n, int base, double a[] )
 }
 //****************************************************************************80
 
-void r8mat_print ( int m, int n, double a[], string title )
+void r8mat_print ( int m, int n, double a[], std::string title )
 
 //****************************************************************************80
 //
@@ -5553,7 +5551,7 @@ void r8mat_print ( int m, int n, double a[], string title )
 //****************************************************************************80
 
 void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
-  int jhi, string title )
+  int jhi, std::string title )
 
 //****************************************************************************80
 //
@@ -5603,8 +5601,8 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
   int j2hi;
   int j2lo;
 
-  cout << "\n";
-  cout << title << "\n";
+  std::cout << "\n";
+  std::cout << title << "\n";
 //
 //  Print the columns of the matrix, in strips of 5.
 //
@@ -5614,20 +5612,20 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
     j2hi = i4_min ( j2hi, n );
     j2hi = i4_min ( j2hi, jhi );
 
-    cout << "\n";
+    std::cout << "\n";
 //
 //  For each column J in the current range...
 //
 //  Write the header.
 //
-    cout << "  Col:    ";
+    std::cout << "  Col:    ";
     for ( j = j2lo; j <= j2hi; j++ )
     {
-      cout << setw(7) << j << "       ";
+      std::cout << std::setw(7) << j << "       ";
     }
-    cout << "\n";
-    cout << "  Row\n";
-    cout << "\n";
+    std::cout << "\n";
+    std::cout << "  Row\n";
+    std::cout << "\n";
 //
 //  Determine the range of the rows in this strip.
 //
@@ -5639,12 +5637,12 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
 //
 //  Print out (up to) 5 entries in row I, that lie in the current strip.
 //
-      cout << setw(5) << i << "  ";
+      std::cout << std::setw(5) << i << "  ";
       for ( j = j2lo; j <= j2hi; j++ )
       {
-        cout << setw(12) << a[i-1+(j-1)*m] << "  ";
+        std::cout << std::setw(12) << a[i-1+(j-1)*m] << "  ";
       }
-      cout << "\n";
+      std::cout << "\n";
     }
   }
 
@@ -5653,7 +5651,7 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
 }
 //****************************************************************************80
 
-void r8mat_transpose_print ( int m, int n, double a[], string title )
+void r8mat_transpose_print ( int m, int n, double a[], std::string title )
 
 //****************************************************************************80
 //
@@ -5694,7 +5692,7 @@ void r8mat_transpose_print ( int m, int n, double a[], string title )
 //****************************************************************************80
 
 void r8mat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
-  int ihi, int jhi, string title )
+  int ihi, int jhi, std::string title )
 
 //****************************************************************************80
 //
@@ -5743,8 +5741,8 @@ void r8mat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
   int j2hi;
   int j2lo;
 
-  cout << "\n";
-  cout << title << "\n";
+  std::cout << "\n";
+  std::cout << title << "\n";
 
   for ( i2lo = i4_max ( ilo, 1 ); i2lo <= i4_min ( ihi, m ); i2lo = i2lo + INCX )
   {
@@ -5754,28 +5752,28 @@ void r8mat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
 
     inc = i2hi + 1 - i2lo;
 
-    cout << "\n";
-    cout << "  Row: ";
+    std::cout << "\n";
+    std::cout << "  Row: ";
     for ( i = i2lo; i <= i2hi; i++ )
     {
-      cout << setw(7) << i << "       ";
+      std::cout << std::setw(7) << i << "       ";
     }
-    cout << "\n";
-    cout << "  Col\n";
-    cout << "\n";
+    std::cout << "\n";
+    std::cout << "  Col\n";
+    std::cout << "\n";
 
     j2lo = i4_max ( jlo, 1 );
     j2hi = i4_min ( jhi, n );
 
     for ( j = j2lo; j <= j2hi; j++ )
     {
-      cout << setw(5) << j << " ";
+      std::cout << std::setw(5) << j << " ";
       for ( i2 = 1; i2 <= inc; i2++ )
       {
         i = i2lo - 1 + i2;
-        cout << setw(14) << a[(i-1)+(j-1)*m];
+        std::cout << std::setw(14) << a[(i-1)+(j-1)*m];
       }
-      cout << "\n";
+      std::cout << "\n";
     }
   }
 
@@ -5861,9 +5859,9 @@ void r8mat_uniform_01 ( int m, int n, int *seed, double r[] )
 
   if ( *seed == 0 )
   {
-    cerr << "\n";
-    cerr << "R8MAT_UNIFORM_01 - Fatal error!\n";
-    cerr << "  Input value of SEED = 0.\n";
+    std::cerr << "\n";
+    std::cerr << "R8MAT_UNIFORM_01 - Fatal error!\n";
+    std::cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
   }
 
@@ -6010,14 +6008,14 @@ int r8tris2 ( int node_num, double node_xy[], int *triangle_num,
 
     if ( k == -1 )
     {
-      cout << "\n";
-      cout << "R8TRIS2 - Fatal error!\n";
-      cout << "  Fails for point number I = " << i << "\n";
-      cout << "  M =  " << m  << "\n";
-      cout << "  M1 = " << m1 << "\n";
-      cout << "  X,Y(M)  = " << node_xy[2*(m-1)+0] << "  "
+      std::cout << "\n";
+      std::cout << "R8TRIS2 - Fatal error!\n";
+      std::cout << "  Fails for point number I = " << i << "\n";
+      std::cout << "  M =  " << m  << "\n";
+      std::cout << "  M1 = " << m1 << "\n";
+      std::cout << "  X,Y(M)  = " << node_xy[2*(m-1)+0] << "  "
                              << node_xy[2*(m-1)+1] << "\n";
-      cout << "  X,Y(M1) = " << node_xy[2*(m1-1)+0] << "  "
+      std::cout << "  X,Y(M1) = " << node_xy[2*(m1-1)+0] << "  "
                              << node_xy[2*(m1-1)+1] << "\n";
       exit ( 1 );
     }
@@ -6035,8 +6033,8 @@ int r8tris2 ( int node_num, double node_xy[], int *triangle_num,
   {
     if ( node_num < j )
     {
-      cout << "\n";
-      cout << "R8TRIS2 - Fatal error!\n";
+      std::cout << "\n";
+      std::cout << "R8TRIS2 - Fatal error!\n";
       delete [] stack;
       return 225;
     }
@@ -6184,9 +6182,9 @@ int r8tris2 ( int node_num, double node_xy[], int *triangle_num,
 
       if ( node_num < top )
       {
-        cout << "\n";
-        cout << "R8TRIS2 - Fatal error!\n";
-        cout << "  Stack overflow.\n";
+        std::cout << "\n";
+        std::cout << "R8TRIS2 - Fatal error!\n";
+        std::cout << "  Stack overflow.\n";
         delete [] stack;
         return 8;
       }
@@ -6211,9 +6209,9 @@ int r8tris2 ( int node_num, double node_xy[], int *triangle_num,
 
     if ( error != 0 )
     {
-      cout << "\n";
-      cout << "R8TRIS2 - Fatal error!\n";
-      cout << "  Error return from SWAPEC.\n";
+      std::cout << "\n";
+      std::cout << "R8TRIS2 - Fatal error!\n";
+      std::cout << "  Error return from SWAPEC.\n";
       delete [] stack;
       return error;
     }
@@ -6421,7 +6419,7 @@ double r8vec_min ( int n, double r8vec[] )
 }
 //****************************************************************************80
 
-int s_len_trim ( string s )
+int s_len_trim ( std::string s )
 
 //****************************************************************************80
 //
@@ -7505,9 +7503,9 @@ void triangle_order6_physical_to_reference ( double t[2*6], int n,
 
       if ( det == 0.0 )
       {
-        cout << "\n";
-        cout << "TRIANGLE_ORDER6_PHYSICAL_TO_REFERENCE - Fatal error!\n";
-        cout << "  The jacobian of the mapping is singular.\n";
+        std::cout << "\n";
+        std::cout << "TRIANGLE_ORDER6_PHYSICAL_TO_REFERENCE - Fatal error!\n";
+        std::cout << "  The jacobian of the mapping is singular.\n";
       }
 
       dx[0] = (  jac[1+1*2] * fun[0] - jac[0+1*2] * fun[1] ) / det;
@@ -8124,39 +8122,39 @@ double triangulation_delaunay_discrepancy_compute ( int node_num,
 
       if ( n4 == -1 )
       {
-        cout << "\n";
-        cout << "TRIANGULATION_DELAUNAY_DISCREPANCY_COMPUTE - Fatal error/!\n";
-        cout << "  Could not identify the fourth node.\n";
-        cout << "\n";
-        cout << "  Triangle1 = " << triangle1 << "\n";
-        cout << "  Nodes =     ";
+        std::cout << "\n";
+        std::cout << "TRIANGULATION_DELAUNAY_DISCREPANCY_COMPUTE - Fatal error/!\n";
+        std::cout << "  Could not identify the fourth node.\n";
+        std::cout << "\n";
+        std::cout << "  Triangle1 = " << triangle1 << "\n";
+        std::cout << "  Nodes =     ";
         for ( i = 0; i < 3; i++ )
         {
-          cout << "  " << triangle_node[i+triangle1*triangle_order];
+          std::cout << "  " << triangle_node[i+triangle1*triangle_order];
         }
-        cout << "\n";
-        cout << "  Neighbors =     ";
+        std::cout << "\n";
+        std::cout << "  Neighbors =     ";
         for ( i = 0; i < 3; i++ )
         {
-          cout << "  " << triangle_neighbor[i+triangle1*3];
+          std::cout << "  " << triangle_neighbor[i+triangle1*3];
         }
-        cout << "\n";
-        cout << "\n";
-        cout << "  Neighbor index = " << neighbor << "\n";
-        cout << "\n";
-        cout << "  Triangle2 = " << triangle2 << "\n";
-        cout << "  Nodes =     ";
+        std::cout << "\n";
+        std::cout << "\n";
+        std::cout << "  Neighbor index = " << neighbor << "\n";
+        std::cout << "\n";
+        std::cout << "  Triangle2 = " << triangle2 << "\n";
+        std::cout << "  Nodes =     ";
         for ( i = 0; i < 3; i++ )
         {
-          cout << "  " << triangle_node[i+triangle2*triangle_order];
+          std::cout << "  " << triangle_node[i+triangle2*triangle_order];
         }
-        cout << "\n";
-        cout << "  Neighbors =     ";
+        std::cout << "\n";
+        std::cout << "  Neighbors =     ";
         for ( i = 0; i < 3; i++ )
         {
-          cout << "  " << triangle_neighbor[i+triangle2*3];
+          std::cout << "  " << triangle_neighbor[i+triangle2*3];
         }
-        cout << "\n";
+        std::cout << "\n";
         exit ( 1 );
       }
 //
@@ -8542,9 +8540,9 @@ int *triangulation_node_order ( int triangle_order, int triangle_num,
 
       if ( node < 1 || node_num < node )
       {
-        cout << "\n";
-        cout << "TRIANGULATION_NODE_ORDER - Fatal error!\n";
-        cout << "  Illegal entry in TRIANGLE_NODE.\n";
+        std::cout << "\n";
+        std::cout << "TRIANGULATION_NODE_ORDER - Fatal error!\n";
+        std::cout << "  Illegal entry in TRIANGLE_NODE.\n";
         node_order = NULL;
         exit ( 1 );
       }
@@ -9237,7 +9235,7 @@ void triangulation_order3_adj_set2 ( int node_num, int triangle_num,
 }
 //****************************************************************************80
 
-int *triangulation_order3_adjacency ( int node_num, int element_num, 
+int *triangulation_order3_adjacency ( int node_num, int element_num,
   int element_node[] )
 
 //****************************************************************************80
@@ -9687,17 +9685,17 @@ int triangulation_order3_check ( int node_num, int triangle_num,
 //
   if ( node_num < 3 )
   {
-    cout << "\n";
-    cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-    cout << "  The number of nodes is less than 3!\n";
+    std::cout << "\n";
+    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+    std::cout << "  The number of nodes is less than 3!\n";
     return 1;
   }
 
   if ( triangle_num < 1 )
   {
-    cout << "\n";
-    cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-    cout << "  The number of triangles is less than 1!\n";
+    std::cout << "\n";
+    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+    std::cout << "  The number of triangles is less than 1!\n";
     return 2;
   }
 //
@@ -9711,9 +9709,9 @@ int triangulation_order3_check ( int node_num, int triangle_num,
     {
       if ( triangle_node[i+j*3] < 1 )
       {
-        cout << "\n";
-        cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-        cout << "  Some vertices are less than 1!\n";
+        std::cout << "\n";
+        std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+        std::cout << "  Some vertices are less than 1!\n";
         return 3;
       }
     }
@@ -9725,9 +9723,9 @@ int triangulation_order3_check ( int node_num, int triangle_num,
     {
       if ( node_num < triangle_node[i+j*3] )
       {
-        cout << "\n";
-        cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-        cout << "  Some vertices are greater than node_num!\n";
+        std::cout << "\n";
+        std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+        std::cout << "  Some vertices are greater than node_num!\n";
         return 4;
       }
     }
@@ -9755,10 +9753,10 @@ int triangulation_order3_check ( int node_num, int triangle_num,
   {
     if ( used[i] == 0 )
     {
-      cout << "\n";
-      cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-      cout << "  Some nodes are never used as triangle vertices!\n";
-      cout << "  First example is node " << i+1 << "\n";
+      std::cout << "\n";
+      std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+      std::cout << "  Some nodes are never used as triangle vertices!\n";
+      std::cout << "  First example is node " << i+1 << "\n";
       delete [] used;
       return 5;
     }
@@ -9774,9 +9772,9 @@ int triangulation_order3_check ( int node_num, int triangle_num,
          triangle_node[1+j*3] == triangle_node[2+j*3] ||
          triangle_node[2+j*3] == triangle_node[0+j*3] )
     {
-      cout << "\n";
-      cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-      cout << "  A triangle contains a null edge!\n";
+      std::cout << "\n";
+      std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+      std::cout << "  A triangle contains a null edge!\n";
       return 6;
     }
   }
@@ -9790,9 +9788,9 @@ int triangulation_order3_check ( int node_num, int triangle_num,
 
   if ( boundary_num < 0 )
   {
-    cout << "\n";
-    cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-    cout << "  Some edges are repeated or given in the wrong direction!\n";
+    std::cout << "\n";
+    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+    std::cout << "  Some edges are repeated or given in the wrong direction!\n";
     return 7;
   }
 //
@@ -9805,9 +9803,9 @@ int triangulation_order3_check ( int node_num, int triangle_num,
 
   if ( euler != 0 )
   {
-    cout << "\n";
-    cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-    cout << "  The triangulation does not satisfy Euler's criterion!\n";
+    std::cout << "\n";
+    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+    std::cout << "  The triangulation does not satisfy Euler's criterion!\n";
     return 8;
   }
 
@@ -9943,9 +9941,9 @@ int triangulation_order3_edge_check ( int triangle_num, int triangle_node[] )
       {
         if ( col[2+(i-1)*3] == col[2+i*3] )
         {
-          cout << "\n";
-          cout << "TRIANGULATION_ORDER3_EDGE_CHECK - Warning!\n";
-          cout << "  An edge occurs twice.\n";
+          std::cout << "\n";
+          std::cout << "TRIANGULATION_ORDER3_EDGE_CHECK - Warning!\n";
+          std::cout << "  An edge occurs twice.\n";
           delete [] col;
           boundary_num = -1;
           return boundary_num;
@@ -10671,36 +10669,36 @@ void triangulation_order3_neighbor_nodes_print ( int node_num,
   int j;
   int k;
 
-  cout << "\n";
-  cout << "  Node Nabes Index  List\n";
-  cout << "\n";
+  std::cout << "\n";
+  std::cout << "  Node Nabes Index  List\n";
+  std::cout << "\n";
 
   for ( i = 0; i < node_num; i++ )
   {
-    cout << setw(4) << i              << "  "
-         << setw(4) << nabes_num[i]   << "  "
-         << setw(4) << nabes_first[i] << "  ";
+    std::cout << std::setw(4) << i              << "  "
+         << std::setw(4) << nabes_num[i]   << "  "
+         << std::setw(4) << nabes_first[i] << "  ";
 
     k = 0;
     for ( j = nabes_first[i] - 1; j < nabes_first[i] + nabes_num[i]; j++ )
     {
       if ( k == 10 )
       {
-        cout << "\n";
-        cout << "                  ";
+        std::cout << "\n";
+        std::cout << "                  ";
         k = 0;
       }
-      cout << setw(4) << nabes[j] << "  ";
+      std::cout << std::setw(4) << nabes[j] << "  ";
       k = k + 1;
     }
   }
-  cout << "\n";
+  std::cout << "\n";
 
   return;
 }
 //****************************************************************************80
 
-void triangulation_order3_plot ( string file_name, int node_num,
+void triangulation_order3_plot ( std::string file_name, int node_num,
   double node_xy[], int triangle_num, int triangle_node[], int node_show,
   int triangle_show )
 
@@ -10756,7 +10754,7 @@ void triangulation_order3_plot ( string file_name, int node_num,
   int circle_size;
   int delta;
   int e;
-  ofstream file_unit;
+  std::ofstream file_unit;
   int i;
   int node;
   int triangle;
@@ -10856,9 +10854,9 @@ void triangulation_order3_plot ( string file_name, int node_num,
 
   if ( !file_unit )
   {
-    cout << "\n";
-    cout << "TRIANGULATION_ORDER3_PLOT - Fatal error!\n";
-    cout << "  Could not open the output EPS file.\n";
+    std::cout << "\n";
+    std::cout << "TRIANGULATION_ORDER3_PLOT - Fatal error!\n";
+    std::cout << "  Could not open the output EPS file.\n";
     exit ( 1 );
   }
 
@@ -11192,29 +11190,29 @@ void triangulation_order3_print ( int node_num, int triangle_num,
   int *vertex_list;
   int vertex_num;
 
-  cout << "\n";
-  cout << "TRIANGULATION_ORDER3_PRINT\n";
-  cout << "  Information defining a triangulation.\n";
-  cout << "\n";
-  cout << "  The number of nodes is " << node_num << "\n";
+  std::cout << "\n";
+  std::cout << "TRIANGULATION_ORDER3_PRINT\n";
+  std::cout << "  Information defining a triangulation.\n";
+  std::cout << "\n";
+  std::cout << "  The number of nodes is " << node_num << "\n";
 
   r8mat_transpose_print ( DIM_NUM, node_num, node_xy, "  Node coordinates" );
 
-  cout << "\n";
-  cout << "  The number of triangles is " << triangle_num << "\n";
-  cout << "\n";
-  cout << "  Sets of three nodes are used as vertices of\n";
-  cout << "  the triangles.  For each triangle, the nodes\n";
-  cout << "  are listed in counterclockwise order.\n";
+  std::cout << "\n";
+  std::cout << "  The number of triangles is " << triangle_num << "\n";
+  std::cout << "\n";
+  std::cout << "  Sets of three nodes are used as vertices of\n";
+  std::cout << "  the triangles.  For each triangle, the nodes\n";
+  std::cout << "  are listed in counterclockwise order.\n";
 
   i4mat_transpose_print ( 3, triangle_num, triangle_node, "  Triangle nodes" );
 
-  cout << "\n";
-  cout << "  On each side of a given triangle, there is either\n";
-  cout << "  another triangle, or a piece of the convex hull.\n";
-  cout << "  For each triangle, we list the indices of the three\n";
-  cout << "  neighbors, or (if negative) the codes of the\n";
-  cout << "  segments of the convex hull.\n";
+  std::cout << "\n";
+  std::cout << "  On each side of a given triangle, there is either\n";
+  std::cout << "  another triangle, or a piece of the convex hull.\n";
+  std::cout << "  For each triangle, we list the indices of the three\n";
+  std::cout << "  neighbors, or (if negative) the codes of the\n";
+  std::cout << "  segments of the convex hull.\n";
 
   i4mat_transpose_print ( 3, triangle_num, triangle_neighbor,
     "  Triangle neighbors" );
@@ -11243,15 +11241,15 @@ void triangulation_order3_print ( int node_num, int triangle_num,
 //
   boundary_num = 2 * vertex_num - triangle_num - 2;
 
-  cout << "\n";
-  cout << "  The number of boundary points is " << boundary_num << "\n";
-  cout << "\n";
-  cout << "  The segments that make up the convex hull can be\n";
-  cout << "  determined from the negative entries of the triangle\n";
-  cout << "  neighbor list.\n";
-  cout << "\n";
-  cout << "     #   Tri  Side    N1    N2\n";
-  cout << "\n";
+  std::cout << "\n";
+  std::cout << "  The number of boundary points is " << boundary_num << "\n";
+  std::cout << "\n";
+  std::cout << "  The segments that make up the convex hull can be\n";
+  std::cout << "  determined from the negative entries of the triangle\n";
+  std::cout << "  neighbor list.\n";
+  std::cout << "\n";
+  std::cout << "     #   Tri  Side    N1    N2\n";
+  std::cout << "\n";
 
   skip = false;
 
@@ -11268,9 +11266,9 @@ void triangulation_order3_print ( int node_num, int triangle_num,
 
         if ( t < 1 || triangle_num < t )
         {
-          cout << "\n";
-          cout << "  Sorry, this data does not use the R8TRIS2\n";
-          cout << "  convention for convex hull segments.\n";
+          std::cout << "\n";
+          std::cout << "  Sorry, this data does not use the R8TRIS2\n";
+          std::cout << "  convention for convex hull segments.\n";
           skip = true;
           break;
         }
@@ -11280,12 +11278,12 @@ void triangulation_order3_print ( int node_num, int triangle_num,
         k = k + 1;
         n1 = triangle_node[s1-1+(t-1)*3];
         n2 = triangle_node[s2-1+(t-1)*3];
-        cout                  << "  "
-             << setw(4) << k  << "  "
-             << setw(4) << t  << "  "
-             << setw(4) << s1 << "  "
-             << setw(4) << n1 << "  "
-             << setw(4) << n2 << "\n";
+        std::cout                  << "  "
+             << std::setw(4) << k  << "  "
+             << std::setw(4) << t  << "  "
+             << std::setw(4) << s1 << "  "
+             << std::setw(4) << n1 << "  "
+             << std::setw(4) << n2 << "\n";
       }
     }
 
@@ -11542,9 +11540,9 @@ void triangulation_order3_refine_compute ( int node_num1, int triangle_num1,
 
       if ( node_num2 < node )
       {
-        cout << "\n";
-        cout << "TRIANGLE_MESH_ORDER3_REFINE - Fatal error!\n";
-        cout << "  Node index exceeds NODE_NUM2.\n";
+        std::cout << "\n";
+        std::cout << "TRIANGLE_MESH_ORDER3_REFINE - Fatal error!\n";
+        std::cout << "  Node index exceeds NODE_NUM2.\n";
         exit ( 1 );
       }
 
@@ -11882,7 +11880,7 @@ void triangulation_order3_sample ( int node_num, double node_xy[],
 }
 //****************************************************************************80
 
-void triangulation_order4_plot ( string plot_filename, int node_num,
+void triangulation_order4_plot ( std::string plot_filename, int node_num,
   double node_xy[], int triangle_num, int triangle_node[], int node_show,
   int triangle_show )
 
@@ -11934,7 +11932,7 @@ void triangulation_order4_plot ( string plot_filename, int node_num,
   int circle_size;
   int delta;
   int e;
-  ofstream plot_unit;
+  std::ofstream plot_unit;
   int i;
   int node;
   int triangle;
@@ -12034,9 +12032,9 @@ void triangulation_order4_plot ( string plot_filename, int node_num,
 
   if ( !plot_unit )
   {
-    cout << "\n";
-    cout << "TRIANGULATION_ORDER4_PLOT - Fatal error!\n";
-    cout << "  Could not open the output EPS file.\n";
+    std::cout << "\n";
+    std::cout << "TRIANGULATION_ORDER4_PLOT - Fatal error!\n";
+    std::cout << "  Could not open the output EPS file.\n";
     exit ( 1 );
   }
 
@@ -13747,7 +13745,7 @@ void triangulation_order6_neighbor ( int triangle_num, int triangle_node[],
 }
 //****************************************************************************80
 
-void triangulation_order6_plot ( string file_name, int node_num,
+void triangulation_order6_plot ( std::string file_name, int node_num,
   double node_xy[], int triangle_num, int triangle_node[], int node_show,
   int triangle_show )
 
@@ -13809,7 +13807,7 @@ void triangulation_order6_plot ( string file_name, int node_num,
   int circle_size;
   int delta;
   int e;
-  ofstream file_unit;
+  std::ofstream file_unit;
   int i;
   int ip1;
   int node;
@@ -13911,9 +13909,9 @@ void triangulation_order6_plot ( string file_name, int node_num,
 
   if ( !file_unit )
   {
-    cout << "\n";
-    cout << "TRIANGULATION_ORDER6_PLOT - Fatal error!\n";
-    cout << "  Could not open the output EPS file.\n";
+    std::cout << "\n";
+    std::cout << "TRIANGULATION_ORDER6_PLOT - Fatal error!\n";
+    std::cout << "  Could not open the output EPS file.\n";
     exit ( 1 );
   }
 
@@ -14165,8 +14163,8 @@ void triangulation_order6_plot ( string file_name, int node_num,
         + (         ave_y - y_min ) * ( double ) ( y_ps_max ) )
         / ( y_max         - y_min ) );
 
-      file_unit << setw(4) << x_ps << "  "
-                << setw(4) << y_ps << "  "
+      file_unit << std::setw(4) << x_ps << "  "
+                << std::setw(4) << y_ps << "  "
                 << "moveto (" << triangle+1 << ") show\n";
     }
   }
@@ -14249,29 +14247,29 @@ void triangulation_order6_print ( int node_num, int triangle_num,
   int *vertex_list;
   int vertex_num;
 
-  cout << "\n";
-  cout << "TRIANGULATION_ORDER6_PRINT\n";
-  cout << "  Information defining a triangulation.\n";
-  cout << "\n";
-  cout << "  The number of nodes is " << node_num << "\n";
+  std::cout << "\n";
+  std::cout << "TRIANGULATION_ORDER6_PRINT\n";
+  std::cout << "  Information defining a triangulation.\n";
+  std::cout << "\n";
+  std::cout << "  The number of nodes is " << node_num << "\n";
 
   r8mat_transpose_print ( DIM_NUM, node_num, node_xy, "  Node coordinates" );
 
-  cout << "\n";
-  cout << "  The number of triangles is " << triangle_num << "\n";
-  cout << "\n";
-  cout << "  Sets of six nodes are used as vertices of\n";
-  cout << "  the triangles.  For each triangle, the vertices are listed\n";
-  cout << "  in counterclockwise order, followed by the midside nodes.\n";
+  std::cout << "\n";
+  std::cout << "  The number of triangles is " << triangle_num << "\n";
+  std::cout << "\n";
+  std::cout << "  Sets of six nodes are used as vertices of\n";
+  std::cout << "  the triangles.  For each triangle, the vertices are listed\n";
+  std::cout << "  in counterclockwise order, followed by the midside nodes.\n";
 
   i4mat_transpose_print ( 6, triangle_num, triangle_node, "  Triangle nodes" );
 
-  cout << "\n";
-  cout << "  On each side of a given triangle, there is either\n";
-  cout << "  another triangle, or a piece of the convex hull.\n";
-  cout << "  For each triangle, we list the indices of the three\n";
-  cout << "  neighbors, or (if negative) the codes of the\n";
-  cout << "  segments of the convex hull.\n";
+  std::cout << "\n";
+  std::cout << "  On each side of a given triangle, there is either\n";
+  std::cout << "  another triangle, or a piece of the convex hull.\n";
+  std::cout << "  For each triangle, we list the indices of the three\n";
+  std::cout << "  neighbors, or (if negative) the codes of the\n";
+  std::cout << "  segments of the convex hull.\n";
 
   i4mat_transpose_print ( 3, triangle_num, triangle_neighbor,
     "  Triangle neighbors" );
@@ -14300,15 +14298,15 @@ void triangulation_order6_print ( int node_num, int triangle_num,
 //
   boundary_num = 2 * vertex_num - triangle_num - 2;
 
-  cout << "\n";
-  cout << "  The number of boundary points is " << boundary_num << "\n";
-  cout << "\n";
-  cout << "  The segments that make up the convex hull can be\n";
-  cout << "  determined from the negative entries of the triangle\n";
-  cout << "  neighbor list.\n";
-  cout << "\n";
-  cout << "     #   Tri  Side    N1    N2    N3\n";
-  cout << "\n";
+  std::cout << "\n";
+  std::cout << "  The number of boundary points is " << boundary_num << "\n";
+  std::cout << "\n";
+  std::cout << "  The segments that make up the convex hull can be\n";
+  std::cout << "  determined from the negative entries of the triangle\n";
+  std::cout << "  neighbor list.\n";
+  std::cout << "\n";
+  std::cout << "     #   Tri  Side    N1    N2    N3\n";
+  std::cout << "\n";
 
   skip = false;
 
@@ -14325,9 +14323,9 @@ void triangulation_order6_print ( int node_num, int triangle_num,
 
         if ( t < 1 || triangle_num < t )
         {
-          cout << "\n";
-          cout << "  Sorry, this data does not use the R8TRIS2\n";
-          cout << "  convention for convex hull segments.\n";
+          std::cout << "\n";
+          std::cout << "  Sorry, this data does not use the R8TRIS2\n";
+          std::cout << "  convention for convex hull segments.\n";
           skip = true;
           break;
         }
@@ -14338,13 +14336,13 @@ void triangulation_order6_print ( int node_num, int triangle_num,
         n1 = triangle_node[s1-1+(t-1)*6];
         n2 = triangle_node[s1+3-1+(t-1)*6];
         n3 = triangle_node[s2-1+(t-1)*6];
-        cout                  << "  "
-             << setw(4) << k  << "  "
-             << setw(4) << t  << "  "
-             << setw(4) << s1 << "  "
-             << setw(4) << n1 << "  "
-             << setw(4) << n2 << "  "
-             << setw(4) << n3 << "\n";
+        std::cout                  << "  "
+             << std::setw(4) << k  << "  "
+             << std::setw(4) << t  << "  "
+             << std::setw(4) << s1 << "  "
+             << std::setw(4) << n1 << "  "
+             << std::setw(4) << n2 << "  "
+             << std::setw(4) << n3 << "\n";
       }
     }
 
@@ -15019,7 +15017,7 @@ int triangulation_order6_vertex_count ( int tri_num, int triangle_node[] )
 
 void triangulation_search_delaunay ( int node_num, double node_xy[],
   int triangle_order, int triangle_num, int triangle_node[],
-  int triangle_neighbor[], double p[2], int *triangle_index, 
+  int triangle_neighbor[], double p[2], int *triangle_index,
   double *alpha, double *beta, double *gamma, int *edge,
   int *step_num )
 
@@ -15137,10 +15135,10 @@ void triangulation_search_delaunay ( int node_num, double node_xy[],
 
     if ( triangle_num < *step_num )
     {
-      cout << "\n";
-      cout << "TRIANGULATION_SEARCH_DELAUNAY - Fatal error!\n";
-      cout << "  The algorithm seems to be cycling.\n";
-      cout << "  Current triangle is " << *triangle_index << "\n";
+      std::cout << "\n";
+      std::cout << "TRIANGULATION_SEARCH_DELAUNAY - Fatal error!\n";
+      std::cout << "  The algorithm seems to be cycling.\n";
+      std::cout << "  Current triangle is " << *triangle_index << "\n";
       *triangle_index = -1;
       *alpha = -1.0;
       *beta = -1.0;
@@ -15233,10 +15231,10 @@ void triangulation_search_delaunay ( int node_num, double node_xy[],
     }
     else
     {
-      cout << "\n";
-      cout << "TRIANGULATION_ORDER3_SEARCH - Fatal error!\n";
-      cout << "  The algorithm seems to have reached a dead end\n";
-      cout << "  after " << *step_num << " steps.\n";
+      std::cout << "\n";
+      std::cout << "TRIANGULATION_ORDER3_SEARCH - Fatal error!\n";
+      std::cout << "  The algorithm seems to have reached a dead end\n";
+      std::cout << "  after " << *step_num << " steps.\n";
       *triangle_index = -1;
       *edge = -1;
       return;
@@ -15638,9 +15636,9 @@ double voronoi_polygon_area ( int node, int neighbor_num,
 
   if ( node < 0 || node_num <= node )
   {
-    cout << "\n";
-    cout << "  VORONOI_POLYGON_AREA - Fatal error!\n";
-    cout << "  Illegal value of input parameter NODE.\n";
+    std::cout << "\n";
+    std::cout << "  VORONOI_POLYGON_AREA - Fatal error!\n";
+    std::cout << "  Illegal value of input parameter NODE.\n";
     exit ( 1 );
   }
 
@@ -15793,9 +15791,9 @@ double *voronoi_polygon_centroid ( int node, int neighbor_num,
 
   if ( node < 0 || node_num <= node )
   {
-    cout << "\n";
-    cout << "VORONOI_POLYGON_CENTROID - Fatal error!\n";
-    cout << "  Illegal value of input parameter NODE.\n";
+    std::cout << "\n";
+    std::cout << "VORONOI_POLYGON_CENTROID - Fatal error!\n";
+    std::cout << "  Illegal value of input parameter NODE.\n";
     exit ( 1 );
   }
 
@@ -15931,9 +15929,9 @@ void voronoi_polygon_vertices ( int node, int neighbor_num,
 
   if ( node < 0 || node_num <= node )
   {
-    cout << "\n";
-    cout << "VORONOI_POLYGON_VERTICES - Fatal error!\n";
-    cout << "  Illegal value of input parameter NODE.\n";
+    std::cout << "\n";
+    std::cout << "VORONOI_POLYGON_VERTICES - Fatal error!\n";
+    std::cout << "  Illegal value of input parameter NODE.\n";
     exit ( 1 );
   }
 

@@ -1722,11 +1722,14 @@ private:
 
         //create a partition of the element array
         int number_of_threads = omp_get_max_threads();
-        vector<unsigned int> element_partition;
+        std::vector<unsigned int> element_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
 
         KRATOS_WATCH( number_of_threads )
-        KRATOS_WATCH( element_partition )
+        std::cout << "element_partition:";
+        for (std::size_t i = 0; i < element_partition.size(); ++i)
+            std::cout << " " << element_partition[i];
+        std::cout << std::endl;
 
         //create the array of lock
         std::vector< omp_lock_t > lock_array(NumberOfNodes);
@@ -1897,11 +1900,14 @@ private:
 
         //create a partition of the element array
         int number_of_threads = omp_get_max_threads();
-        vector<unsigned int> element_partition;
+        std::vector<unsigned int> element_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
 
         KRATOS_WATCH( number_of_threads )
-        KRATOS_WATCH( element_partition )
+        std::cout << "element_partition:";
+        for (std::size_t i = 0; i < element_partition.size(); ++i)
+            std::cout << " " << element_partition[i];
+        std::cout << std::endl;
 
         #pragma omp parallel for
         for(int k = 0; k < number_of_threads; ++k)

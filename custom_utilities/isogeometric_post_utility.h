@@ -18,10 +18,6 @@
 #include <omp.h>
 #include "boost/progress.hpp"
 
-#ifdef ISOGEOMETRIC_USE_MPI
-#include "mpi.h"
-#endif
-
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
@@ -32,6 +28,16 @@
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/isogeometric_utility.h"
 
+#define USE_TRIANGULATION_UTILS_FOR_TRIANGULATION
+
+#if defined(USE_TRIANGULATION_UTILS_FOR_TRIANGULATION)
+#include "custom_utilities/triangulation_utils.h"
+#elif defined(USE_CGAL_FOR_TRIANGULATION) && defined(ISOGEOMETRIC_APPLICATION_USE_CGAL)
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <CGAL/Delaunay_triangulation_2.h>
+#include <CGAL/Triangulation_vertex_base_with_info_2.h>
+#endif
 
 namespace Kratos
 {
@@ -122,7 +128,8 @@ public:
         for (typename TEntitiesContainerType::ptr_iterator it = pEntities.ptr_begin(); it != pEntities.ptr_end(); ++it)
         {
             if (typeid(*(*it)) == typeid(r_sample_entity))
-                pFoundEntities.push_back(*it);
+                if (typeid((*it)->GetGeometry()) == typeid(r_sample_entity.GetGeometry()))
+                    pFoundEntities.push_back(*it);
         }
 
         return pFoundEntities;
@@ -156,7 +163,7 @@ public:
         }
 
         // create new elements in the other model_part
-        std::string NodeKey = std::string("Node");
+        const std::string NodeKey = std::string("Node");
         typename TEntityType::NodesArrayType temp_entity_nodes;
         TEntitiesContainerType pNewEntities;
         for (typename TEntitiesContainerType::ptr_iterator it = pEntities.ptr_begin(); it != pEntities.ptr_end(); ++it)
@@ -173,22 +180,119 @@ public:
         return pNewEntities;
     }
 
+    /// Create a list of conditions/elements from the list of points.
+    /// The point list will be triangulated before the conditions are created.
+    /// It is noted that the newly created entities are not added to the other model_part. User must do it manually. Nevertheless, the nodes are added to the model_part.
+    template<typename TPointType, typename TVectorType, class TEntityType, class TNodesContainerType, class TEntitiesContainerType>
+    static std::pair<TNodesContainerType, TEntitiesContainerType> CreateEntities(const std::vector<TPointType>& points,
+        const TVectorType& rCenter,
+        const TVectorType& rNormal,
+        const TVectorType& rTangent1,
+        const TVectorType& rTangent2,
+        ModelPart& r_model_part,
+        TEntityType const& r_sample_entity,
+        std::size_t& last_entity_id,
+        Properties::Pointer pProperties)
+    {
+        // create the 2D coordinates for points, in order to triangulate
+        std::vector<double> XY;
+        TPointType Projection;
+        for (std::size_t i = 0; i < points.size(); ++i)
+        {
+            noalias(Projection) = points[i] - inner_prod(points[i] - rCenter, rNormal) * rNormal;
+            XY.push_back(inner_prod(Projection - rCenter, rTangent1));
+            XY.push_back(inner_prod(Projection - rCenter, rTangent2));
+        }
+
+        // compute the triangulation
+        std::vector<std::vector<unsigned int> > Connectivities;
+        #if defined(USE_CGAL_FOR_TRIANGULATION)
+        typedef CGAL::Exact_predicates_inexact_constructions_kernel                 Kernel;
+        typedef CGAL::Triangulation_vertex_base_with_info_2<unsigned int, Kernel>   Vb;
+        typedef CGAL::Triangulation_data_structure_2<Vb>                            Tds;
+        typedef CGAL::Delaunay_triangulation_2<Kernel, Tds>                         Delaunay;
+        typedef Kernel::Point_2                                                     Point2;
+
+        std::vector< std::pair<Point2, unsigned int> > clipped_points;
+        for(std::size_t i = 0; i < XY.size() / 2; ++i)
+        {
+            clipped_points.push_back( std::make_pair( Point2(XY[2*i], XY[2*i+1]), i ) );
+        }
+
+        Delaunay triangulation;
+        triangulation.insert(clipped_points.begin(), clipped_points.end());
+
+        for(Delaunay::Finite_faces_iterator fit = triangulation.finite_faces_begin(); fit != triangulation.finite_faces_end(); ++fit)
+        {
+            Delaunay::Face_handle face = fit;
+            std::vector<unsigned int> con(3);
+            con[0] = face->vertex(0)->info();
+            con[1] = face->vertex(1)->info();
+            con[2] = face->vertex(2)->info();
+            Connectivities.push_back(con);
+        }
+        #elif defined(USE_TRIANGULATION_UTILS_FOR_TRIANGULATION)
+        TriangulationUtils tri_util;
+        tri_util.ComputeDelaunayTriangulation(XY, Connectivities);
+        #else
+        // REMARK: a tool to perform triangulation is not defined. You must define it.
+        KRATOS_THROW_ERROR(std::logic_error, "A triangulation method must be specialized", "")
+        #endif
+
+        // std::cout << "Connectivities:" << std::endl;
+        // for (std::size_t i = 0; i < Connectivities.size(); ++i)
+        // {
+        //     std::cout << "  " << i << ":";
+        //     for (std::size_t j = 0; j < Connectivities[i].size(); ++j)
+        //         std::cout << " " << Connectivities[i][j];
+        //     std::cout << std::endl;
+        // }
+
+        // create the nodes
+        std::vector<std::size_t> map_con_to_mp(points.size());
+        std::size_t last_node_id = GetLastNodeId(r_model_part);
+        TNodesContainerType pNewNodes;
+        for (std::size_t i = 0; i < points.size(); ++i)
+        {
+            NodeType::Pointer pNewNode = r_model_part.CreateNewNode(++last_node_id, points[i][0], points[i][1], points[i][2]);
+            map_con_to_mp[i] = pNewNode->Id();
+            pNewNodes.push_back(pNewNode);
+        }
+
+        // create the entities based on connectivity
+        const std::string NodeKey = std::string("Node");
+        typename TEntityType::NodesArrayType temp_entity_nodes;
+        TEntitiesContainerType pNewEntities;
+        for (std::size_t i = 0; i < Connectivities.size(); ++i)
+        {
+            temp_entity_nodes.clear();
+            for (std::size_t j = 0; j < Connectivities[i].size(); ++j)
+            {
+                std::size_t node_id = map_con_to_mp[Connectivities[i][j]];
+                temp_entity_nodes.push_back(*(FindKey(r_model_part.Nodes(), node_id, NodeKey).base()));
+            }
+            pNewEntities.push_back(r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pProperties));
+        }
+
+        return std::make_pair(pNewNodes, pNewEntities);
+    }
+
     //**********AUXILIARY FUNCTION**************************************************************
     // Construct the matrix structure for high performance assembling
     // This subroutine shall only be used to construct the matrix structure for L2 projection
     // using in post-processing
     //******************************************************************************************
-    template<typename TElementType, typename TCompressedMatrixType, typename ElementsArrayType>
+    template<typename TElementType, typename TCompressedMatrixType, typename TElementsArrayType>
     static void ConstructL2MatrixStructure (
         TCompressedMatrixType& A,
-        ElementsArrayType& rElements,
-        std::map<unsigned int, unsigned int> MapNodeIdToVec)
+        TElementsArrayType& rElements,
+        std::map<std::size_t, std::size_t> MapNodeIdToVec)
     {
         std::size_t equation_size = A.size1();
         std::vector<std::vector<std::size_t> > indices(equation_size);
 
         typename TElementType::EquationIdVectorType ids;
-        for(typename ElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
+        for(typename TElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
         {
             ids.resize((i_element)->GetGeometry().size());
             for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
@@ -231,7 +335,7 @@ public:
         }
 #else
         int number_of_threads = omp_get_max_threads();
-        vector<unsigned int> matrix_partition;
+        std::vector<unsigned int> matrix_partition;
         OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
         for( int k=0; k < number_of_threads; ++k )
         {
@@ -259,16 +363,16 @@ public:
     // This subroutine shall only be used to construct the matrix structure for L2 projection
     // using in post-processing
     //******************************************************************************************
-    template<typename TElementType, typename TCompressedMatrixType, typename ElementsArrayType>
+    template<typename TElementType, typename TCompressedMatrixType, typename TElementsArrayType>
     static void ConstructL2MatrixStructure (
         TCompressedMatrixType& A,
-        ElementsArrayType& rElements)
+        TElementsArrayType& rElements)
     {
         std::size_t equation_size = A.size1();
         std::vector<std::vector<std::size_t> > indices(equation_size);
 
         typename TElementType::EquationIdVectorType ids;
-        for(typename ElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
+        for(typename TElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
         {
             ids.resize((i_element)->GetGeometry().size());
             for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
@@ -311,7 +415,7 @@ public:
         }
 #else
         int number_of_threads = omp_get_max_threads();
-        vector<unsigned int> matrix_partition;
+        std::vector<unsigned int> matrix_partition;
         OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
         for( int k=0; k < number_of_threads; ++k )
         {

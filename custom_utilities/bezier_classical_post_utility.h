@@ -193,8 +193,8 @@ public:
 
         Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
-        int NodeCounter = 0;
-        int ElementCounter = 0;
+        std::size_t NodeCounter = 0;
+        std::size_t ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
@@ -205,7 +205,7 @@ public:
             }
 
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension();
-            int NodeCounter_old = NodeCounter;
+            std::size_t NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(Dim)
@@ -225,9 +225,9 @@ public:
             }
             else if(Dim == 2)
             {
-                int NumDivision1 = (*it)->GetValue(NUM_DIVISION_1);
-                int NumDivision2 = (*it)->GetValue(NUM_DIVISION_2);
-                int i, j;
+                std::size_t NumDivision1 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_1) );
+                std::size_t NumDivision2 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_2) );
+                std::size_t i, j;
                 CoordinatesArrayType p_ref;
                 CoordinatesArrayType p;
 
@@ -281,51 +281,83 @@ public:
                 #endif
 
                 // create and add element
-                Element::NodesArrayType temp_element_nodes;
+                // Element::NodesArrayType temp_element_nodes;
+                // for(i = 0; i < NumDivision1; ++i)
+                // {
+                //     for(j = 0; j < NumDivision2; ++j)
+                //     {
+                //         int Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
+                //         int Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
+                //         int Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
+                //         int Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
+
+                //         if(postElementType == _TRIANGLE_)
+                //         {
+                //             // TODO: check if jacobian checking is necessary
+                //             temp_element_nodes.clear();
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
+
+                //             Element::Pointer NewElement1 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
+                //             pModelPartPost->AddElement(NewElement1);
+                //             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+
+                //             temp_element_nodes.clear();
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
+
+                //             Element::Pointer NewElement2 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
+                //             pModelPartPost->AddElement(NewElement2);
+                //             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                //         }
+                //         else if(postElementType == _QUADRILATERAL_)
+                //         {
+                //             // TODO: check if jacobian checking is necessary
+                //             temp_element_nodes.clear();
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
+
+                //             Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
+                //             pModelPartPost->AddElement(NewElement);
+                //             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                //         }
+                //     }
+                // }
+
+                std::vector<std::vector<std::size_t> > connectivities;
+
                 for(i = 0; i < NumDivision1; ++i)
                 {
                     for(j = 0; j < NumDivision2; ++j)
                     {
-                        int Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
-                        int Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
-                        int Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
-                        int Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
+                        std::size_t Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
+                        std::size_t Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
+                        std::size_t Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
+                        std::size_t Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
 
                         if(postElementType == _TRIANGLE_)
                         {
-                            // TODO: check if jacobian checking is necessary
-                            temp_element_nodes.clear();
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-
-                            Element::Pointer NewElement1 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                            pModelPartPost->AddElement(NewElement1);
-                            mOldToNewElements[(*it)->Id()].insert(ElementCounter);
-
-                            temp_element_nodes.clear();
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
-
-                            Element::Pointer NewElement2 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                            pModelPartPost->AddElement(NewElement2);
-                            mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                            connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4});
+                            connectivities.push_back(std::vector<std::size_t>{Node1, Node4, Node3});
                         }
                         else if(postElementType == _QUADRILATERAL_)
                         {
-                            // TODO: check if jacobian checking is necessary
-                            temp_element_nodes.clear();
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                            temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
-
-                            Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                            pModelPartPost->AddElement(NewElement);
-                            mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                            connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4, Node3});
                         }
                     }
+                }
+
+                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Element, ElementsArrayType>(
+                    connectivities, *pModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
+
+                for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
+                {
+                    pModelPartPost->AddElement(*it2);
+                    mOldToNewElements[(*it)->Id()].insert((*it2)->Id());
                 }
 
                 pModelPartPost->Elements().Unique();
@@ -336,10 +368,10 @@ public:
             }
             else if(Dim == 3)
             {
-                int NumDivision1 = (*it)->GetValue(NUM_DIVISION_1);
-                int NumDivision2 = (*it)->GetValue(NUM_DIVISION_2);
-                int NumDivision3 = (*it)->GetValue(NUM_DIVISION_3);
-                int i, j, k;
+                std::size_t NumDivision1 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_1) );
+                std::size_t NumDivision2 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_2) );
+                std::size_t NumDivision3 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_3) );
+                std::size_t i, j, k;
                 CoordinatesArrayType p_ref;
                 CoordinatesArrayType p;
 
@@ -397,45 +429,84 @@ public:
                 #endif
 
                 // create and add element
-                Element::NodesArrayType temp_element_nodes;
+                // Element::NodesArrayType temp_element_nodes;
+                // for(i = 0; i < NumDivision1; ++i)
+                // {
+                //     for(j = 0; j < NumDivision2; ++j)
+                //     {
+                //         for(k = 0; k < NumDivision3; ++k)
+                //         {
+                //             int Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                //             int Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                //             int Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                //             int Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                //             int Node5 = Node1 + 1;
+                //             int Node6 = Node2 + 1;
+                //             int Node7 = Node3 + 1;
+                //             int Node8 = Node4 + 1;
+
+                //             if(postElementType == _TETRAHEDRA_)
+                //             {
+                //                 // TODO: check if jacobian checking is necessary
+                //             }
+                //             else if(postElementType == _HEXAHEDRA_)
+                //             {
+                //                 // TODO: check if jacobian checking is necessary
+                //                 temp_element_nodes.clear();
+                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node5, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node6, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node8, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node7, NodeKey).base()));
+
+                //                 Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
+                //                 pModelPartPost->AddElement(NewElement);
+                //                 mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                //             }
+                //         }
+                //     }
+                // }
+
+                std::vector<std::vector<std::size_t> > connectivities;
+
                 for(i = 0; i < NumDivision1; ++i)
                 {
                     for(j = 0; j < NumDivision2; ++j)
                     {
                         for(k = 0; k < NumDivision3; ++k)
                         {
-                            int Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                            int Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                            int Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                            int Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                            int Node5 = Node1 + 1;
-                            int Node6 = Node2 + 1;
-                            int Node7 = Node3 + 1;
-                            int Node8 = Node4 + 1;
+                            std::size_t Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                            std::size_t Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                            std::size_t Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                            std::size_t Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                            std::size_t Node5 = Node1 + 1;
+                            std::size_t Node6 = Node2 + 1;
+                            std::size_t Node7 = Node3 + 1;
+                            std::size_t Node8 = Node4 + 1;
 
                             if(postElementType == _TETRAHEDRA_)
                             {
-                                // TODO: check if jacobian checking is necessary
+                                connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4});
+                                connectivities.push_back(std::vector<std::size_t>{Node1, Node4, Node3});
                             }
                             else if(postElementType == _HEXAHEDRA_)
                             {
-                                // TODO: check if jacobian checking is necessary
-                                temp_element_nodes.clear();
-                                temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                                temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
-                                temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                                temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
-                                temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node5, NodeKey).base()));
-                                temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node6, NodeKey).base()));
-                                temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node8, NodeKey).base()));
-                                temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node7, NodeKey).base()));
-
-                                Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                                pModelPartPost->AddElement(NewElement);
-                                mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                                connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4, Node3, Node5, Node6, Node8, Node7});
                             }
                         }
                     }
+                }
+
+                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Element, ElementsArrayType>(
+                    connectivities, *pModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
+
+                for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
+                {
+                    pModelPartPost->AddElement(*it2);
+                    mOldToNewElements[(*it)->Id()].insert((*it2)->Id());
                 }
 
                 pModelPartPost->Elements().Unique();
@@ -474,8 +545,8 @@ public:
 
         std::string NodeKey = std::string("Node");
 
-        int NodeCounter = 0;
-        int ElementCounter = 0;
+        std::size_t NodeCounter = 0;
+        std::size_t ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
@@ -492,7 +563,7 @@ public:
 
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
             int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
-            int NodeCounter_old = NodeCounter;
+            std::size_t NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(Dim)
@@ -533,13 +604,8 @@ public:
 
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
-            GenerateForOneEntity<Element, 1>(*pModelPartPost,
-                                             *(*it),
-                                             rCloneElement,
-                                             NodeCounter_old,
-                                             NodeCounter,
-                                             ElementCounter,
-                                             NodeKey);
+            GenerateForOneEntity<Element, ElementsArrayType, 1>(*pModelPartPost,
+                *(*it), rCloneElement, NodeCounter_old, NodeCounter, ElementCounter, NodeKey);
 
             ++show_progress;
         }
@@ -549,7 +615,7 @@ public:
         std::cout << "Done generating for elements" << std::endl;
         #endif
 
-        int ConditionCounter = 0;
+        std::size_t ConditionCounter = 0;
         if (generate_for_condition)
         {
             boost::progress_display show_progress2( pConditions.size() );
@@ -568,7 +634,7 @@ public:
 
                 int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
                 int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
-                int NodeCounter_old = NodeCounter;
+                std::size_t NodeCounter_old = NodeCounter;
 
                 #ifdef DEBUG_LEVEL1
                 KRATOS_WATCH(typeid((*it)->GetGeometry()).name())
@@ -604,13 +670,8 @@ public:
 
                 Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
 
-                GenerateForOneEntity<Condition, 2>(*pModelPartPost,
-                                                   *(*it),
-                                                   rCloneCondition,
-                                                   NodeCounter_old,
-                                                   NodeCounter,
-                                                   ConditionCounter,
-                                                   NodeKey);
+                GenerateForOneEntity<Condition, ConditionsArrayType, 2>(*pModelPartPost,
+                    *(*it), rCloneCondition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey);
 
                 ++show_progress2;
             }
@@ -651,10 +712,10 @@ public:
 
         std::string NodeKey = std::string("Node");
 
-        int NodeCounter = 0;
-        int ElementCounter = 0;
+        std::size_t NodeCounter = 0;
+        std::size_t ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
-        VectorMap<int, int> MapToCollapseNode;
+        VectorMap<std::size_t, std::size_t> MapToCollapseNode;
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
             if((*it)->GetValue( IS_INACTIVE ))
@@ -666,7 +727,7 @@ public:
 
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
             int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
-            int NodeCounter_old = NodeCounter;
+            std::size_t NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(Dim)
@@ -699,15 +760,9 @@ public:
 
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
-            GenerateForOneEntityAutoCollapse<Element, 1>(collapse_util,
-                                                         *pModelPartPost,
-                                                         *(*it),
-                                                         rCloneElement,
-                                                         MapToCollapseNode,
-                                                         NodeCounter_old,
-                                                         NodeCounter,
-                                                         ElementCounter,
-                                                         NodeKey);
+            GenerateForOneEntityAutoCollapse<Element, ElementsArrayType, 1>(collapse_util,
+                *pModelPartPost, *(*it), rCloneElement, MapToCollapseNode, NodeCounter_old,
+                NodeCounter, ElementCounter, NodeKey);
 
             ++show_progress;
         }
@@ -716,7 +771,7 @@ public:
         std::cout << "Done generating for elements" << std::endl;
         #endif
 
-        int ConditionCounter = 0;
+        std::size_t ConditionCounter = 0;
         boost::progress_display show_progress2( pConditions.size() );
         for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
         {
@@ -729,7 +784,7 @@ public:
 
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
             int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
-            int NodeCounter_old = NodeCounter;
+            std::size_t NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(typeid((*it)->GetGeometry()).name())
@@ -763,15 +818,9 @@ public:
 
             Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
 
-            GenerateForOneEntityAutoCollapse<Condition, 2>(collapse_util,
-                                                           *pModelPartPost,
-                                                           *(*it),
-                                                           rCloneCondition,
-                                                           MapToCollapseNode,
-                                                           NodeCounter_old,
-                                                           NodeCounter,
-                                                           ConditionCounter,
-                                                           NodeKey);
+            GenerateForOneEntityAutoCollapse<Condition, ConditionsArrayType, 2>(collapse_util,
+                *pModelPartPost, *(*it), rCloneCondition, MapToCollapseNode, NodeCounter_old,
+                NodeCounter, ConditionCounter, NodeKey);
 
             ++show_progress2;
         }
@@ -787,15 +836,15 @@ public:
 
     /**
      * Utility function to generate elements/conditions for element/condition
-     * if T==Element, type must be 1; if T==Condition, type is 2
+     * if TEntityType==Element, type must be 1; if T==Condition, type is 2
      */
-    template<class T, std::size_t type>
+    template<class TEntityType, class TEntityContainerType, std::size_t type>
     void GenerateForOneEntity(ModelPart& rModelPart,
-                              T& rE,
-                              T const& rSample,
-                              int NodeCounter_old,
-                              int& NodeCounter,
-                              int& EntityCounter,
+                              TEntityType& rE,
+                              TEntityType const& rSample,
+                              std::size_t NodeCounter_old,
+                              std::size_t& NodeCounter,
+                              std::size_t& EntityCounter,
                               const std::string& NodeKey)
     {
 //        int ReducedDim = rE.GetGeometry().WorkingSpaceDimension();
@@ -820,9 +869,9 @@ public:
         }
         else if(ReducedDim == 2)
         {
-            int NumDivision1 = rE.GetValue(NUM_DIVISION_1);
-            int NumDivision2 = rE.GetValue(NUM_DIVISION_2);
-            int i, j;
+            std::size_t NumDivision1 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_1) );
+            std::size_t NumDivision2 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_2) );
+            std::size_t i, j;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
 
@@ -874,32 +923,59 @@ public:
             #endif
 
             // create and add element
-            typename T::NodesArrayType temp_nodes;
+//             typename T::NodesArrayType temp_nodes;
+//             for(i = 0; i < NumDivision1; ++i)
+//             {
+//                 for(j = 0; j < NumDivision2; ++j)
+//                 {
+//                     int Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
+//                     int Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
+//                     int Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
+//                     int Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
+
+//                     // TODO: check if jacobian checking is necessary
+//                     temp_nodes.clear();
+//                     temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node1, NodeKey).base()));
+//                     temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node2, NodeKey).base()));
+//                     temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node4, NodeKey).base()));
+//                     temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node3, NodeKey).base()));
+
+//                     int NewEntityId = ++EntityCounter;
+// //                    int NewEntityId = rE.Id(); ++EntityCounter;
+//                     typename TEntityType::Pointer NewEntity = rSample.Create(NewEntityId, temp_nodes, pDummyProperties);
+//                     AddToModelPart<TEntityType>(rModelPart, NewEntity);
+//                     if(type == 1)
+//                         mOldToNewElements[rE.Id()].insert(NewEntityId);
+//                     else if(type == 2)
+//                         mOldToNewConditions[rE.Id()].insert(NewEntityId);
+//                 }
+//             }
+
+            std::vector<std::vector<std::size_t> > connectivities;
+
             for(i = 0; i < NumDivision1; ++i)
             {
                 for(j = 0; j < NumDivision2; ++j)
                 {
-                    int Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
-                    int Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
-                    int Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
-                    int Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
+                    std::size_t Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
+                    std::size_t Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
+                    std::size_t Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
+                    std::size_t Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
 
-                    // TODO: check if jacobian checking is necessary
-                    temp_nodes.clear();
-                    temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node1, NodeKey).base()));
-                    temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node2, NodeKey).base()));
-                    temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node4, NodeKey).base()));
-                    temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node3, NodeKey).base()));
-
-                    int NewEntityId = ++EntityCounter;
-//                    int NewEntityId = rE.Id(); ++EntityCounter;
-                    typename T::Pointer NewEntity = rSample.Create(NewEntityId, temp_nodes, pDummyProperties);
-                    AddToModelPart<T>(rModelPart, NewEntity);
-                    if(type == 1)
-                        mOldToNewElements[rE.Id()].insert(NewEntityId);
-                    else if(type == 2)
-                        mOldToNewConditions[rE.Id()].insert(NewEntityId);
+                    connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4, Node3});
                 }
+            }
+
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, TEntityType, TEntityContainerType>(
+                connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
+
+            for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
+            {
+                AddToModelPart<TEntityType>(rModelPart, *it2);
+                if(type == 1)
+                    mOldToNewElements[rE.Id()].insert((*it2)->Id());
+                else if(type == 2)
+                    mOldToNewConditions[rE.Id()].insert((*it2)->Id());
             }
 
             if(type == 1)
@@ -916,10 +992,10 @@ public:
         }
         else if(ReducedDim == 3)
         {
-            int NumDivision1 = rE.GetValue(NUM_DIVISION_1);
-            int NumDivision2 = rE.GetValue(NUM_DIVISION_2);
-            int NumDivision3 = rE.GetValue(NUM_DIVISION_3);
-            int i, j, k;
+            std::size_t NumDivision1 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_1) );
+            std::size_t NumDivision2 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_2) );
+            std::size_t NumDivision3 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_3) );
+            std::size_t i, j, k;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
 
@@ -983,42 +1059,76 @@ public:
             #endif
 
             // create and add element
-            typename T::NodesArrayType temp_nodes;
+            // typename T::NodesArrayType temp_nodes;
+            // for(i = 0; i < NumDivision1; ++i)
+            // {
+            //     for(j = 0; j < NumDivision2; ++j)
+            //     {
+            //         for(k = 0; k < NumDivision3; ++k)
+            //         {
+            //             int Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+            //             int Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+            //             int Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+            //             int Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+            //             int Node5 = Node1 + 1;
+            //             int Node6 = Node2 + 1;
+            //             int Node7 = Node3 + 1;
+            //             int Node8 = Node4 + 1;
+
+            //             // TODO: check if jacobian checking is necessary
+            //             temp_nodes.clear();
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node1, NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node2, NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node4, NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node3, NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node5, NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node6, NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node8, NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node7, NodeKey).base()));
+
+            //             int NewEntityId = ++EntityCounter;
+            //             typename TEntityType::Pointer NewEntity = rSample.Create(NewEntityId, temp_nodes, pDummyProperties);
+            //             AddToModelPart<TEntityType>(rModelPart, NewEntity);
+            //             if(type == 1)
+            //                 mOldToNewElements[rE.Id()].insert(NewEntityId);
+            //             else if(type == 2)
+            //                 mOldToNewConditions[rE.Id()].insert(NewEntityId);
+            //         }
+            //     }
+            // }
+
+            std::vector<std::vector<std::size_t> > connectivities;
+
             for(i = 0; i < NumDivision1; ++i)
             {
                 for(j = 0; j < NumDivision2; ++j)
                 {
                     for(k = 0; k < NumDivision3; ++k)
                     {
-                        int Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                        int Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                        int Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                        int Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                        int Node5 = Node1 + 1;
-                        int Node6 = Node2 + 1;
-                        int Node7 = Node3 + 1;
-                        int Node8 = Node4 + 1;
+                        std::size_t Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                        std::size_t Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                        std::size_t Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                        std::size_t Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                        std::size_t Node5 = Node1 + 1;
+                        std::size_t Node6 = Node2 + 1;
+                        std::size_t Node7 = Node3 + 1;
+                        std::size_t Node8 = Node4 + 1;
 
-                        // TODO: check if jacobian checking is necessary
-                        temp_nodes.clear();
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node1, NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node2, NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node4, NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node3, NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node5, NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node6, NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node8, NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node7, NodeKey).base()));
-
-                        int NewEntityId = ++EntityCounter;
-                        typename T::Pointer NewEntity = rSample.Create(NewEntityId, temp_nodes, pDummyProperties);
-                        AddToModelPart<T>(rModelPart, NewEntity);
-                        if(type == 1)
-                            mOldToNewElements[rE.Id()].insert(NewEntityId);
-                        else if(type == 2)
-                            mOldToNewConditions[rE.Id()].insert(NewEntityId);
+                        connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4, Node3, Node5, Node6, Node8, Node7});
                     }
                 }
+            }
+
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, TEntityType, TEntityContainerType>(
+                connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
+
+            for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
+            {
+                AddToModelPart<TEntityType>(rModelPart, *it2);
+                if(type == 1)
+                    mOldToNewElements[rE.Id()].insert((*it2)->Id());
+                else if(type == 2)
+                    mOldToNewConditions[rE.Id()].insert((*it2)->Id());
             }
 
             if(type == 1)
@@ -1040,15 +1150,15 @@ public:
      * This uses a collapse utility to automatically merge the coincident nodes
      * if T==Element, type must be 1; otherwise type=2
      */
-    template<class T, std::size_t type>
+    template<class TEntityType, class TEntityContainerType, std::size_t type>
     void GenerateForOneEntityAutoCollapse(AutoCollapseSpatialBinning& collapse_util,
                                           ModelPart& rModelPart,
-                                          T& rE,
-                                          T const& rSample,
-                                          VectorMap<int, int>& rMapToCollapseNode,
-                                          int NodeCounter_old,
-                                          int& NodeCounter,
-                                          int& EntityCounter,
+                                          TEntityType& rE,
+                                          TEntityType const& rSample,
+                                          VectorMap<std::size_t, std::size_t>& rMapToCollapseNode,
+                                          std::size_t NodeCounter_old,
+                                          std::size_t& NodeCounter,
+                                          std::size_t& EntityCounter,
                                           const std::string& NodeKey)
     {
 //        int ReducedDim = rE.GetGeometry().WorkingSpaceDimension();
@@ -1072,9 +1182,9 @@ public:
         }
         else if(ReducedDim == 2)
         {
-            int NumDivision1 = rE.GetValue(NUM_DIVISION_1);
-            int NumDivision2 = rE.GetValue(NUM_DIVISION_2);
-            int i, j;
+            std::size_t NumDivision1 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_1) );
+            std::size_t NumDivision2 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_2) );
+            std::size_t i, j;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
 
@@ -1095,7 +1205,7 @@ public:
 
                     p = GlobalCoordinates(rE.GetGeometry(), p, p_ref);
 
-                    int id = collapse_util.AddNode(p[0], p[1], p[2]);
+                    std::size_t id = static_cast<std::size_t>( collapse_util.AddNode(p[0], p[1], p[2]) );
                     ++NodeCounter;
                     rMapToCollapseNode[NodeCounter] = id;
 
@@ -1140,30 +1250,61 @@ public:
             #endif
 
             // create and add element
-            typename T::NodesArrayType temp_nodes;
+            // typename T::NodesArrayType temp_nodes;
+            // for(i = 0; i < NumDivision1; ++i)
+            // {
+            //     for(j = 0; j < NumDivision2; ++j)
+            //     {
+            //         int Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
+            //         int Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
+            //         int Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
+            //         int Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
+
+            //         // TODO: check if jacobian checking is necessary
+            //         temp_nodes.clear();
+            //         temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node1], NodeKey).base()));
+            //         temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node2], NodeKey).base()));
+            //         temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node4], NodeKey).base()));
+            //         temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node3], NodeKey).base()));
+
+            //         typename T::Pointer NewEntity = rSample.Create(++EntityCounter, temp_nodes, pDummyProperties);
+            //         AddToModelPart<T>(rModelPart, NewEntity);
+            //         if(type == 1)
+            //             mOldToNewElements[rE.Id()].insert(EntityCounter);
+            //         else if(type == 2)
+            //             mOldToNewConditions[rE.Id()].insert(EntityCounter);
+            //     }
+            // }
+
+            std::vector<std::vector<std::size_t> > connectivities;
+
             for(i = 0; i < NumDivision1; ++i)
             {
                 for(j = 0; j < NumDivision2; ++j)
                 {
-                    int Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
-                    int Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
-                    int Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
-                    int Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
+                    std::size_t Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
+                    std::size_t Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
+                    std::size_t Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
+                    std::size_t Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
 
-                    // TODO: check if jacobian checking is necessary
-                    temp_nodes.clear();
-                    temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node1], NodeKey).base()));
-                    temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node2], NodeKey).base()));
-                    temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node4], NodeKey).base()));
-                    temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node3], NodeKey).base()));
-
-                    typename T::Pointer NewEntity = rSample.Create(++EntityCounter, temp_nodes, pDummyProperties);
-                    AddToModelPart<T>(rModelPart, NewEntity);
-                    if(type == 1)
-                        mOldToNewElements[rE.Id()].insert(EntityCounter);
-                    else if(type == 2)
-                        mOldToNewConditions[rE.Id()].insert(EntityCounter);
+                    connectivities.push_back(std::vector<std::size_t>{
+                        rMapToCollapseNode[Node1],
+                        rMapToCollapseNode[Node2],
+                        rMapToCollapseNode[Node4],
+                        rMapToCollapseNode[Node3]});
                 }
+            }
+
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, TEntityType, TEntityContainerType>(
+                connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
+
+            for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
+            {
+                AddToModelPart<TEntityType>(rModelPart, *it2);
+                if(type == 1)
+                    mOldToNewElements[rE.Id()].insert((*it2)->Id());
+                else if(type == 2)
+                    mOldToNewConditions[rE.Id()].insert((*it2)->Id());
             }
 
             if(type == 1)
@@ -1180,10 +1321,10 @@ public:
         }
         else if(ReducedDim == 3)
         {
-            int NumDivision1 = rE.GetValue(NUM_DIVISION_1);
-            int NumDivision2 = rE.GetValue(NUM_DIVISION_2);
-            int NumDivision3 = rE.GetValue(NUM_DIVISION_3);
-            int i, j, k;
+            std::size_t NumDivision1 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_1) );
+            std::size_t NumDivision2 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_2) );
+            std::size_t NumDivision3 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_3) );
+            std::size_t i, j, k;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
 
@@ -1208,7 +1349,7 @@ public:
 
                         p = GlobalCoordinates(rE.GetGeometry(), p, p_ref);
 
-                        int id = collapse_util.AddNode(p[0], p[1], p[2]);
+                        std::size_t id = static_cast<std::size_t>( collapse_util.AddNode(p[0], p[1], p[2]) );
                         ++NodeCounter;
                         rMapToCollapseNode[NodeCounter] = id;
 
@@ -1261,41 +1402,83 @@ public:
             #endif
 
             // create and add element
-            typename T::NodesArrayType temp_nodes;
+            // typename T::NodesArrayType temp_nodes;
+            // for(i = 0; i < NumDivision1; ++i)
+            // {
+            //     for(j = 0; j < NumDivision2; ++j)
+            //     {
+            //         for(k = 0; k < NumDivision3; ++k)
+            //         {
+            //             int Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+            //             int Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+            //             int Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+            //             int Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+            //             int Node5 = Node1 + 1;
+            //             int Node6 = Node2 + 1;
+            //             int Node7 = Node3 + 1;
+            //             int Node8 = Node4 + 1;
+
+            //             // TODO: check if jacobian checking is necessary
+            //             temp_nodes.clear();
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node1], NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node2], NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node4], NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node3], NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node5], NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node6], NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node8], NodeKey).base()));
+            //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node7], NodeKey).base()));
+
+            //             typename T::Pointer NewEntity = rSample.Create(++EntityCounter, temp_nodes, pDummyProperties);
+            //             AddToModelPart<T>(rModelPart, NewEntity);
+            //             if(type == 1)
+            //                 mOldToNewElements[rE.Id()].insert(EntityCounter);
+            //             else if(type == 2)
+            //                 mOldToNewConditions[rE.Id()].insert(EntityCounter);
+            //         }
+            //     }
+            // }
+
+            std::vector<std::vector<std::size_t> > connectivities;
+
             for(i = 0; i < NumDivision1; ++i)
             {
                 for(j = 0; j < NumDivision2; ++j)
                 {
                     for(k = 0; k < NumDivision3; ++k)
                     {
-                        int Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                        int Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                        int Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                        int Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                        int Node5 = Node1 + 1;
-                        int Node6 = Node2 + 1;
-                        int Node7 = Node3 + 1;
-                        int Node8 = Node4 + 1;
+                        std::size_t Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                        std::size_t Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                        std::size_t Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                        std::size_t Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                        std::size_t Node5 = Node1 + 1;
+                        std::size_t Node6 = Node2 + 1;
+                        std::size_t Node7 = Node3 + 1;
+                        std::size_t Node8 = Node4 + 1;
 
-                        // TODO: check if jacobian checking is necessary
-                        temp_nodes.clear();
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node1], NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node2], NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node4], NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node3], NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node5], NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node6], NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node8], NodeKey).base()));
-                        temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node7], NodeKey).base()));
-
-                        typename T::Pointer NewEntity = rSample.Create(++EntityCounter, temp_nodes, pDummyProperties);
-                        AddToModelPart<T>(rModelPart, NewEntity);
-                        if(type == 1)
-                            mOldToNewElements[rE.Id()].insert(EntityCounter);
-                        else if(type == 2)
-                            mOldToNewConditions[rE.Id()].insert(EntityCounter);
+                        connectivities.push_back(std::vector<std::size_t>{
+                            rMapToCollapseNode[Node1],
+                            rMapToCollapseNode[Node2],
+                            rMapToCollapseNode[Node4],
+                            rMapToCollapseNode[Node3],
+                            rMapToCollapseNode[Node5],
+                            rMapToCollapseNode[Node6],
+                            rMapToCollapseNode[Node8],
+                            rMapToCollapseNode[Node7]});
                     }
                 }
+            }
+
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, TEntityType, TEntityContainerType>(
+                connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
+
+            for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
+            {
+                AddToModelPart<TEntityType>(rModelPart, *it2);
+                if(type == 1)
+                    mOldToNewElements[rE.Id()].insert((*it2)->Id());
+                else if(type == 2)
+                    mOldToNewConditions[rE.Id()].insert((*it2)->Id());
             }
 
             if(type == 1)
@@ -1318,8 +1501,8 @@ public:
         ElementsArrayType& pElements = mpModelPart->Elements();
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
-            std::set<int> NewElements = mOldToNewElements[(*it)->Id()];
-            for(std::set<int>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
+            std::set<std::size_t> NewElements = mOldToNewElements[(*it)->Id()];
+            for(std::set<std::size_t>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
             {
                 pModelPartPost->GetElement(*it2).GetValue(IS_INACTIVE) = (*it)->GetValue( IS_INACTIVE );
             }
@@ -1327,8 +1510,8 @@ public:
         ConditionsArrayType& pConditions = mpModelPart->Conditions();
         for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
         {
-            std::set<int> NewConditions = mOldToNewConditions[(*it)->Id()];
-            for(std::set<int>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
+            std::set<std::size_t> NewConditions = mOldToNewConditions[(*it)->Id()];
+            for(std::set<std::size_t>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
             {
                 pModelPartPost->GetCondition(*it2).GetValue(IS_INACTIVE) = (*it)->GetValue( IS_INACTIVE );
             }
@@ -1342,8 +1525,8 @@ public:
         ElementsArrayType& pElements = mpModelPart->Elements();
         for(typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
-            std::set<int> NewElements = mOldToNewElements[(*it)->Id()];
-            for(std::set<int>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
+            std::set<std::size_t> NewElements = mOldToNewElements[(*it)->Id()];
+            for(std::set<std::size_t>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
             {
                 pModelPartPost->GetElement(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
             }
@@ -1357,8 +1540,8 @@ public:
         ConditionsArrayType& pConditions = mpModelPart->Conditions();
         for(typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
         {
-            std::set<int> NewConditions = mOldToNewConditions[(*it)->Id()];
-            for(std::set<int>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
+            std::set<std::size_t> NewConditions = mOldToNewConditions[(*it)->Id()];
+            for(std::set<std::size_t>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
             {
                 pModelPartPost->GetCondition(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
             }
@@ -1382,13 +1565,13 @@ public:
 
         typename TVariableType::Type Results;
         CoordinatesArrayType LocalPos;
-        int ElementId;
+        std::size_t ElementId;
 
 //        #pragma omp parallel for
         //TODO: check this. This is not parallelized.
         for(NodesArrayType::ptr_iterator it = pTargetNodes.ptr_begin(); it != pTargetNodes.ptr_end(); ++it)
         {
-            int key = (*it)->Id();
+            std::size_t key = (*it)->Id();
             if(mNodeToElement.find(key) != mNodeToElement.end())
             {
                 ElementId = mNodeToElement[key];
@@ -1573,10 +1756,10 @@ private:
     ///@{
     ModelPart::Pointer mpModelPart; // pointer variable to a model_part
 
-    VectorMap<int, CoordinatesArrayType> mNodeToLocalCoordinates; // vector map to store local coordinates of node on a NURBS entity
-    VectorMap<int, int> mNodeToElement; // vector map to store local coordinates of node on a NURBS entity
-    std::map<int, std::set<int> > mOldToNewElements; // vector map to store id map from old element to new elements
-    std::map<int, std::set<int> > mOldToNewConditions; // vector map to store id map from old condition to new conditions
+    VectorMap<std::size_t, CoordinatesArrayType> mNodeToLocalCoordinates; // vector map to store local coordinates of node on a NURBS entity
+    VectorMap<std::size_t, std::size_t> mNodeToElement; // vector map to store local coordinates of node on a NURBS entity
+    std::map<std::size_t, std::set<std::size_t> > mOldToNewElements; // vector map to store id map from old element to new elements
+    std::map<std::size_t, std::set<std::size_t> > mOldToNewConditions; // vector map to store id map from old condition to new conditions
 
     ///@}
     ///@name Private Operators

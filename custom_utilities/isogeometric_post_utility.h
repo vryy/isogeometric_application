@@ -135,11 +135,43 @@ public:
         return pFoundEntities;
     }
 
+    /// Create the entities based on the connectivities
+    /// It is noted that the newly created entities are not added to the other model_part. User must do it manually.
+    template<typename TConnectivityType, typename TEntityType, typename TEntitiesContainerType>
+    static TEntitiesContainerType CreateEntities(
+        const TConnectivityType& r_connectivities,
+        ModelPart& r_model_part,
+        TEntityType const& r_sample_entity,
+        std::size_t& last_entity_id,
+        Properties::Pointer pProperties,
+        const std::string& NodeKey)
+    {
+        TEntitiesContainerType pNewEntities;
+        typename TEntityType::NodesArrayType temp_entity_nodes;
+
+        for (typename TConnectivityType::const_iterator it = r_connectivities.begin(); it != r_connectivities.end(); ++it)
+        {
+            temp_entity_nodes.clear();
+
+            for (typename TConnectivityType::value_type::const_iterator it2 = it->begin(); it2 != it->end(); ++it2)
+                temp_entity_nodes.push_back(*(FindKey(r_model_part.Nodes(), *it2, NodeKey).base()));
+
+            typename TEntityType::Pointer pNewEntity = r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pProperties);
+            pNewEntities.push_back(pNewEntity);
+        }
+
+        return pNewEntities;
+    }
+
     /// Create a list of entities (element/condition) (from a model_part) to another model_part
     /// It is noted that the newly created entities are not added to the other model_part. User must do it manually.
     template<class TEntityType, class TEntitiesContainerType>
-    static TEntitiesContainerType CreateEntities(TEntitiesContainerType& pEntities, ModelPart& r_other_model_part,
-        TEntityType const& r_sample_entity, std::size_t& last_entity_id, Properties::Pointer pProperties)
+    static TEntitiesContainerType CreateEntities(
+        TEntitiesContainerType& pEntities,
+        ModelPart& r_other_model_part,
+        TEntityType const& r_sample_entity,
+        std::size_t& last_entity_id,
+        Properties::Pointer pProperties)
     {
         // first collect all the nodes from the elements
         std::map<std::size_t, NodeType::Pointer> pNodes;
@@ -184,7 +216,8 @@ public:
     /// The point list will be triangulated before the conditions are created.
     /// It is noted that the newly created entities are not added to the other model_part. User must do it manually. Nevertheless, the nodes are added to the model_part.
     template<typename TPointType, typename TVectorType, class TEntityType, class TNodesContainerType, class TEntitiesContainerType>
-    static std::pair<TNodesContainerType, TEntitiesContainerType> CreateEntities(const std::vector<TPointType>& points,
+    static std::pair<TNodesContainerType, TEntitiesContainerType> CreateEntities(
+        const std::vector<TPointType>& points,
         const TVectorType& rCenter,
         const TVectorType& rNormal,
         const TVectorType& rTangent1,
@@ -203,6 +236,10 @@ public:
             XY.push_back(inner_prod(Projection - rCenter, rTangent1));
             XY.push_back(inner_prod(Projection - rCenter, rTangent2));
         }
+
+        // std::cout << "XY:" << std::endl;
+        // for (std::size_t i = 0; i < XY.size()/2; ++i)
+        //     std::cout << " " << XY[2*i] << " " << XY[2*i+1] << std::endl;
 
         // compute the triangulation
         std::vector<std::vector<unsigned int> > Connectivities;

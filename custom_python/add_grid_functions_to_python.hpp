@@ -61,7 +61,7 @@ void GridFunction_SetControlGrid(TGridFrunctionType& rDummy, typename TGridFrunc
 }
 
 template<class TGridFrunctionType>
-typename TGridFrunctionType::DataType GridFunction_GetValue(TGridFrunctionType& rDummy, const boost::python::list& xi)
+typename TGridFrunctionType::DataType GridFunction_GetValue1(TGridFrunctionType& rDummy, const boost::python::list& xi)
 {
     std::vector<double> xi_vec;
     typedef boost::python::stl_input_iterator<double> iterator_value_type;
@@ -74,7 +74,13 @@ typename TGridFrunctionType::DataType GridFunction_GetValue(TGridFrunctionType& 
 }
 
 template<class TGridFrunctionType>
-boost::python::list GridFunction_GetDerivative(TGridFrunctionType& rDummy, const boost::python::list& xi)
+typename TGridFrunctionType::DataType GridFunction_GetValue2(TGridFrunctionType& rDummy, const array_1d<double, 3>& xi)
+{
+    return rDummy.GetValue(xi);
+}
+
+template<class TGridFrunctionType>
+boost::python::list GridFunction_GetDerivative1(TGridFrunctionType& rDummy, const boost::python::list& xi)
 {
     std::vector<double> xi_vec;
     typedef boost::python::stl_input_iterator<double> iterator_value_type;
@@ -85,6 +91,19 @@ boost::python::list GridFunction_GetDerivative(TGridFrunctionType& rDummy, const
 
     std::vector<typename TGridFrunctionType::DataType> derivatives;
     rDummy.GetDerivative(derivatives, xi_vec);
+
+    boost::python::list results;
+    for (std::size_t i = 0; i < derivatives.size(); ++i)
+        results.append(derivatives[i]);
+
+    return results;
+}
+
+template<class TGridFrunctionType>
+boost::python::list GridFunction_GetDerivative2(TGridFrunctionType& rDummy, const array_1d<double, 3>& xi)
+{
+    std::vector<typename TGridFrunctionType::DataType> derivatives;
+    rDummy.GetDerivative(derivatives, xi);
 
     boost::python::list results;
     for (std::size_t i = 0; i < derivatives.size(); ++i)
@@ -122,8 +141,10 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<ControlPoint<double> >::Pointer>())
     .add_property("FESpace", GridFunction_GetFESpace<ControlPointGridFunctionType>, GridFunction_SetFESpace<ControlPointGridFunctionType>)
     .add_property("ControlGrid", GridFunction_GetControlGrid<ControlPointGridFunctionType>, GridFunction_SetControlGrid<ControlPointGridFunctionType>)
-    .def("GetValue", &GridFunction_GetValue<ControlPointGridFunctionType>)
-    .def("GetDerivative", &GridFunction_GetDerivative<ControlPointGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue1<ControlPointGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue2<ControlPointGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative1<ControlPointGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative2<ControlPointGridFunctionType>)
     .def(self_ns::str(self))
     ;
 
@@ -134,8 +155,10 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<double>::Pointer>())
     .add_property("FESpace", GridFunction_GetFESpace<DoubleGridFunctionType>, GridFunction_SetFESpace<DoubleGridFunctionType>)
     .add_property("ControlGrid", GridFunction_GetControlGrid<DoubleGridFunctionType>, GridFunction_SetControlGrid<DoubleGridFunctionType>)
-    .def("GetValue", &GridFunction_GetValue<DoubleGridFunctionType>)
-    .def("GetDerivative", &GridFunction_GetDerivative<DoubleGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue1<DoubleGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue2<DoubleGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative1<DoubleGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative2<DoubleGridFunctionType>)
     .def(self_ns::str(self))
     ;
 
@@ -146,8 +169,10 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<array_1d<double, 3> >::Pointer>())
     .add_property("FESpace", GridFunction_GetFESpace<Array1DGridFunctionType>, GridFunction_SetFESpace<Array1DGridFunctionType>)
     .add_property("ControlGrid", GridFunction_GetControlGrid<Array1DGridFunctionType>, GridFunction_SetControlGrid<Array1DGridFunctionType>)
-    .def("GetValue", &GridFunction_GetValue<Array1DGridFunctionType>)
-    .def("GetDerivative", &GridFunction_GetDerivative<Array1DGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue1<Array1DGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue2<Array1DGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative1<Array1DGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative2<Array1DGridFunctionType>)
     .def("LocalCoordinates", &GridFunction_LocalCoordinates<Array1DGridFunctionType, array_1d<double, 3> >)
     .def(self_ns::str(self))
     ;
@@ -159,8 +184,10 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<Vector>::Pointer>())
     .add_property("FESpace", GridFunction_GetFESpace<VectorGridFunctionType>, GridFunction_SetFESpace<VectorGridFunctionType>)
     .add_property("ControlGrid", GridFunction_GetControlGrid<VectorGridFunctionType>, GridFunction_SetControlGrid<VectorGridFunctionType>)
-    .def("GetValue", &GridFunction_GetValue<VectorGridFunctionType>)
-    .def("GetDerivative", &GridFunction_GetDerivative<VectorGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue1<VectorGridFunctionType>)
+    .def("GetValue", &GridFunction_GetValue2<VectorGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative1<VectorGridFunctionType>)
+    .def("GetDerivative", &GridFunction_GetDerivative2<VectorGridFunctionType>)
     .def("LocalCoordinates", &GridFunction_LocalCoordinates<VectorGridFunctionType, array_1d<double, 3> >)
     .def(self_ns::str(self))
     ;

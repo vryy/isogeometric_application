@@ -52,7 +52,7 @@ public:
     /// Get the level of this cell
     virtual std::size_t Level() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        return 1;
     }
 
     /// Clear internal data of this cell

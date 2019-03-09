@@ -66,6 +66,12 @@ public:
     /// Destructor
     virtual ~TCell() {}
 
+    /// Get the level of this cell
+    virtual std::size_t Level() const
+    {
+        return 1;
+    }
+
     /// Get the coordinates
     double XiMin() const {return mXiMin;}
     double XiMinValue() const {return mXiMin;}

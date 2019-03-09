@@ -22,7 +22,7 @@
 #include "custom_utilities/multipatch_utility.h"
 
 
-#define DEBUG_INTERSECT_CURVE_PLANE
+// #define DEBUG_INTERSECT_CURVE_PLANE
 
 
 namespace Kratos
@@ -578,8 +578,9 @@ public:
      * This subroutine uses the Newton-Raphson procedure to compute the intersection point. A starting value in the curve must be given.
      * On the return, the status code of each intersection in each boundary will be return.
      */
+    template<typename TCoordinatesType>
     static std::vector<int> ComputeIntersectionByNewtonRaphson(const std::vector<double>& starting_points,
-            std::vector<std::vector<double> >& intersection_points,
+            std::vector<TCoordinatesType>& intersection_points,
             Patch<3>::Pointer pPatch,
             const double& A, const double& B, const double& C, const double& D,
             const int& max_iters,
@@ -626,7 +627,8 @@ public:
      * This subroutine uses the Newton-Raphson procedure to compute the intersection point. A starting value in the curve must be given.
      * On the return, the status code of each intersection in each boundary will be return.
      */
-    static std::vector<int> ComputeIntersectionByBisection(std::vector<std::vector<double> >& intersection_points,
+    template<typename TCoordinatesType>
+    static std::vector<int> ComputeIntersectionByBisection(std::vector<TCoordinatesType>& intersection_points,
             Patch<3>::Pointer pPatch,
             const double& A, const double& B, const double& C, const double& D,
             const int& max_iters,

@@ -198,13 +198,13 @@ void NURBSTestUtils_ProbeJacobian3(
 //////////////////////////////////////////////////////////
 
 ModelPart::ElementsContainerType IsogeometricPostUtility_TransferElements(IsogeometricPostUtility& rDummy, ModelPart::ElementsContainerType& pElements,
-    ModelPart& r_other_model_part, const std::string& sample_element_name, Properties::Pointer pProperties)
+    ModelPart& r_other_model_part, const std::string& sample_element_name, Properties::Pointer pProperties, const bool& retain_prop_id)
 {
     std::size_t last_element_id = IsogeometricPostUtility::GetLastElementId(r_other_model_part);
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
     Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
-    ModelPart::ElementsContainerType pNewElements = IsogeometricPostUtility::CreateEntities(pElements, r_other_model_part, r_clone_element, last_element_id, pProperties);
+    ModelPart::ElementsContainerType pNewElements = IsogeometricPostUtility::CreateEntities(pElements, r_other_model_part, r_clone_element, last_element_id, pProperties, retain_prop_id);
 
     for(ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
         r_other_model_part.Elements().push_back(*it);
@@ -217,13 +217,13 @@ ModelPart::ElementsContainerType IsogeometricPostUtility_TransferElements(Isogeo
 }
 
 ModelPart::ConditionsContainerType IsogeometricPostUtility_TransferConditions(IsogeometricPostUtility& rDummy, ModelPart::ConditionsContainerType& pConditions,
-    ModelPart& r_other_model_part, const std::string& sample_condition_name, Properties::Pointer pProperties)
+    ModelPart& r_other_model_part, const std::string& sample_condition_name, Properties::Pointer pProperties, const bool& retain_prop_id)
 {
     std::size_t last_condition_id = IsogeometricPostUtility::GetLastConditionId(r_other_model_part);
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
-    ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities(pConditions, r_other_model_part, r_clone_condition, last_condition_id, pProperties);
+    ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities(pConditions, r_other_model_part, r_clone_condition, last_condition_id, pProperties, retain_prop_id);
 
     for(ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         r_other_model_part.Conditions().push_back(*it);
@@ -253,37 +253,120 @@ ModelPart::ConditionsContainerType IsogeometricPostUtility_FindConditions(Isogeo
     return IsogeometricPostUtility::FindEntities(pConditions, r_clone_condition);
 }
 
-boost::python::list IsogeometricPostUtility_CreateConditions(IsogeometricPostUtility& rDummy,
-    boost::python::list list_points,
+template<typename TCoordinatesType, typename TPatchType>
+boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(IsogeometricPostUtility& rDummy,
+    const boost::python::list& list_physical_points,
     const Vector& center, const Vector& normal, const Vector& t1, const Vector& t2,
-    ModelPart& r_model_part, const std::string& sample_condition_name, const std::size_t& last_condition_id,
+    const boost::python::list& list_local_points, const std::size_t& nrefine,
+    typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
+    const std::string& sample_condition_name,
+    const std::size_t& last_node_id, const std::size_t& last_condition_id,
     Properties::Pointer pProperties)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
-    typedef Condition::GeometryType::PointType::PointType PointType;
-    std::vector<PointType> points;
-
     typedef boost::python::stl_input_iterator<array_1d<double, 3> > iterator_value_type;
+
+    std::vector<TCoordinatesType> physical_points;
     BOOST_FOREACH(const iterator_value_type::value_type& p,
-                std::make_pair(iterator_value_type(list_points), // begin
+                std::make_pair(iterator_value_type(list_physical_points), // begin
                 iterator_value_type() ) ) // end
     {
-        points.push_back(p);
+        physical_points.push_back(p);
     }
 
+    std::vector<TCoordinatesType> local_points;
+    BOOST_FOREACH(const iterator_value_type::value_type& p,
+                std::make_pair(iterator_value_type(list_local_points), // begin
+                iterator_value_type() ) ) // end
+    {
+        local_points.push_back(p);
+    }
+
+    std::size_t offset = last_node_id + 1;
+    std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<std::size_t> > >
+    points_and_connectivities = IsogeometricPostUtility::GenerateTriangleGrid(physical_points, center, normal, t1, t2, local_points, offset, nrefine);
+
+    boost::python::list new_nodes;
+    boost::python::list new_local_points;
+    std::size_t starting_node_id = last_node_id + 1;
+    for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
+    {
+        new_local_points.append(points_and_connectivities.first[i]);
+        ModelPart::NodeType::Pointer pNewNode = IsogeometricPostUtility::CreateNode(points_and_connectivities.first[i], *pPatch, r_model_part, starting_node_id++);
+        new_nodes.append(pNewNode);
+        // std::cout << "node " << pNewNode->Id() << " (" << pNewNode->X0() << " " << pNewNode->Y0() << " " << pNewNode->Z0() << ") is created at " << points_and_connectivities.first[i] << std::endl;
+    }
+
+    // std::cout << "connectivities:" << std::endl;
+    // for (std::size_t i = 0; i < points_and_connectivities.second.size(); ++i)
+    // {
+    //     std::cout << " ";
+    //     for (std::size_t j = 0; j < points_and_connectivities.second[i].size(); ++j)
+    //         std::cout << " " << points_and_connectivities.second[i][j];
+    //     std::cout << std::endl;
+    // }
+
     std::size_t last_condition_id_new = last_condition_id;
-    std::pair<ModelPart::NodesContainerType, ModelPart::ConditionsContainerType> results =
-        IsogeometricPostUtility::CreateEntities<PointType, Vector, Condition,
-            ModelPart::NodesContainerType, ModelPart::ConditionsContainerType>(points,
-                center, normal, t1, t2,
-                r_model_part, r_clone_condition, last_condition_id_new, pProperties);
+    const std::string NodeKey = std::string("Node");
+    ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
+        points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
 
     boost::python::list output;
-    output.append(results.first);
-    output.append(results.second);
+    output.append(new_local_points);
+    output.append(new_nodes);
+    output.append(pNewConditions);
+    return output;
+}
+
+template<typename TCoordinatesType, typename TPatchType>
+boost::python::list IsogeometricPostUtility_CreateConditionsByQuadrilateralization(IsogeometricPostUtility& rDummy,
+    const TCoordinatesType& p1, const TCoordinatesType& p2,
+    const TCoordinatesType& p3, const TCoordinatesType& p4,
+    const std::size_t& num_div_1, const std::size_t& num_div_2,
+    typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
+    const std::string& sample_condition_name,
+    const std::size_t& last_node_id, const std::size_t& last_condition_id,
+    Properties::Pointer pProperties)
+{
+    if (!KratosComponents<Condition>::Has(sample_condition_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+
+    std::size_t starting_node_id = last_node_id + 1;
+    std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<std::size_t> > >
+    points_and_connectivities = IsogeometricPostUtility::GenerateQuadGrid(p1, p2, p3, p4, starting_node_id, num_div_1, num_div_2);
+
+    boost::python::list new_nodes;
+    boost::python::list new_local_points;
+    for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
+    {
+        new_local_points.append(points_and_connectivities.first[i]);
+        ModelPart::NodeType::Pointer pNewNode = IsogeometricPostUtility::CreateNode(points_and_connectivities.first[i], *pPatch, r_model_part, starting_node_id++);
+        new_nodes.append(pNewNode);
+        // std::cout << "node " << pNewNode->Id() << " (" << pNewNode->X0() << " " << pNewNode->Y0() << " " << pNewNode->Z0() << ") is created at " << points_and_connectivities.first[i] << std::endl;
+    }
+
+    // std::cout << "connectivities:" << std::endl;
+    // for (std::size_t i = 0; i < points_and_connectivities.second.size(); ++i)
+    // {
+    //     std::cout << " ";
+    //     for (std::size_t j = 0; j < points_and_connectivities.second[i].size(); ++j)
+    //         std::cout << " " << points_and_connectivities.second[i][j];
+    //     std::cout << std::endl;
+    // }
+
+    std::size_t last_condition_id_new = last_condition_id;
+    const std::string NodeKey = std::string("Node");
+    ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
+        points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
+
+    boost::python::list output;
+    output.append(new_local_points);
+    output.append(new_nodes);
+    output.append(pNewConditions);
     return output;
 }
 
@@ -293,17 +376,18 @@ void BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& d
         ModelPart& rModelPart,
         Condition& rCondition,
         const std::string& sample_condition_name,
-        std::size_t starting_node_id,
-        std::size_t starting_condition_id)
+        const std::size_t& starting_node_id,
+        const std::size_t& starting_condition_id)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
-    int NodeCounter = starting_node_id;
-    int NodeCounter_old = NodeCounter;
-    int ConditionCounter = starting_condition_id;
-    dummy.GenerateForOneEntity<Condition, 2>(rModelPart, rCondition,
-            r_clone_condition, NodeCounter_old, NodeCounter, ConditionCounter, "Node");
+    std::size_t NodeCounter = starting_node_id;
+    std::size_t NodeCounter_old = NodeCounter;
+    std::size_t ConditionCounter = starting_condition_id;
+    const std::string NodeKey = std::string("Node");
+    dummy.GenerateForOneEntity<Condition, ModelPart::ConditionsContainerType, 2>(rModelPart, rCondition,
+            r_clone_condition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey);
 }
 
 void BezierClassicalPostUtility_GenerateModelPart2WithCondition(BezierClassicalPostUtility& dummy, ModelPart::Pointer pModelPartPost)
@@ -368,7 +452,9 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("TransferConditions", &IsogeometricPostUtility_TransferConditions)
     .def("FindElements", &IsogeometricPostUtility_FindElements)
     .def("FindConditions", &IsogeometricPostUtility_FindConditions)
-    .def("CreateConditions", &IsogeometricPostUtility_CreateConditions)
+    .def("CreateConditions", &IsogeometricPostUtility_CreateConditionsByTriangulation<array_1d<double, 3>, Patch<3> >)
+    .def("CreateConditions", &IsogeometricPostUtility_CreateConditionsByQuadrilateralization<Vector, Patch<3> >)
+    .def("CreateConditions", &IsogeometricPostUtility_CreateConditionsByQuadrilateralization<array_1d<double, 3>, Patch<3> >)
     ;
 
     class_<BezierClassicalPostUtility, BezierClassicalPostUtility::Pointer, boost::noncopyable>("BezierClassicalPostUtility", init<ModelPart::Pointer>())

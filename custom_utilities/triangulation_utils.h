@@ -25,8 +25,9 @@ public:
     TriangulationUtils() {}
     virtual ~TriangulationUtils() {}
 
+    template<typename TIndexType>
     void ComputeDelaunayTriangulation(std::vector<double>& XYlist,
-                                      std::vector<std::vector<unsigned int> >& Connectivities)
+        std::vector<std::vector<TIndexType> >& Connectivities)
     {
         // generate the triangulation
         int node_num = XYlist.size() / 2;
@@ -48,10 +49,10 @@ public:
         // write the output data
         for(int i = 0; i < triangle_num; ++i)
         {
-            std::vector<unsigned int> tri(3);
-            tri[0] = triangle_node[3*i];
-            tri[1] = triangle_node[3*i + 1];
-            tri[2] = triangle_node[3*i + 2];
+            std::vector<TIndexType> tri(3);
+            tri[0] = static_cast<TIndexType>(triangle_node[3*i]);
+            tri[1] = static_cast<TIndexType>(triangle_node[3*i + 1]);
+            tri[2] = static_cast<TIndexType>(triangle_node[3*i + 2]);
             Connectivities.push_back(tri);
         }
 

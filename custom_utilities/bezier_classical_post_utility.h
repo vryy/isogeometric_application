@@ -193,8 +193,8 @@ public:
 
         Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
-        std::size_t NodeCounter = 0;
-        std::size_t ElementCounter = 0;
+        IndexType NodeCounter = 0;
+        IndexType ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
@@ -205,7 +205,7 @@ public:
             }
 
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension();
-            std::size_t NodeCounter_old = NodeCounter;
+            IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(Dim)
@@ -225,9 +225,9 @@ public:
             }
             else if(Dim == 2)
             {
-                std::size_t NumDivision1 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_1) );
-                std::size_t NumDivision2 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_2) );
-                std::size_t i, j;
+                IndexType NumDivision1 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_1) );
+                IndexType NumDivision2 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_2) );
+                IndexType i, j;
                 CoordinatesArrayType p_ref;
                 CoordinatesArrayType p;
 
@@ -328,30 +328,30 @@ public:
                 //     }
                 // }
 
-                std::vector<std::vector<std::size_t> > connectivities;
+                std::vector<std::vector<IndexType> > connectivities;
 
                 for(i = 0; i < NumDivision1; ++i)
                 {
                     for(j = 0; j < NumDivision2; ++j)
                     {
-                        std::size_t Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
-                        std::size_t Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
-                        std::size_t Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
-                        std::size_t Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
+                        IndexType Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
+                        IndexType Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
+                        IndexType Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
+                        IndexType Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
 
                         if(postElementType == _TRIANGLE_)
                         {
-                            connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4});
-                            connectivities.push_back(std::vector<std::size_t>{Node1, Node4, Node3});
+                            connectivities.push_back(std::vector<IndexType>{Node1, Node2, Node4});
+                            connectivities.push_back(std::vector<IndexType>{Node1, Node4, Node3});
                         }
                         else if(postElementType == _QUADRILATERAL_)
                         {
-                            connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4, Node3});
+                            connectivities.push_back(std::vector<IndexType>{Node1, Node2, Node4, Node3});
                         }
                     }
                 }
 
-                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Element, ElementsArrayType>(
+                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
                     connectivities, *pModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
@@ -368,10 +368,10 @@ public:
             }
             else if(Dim == 3)
             {
-                std::size_t NumDivision1 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_1) );
-                std::size_t NumDivision2 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_2) );
-                std::size_t NumDivision3 = static_cast<std::size_t>( (*it)->GetValue(NUM_DIVISION_3) );
-                std::size_t i, j, k;
+                IndexType NumDivision1 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_1) );
+                IndexType NumDivision2 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_2) );
+                IndexType NumDivision3 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_3) );
+                IndexType i, j, k;
                 CoordinatesArrayType p_ref;
                 CoordinatesArrayType p;
 
@@ -470,7 +470,7 @@ public:
                 //     }
                 // }
 
-                std::vector<std::vector<std::size_t> > connectivities;
+                std::vector<std::vector<IndexType> > connectivities;
 
                 for(i = 0; i < NumDivision1; ++i)
                 {
@@ -478,29 +478,29 @@ public:
                     {
                         for(k = 0; k < NumDivision3; ++k)
                         {
-                            std::size_t Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                            std::size_t Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                            std::size_t Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                            std::size_t Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                            std::size_t Node5 = Node1 + 1;
-                            std::size_t Node6 = Node2 + 1;
-                            std::size_t Node7 = Node3 + 1;
-                            std::size_t Node8 = Node4 + 1;
+                            IndexType Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                            IndexType Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                            IndexType Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                            IndexType Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                            IndexType Node5 = Node1 + 1;
+                            IndexType Node6 = Node2 + 1;
+                            IndexType Node7 = Node3 + 1;
+                            IndexType Node8 = Node4 + 1;
 
                             if(postElementType == _TETRAHEDRA_)
                             {
-                                connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4});
-                                connectivities.push_back(std::vector<std::size_t>{Node1, Node4, Node3});
+                                connectivities.push_back(std::vector<IndexType>{Node1, Node2, Node4});
+                                connectivities.push_back(std::vector<IndexType>{Node1, Node4, Node3});
                             }
                             else if(postElementType == _HEXAHEDRA_)
                             {
-                                connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4, Node3, Node5, Node6, Node8, Node7});
+                                connectivities.push_back(std::vector<IndexType>{Node1, Node2, Node4, Node3, Node5, Node6, Node8, Node7});
                             }
                         }
                     }
                 }
 
-                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Element, ElementsArrayType>(
+                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
                     connectivities, *pModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
@@ -545,8 +545,8 @@ public:
 
         std::string NodeKey = std::string("Node");
 
-        std::size_t NodeCounter = 0;
-        std::size_t ElementCounter = 0;
+        IndexType NodeCounter = 0;
+        IndexType ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
@@ -563,7 +563,7 @@ public:
 
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
             int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
-            std::size_t NodeCounter_old = NodeCounter;
+            IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(Dim)
@@ -615,7 +615,7 @@ public:
         std::cout << "Done generating for elements" << std::endl;
         #endif
 
-        std::size_t ConditionCounter = 0;
+        IndexType ConditionCounter = 0;
         if (generate_for_condition)
         {
             boost::progress_display show_progress2( pConditions.size() );
@@ -634,7 +634,7 @@ public:
 
                 int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
                 int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
-                std::size_t NodeCounter_old = NodeCounter;
+                IndexType NodeCounter_old = NodeCounter;
 
                 #ifdef DEBUG_LEVEL1
                 KRATOS_WATCH(typeid((*it)->GetGeometry()).name())
@@ -712,10 +712,10 @@ public:
 
         std::string NodeKey = std::string("Node");
 
-        std::size_t NodeCounter = 0;
-        std::size_t ElementCounter = 0;
+        IndexType NodeCounter = 0;
+        IndexType ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
-        VectorMap<std::size_t, std::size_t> MapToCollapseNode;
+        VectorMap<IndexType, IndexType> MapToCollapseNode;
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
             if((*it)->GetValue( IS_INACTIVE ))
@@ -727,7 +727,7 @@ public:
 
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
             int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
-            std::size_t NodeCounter_old = NodeCounter;
+            IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(Dim)
@@ -771,7 +771,7 @@ public:
         std::cout << "Done generating for elements" << std::endl;
         #endif
 
-        std::size_t ConditionCounter = 0;
+        IndexType ConditionCounter = 0;
         boost::progress_display show_progress2( pConditions.size() );
         for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
         {
@@ -784,7 +784,7 @@ public:
 
             int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
             int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
-            std::size_t NodeCounter_old = NodeCounter;
+            IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(typeid((*it)->GetGeometry()).name())
@@ -842,9 +842,9 @@ public:
     void GenerateForOneEntity(ModelPart& rModelPart,
                               TEntityType& rE,
                               TEntityType const& rSample,
-                              std::size_t NodeCounter_old,
-                              std::size_t& NodeCounter,
-                              std::size_t& EntityCounter,
+                              IndexType NodeCounter_old,
+                              IndexType& NodeCounter,
+                              IndexType& EntityCounter,
                               const std::string& NodeKey)
     {
 //        int ReducedDim = rE.GetGeometry().WorkingSpaceDimension();
@@ -869,9 +869,9 @@ public:
         }
         else if(ReducedDim == 2)
         {
-            std::size_t NumDivision1 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_1) );
-            std::size_t NumDivision2 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_2) );
-            std::size_t i, j;
+            IndexType NumDivision1 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_1) );
+            IndexType NumDivision2 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_2) );
+            IndexType i, j;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
 
@@ -951,22 +951,22 @@ public:
 //                 }
 //             }
 
-            std::vector<std::vector<std::size_t> > connectivities;
+            std::vector<std::vector<IndexType> > connectivities;
 
             for(i = 0; i < NumDivision1; ++i)
             {
                 for(j = 0; j < NumDivision2; ++j)
                 {
-                    std::size_t Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
-                    std::size_t Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
-                    std::size_t Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
-                    std::size_t Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
+                    IndexType Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
+                    IndexType Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
+                    IndexType Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
+                    IndexType Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
 
-                    connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4, Node3});
+                    connectivities.push_back(std::vector<IndexType>{Node1, Node2, Node4, Node3});
                 }
             }
 
-            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, TEntityType, TEntityContainerType>(
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
                 connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
@@ -992,10 +992,10 @@ public:
         }
         else if(ReducedDim == 3)
         {
-            std::size_t NumDivision1 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_1) );
-            std::size_t NumDivision2 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_2) );
-            std::size_t NumDivision3 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_3) );
-            std::size_t i, j, k;
+            IndexType NumDivision1 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_1) );
+            IndexType NumDivision2 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_2) );
+            IndexType NumDivision3 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_3) );
+            IndexType i, j, k;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
 
@@ -1097,7 +1097,7 @@ public:
             //     }
             // }
 
-            std::vector<std::vector<std::size_t> > connectivities;
+            std::vector<std::vector<IndexType> > connectivities;
 
             for(i = 0; i < NumDivision1; ++i)
             {
@@ -1105,21 +1105,21 @@ public:
                 {
                     for(k = 0; k < NumDivision3; ++k)
                     {
-                        std::size_t Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                        std::size_t Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                        std::size_t Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                        std::size_t Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                        std::size_t Node5 = Node1 + 1;
-                        std::size_t Node6 = Node2 + 1;
-                        std::size_t Node7 = Node3 + 1;
-                        std::size_t Node8 = Node4 + 1;
+                        IndexType Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                        IndexType Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                        IndexType Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                        IndexType Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                        IndexType Node5 = Node1 + 1;
+                        IndexType Node6 = Node2 + 1;
+                        IndexType Node7 = Node3 + 1;
+                        IndexType Node8 = Node4 + 1;
 
-                        connectivities.push_back(std::vector<std::size_t>{Node1, Node2, Node4, Node3, Node5, Node6, Node8, Node7});
+                        connectivities.push_back(std::vector<IndexType>{Node1, Node2, Node4, Node3, Node5, Node6, Node8, Node7});
                     }
                 }
             }
 
-            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, TEntityType, TEntityContainerType>(
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
                 connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
@@ -1155,10 +1155,10 @@ public:
                                           ModelPart& rModelPart,
                                           TEntityType& rE,
                                           TEntityType const& rSample,
-                                          VectorMap<std::size_t, std::size_t>& rMapToCollapseNode,
-                                          std::size_t NodeCounter_old,
-                                          std::size_t& NodeCounter,
-                                          std::size_t& EntityCounter,
+                                          VectorMap<IndexType, IndexType>& rMapToCollapseNode,
+                                          IndexType NodeCounter_old,
+                                          IndexType& NodeCounter,
+                                          IndexType& EntityCounter,
                                           const std::string& NodeKey)
     {
 //        int ReducedDim = rE.GetGeometry().WorkingSpaceDimension();
@@ -1182,9 +1182,9 @@ public:
         }
         else if(ReducedDim == 2)
         {
-            std::size_t NumDivision1 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_1) );
-            std::size_t NumDivision2 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_2) );
-            std::size_t i, j;
+            IndexType NumDivision1 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_1) );
+            IndexType NumDivision2 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_2) );
+            IndexType i, j;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
 
@@ -1205,7 +1205,7 @@ public:
 
                     p = GlobalCoordinates(rE.GetGeometry(), p, p_ref);
 
-                    std::size_t id = static_cast<std::size_t>( collapse_util.AddNode(p[0], p[1], p[2]) );
+                    IndexType id = static_cast<IndexType>( collapse_util.AddNode(p[0], p[1], p[2]) );
                     ++NodeCounter;
                     rMapToCollapseNode[NodeCounter] = id;
 
@@ -1276,18 +1276,18 @@ public:
             //     }
             // }
 
-            std::vector<std::vector<std::size_t> > connectivities;
+            std::vector<std::vector<IndexType> > connectivities;
 
             for(i = 0; i < NumDivision1; ++i)
             {
                 for(j = 0; j < NumDivision2; ++j)
                 {
-                    std::size_t Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
-                    std::size_t Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
-                    std::size_t Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
-                    std::size_t Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
+                    IndexType Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
+                    IndexType Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 2;
+                    IndexType Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
+                    IndexType Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 2;
 
-                    connectivities.push_back(std::vector<std::size_t>{
+                    connectivities.push_back(std::vector<IndexType>{
                         rMapToCollapseNode[Node1],
                         rMapToCollapseNode[Node2],
                         rMapToCollapseNode[Node4],
@@ -1295,7 +1295,7 @@ public:
                 }
             }
 
-            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, TEntityType, TEntityContainerType>(
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
                 connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
@@ -1321,10 +1321,10 @@ public:
         }
         else if(ReducedDim == 3)
         {
-            std::size_t NumDivision1 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_1) );
-            std::size_t NumDivision2 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_2) );
-            std::size_t NumDivision3 = static_cast<std::size_t>( rE.GetValue(NUM_DIVISION_3) );
-            std::size_t i, j, k;
+            IndexType NumDivision1 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_1) );
+            IndexType NumDivision2 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_2) );
+            IndexType NumDivision3 = static_cast<IndexType>( rE.GetValue(NUM_DIVISION_3) );
+            IndexType i, j, k;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
 
@@ -1349,7 +1349,7 @@ public:
 
                         p = GlobalCoordinates(rE.GetGeometry(), p, p_ref);
 
-                        std::size_t id = static_cast<std::size_t>( collapse_util.AddNode(p[0], p[1], p[2]) );
+                        IndexType id = static_cast<IndexType>( collapse_util.AddNode(p[0], p[1], p[2]) );
                         ++NodeCounter;
                         rMapToCollapseNode[NodeCounter] = id;
 
@@ -1439,7 +1439,7 @@ public:
             //     }
             // }
 
-            std::vector<std::vector<std::size_t> > connectivities;
+            std::vector<std::vector<IndexType> > connectivities;
 
             for(i = 0; i < NumDivision1; ++i)
             {
@@ -1447,16 +1447,16 @@ public:
                 {
                     for(k = 0; k < NumDivision3; ++k)
                     {
-                        std::size_t Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                        std::size_t Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                        std::size_t Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
-                        std::size_t Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
-                        std::size_t Node5 = Node1 + 1;
-                        std::size_t Node6 = Node2 + 1;
-                        std::size_t Node7 = Node3 + 1;
-                        std::size_t Node8 = Node4 + 1;
+                        IndexType Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                        IndexType Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                        IndexType Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k + 1;
+                        IndexType Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k + 1;
+                        IndexType Node5 = Node1 + 1;
+                        IndexType Node6 = Node2 + 1;
+                        IndexType Node7 = Node3 + 1;
+                        IndexType Node8 = Node4 + 1;
 
-                        connectivities.push_back(std::vector<std::size_t>{
+                        connectivities.push_back(std::vector<IndexType>{
                             rMapToCollapseNode[Node1],
                             rMapToCollapseNode[Node2],
                             rMapToCollapseNode[Node4],
@@ -1469,7 +1469,7 @@ public:
                 }
             }
 
-            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, TEntityType, TEntityContainerType>(
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
                 connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
@@ -1501,8 +1501,8 @@ public:
         ElementsArrayType& pElements = mpModelPart->Elements();
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
-            std::set<std::size_t> NewElements = mOldToNewElements[(*it)->Id()];
-            for(std::set<std::size_t>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
+            std::set<IndexType> NewElements = mOldToNewElements[(*it)->Id()];
+            for(std::set<IndexType>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
             {
                 pModelPartPost->GetElement(*it2).GetValue(IS_INACTIVE) = (*it)->GetValue( IS_INACTIVE );
             }
@@ -1510,8 +1510,8 @@ public:
         ConditionsArrayType& pConditions = mpModelPart->Conditions();
         for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
         {
-            std::set<std::size_t> NewConditions = mOldToNewConditions[(*it)->Id()];
-            for(std::set<std::size_t>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
+            std::set<IndexType> NewConditions = mOldToNewConditions[(*it)->Id()];
+            for(std::set<IndexType>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
             {
                 pModelPartPost->GetCondition(*it2).GetValue(IS_INACTIVE) = (*it)->GetValue( IS_INACTIVE );
             }
@@ -1525,8 +1525,8 @@ public:
         ElementsArrayType& pElements = mpModelPart->Elements();
         for(typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
-            std::set<std::size_t> NewElements = mOldToNewElements[(*it)->Id()];
-            for(std::set<std::size_t>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
+            std::set<IndexType> NewElements = mOldToNewElements[(*it)->Id()];
+            for(std::set<IndexType>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
             {
                 pModelPartPost->GetElement(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
             }
@@ -1540,8 +1540,8 @@ public:
         ConditionsArrayType& pConditions = mpModelPart->Conditions();
         for(typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
         {
-            std::set<std::size_t> NewConditions = mOldToNewConditions[(*it)->Id()];
-            for(std::set<std::size_t>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
+            std::set<IndexType> NewConditions = mOldToNewConditions[(*it)->Id()];
+            for(std::set<IndexType>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
             {
                 pModelPartPost->GetCondition(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
             }
@@ -1565,13 +1565,13 @@ public:
 
         typename TVariableType::Type Results;
         CoordinatesArrayType LocalPos;
-        std::size_t ElementId;
+        IndexType ElementId;
 
 //        #pragma omp parallel for
         //TODO: check this. This is not parallelized.
         for(NodesArrayType::ptr_iterator it = pTargetNodes.ptr_begin(); it != pTargetNodes.ptr_end(); ++it)
         {
-            std::size_t key = (*it)->Id();
+            IndexType key = (*it)->Id();
             if(mNodeToElement.find(key) != mNodeToElement.end())
             {
                 ElementId = mNodeToElement[key];
@@ -1756,10 +1756,10 @@ private:
     ///@{
     ModelPart::Pointer mpModelPart; // pointer variable to a model_part
 
-    VectorMap<std::size_t, CoordinatesArrayType> mNodeToLocalCoordinates; // vector map to store local coordinates of node on a NURBS entity
-    VectorMap<std::size_t, std::size_t> mNodeToElement; // vector map to store local coordinates of node on a NURBS entity
-    std::map<std::size_t, std::set<std::size_t> > mOldToNewElements; // vector map to store id map from old element to new elements
-    std::map<std::size_t, std::set<std::size_t> > mOldToNewConditions; // vector map to store id map from old condition to new conditions
+    VectorMap<IndexType, CoordinatesArrayType> mNodeToLocalCoordinates; // vector map to store local coordinates of node on a NURBS entity
+    VectorMap<IndexType, IndexType> mNodeToElement; // vector map to store local coordinates of node on a NURBS entity
+    std::map<IndexType, std::set<IndexType> > mOldToNewElements; // vector map to store id map from old element to new elements
+    std::map<IndexType, std::set<IndexType> > mOldToNewConditions; // vector map to store id map from old condition to new conditions
 
     ///@}
     ///@name Private Operators

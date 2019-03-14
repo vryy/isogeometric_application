@@ -44,6 +44,8 @@ public:
     /// Type definition
     typedef typename Element::GeometryType::CoordinatesArrayType CoordinatesArrayType;
     typedef typename Element::GeometryType::PointType NodeType;
+    typedef ModelPart::ElementsContainerType ElementsArrayType;
+    typedef std::size_t IndexType;
 
     /// Default constructor
     NonConformingTSplinesMultipatchLagrangeMesh(typename MultiPatch<TFESpaceType::Dim()>::Pointer pMultiPatch) : mpMultiPatch(pMultiPatch) {}
@@ -114,7 +116,6 @@ public:
 
         // generate nodes and elements for each patch
         std::size_t NodeCounter = mLastNodeId;
-        std::size_t NodeCounter_old = NodeCounter;
         std::size_t ElementCounter = mLastElemId;
         // std::size_t PropertiesCounter = mLastPropId;
         std::vector<double> p_ref(TFESpaceType::Dim());
@@ -148,57 +149,36 @@ public:
                     double eta_min = (*it_cell)->EtaMin();
                     double eta_max = (*it_cell)->EtaMax();
 
-                    // create new nodes for each face
-                    for (std::size_t i = 0; i <= NumDivision1; ++i)
+                    // create nodes and elements
+                    std::vector<array_1d<double, 3> > corners(4);
+
+                    IsogeometricPostUtility::GenerateRectangle(corners, xi_min, xi_max, eta_min, eta_max);
+
+                    std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities
+                        = IsogeometricPostUtility::GenerateQuadGrid(corners[0], corners[1], corners[2], corners[3],
+                            NodeCounter, NumDivision1, NumDivision2);
+
+                    for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
                     {
-                        p_ref[0] = ((double) i) / NumDivision1 * (xi_max - xi_min) + xi_min;
-                        for (std::size_t j = 0; j <= NumDivision2; ++j)
-                        {
-                            p_ref[1] = ((double) j) / NumDivision2 * (eta_max - eta_min) + eta_min;
-
-                            #ifdef DEBUG_MESH_GENERATION
-                            std::cout << "p_ref: " << p_ref[0] << " " << p_ref[1] << std::endl;
-                            #endif
-
-                            NonConformingMultipatchLagrangeMesh<TFESpaceType::Dim()>::CreateNode(p_ref, *it, r_model_part, NodeCounter);
-                            ++NodeCounter;
-                        }
+                        IsogeometricPostUtility::CreateNodeAndTransferValues(points_and_connectivities.first[i], *it, r_model_part, NodeCounter++);
                     }
 
-                    // create and add element
-                    Element::NodesArrayType temp_element_nodes;
-                    for (std::size_t i = 0; i < NumDivision1; ++i)
+                    ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
+                        points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
+
+                    for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                     {
-                        for (std::size_t j = 0; j < NumDivision2; ++j)
-                        {
-                            std::size_t Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j;
-                            std::size_t Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
-                            std::size_t Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j;
-                            std::size_t Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
-
-                            // TODO: check if jacobian checking is necessary
-                            temp_element_nodes.clear();
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node1, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node2, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node4, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node3, NodeKey).base()));
-
-                            Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
-                            r_model_part.AddElement(pNewElement);
-                            #ifdef DEBUG_MESH_GENERATION
-                            std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
-                            for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
-                                std::cout << " " << pNewElement->GetGeometry()[n].Id();
-                            std::cout << std::endl;
-                            #endif
-                        }
+                        r_model_part.AddElement(*it2);
+                        #ifdef DEBUG_MESH_GENERATION
+                        std::cout << "Element " << (*it2)->Id() << " is created with connectivity:";
+                        for (std::size_t n = 0; n < (*it2)->GetGeometry().size(); ++n)
+                            std::cout << " " << (*it2)->GetGeometry()[n].Id();
+                        std::cout << std::endl;
+                        #endif
                     }
 
                     // create and add conditions on the boundary
                     // TODO
-
-                    // update the node counter
-                    NodeCounter_old = NodeCounter;
                 }
 
                 // just to make sure everything is organized properly
@@ -229,67 +209,36 @@ public:
                     double zeta_min = (*it_cell)->ZetaMin();
                     double zeta_max = (*it_cell)->ZetaMax();
 
-                    for (std::size_t i = 0; i <= NumDivision1; ++i)
-                    {
-                        p_ref[0] = ((double) i) / NumDivision1 * (xi_max - xi_min) + xi_min;
-                        for (std::size_t j = 0; j <= NumDivision2; ++j)
-                        {
-                            p_ref[1] = ((double) j) / NumDivision2 * (eta_max - eta_min) + eta_min;
-                            for (std::size_t k = 0; k <= NumDivision3; ++k)
-                            {
-                                p_ref[2] = ((double) k) / NumDivision3 * (zeta_max - zeta_min) + zeta_min;
+                    // create nodes and elements
+                    std::vector<array_1d<double, 3> > corners(8);
 
-                                NonConformingMultipatchLagrangeMesh<TFESpaceType::Dim()>::CreateNode(p_ref, *it, r_model_part, NodeCounter);
-                                ++NodeCounter;
-                            }
-                        }
+                    IsogeometricPostUtility::GenerateBox(corners, xi_min, xi_max, eta_min, eta_max, zeta_min, zeta_max);
+
+                    std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities
+                        = IsogeometricPostUtility::GenerateHexGrid(corners[0], corners[1], corners[2], corners[3],
+                            corners[4], corners[5], corners[6], corners[7], NodeCounter, NumDivision1, NumDivision2, NumDivision3);
+
+                    for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
+                    {
+                        IsogeometricPostUtility::CreateNodeAndTransferValues(points_and_connectivities.first[i], *it, r_model_part, NodeCounter++);
                     }
 
-                    // create and add element
-                    Element::NodesArrayType temp_element_nodes;
-                    for (std::size_t i = 0; i < NumDivision1; ++i)
+                    ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
+                        points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
+
+                    for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                     {
-                        for (std::size_t j = 0; j < NumDivision2; ++j)
-                        {
-                            for (std::size_t k = 0; k < NumDivision3; ++k)
-                            {
-                                std::size_t Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k;
-                                std::size_t Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k;
-                                std::size_t Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k;
-                                std::size_t Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k;
-                                std::size_t Node5 = Node1 + 1;
-                                std::size_t Node6 = Node2 + 1;
-                                std::size_t Node7 = Node3 + 1;
-                                std::size_t Node8 = Node4 + 1;
-
-                                // TODO: check if jacobian checking is necessary
-                                temp_element_nodes.clear();
-                                temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node1, NodeKey).base()));
-                                temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node2, NodeKey).base()));
-                                temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node4, NodeKey).base()));
-                                temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node3, NodeKey).base()));
-                                temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node5, NodeKey).base()));
-                                temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node6, NodeKey).base()));
-                                temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node8, NodeKey).base()));
-                                temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node7, NodeKey).base()));
-
-                                Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
-                                r_model_part.AddElement(pNewElement);
-                                #ifdef DEBUG_MESH_GENERATION
-                                std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
-                                for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
-                                    std::cout << " " << pNewElement->GetGeometry()[n].Id();
-                                std::cout << std::endl;
-                                #endif
-                            }
-                        }
+                        r_model_part.AddElement(*it2);
+                        #ifdef DEBUG_MESH_GENERATION
+                        std::cout << "Element " << (*it2)->Id() << " is created with connectivity:";
+                        for (std::size_t n = 0; n < (*it2)->GetGeometry().size(); ++n)
+                            std::cout << " " << (*it2)->GetGeometry()[n].Id();
+                        std::cout << std::endl;
+                        #endif
                     }
 
                     // create and add conditions on the boundary
                     // TODO
-
-                    // update the node counter
-                    NodeCounter_old = NodeCounter;
                 }
 
                 // just to make sure everything is organized properly

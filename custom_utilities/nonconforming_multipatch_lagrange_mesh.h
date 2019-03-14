@@ -22,6 +22,7 @@
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/multipatch_utility.h"
+#include "custom_utilities/isogeometric_post_utility.h"
 
 // #define DEBUG_MESH_GENERATION
 
@@ -43,6 +44,8 @@ public:
     /// Type definition
     typedef typename Element::GeometryType::CoordinatesArrayType CoordinatesArrayType;
     typedef typename Element::GeometryType::PointType NodeType;
+    typedef ModelPart::ElementsContainerType ElementsArrayType;
+    typedef std::size_t IndexType;
 
     /// Default constructor
     NonConformingMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch) : mpMultiPatch(pMultiPatch) {}
@@ -52,12 +55,12 @@ public:
 
     /// Set the division for all the patches the same number of division in each dimension
     /// Note that if the division is changed, the post_model_part must be generated again
-    void SetUniformDivision(const std::size_t& num_division)
+    void SetUniformDivision(const IndexType& num_division)
     {
         typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
-            for (std::size_t dim = 0; dim < TDim; ++dim)
+            for (IndexType dim = 0; dim < TDim; ++dim)
                 mNumDivision[it->Id()][dim] = num_division;
         }
 
@@ -65,7 +68,7 @@ public:
 
     /// Set the division for the patch at specific dimension
     /// Note that if the division is changed, the post_model_part must be generated again
-    void SetDivision(const std::size_t& patch_id, const int& dim, const std::size_t& num_division)
+    void SetDivision(const std::size_t& patch_id, const int& dim, const IndexType& num_division)
     {
         if (mpMultiPatch->Patches().find(patch_id) == mpMultiPatch->end())
         {
@@ -81,17 +84,19 @@ public:
     void SetBaseElementName(const std::string& BaseElementName) {mBaseElementName = BaseElementName;}
 
     /// Set the last node index
-    void SetLastNodeId(const std::size_t& lastNodeId) {mLastNodeId = lastNodeId;}
+    void SetLastNodeId(const IndexType& lastNodeId) {mLastNodeId = lastNodeId;}
 
     /// Set the last element index
-    void SetLastElemId(const std::size_t& lastElemId) {mLastElemId = lastElemId;}
+    void SetLastElemId(const IndexType& lastElemId) {mLastElemId = lastElemId;}
 
     /// Set the last properties index
-    void SetLastPropId(const std::size_t& lastPropId) {mLastPropId = lastPropId;}
+    void SetLastPropId(const IndexType& lastPropId) {mLastPropId = lastPropId;}
 
     /// Append to model_part, the quad/hex element from patches
     void WriteModelPart(ModelPart& r_model_part) const
     {
+        std::cout << "invoking " << __FUNCTION__ << std::endl;
+
         // get the sample element
         std::string element_name = mBaseElementName;
         if (TDim == 2)
@@ -112,10 +117,9 @@ public:
         Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
         // generate nodes and elements for each patch
-        std::size_t NodeCounter = mLastNodeId;
-        std::size_t NodeCounter_old = NodeCounter;
-        std::size_t ElementCounter = mLastElemId;
-        // std::size_t PropertiesCounter = mLastPropId;
+        IndexType NodeCounter = mLastNodeId;
+        IndexType ElementCounter = mLastElemId;
+        // IndexType PropertiesCounter = mLastPropId;
         std::vector<double> p_ref(TDim);
         typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
@@ -125,221 +129,80 @@ public:
             Properties::Pointer pNewProperties = Properties::Pointer(new Properties(it->Id()));
             r_model_part.AddProperties(pNewProperties);
 
+            // generate the connectivities
+            std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities;
+
             if (TDim == 2)
             {
-                // create new nodes
-                typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
+                // create new nodes and elements
+                typename std::map<IndexType, boost::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
-                std::size_t NumDivision1 = it_num->second[0];
-                std::size_t NumDivision2 = it_num->second[1];
+                IndexType NumDivision1 = it_num->second[0];
+                IndexType NumDivision2 = it_num->second[1];
                 #ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
                 #endif
 
-                for (std::size_t i = 0; i <= NumDivision1; ++i)
-                {
-                    p_ref[0] = ((double) i) / NumDivision1;
-                    for (std::size_t j = 0; j <= NumDivision2; ++j)
-                    {
-                        p_ref[1] = ((double) j) / NumDivision2;
+                std::vector<array_1d<double, 3> > corners(4);
 
-                        #ifdef DEBUG_MESH_GENERATION
-                        std::cout << "p_ref: " << p_ref[0] << " " << p_ref[1] << std::endl;
-                        #endif
+                IsogeometricPostUtility::GenerateRectangle(corners, 0.0, 1.0, 0.0, 1.0);
 
-                        CreateNode(p_ref, *it, r_model_part, NodeCounter);
-                        ++NodeCounter;
-                    }
-                }
-
-                // create and add element
-                Element::NodesArrayType temp_element_nodes;
-                for (std::size_t i = 0; i < NumDivision1; ++i)
-                {
-                    for (std::size_t j = 0; j < NumDivision2; ++j)
-                    {
-                        std::size_t Node1 = NodeCounter_old + i * (NumDivision2 + 1) + j;
-                        std::size_t Node2 = NodeCounter_old + i * (NumDivision2 + 1) + j + 1;
-                        std::size_t Node3 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j;
-                        std::size_t Node4 = NodeCounter_old + (i + 1) * (NumDivision2 + 1) + j + 1;
-
-                        // TODO: check if jacobian checking is necessary
-                        temp_element_nodes.clear();
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node1, NodeKey).base()));
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node2, NodeKey).base()));
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node4, NodeKey).base()));
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node3, NodeKey).base()));
-
-                        Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
-                        r_model_part.AddElement(pNewElement);
-                        #ifdef DEBUG_MESH_GENERATION
-                        std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
-                        for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
-                            std::cout << " " << pNewElement->GetGeometry()[n].Id();
-                        std::cout << std::endl;
-                        #endif
-                    }
-                }
-
-                // create and add conditions on the boundary
-                // TODO
-
-                // update the node counter
-                NodeCounter_old = NodeCounter;
-
-                // just to make sure everything is organized properly
-                r_model_part.Elements().Unique();
+                points_and_connectivities = IsogeometricPostUtility::GenerateQuadGrid(corners[0], corners[1],
+                        corners[2], corners[3], NodeCounter, NumDivision1, NumDivision2);
             }
             else if (TDim == 3)
             {
-                // create new nodes
-                typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
+                // create new nodes and elements
+                typename std::map<IndexType, boost::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
-                std::size_t NumDivision1 = it_num->second[0];
-                std::size_t NumDivision2 = it_num->second[1];
-                std::size_t NumDivision3 = it_num->second[2];
+                IndexType NumDivision1 = it_num->second[0];
+                IndexType NumDivision2 = it_num->second[1];
+                IndexType NumDivision3 = it_num->second[2];
                 #ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
                 KRATOS_WATCH(NumDivision3)
                 #endif
 
-                for (std::size_t i = 0; i <= NumDivision1; ++i)
-                {
-                    p_ref[0] = ((double) i) / NumDivision1;
-                    for (std::size_t j = 0; j <= NumDivision2; ++j)
-                    {
-                        p_ref[1] = ((double) j) / NumDivision2;
-                        for (std::size_t k = 0; k <= NumDivision3; ++k)
-                        {
-                            p_ref[2] = ((double) k) / NumDivision3;
+                std::vector<array_1d<double, 3> > corners(8);
 
-                            CreateNode(p_ref, *it, r_model_part, NodeCounter);
-                            ++NodeCounter;
-                        }
-                    }
-                }
+                IsogeometricPostUtility::GenerateBox(corners, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
 
-                // create and add element
-                Element::NodesArrayType temp_element_nodes;
-                for (std::size_t i = 0; i < NumDivision1; ++i)
-                {
-                    for (std::size_t j = 0; j < NumDivision2; ++j)
-                    {
-                        for (std::size_t k = 0; k < NumDivision3; ++k)
-                        {
-                            std::size_t Node1 = NodeCounter_old + (i * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k;
-                            std::size_t Node2 = NodeCounter_old + (i * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k;
-                            std::size_t Node3 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j) * (NumDivision3 + 1) + k;
-                            std::size_t Node4 = NodeCounter_old + ((i + 1) * (NumDivision2 + 1) + j + 1) * (NumDivision3 + 1) + k;
-                            std::size_t Node5 = Node1 + 1;
-                            std::size_t Node6 = Node2 + 1;
-                            std::size_t Node7 = Node3 + 1;
-                            std::size_t Node8 = Node4 + 1;
-
-                            // TODO: check if jacobian checking is necessary
-                            temp_element_nodes.clear();
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node1, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node2, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node4, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node3, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node5, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node6, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node8, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(r_model_part.Nodes(), Node7, NodeKey).base()));
-
-                            Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
-                            r_model_part.AddElement(pNewElement);
-                            #ifdef DEBUG_MESH_GENERATION
-                            std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
-                            for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
-                                std::cout << " " << pNewElement->GetGeometry()[n].Id();
-                            std::cout << std::endl;
-                            #endif
-                        }
-                    }
-                }
-
-                // create and add conditions on the boundary
-                // TODO
-
-                // update the node counter
-                NodeCounter_old = NodeCounter;
-
-                // just to make sure everything is organized properly
-                r_model_part.Elements().Unique();
+                points_and_connectivities = IsogeometricPostUtility::GenerateHexGrid(corners[0], corners[1], corners[2], corners[3],
+                        corners[4], corners[5], corners[6], corners[7], NodeCounter, NumDivision1, NumDivision2, NumDivision3);
             }
-        }
-    }
 
-    /// Helper function to create new node from patch and add to the model_part. The control values will be carried.
-    static void CreateNode(const std::vector<double>& p_ref, const Patch<TDim>& rPatch, ModelPart& r_model_part, const std::size_t& NodeCounter)
-    {
-        typedef typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctionContainerType;
-        typedef typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctionContainerType;
-        typedef typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctionContainerType;
-
-        typename Patch<TDim>::ControlPointType p = rPatch.pControlPointGridFunction()->GetValue(p_ref);
-
-        typename NodeType::Pointer pNewNode = r_model_part.CreateNewNode(NodeCounter, p.X(), p.Y(), p.Z());
-        #ifdef DEBUG_MESH_GENERATION
-        std::cout << "Node " << pNewNode->Id() << " (" << pNewNode->X() << " " << pNewNode->Y() << " " << pNewNode->Z() << ") is created" << std::endl;
-        #endif
-
-        // transfer the control values
-        DoubleGridFunctionContainerType DoubleGridFunctions_ = rPatch.DoubleGridFunctions();
-        for (typename DoubleGridFunctionContainerType::const_iterator it_gf = DoubleGridFunctions_.begin();
-                it_gf != DoubleGridFunctions_.end(); ++it_gf)
-        {
-            typedef double DataType;
-            typedef Variable<DataType> VariableType;
-            const std::string& var_name = (*it_gf)->pControlGrid()->Name();
-            if (KratosComponents<VariableData>::Has(var_name))
+            // create nodes
+            for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
             {
-                VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
-                DataType value = (*it_gf)->GetValue(p_ref);
-                pNewNode->GetSolutionStepValue(*pVariable) = value;
+                IsogeometricPostUtility::CreateNodeAndTransferValues(points_and_connectivities.first[i], *it, r_model_part, NodeCounter++);
             }
-        }
 
-        Array1DGridFunctionContainerType Array1DGridFunctions_ = rPatch.Array1DGridFunctions();
-        for (typename Array1DGridFunctionContainerType::const_iterator it_gf = Array1DGridFunctions_.begin();
-                it_gf != Array1DGridFunctions_.end(); ++it_gf)
-        {
-            typedef array_1d<double, 3> DataType;
-            typedef Variable<DataType> VariableType;
-            const std::string& var_name = (*it_gf)->pControlGrid()->Name();
-            if (var_name == "CONTROL_POINT_COORDINATES") continue;
-            if (KratosComponents<VariableData>::Has(var_name))
+            // create elements
+            ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
+                points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
+
+            for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
             {
-                VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
-                DataType value = (*it_gf)->GetValue(p_ref);
-                pNewNode->GetSolutionStepValue(*pVariable) = value;
+                r_model_part.AddElement(*it2);
                 #ifdef DEBUG_MESH_GENERATION
-                std::cout << "node " << *pNewNode << "[" << var_name << "]: " << value << std::endl;
-                KRATOS_WATCH(*((*it_gf)->pControlGrid()))
+                std::cout << "Element " << (*it2)->Id() << " is created with connectivity:";
+                for (std::size_t n = 0; n < (*it2)->GetGeometry().size(); ++n)
+                    std::cout << " " << (*it2)->GetGeometry()[n].Id();
+                std::cout << std::endl;
                 #endif
             }
-        }
 
-        VectorGridFunctionContainerType VectorGridFunctions_ = rPatch.VectorGridFunctions();
-        for (typename VectorGridFunctionContainerType::const_iterator it_gf = VectorGridFunctions_.begin();
-                it_gf != VectorGridFunctions_.end(); ++it_gf)
-        {
-            typedef Vector DataType;
-            typedef Variable<DataType> VariableType;
-            const std::string& var_name = (*it_gf)->pControlGrid()->Name();
-            if (KratosComponents<VariableData>::Has(var_name))
-            {
-                VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
-                DataType value = (*it_gf)->GetValue(p_ref);
-                pNewNode->GetSolutionStepValue(*pVariable) = value;
-            }
+            // create and add conditions on the boundary
+            // TODO
+
+            // just to make sure everything is organized properly
+            r_model_part.Elements().Unique();
         }
     }
 
@@ -357,12 +220,12 @@ private:
 
     typename MultiPatch<TDim>::Pointer mpMultiPatch;
 
-    std::map<std::size_t, boost::array<std::size_t, TDim> > mNumDivision;
+    std::map<IndexType, boost::array<IndexType, TDim> > mNumDivision;
 
     std::string mBaseElementName;
-    std::size_t mLastNodeId;
-    std::size_t mLastElemId;
-    std::size_t mLastPropId;
+    IndexType mLastNodeId;
+    IndexType mLastElemId;
+    IndexType mLastPropId;
 
 };
 

@@ -240,15 +240,15 @@ namespace Kratos
 
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
         ModelPart& r_model_part,
-        const Variable<double>& rThisVariable) const
+        const Variable<double>& rThisVariable, const bool& check_active) const
     {
-        TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable, false);
+        TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable, check_active);
     }
 
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
         ModelPart& r_model_part, ElementsArrayType& ElementsArray,
         const Variable<Vector>& rThisVariable,
-        const bool& check_active, std::size_t ncomponents) const
+        const std::size_t& ncomponents, const bool& check_active) const
     {
         #ifdef ENABLE_PROFILING
         //profiling variables
@@ -461,9 +461,9 @@ namespace Kratos
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
         ModelPart& r_model_part,
         const Variable<Vector>& rThisVariable,
-        std::size_t ncomponents) const
+        const std::size_t& ncomponents, const bool& check_active) const
     {
-        TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable, ncomponents, false);
+        TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable, ncomponents, check_active);
     }
 
 }

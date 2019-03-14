@@ -257,7 +257,7 @@ public:
                   << rThisVariable.Name() << " starts" << std::endl;
         #endif
 
-        TransferVariablesToNodes(pSolver, r_model_part, ElementsArray, rThisVariable, false);
+        TransferVariablesToNodes(pSolver, r_model_part, ElementsArray, rThisVariable);
 
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
@@ -370,7 +370,8 @@ private:
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
                                   ModelPart& r_model_part, ElementsArrayType& ElementsArray,
-                                  const Variable<double>& rThisVariable, const bool& check_active) const;
+                                  const Variable<double>& rThisVariable,
+                                  const bool& check_active = false) const;
 
     /**
      * Transfer of rThisVariable defined on integration points to corresponding
@@ -392,7 +393,8 @@ private:
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
                                   ModelPart& r_model_part,
-                                  const Variable<double>& rThisVariable) const;
+                                  const Variable<double>& rThisVariable,
+                                  const bool& check_active = false) const;
 
     /**
      * Transfer of rThisVariable defined on integration points to corresponding
@@ -414,10 +416,10 @@ private:
      * REMARKS: this subroutine will only transfer the variables to nodes connecting with the mesh defined by ElementsArray
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-        ModelPart& r_model_part, ElementsArrayType& ElementsArray,
-        const Variable<Vector>& rThisVariable,
-        const bool& check_active,
-        std::size_t ncomponents = 6) const;
+                                  ModelPart& r_model_part, ElementsArrayType& ElementsArray,
+                                  const Variable<Vector>& rThisVariable,
+                                  const std::size_t& ncomponents = 6,
+                                  const bool& check_active = false) const;
 
     /**
      * Transfer of rThisVariable defined on integration points to corresponding
@@ -443,7 +445,8 @@ private:
     void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
                                   ModelPart& r_model_part,
                                   const Variable<Vector>& rThisVariable,
-                                  std::size_t ncomponents = 6) const;
+                                  const std::size_t& ncomponents = 6,
+                                  const bool& check_active = false) const;
 
     ///@}
     ///@name Private  Access

@@ -1,3 +1,4 @@
+#include "includes/kratos_flags.h"
 #include "includes/deprecated_variables.h"
 #include "custom_utilities/isogeometric_math_utils.h"
 #include "custom_utilities/bezier_post_utility.h"

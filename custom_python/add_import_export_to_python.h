@@ -41,6 +41,20 @@ void MultiPatchExporter_Export(TExporter& rDummy,
     rDummy.template Export<TDim>(pPatch, filename);
 }
 
+template<int TDim, class TExporter, class TPatchType, typename TVariableType>
+void MultiPatchExporter_Export_Variable(TExporter& rDummy,
+        typename TPatchType::Pointer pPatch, const TVariableType& rVariable, const std::string& filename)
+{
+    rDummy.template Export<TDim, TVariableType>(pPatch, rVariable, filename);
+}
+
+template<int TDim, class TExporter, class TPatchType, typename TVariableType>
+void MultiPatchExporter_Export_Variable_WithComponents(TExporter& rDummy,
+        typename TPatchType::Pointer pPatch, const TVariableType& rVariable, const std::string& filename, const std::size_t& ncomponents)
+{
+    rDummy.template Export<TDim, TVariableType>(pPatch, rVariable, filename, ncomponents);
+}
+
 }  // namespace Python.
 
 }  // namespace Kratos.

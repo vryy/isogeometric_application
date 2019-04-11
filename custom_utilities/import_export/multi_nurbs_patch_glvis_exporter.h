@@ -24,6 +24,81 @@
 namespace Kratos
 {
 
+template<int TDim, typename TVariableType>
+struct MultiNURBSPatchGLVisExporterWriter_Helper
+{};
+
+template<int TDim>
+struct MultiNURBSPatchGLVisExporterWriter_Helper<TDim, Variable<double> >
+{
+    static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const Variable<double>& rVariable, std::ostream& rOStream)
+    {
+        rOStream << "FiniteElementSpace" << std::endl;
+        rOStream << "FiniteElementCollection: NURBS1" << std::endl;
+        rOStream << "VDim: 1" << std::endl;
+        rOStream << "Ordering: 1" << std::endl;
+        rOStream << std::endl;
+
+        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        for (patch_iterator it = pMultiPatch->Patches().begin(); it != pMultiPatch->Patches().end(); ++it)
+        {
+            typename ControlGrid<double>::Pointer pControlGrid = it->pGetGridFunction(rVariable)->pControlGrid();
+            for (std::size_t i = 0; i < pControlGrid->size(); ++i)
+                rOStream << (*pControlGrid)[i] << std::endl;
+        }
+    }
+};
+
+template<int TDim>
+struct MultiNURBSPatchGLVisExporterWriter_Helper<TDim, Variable<array_1d<double, 3> > >
+{
+    static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const Variable<array_1d<double, 3> >& rVariable, std::ostream& rOStream)
+    {
+        rOStream << "FiniteElementSpace" << std::endl;
+        rOStream << "FiniteElementCollection: NURBS1" << std::endl;
+        rOStream << "VDim: 3" << std::endl;
+        rOStream << "Ordering: 1" << std::endl;
+        rOStream << std::endl;
+
+        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        for (patch_iterator it = pMultiPatch->Patches().begin(); it != pMultiPatch->Patches().end(); ++it)
+        {
+            typename ControlGrid<array_1d<double, 3> >::Pointer pControlGrid = it->pGetGridFunction(rVariable)->pControlGrid();
+            for (std::size_t i = 0; i < pControlGrid->size(); ++i)
+            {
+                const array_1d<double, 3>& v = (*pControlGrid)[i];
+                rOStream << v[0] << " " << v[1] << " " << v[2] << std::endl;
+            }
+        }
+    }
+};
+
+template<int TDim>
+struct MultiNURBSPatchGLVisExporterWriter_Helper<TDim, Variable<Vector> >
+{
+    static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const Variable<Vector>& rVariable, std::ostream& rOStream, const std::size_t& ncomponents)
+    {
+        rOStream << "FiniteElementSpace" << std::endl;
+        rOStream << "FiniteElementCollection: NURBS1" << std::endl;
+        rOStream << "VDim: " << ncomponents << std::endl;
+        rOStream << "Ordering: 1" << std::endl;
+        rOStream << std::endl;
+
+        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        for (patch_iterator it = pMultiPatch->Patches().begin(); it != pMultiPatch->Patches().end(); ++it)
+        {
+            typename ControlGrid<Vector>::Pointer pControlGrid = it->pGetGridFunction(rVariable)->pControlGrid();
+            for (std::size_t i = 0; i < pControlGrid->size(); ++i)
+            {
+                const Vector& v = (*pControlGrid)[i];
+                for (std::size_t i = 0; i < ncomponents; ++i)
+                    rOStream << " " << v[i];
+                rOStream << std::endl;
+            }
+        }
+    }
+};
+
 /**
 Export NURBS patch/multipatch to GLVis to visualize with NURBS toolbox by M. Spink
  */
@@ -48,7 +123,27 @@ public:
     /// Export a single patch
     virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const
     {
-        BaseType::Export(pPatch, rOStream);
+        typename MultiPatch<TDim>::Pointer pMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
+        pMultiPatch->AddPatch(pPatch);
+        this->Export(pMultiPatch, rOStream);
+    }
+
+    /// Export the results from single patch
+    template<typename TVariableType>
+    void Export(typename Patch<TDim>::Pointer pPatch, const TVariableType& rVariable, std::ostream& rOStream) const
+    {
+        typename MultiPatch<TDim>::Pointer pMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
+        pMultiPatch->AddPatch(pPatch);
+        this->Export(pMultiPatch, rVariable, rOStream);
+    }
+
+    /// Export the results from single patch
+    template<typename TVariableType>
+    void Export(typename Patch<TDim>::Pointer pPatch, const TVariableType& rVariable, std::ostream& rOStream, const std::size_t& ncomponents) const
+    {
+        typename MultiPatch<TDim>::Pointer pMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
+        pMultiPatch->AddPatch(pPatch);
+        this->Export(pMultiPatch, rVariable, rOStream, ncomponents);
     }
 
     /// Export a multipatch
@@ -156,6 +251,20 @@ public:
         }
 
         rOStream << std::endl;
+    }
+
+    /// Export the results from multipatch
+    template<typename TVariableType>
+    void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const TVariableType& rVariable, std::ostream& rOStream) const
+    {
+        MultiNURBSPatchGLVisExporterWriter_Helper<TDim, TVariableType>::Export(pMultiPatch, rVariable, rOStream);
+    }
+
+    /// Export the results from multipatch
+    template<typename TVariableType>
+    void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const TVariableType& rVariable, std::ostream& rOStream, const std::size_t& ncomponents) const
+    {
+        MultiNURBSPatchGLVisExporterWriter_Helper<TDim, TVariableType>::Export(pMultiPatch, rVariable, rOStream, ncomponents);
     }
 
 private:
@@ -593,6 +702,7 @@ class MultiNURBSPatchGLVisExporter
 public:
     KRATOS_CLASS_POINTER_DEFINITION(MultiNURBSPatchGLVisExporter);
 
+    /// Write a single patch to the mesh file
     template<int TDim>
     static void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename)
     {
@@ -606,6 +716,35 @@ public:
         std::cout <<" Patch " << pPatch->Id() << " is exported to " << filename << " successfully" << std::endl;
     }
 
+    /// Write the results from single patch to the results file
+    template<int TDim, typename TVariableType>
+    static void Export(typename Patch<TDim>::Pointer pPatch, const TVariableType& rVariable, const std::string& filename)
+    {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
+        MultiNURBSPatchGLVisExporterWriter<TDim> dummy;
+        dummy.Export(pPatch, rVariable, outfile);
+
+        outfile.close();
+        std::cout <<" Patch " << pPatch->Id() << " results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
+    }
+
+    /// Write the results from single patch to the results file
+    template<int TDim, typename TVariableType>
+    static void Export(typename Patch<TDim>::Pointer pPatch, const TVariableType& rVariable, const std::string& filename, const std::size_t& ncomponents)
+    {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
+        MultiNURBSPatchGLVisExporterWriter<TDim> dummy;
+        dummy.Export(pPatch, rVariable, outfile, ncomponents);
+
+        outfile.close();
+        std::cout <<" Patch " << pPatch->Id() << " results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
+    }
+
+    /// Write a multipatch to the mesh file
     template<int TDim>
     static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const std::string& filename)
     {
@@ -616,7 +755,35 @@ public:
         dummy.Export(pMultiPatch, outfile);
 
         outfile.close();
-        std::cout <<" Multipatch is exported to " << filename << " successfully" << std::endl;
+        std::cout <<" MultiPatch is exported to " << filename << " successfully" << std::endl;
+    }
+
+    /// Write the results from multipatch to the results file
+    template<int TDim, typename TVariableType>
+    static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const TVariableType& rVariable, const std::string& filename)
+    {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
+        MultiNURBSPatchGLVisExporterWriter<TDim> dummy;
+        dummy.Export(pMultiPatch, rVariable, outfile);
+
+        outfile.close();
+        std::cout <<" MultiPatch results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
+    }
+
+    /// Write the results from multipatch to the results file
+    template<int TDim, typename TVariableType>
+    static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const TVariableType& rVariable, const std::string& filename, const std::size_t& ncomponents)
+    {
+        std::ofstream outfile;
+        outfile.open(filename, std::ios::out);
+
+        MultiNURBSPatchGLVisExporterWriter<TDim> dummy;
+        dummy.Export(pMultiPatch, rVariable, outfile, ncomponents);
+
+        outfile.close();
+        std::cout <<" MultiPatch results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Information

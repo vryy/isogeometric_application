@@ -141,6 +141,20 @@ public:
     }
 
     /// Transfer the control values from patch to node
+    /// The node has to be inside the patch
+    template<class TPatchType>
+    static void TransferValuesToNodes(NodeType& rNode, const TPatchType& rPatch)
+    {
+        typename TPatchType::Array1DGridFunctionType::ConstPointer pControlPointCoordinatesGridFunction = rPatch.pGetGridFunction(CONTROL_POINT_COORDINATES);
+
+        typename TPatchType::Array1DGridFunctionType::DataType p_ref;
+        pControlPointCoordinatesGridFunction->LocalCoordinates(rNode, p_ref);
+
+        TransferValuesToNodes(rNode, p_ref, rPatch);
+    }
+
+    /// Transfer the control values from patch to node
+    /// p_ref is the local coordinates of the node in patch
     template<class TPatchType, typename TCoordinatesType>
     static void TransferValuesToNodes(NodeType& rNode, const TCoordinatesType& p_ref, const TPatchType& rPatch)
     {
@@ -160,7 +174,8 @@ public:
             {
                 VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
                 DataType value = (*it_gf)->GetValue(p_ref);
-                rNode.GetSolutionStepValue(*pVariable) = value;
+                if (rNode.SolutionStepsDataHas(*pVariable))
+                    rNode.GetSolutionStepValue(*pVariable) = value;
             }
         }
 
@@ -176,7 +191,8 @@ public:
             {
                 VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
                 DataType value = (*it_gf)->GetValue(p_ref);
-                rNode.GetSolutionStepValue(*pVariable) = value;
+                if (rNode.SolutionStepsDataHas(*pVariable))
+                    rNode.GetSolutionStepValue(*pVariable) = value;
             }
         }
 
@@ -191,9 +207,56 @@ public:
             {
                 VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
                 DataType value = (*it_gf)->GetValue(p_ref);
-                rNode.GetSolutionStepValue(*pVariable) = value;
+                if (rNode.SolutionStepsDataHas(*pVariable))
+                    rNode.GetSolutionStepValue(*pVariable) = value;
             }
         }
+    }
+
+    /// Transfer the control values from patch to Gauss points
+    template<class TEntityType, typename TVariableType, class TPatchType>
+    static void TransferValuesToGaussPoints(TEntityType& rElement, const TVariableType& rVariable,
+        const TPatchType& rPatch, const ProcessInfo& rProcessInfo)
+    {
+        GeometryData::IntegrationMethod ThisIntegrationMethod = rElement.GetIntegrationMethod();
+
+        GeometryType& rGeometry = rElement.GetGeometry();
+
+        typename TPatchType::Array1DGridFunctionType::ConstPointer pControlPointCoordinatesGridFunction
+            = rPatch.pGetGridFunction(CONTROL_POINT_COORDINATES);
+
+        typename GridFunction<TPatchType::FESpaceType::Dim(), typename TVariableType::Type>::ConstPointer pGridFunc
+            = rPatch.pGetGridFunction(rVariable);
+
+        #ifdef ENABLE_BEZIER_GEOMETRY
+        //initialize the geometry
+        rGeometry.Initialize(ThisIntegrationMethod);
+        #endif
+
+        const IntegrationPointsArrayType& integration_points = rGeometry.IntegrationPoints(ThisIntegrationMethod);
+
+        std::vector<typename TVariableType::Type> ValuesOnIntPoint(integration_points.size());
+
+        CoordinatesArrayType GlobalCoords;
+        typename TPatchType::Array1DGridFunctionType::DataType p_ref;
+
+        for (unsigned int PointNumber = 0; PointNumber < integration_points.size(); ++PointNumber)
+        {
+            rGeometry.GlobalCoordinates(GlobalCoords, integration_points[PointNumber]);
+
+            typename TPatchType::Array1DGridFunctionType::ConstPointer pControlPointCoordinatesGridFunction = rPatch.pGetGridFunction(CONTROL_POINT_COORDINATES);
+
+            pControlPointCoordinatesGridFunction->LocalCoordinates(GlobalCoords, p_ref);
+
+            ValuesOnIntPoint[PointNumber] = pGridFunc->GetValue(p_ref);
+        }
+
+        #ifdef ENABLE_BEZIER_GEOMETRY
+        // clean the geometry
+        rGeometry.Clean();
+        #endif
+
+        rElement.SetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint, rProcessInfo);
     }
 
     /// Generate corner points for regular geometry

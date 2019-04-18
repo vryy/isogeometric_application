@@ -370,6 +370,19 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByQuadrilateralizati
     return output;
 }
 
+template<class TPatchType>
+void IsogeometricPostUtility_TransferValuesToNodes(IsogeometricPostUtility& rDummy, Element::GeometryType::PointType& rNode, const TPatchType& rPatch)
+{
+    rDummy.TransferValuesToNodes(rNode, rPatch);
+}
+
+template<class TEntityType, typename TVariableType, class TPatchType>
+void IsogeometricPostUtility_TransferValuesToGaussPoints(IsogeometricPostUtility& rDummy, TEntityType& rElement,
+    const TVariableType& rVariable, const TPatchType& rPatch, const ProcessInfo& rProcessInfo)
+{
+    rDummy.TransferValuesToGaussPoints(rElement, rVariable, rPatch, rProcessInfo);
+}
+
 //////////////////////////////////////////////////////////
 
 void BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& dummy,
@@ -447,9 +460,17 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
 //    .def("bezier_extraction_tsplines_1d", &BezierUtils::bezier_extraction_tsplines_1d)
     ;
 
-    class_<IsogeometricPostUtility,IsogeometricPostUtility::Pointer, boost::noncopyable>("IsogeometricPostUtility", init<>())
+    class_<IsogeometricPostUtility, IsogeometricPostUtility::Pointer, boost::noncopyable>("IsogeometricPostUtility", init<>())
     .def("TransferElements", &IsogeometricPostUtility_TransferElements)
     .def("TransferConditions", &IsogeometricPostUtility_TransferConditions)
+    .def("TransferValuesToNodes", &IsogeometricPostUtility_TransferValuesToNodes<Patch<2> >)
+    .def("TransferValuesToNodes", &IsogeometricPostUtility_TransferValuesToNodes<Patch<2> >)
+    .def("TransferValuesToGaussPoints", &IsogeometricPostUtility_TransferValuesToGaussPoints<Element, Variable<double>, Patch<2> >)
+    .def("TransferValuesToGaussPoints", &IsogeometricPostUtility_TransferValuesToGaussPoints<Element, Variable<array_1d<double, 3> >, Patch<2> >)
+    .def("TransferValuesToGaussPoints", &IsogeometricPostUtility_TransferValuesToGaussPoints<Element, Variable<Vector>, Patch<2> >)
+    .def("TransferValuesToGaussPoints", &IsogeometricPostUtility_TransferValuesToGaussPoints<Element, Variable<double>, Patch<3> >)
+    .def("TransferValuesToGaussPoints", &IsogeometricPostUtility_TransferValuesToGaussPoints<Element, Variable<array_1d<double, 3> >, Patch<3> >)
+    .def("TransferValuesToGaussPoints", &IsogeometricPostUtility_TransferValuesToGaussPoints<Element, Variable<Vector>, Patch<3> >)
     .def("FindElements", &IsogeometricPostUtility_FindElements)
     .def("FindConditions", &IsogeometricPostUtility_FindConditions)
     .def("CreateConditions", &IsogeometricPostUtility_CreateConditionsByTriangulation<array_1d<double, 3>, Patch<3> >)

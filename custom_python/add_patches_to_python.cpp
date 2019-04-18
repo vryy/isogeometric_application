@@ -243,8 +243,8 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
 
     ss.str(std::string());
     ss << "Patch" << TDim << "D";
-    class_<Patch<TDim> >
-    // class_<Patch<TDim>, typename Patch<TDim>::Pointer >
+    class_<Patch<TDim>, bases<Flags> >
+    // class_<Patch<TDim>, typename Patch<TDim>::Pointer > // do not use this to export Patch pointer
     (ss.str().c_str(), init<const std::size_t&, typename FESpace<TDim>::Pointer>())
     .add_property("Id", &Patch_GetId<Patch<TDim> >, &Patch_SetId<Patch<TDim> >)
     .add_property("Prefix", &Patch_GetPrefix<Patch<TDim> >, &Patch_SetPrefix<Patch<TDim> >)

@@ -23,6 +23,8 @@
 #include "includes/define.h"
 #include "includes/serializer.h"
 #include "containers/array_1d.h"
+#include "containers/flags.h"
+#include "utilities/indexed_object.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/grid_function.h"
@@ -46,7 +48,7 @@ template<int TDim> class PatchInterface;
 This class represents an isogeometric patch in parametric coordinates. An isogeometric patch can be a NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
  */
 template<int TDim>
-class Patch : public boost::enable_shared_from_this<Patch<TDim> >
+class Patch : public IndexedObject, public Flags, public boost::enable_shared_from_this<Patch<TDim> >
 {
 public:
     /// Pointer definition
@@ -84,13 +86,17 @@ public:
     typedef FESpace<TDim> FESpaceType;
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : mId(Id), mpFESpace(NULL), mPrefix("Patch")
+    Patch(const std::size_t& Id)
+    : IndexedObject(Id), mpFESpace(NULL), mPrefix("Patch")
     {
+        this->Set(ACTIVE, true);
     }
 
     /// Constructor with id and FESpace
-    Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace) : mId(Id), mpFESpace(pFESpace), mPrefix("Patch")
+    Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
+    : IndexedObject(Id), mpFESpace(pFESpace), mPrefix("Patch")
     {
+        this->Set(ACTIVE, true);
         if (mpFESpace == NULL)
             KRATOS_THROW_ERROR(std::logic_error, "Invalid FESpace is provided", "")
     }
@@ -112,7 +118,7 @@ public:
     }
 
     /// Get the working space dimension of the patch
-    std::size_t WorkingSpaceDimension() const {return TDim;}
+    constexpr std::size_t WorkingSpaceDimension() {return TDim;}
 
     /// Set the prefix for the patch
     void SetPrefix(const std::string& prefix) {mPrefix = prefix;}
@@ -120,19 +126,13 @@ public:
     /// Get the prefix of the patch
     const std::string& Prefix() const {return mPrefix;}
 
-    /// Set the Id of this patch
-    void SetId(const std::size_t& Id) {mId = Id;}
-
     /// Get the name of the patch. The name is prefix + id
     std::string Name() const
     {
         std::stringstream ss;
-        ss << mPrefix << "_" << mId;
+        ss << mPrefix << "_" << Id();
         return ss.str();
     }
-
-    /// Get the Id of this patch
-    const std::size_t& Id() const {return mId;}
 
     /// Set the corresponding FESpace for the patch
     void SetFESpace(typename FESpace<TDim>::Pointer pFESpace) {mpFESpace = pFESpace;}
@@ -792,7 +792,6 @@ public:
 
 private:
 
-    std::size_t mId;
     std::string mPrefix;
 
     // FESpace contains the shape function information and various information with regards to the functional space.
@@ -813,7 +812,7 @@ private:
     typename MultiPatch<TDim>::WeakPointer mpParentMultiPatch;
 
     /// Empty Constructor for serializer
-    Patch() : mId(0), mpFESpace(NULL) {}
+    Patch() : IndexedObject(0), mpFESpace(NULL) {}
 
     /// Serializer
     friend class Serializer;
@@ -892,7 +891,7 @@ private:
  * In fact, null-D patch is a vertex
  */
 template<>
-class Patch<0>
+class Patch<0> : public IndexedObject, public Flags
 {
 public:
     /// Pointer definition
@@ -902,19 +901,16 @@ public:
     typedef ControlPoint<double> ControlPointType;
 
     /// Default constructor
-    Patch() : mId(0) {}
+    Patch() : IndexedObject(0) {}
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : mId(Id) {}
+    Patch(const std::size_t& Id) : IndexedObject(Id) {}
 
     /// Destructor
     virtual ~Patch() {}
 
     /// Set the FESpace for the patch
     void SetFESpace(typename FESpace<0>::Pointer pFESpace) {}
-
-    /// Get the Id of this patch
-    const std::size_t& Id() const {return mId;}
 
     /// Get the number of basis functions defined over the patch
     virtual const std::size_t TotalNumber() const
@@ -993,35 +989,29 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
     }
-
-private:
-    std::size_t mId;
 };
 
 /**
  * Template specific instantiation for -1-D patch to terminate the compilation.
  */
 template<>
-class Patch<-1>
+class Patch<-1> : public IndexedObject, public Flags
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
 
     /// Default constructor
-    Patch() : mId(0) {}
+    Patch() : IndexedObject(0) {}
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : mId(Id) {}
+    Patch(const std::size_t& Id) : IndexedObject(Id) {}
 
     /// Destructor
     virtual ~Patch() {}
 
     /// Set the FESpace for the patch
     void SetFESpace(typename FESpace<-1>::Pointer pFESpace) {}
-
-    /// Get the Id of this patch
-    const std::size_t& Id() const {return mId;}
 
     /// Get the number of basis functions defined over the patch
     virtual const std::size_t TotalNumber() const
@@ -1081,35 +1071,29 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
     }
-
-private:
-    std::size_t mId;
 };
 
 /**
  * Template specific instantiation for -2-D patch to terminate the compilation.
  */
 template<>
-class Patch<-2>
+class Patch<-2> : public IndexedObject, public Flags
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
 
     /// Default constructor
-    Patch() : mId(0) {}
+    Patch() : IndexedObject(0) {}
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : mId(Id) {}
+    Patch(const std::size_t& Id) : IndexedObject(Id) {}
 
     /// Destructor
     virtual ~Patch() {}
 
     /// Set the FESpace for the patch
     void SetFESpace(typename FESpace<-2>::Pointer pFESpace) {}
-
-    /// Get the Id of this patch
-    const std::size_t& Id() const {return mId;}
 
     /// Get the number of basis functions defined over the patch
     virtual const std::size_t TotalNumber() const
@@ -1169,9 +1153,6 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
     }
-
-private:
-    std::size_t mId;
 };
 
 /// output stream function

@@ -124,6 +124,10 @@ public:
         typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
+            std::cout << "Patch " << it->Id() << " is ACTIVE: " << it->Is(ACTIVE) << std::endl;
+            if (!it->Is(ACTIVE))
+                continue;
+
             // create new properties and add to model_part
             // Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));
             Properties::Pointer pNewProperties = Properties::Pointer(new Properties(it->Id()));

@@ -11,6 +11,7 @@
 
 // System includes
 #include <vector>
+#include <array>
 
 // External includes
 
@@ -39,15 +40,15 @@ class NonConformingVariableMultipatchLagrangeMesh
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(NonConformingVariableMultipatchLagrangeMesh);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(NonConformingVariableMultipatchLagrangeMesh);
 
     /// Type definition
     typedef typename Element::GeometryType::CoordinatesArrayType CoordinatesArrayType;
     typedef typename Element::GeometryType::PointType NodeType;
 
     /// Default constructor
-    NonConformingVariableMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch, ModelPart::Pointer p_model_part)
-    : mpMultiPatch(pMultiPatch), mpModelPart(p_model_part)
+    NonConformingVariableMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch, ModelPart& r_model_part)
+    : mpMultiPatch(pMultiPatch), mr_model_part(r_model_part)
     {}
 
     /// Destructor
@@ -125,12 +126,12 @@ public:
         {
             // create new properties and add to model_part
             Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));
-            mpModelPart->AddProperties(pNewProperties);
+            mr_model_part.AddProperties(pNewProperties);
 
             if (TDim == 2)
             {
                 // create new nodes
-                typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
+                typename std::map<std::size_t, std::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
@@ -170,13 +171,13 @@ public:
 
                         // TODO: check if jacobian checking is necessary
                         temp_element_nodes.clear();
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node1, NodeKey).base()));
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node2, NodeKey).base()));
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node4, NodeKey).base()));
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node3, NodeKey).base()));
+                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node1, NodeKey).base()));
+                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node2, NodeKey).base()));
+                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node4, NodeKey).base()));
+                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node3, NodeKey).base()));
 
                         Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
-                        mpModelPart->AddElement(pNewElement);
+                        mr_model_part.AddElement(pNewElement);
                         #ifdef DEBUG_MESH_GENERATION
                         std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
                         for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
@@ -193,12 +194,12 @@ public:
                 NodeCounter_old = NodeCounter;
 
                 // just to make sure everything is organized properly
-                mpModelPart->Elements().Unique();
+                mr_model_part.Elements().Unique();
             }
             else if (TDim == 3)
             {
                 // create new nodes
-                typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
+                typename std::map<std::size_t, std::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
@@ -246,17 +247,17 @@ public:
 
                             // TODO: check if jacobian checking is necessary
                             temp_element_nodes.clear();
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node1, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node2, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node4, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node3, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node5, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node6, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node8, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node7, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node1, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node2, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node4, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node3, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node5, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node6, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node8, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node7, NodeKey).base()));
 
                             Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
-                            mpModelPart->AddElement(pNewElement);
+                            mr_model_part.AddElement(pNewElement);
                             #ifdef DEBUG_MESH_GENERATION
                             std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
                             for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
@@ -274,7 +275,7 @@ public:
                 NodeCounter_old = NodeCounter;
 
                 // just to make sure everything is organized properly
-                mpModelPart->Elements().Unique();
+                mr_model_part.Elements().Unique();
             }
         }
     }
@@ -282,9 +283,9 @@ public:
 
 //    /// Transfer the variable to the model_part
 //    template<typename TVariableType>
-//    void TransferVariables(const TVariableType& rVariable, ModelPart::Pointer mpModelPart) const
+//    void TransferVariables(const TVariableType& rVariable, ModelPart& r_model_part) const
 //    {
-//        this->TransferVariables(rVariable, mpMultiPatch, mpModelPart);
+//        this->TransferVariables(rVariable, mpMultiPatch, r_model_part);
 //    }
 
 
@@ -313,7 +314,7 @@ public:
             if (TDim == 2)
             {
                 // get nodes nodes
-                typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
+                typename std::map<std::size_t, std::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
@@ -335,7 +336,7 @@ public:
                         std::cout << "p_ref: " << p_ref[0] << " " << p_ref[1] << std::endl;
                         #endif
 
-                        NodeType::Pointer pNode = mpModelPart->pGetNode(NodeCounter);
+                        NodeType::Pointer pNode = mr_model_part.pGetNode(NodeCounter);
                         typename TVariableType::Type value = pGridFunction->GetValue(p_ref);
                         pNode->GetSolutionStepValue(rVariable) = value;
                         ++NodeCounter;
@@ -345,7 +346,7 @@ public:
             else if (TDim == 3)
             {
                 // create new nodes
-                typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
+                typename std::map<std::size_t, std::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
@@ -368,7 +369,7 @@ public:
                         {
                             p_ref[2] = ((double) k) / NumDivision3;
 
-                            NodeType::Pointer pNode = mpModelPart->pGetNode(NodeCounter);
+                            NodeType::Pointer pNode = mr_model_part.pGetNode(NodeCounter);
                             typename TVariableType::Type value = pGridFunction->GetValue(p_ref);
                             pNode->GetSolutionStepValue(rVariable) = value;
                             ++NodeCounter;
@@ -394,9 +395,9 @@ private:
 
     typename MultiPatch<TDim>::Pointer mpMultiPatch;
 
-    ModelPart::Pointer mpModelPart; // pointer to keep track of the generated model_part
+    ModelPart& mr_model_part; // reference to keep track of the generated model_part
 
-    std::map<std::size_t, boost::array<std::size_t, TDim> > mNumDivision;
+    std::map<std::size_t, std::array<std::size_t, TDim> > mNumDivision;
 
     std::string mBaseElementName;
     std::size_t mLastNodeId;
@@ -410,7 +411,7 @@ private:
     {
         typename Patch<TDim>::ControlPointType p = rPatch.pControlPointGridFunction()->GetValue(p_ref);
 
-        typename NodeType::Pointer pNewNode = mpModelPart->CreateNewNode(NodeCounter, p.X(), p.Y(), p.Z());
+        typename NodeType::Pointer pNewNode = mr_model_part.CreateNewNode(NodeCounter, p.X(), p.Y(), p.Z());
         #ifdef DEBUG_MESH_GENERATION
         std::cout << "Node " << pNewNode->Id() << " (" << pNewNode->X() << " " << pNewNode->Y() << " " << pNewNode->Z() << ") is created" << std::endl;
         #endif

@@ -22,12 +22,8 @@
 
 // External includes
 #include <omp.h>
-#include "boost/progress.hpp"
-#include "boost/algorithm/string.hpp"
-#include "boost/foreach.hpp"
-#include "boost/python.hpp"
-#include "boost/python/stl_iterator.hpp"
-
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // Project includes
 #include "includes/define.h"
@@ -124,7 +120,7 @@ public:
 //    static const int ECHO_REFIMENT      = 0b0000000000001000;
 
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(DeprecatedHBMesh);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(DeprecatedHBMesh);
 
     /// Type definition
     typedef Patch<TDim> BaseType;
@@ -195,7 +191,7 @@ public:
     void Refine(const std::size_t& Id);
 
     /// Refine a list of bfs provided by python list. The list will be automatically sorted by the level.
-    void RefineNodes(boost::python::list& pyList);
+    void RefineNodes(pybind11::list& pyList);
 
     /// Refine on a cuboid domain
     void RefineWindow(const double& Xi_min, const double& Xi_max,
@@ -361,7 +357,7 @@ template<>
 class DeprecatedHBMesh<0> : public Patch<0>
 {
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(DeprecatedHBMesh);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(DeprecatedHBMesh);
 
     /// Default constructor
     DeprecatedHBMesh(const std::size_t& Id, const std::string& Name) : Patch<0>(Id), mName(Name) {}

@@ -31,15 +31,16 @@
 #include "includes/ublas_interface.h"
 #include "includes/deprecated_variables.h"
 #include "includes/legacy_structural_app_vars.h"
+#include "containers/vector_map.h"
 #include "spaces/ublas_space.h"
 #include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
-#include "utilities/auto_collapse_spatial_binning.h"
 #include "custom_utilities/iga_define.h"
-#include "custom_geometries/isogeometric_geometry.h"
+#include "custom_utilities/auto_collapse_spatial_binning.h"
 #include "custom_utilities/isogeometric_utility.h"
 #include "custom_utilities/isogeometric_post_utility.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "custom_geometries/isogeometric_geometry.h"
+#include "isogeometric_application.h"
 
 //#define DEBUG_LEVEL1
 //#define DEBUG_LEVEL2
@@ -98,13 +99,13 @@ public:
 
     typedef boost::numeric::ublas::matrix<double> ValuesArrayContainerType;
 
-    typedef typename ModelPart::NodesContainerType NodesArrayType;
+    typedef ModelPart::NodesContainerType NodesArrayType;
 
-    typedef typename ModelPart::ElementsContainerType ElementsArrayType;
+    typedef ModelPart::ElementsContainerType ElementsArrayType;
 
-    typedef typename ModelPart::ConditionsContainerType ConditionsArrayType;
+    typedef ModelPart::ConditionsContainerType ConditionsArrayType;
 
-    typedef typename Element::GeometryType GeometryType;
+    typedef Element::GeometryType GeometryType;
 
     typedef typename GeometryType::PointType NodeType;
 
@@ -125,15 +126,15 @@ public:
     typedef std::size_t IndexType;
 
     /// Pointer definition of BezierClassicalPostUtility
-    KRATOS_CLASS_POINTER_DEFINITION(BezierClassicalPostUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BezierClassicalPostUtility);
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    BezierClassicalPostUtility(ModelPart::Pointer pModelPart)
-    : mpModelPart(pModelPart)
+    BezierClassicalPostUtility(ModelPart& r_model_part)
+    : mr_model_part(r_model_part)
     {
     }
 
@@ -152,7 +153,7 @@ public:
 
     /// Generate the post model_part from reference model_part
     /// Deprecated
-    void GenerateModelPart(ModelPart::Pointer pModelPartPost, PostElementType postElementType)
+    void GenerateModelPart(ModelPart& r_model_part_post, PostElementType postElementType)
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
@@ -162,7 +163,7 @@ public:
         std::cout << typeid(*this).name() << "::GenerateModelPart" << std::endl;
         #endif
 
-        ElementsArrayType& pElements = mpModelPart->Elements();
+        ElementsArrayType& pElements = mr_model_part.Elements();
 
         #ifdef DEBUG_LEVEL1
         std::cout << "Retrieved pElements" << std::endl;
@@ -198,7 +199,7 @@ public:
         boost::progress_display show_progress( pElements.size() );
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
-            if((*it)->GetValue( IS_INACTIVE ))
+            if(!(*it)->Is( ACTIVE ))
             {
 //                std::cout << "Element " << (*it)->Id() << " is inactive" << std::endl;
                 continue;
@@ -260,12 +261,12 @@ public:
                         #endif
 
                         // Giving model part's variables list to the node
-                        pNewNode->SetSolutionStepVariablesList(&pModelPartPost->GetNodalSolutionStepVariablesList());
+                        pNewNode->SetSolutionStepVariablesList(&r_model_part_post.GetNodalSolutionStepVariablesList());
 
                         //set buffer size
-                        pNewNode->SetBufferSize(pModelPartPost->GetBufferSize());
+                        pNewNode->SetBufferSize(r_model_part_post.GetBufferSize());
 
-                        pModelPartPost->AddNode(pNewNode);
+                        r_model_part_post.AddNode(pNewNode);
 
                         mNodeToLocalCoordinates(pNewNode->Id()) = p_ref;
                         mNodeToElement(pNewNode->Id()) = (*it)->Id();
@@ -273,10 +274,10 @@ public:
                 }
 
                 //for correct mapping to element, the repetitive node is allowed.
-//                pModelPartPost->Nodes().Unique();
+//                r_model_part_post.Nodes().Unique();
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH(pModelPartPost->Nodes().size())
+                KRATOS_WATCH(r_model_part_post.Nodes().size())
                 std::cout << "Generating Elements..." << std::endl;
                 #endif
 
@@ -295,34 +296,34 @@ public:
                 //         {
                 //             // TODO: check if jacobian checking is necessary
                 //             temp_element_nodes.clear();
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node1, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node2, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node4, NodeKey).base()));
 
                 //             Element::Pointer NewElement1 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                //             pModelPartPost->AddElement(NewElement1);
+                //             r_model_part_post.AddElement(NewElement1);
                 //             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
 
                 //             temp_element_nodes.clear();
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node1, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node4, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node3, NodeKey).base()));
 
                 //             Element::Pointer NewElement2 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                //             pModelPartPost->AddElement(NewElement2);
+                //             r_model_part_post.AddElement(NewElement2);
                 //             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
                 //         }
                 //         else if(postElementType == _QUADRILATERAL_)
                 //         {
                 //             // TODO: check if jacobian checking is necessary
                 //             temp_element_nodes.clear();
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node1, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node2, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node4, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node3, NodeKey).base()));
 
                 //             Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                //             pModelPartPost->AddElement(NewElement);
+                //             r_model_part_post.AddElement(NewElement);
                 //             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
                 //         }
                 //     }
@@ -352,18 +353,18 @@ public:
                 }
 
                 ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
-                    connectivities, *pModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
+                    connectivities, r_model_part_post, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                 {
-                    pModelPartPost->AddElement(*it2);
+                    r_model_part_post.AddElement(*it2);
                     mOldToNewElements[(*it)->Id()].insert((*it2)->Id());
                 }
 
-                pModelPartPost->Elements().Unique();
+                r_model_part_post.Elements().Unique();
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH(pModelPartPost->Elements().size())
+                KRATOS_WATCH(r_model_part_post.Elements().size())
                 #endif
             }
             else if(Dim == 3)
@@ -407,12 +408,12 @@ public:
                             #endif
 
                             // Giving model part's variables list to the node
-                            pNewNode->SetSolutionStepVariablesList(&pModelPartPost->GetNodalSolutionStepVariablesList());
+                            pNewNode->SetSolutionStepVariablesList(&r_model_part_post.GetNodalSolutionStepVariablesList());
 
                             //set buffer size
-                            pNewNode->SetBufferSize(pModelPartPost->GetBufferSize());
+                            pNewNode->SetBufferSize(r_model_part_post.GetBufferSize());
 
-                            pModelPartPost->AddNode(pNewNode);
+                            r_model_part_post.AddNode(pNewNode);
 
                             mNodeToLocalCoordinates(pNewNode->Id()) = p_ref;
                             mNodeToElement(pNewNode->Id()) = (*it)->Id();
@@ -421,10 +422,10 @@ public:
                 }
 
                 //for correct mapping to element, the repetitive node is allowed.
-//                pModelPartPost->Nodes().Unique();
+//                r_model_part_post.Nodes().Unique();
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH(pModelPartPost->Nodes().size())
+                KRATOS_WATCH(r_model_part_post.Nodes().size())
                 std::cout << "Generating Elements..." << std::endl;
                 #endif
 
@@ -453,17 +454,17 @@ public:
                 //             {
                 //                 // TODO: check if jacobian checking is necessary
                 //                 temp_element_nodes.clear();
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node5, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node6, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node8, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node7, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node1, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node2, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node4, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node3, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node5, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node6, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node8, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(r_model_part_post.Nodes(), Node7, NodeKey).base()));
 
                 //                 Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                //                 pModelPartPost->AddElement(NewElement);
+                //                 r_model_part_post.AddElement(NewElement);
                 //                 mOldToNewElements[(*it)->Id()].insert(ElementCounter);
                 //             }
                 //         }
@@ -501,18 +502,18 @@ public:
                 }
 
                 ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
-                    connectivities, *pModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
+                    connectivities, r_model_part_post, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                 {
-                    pModelPartPost->AddElement(*it2);
+                    r_model_part_post.AddElement(*it2);
                     mOldToNewElements[(*it)->Id()].insert((*it2)->Id());
                 }
 
-                pModelPartPost->Elements().Unique();
+                r_model_part_post.Elements().Unique();
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH(pModelPartPost->Elements().size())
+                KRATOS_WATCH(r_model_part_post.Elements().size())
                 #endif
             }
             ++show_progress;
@@ -530,7 +531,7 @@ public:
     /// Generate the post model_part from reference model_part
     /// this is the improved version of GenerateModelPart
     /// which uses template function to generate post Elements for both Element and Condition
-    void GenerateModelPart2(ModelPart::Pointer pModelPartPost, const bool& generate_for_condition)
+    void GenerateModelPart2(ModelPart& r_model_part_post, const bool& generate_for_condition)
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
@@ -540,8 +541,8 @@ public:
         std::cout << typeid(*this).name() << "::GenerateModelPart" << std::endl;
         #endif
 
-        ElementsArrayType& pElements = mpModelPart->Elements();
-        ConditionsArrayType& pConditions = mpModelPart->Conditions();
+        ElementsArrayType& pElements = mr_model_part.Elements();
+        ConditionsArrayType& pConditions = mr_model_part.Conditions();
 
         std::string NodeKey = std::string("Node");
 
@@ -550,9 +551,9 @@ public:
         boost::progress_display show_progress( pElements.size() );
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
-            // This is wrong, we will not skill the IS_INACTIVE elements
+            // This is wrong, we will not kill the non-ACTIVE elements
             // TODO: to be deleted
-//            if((*it)->GetValue( IS_INACTIVE ))
+//            if(!(*it)->Is( ACTIVE ))
 //            {
 ////                std::cout << "Element " << (*it)->Id() << " is inactive" << std::endl;
 //                ++show_progress;
@@ -604,7 +605,7 @@ public:
 
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
-            GenerateForOneEntity<Element, ElementsArrayType, 1>(*pModelPartPost,
+            GenerateForOneEntity<Element, ElementsArrayType, 1>(r_model_part_post,
                 *(*it), rCloneElement, NodeCounter_old, NodeCounter, ElementCounter, NodeKey);
 
             ++show_progress;
@@ -621,9 +622,9 @@ public:
             boost::progress_display show_progress2( pConditions.size() );
             for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
             {
-                // This is wrong, we will not kill the IS_INACTIVE conditions
+                // This is wrong, we will not kill the non-ACTIVE conditions
                 // TODO: to be deleted
-    //            if((*it)->GetValue( IS_INACTIVE ))
+    //            if(!(*it)->Is( ACTIVE ))
     //            {
     ////                std::cout << "Condition " << (*it)->Id() << " is inactive" << std::endl;
     //                ++show_progress2;
@@ -670,7 +671,7 @@ public:
 
                 Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
 
-                GenerateForOneEntity<Condition, ConditionsArrayType, 2>(*pModelPartPost,
+                GenerateForOneEntity<Condition, ConditionsArrayType, 2>(r_model_part_post,
                     *(*it), rCloneCondition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey);
 
                 ++show_progress2;
@@ -694,7 +695,7 @@ public:
     // this is the improved version of GenerateModelPart
     // which uses template function to generate post Elements for both Element and Condition
     // this version used a collapsing utility to collapse nodes automatically
-    void GenerateModelPart2AutoCollapse(ModelPart::Pointer pModelPartPost,
+    void GenerateModelPart2AutoCollapse(ModelPart& r_model_part_post,
                                         double dx, double dy, double dz, double tol)
     {
         #ifdef ENABLE_PROFILING
@@ -707,8 +708,8 @@ public:
 
         AutoCollapseSpatialBinning collapse_util(0.0, 0.0, 0.0, dx, dy, dz, tol);
 
-        ElementsArrayType& pElements = mpModelPart->Elements();
-        ConditionsArrayType& pConditions = mpModelPart->Conditions();
+        ElementsArrayType& pElements = mr_model_part.Elements();
+        ConditionsArrayType& pConditions = mr_model_part.Conditions();
 
         std::string NodeKey = std::string("Node");
 
@@ -718,7 +719,7 @@ public:
         VectorMap<IndexType, IndexType> MapToCollapseNode;
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
-            if((*it)->GetValue( IS_INACTIVE ))
+            if(!(*it)->Is( ACTIVE ))
             {
 //                std::cout << "Element " << (*it)->Id() << " is inactive" << std::endl;
                 ++show_progress;
@@ -761,7 +762,7 @@ public:
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
             GenerateForOneEntityAutoCollapse<Element, ElementsArrayType, 1>(collapse_util,
-                *pModelPartPost, *(*it), rCloneElement, MapToCollapseNode, NodeCounter_old,
+                r_model_part_post, *(*it), rCloneElement, MapToCollapseNode, NodeCounter_old,
                 NodeCounter, ElementCounter, NodeKey);
 
             ++show_progress;
@@ -775,7 +776,7 @@ public:
         boost::progress_display show_progress2( pConditions.size() );
         for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
         {
-            if((*it)->GetValue( IS_INACTIVE ))
+            if(!(*it)->Is( ACTIVE ))
             {
 //                std::cout << "Condition " << (*it)->Id() << " is inactive" << std::endl;
                 ++show_progress2;
@@ -819,7 +820,7 @@ public:
             Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
 
             GenerateForOneEntityAutoCollapse<Condition, ConditionsArrayType, 2>(collapse_util,
-                *pModelPartPost, *(*it), rCloneCondition, MapToCollapseNode, NodeCounter_old,
+                r_model_part_post, *(*it), rCloneCondition, MapToCollapseNode, NodeCounter_old,
                 NodeCounter, ConditionCounter, NodeKey);
 
             ++show_progress2;
@@ -1496,54 +1497,54 @@ public:
     }
 
     // Synchronize the activation between model_parts
-    void SynchronizeActivation(ModelPart::Pointer pModelPartPost)
+    void SynchronizeActivation(ModelPart& r_model_part_post)
     {
-        ElementsArrayType& pElements = mpModelPart->Elements();
+        ElementsArrayType& pElements = mr_model_part.Elements();
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
             std::set<IndexType> NewElements = mOldToNewElements[(*it)->Id()];
             for(std::set<IndexType>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
             {
-                pModelPartPost->GetElement(*it2).GetValue(IS_INACTIVE) = (*it)->GetValue( IS_INACTIVE );
+                r_model_part_post.GetElement(*it2).Set(ACTIVE, (*it)->Is( ACTIVE ));
             }
         }
-        ConditionsArrayType& pConditions = mpModelPart->Conditions();
+        ConditionsArrayType& pConditions = mr_model_part.Conditions();
         for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
         {
             std::set<IndexType> NewConditions = mOldToNewConditions[(*it)->Id()];
             for(std::set<IndexType>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
             {
-                pModelPartPost->GetCondition(*it2).GetValue(IS_INACTIVE) = (*it)->GetValue( IS_INACTIVE );
+                r_model_part_post.GetCondition(*it2).Set(ACTIVE, (*it)->Is( ACTIVE ));
             }
         }
     }
 
     // transfer the elemental data
     template<class TVariableType>
-    void TransferElementalData(const TVariableType& rThisVariable, ModelPart::Pointer pModelPartPost)
+    void TransferElementalData(const TVariableType& rThisVariable, ModelPart& r_model_part_post)
     {
-        ElementsArrayType& pElements = mpModelPart->Elements();
+        ElementsArrayType& pElements = mr_model_part.Elements();
         for(typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
             std::set<IndexType> NewElements = mOldToNewElements[(*it)->Id()];
             for(std::set<IndexType>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
             {
-                pModelPartPost->GetElement(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
+                r_model_part_post.GetElement(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
             }
         }
     }
 
     // transfer the conditional data
     template<class TVariableType>
-    void TransferConditionalData(const TVariableType& rThisVariable, ModelPart::Pointer pModelPartPost)
+    void TransferConditionalData(const TVariableType& rThisVariable, ModelPart& r_model_part_post)
     {
-        ConditionsArrayType& pConditions = mpModelPart->Conditions();
+        ConditionsArrayType& pConditions = mr_model_part.Conditions();
         for(typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
         {
             std::set<IndexType> NewConditions = mOldToNewConditions[(*it)->Id()];
             for(std::set<IndexType>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
             {
-                pModelPartPost->GetCondition(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
+                r_model_part_post.GetCondition(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
             }
         }
     }
@@ -1552,16 +1553,16 @@ public:
     template<class TVariableType>
     void TransferNodalResults(
         const TVariableType& rThisVariable,
-        const ModelPart::Pointer pModelPartPost
+        ModelPart& r_model_part_post
     )
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
         #endif
 
-        NodesArrayType& pTargetNodes = pModelPartPost->Nodes();
+        NodesArrayType& pTargetNodes = r_model_part_post.Nodes();
 
-        ElementsArrayType& pElements = mpModelPart->Elements();
+        ElementsArrayType& pElements = mr_model_part.Elements();
 
         typename TVariableType::Type Results;
         CoordinatesArrayType LocalPos;
@@ -1575,7 +1576,7 @@ public:
             if(mNodeToElement.find(key) != mNodeToElement.end())
             {
                 ElementId = mNodeToElement[key];
-                if( ! pElements(ElementId)->GetValue(IS_INACTIVE) ) // skip the inactive elements
+                if( pElements(ElementId)->Is(ACTIVE) ) // skip the inactive elements
                 {
                     noalias(LocalPos) = mNodeToLocalCoordinates[key];
                     Results = CalculateOnPoint(rThisVariable, Results, pElements(ElementId), LocalPos);
@@ -1594,7 +1595,7 @@ public:
     template<class TVariableType>
     void TransferIntegrationPointResults(
         const TVariableType& rThisVariable,
-        const ModelPart::Pointer pModelPartPost,
+        ModelPart& r_model_part_post,
         LinearSolverType::Pointer pSolver
     )
     {
@@ -1606,10 +1607,10 @@ public:
         #endif
 
         // firstly transfer rThisVariable from integration points of reference model_part to its nodes
-        TransferVariablesToNodes(pSolver, mpModelPart, rThisVariable);
+        TransferVariablesToNodes(pSolver, mr_model_part, rThisVariable);
 
         // secondly transfer new nodal variables results to the post model_part
-        TransferNodalResults(rThisVariable, pModelPartPost);
+        TransferNodalResults(rThisVariable, r_model_part_post);
 
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
@@ -1624,7 +1625,7 @@ public:
     template<class TVariableType>
     void TransferVariablesToNodes(
         const TVariableType& rThisVariable,
-        ModelPart::Pointer pModelPart,
+        ModelPart& r_model_part,
         LinearSolverType::Pointer pSolver
     )
     {
@@ -1635,7 +1636,7 @@ public:
                   << rThisVariable.Name() << " starts" << std::endl;
         #endif
 
-        TransferVariablesToNodes(pSolver, pModelPart, rThisVariable);
+        TransferVariablesToNodes(pSolver, r_model_part, rThisVariable);
 
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
@@ -1649,7 +1650,7 @@ public:
     /**
      * Utility function to renumber the nodes of the post model_part (for parallel merge)
      */
-    void GlobalNodalRenumbering(ModelPart::Pointer pModelPartPost)
+    void GlobalNodalRenumbering(ModelPart& r_model_part_post)
     {
         #ifdef ISOGEOMETRIC_USE_MPI
         int rank, size;
@@ -1658,7 +1659,7 @@ public:
 
         // gather the number of nodes on each process
         int NumberOfNodes[size];
-        int MyNumberOfNodes = pModelPartPost->NumberOfNodes();
+        int MyNumberOfNodes = r_model_part_post.NumberOfNodes();
         MPI_Allgather(&MyNumberOfNodes, 1, MPI_INT, NumberOfNodes, 1, MPI_INT, MPI_COMM_WORLD);
 //        std::cout << "NumberOfNodes:";
 //        for(int i = 0; i < size; ++i)
@@ -1671,7 +1672,7 @@ public:
             offset += NumberOfNodes[i];
 
         // renumber the nodes of the current process
-        for(ModelPart::NodeIterator it = pModelPartPost->NodesBegin(); it != pModelPartPost->NodesEnd(); ++it)
+        for(ModelPart::NodeIterator it = r_model_part_post.NodesBegin(); it != r_model_part_post.NodesEnd(); ++it)
         {
             it->SetId(++offset);
             it->GetSolutionStepValue(PARTITION_INDEX) = rank;
@@ -1754,7 +1755,7 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-    ModelPart::Pointer mpModelPart; // pointer variable to a model_part
+    ModelPart& mr_model_part; // pointer variable to a model_part
 
     VectorMap<IndexType, CoordinatesArrayType> mNodeToLocalCoordinates; // vector map to store local coordinates of node on a NURBS entity
     VectorMap<IndexType, IndexType> mNodeToElement; // vector map to store local coordinates of node on a NURBS entity
@@ -1872,19 +1873,19 @@ private:
      * Transfer variable at integration points to nodes
      *
      * @param pSolver       the solver used for solving the local system matrix
-     * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
+     * @param r_model_part    pointer to model_part that we wish to transfer the result from its integration points to its nodes
      * @param rThisVariable the variable need to transfer the respected values
      */
     void TransferVariablesToNodes(
             LinearSolverType::Pointer& pSolver,
-            ModelPart::Pointer& pModelPart,
+            ModelPart& r_model_part,
             const Variable<double>& rThisVariable
         )
     {
-        ElementsArrayType& ElementsArray= pModelPart->Elements();
+        ElementsArrayType& ElementsArray= r_model_part.Elements();
 
         //Initialize system of equations
-        int NumberOfNodes = pModelPart->NumberOfNodes();
+        int NumberOfNodes = r_model_part.NumberOfNodes();
         SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
         noalias(M)= ZeroMatrix(NumberOfNodes, NumberOfNodes);
 
@@ -1931,7 +1932,7 @@ private:
 
             for( ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it )
             {
-                if(!(*it)->GetValue(IS_INACTIVE))
+                if((*it)->Is(ACTIVE))
                 {
                     const IntegrationPointsArrayType& integration_points
                     = (*it)->GetGeometry().IntegrationPoints((*it)->GetIntegrationMethod());
@@ -1954,7 +1955,7 @@ private:
 
                     // get the values at the integration_points
                     std::vector<double> ValuesOnIntPoint(integration_points.size());
-                    (*it)->GetValueOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, pModelPart->GetProcessInfo());
+                    (*it)->GetValueOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
 
                     for(unsigned int point = 0; point< integration_points.size(); ++point)
                     {
@@ -2004,7 +2005,7 @@ private:
         pSolver->Solve(M, g, b);
 
         // transfer the solution to the nodal variables
-        for(ModelPart::NodeIterator it = pModelPart->NodesBegin(); it != pModelPart->NodesEnd(); ++it)
+        for(ModelPart::NodeIterator it = r_model_part.NodesBegin(); it != r_model_part.NodesEnd(); ++it)
         {
             it->GetSolutionStepValue(rThisVariable) = g((it->Id()-1));
         }
@@ -2026,16 +2027,16 @@ private:
      * stored on integration points!
      *
      * @param pSolver       the solver used for solving the local system matrix
-     * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
+     * @param r_model_part    pointer to model_part that we wish to transfer the result from its integration points to its nodes
      * @param rThisVariable the variable need to transfer the respected values
      */
     void TransferVariablesToNodes(
             LinearSolverType::Pointer& pSolver,
-            ModelPart::Pointer& pModelPart,
+            ModelPart& r_model_part,
             const Variable<Vector>& rThisVariable
         )
     {
-        ElementsArrayType& ElementsArray = pModelPart->Elements();
+        ElementsArrayType& ElementsArray = r_model_part.Elements();
 
         const unsigned int& Dim = (*(ElementsArray.ptr_begin()))->GetGeometry().WorkingSpaceDimension();
         unsigned int VariableSize;
@@ -2058,7 +2059,7 @@ private:
         #endif
 
         //Initialize system of equations
-        unsigned int NumberOfNodes = pModelPart->NumberOfNodes();
+        unsigned int NumberOfNodes = r_model_part.NumberOfNodes();
         SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
         noalias(M)= ZeroMatrix(NumberOfNodes, NumberOfNodes);
 
@@ -2104,7 +2105,7 @@ private:
 
             for( ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it )
             {
-                if(!(*it)->GetValue(IS_INACTIVE))
+                if((*it)->Is(ACTIVE))
                 {
                     const IntegrationPointsArrayType& integration_points
                     = (*it)->GetGeometry().IntegrationPoints((*it)->GetIntegrationMethod());
@@ -2127,7 +2128,7 @@ private:
 
                     // get the values at the integration_points
                     std::vector<Vector> ValuesOnIntPoint(integration_points.size());
-                    (*it)->GetValueOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, pModelPart->GetProcessInfo());
+                    (*it)->GetValueOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
 
                     for(unsigned int point = 0; point < integration_points.size(); ++point)
                     {
@@ -2205,7 +2206,7 @@ private:
         #endif
 
         // transfer the solution to the nodal variables
-        for(ModelPart::NodeIterator it = pModelPart->NodesBegin(); it != pModelPart->NodesEnd(); ++it)
+        for(ModelPart::NodeIterator it = r_model_part.NodesBegin(); it != r_model_part.NodesEnd(); ++it)
         {
             Vector tmp(VariableSize);
             for(unsigned int i = 0; i < VariableSize; ++i)
@@ -2236,6 +2237,7 @@ private:
 
     /// Copy constructor.
     BezierClassicalPostUtility(BezierClassicalPostUtility const& rOther)
+    : mr_model_part(rOther.mr_model_part)
     {
     }
 

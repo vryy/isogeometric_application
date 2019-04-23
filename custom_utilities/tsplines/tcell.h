@@ -41,7 +41,7 @@ class TCell : public Cell
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(TCell);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TCell);
 
     /// Type definitions
     typedef Cell BaseType;

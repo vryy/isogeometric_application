@@ -82,7 +82,7 @@ class Rotation : public Transformation<TDataType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Rotation);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(Rotation);
 
     /// Type definitions
     typedef Transformation<TDataType> BaseType;

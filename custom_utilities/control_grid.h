@@ -16,6 +16,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "custom_utilities/iga_define.h"
 
 namespace Kratos
 {
@@ -29,7 +30,7 @@ class ControlGrid
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(ControlGrid);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(ControlGrid);
 
     /// Type definition
     typedef TDataType DataType;

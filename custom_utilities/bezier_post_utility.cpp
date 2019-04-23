@@ -80,7 +80,7 @@ namespace Kratos
         {
             bool is_active = true;
             if (check_active)
-                is_active = ((*it)->GetValue(IS_INACTIVE) == false) || (*it)->Is(ACTIVE);
+                is_active = (*it)->Is(ACTIVE);
 
             if( is_active )
             {
@@ -148,7 +148,7 @@ namespace Kratos
 
             for( ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it )
             {
-                if(!(*it)->GetValue(IS_INACTIVE))
+                if((*it)->Is(ACTIVE))
                 {
                     const IntegrationPointsArrayType& integration_points
                     = (*it)->GetGeometry().IntegrationPoints((*it)->GetIntegrationMethod());
@@ -262,7 +262,7 @@ namespace Kratos
         {
             bool is_active = true;
             if (check_active)
-                is_active = ((*it)->GetValue(IS_INACTIVE) == false) || (*it)->Is(ACTIVE);
+                is_active = (*it)->Is(ACTIVE);
 
             if( is_active )
             {
@@ -336,7 +336,7 @@ namespace Kratos
             {
                 bool is_active = true;
                 if (check_active)
-                    is_active = ((*it)->GetValue(IS_INACTIVE) == false) || (*it)->Is(ACTIVE);
+                    is_active = (*it)->Is(ACTIVE);
 
                 if (is_active)
                 {

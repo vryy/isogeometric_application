@@ -10,6 +10,7 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_PATCH_INTERFACE_H_INCLUDED
 
 // System includes
+#include <memory>
 
 // External includes
 
@@ -25,11 +26,11 @@ namespace Kratos
  * The interface is designed using half-edge philosophy, in which the interface keeps a pointer to the interface of the other side.
  */
 template<int TDim>
-class PatchInterface : public boost::enable_shared_from_this<PatchInterface<TDim> >
+class PatchInterface : public std::enable_shared_from_this<PatchInterface<TDim> >
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(PatchInterface);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(PatchInterface);
 
     typedef Patch<TDim> PatchType;
 

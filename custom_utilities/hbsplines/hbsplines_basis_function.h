@@ -37,7 +37,7 @@
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/hbsplines/hb_cell.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application.h"
 
 
 namespace Kratos
@@ -52,7 +52,7 @@ class HBSplinesBasisFunction : public PBBSplinesBasisFunction<TDim, HBCell<HBSpl
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(HBSplinesBasisFunction);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(HBSplinesBasisFunction);
 
     /// Type definition
     typedef PBBSplinesBasisFunction<TDim, HBCell<HBSplinesBasisFunction<TDim> > > BaseType;
@@ -342,7 +342,7 @@ class HBSplinesBasisFunction<0>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(HBSplinesBasisFunction);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(HBSplinesBasisFunction);
 
     /// Type definitions
     typedef Knot<double>::Pointer knot_t;

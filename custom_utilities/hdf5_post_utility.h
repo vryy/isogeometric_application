@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 7 Jan 2015 $
 //   Revision:            $Revision: 1.0 $
@@ -14,7 +14,7 @@
 #include <vector>
 #include <iostream>
 
-// External includes 
+// External includes
 #include <omp.h>
 #include "boost/progress.hpp"
 #include "H5Cpp.h"
@@ -71,37 +71,37 @@ public:
     ///@{
 
     typedef boost::numeric::ublas::vector<double> ValuesContainerType;
-    
+
     typedef boost::numeric::ublas::matrix<double> ValuesArrayContainerType;
-    
+
     typedef typename ModelPart::NodesContainerType NodesArrayType;
-    
+
     typedef typename ModelPart::ElementsContainerType ElementsArrayType;
 
     typedef typename ModelPart::ConditionsContainerType ConditionsArrayType;
-    
+
     typedef typename Element::GeometryType GeometryType;
-    
+
     typedef IsogeometricGeometry<GeometryType::PointType> IsogeometricGeometryType;
-    
+
     typedef typename GeometryType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
     typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
 
     typedef typename Node<3>::DofsContainerType DofsContainerType;
-    
+
     typedef typename Node<3>::Pointer NodeType;
 
     typedef UblasSpace<double, CompressedMatrix, Vector> SerialSparseSpaceType;
 
     typedef UblasSpace<double, Matrix, Vector> SerialDenseSpaceType;
-    
+
     typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType> LinearSolverType;
-    
+
     typedef std::size_t IndexType;
-    
+
     /// Pointer definition of HDF5PostUtility
-    KRATOS_CLASS_POINTER_DEFINITION(HDF5PostUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(HDF5PostUtility);
 
     ///@}
     ///@name Life Cycle
@@ -110,14 +110,14 @@ public:
     /// Default constructor.
     HDF5PostUtility(const std::string h5_filename)
     {
-        mpFile = boost::shared_ptr<H5::H5File>(new H5::H5File(h5_filename, H5F_ACC_TRUNC));
+        mpFile = Kratos::shared_ptr<H5::H5File>(new H5::H5File(h5_filename, H5F_ACC_TRUNC));
     }
 
     /// Constructor with access mode
     HDF5PostUtility(const std::string h5_filename, const std::string AccessMode)
     {
         unsigned int mode = H5F_ACC_TRUNC;
-        
+
         if(AccessMode == std::string("Truncation"))
         {
             mode = H5F_ACC_TRUNC;
@@ -133,9 +133,9 @@ public:
         else
             KRATOS_THROW_ERROR(std::logic_error, "This access mode is not supported:", AccessMode)
 
-        mpFile = boost::shared_ptr<H5::H5File>(new H5::H5File(h5_filename, mode));
+        mpFile = Kratos::shared_ptr<H5::H5File>(new H5::H5File(h5_filename, mode));
     }
-    
+
     /// Destructor.
     virtual ~HDF5PostUtility()
     {
@@ -148,13 +148,13 @@ public:
     ///@}
     ///@name Operations
     ///@{
-    
+
     /**
      * Write all nodes of the model_part to the HDF5 datafile
      */
-    void WriteNodes(ModelPart::Pointer pModelPart)
+    void WriteNodes(ModelPart& r_model_part)
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
 
         typedef struct Node_t {
 	        int    id;
@@ -162,9 +162,9 @@ public:
 	        double y;
 	        double z;
         } Node_t;
-        
+
         Node_t* nodes = new Node_t[pNodes.size()];
-        
+
         /*
          * Initialize the data
          */
@@ -177,7 +177,7 @@ public:
             nodes[cnt].z = (*it)->Z0();
             ++cnt;
         }
-        
+
         /*
          * Create the memory data type.
          */
@@ -186,7 +186,7 @@ public:
         mtype.insertMember( "x",  HOFFSET(Node_t, x),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember( "y",  HOFFSET(Node_t, y),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember( "z",  HOFFSET(Node_t, z),  H5::PredType::NATIVE_DOUBLE);
-        
+
         /*
          * Create the data space.
          */
@@ -210,31 +210,31 @@ public:
         delete dataset;
         delete nodes;
     }
-    
+
     template<class TDataType>
-    void WriteNodalResults(const Variable<TDataType>& rThisVariable, ModelPart::Pointer pModelPart)
+    void WriteNodalResults(const Variable<TDataType>& rThisVariable, ModelPart& r_model_part)
     {
-        WriteNodalResults_(rThisVariable, pModelPart);
+        WriteNodalResults_(rThisVariable, r_model_part);
     }
 
     template<class TDataType>
-    void ReadNodalResults(const Variable<TDataType>& rThisVariable, ModelPart::Pointer pModelPart)
+    void ReadNodalResults(const Variable<TDataType>& rThisVariable, ModelPart& r_model_part)
     {
-        ReadNodalResults_(rThisVariable, pModelPart);
-    }
-    
-    template<class TDataType>
-    void WriteElementalData(const Variable<TDataType>& rThisVariable, ModelPart::Pointer pModelPart)
-    {
-        WriteElementalData_(rThisVariable, pModelPart);
+        ReadNodalResults_(rThisVariable, r_model_part);
     }
 
     template<class TDataType>
-    void ReadElementalData(const Variable<TDataType>& rThisVariable, ModelPart::Pointer pModelPart, bool allow_unequal = true)
+    void WriteElementalData(const Variable<TDataType>& rThisVariable, ModelPart& r_model_part)
     {
-        ReadElementalData_(rThisVariable, pModelPart, allow_unequal);
+        WriteElementalData_(rThisVariable, r_model_part);
     }
-    
+
+    template<class TDataType>
+    void ReadElementalData(const Variable<TDataType>& rThisVariable, ModelPart& r_model_part, bool allow_unequal = true)
+    {
+        ReadElementalData_(rThisVariable, r_model_part, allow_unequal);
+    }
+
     ///@}
     ///@name Access
     ///@{
@@ -308,7 +308,7 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-    boost::shared_ptr<H5::H5File> mpFile;
+    Kratos::shared_ptr<H5::H5File> mpFile;
 
     ///@}
     ///@name Private Operators
@@ -323,18 +323,18 @@ private:
     *****************************************************/
     void WriteNodalResults_(
         const Variable<double>& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
 
         typedef struct Data_t {
 	        int    id;
 	        double v;
         } Data_t;
-        
+
         Data_t* data = new Data_t[pNodes.size()];
-        
+
         /*
          * Initialize the data
          */
@@ -345,14 +345,14 @@ private:
             data[cnt].v = (*it)->operator[](rThisVariable);
             ++cnt;
         }
-        
+
         /*
          * Create the memory data type.
          */
         H5::CompType mtype(sizeof(Data_t));
         mtype.insertMember("id", HOFFSET(Data_t, id), H5::PredType::NATIVE_INT);
         mtype.insertMember("v",  HOFFSET(Data_t, v),  H5::PredType::NATIVE_DOUBLE);
-        
+
         /*
          * Create the data space.
          */
@@ -379,10 +379,10 @@ private:
 
     void WriteNodalResults_(
         const Variable<array_1d<double, 3> >& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
 
         typedef struct Data_t {
 	        int    id;
@@ -390,9 +390,9 @@ private:
 	        double d2;
 	        double d3;
         } Data_t;
-        
+
         Data_t* data = new Data_t[pNodes.size()];
-        
+
         /*
          * Initialize the data
          */
@@ -406,7 +406,7 @@ private:
             data[cnt].d3 = v[2];
             ++cnt;
         }
-        
+
         /*
          * Create the memory data type.
          */
@@ -415,7 +415,7 @@ private:
         mtype.insertMember("v1",  HOFFSET(Data_t, d1),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v2",  HOFFSET(Data_t, d2),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v3",  HOFFSET(Data_t, d3),  H5::PredType::NATIVE_DOUBLE);
-        
+
         /*
          * Create the data space.
          */
@@ -439,15 +439,15 @@ private:
         delete dataset;
         delete data;
     }
-    
+
     void WriteNodalResults_(
         const Variable<Vector>& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
         int len = (*(pNodes.ptr_begin()))->GetSolutionStepValue(rThisVariable).size();
-        
+
         // I have to do this since it is not impossible AFAIK to create a struct with double pointer with HDF5/C++. If yes, is the performance OK?
         if(len == 3)
         {
@@ -462,13 +462,13 @@ private:
                       << " is not supported, skipping variable "
                       << rThisVariable.Name() << std::endl;
     }
-    
+
     void WriteNodalResults_Vector_3(
         const Variable<Vector>& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
 
         typedef struct Data_t {
 	        int    id;
@@ -476,9 +476,9 @@ private:
 	        double d2;
 	        double d3;
         } Data_t;
-        
+
         Data_t* data = new Data_t[pNodes.size()];
-        
+
         /*
          * Initialize the data
          */
@@ -492,7 +492,7 @@ private:
             data[cnt].d3 = v[2];
             ++cnt;
         }
-        
+
         /*
          * Create the memory data type.
          */
@@ -501,7 +501,7 @@ private:
         mtype.insertMember("v1",  HOFFSET(Data_t, d1),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v2",  HOFFSET(Data_t, d2),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v3",  HOFFSET(Data_t, d3),  H5::PredType::NATIVE_DOUBLE);
-        
+
         /*
          * Create the data space.
          */
@@ -513,7 +513,7 @@ private:
          */
         H5::DataSet* dataset;
         dataset = new H5::DataSet(mpFile->createDataSet(rThisVariable.Name(), mtype, space));
-        
+
         /*
          * Write the attribute
          */
@@ -534,13 +534,13 @@ private:
         delete dataset;
         delete data;
     }
-    
+
     void WriteNodalResults_Vector_6(
         const Variable<Vector>& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
 
         typedef struct Data_t {
 	        int    id;
@@ -551,9 +551,9 @@ private:
 	        double d5;
 	        double d6;
         } Data_t;
-        
+
         Data_t* data = new Data_t[pNodes.size()];
-        
+
         /*
          * Initialize the data
          */
@@ -570,7 +570,7 @@ private:
             data[cnt].d6 = v[5];
             ++cnt;
         }
-        
+
         /*
          * Create the memory data type.
          */
@@ -582,7 +582,7 @@ private:
         mtype.insertMember("v4",  HOFFSET(Data_t, d4),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v5",  HOFFSET(Data_t, d5),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v6",  HOFFSET(Data_t, d6),  H5::PredType::NATIVE_DOUBLE);
-        
+
         /*
          * Create the data space.
          */
@@ -603,7 +603,7 @@ private:
         H5::DataSpace attr_dataspace = H5::DataSpace (1, dims);
         H5::Attribute attribute = dataset->createAttribute("LEN", H5::PredType::STD_I32BE, attr_dataspace);
         attribute.write(H5::PredType::NATIVE_INT, attr_data);
-        
+
         /*
          * Write data to the dataset;
          */
@@ -615,24 +615,24 @@ private:
         delete dataset;
         delete data;
     }
-    
+
     /*****************************************************
                 FUNCTIONS TO WRITE ELEMENTAL DATA
     *****************************************************/
     void WriteElementalData_(
         const Variable<bool>& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        ElementsArrayType& pElements = pModelPart->Elements();
+        ElementsArrayType& pElements = r_model_part.Elements();
 
         typedef struct Data_t {
 	        int id;
 	        int v;
         } Data_t;
-        
+
         Data_t* data = new Data_t[pElements.size()];
-        
+
         /*
          * Initialize the data
          */
@@ -646,14 +646,14 @@ private:
                 data[cnt].v = 0;
             ++cnt;
         }
-        
+
         /*
          * Create the memory data type.
          */
         H5::CompType mtype(sizeof(Data_t));
         mtype.insertMember("id", HOFFSET(Data_t, id), H5::PredType::NATIVE_INT);
         mtype.insertMember("v",  HOFFSET(Data_t, v),  H5::PredType::NATIVE_INT);
-        
+
         /*
          * Create the data space.
          */
@@ -677,76 +677,76 @@ private:
         delete dataset;
         delete data;
     }
-    
-    
+
+
     /*****************************************************
              FUNCTIONS TO READ DATA FROM NODES
     *****************************************************/
     int ReadNodalResults_(
         const Variable<double>& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
 
         typedef struct Data_t {
 	        int    id;
 	        double v;
         } Data_t;
-        
+
         /*
          * Create the memory data type.
          */
         H5::CompType mtype(sizeof(Data_t) );
         mtype.insertMember("id", HOFFSET(Data_t, id), H5::PredType::NATIVE_INT);
         mtype.insertMember("v",  HOFFSET(Data_t, v),  H5::PredType::NATIVE_DOUBLE);
-        
+
         try
         {
             /*
              * Open the dataset
              */
             H5::DataSet dataset = mpFile->openDataSet(rThisVariable.Name());
-            
+
             /*
              * Get dataspace of the dataset.
              */
             H5::DataSpace dataspace = dataset.getSpace();
-            
+
             /*
              * Get the number of dimensions in the dataspace.
              */
             int rank = dataspace.getSimpleExtentNdims();
 //            KRATOS_WATCH(rank)
-            
+
             /*
              * Get the dimension size of each dimension in the dataspace and
              * do the bound check.
              */
             hsize_t dims_out[rank];
             int ndims = dataspace.getSimpleExtentDims(dims_out, NULL);
-            
+
             if(dims_out[0] != pNodes.size())
                 KRATOS_THROW_ERROR(std::logic_error, "The dimension of provided data is not compatible:", dims_out[0])
-            
+
             /*
              * Output buffer
              */
             Data_t* data = new Data_t[pNodes.size()];
-            
+
             /*
              * Read data from hyperslab in the file into the hyperslab in
              * memory and display the data.
              */
             dataset.read(data, mtype, dataspace, dataspace);
-            
+
             double tmp;
             for(unsigned int i = 0; i < dims_out[0]; ++i)
             {
                 tmp = data[i].v;
                 pNodes[data[i].id].GetSolutionStepValue(rThisVariable) = tmp;
             }
-            
+
             /*
              * Release memory
              */
@@ -771,19 +771,19 @@ private:
           return -3;
        }
     }
-    
+
     int ReadNodalResults_(
         const Variable<array_1d<double, 3> >& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
 
         typedef struct Data_t {
 	        int    id;
 	        double v[3];
         } Data_t;
-        
+
         /*
          * Create the memory data type.
          */
@@ -792,46 +792,46 @@ private:
         mtype.insertMember("v1",  HOFFSET(Data_t, v[0]),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v2",  HOFFSET(Data_t, v[1]),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v3",  HOFFSET(Data_t, v[2]),  H5::PredType::NATIVE_DOUBLE);
-        
+
         try
         {
             /*
              * Open the dataset
              */
             H5::DataSet dataset = mpFile->openDataSet(rThisVariable.Name());
-            
+
             /*
              * Get dataspace of the dataset.
              */
             H5::DataSpace dataspace = dataset.getSpace();
-            
+
             /*
              * Get the number of dimensions in the dataspace.
              */
             int rank = dataspace.getSimpleExtentNdims();
 //            KRATOS_WATCH(rank)
-            
+
             /*
              * Get the dimension size of each dimension in the dataspace and
              * do the bound check.
              */
             hsize_t dims_out[rank];
             int ndims = dataspace.getSimpleExtentDims(dims_out, NULL);
-            
+
             if(dims_out[0] != pNodes.size())
                 KRATOS_THROW_ERROR(std::logic_error, "The dimension of provided data is not compatible:", dims_out[0])
-            
+
             /*
              * Output buffer
              */
             Data_t* data = new Data_t[pNodes.size()];
-            
+
             /*
              * Read data from hyperslab in the file into the hyperslab in
              * memory and display the data.
              */
             dataset.read(data, mtype, dataspace, dataspace);
-            
+
             //display data
 //            for(int i = 0; i < pNodes.size(); ++i)
 //                std::cout << "node " << data[i].id
@@ -847,7 +847,7 @@ private:
                 tmp[2] = data[i].v[2];
                 pNodes[data[i].id].GetSolutionStepValue(rThisVariable) = tmp;
             }
-            
+
             /*
              * Release memory
              */
@@ -872,10 +872,10 @@ private:
           return -3;
        }
     }
-    
+
     int ReadNodalResults_(
         const Variable<Vector>& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
         /*
@@ -889,7 +889,7 @@ private:
         int len;
         H5::Attribute attr = dataset.openAttribute("LEN");
         attr.read(H5::PredType::NATIVE_INT, &len);
-        
+
         if(len == 3)
         {
             ReadNodalResults_Vector_3(rThisVariable, pModelPart);
@@ -901,19 +901,19 @@ private:
         else
             KRATOS_THROW_ERROR(std::logic_error, "Vector length of this size is not supported:", len)
     }
-    
+
     int ReadNodalResults_Vector_3(
         const Variable<Vector>& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
 
         typedef struct Data_t {
 	        int    id;
 	        double v[3];
         } Data_t;
-        
+
         /*
          * Create the memory data type.
          */
@@ -922,46 +922,46 @@ private:
         mtype.insertMember("v1",  HOFFSET(Data_t, v[0]),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v2",  HOFFSET(Data_t, v[1]),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v3",  HOFFSET(Data_t, v[2]),  H5::PredType::NATIVE_DOUBLE);
-        
+
         try
         {
             /*
              * Open the dataset
              */
             H5::DataSet dataset = mpFile->openDataSet(rThisVariable.Name());
-            
+
             /*
              * Get dataspace of the dataset.
              */
             H5::DataSpace dataspace = dataset.getSpace();
-            
+
             /*
              * Get the number of dimensions in the dataspace.
              */
             int rank = dataspace.getSimpleExtentNdims();
 //            KRATOS_WATCH(rank)
-            
+
             /*
              * Get the dimension size of each dimension in the dataspace and
              * do the bound check.
              */
             hsize_t dims_out[rank];
             int ndims = dataspace.getSimpleExtentDims(dims_out, NULL);
-            
+
             if(dims_out[0] != pNodes.size())
                 KRATOS_THROW_ERROR(std::logic_error, "The dimension of provided data is not compatible:", dims_out[0])
-            
+
             /*
              * Output buffer
              */
             Data_t* data = new Data_t[pNodes.size()];
-            
+
             /*
              * Read data from hyperslab in the file into the hyperslab in
              * memory and display the data.
              */
             dataset.read(data, mtype, dataspace, dataspace);
-            
+
             Vector tmp(3);
             for(unsigned int i = 0; i < dims_out[0]; ++i)
             {
@@ -970,7 +970,7 @@ private:
                 tmp(2) = data[i].v[2];
                 pNodes[data[i].id].GetSolutionStepValue(rThisVariable) = tmp;
             }
-            
+
             /*
              * Release memory
              */
@@ -995,19 +995,19 @@ private:
           return -3;
        }
     }
-    
+
     int ReadNodalResults_Vector_6(
         const Variable<Vector>& rThisVariable,
-        ModelPart::Pointer pModelPart
+        ModelPart& r_model_part
     )
     {
-        NodesArrayType& pNodes = pModelPart->Nodes();
+        NodesArrayType& pNodes = r_model_part.Nodes();
 
         typedef struct Data_t {
 	        int    id;
 	        double v[6];
         } Data_t;
-        
+
         /*
          * Create the memory data type.
          */
@@ -1019,46 +1019,46 @@ private:
         mtype.insertMember("v4",  HOFFSET(Data_t, v[3]),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v5",  HOFFSET(Data_t, v[4]),  H5::PredType::NATIVE_DOUBLE);
         mtype.insertMember("v6",  HOFFSET(Data_t, v[5]),  H5::PredType::NATIVE_DOUBLE);
-        
+
         try
         {
             /*
              * Open the dataset
              */
             H5::DataSet dataset = mpFile->openDataSet(rThisVariable.Name());
-            
+
             /*
              * Get dataspace of the dataset.
              */
             H5::DataSpace dataspace = dataset.getSpace();
-            
+
             /*
              * Get the number of dimensions in the dataspace.
              */
             int rank = dataspace.getSimpleExtentNdims();
 //            KRATOS_WATCH(rank)
-            
+
             /*
              * Get the dimension size of each dimension in the dataspace and
              * do the bound check.
              */
             hsize_t dims_out[rank];
             int ndims = dataspace.getSimpleExtentDims(dims_out, NULL);
-            
+
             if(dims_out[0] != pNodes.size())
                 KRATOS_THROW_ERROR(std::logic_error, "The dimension of provided data is not compatible:", dims_out[0])
-            
+
             /*
              * Output buffer
              */
             Data_t* data = new Data_t[pNodes.size()];
-            
+
             /*
              * Read data from hyperslab in the file into the hyperslab in
              * memory and display the data.
              */
             dataset.read(data, mtype, dataspace, dataspace);
-            
+
             Vector tmp(6);
             for(unsigned int i = 0; i < dims_out[0]; ++i)
             {
@@ -1070,7 +1070,7 @@ private:
                 tmp(5) = data[i].v[5];
                 pNodes[data[i].id].GetSolutionStepValue(rThisVariable) = tmp;
             }
-            
+
             /*
              * Release memory
              */
@@ -1095,55 +1095,55 @@ private:
           return -3;
        }
     }
-    
+
     /*****************************************************
              FUNCTIONS TO READ ELEMENTAL DATA
     *****************************************************/
     int ReadElementalData_(
         const Variable<bool>& rThisVariable,
-        ModelPart::Pointer pModelPart,
+        ModelPart& r_model_part,
         bool allow_unequal = true
     )
     {
-        ElementsArrayType& pElements = pModelPart->Elements();
+        ElementsArrayType& pElements = r_model_part.Elements();
 
         typedef struct Data_t {
 	        int id;
 	        int v;
         } Data_t;
-        
+
         /*
          * Create the memory data type.
          */
         H5::CompType mtype(sizeof(Data_t) );
         mtype.insertMember("id", HOFFSET(Data_t, id), H5::PredType::NATIVE_INT);
         mtype.insertMember("v",  HOFFSET(Data_t, v),  H5::PredType::NATIVE_INT);
-        
+
         try
         {
             /*
              * Open the dataset
              */
             H5::DataSet dataset = mpFile->openDataSet(rThisVariable.Name());
-            
+
             /*
              * Get dataspace of the dataset.
              */
             H5::DataSpace dataspace = dataset.getSpace();
-            
+
             /*
              * Get the number of dimensions in the dataspace.
              */
             int rank = dataspace.getSimpleExtentNdims();
 //            KRATOS_WATCH(rank)
-            
+
             /*
              * Get the dimension size of each dimension in the dataspace and
              * do the bound check.
              */
             hsize_t dims_out[rank];
             int ndims = dataspace.getSimpleExtentDims(dims_out, NULL);
-            
+
             if(!allow_unequal)
                 if(dims_out[0] != pElements.size())
                 {
@@ -1153,18 +1153,18 @@ private:
                     ss << ", the dimension of read-out data is " << dims_out[0];
                     KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
                 }
-            
+
             /*
              * Output buffer
              */
             Data_t* data = new Data_t[dims_out[0]];
-            
+
             /*
              * Read data from hyperslab in the file into the hyperslab in
              * memory and display the data.
              */
             dataset.read(data, mtype, dataspace, dataspace);
-            
+
             double tmp;
             for(unsigned int i = 0; i < dims_out[0]; ++i)
             {
@@ -1174,7 +1174,7 @@ private:
                 else
                     pElements[data[i].id].SetValue(rThisVariable, true);
             }
-            
+
             /*
              * Release memory
              */
@@ -1199,7 +1199,7 @@ private:
           return -3;
        }
     }
-    
+
     ///@}
     ///@name Un accessible methods
     ///@{
@@ -1260,26 +1260,26 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HDF5PostUtility& 
 
 //      void WriteNodalResults_(
 //        const Variable<Vector>& rThisVariable,
-//        ModelPart::Pointer pModelPart
+//        ModelPart& r_model_part
 //    )
 //    {
-//        NodesArrayType& pNodes = pModelPart->Nodes();
-//        
+//        NodesArrayType& pNodes = r_model_part.Nodes();
+//
 //        int len = (*(pNodes.ptr_begin()))->GetSolutionStepValue(rThisVariable).size();
-// 
+//
 //        typedef struct Data_t {
 //	        int    id;
 //	        double *v;
 //        } Data_t;
-// 
+//
 //        typedef struct Data_buffer_t {
 //	        int    id;
 //	        hvl_t  v;
 //        } Data_buffer_t;
-//        
+//
 //        Data_t* data = new Data_t[pNodes.size()];
 //        Data_buffer_t* data_buffer = new Data_buffer_t[pNodes.size()];
-//        
+//
 //        /*
 //         * Initialize the data
 //         */
@@ -1291,14 +1291,14 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HDF5PostUtility& 
 //            Vector& v = (*it)->GetSolutionStepValue(rThisVariable);
 //            for(int i = 0; i < len; ++i)
 //                data[cnt].v[i] = v[i];
-//            
+//
 //            data_buffer[cnt].id = data[cnt].id;
 //            data_buffer[cnt].v.len = len;
 //            data_buffer[cnt].v.p = data[cnt].v;
-//            
+//
 //            ++cnt;
 //        }
-//        
+//
 //        /*
 //         * Create the memory data type.
 //         */
@@ -1306,24 +1306,24 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HDF5PostUtility& 
 //        H5::CompType mtype(sizeof(Data_t) );
 //        mtype.insertMember("id", HOFFSET(Data_t, id), H5::PredType::NATIVE_INT);
 //        mtype.insertMember("v", HOFFSET(Data_t, v), vlen_tid);
-//        
+//
 //        /*
 //         * Create the data space.
 //         */
 //        hsize_t dim[] = {pNodes.size()};   /* Dataspace dimensions */
 //        H5::DataSpace space(1, dim);
-// 
+//
 //        /*
 //         * Create the dataset.
 //         */
 //        H5::DataSet* dataset;
 //        dataset = new H5::DataSet(mpFile->createDataSet(rThisVariable.Name(), mtype, space));
-//        
+//
 //        /*
 //         * Write data to the dataset;
 //         */
 //        dataset->write(data_buffer, mtype);
-// 
+//
 //        /*
 //         * Release resources
 //         */
@@ -1331,4 +1331,4 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HDF5PostUtility& 
 //        delete data;
 //        delete data_buffer;
 //    }
-//    
+//

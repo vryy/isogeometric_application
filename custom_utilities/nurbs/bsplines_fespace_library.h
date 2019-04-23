@@ -29,7 +29,7 @@ class BSplinesFESpaceLibrary
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BSplinesFESpaceLibrary);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BSplinesFESpaceLibrary);
 
     /// Type definition
     typedef KnotArray1D<double> knot_container_t;

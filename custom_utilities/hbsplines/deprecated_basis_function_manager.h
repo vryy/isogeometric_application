@@ -33,7 +33,7 @@ class DeprecatedBasisFunctionManager
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(DeprecatedBasisFunctionManager);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(DeprecatedBasisFunctionManager);
 
     /// Type definitions
     typedef Knot<double> KnotType;

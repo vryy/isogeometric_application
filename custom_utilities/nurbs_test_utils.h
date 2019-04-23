@@ -67,7 +67,7 @@ public:
     typedef typename Element::GeometryType::PointType::CoordinatesArrayType CoordinatesArrayType;
 
     /// Pointer definition of NURBSTestUtils
-    KRATOS_CLASS_POINTER_DEFINITION(NURBSTestUtils);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(NURBSTestUtils);
 
     ///@}
     ///@name Life Cycle

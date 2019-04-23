@@ -20,6 +20,7 @@
 // Project includes
 #include "includes/define.h"
 #include "utilities/math_utils.h"
+#include "custom_utilities/iga_define.h"
 
 
 namespace Kratos
@@ -33,7 +34,7 @@ class Transformation
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Transformation);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(Transformation);
 
     /// Type definitions
     typedef boost::numeric::ublas::matrix<TDataType> MatrixType;

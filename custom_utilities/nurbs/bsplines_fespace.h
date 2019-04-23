@@ -40,7 +40,7 @@ class BSplinesFESpace : public FESpace<TDim>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BSplinesFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BSplinesFESpace);
 
     /// Type definition
     typedef FESpace<TDim> BaseType;
@@ -1214,9 +1214,9 @@ private:
     /**
      * internal data to construct the shape functions on the BSplines
      */
-    boost::array<std::size_t, TDim> mOrders;
-    boost::array<std::size_t, TDim> mNumbers;
-    boost::array<knot_container_t, TDim> mKnotVectors;
+    std::array<std::size_t, TDim> mOrders;
+    std::array<std::size_t, TDim> mNumbers;
+    std::array<knot_container_t, TDim> mKnotVectors;
 
     /**
      * data for grid function interpolation
@@ -1232,7 +1232,7 @@ class BSplinesFESpace<0> : public FESpace<0>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BSplinesFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BSplinesFESpace);
 
     /// Type definition
     typedef FESpace<0> BaseType;

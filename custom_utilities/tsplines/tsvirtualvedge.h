@@ -32,7 +32,7 @@ class TsVirtualVEdge : public TsVEdge
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(TsVirtualVEdge);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TsVirtualVEdge);
 
     /// Type definitions
     typedef TsVEdge BaseType;

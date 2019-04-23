@@ -34,7 +34,7 @@ class CellContainer
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(CellContainer);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(CellContainer);
 
     /// Type definitions
     typedef Cell CellType;

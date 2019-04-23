@@ -66,8 +66,11 @@ namespace Kratos
     KRATOS_CREATE_VARIABLE( int, EQUATION_INDEX )
     KRATOS_CREATE_VARIABLE( int, CELL_INDEX )
 
+    KRATOS_CREATE_VARIABLE( int, INTEGRATION_ORDER )
+
     KratosIsogeometricApplication::KratosIsogeometricApplication()
-    : mDummyConditionBezier( 0, Element::GeometryType::Pointer( new Geo1dBezier<Node<3> >() ) )
+    : KratosApplication("IsogeometricApplication")
+    , mDummyConditionBezier( 0, Element::GeometryType::Pointer( new Geo1dBezier<Node<3> >() ) )
     , mDummyConditionBezier2D( 0, Element::GeometryType::Pointer( new Geo2dBezier<Node<3> >() ) )
     , mDummyConditionBezier2D3( 0, Element::GeometryType::Pointer( new Geo2dBezier3<Node<3> >() ) )
     , mDummyConditionBezier3D( 0, Element::GeometryType::Pointer( new Geo3dBezier<Node<3> >() ) )

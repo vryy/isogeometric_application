@@ -19,6 +19,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "custom_utilities/iga_define.h"
 
 namespace Kratos
 {
@@ -31,7 +32,7 @@ class DomainManager
 
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(DomainManager);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(DomainManager);
 
     /// Type definition
     typedef std::set<double> coords_container_t;

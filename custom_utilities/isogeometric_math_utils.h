@@ -21,6 +21,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "custom_utilities/iga_define.h"
 
 
 namespace Kratos
@@ -34,7 +35,7 @@ class IsogeometricMathUtils
 public:
 
     /// Pointer definition of IsogeometricMathUtils
-    KRATOS_CLASS_POINTER_DEFINITION(IsogeometricMathUtils);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(IsogeometricMathUtils);
 
     /// Default constructor.
     IsogeometricMathUtils()

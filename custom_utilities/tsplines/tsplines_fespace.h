@@ -33,7 +33,7 @@ class TSplinesFESpace : public PBBSplinesFESpace<TDim, TBasisFunctionType, TCell
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(TSplinesFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TSplinesFESpace);
 
     /// Type definition
     typedef PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType> BaseType;

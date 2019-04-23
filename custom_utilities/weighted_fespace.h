@@ -32,7 +32,7 @@ class WeightedFESpace : public FESpace<TDim>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     /// Type definition
     typedef FESpace<TDim> BaseType;
@@ -409,7 +409,7 @@ class WeightedFESpace<0> : public FESpace<0>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     /// Default constructor
     WeightedFESpace(FESpace<0>::Pointer pFESpace, const std::vector<double>& weights) : mFunctionId(-1) {}
@@ -519,7 +519,7 @@ class WeightedFESpace<-1> : public FESpace<-1>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     /// Default constructor
     WeightedFESpace(FESpace<-1>::Pointer pFESpace, const std::vector<double>& weights) {}
@@ -596,7 +596,7 @@ class WeightedFESpace<-2> : public FESpace<-2>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     /// Default constructor
     WeightedFESpace(FESpace<-2>::Pointer pFESpace, const std::vector<double>& weights) {}

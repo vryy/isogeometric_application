@@ -15,13 +15,12 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // Project includes
 #include "includes/define.h"
+#include "includes/define_python.h"
 #include "containers/array_1d.h"
 #include "includes/ublas_interface.h"
 #include "custom_utilities/trans/transformation.h"
@@ -37,8 +36,6 @@ namespace Kratos
 
 namespace Python
 {
-
-using namespace boost::python;
 
 //////////////////////////////////////////////////
 
@@ -72,16 +69,15 @@ TVectorType Transformation_Apply(Transformation<TDataType>& rDummy, const TVecto
 }
 
 template<typename TDataType>
-boost::python::list Transformation_Apply2(Transformation<TDataType>& rDummy, boost::python::list v)
+pybind11::list Transformation_Apply2(Transformation<TDataType>& rDummy, pybind11::list py_trans_list)
 {
     std::vector<TDataType> newv;
-    typedef boost::python::stl_input_iterator<TDataType> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& d, std::make_pair(iterator_value_type(v), iterator_value_type() ) )
-        newv.push_back(d);
+    for (auto v : py_trans_list)
+        newv.push_back(v.cast<TDataType>());
 
     rDummy.template ApplyTransformation<std::vector<TDataType> >(newv);
 
-    boost::python::list res;
+    pybind11::list res;
     for (std::size_t i = 0; i < newv.size(); ++i)
         res.append(newv[i]);
 
@@ -114,20 +110,21 @@ array_1d<TDataType, 3> Transformation_V3(Transformation<TDataType>& rDummy)
 
 //////////////////////////////////////////////////
 
-void IsogeometricApplication_AddTransformationToPython()
+void IsogeometricApplication_AddTransformationToPython(pybind11::module& m)
 {
+
     typedef Transformation<double>::VectorType VectorType;
 
-    class_<Transformation<double>, Transformation<double>::Pointer>
-    ("Transformation", init<>())
-    .def(init<const VectorType&, const VectorType&, const VectorType&>())
-    .def(init<const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&>())
-    .def(init<const VectorType&, const VectorType&, const VectorType&, const VectorType&>())
-    .def(init<const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&>())
+    pybind11::class_<Transformation<double>, Transformation<double>::Pointer>(m, "Transformation")
+    .def(pybind11::init<>())
+    .def(pybind11::init<const VectorType&, const VectorType&, const VectorType&>())
+    .def(pybind11::init<const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&>())
+    .def(pybind11::init<const VectorType&, const VectorType&, const VectorType&, const VectorType&>())
+    .def(pybind11::init<const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&, const array_1d<double, 3>&>())
     .def("AppendTransformation", &Transformation<double>::AppendTransformation)
     .def("PrependTransformation", &Transformation<double>::PrependTransformation)
     .def("Inverse", &Transformation<double>::Inverse)
-    // .def(boost::python::operators<boost::python::op_mul>());
+    // .def(pybind11::operators<pybind11::op_mul>());
     .def("P", &Transformation_P<double>)
     .def("V1", &Transformation_V1<double>)
     .def("V2", &Transformation_V2<double>)
@@ -137,46 +134,54 @@ void IsogeometricApplication_AddTransformationToPython()
     .def("Apply", &Transformation_Apply<double, Vector>)
     .def("Apply", &Transformation_Apply<double, array_1d<double, 3> >)
     .def("Apply", &Transformation_Apply2<double>)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<Transformation<double> >)
     ;
 
-    class_<Translation<double>, Translation<double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
-    ("Translation", init<const double&, const double&, const double&>())
-    .def(self_ns::str(self))
+    pybind11::class_<Translation<double>, Translation<double>::Pointer, Transformation<double> >
+    (m, "Translation")
+    .def(pybind11::init<const double&, const double&, const double&>())
+    .def("__str__", &PrintObject<Translation<double> >)
     ;
 
-    class_<Rotation<0, double>, Rotation<0, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
-    ("RotationX", init<const double&>())
-    .def(self_ns::str(self))
+    pybind11::class_<Rotation<0, double>, Rotation<0, double>::Pointer, Transformation<double> >
+    (m, "RotationX")
+    .def(pybind11::init<const double&>())
+    .def("__str__", &PrintObject<Rotation<0, double> >)
     ;
 
-    class_<Rotation<1, double>, Rotation<1, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
-    ("RotationY", init<const double&>())
-    .def(self_ns::str(self))
+    pybind11::class_<Rotation<1, double>, Rotation<1, double>::Pointer, Transformation<double> >
+    (m, "RotationY")
+    .def(pybind11::init<const double&>())
+    .def("__str__", &PrintObject<Rotation<1, double> >)
     ;
 
-    class_<Rotation<2, double>, Rotation<2, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
-    ("RotationZ", init<const double&>())
-    .def(self_ns::str(self))
+    pybind11::class_<Rotation<2, double>, Rotation<2, double>::Pointer, Transformation<double> >
+    (m, "RotationZ")
+    .def(pybind11::init<const double&>())
+    .def("__str__", &PrintObject<Rotation<2, double> >)
     ;
 
-    class_<Mirror<0, double>, Mirror<0, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
-    ("MirrorX", init<>())
-    .def(self_ns::str(self))
+    pybind11::class_<Mirror<0, double>, Mirror<0, double>::Pointer, Transformation<double> >
+    (m, "MirrorX")
+    .def(pybind11::init<>())
+    .def("__str__", &PrintObject<Mirror<0, double> >)
     ;
 
-    class_<Mirror<1, double>, Mirror<1, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
-    ("MirrorY", init<>())
-    .def(self_ns::str(self))
+    pybind11::class_<Mirror<1, double>, Mirror<1, double>::Pointer, Transformation<double> >
+    (m, "MirrorY")
+    .def(pybind11::init<>())
+    .def("__str__", &PrintObject<Mirror<1, double> >)
     ;
 
-    class_<Mirror<2, double>, Mirror<2, double>::Pointer, bases<Transformation<double> >, boost::noncopyable>
-    ("MirrorZ", init<>())
-    .def(self_ns::str(self))
+    pybind11::class_<Mirror<2, double>, Mirror<2, double>::Pointer, Transformation<double> >
+    (m, "MirrorZ")
+    .def(pybind11::init<>())
+    .def("__str__", &PrintObject<Mirror<2, double> >)
     ;
 
-    class_<TransformationUtility<double>, TransformationUtility<double>::Pointer, boost::noncopyable>
-    ("TransformationUtility", init<>())
+    pybind11::class_<TransformationUtility<double>, TransformationUtility<double>::Pointer>
+    (m, "TransformationUtility")
+    .def(pybind11::init<>())
     .def("CreateAlignTransformation", &TransformationUtility_CreateAlignTransformation<double>)
     ;
 

@@ -11,11 +11,13 @@
 
 // System includes
 #include <vector>
+#include <algorithm>
 
 // External includes
 
 // Project includes
 #include "includes/define.h"
+#include "custom_utilities/iga_define.h"
 
 namespace Kratos
 {
@@ -81,7 +83,7 @@ class BSplinesIndexingUtility
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BSplinesIndexingUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BSplinesIndexingUtility);
 
     /// Type definition
 

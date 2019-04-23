@@ -36,7 +36,7 @@ class BSplinesPatchUtility
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BSplinesPatchUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BSplinesPatchUtility);
 
     /// Default constructor
     BSplinesPatchUtility() {}
@@ -82,7 +82,7 @@ public:
         }
 
         // create the new FESpace
-        typename BSplinesFESpace<TDim-1>::Pointer pFESpace0 = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pPatches[0]->pFESpace());
+        typename BSplinesFESpace<TDim-1>::Pointer pFESpace0 = Kratos::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pPatches[0]->pFESpace());
         if (pFESpace0 == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = BSplinesFESpace<TDim>::Create();
@@ -102,7 +102,7 @@ public:
         // create the new control point grid
         typedef typename Patch<TDim>::ControlPointType ControlPointType;
         typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pControlPointGrid0
-            = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >(pPatches[0]->pControlPointGridFunction()->pControlGrid());
+            = Kratos::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >(pPatches[0]->pControlPointGridFunction()->pControlGrid());
         if (pControlPointGrid0 == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
@@ -170,13 +170,13 @@ public:
         }
 
         // reverse the FESPace
-        typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = Kratos::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         pFESpace->Reverse(idir);
 
         // reverse the structured control grid
         typedef typename Patch<TDim>::ControlPointType ControlPointType;
         typename StructuredControlGrid<TDim, ControlPointType>::Pointer pControlPointGrid =
-            boost::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+            Kratos::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
         if (pControlPointGrid != NULL)
             pControlPointGrid->Reverse(idir);
         else
@@ -188,7 +188,7 @@ public:
                 it != DoubleGridFunctions_.end(); ++it)
         {
             typename StructuredControlGrid<TDim, double>::Pointer pControlValueGrid =
-                boost::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
+                Kratos::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
             if (pControlValueGrid != NULL)
             {
                 pControlValueGrid->Reverse(idir);
@@ -207,7 +207,7 @@ public:
                 it != Array1DGridFunctions_.end(); ++it)
         {
             typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pControlValueGrid =
-                boost::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
+                Kratos::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
             if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
             if (pControlValueGrid != NULL)
             {
@@ -227,7 +227,7 @@ public:
                 it != VectorGridFunctions_.end(); ++it)
         {
             typename StructuredControlGrid<TDim, Vector>::Pointer pControlValueGrid =
-                boost::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
+                Kratos::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
             if (pControlValueGrid != NULL)
             {
                 pControlValueGrid->Reverse(idir);
@@ -248,7 +248,7 @@ public:
         {
             for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
             {
-                typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
+                typename BSplinesPatchInterface<TDim>::Pointer pInterface = Kratos::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
 
                 if (pInterface != NULL)
                 {
@@ -348,8 +348,8 @@ public:
             typename PatchInterface<2>::Pointer pInterface12;
             typename PatchInterface<2>::Pointer pInterface21;
 
-            pInterface12 = boost::make_shared<BSplinesPatchInterface<2> >(pPatch1, side1, pPatch2, side2, direction);
-            pInterface21 = boost::make_shared<BSplinesPatchInterface<2> >(pPatch2, side2, pPatch1, side1, direction);
+            pInterface12 = Kratos::make_shared<BSplinesPatchInterface<2> >(pPatch1, side1, pPatch2, side2, direction);
+            pInterface21 = Kratos::make_shared<BSplinesPatchInterface<2> >(pPatch2, side2, pPatch1, side1, direction);
 
             pInterface12->SetOtherInterface(pInterface21);
             pInterface21->SetOtherInterface(pInterface12);
@@ -412,8 +412,8 @@ public:
             typename PatchInterface<3>::Pointer pInterface12;
             typename PatchInterface<3>::Pointer pInterface21;
 
-            pInterface12 = boost::make_shared<BSplinesPatchInterface<3> >(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
-            pInterface21 = boost::make_shared<BSplinesPatchInterface<3> >(pPatch2, side2, pPatch1, side1, uv_or_vu, direction1, direction2);
+            pInterface12 = Kratos::make_shared<BSplinesPatchInterface<3> >(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
+            pInterface21 = Kratos::make_shared<BSplinesPatchInterface<3> >(pPatch2, side2, pPatch1, side1, uv_or_vu, direction1, direction2);
 
             pInterface12->SetOtherInterface(pInterface21);
             pInterface21->SetOtherInterface(pInterface12);

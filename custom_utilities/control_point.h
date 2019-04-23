@@ -36,7 +36,7 @@ public:
     typedef typename BaseType::DataType CoordinatesType;
 
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(ControlPoint);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(ControlPoint);
 
     /// Default constructor
     ControlPoint() : BaseType() {}

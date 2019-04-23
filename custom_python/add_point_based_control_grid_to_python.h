@@ -21,11 +21,11 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <sstream>
 
 // External includes
-#include <boost/python.hpp>
-
+#include <pybind11/pybind11.h>
 
 // Project includes
 #include "includes/define.h"
+#include "includes/define_python.h"
 #include "custom_utilities/point_based_control_grid.h"
 
 
@@ -34,8 +34,6 @@ namespace Kratos
 
 namespace Python
 {
-
-using namespace boost::python;
 
 template<class TVariableType, class TFESpaceType>
 struct IsogeometricApplication_AddPointBasedControlGrid_Helper
@@ -50,13 +48,14 @@ struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<double>,
     typedef ControlGrid<typename VariableType::Type> ControlGridType;
     typedef PointBasedControlGrid<VariableType, TFESpaceType> PointBasedControlGridType;
 
-    static void Execute()
+    static void Execute(pybind11::module& m)
     {
         std::stringstream ss;
         ss << TFESpaceType::StaticType() << "PointBasedDoubleControlGrid";
-        class_<PointBasedControlGridType, typename PointBasedControlGridType::Pointer, bases<ControlGridType>, boost::noncopyable>
-        (ss.str().c_str(), init<const VariableType&, typename TFESpaceType::Pointer>())
-        .def(self_ns::str(self))
+        pybind11::class_<PointBasedControlGridType, typename PointBasedControlGridType::Pointer, ControlGridType>
+        (m, ss.str().c_str())
+        .def(pybind11::init<const VariableType&, typename TFESpaceType::Pointer>())
+        .def("__str__", &PrintObject<PointBasedControlGridType>)
         ;
     }
 };
@@ -68,13 +67,14 @@ struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<array_1d
     typedef ControlGrid<typename VariableType::Type> ControlGridType;
     typedef PointBasedControlGrid<VariableType, TFESpaceType> PointBasedControlGridType;
 
-    static void Execute()
+    static void Execute(pybind11::module& m)
     {
         std::stringstream ss;
         ss << TFESpaceType::StaticType() << "PointBasedArray1DControlGrid";
-        class_<PointBasedControlGridType, typename PointBasedControlGridType::Pointer, bases<ControlGridType>, boost::noncopyable>
-        (ss.str().c_str(), init<const VariableType&, typename TFESpaceType::Pointer>())
-        .def(self_ns::str(self))
+        pybind11::class_<PointBasedControlGridType, typename PointBasedControlGridType::Pointer, ControlGridType>
+        (m, ss.str().c_str())
+        .def(pybind11::init<const VariableType&, typename TFESpaceType::Pointer>())
+        .def("__str__", &PrintObject<PointBasedControlGridType>)
         ;
     }
 };
@@ -86,13 +86,14 @@ struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<Vector>,
     typedef ControlGrid<typename VariableType::Type> ControlGridType;
     typedef PointBasedControlGrid<VariableType, TFESpaceType> PointBasedControlGridType;
 
-    static void Execute()
+    static void Execute(pybind11::module& m)
     {
         std::stringstream ss;
         ss << TFESpaceType::StaticType() << "PointBasedVectorControlGrid";
-        class_<PointBasedControlGridType, typename PointBasedControlGridType::Pointer, bases<ControlGridType>, boost::noncopyable>
-        (ss.str().c_str(), init<const VariableType&, typename TFESpaceType::Pointer>())
-        .def(self_ns::str(self))
+        pybind11::class_<PointBasedControlGridType, typename PointBasedControlGridType::Pointer, ControlGridType>
+        (m, ss.str().c_str())
+        .def(pybind11::init<const VariableType&, typename TFESpaceType::Pointer>())
+        .def("__str__", &PrintObject<PointBasedControlGridType>)
         ;
     }
 };

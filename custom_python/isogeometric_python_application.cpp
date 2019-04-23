@@ -14,7 +14,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 #if defined(KRATOS_PYTHON)
 // External includes
-#include <boost/python.hpp>
+#include <pybind11/pybind11.h>
 
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_control_point_to_python.h"
@@ -29,7 +29,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/add_patches_to_python.h"
 #include "custom_python/add_mesh_and_model_part_to_python.h"
 #include "custom_python/add_processes_to_python.h"
-#include "custom_python/add_io_to_python.h"
+// #include "custom_python/add_io_to_python.h"
 #include "custom_python/add_strategies_to_python.h"
 
 ////utilities
@@ -46,60 +46,60 @@ namespace Python
 {
 
 
-BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
+PYBIND11_MODULE(KratosIsogeometricApplication, m)
 {
 
-    using namespace boost::python;
+    namespace py = pybind11;
 
-    class_<KratosIsogeometricApplication,
+    py::class_<KratosIsogeometricApplication,
            KratosIsogeometricApplication::Pointer,
-           bases<KratosApplication>, boost::noncopyable > ("KratosIsogeometricApplication")
+           KratosApplication> (m, "KratosIsogeometricApplication")
+           .def(py::init<>())
            ;
 
-    IsogeometricApplication_AddBackendUtilitiesToPython();
-    IsogeometricApplication_AddFrontendUtilitiesToPython();
-    IsogeometricApplication_AddControlPointToPython();
-    IsogeometricApplication_AddControlGridsToPython();
-    IsogeometricApplication_AddTransformationToPython();
-    IsogeometricApplication_AddFESpacesToPython<1>();
-    IsogeometricApplication_AddFESpacesToPython<2>();
-    IsogeometricApplication_AddFESpacesToPython<3>();
-    IsogeometricApplication_AddGridFunctionsToPython<1>();
-    IsogeometricApplication_AddGridFunctionsToPython<2>();
-    IsogeometricApplication_AddGridFunctionsToPython<3>();
-    IsogeometricApplication_AddPatchesToPython();
-    IsogeometricApplication_AddNURBSToPython();
-    IsogeometricApplication_AddPBBSplinesToPython();
-    IsogeometricApplication_AddHBSplinesToPython();
-    IsogeometricApplication_AddTSplinesToPython();
-    IsogeometricApplication_AddMeshAndModelPartToPython();
-    IsogeometricApplication_AddProcessesToPython();
-    IsogeometricApplication_AddIOToPython();
-    IsogeometricApplication_AddStrategiesToPython();
+    IsogeometricApplication_AddBackendUtilitiesToPython(m);
+    IsogeometricApplication_AddFrontendUtilitiesToPython(m);
+    IsogeometricApplication_AddControlPointToPython(m);
+    IsogeometricApplication_AddControlGridsToPython(m);
+    IsogeometricApplication_AddTransformationToPython(m);
+    IsogeometricApplication_AddFESpacesToPython<1>(m);
+    IsogeometricApplication_AddFESpacesToPython<2>(m);
+    IsogeometricApplication_AddFESpacesToPython<3>(m);
+    IsogeometricApplication_AddGridFunctionsToPython<1>(m);
+    IsogeometricApplication_AddGridFunctionsToPython<2>(m);
+    IsogeometricApplication_AddGridFunctionsToPython<3>(m);
+    IsogeometricApplication_AddPatchesToPython(m);
+    IsogeometricApplication_AddNURBSToPython(m);
+    IsogeometricApplication_AddPBBSplinesToPython(m);
+    IsogeometricApplication_AddHBSplinesToPython(m);
+    IsogeometricApplication_AddTSplinesToPython(m);
+    IsogeometricApplication_AddMeshAndModelPartToPython(m);
+    IsogeometricApplication_AddProcessesToPython(m);
+    // IsogeometricApplication_AddIOToPython(m);
+    IsogeometricApplication_AddStrategiesToPython(m);
 
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( NURBS_WEIGHT )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( NURBS_WEIGHTS )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( NUM_DIVISION_1 )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( NUM_DIVISION_2 )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( NUM_DIVISION_3 )
-    KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( LOCAL_COORDINATES )
-    KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( CONTROL_POINT_COORDINATES )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( NUM_IGA_INTEGRATION_METHOD )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( CONTROL_POINT )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( KNOT_LEFT )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( KNOT_RIGHT )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( KNOT_TOP )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( KNOT_BOTTOM )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( KNOT_FRONT )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( KNOT_BACK )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( PATCH_INDEX )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( HIERARCHICAL_LEVEL )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( BASIS_FUNCTION_INDEX )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( EQUATION_INDEX )
-    KRATOS_REGISTER_IN_PYTHON_VARIABLE( CELL_INDEX )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, NURBS_WEIGHT )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, NURBS_WEIGHTS )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, NUM_DIVISION_1 )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, NUM_DIVISION_2 )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, NUM_DIVISION_3 )
+    KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( m, LOCAL_COORDINATES )
+    KRATOS_REGISTER_IN_PYTHON_3D_VARIABLE_WITH_COMPONENTS( m, CONTROL_POINT_COORDINATES )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, NUM_IGA_INTEGRATION_METHOD )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, CONTROL_POINT )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, KNOT_LEFT )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, KNOT_RIGHT )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, KNOT_TOP )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, KNOT_BOTTOM )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, KNOT_FRONT )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, KNOT_BACK )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, PATCH_INDEX )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, HIERARCHICAL_LEVEL )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, BASIS_FUNCTION_INDEX )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, EQUATION_INDEX )
+    KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, CELL_INDEX )
 
 }
-
 
 } // namespace Python.
 

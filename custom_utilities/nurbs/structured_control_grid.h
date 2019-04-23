@@ -31,7 +31,7 @@ class BaseStructuredControlGrid : public ControlGrid<TDataType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BaseStructuredControlGrid);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BaseStructuredControlGrid);
 
     /// Type definition
     typedef ControlGrid<TDataType> BaseType;
@@ -163,7 +163,7 @@ class StructuredControlGrid<1, TDataType> : public BaseStructuredControlGrid<TDa
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(StructuredControlGrid);
 
     // type definitions
     typedef BaseStructuredControlGrid<TDataType> BaseType;
@@ -325,7 +325,7 @@ class StructuredControlGrid<2, TDataType> : public BaseStructuredControlGrid<TDa
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(StructuredControlGrid);
 
     // type definitions
     typedef BaseStructuredControlGrid<TDataType> BaseType;
@@ -590,7 +590,7 @@ class StructuredControlGrid<3, TDataType> : public BaseStructuredControlGrid<TDa
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(StructuredControlGrid);
 
     // type definitions
     typedef BaseStructuredControlGrid<TDataType> BaseType;

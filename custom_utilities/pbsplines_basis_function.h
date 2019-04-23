@@ -20,7 +20,7 @@
 #include "includes/serializer.h"
 #include "containers/data_value_container.h"
 #include "custom_utilities/control_point.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application.h"
 
 
 namespace Kratos
@@ -49,7 +49,7 @@ class PBSplinesBasisFunction
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(PBSplinesBasisFunction);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(PBSplinesBasisFunction);
 
     /// Type definition
     typedef ControlPoint<double> ControlPointType;

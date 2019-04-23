@@ -28,7 +28,7 @@ class Translation : public Transformation<TDataType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Translation);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(Translation);
 
     /// Type definitions
     typedef Transformation<TDataType> BaseType;

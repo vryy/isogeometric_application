@@ -29,7 +29,7 @@ class UnstructuredControlGrid : public ControlGrid<TDataType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(UnstructuredControlGrid);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(UnstructuredControlGrid);
 
     /// Type definition
     typedef ControlGrid<TDataType> BaseType;

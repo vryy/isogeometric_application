@@ -15,10 +15,12 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/python.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // Project includes
 #include "includes/define.h"
+#include "includes/define_python.h"
 #include "containers/variable.h"
 #include "custom_utilities/control_point.h"
 #include "custom_python/add_control_point_to_python.h"
@@ -30,8 +32,6 @@ namespace Kratos
 
 namespace Python
 {
-
-using namespace boost::python;
 
 ////////////////////////////////////////
 
@@ -97,24 +97,26 @@ inline void ControlPoint_ApplyTransformation(ControlPoint<double>& rDummy, const
 
 ////////////////////////////////////////
 
-void IsogeometricApplication_AddControlPointToPython()
+void IsogeometricApplication_AddControlPointToPython(pybind11::module& m)
 {
-    class_<ControlPoint<double>, ControlPoint<double>::Pointer>
-    ("ControlPoint", init<>())
-    .def(init<const double&, const double&, const double&, const double&>())
-    .add_property("WX", ControlPoint_GetWX, ControlPoint_SetWX)
-    .add_property("WY", ControlPoint_GetWY, ControlPoint_SetWY)
-    .add_property("WZ", ControlPoint_GetWZ, ControlPoint_SetWZ)
-    .add_property("W", ControlPoint_GetW, ControlPoint_SetW)
+    pybind11::class_<ControlPoint<double>, ControlPoint<double>::Pointer>
+    (m, "ControlPoint")
+    .def(pybind11::init<>())
+    .def(pybind11::init<const double&, const double&, const double&, const double&>())
+    .def_property("WX", ControlPoint_GetWX, ControlPoint_SetWX)
+    .def_property("WY", ControlPoint_GetWY, ControlPoint_SetWY)
+    .def_property("WZ", ControlPoint_GetWZ, ControlPoint_SetWZ)
+    .def_property("W", ControlPoint_GetW, ControlPoint_SetW)
     .def("ApplyTransformation", &ControlPoint_ApplyTransformation)
     .def("X", &ControlPoint_GetX)
     .def("Y", &ControlPoint_GetY)
     .def("Z", &ControlPoint_GetZ)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<ControlPoint<double> >)
     ;
 
-    class_<Variable<ControlPoint<double> >, bases<VariableData>, boost::noncopyable >( "ControlPointVariable", no_init )
-    .def( self_ns::str( self ) )
+    pybind11::class_<Variable<ControlPoint<double> >, VariableData>
+    (m, "ControlPointVariable")
+    .def("__str__", &PrintObject<Variable<ControlPoint<double> > >)
     ;
 }
 

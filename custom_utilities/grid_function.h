@@ -142,7 +142,7 @@ class GridFunction
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(GridFunction);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(GridFunction);
 
     /// Type definition
     typedef TDataType DataType;

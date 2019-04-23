@@ -15,13 +15,12 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // Project includes
 #include "includes/define.h"
+#include "includes/define_python.h"
 #include "includes/model_part.h"
 #include "includes/variables.h"
 #include "custom_python/add_utilities_to_python.h"
@@ -34,8 +33,6 @@ namespace Kratos
 
 namespace Python
 {
-
-using namespace boost::python;
 
 ////////////////////////////////////////
 
@@ -54,19 +51,15 @@ std::size_t FESpace_Enumerate(FESpace<TDim>& rDummy)
 }
 
 template<int TDim>
-boost::python::list FESpace_GetValue(FESpace<TDim>& rDummy, boost::python::list xi_list)
+pybind11::list FESpace_GetValue(FESpace<TDim>& rDummy, pybind11::list& py_xi_list)
 {
     std::vector<double> xi;
-
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi_list), iterator_value_type() ) )
-    {
-        xi.push_back(v);
-    }
+    for (auto v : py_xi_list)
+        xi.push_back(v.cast<double>());
 
     std::vector<double> values = rDummy.GetValue(xi);
 
-    boost::python::list values_list;
+    pybind11::list values_list;
     for (std::size_t i = 0; i < values.size(); ++i)
         values_list.append(values[i]);
 
@@ -74,23 +67,19 @@ boost::python::list FESpace_GetValue(FESpace<TDim>& rDummy, boost::python::list 
 }
 
 template<int TDim>
-bool FESpace_IsInside(FESpace<TDim>& rDummy, boost::python::list xi_list)
+bool FESpace_IsInside(FESpace<TDim>& rDummy, pybind11::list& py_xi_list)
 {
     std::vector<double> xi;
-
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi_list), iterator_value_type() ) )
-    {
-        xi.push_back(v);
-    }
+    for (auto v : py_xi_list)
+        xi.push_back(v.cast<double>());
 
     return rDummy.IsInside(xi);
 }
 
 template<int TDim>
-boost::python::list FESpace_FunctionIndices(FESpace<TDim>& rDummy)
+pybind11::list FESpace_FunctionIndices(FESpace<TDim>& rDummy)
 {
-    boost::python::list indices;
+    pybind11::list indices;
     std::vector<std::size_t> all_indices = rDummy.FunctionIndices();
     for (std::size_t i = 0; i < all_indices.size(); ++i)
         indices.append<int>(static_cast<int>(all_indices[i]));
@@ -98,9 +87,9 @@ boost::python::list FESpace_FunctionIndices(FESpace<TDim>& rDummy)
 }
 
 template<int TDim>
-boost::python::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, const int& iside)
+pybind11::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, const int& iside)
 {
-    boost::python::list indices;
+    pybind11::list indices;
     BoundarySide side = static_cast<BoundarySide>(iside);
     std::vector<std::size_t> boundary_indices = rDummy.ExtractBoundaryFunctionIndices(side);
     for (std::size_t i = 0; i < boundary_indices.size(); ++i)
@@ -109,9 +98,9 @@ boost::python::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, const
 }
 
 template<int TDim>
-boost::python::list FESpace_BoundaryFunctionIndicesByFlag(FESpace<TDim>& rDummy, const int& boundary_id)
+pybind11::list FESpace_BoundaryFunctionIndicesByFlag(FESpace<TDim>& rDummy, const int& boundary_id)
 {
-    boost::python::list indices;
+    pybind11::list indices;
     std::vector<std::size_t> boundary_indices = rDummy.ExtractBoundaryFunctionIndicesByFlag(boundary_id);
     for (std::size_t i = 0; i < boundary_indices.size(); ++i)
         indices.append<int>(static_cast<int>(boundary_indices[i]));
@@ -119,9 +108,9 @@ boost::python::list FESpace_BoundaryFunctionIndicesByFlag(FESpace<TDim>& rDummy,
 }
 
 template<int TDim>
-boost::python::list FESpace_BoundaryShiftedFunctionIndices(FESpace<TDim>& rDummy, const int& iside)
+pybind11::list FESpace_BoundaryShiftedFunctionIndices(FESpace<TDim>& rDummy, const int& iside)
 {
-    boost::python::list indices;
+    pybind11::list indices;
     BoundarySide side = static_cast<BoundarySide>(iside);
     std::vector<std::size_t> boundary_indices = rDummy.ExtractBoundaryFunctionIndices(side);
     for (std::size_t i = 0; i < boundary_indices.size(); ++i)
@@ -137,15 +126,16 @@ typename FESpace<TDim-1>::Pointer FESpace_ConstructBoundaryFESpace(FESpace<TDim>
 }
 
 template<int TDim>
-void IsogeometricApplication_AddFESpacesToPython()
+void IsogeometricApplication_AddFESpacesToPython(pybind11::module& m)
 {
 
     std::stringstream ss;
 
     ss.str(std::string());
     ss << "FESpace" << TDim << "D";
-    class_<FESpace<TDim>, typename FESpace<TDim>::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<>())
+    pybind11::class_<FESpace<TDim>, typename FESpace<TDim>::Pointer>
+    (m, ss.str().c_str())
+    .def(pybind11::init<>())
     .def("Order", &FESpace<TDim>::Order)
     .def("TotalNumber", &FESpace<TDim>::TotalNumber)
     .def("GetValue", &FESpace_GetValue<TDim>)
@@ -157,14 +147,15 @@ void IsogeometricApplication_AddFESpacesToPython()
     .def("BoundaryFunctionIndicesByFlag", &FESpace_BoundaryFunctionIndicesByFlag<TDim>)
     .def("BoundaryShiftedFunctionIndices", &FESpace_BoundaryShiftedFunctionIndices<TDim>)
     .def("ConstructBoundaryFESpace", &FESpace_ConstructBoundaryFESpace<TDim>)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<FESpace<TDim> >)
     ;
 
     ss.str(std::string());
     ss << "WeightedFESpace" << TDim << "D";
-    class_<WeightedFESpace<TDim>, typename WeightedFESpace<TDim>::Pointer, bases<FESpace<TDim> >, boost::noncopyable>
-    (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, const std::vector<double>&>())
-    .def(self_ns::str(self))
+    pybind11::class_<WeightedFESpace<TDim>, typename WeightedFESpace<TDim>::Pointer, FESpace<TDim> >
+    (m, ss.str().c_str())
+    .def(pybind11::init<typename FESpace<TDim>::Pointer, const std::vector<double>&>())
+    .def("__str__", &PrintObject<WeightedFESpace<TDim> >)
     ;
 
 }

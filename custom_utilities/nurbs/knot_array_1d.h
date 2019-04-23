@@ -39,7 +39,7 @@ class KnotArray1D
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(KnotArray1D);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(KnotArray1D);
 
     /// Type definitions
     typedef Knot<TDataType> KnotType;

@@ -33,7 +33,7 @@ class IsogeometricUtility
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(IsogeometricUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(IsogeometricUtility);
 
     /// Type definition
 

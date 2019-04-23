@@ -40,7 +40,7 @@ public:
     static const int VIRTUAL_HORIZONTAL_EDGE = 4;
 
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(TsEdge);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TsEdge);
 
     /// Default constructor
     TsEdge(const std::size_t& Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)

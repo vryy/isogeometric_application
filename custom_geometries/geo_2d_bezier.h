@@ -323,7 +323,7 @@ public:
         return pNewGeom;
     }
 
-//    virtual boost::shared_ptr< Geometry< Point<3> > > Clone() const
+//    virtual Kratos::shared_ptr< Geometry< Point<3> > > Clone() const
 //    {
 ////        Geometry< Point<3> >::PointsArrayType NewPoints;
 ////        //making a copy of the nodes TO POINTS (not Nodes!!!)
@@ -332,7 +332,7 @@ public:
 ////        NewPoints.push_back( this->Points()[i] );
 
 ////        //creating a geometry with the new points
-////        boost::shared_ptr< Geometry< Point<3> > >
+////        Kratos::shared_ptr< Geometry< Point<3> > >
 ////        p_clone( new Geo2dBezier< Point<3> >( NewPoints ) );
 
 ////        p_clone->ClonePoints();

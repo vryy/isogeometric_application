@@ -39,7 +39,7 @@ class NonConformingTSplinesMultipatchLagrangeMesh
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(NonConformingTSplinesMultipatchLagrangeMesh);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(NonConformingTSplinesMultipatchLagrangeMesh);
 
     /// Type definition
     typedef typename Element::GeometryType::CoordinatesArrayType CoordinatesArrayType;
@@ -127,11 +127,11 @@ public:
             Properties::Pointer pNewProperties = Properties::Pointer(new Properties(it->Id()));
             r_model_part.AddProperties(pNewProperties);
 
-            typename TFESpaceType::cell_container_t::Pointer pFaceManager = boost::dynamic_pointer_cast<TFESpaceType>(it->pFESpace())->pFaceManager();
+            typename TFESpaceType::cell_container_t::Pointer pFaceManager = Kratos::dynamic_pointer_cast<TFESpaceType>(it->pFESpace())->pFaceManager();
 
             if (TFESpaceType::Dim() == 2)
             {
-                typename std::map<std::size_t, boost::array<std::size_t, TFESpaceType::Dim()> >::const_iterator it_num = mNumDivision.find(it->Id());
+                typename std::map<std::size_t, std::array<std::size_t, TFESpaceType::Dim()> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
@@ -187,7 +187,7 @@ public:
             else if (TFESpaceType::Dim() == 3)
             {
                 // create new nodes
-                typename std::map<std::size_t, boost::array<std::size_t, TFESpaceType::Dim()> >::const_iterator it_num = mNumDivision.find(it->Id());
+                typename std::map<std::size_t, std::array<std::size_t, TFESpaceType::Dim()> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
@@ -261,7 +261,7 @@ private:
 
     typename MultiPatch<TFESpaceType::Dim()>::Pointer mpMultiPatch;
 
-    std::map<std::size_t, boost::array<std::size_t, TFESpaceType::Dim()> > mNumDivision;
+    std::map<std::size_t, std::array<std::size_t, TFESpaceType::Dim()> > mNumDivision;
 
     std::string mBaseElementName;
     std::size_t mLastNodeId;

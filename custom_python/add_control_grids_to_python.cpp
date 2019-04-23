@@ -15,13 +15,12 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // Project includes
 #include "includes/define.h"
+#include "includes/define_python.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/control_grid_library.h"
@@ -41,8 +40,6 @@ namespace Kratos
 
 namespace Python
 {
-
-using namespace boost::python;
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateLinearControlPointGrid(
         ControlGridLibrary& rDummy,
@@ -148,7 +145,7 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicContro
         ControlGridLibrary& rDummy,
         const double& start_x, const double& start_y, const double& start_z,
         const std::size_t& n_points_u, const std::size_t& n_points_v, const std::size_t& n_points_w,
-        boost::python::list spacing_vectors_data)
+        pybind11::list py_spacing_vectors_data)
 {
     std::vector<double> start(3);
     start[0] = start_x;
@@ -161,16 +158,11 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicContro
     ngrid[2] = n_points_w;
 
     std::vector<std::vector<double> > spacing_vectors;
-    std::size_t cnt1 = 0, cnt2 = 0;
-    typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& vect, std::make_pair(iterator_value_type(spacing_vectors_data), iterator_value_type() ) )
+    for (auto v1 : py_spacing_vectors_data)
     {
-        typedef boost::python::stl_input_iterator<double> iterator_value_type2;
         std::vector<double> space_vect;
-        BOOST_FOREACH(const iterator_value_type2::value_type& v, std::make_pair(iterator_value_type2(vect), iterator_value_type2() ) )
-        {
-            space_vect.push_back(v);
-        }
+        for (auto v2 : v1.cast<pybind11::list>())
+            space_vect.push_back(v2.cast<double>());
         spacing_vectors.push_back(space_vect);
     }
 
@@ -225,74 +217,83 @@ inline typename ControlGrid<TDataType>::Pointer ControlGridUtility_CreatePointBa
 
 ////////////////////////////////////////
 
-void IsogeometricApplication_AddControlGridsToPython()
+void IsogeometricApplication_AddControlGridsToPython(pybind11::module& m)
 {
     /////////////////////////////////////////////////////////////////
     ///////////////////////CONTROL GRIDS/////////////////////////////
     /////////////////////////////////////////////////////////////////
 
-    class_<ControlGrid<ControlPoint<double> >, ControlGrid<ControlPoint<double> >::Pointer, boost::noncopyable>
-    ("ControlPointControlGrid", init<>())
+    pybind11::class_<ControlGrid<ControlPoint<double> >, ControlGrid<ControlPoint<double> >::Pointer>
+    (m, "ControlPointControlGrid")
+    .def(pybind11::init<>())
     .def("Size", &ControlGrid<ControlPoint<double> >::Size)
     .def("size", &ControlGrid<ControlPoint<double> >::Size)
     .def("__setitem__", &ControlGrid_SetItem<ControlPoint<double> >)
     .def("__getitem__", &ControlGrid_GetItem<ControlPoint<double> >)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<ControlGrid<ControlPoint<double> > >)
     ;
 
-    class_<ControlGrid<double>, ControlGrid<double>::Pointer, boost::noncopyable>
-    ("DoubleControlGrid", init<>())
+    pybind11::class_<ControlGrid<double>, ControlGrid<double>::Pointer>
+    (m, "DoubleControlGrid")
+    .def(pybind11::init<>())
     .def("Size", &ControlGrid<double>::Size)
     .def("size", &ControlGrid<double>::Size)
     .def("__setitem__", &ControlGrid_SetItem<double>)
     .def("__getitem__", &ControlGrid_GetItem<double>)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<ControlGrid<double> >)
     ;
 
-    class_<ControlGrid<array_1d<double, 3> >, ControlGrid<array_1d<double, 3> >::Pointer, boost::noncopyable>
-    ("Array1DControlGrid", init<>())
+    pybind11::class_<ControlGrid<array_1d<double, 3> >, ControlGrid<array_1d<double, 3> >::Pointer>
+    (m, "Array1DControlGrid")
+    .def(pybind11::init<>())
     .def("Size", &ControlGrid<array_1d<double, 3> >::Size)
     .def("size", &ControlGrid<array_1d<double, 3> >::Size)
     .def("__setitem__", &ControlGrid_SetItem<array_1d<double, 3> >)
     .def("__getitem__", &ControlGrid_GetItem<array_1d<double, 3> >)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<ControlGrid<array_1d<double, 3> > >)
     ;
 
-    class_<ControlGrid<Vector>, ControlGrid<Vector>::Pointer, boost::noncopyable>
-    ("VectorControlGrid", init<>())
+    pybind11::class_<ControlGrid<Vector>, ControlGrid<Vector>::Pointer>
+    (m, "VectorControlGrid")
+    .def(pybind11::init<>())
     .def("Size", &ControlGrid<Vector>::Size)
     .def("size", &ControlGrid<Vector>::Size)
     .def("__setitem__", &ControlGrid_SetItem<Vector>)
     .def("__getitem__", &ControlGrid_GetItem<Vector>)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<ControlGrid<Vector> >)
     ;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
-    class_<UnstructuredControlGrid<ControlPoint<double> >, UnstructuredControlGrid<ControlPoint<double> >::Pointer, bases<ControlGrid<ControlPoint<double> > >, boost::noncopyable>
-    ("UnstructuredControlPointGrid", init<const std::size_t&>())
-    .def(self_ns::str(self))
+    pybind11::class_<UnstructuredControlGrid<ControlPoint<double> >, UnstructuredControlGrid<ControlPoint<double> >::Pointer, ControlGrid<ControlPoint<double> > >
+    (m, "UnstructuredControlPointGrid")
+    .def(pybind11::init<const std::size_t&>())
+    .def("__str__", &PrintObject<UnstructuredControlGrid<ControlPoint<double> > >)
     ;
 
-    class_<UnstructuredControlGrid<double>, UnstructuredControlGrid<double>::Pointer, bases<ControlGrid<double> >, boost::noncopyable>
-    ("UnstructuredDoubleControlGrid", init<const std::size_t&>())
-    .def(self_ns::str(self))
+    pybind11::class_<UnstructuredControlGrid<double>, UnstructuredControlGrid<double>::Pointer, ControlGrid<double> >
+    (m, "UnstructuredDoubleControlGrid")
+    .def(pybind11::init<const std::size_t&>())
+    .def("__str__", &PrintObject<UnstructuredControlGrid<double> >)
     ;
 
-    class_<UnstructuredControlGrid<array_1d<double, 3> >, UnstructuredControlGrid<array_1d<double, 3> >::Pointer, bases<ControlGrid<array_1d<double, 3> > >, boost::noncopyable>
-    ("UnstructuredArray1DControlGrid", init<const std::size_t&>())
-    .def(self_ns::str(self))
+    pybind11::class_<UnstructuredControlGrid<array_1d<double, 3> >, UnstructuredControlGrid<array_1d<double, 3> >::Pointer, ControlGrid<array_1d<double, 3> > >
+    (m, "UnstructuredArray1DControlGrid")
+    .def(pybind11::init<const std::size_t&>())
+    .def("__str__", &PrintObject<UnstructuredControlGrid<array_1d<double, 3> > >)
     ;
 
-    class_<UnstructuredControlGrid<Vector>, UnstructuredControlGrid<Vector>::Pointer, bases<ControlGrid<Vector> >, boost::noncopyable>
-    ("UnstructuredVectorControlGrid", init<const std::size_t&>())
-    .def(self_ns::str(self))
+    pybind11::class_<UnstructuredControlGrid<Vector>, UnstructuredControlGrid<Vector>::Pointer, ControlGrid<Vector> >
+    (m, "UnstructuredVectorControlGrid")
+    .def(pybind11::init<const std::size_t&>())
+    .def("__str__", &PrintObject<UnstructuredControlGrid<Vector> >)
     ;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
-    class_<ControlGridLibrary, ControlGridLibrary::Pointer, boost::noncopyable>
-    ("ControlGridLibrary", init<>())
+    pybind11::class_<ControlGridLibrary, ControlGridLibrary::Pointer>
+    (m, "ControlGridLibrary")
+    .def(pybind11::init<>())
     .def("CreateLinearControlPointGrid", &ControlGridLibrary_CreateLinearControlPointGrid)
     .def("CreateRectangularControlPointGrid", &ControlGridLibrary_CreateRectangularControlPointGrid1)
     .def("CreateRectangularControlPointGrid", &ControlGridLibrary_CreateRectangularControlPointGrid2)
@@ -312,8 +313,9 @@ void IsogeometricApplication_AddControlGridsToPython()
     ///////////////////////CONTROL GRID UTILITIY/////////////////////
     /////////////////////////////////////////////////////////////////
 
-    class_<ControlGridUtility, ControlGridUtility::Pointer, boost::noncopyable>
-    ("PointBasedControlGridUtility", init<>())
+    pybind11::class_<ControlGridUtility, ControlGridUtility::Pointer>
+    (m, "PointBasedControlGridUtility")
+    .def(pybind11::init<>())
     .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<1, PBBSplinesBasisFunction<1, TCell>, BCellManager<1, TCell> > >)
     .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<2, PBBSplinesBasisFunction<2, TCell>, BCellManager<2, TCell> > >)
     .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<3, PBBSplinesBasisFunction<3, TCell>, BCellManager<3, TCell> > >)

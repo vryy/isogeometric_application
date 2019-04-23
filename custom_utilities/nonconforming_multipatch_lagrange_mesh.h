@@ -39,7 +39,7 @@ class NonConformingMultipatchLagrangeMesh
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(NonConformingMultipatchLagrangeMesh);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(NonConformingMultipatchLagrangeMesh);
 
     /// Type definition
     typedef typename Element::GeometryType::CoordinatesArrayType CoordinatesArrayType;
@@ -135,7 +135,7 @@ public:
             if (TDim == 2)
             {
                 // create new nodes and elements
-                typename std::map<IndexType, boost::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
+                typename std::map<IndexType, std::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
@@ -156,7 +156,7 @@ public:
             else if (TDim == 3)
             {
                 // create new nodes and elements
-                typename std::map<IndexType, boost::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
+                typename std::map<IndexType, std::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
@@ -220,7 +220,7 @@ private:
 
     typename MultiPatch<TDim>::Pointer mpMultiPatch;
 
-    std::map<IndexType, boost::array<IndexType, TDim> > mNumDivision;
+    std::map<IndexType, std::array<IndexType, TDim> > mNumDivision;
 
     std::string mBaseElementName;
     IndexType mLastNodeId;

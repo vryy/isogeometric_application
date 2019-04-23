@@ -43,7 +43,7 @@ class DeprecatedHBBasisFunction
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(DeprecatedHBBasisFunction);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(DeprecatedHBBasisFunction);
 
     /// Type definition
     typedef Knot<double> KnotType;

@@ -104,7 +104,7 @@ template<int TDim>
 class MultiNURBSPatchGeoImporter : public MultiPatchImporter<TDim>
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(MultiNURBSPatchGeoImporter);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(MultiNURBSPatchGeoImporter);
 
     virtual typename Patch<TDim>::Pointer ImportSingle(const std::string& filename) const;
 

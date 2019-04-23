@@ -18,6 +18,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/serializer.h"
+#include "custom_utilities/iga_define.h"
 
 namespace Kratos
 {
@@ -34,7 +35,7 @@ public:
     typedef TWeightType WeightType;
 
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(ControlValue);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(ControlValue);
 
     /// Default constructor
     ControlValue() : mWV(TDataType(0.0)), mW(0.0) {}

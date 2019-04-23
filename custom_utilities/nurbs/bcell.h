@@ -41,7 +41,7 @@ class BCell : public Cell
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BCell);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BCell);
 
     /// Type definitions
     typedef Cell BaseType;

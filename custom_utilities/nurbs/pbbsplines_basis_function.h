@@ -49,7 +49,7 @@ class PBBSplinesBasisFunction : public PBSplinesBasisFunction<TCellType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(PBBSplinesBasisFunction);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(PBBSplinesBasisFunction);
 
     /// Type definition
     typedef PBSplinesBasisFunction<TCellType> BaseType;
@@ -312,9 +312,9 @@ protected:
     std::size_t mBoundaryId; // this variable stores the boundary information associated with this basis function.
                 // By default, the new basis function is considerred inside of the patch.
                 // User can add/remove the boundary information by using AddBoundary/RemoveBoundary
-    boost::array<std::size_t, TDim> mOrders;
+    std::array<std::size_t, TDim> mOrders;
     cell_container_t mpCells; // list of cells support this basis function
-    boost::array<std::vector<knot_t>, TDim> mpLocalKnots;
+    std::array<std::vector<knot_t>, TDim> mpLocalKnots;
 
     /** A pointer to data related to this basis function. */
 

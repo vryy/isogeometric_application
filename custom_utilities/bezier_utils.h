@@ -189,7 +189,7 @@ public:
     typedef Vector VectorType;
 
     /// Pointer definition of BezierUtils
-    KRATOS_CLASS_POINTER_DEFINITION(BezierUtils);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BezierUtils);
 
     ///@}
     ///@name Life Cycle
@@ -857,7 +857,7 @@ public:
             Dumping utilities
      ********************************************************/
     static void DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients(
-        ModelPart::Pointer pModelPart,
+        ModelPart& rModelPart,
         std::string FileName
     )
     {
@@ -867,7 +867,7 @@ public:
 
         IntegrationMethod ThisMethod = GeometryData::GI_GAUSS_1;
 
-        ElementsArrayType& pElements = pModelPart->Elements();
+        ElementsArrayType& pElements = rModelPart.Elements();
 
         std::ofstream Out;
         Out.open(FileName.c_str());

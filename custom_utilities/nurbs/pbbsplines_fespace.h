@@ -19,7 +19,7 @@
 #include "includes/define.h"
 #include "containers/array_1d.h"
 #include "custom_utilities/fespace.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application.h"
 
 #define DEBUG_GEN_CELL
 
@@ -34,7 +34,7 @@ class PBBSplinesFESpace : public FESpace<TDim>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(PBBSplinesFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(PBBSplinesFESpace);
 
     /// Type definition
     typedef FESpace<TDim> BaseType;
@@ -638,7 +638,7 @@ protected:
 
     unsigned int mEchoLevel;
 
-    boost::array<std::size_t, TDim> mOrders;
+    std::array<std::size_t, TDim> mOrders;
 
     typename cell_container_t::Pointer mpCellManager;
 

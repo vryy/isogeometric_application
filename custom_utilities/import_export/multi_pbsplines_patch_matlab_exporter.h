@@ -29,12 +29,12 @@ template<class TFESpaceType>
 class MultiPBSplinesPatchMatlabExporter : public MultiPatchExporter<TFESpaceType::Dim()>
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(MultiPBSplinesPatchMatlabExporter);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(MultiPBSplinesPatchMatlabExporter);
 
     virtual void Export(typename Patch<TFESpaceType::Dim()>::Pointer pPatch, std::ostream& rOStream)
     {
         // extract the point-based B-Splines space
-        typename TFESpaceType::Pointer pFESpace = boost::dynamic_pointer_cast<TFESpaceType>(pPatch->pFESpace());
+        typename TFESpaceType::Pointer pFESpace = Kratos::dynamic_pointer_cast<TFESpaceType>(pPatch->pFESpace());
         if (pFESpace == NULL)
         {
             std::stringstream ss;

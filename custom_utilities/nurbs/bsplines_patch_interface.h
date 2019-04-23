@@ -37,7 +37,7 @@ class BSplinesPatchInterface<1> : public PatchInterface<1>
 {
     public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
 
     typedef PatchInterface<1> BaseType;
     typedef typename BaseType::PatchType PatchType;
@@ -83,7 +83,7 @@ class BSplinesPatchInterface<2> : public PatchInterface<2>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
 
     typedef PatchInterface<2> BaseType;
     typedef typename BaseType::PatchType PatchType;
@@ -185,7 +185,7 @@ class BSplinesPatchInterface<3> : public PatchInterface<3>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
 
     typedef PatchInterface<3> BaseType;
     typedef typename BaseType::PatchType PatchType;
@@ -332,7 +332,7 @@ private:
     // this variable stores the information about the local mapping at the interface. In 2D, it is simply 0:0.
     // In 3D, it shall have the values {0:0, 1:1} or {0:1, 1:0}. The latter values corresponds to the {(u:vb) - (v:ub)} configuration.
 
-    boost::array<BoundaryDirection, 2> mDirections;
+    std::array<BoundaryDirection, 2> mDirections;
     // this variable indicates if the relative local direction shall be reversed of each other.
 };
 

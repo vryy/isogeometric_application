@@ -12,6 +12,7 @@
 
 
 // External includes
+#include <pybind11/pybind11.h>
 
 
 // Project includes
@@ -27,7 +28,7 @@
 #endif
 #include "custom_strategies/builder_and_solvers/row_constraint_builder_and_solver.h"
 #include "custom_python/add_strategies_to_python.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application.h"
 
 
 namespace Kratos
@@ -36,9 +37,7 @@ namespace Kratos
 namespace Python
 {
 
-using namespace boost::python;
-
-void IsogeometricApplication_AddStrategiesToPython()
+void IsogeometricApplication_AddStrategiesToPython(pybind11::module& m)
 {
 
     typedef UblasSpace<double, CompressedMatrix, Vector> SparseSpaceType;
@@ -49,8 +48,9 @@ void IsogeometricApplication_AddStrategiesToPython()
     typedef ResidualBasedEliminationBuilderAndSolverDeactivation<SparseSpaceType, LocalSpaceType, LinearSolverType> ResidualBasedEliminationBuilderAndSolverDeactivationType;
 
     typedef RowConstraintBuilderAndSolver<ResidualBasedEliminationBuilderAndSolverDeactivationType> RowConstraintResidualBasedEliminationBuilderAndSolverDeactivationType;
-    class_<RowConstraintResidualBasedEliminationBuilderAndSolverDeactivationType, bases<ResidualBasedEliminationBuilderAndSolverDeactivationType>, boost::noncopyable>
-    ("RowConstraintResidualBasedEliminationBuilderAndSolverDeactivation", init<typename LinearSolverType::Pointer>())
+    pybind11::class_<RowConstraintResidualBasedEliminationBuilderAndSolverDeactivationType, ResidualBasedEliminationBuilderAndSolverDeactivationType>
+    (m, "RowConstraintResidualBasedEliminationBuilderAndSolverDeactivation")
+    .def(pybind11::init<typename LinearSolverType::Pointer>())
     .def("AddConstraint", &RowConstraintResidualBasedEliminationBuilderAndSolverDeactivationType::AddConstraint)
     ;
     #endif

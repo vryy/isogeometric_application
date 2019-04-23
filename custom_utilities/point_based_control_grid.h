@@ -32,7 +32,7 @@ class PointBasedControlGrid : public ControlGrid<typename TVariableType::Type>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(PointBasedControlGrid);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(PointBasedControlGrid);
 
     /// Type definition
     typedef ControlGrid<typename TVariableType::Type> BaseType;
@@ -135,7 +135,7 @@ class PointBasedControlGrid<Variable<ControlPoint<double> >, TFESpaceType> : pub
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(PointBasedControlGrid);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(PointBasedControlGrid);
 
     /// Type definition
     typedef ControlGrid<ControlPoint<double> > BaseType;

@@ -30,7 +30,7 @@ class MultiPatchImporter
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(MultiPatchImporter);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(MultiPatchImporter);
 
     /// Type definition
     typedef KnotArray1D<double> knot_container_t;

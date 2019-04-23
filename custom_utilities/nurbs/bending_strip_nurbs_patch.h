@@ -36,7 +36,7 @@ class BendingStripNURBSPatch : public PatchInterface<TDim>, public Patch<TDim>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BendingStripNURBSPatch);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BendingStripNURBSPatch);
 
     typedef Patch<TDim> PatchType;
     typedef KnotArray1D<double> knot_container_t;
@@ -73,7 +73,7 @@ public:
         }
 
         // get the FESpace of boundary patch 1
-        typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pBPatch1->pFESpace());
+        typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = Kratos::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pBPatch1->pFESpace());
         if (pBFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
@@ -127,7 +127,7 @@ public:
         }
 
         // get the FESpace of boundary patch 1
-        typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pBPatch1->pFESpace());
+        typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = Kratos::dynamic_pointer_cast<BSplinesFESpace<TDim-1> >(pBPatch1->pFESpace());
         if (pBFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
@@ -229,15 +229,15 @@ private:
     {
         std::vector<typename StructuredControlGrid<TDim-1, TDataType>::Pointer> pSlicedControlGrids;
 
-        typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid1 = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid1 );
+        typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid1 = Kratos::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid1 );
         if (psControlGrid1 == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
-        typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid2 = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid2 );
+        typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid2 = Kratos::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid2 );
         if (psControlGrid2 == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
-        typename StructuredControlGrid<TDim-1, TDataType>::Pointer psBControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, TDataType> >( pBControlGrid );
+        typename StructuredControlGrid<TDim-1, TDataType>::Pointer psBControlGrid = Kratos::dynamic_pointer_cast<StructuredControlGrid<TDim-1, TDataType> >( pBControlGrid );
         if (psBControlGrid == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
@@ -254,7 +254,7 @@ private:
 
     void AssignControlValues(typename Patch<TDim-1>::Pointer pBPatch)
     {
-        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pBControlPointGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >( pBPatch->ControlPointGridFunction().pControlGrid() );
+        typename StructuredControlGrid<TDim-1, ControlPointType>::Pointer pBControlPointGrid = Kratos::dynamic_pointer_cast<StructuredControlGrid<TDim-1, ControlPointType> >( pBPatch->ControlPointGridFunction().pControlGrid() );
         std::vector<std::size_t> strip_sizes(TDim);
         for (std::size_t dim = 0; dim < TDim-1; ++dim)
             strip_sizes[dim] = pBControlPointGrid->Size(dim);
@@ -285,7 +285,7 @@ class BendingStripNURBSPatch<1> : public PatchInterface<1>, public Patch<1>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BendingStripNURBSPatch);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BendingStripNURBSPatch);
 
     typedef Patch<1> PatchType;
     typedef PatchInterface<1> BaseType;

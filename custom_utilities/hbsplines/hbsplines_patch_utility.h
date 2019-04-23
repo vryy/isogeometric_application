@@ -24,7 +24,7 @@
 #include "custom_utilities/patch.h"
 #include "custom_utilities/multipatch.h"
 #include "custom_utilities/control_grid_utility.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application.h"
 
 namespace Kratos
 {
@@ -42,7 +42,7 @@ class HBSplinesPatchUtility
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(HBSplinesPatchUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(HBSplinesPatchUtility);
 
     /// Type definition
 
@@ -92,7 +92,7 @@ public:
         for (patch_iterator it = pMultiPatch->begin();
                 it != pMultiPatch->end(); ++it)
         {
-            typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
+            typename HBSplinesFESpace<TDim>::Pointer pFESpace = Kratos::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
@@ -123,7 +123,7 @@ public:
         for (patch_iterator it = pMultiPatch->begin();
                 it != pMultiPatch->end(); ++it)
         {
-            typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
+            typename HBSplinesFESpace<TDim>::Pointer pFESpace = Kratos::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
@@ -142,7 +142,7 @@ public:
                 for (std::size_t i = 0; i < it->second.size(); ++i)
                 {
                     typename Patch<TDim>::Pointer pPatch = pMultiPatch->pGetPatch(it->second[i].first);
-                    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+                    typename HBSplinesFESpace<TDim>::Pointer pFESpace = Kratos::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
 
                     bf_t p_bf = pFESpace->operator()(it->second[i].second);
                     std::cout << " patch " << pPatch->Id() << ", bf " << p_bf->Id()
@@ -163,7 +163,7 @@ public:
                     for (std::size_t i = 0; i < it->second.size(); ++i)
                     {
                         typename Patch<TDim>::Pointer pPatch = pMultiPatch->pGetPatch(it->second[i].first);
-                        typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+                        typename HBSplinesFESpace<TDim>::Pointer pFESpace = Kratos::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
 
                         bf_t p_bf = pFESpace->operator()(it->second[i].second);
 
@@ -206,7 +206,7 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<2>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, "The input patch is not B-Splines patch", "")
 
-    typename BSplinesFESpace<2>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<2> >(pPatch->pFESpace());
+    typename BSplinesFESpace<2>::Pointer pFESpace = Kratos::dynamic_pointer_cast<BSplinesFESpace<2> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
@@ -355,7 +355,7 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<3>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, "The input patch is not B-Splines patch", "")
 
-    typename BSplinesFESpace<3>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<3> >(pPatch->pFESpace());
+    typename BSplinesFESpace<3>::Pointer pFESpace = Kratos::dynamic_pointer_cast<BSplinesFESpace<3> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 

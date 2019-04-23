@@ -13,6 +13,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ADD_POINT_BASED_BSPLINES_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_ADD_POINT_BASED_BSPLINES_TO_PYTHON_H_INCLUDED
 
+#include <pybind11/pybind11.h>
 
 namespace Kratos
 {
@@ -20,7 +21,7 @@ namespace Kratos
 namespace Python
 {
 
-void  IsogeometricApplication_AddPBBSplinesToPython();
+void  IsogeometricApplication_AddPBBSplinesToPython(pybind11::module& m);
 
 }  // namespace Python.
 

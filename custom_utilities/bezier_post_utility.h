@@ -33,10 +33,10 @@
 #include "spaces/ublas_space.h"
 #include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
-#include "utilities/auto_collapse_spatial_binning.h"
+#include "custom_utilities/auto_collapse_spatial_binning.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "custom_utilities/isogeometric_post_utility.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application.h"
 
 // #define DEBUG_LEVEL1
 //#define DEBUG_LEVEL2
@@ -126,7 +126,7 @@ public:
     typedef std::size_t IndexType;
 
     /// Pointer definition of BezierPostUtility
-    KRATOS_CLASS_POINTER_DEFINITION(BezierPostUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BezierPostUtility);
 
     ///@}
     ///@name Life Cycle

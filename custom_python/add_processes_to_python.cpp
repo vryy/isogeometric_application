@@ -14,16 +14,15 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // System includes
 
 // External includes
-#include <boost/python.hpp>
-
+#include <pybind11/pybind11.h>
 
 // Project includes
 #include "includes/define.h"
+#include "includes/define_python.h"
 #include "includes/model_part.h"
 #include "includes/io.h"
 #include "processes/process.h"
 #include "custom_python/add_processes_to_python.h"
-#include "python/vector_python_interface.h"
 
 #ifdef ISOGEOMETRIC_USE_PARMETIS
 #include "custom_processes/isogeometric_partitioning_process.h"
@@ -35,13 +34,11 @@ namespace Kratos
 namespace Python
 {
 
-void IsogeometricApplication_AddProcessesToPython()
+void IsogeometricApplication_AddProcessesToPython(pybind11::module& m)
 {
-    using namespace boost::python;
-
     #ifdef ISOGEOMETRIC_USE_PARMETIS
-    class_<IsogeometricPartitioningProcess, bases<Process> >
-    ("IsogeometricPartitioningProcess", init<ModelPart&, IO&, unsigned int>())
+    pybind11::class_<IsogeometricPartitioningProcess, Process>(m, "IsogeometricPartitioningProcess")
+    .def(pybind11::init<ModelPart&, IO&, unsigned int>())
     ;
     #endif
 }

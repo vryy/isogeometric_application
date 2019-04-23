@@ -32,7 +32,7 @@ class TsHEdge : public TsEdge
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(TsHEdge);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TsHEdge);
 
     /// Type definitions
     typedef TsEdge BaseType;

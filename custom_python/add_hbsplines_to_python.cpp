@@ -15,14 +15,12 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // Project includes
 #include "includes/define.h"
-#include "python/pointer_vector_set_python_interface.h"
+#include "includes/define_python.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/control_grid_utility.h"
 #include "custom_utilities/hbsplines/deprecated_hb_mesh.h"
@@ -42,8 +40,6 @@ namespace Kratos
 
 namespace Python
 {
-
-using namespace boost::python;
 
 ////////////////////////////////////////
 
@@ -78,13 +74,13 @@ std::size_t HBSplinesBasisFunction_GetLevel(HBSplinesBasisFunction<TDim>& rDummy
 // }
 
 template<int TDim>
-boost::python::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<TDim>& rDummy, std::size_t boundary_id)
+pybind11::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<TDim>& rDummy, std::size_t boundary_id)
 {
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
     std::vector<bf_t> bf_list = rDummy.ExtractBoundaryBfsByFlag(boundary_id);
 
-    boost::python::list Output;
+    pybind11::list Output;
     for (std::size_t i = 0; i < bf_list.size(); ++i)
         Output.append(bf_list[i]);
 
@@ -151,19 +147,14 @@ void HBSplinesRefinementUtility_RefineBf(HBSplinesRefinementUtility& rDummy,
 
 template<int TDim>
 void HBSplinesRefinementUtility_RefineWindow(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, boost::python::list& window, const int& EchoLevel)
+        typename Patch<TDim>::Pointer pPatch, pybind11::list& py_window, const int& EchoLevel)
 {
     std::vector<std::vector<double> > window_vector;
-    std::size_t cnt1 = 0, cnt2 = 0;
-    typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& vect, std::make_pair(iterator_value_type(window), iterator_value_type() ) )
+    for (auto v1 : py_window)
     {
-        typedef boost::python::stl_input_iterator<double> iterator_value_type2;
         std::vector<double> win_vect;
-        BOOST_FOREACH(const iterator_value_type2::value_type& v, std::make_pair(iterator_value_type2(vect), iterator_value_type2() ) )
-        {
-            win_vect.push_back(v);
-        }
+        for (auto v2 : v1.cast<pybind11::list>())
+            win_vect.push_back(v2.cast<double>());
         window_vector.push_back(win_vect);
     }
     rDummy.RefineWindow<TDim>(pPatch, window_vector, EchoLevel);
@@ -189,30 +180,32 @@ typename ControlGrid<TDataType>::Pointer ControlGridUtility_CreatePointBasedCont
 ////////////////////////////////////////
 
 template<int TDim>
-void IsogeometricApplication_AddHBSplinesSpaceToPython()
+void IsogeometricApplication_AddHBSplinesSpaceToPython(pybind11::module& m)
 {
 
     std::stringstream ss;
 
     ss.str(std::string());
     ss << "HBSplinesBasisFunction" << TDim << "D";
-    class_<HBSplinesBasisFunction<TDim>, typename HBSplinesBasisFunction<TDim>::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<const std::size_t&, const std::size_t&>())
-    // .add_property("Id", HBSplinesBasisFunction_GetId<TDim>, HBSplinesBasisFunction_SetId<TDim>)
-    .add_property("Id", Isogeometric_GetId<HBSplinesBasisFunction<TDim> >, HBSplinesBasisFunction_SetId<TDim>)
-    // .add_property("EquationId", HBSplinesBasisFunction_GetEquationId<TDim>, HBSplinesBasisFunction_SetEquationId<TDim>)
-    .add_property("EquationId", Isogeometric_GetEquationId<HBSplinesBasisFunction<TDim>>, Isogeometric_SetEquationId<HBSplinesBasisFunction<TDim>>)
+    pybind11::class_<HBSplinesBasisFunction<TDim>, typename HBSplinesBasisFunction<TDim>::Pointer>
+    (m, ss.str().c_str())
+    .def(pybind11::init<const std::size_t&, const std::size_t&>())
+    // .def_property("Id", HBSplinesBasisFunction_GetId<TDim>, HBSplinesBasisFunction_SetId<TDim>)
+    .def_property("Id", Isogeometric_GetId<HBSplinesBasisFunction<TDim> >, HBSplinesBasisFunction_SetId<TDim>)
+    // .def_property("EquationId", HBSplinesBasisFunction_GetEquationId<TDim>, HBSplinesBasisFunction_SetEquationId<TDim>)
+    .def_property("EquationId", Isogeometric_GetEquationId<HBSplinesBasisFunction<TDim>>, Isogeometric_SetEquationId<HBSplinesBasisFunction<TDim>>)
     .def("Weight", &HBSplinesBasisFunction<TDim>::Weight)
     .def("Level", &HBSplinesBasisFunction_GetLevel<TDim>)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<HBSplinesBasisFunction<TDim> >)
     ;
 
     ss.str(std::string());
     ss << "HBSplinesFESpace" << TDim << "D";
 //    typename FESpace<TDim-1>::Pointer(HBSplinesFESpace<TDim>::*pointer_to_ConstructBoundaryFESpace1)(const BoundarySide& side) const = &HBSplinesFESpace<TDim>::ConstructBoundaryFESpace;
     // typename FESpace<TDim-1>::Pointer(HBSplinesFESpace<TDim>::*pointer_to_ConstructBoundaryFESpace2)(const BoundarySide& side, const BoundaryRotation& rotation) const = &HBSplinesFESpace<TDim>::ConstructBoundaryFESpace;
-    class_<HBSplinesFESpace<TDim>, typename HBSplinesFESpace<TDim>::Pointer, bases<FESpace<TDim> >, boost::noncopyable>
-    (ss.str().c_str(), init<>())
+    pybind11::class_<HBSplinesFESpace<TDim>, typename HBSplinesFESpace<TDim>::Pointer, FESpace<TDim> >
+    (m, ss.str().c_str())
+    .def(pybind11::init<>())
     .def("__getitem__", &HBSplinesFESpace_GetItem<TDim>)
     .def("GetBoundaryBfs", &HBSplinesFESpace_ExtractBoundaryBfsByFlag<TDim>) // deprecated
     .def("ExtractBoundaryBfsByFlag", &HBSplinesFESpace_ExtractBoundaryBfsByFlag<TDim>)
@@ -224,72 +217,74 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     .def("GetBfByEquationId", &HBSplinesFESpace<TDim>::pGetBfByEquationId)
     .def("HasBfByEquationId", &HBSplinesFESpace<TDim>::HasBfByEquationId)
     .def("HasBfById", &HBSplinesFESpace<TDim>::HasBfById)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<HBSplinesFESpace<TDim> >)
     ;
 
-    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<double>, HBSplinesFESpace<TDim> >::Execute();
-    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<array_1d<double, 3> >, HBSplinesFESpace<TDim> >::Execute();
-    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<Vector>, HBSplinesFESpace<TDim> >::Execute();
+    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<double>, HBSplinesFESpace<TDim> >::Execute(m);
+    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<array_1d<double, 3> >, HBSplinesFESpace<TDim> >::Execute(m);
+    IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<Vector>, HBSplinesFESpace<TDim> >::Execute(m);
 
     ////////////////////OLD H-SPLINES////////////////////////
 
-    ss.str(std::string());
-    ss << "DeprecatedHBMesh" << TDim << "D";
-    class_<DeprecatedHBMesh<TDim>, bases<Patch<TDim> > >
-    // class_<DeprecatedHBMesh<TDim>, typename DeprecatedHBMesh<TDim>::Pointer, bases<Patch<TDim> > >
-    (ss.str().c_str(), init<const std::size_t&, const std::string&>())
-    .def("SetEchoLevel", &DeprecatedHBMesh<TDim>::SetEchoLevel)
-    .def("ReadMesh", &DeprecatedHBMesh<TDim>::ReadMesh)
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    .def("Refine", &DeprecatedHBMesh<TDim>::Refine) // use this for debugging only, use RefineNodes and LinearDependencyRefine instead
-    .def("RefineNodes", &DeprecatedHBMesh<TDim>::RefineNodes)
-    .def("LinearDependencyRefine", &DeprecatedHBMesh<TDim>::LinearDependencyRefine)
-    .def("BuildMesh", &DeprecatedHBMesh<TDim>::BuildMesh)
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    .def("ExportCellTopology", &DeprecatedHBMesh<TDim>::ExportCellTopology)
-    .def("ExportCellGeology", &DeprecatedHBMesh<TDim>::ExportCellGeology)
-    //    .def("ExportRefinedDomain", &DeprecatedHBMesh<TDim>::ExportRefinedDomain)
-    .def("ExportSupportDomain", &DeprecatedHBMesh<TDim>::ExportSupportDomain)
-    .def("ExportMatlab", &DeprecatedHBMesh<TDim>::ExportMatlab)
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    .def("ExportMDPA", &DeprecatedHBMesh<TDim>::ExportMDPA)
-    .def("ExportMDPA2", &DeprecatedHBMesh<TDim>::ExportMDPA2)
-    .def("ExportPostMDPA", &DeprecatedHBMesh<TDim>::ExportPostMDPA)
-    .def("ExportCellGeologyAsPostMDPA", &DeprecatedHBMesh<TDim>::ExportCellGeologyAsPostMDPA)
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    .def("PrintKnotVectors", &DeprecatedHBMesh<TDim>::PrintKnotVectors)
-    .def("PrintCells", &DeprecatedHBMesh<TDim>::PrintCells)
-    .def("PrintBasisFuncs", &DeprecatedHBMesh<TDim>::PrintBasisFuncs)
-    .def("PrintRefinementHistory", &DeprecatedHBMesh<TDim>::PrintRefinementHistory)
-    .def("CheckNestedSpace", &DeprecatedHBMesh<TDim>::CheckNestedSpace)
-    .def(self_ns::str(self))
-    ;
+    // ss.str(std::string());
+    // ss << "DeprecatedHBMesh" << TDim << "D";
+    // pybind11::class_<DeprecatedHBMesh<TDim>, Patch<TDim> >
+    // // pybind11::class_<DeprecatedHBMesh<TDim>, typename DeprecatedHBMesh<TDim>::Pointer, Patch<TDim> >
+    // (m, ss.str().c_str())
+    // .def(pybind11::init<const std::size_t&, const std::string&>())
+    // .def("SetEchoLevel", &DeprecatedHBMesh<TDim>::SetEchoLevel)
+    // .def("ReadMesh", &DeprecatedHBMesh<TDim>::ReadMesh)
+    // /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // .def("Refine", &DeprecatedHBMesh<TDim>::Refine) // use this for debugging only, use RefineNodes and LinearDependencyRefine instead
+    // .def("RefineNodes", &DeprecatedHBMesh<TDim>::RefineNodes)
+    // .def("LinearDependencyRefine", &DeprecatedHBMesh<TDim>::LinearDependencyRefine)
+    // .def("BuildMesh", &DeprecatedHBMesh<TDim>::BuildMesh)
+    // /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // .def("ExportCellTopology", &DeprecatedHBMesh<TDim>::ExportCellTopology)
+    // .def("ExportCellGeology", &DeprecatedHBMesh<TDim>::ExportCellGeology)
+    // //    .def("ExportRefinedDomain", &DeprecatedHBMesh<TDim>::ExportRefinedDomain)
+    // .def("ExportSupportDomain", &DeprecatedHBMesh<TDim>::ExportSupportDomain)
+    // .def("ExportMatlab", &DeprecatedHBMesh<TDim>::ExportMatlab)
+    // /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // .def("ExportMDPA", &DeprecatedHBMesh<TDim>::ExportMDPA)
+    // .def("ExportMDPA2", &DeprecatedHBMesh<TDim>::ExportMDPA2)
+    // .def("ExportPostMDPA", &DeprecatedHBMesh<TDim>::ExportPostMDPA)
+    // .def("ExportCellGeologyAsPostMDPA", &DeprecatedHBMesh<TDim>::ExportCellGeologyAsPostMDPA)
+    // /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    // .def("PrintKnotVectors", &DeprecatedHBMesh<TDim>::PrintKnotVectors)
+    // .def("PrintCells", &DeprecatedHBMesh<TDim>::PrintCells)
+    // .def("PrintBasisFuncs", &DeprecatedHBMesh<TDim>::PrintBasisFuncs)
+    // .def("PrintRefinementHistory", &DeprecatedHBMesh<TDim>::PrintRefinementHistory)
+    // .def("CheckNestedSpace", &DeprecatedHBMesh<TDim>::CheckNestedSpace)
+    // .def("__str__", &PrintObject<DeprecatedHBMesh<TDim> >)
+    // ;
 
-    ss.str(std::string());
-    ss << "DeprecatedHBMesh" << TDim << "DPointer";
-    class_<typename DeprecatedHBMesh<TDim>::Pointer>
-    (ss.str().c_str(), init<typename DeprecatedHBMesh<TDim>::Pointer>())
-    .def("GetReference", GetReference<DeprecatedHBMesh<TDim> >, return_value_policy<reference_existing_object>())
-    .def(self_ns::str(self))
-    ;
+    // ss.str(std::string());
+    // ss << "DeprecatedHBMesh" << TDim << "DPointer";
+    // pybind11::class_<typename DeprecatedHBMesh<TDim>::Pointer>
+    // (m, ss.str().c_str())
+    // .def(pybind11::init<typename DeprecatedHBMesh<TDim>::Pointer>())
+    // .def("GetReference", GetReference<DeprecatedHBMesh<TDim> >, pybind11::return_value_policy::reference)
+    // ;
 
 }
 
 ////////////////////////////////////////
 
-void IsogeometricApplication_AddHBSplinesToPython()
+void IsogeometricApplication_AddHBSplinesToPython(pybind11::module& m)
 {
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////HIERARCHICAL BSplines/////////////////////
     /////////////////////////////////////////////////////////////////
 
-    IsogeometricApplication_AddHBSplinesSpaceToPython<1>();
-    IsogeometricApplication_AddHBSplinesSpaceToPython<2>();
-    IsogeometricApplication_AddHBSplinesSpaceToPython<3>();
+    IsogeometricApplication_AddHBSplinesSpaceToPython<1>(m);
+    IsogeometricApplication_AddHBSplinesSpaceToPython<2>(m);
+    IsogeometricApplication_AddHBSplinesSpaceToPython<3>(m);
 
-    class_<HBSplinesPatchUtility, HBSplinesPatchUtility::Pointer, boost::noncopyable>
-    ("HBSplinesPatchUtility", init<>())
+    pybind11::class_<HBSplinesPatchUtility, HBSplinesPatchUtility::Pointer>
+    (m, "HBSplinesPatchUtility")
+    .def(pybind11::init<>())
     .def("CreatePatchFromBSplines", &HBSplinesPatchUtility_CreatePatchFromBSplines<2>)
     .def("CreatePatchFromBSplines", &HBSplinesPatchUtility_CreatePatchFromBSplines<3>)
     .def("ListBoundaryBfs", &HBSplinesPatchUtility_ListBoundaryBfs<2>)
@@ -298,11 +293,12 @@ void IsogeometricApplication_AddHBSplinesToPython()
     .def("GetBfByEquationId", &HBSplinesPatchUtility_GetBfByEquationId<3>)
     .def("ReportDuplicatedEquationId", &HBSplinesPatchUtility_ReportDuplicatedEquationId<2>)
     .def("ReportDuplicatedEquationId", &HBSplinesPatchUtility_ReportDuplicatedEquationId<3>)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<HBSplinesPatchUtility>)
     ;
 
-    class_<HBSplinesRefinementUtility, typename HBSplinesRefinementUtility::Pointer, boost::noncopyable>
-    ("HBSplinesRefinementUtility", init<>())
+    pybind11::class_<HBSplinesRefinementUtility, typename HBSplinesRefinementUtility::Pointer>
+    (m, "HBSplinesRefinementUtility")
+    .def(pybind11::init<>())
     .def("Refine", &HBSplinesRefinementUtility_Refine<2>)
     .def("Refine", &HBSplinesRefinementUtility_Refine<3>)
     .def("Refine", &HBSplinesRefinementUtility_RefineBf<2>)
@@ -311,18 +307,19 @@ void IsogeometricApplication_AddHBSplinesToPython()
     .def("RefineWindow", &HBSplinesRefinementUtility_RefineWindow<3>)
     .def("LinearDependencyRefine", &HBSplinesRefinementUtility_LinearDependencyRefine<2>)
     .def("LinearDependencyRefine", &HBSplinesRefinementUtility_LinearDependencyRefine<3>)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<HBSplinesRefinementUtility>)
     ;
 
-    class_<MultiHBSplinesPatchMatlabExporter, MultiHBSplinesPatchMatlabExporter::Pointer, boost::noncopyable>
-    ("MultiHBSplinesPatchMatlabExporter", init<>())
+    pybind11::class_<MultiHBSplinesPatchMatlabExporter, MultiHBSplinesPatchMatlabExporter::Pointer>
+    (m, "MultiHBSplinesPatchMatlabExporter")
+    .def(pybind11::init<>())
     .def("Export", &MultiPatchExporter_Export<1, MultiHBSplinesPatchMatlabExporter, Patch<1> >)
     .def("Export", &MultiPatchExporter_Export<2, MultiHBSplinesPatchMatlabExporter, Patch<2> >)
     .def("Export", &MultiPatchExporter_Export<3, MultiHBSplinesPatchMatlabExporter, Patch<3> >)
     .def("Export", &MultiPatchExporter_Export<1, MultiHBSplinesPatchMatlabExporter, MultiPatch<1> >)
     .def("Export", &MultiPatchExporter_Export<2, MultiHBSplinesPatchMatlabExporter, MultiPatch<2> >)
     .def("Export", &MultiPatchExporter_Export<3, MultiHBSplinesPatchMatlabExporter, MultiPatch<3> >)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<MultiHBSplinesPatchMatlabExporter>)
     ;
 
 }

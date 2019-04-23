@@ -34,7 +34,7 @@ class MultiPatchUtility : public IsogeometricUtility
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(MultiPatchUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(MultiPatchUtility);
 
     /// Type definition
 
@@ -60,8 +60,8 @@ public:
         typename PatchInterface<TDim>::Pointer pInterface12;
         typename PatchInterface<TDim>::Pointer pInterface21;
 
-        pInterface12 = boost::make_shared<PatchInterface<TDim> >(pPatch1, side1, pPatch2, side2);
-        pInterface21 = boost::make_shared<PatchInterface<TDim> >(pPatch2, side2, pPatch1, side1);
+        pInterface12 = Kratos::make_shared<PatchInterface<TDim> >(pPatch1, side1, pPatch2, side2);
+        pInterface21 = Kratos::make_shared<PatchInterface<TDim> >(pPatch2, side2, pPatch1, side1);
 
         pInterface12->SetOtherInterface(pInterface21);
         pInterface21->SetOtherInterface(pInterface12);

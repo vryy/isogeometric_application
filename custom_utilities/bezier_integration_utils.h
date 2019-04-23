@@ -61,7 +61,7 @@ public:
     typedef boost::numeric::ublas::matrix<double> ValuesArrayContainerType;
 
     /// Pointer definition of BezierUtils
-    KRATOS_CLASS_POINTER_DEFINITION(BezierUtils);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BezierUtils);
 
     ///@}
     ///@name Life Cycle

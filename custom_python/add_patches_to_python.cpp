@@ -15,14 +15,13 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // Project includes
 #include "includes/define.h"
-#include "python/pointer_vector_set_python_interface.h"
+#include "includes/define_python.h"
+#include "python/containers_interface.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/multipatch.h"
 #include "custom_utilities/patch_interface.h"
@@ -40,8 +39,6 @@ namespace Kratos
 
 namespace Python
 {
-
-using namespace boost::python;
 
 ////////////////////////////////////////
 
@@ -88,21 +85,15 @@ typename GridFunction<TDim, typename TVariableType::Type>::Pointer Patch_GridFun
 }
 
 template<class TPatchType>
-boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, boost::python::list& P, boost::python::list& xi0)
+pybind11::list Patch_LocalCoordinates(TPatchType& rDummy, pybind11::list& py_P, pybind11::list& py_xi0)
 {
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-
     std::vector<double> xi0_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi0), iterator_value_type() ) )
-    {
-        xi0_vec.push_back(v);
-    }
+    for (auto v : py_xi0)
+        xi0_vec.push_back(v.cast<double>());
 
     std::vector<double> P_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
-    {
-        P_vec.push_back(v);
-    }
+    for (auto v : py_P)
+        P_vec.push_back(v.cast<double>());
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
@@ -116,33 +107,27 @@ boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, boost::python::li
 
     int stat = rDummy.LocalCoordinates(point, xi);
 
-    boost::python::list out_point;
+    pybind11::list out_point;
     out_point.append(xi[0]);
     out_point.append(xi[1]);
     out_point.append(xi[2]);
 
-    boost::python::list output;
+    pybind11::list output;
     output.append(stat);
     output.append(out_point);
     return output;
 }
 
 template<class TPatchType>
-bool Patch_IsInside(TPatchType& rDummy, boost::python::list& P, boost::python::list& xi0)
+bool Patch_IsInside(TPatchType& rDummy, pybind11::list& py_P, pybind11::list& py_xi0)
 {
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-
     std::vector<double> xi0_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi0), iterator_value_type() ) )
-    {
-        xi0_vec.push_back(v);
-    }
+    for (auto v : py_xi0)
+        xi0_vec.push_back(v.cast<double>());
 
     std::vector<double> P_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
-    {
-        P_vec.push_back(v);
-    }
+    for (auto v : py_P)
+        P_vec.push_back(v.cast<double>());
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
@@ -237,17 +222,19 @@ BoundarySide PatchInterface_Side2(TPatchInterfaceType& rDummy)
 ////////////////////////////////////////
 
 template<int TDim>
-void IsogeometricApplication_AddPatchesToPython_Helper()
+void IsogeometricApplication_AddPatchesToPython_Helper(pybind11::module& m)
 {
+
     std::stringstream ss;
 
     ss.str(std::string());
     ss << "Patch" << TDim << "D";
-    class_<Patch<TDim> >
-    // class_<Patch<TDim>, typename Patch<TDim>::Pointer >
-    (ss.str().c_str(), init<const std::size_t&, typename FESpace<TDim>::Pointer>())
-    .add_property("Id", &Patch_GetId<Patch<TDim> >, &Patch_SetId<Patch<TDim> >)
-    .add_property("Prefix", &Patch_GetPrefix<Patch<TDim> >, &Patch_SetPrefix<Patch<TDim> >)
+    pybind11::class_<Patch<TDim> >
+    // pybind11::class_<Patch<TDim>, typename Patch<TDim>::Pointer >
+    (m, ss.str().c_str())
+    .def(pybind11::init<const std::size_t&, typename FESpace<TDim>::Pointer>())
+    .def_property("Id", &Patch_GetId<Patch<TDim> >, &Patch_SetId<Patch<TDim> >)
+    .def_property("Prefix", &Patch_GetPrefix<Patch<TDim> >, &Patch_SetPrefix<Patch<TDim> >)
     .def("WorkingSpaceDimension", &Patch<TDim>::WorkingSpaceDimension)
     .def("Name", &Patch<TDim>::Name)
     .def("CreateControlPointGridFunction", &Patch<TDim>::CreateControlPointGridFunction)
@@ -270,38 +257,38 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("GetInterface", &Patch_GetInterface<TDim>)
     .def("ConstructBoundaryPatch", &Patch_ConstructBoundaryPatch<TDim>)
     .def("FindBoundarySide", &Patch<TDim>::FindBoundarySide)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<Patch<TDim> >)
     ;
 
     ss.str(std::string());
     ss << "Patch" << TDim << "DPointer";
-    class_<typename Patch<TDim>::Pointer>
-    (ss.str().c_str(), init<typename Patch<TDim>::Pointer>())
-    .def("GetReference", GetReference<Patch<TDim> >, return_value_policy<reference_existing_object>())
-    .def(self_ns::str(self))
+    pybind11::class_<typename Patch<TDim>::Pointer>
+    (m, ss.str().c_str())
+    .def(pybind11::init<typename Patch<TDim>::Pointer>())
+    .def("GetReference", GetReference<Patch<TDim> >, pybind11::return_value_policy::reference)
     ;
 
     ss.str(std::string());
     ss << "Patch" << TDim << "DContainer";
-    PointerVectorSetPythonInterface<typename MultiPatch<TDim>::PatchContainerType>::CreateInterface(ss.str());
+    PointerVectorSetPythonInterface<typename MultiPatch<TDim>::PatchContainerType>().CreateInterface(m, ss.str());
 
     ss.str(std::string());
     ss << "PatchInterface" << TDim << "D";
     // class_<PatchInterface<TDim> >
-    class_<PatchInterface<TDim>, typename PatchInterface<TDim>::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<>())
-    .def(init<typename Patch<TDim>::Pointer, const BoundarySide&, typename Patch<TDim>::Pointer, const BoundarySide&>())
+    pybind11::class_<PatchInterface<TDim>, typename PatchInterface<TDim>::Pointer>(m, ss.str().c_str())
+    .def(pybind11::init<>())
+    .def(pybind11::init<typename Patch<TDim>::Pointer, const BoundarySide&, typename Patch<TDim>::Pointer, const BoundarySide&>())
     .def("Patch1", &PatchInterface_pPatch1<TDim>)
     .def("Patch2", &PatchInterface_pPatch2<TDim>)
     .def("Side1", &PatchInterface_Side1<PatchInterface<TDim> >)
     .def("Side2", &PatchInterface_Side2<PatchInterface<TDim> >)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<PatchInterface<TDim> >)
     ;
 
     ss.str(std::string());
     ss << "MultiPatch" << TDim << "D";
-    class_<MultiPatch<TDim>, typename MultiPatch<TDim>::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<>())
+    pybind11::class_<MultiPatch<TDim>, typename MultiPatch<TDim>::Pointer>(m, ss.str().c_str())
+    .def(pybind11::init<>())
     // .def("ResetId", &MultiPatch<TDim>::ResetId) // this function is not really useful. One shall keep control over the id of the patch.
     .def("AddPatch", &MultiPatch<TDim>::AddPatch)
     .def("RemovePatch", &MultiPatch<TDim>::RemovePatch)
@@ -313,36 +300,40 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("Enumerate", &MultiPatch_Enumerate1<TDim>)
     .def("Enumerate", &MultiPatch_Enumerate2<TDim>)
     .def("IsEnumerated", &MultiPatch<TDim>::IsEnumerated)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<MultiPatch<TDim> >)
     ;
 }
 
-void IsogeometricApplication_AddExportToPython()
+void IsogeometricApplication_AddExportToPython(pybind11::module& m)
 {
-    class_<MultiNURBSPatchGeoExporter, MultiNURBSPatchGeoExporter::Pointer, boost::noncopyable>
-    ("MultiNURBSPatchGeoExporter", init<>())
+
+    pybind11::class_<MultiNURBSPatchGeoExporter, MultiNURBSPatchGeoExporter::Pointer>
+    (m, "MultiNURBSPatchGeoExporter")
+    .def(pybind11::init<>())
     .def("Export", &MultiPatchExporter_Export<1, MultiNURBSPatchGeoExporter, Patch<1> >)
     .def("Export", &MultiPatchExporter_Export<2, MultiNURBSPatchGeoExporter, Patch<2> >)
     .def("Export", &MultiPatchExporter_Export<3, MultiNURBSPatchGeoExporter, Patch<3> >)
     .def("Export", &MultiPatchExporter_Export<1, MultiNURBSPatchGeoExporter, MultiPatch<1> >)
     .def("Export", &MultiPatchExporter_Export<2, MultiNURBSPatchGeoExporter, MultiPatch<2> >)
     .def("Export", &MultiPatchExporter_Export<3, MultiNURBSPatchGeoExporter, MultiPatch<3> >)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<MultiNURBSPatchGeoExporter>)
     ;
 
-    class_<MultiNURBSPatchMatlabExporter, MultiNURBSPatchMatlabExporter::Pointer, boost::noncopyable>
-    ("MultiNURBSPatchMatlabExporter", init<>())
+    pybind11::class_<MultiNURBSPatchMatlabExporter, MultiNURBSPatchMatlabExporter::Pointer>
+    (m, "MultiNURBSPatchMatlabExporter")
+    .def(pybind11::init<>())
     .def("Export", &MultiPatchExporter_Export<1, MultiNURBSPatchMatlabExporter, Patch<1> >)
     .def("Export", &MultiPatchExporter_Export<2, MultiNURBSPatchMatlabExporter, Patch<2> >)
     .def("Export", &MultiPatchExporter_Export<3, MultiNURBSPatchMatlabExporter, Patch<3> >)
     .def("Export", &MultiPatchExporter_Export<1, MultiNURBSPatchMatlabExporter, MultiPatch<1> >)
     .def("Export", &MultiPatchExporter_Export<2, MultiNURBSPatchMatlabExporter, MultiPatch<2> >)
     .def("Export", &MultiPatchExporter_Export<3, MultiNURBSPatchMatlabExporter, MultiPatch<3> >)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<MultiNURBSPatchMatlabExporter>)
     ;
 
-    class_<MultiNURBSPatchGLVisExporter, MultiNURBSPatchGLVisExporter::Pointer, boost::noncopyable>
-    ("MultiNURBSPatchGLVisExporter", init<>())
+    pybind11::class_<MultiNURBSPatchGLVisExporter, MultiNURBSPatchGLVisExporter::Pointer>
+    (m, "MultiNURBSPatchGLVisExporter")
+    .def(pybind11::init<>())
     .def("Export", &MultiPatchExporter_Export<1, MultiNURBSPatchGLVisExporter, Patch<1> >)
     .def("Export", &MultiPatchExporter_Export_Variable<1, MultiNURBSPatchGLVisExporter, Patch<1>, Variable<double> >)
     .def("Export", &MultiPatchExporter_Export_Variable<1, MultiNURBSPatchGLVisExporter, Patch<1>, Variable<array_1d<double, 3> > >)
@@ -367,41 +358,43 @@ void IsogeometricApplication_AddExportToPython()
     .def("Export", &MultiPatchExporter_Export_Variable<3, MultiNURBSPatchGLVisExporter, MultiPatch<3>, Variable<double> >)
     .def("Export", &MultiPatchExporter_Export_Variable<3, MultiNURBSPatchGLVisExporter, MultiPatch<3>, Variable<array_1d<double, 3> > >)
     .def("Export", &MultiPatchExporter_Export_Variable_WithComponents<3, MultiNURBSPatchGLVisExporter, MultiPatch<3>, Variable<Vector> >)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<MultiNURBSPatchGLVisExporter>)
     ;
 
 }
 
 template<int TDim>
-void IsogeometricApplication_AddImportToPython()
+void IsogeometricApplication_AddImportToPython(pybind11::module& m)
 {
+
     std::stringstream ss;
 
     ss.str(std::string());
     ss << "MultiNURBSPatchGeoImporter" << TDim << "D";
-    class_<MultiNURBSPatchGeoImporter<TDim>, typename MultiNURBSPatchGeoImporter<TDim>::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<>())
+    pybind11::class_<MultiNURBSPatchGeoImporter<TDim>, typename MultiNURBSPatchGeoImporter<TDim>::Pointer>
+    (m, ss.str().c_str())
+    .def(pybind11::init<>())
     .def("ImportSingle", &MultiNURBSPatchGeoImporter<TDim>::ImportSingle)
     .def("Import", &MultiNURBSPatchGeoImporter<TDim>::Import)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<MultiNURBSPatchGeoImporter<TDim> >)
     ;
 
 }
 
-void IsogeometricApplication_AddPatchesToPython()
+void IsogeometricApplication_AddPatchesToPython(pybind11::module& m)
 {
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////PATCHES///////////////////////////////////
     /////////////////////////////////////////////////////////////////
 
-    enum_<ParametricAxis>("ParametricAxis")
+    pybind11::enum_<ParametricAxis>(m, "ParametricAxis")
     .value("U", _PA_U_)
     .value("V", _PA_V_)
     .value("W", _PA_W_)
     ;
 
-    enum_<BoundarySide>("BoundarySide")
+    pybind11::enum_<BoundarySide>(m, "BoundarySide")
     .value("Left", _BLEFT_)
     .value("Right", _BRIGHT_)
     .value("Top", _BTOP_)
@@ -410,14 +403,14 @@ void IsogeometricApplication_AddPatchesToPython()
     .value("Back", _BBACK_)
     ;
 
-    enum_<BoundarySide2D>("BoundarySide2D")
+    pybind11::enum_<BoundarySide2D>(m, "BoundarySide2D")
     .value("U0", _B2LEFT_)
     .value("U1", _B2RIGHT_)
     .value("V0", _B2BOTTOM_)
     .value("V1", _B2TOP_)
     ;
 
-    enum_<BoundarySide3D>("BoundarySide3D")
+    pybind11::enum_<BoundarySide3D>(m, "BoundarySide3D")
     .value("U0", _B3LEFT_)
     .value("U1", _B3RIGHT_)
     .value("V0", _B3FRONT_)
@@ -426,12 +419,12 @@ void IsogeometricApplication_AddPatchesToPython()
     .value("W1", _B3TOP_)
     ;
 
-    enum_<BoundaryDirection>("BoundaryDirection")
+    pybind11::enum_<BoundaryDirection>(m, "BoundaryDirection")
     .value("Forward", _FORWARD_)
     .value("Reversed", _REVERSED_)
     ;
 
-    enum_<BoundaryFlag>("BoundaryFlag")
+    pybind11::enum_<BoundaryFlag>(m, "BoundaryFlag")
     .value("Left", _FLEFT_)
     .value("Right", _FRIGHT_)
     .value("Top", _FTOP_)
@@ -440,23 +433,23 @@ void IsogeometricApplication_AddPatchesToPython()
     .value("Back", _FBACK_)
     ;
 
-    enum_<IsogeometricEchoFlags>("IsogeometricEchoFlags")
+    pybind11::enum_<IsogeometricEchoFlags>(m, "IsogeometricEchoFlags")
     .value("ECHO_REFINEMENT", ECHO_REFINEMENT)
     .value("ECHO_REFINEMENT_DETAIL", ECHO_REFINEMENT_DETAIL)
     ;
 
-    IsogeometricApplication_AddPatchesToPython_Helper<1>();
-    IsogeometricApplication_AddPatchesToPython_Helper<2>();
-    IsogeometricApplication_AddPatchesToPython_Helper<3>();
+    IsogeometricApplication_AddPatchesToPython_Helper<1>(m);
+    IsogeometricApplication_AddPatchesToPython_Helper<2>(m);
+    IsogeometricApplication_AddPatchesToPython_Helper<3>(m);
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////IMPORT/EXPORT/////////////////////////////
     /////////////////////////////////////////////////////////////////
 
-    IsogeometricApplication_AddExportToPython();
-    IsogeometricApplication_AddImportToPython<1>();
-    IsogeometricApplication_AddImportToPython<2>();
-    IsogeometricApplication_AddImportToPython<3>();
+    IsogeometricApplication_AddExportToPython(m);
+    IsogeometricApplication_AddImportToPython<1>(m);
+    IsogeometricApplication_AddImportToPython<2>(m);
+    IsogeometricApplication_AddImportToPython<3>(m);
 
 }
 

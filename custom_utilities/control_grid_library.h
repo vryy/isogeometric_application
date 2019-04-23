@@ -38,7 +38,7 @@ class ControlGridLibrary
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(ControlGridLibrary);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(ControlGridLibrary);
 
     /// Type definition
     typedef ControlPoint<double> ControlPointType;

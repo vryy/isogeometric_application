@@ -898,7 +898,7 @@ private:
             number_of_nodes_read++;
         }
         #elif defined(KRATOS_SD_REF_NUMBER_3)
-        NodeType::Pointer temp_node = boost::make_shared< NodeType >( 0, 0.0, 0.0, 0.0);
+        NodeType::Pointer temp_node = Kratos::make_shared< NodeType >( 0, 0.0, 0.0, 0.0);
         SizeType temp_id;
 
         std::string word;
@@ -985,7 +985,7 @@ private:
             number_of_nodes_read++;
         }
         #elif defined(KRATOS_SD_REF_NUMBER_3)
-        NodeType::Pointer temp_node = boost::make_shared< NodeType >( 0, 0.0, 0.0, 0.0);
+        NodeType::Pointer temp_node = Kratos::make_shared< NodeType >( 0, 0.0, 0.0, 0.0);
         SizeType temp_id;
 
         // Giving model part's variables list to the node
@@ -1086,7 +1086,7 @@ private:
         #if defined(KRATOS_SD_REF_NUMBER_2)
         Properties temp_properties;
         #elif defined(KRATOS_SD_REF_NUMBER_3)
-        Properties::Pointer props = boost::make_shared<Properties>();
+        Properties::Pointer props = Kratos::make_shared<Properties>();
         Properties& temp_properties = *props;
         #endif
 
@@ -2380,7 +2380,7 @@ private:
             #if defined(KRATOS_SD_REF_NUMBER_2)
             rModelPart.GetMeshes().push_back(empty_mesh.Clone());
             #elif defined(KRATOS_SD_REF_NUMBER_3)
-            rModelPart.GetMeshes().push_back(boost::make_shared<MeshType>(empty_mesh.Clone()));
+            rModelPart.GetMeshes().push_back(Kratos::make_shared<MeshType>(empty_mesh.Clone()));
             #endif
 
         MeshType& mesh = rModelPart.GetMesh(mesh_id);

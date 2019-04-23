@@ -67,7 +67,7 @@ public:
     typedef typename Element::GeometryType::PointType::CoordinatesArrayType CoordinatesArrayType;
 
     /// Pointer definition of BezierTestUtils
-    KRATOS_CLASS_POINTER_DEFINITION(BezierTestUtils);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BezierTestUtils);
 
     ///@}
     ///@name Life Cycle

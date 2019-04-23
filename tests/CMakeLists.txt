@@ -2,7 +2,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include_directories( ${CMAKE_SOURCE_DIR})
 include_directories( ${CMAKE_SOURCE_DIR}/kratos)
 include_directories( ${CMAKE_SOURCE_DIR}/applications)
-include_directories( ${CMAKE_SOURCE_DIR}/applications/isogeometric_application)
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../)
 
 ###############################################################
 set(name_list
@@ -22,6 +22,6 @@ set(name_list
 foreach(str ${name_list})
     add_executable(${str} ${str}.cpp)
     target_link_libraries(${str} KratosCore)
-    target_link_libraries(${str} KratosIsogeometricApplication)
+    target_link_libraries(${str} KratosIsogeometricApplicationCore)
     install(TARGETS ${str} DESTINATION libs )
 endforeach()

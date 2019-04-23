@@ -15,13 +15,12 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // Project includes
 #include "includes/define.h"
+#include "includes/define_python.h"
 #include "custom_utilities/multipatch.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/tsplines/tcell.h"
@@ -72,17 +71,15 @@ void TSplinesUtils_ExportMDPA2(TSplinesUtils& rDummy, const TsMesh2D& tmesh,
 namespace Python
 {
 
-using namespace boost::python;
-
-void IsogeometricApplication_AddTSplinesToPython()
+void IsogeometricApplication_AddTSplinesToPython(pybind11::module& m)
 {
 
     /////////////////////////////////////////////////////////////////
     /////////////////////////TMESH///////////////////////////////////
     /////////////////////////////////////////////////////////////////
 
-    class_<TsMesh2D, TsMesh2D::Pointer, boost::noncopyable>
-    ("TsMesh2D", init<>())
+    pybind11::class_<TsMesh2D, TsMesh2D::Pointer>(m, "TsMesh2D")
+    .def(pybind11::init<>())
     .def("BeginConstruct", &TsMesh2D::BeginConstruct)
     .def("EndConstruct", &TsMesh2D::EndConstruct)
     .def("BuildExtendedTmesh", &TsMesh2D::BuildExtendedTmesh)
@@ -90,7 +87,7 @@ void IsogeometricApplication_AddTSplinesToPython()
     .def("BuildAnchors", &TsMesh2D::BuildAnchors)
     .def("BuildCells", &TsMesh2D::BuildCells)
     //    .def("FindKnots2", &TsMesh2D::FindKnots2)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<TsMesh2D>)
     ;
 
     /////////////////////////////////////////////////////////////////
@@ -100,14 +97,16 @@ void IsogeometricApplication_AddTSplinesToPython()
     typedef PBBSplinesBasisFunction<2, TCell> PBBSplinesBasisFunctionType;
     typedef PBBSplinesFESpace<2, PBBSplinesBasisFunctionType, BCellManager<2, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
     typedef TSplinesFESpace<2, PBBSplinesBasisFunctionType, BCellManager<2, typename PBBSplinesBasisFunctionType::CellType> > TSplinesFESpaceType;
-    class_<TSplinesFESpaceType, TSplinesFESpaceType::Pointer, bases<PBBSplinesFESpaceType>, boost::noncopyable>
-    ("TSplinesFESpace2D", init<>())
-    .def(self_ns::str(self))
+    pybind11::class_<TSplinesFESpaceType, TSplinesFESpaceType::Pointer, PBBSplinesFESpaceType>
+    (m, "TSplinesFESpace2D")
+    .def(pybind11::init<>())
+    .def("__str__", &PrintObject<TSplinesFESpaceType>)
     ;
 
     typedef NonConformingTSplinesMultipatchLagrangeMesh<TSplinesFESpaceType> NonConformingTSplinesMultipatchLagrangeMeshType;
-    class_<NonConformingTSplinesMultipatchLagrangeMeshType, typename NonConformingTSplinesMultipatchLagrangeMeshType::Pointer, boost::noncopyable>
-    ("NonConformingTSplinesMultipatchLagrangeMesh", init<typename MultiPatch<2>::Pointer>())
+    pybind11::class_<NonConformingTSplinesMultipatchLagrangeMeshType, typename NonConformingTSplinesMultipatchLagrangeMeshType::Pointer>
+    (m, "NonConformingTSplinesMultipatchLagrangeMesh")
+    .def(pybind11::init<typename MultiPatch<2>::Pointer>())
     .def("SetBaseElementName", &NonConformingTSplinesMultipatchLagrangeMeshType::SetBaseElementName)
     .def("SetLastNodeId", &NonConformingTSplinesMultipatchLagrangeMeshType::SetLastNodeId)
     .def("SetLastElemId", &NonConformingTSplinesMultipatchLagrangeMeshType::SetLastElemId)
@@ -115,21 +114,21 @@ void IsogeometricApplication_AddTSplinesToPython()
     .def("SetDivision", &NonConformingTSplinesMultipatchLagrangeMeshType::SetDivision)
     .def("SetUniformDivision", &NonConformingTSplinesMultipatchLagrangeMeshType::SetUniformDivision)
     .def("WriteModelPart", &NonConformingTSplinesMultipatchLagrangeMeshType::WriteModelPart)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<NonConformingTSplinesMultipatchLagrangeMeshType>)
     ;
 
     /////////////////////////////////////////////////////////////////
     /////////////////////////UTILITIES///////////////////////////////
     /////////////////////////////////////////////////////////////////
 
-    class_<TSplinesUtils, TSplinesUtils::Pointer, boost::noncopyable>
-    ("TSplinesUtils", init<>())
+    pybind11::class_<TSplinesUtils, TSplinesUtils::Pointer>(m, "TSplinesUtils")
+    .def(pybind11::init<>())
     .def("CreateFromBSplines", &TSplinesUtils_CreateFromBSplines)
     .def("ReadFromFile", &TSplinesUtils_ReadFromFile)
     .def("ExportMatlab", &TSplinesUtils_ExportMatlab)
     .def("ExportMDPA", &TSplinesUtils_ExportMDPA)
     .def("ExportMDPA", &TSplinesUtils_ExportMDPA2)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<TSplinesUtils>)
     ;
 
     /////////////////////////////////////////////////////////////////
@@ -137,10 +136,11 @@ void IsogeometricApplication_AddTSplinesToPython()
     /////////////////////////////////////////////////////////////////
 
     #ifdef ISOGEOMETRIC_USE_TSPLINE
-    class_<TSplinesPatchTSMImporter, TSplinesPatchTSMImporter::Pointer, boost::noncopyable>
-    ("TSplinesPatchTSMImporter", init<>())
+    pybind11::class_<TSplinesPatchTSMImporter, TSplinesPatchTSMImporter::Pointer>
+    (m, "TSplinesPatchTSMImporter")
+    .def(pybind11::init<>())
     .def("ImportSingle", &TSplinesPatchTSMImporter::ImportSingle)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<TSplinesPatchTSMImporter>)
     ;
     #endif
 

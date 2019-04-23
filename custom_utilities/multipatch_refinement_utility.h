@@ -64,7 +64,7 @@ class MultiPatchRefinementUtility
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(MultiPatchRefinementUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(MultiPatchRefinementUtility);
 
     /// Type definition
     typedef KnotArray1D<double> knot_container_t;

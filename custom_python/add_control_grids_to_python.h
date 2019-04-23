@@ -13,6 +13,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ADD_CONTROL_GRIDS_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_ADD_CONTROL_GRIDS_TO_PYTHON_H_INCLUDED
 
+#include <pybind11/pybind11.h>
+
 #include "custom_utilities/control_grid.h"
 
 namespace Kratos
@@ -36,7 +38,7 @@ void ControlGrid_SetItem(ControlGrid<TDataType>& rDummy, int index, const TDataT
 }
 
 ////////////////////////////////////////////////////////
-void  IsogeometricApplication_AddControlGridsToPython();
+void  IsogeometricApplication_AddControlGridsToPython(pybind11::module& m);
 ////////////////////////////////////////////////////////
 
 }  // namespace Python.

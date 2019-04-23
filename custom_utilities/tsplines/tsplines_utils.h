@@ -59,7 +59,7 @@ public:
     ///@{
 
     /// Pointer definition of TSplinesUtils
-    KRATOS_CLASS_POINTER_DEFINITION(TSplinesUtils);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TSplinesUtils);
 
     ///@}
     ///@name Life Cycle

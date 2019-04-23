@@ -38,7 +38,7 @@ public:
     typedef std::map<key_t, index_container_t> map_t;
 
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(DomainManager2D);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(DomainManager2D);
 
     /// Default constructor
     DomainManager2D(const std::size_t& Id) : BaseType(Id) {}

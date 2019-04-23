@@ -28,7 +28,7 @@ namespace Kratos
 class MultiHBSplinesPatchMatlabExporter
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(MultiHBSplinesPatchMatlabExporter);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(MultiHBSplinesPatchMatlabExporter);
 
     template<int TDim>
     static void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename)

@@ -77,7 +77,7 @@ public:
     typedef std::list<TsEdge::Pointer>      edge_container_t;
 
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(TsMesh2D);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TsMesh2D);
 
     /// Default constructor
     TsMesh2D();
@@ -308,15 +308,15 @@ private:
     cell_container_t mCells; // list of cells
     anchor_container_t mAnchors; // list of anchors
 
-    boost::array<int, 2> mOrder; // order of the Tsplines mesh in horizontal and vertical direction
+    std::array<int, 2> mOrder; // order of the Tsplines mesh in horizontal and vertical direction
 
     std::size_t mLastVertex; // internal variable point to the last vertex identification in the T-splines mesh
     std::size_t mLastEdge; // internal variable point to the last edge identification in the T-splines mesh
 
-    boost::array<double, 2> mKnotsMin;
-    boost::array<double, 2> mKnotsMax;
+    std::array<double, 2> mKnotsMin;
+    std::array<double, 2> mKnotsMax;
 
-    boost::array<knot_container_t, 2> mKnots; // 0: knot vector in horizontal direction
+    std::array<knot_container_t, 2> mKnots; // 0: knot vector in horizontal direction
                                               // 1: knot vector in vertical direction
 
     bool mLockConstruct; // lock variable to control the build process

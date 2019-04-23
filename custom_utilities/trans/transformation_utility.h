@@ -30,7 +30,7 @@ class TransformationUtility
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(TransformationUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TransformationUtility);
 
     /// Type definition
     typedef Transformation<TDataType> TransformationType;

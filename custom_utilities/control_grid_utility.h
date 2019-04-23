@@ -49,7 +49,7 @@ class ControlGridUtility
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(ControlGridUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(ControlGridUtility);
 
     /// Type definition
     typedef ControlPoint<double> ControlPointType;
@@ -176,7 +176,7 @@ public:
         }
         else if (typeid(*pFESpace) == typeid(HBSplinesFESpace<TDim>))
         {
-            typename HBSplinesFESpace<TDim>::Pointer pHbFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pFESpace);
+            typename HBSplinesFESpace<TDim>::Pointer pHbFESpace = Kratos::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pFESpace);
             return CreatePointBasedControlGrid<typename TVariableType::Type, HBSplinesFESpace<TDim> >(rVariable, pHbFESpace);
         }
         else

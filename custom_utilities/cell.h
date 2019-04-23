@@ -17,6 +17,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "custom_utilities/iga_define.h"
 
 // External includes
 #include <boost/numeric/ublas/vector_sparse.hpp>
@@ -32,7 +33,7 @@ class Cell
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Cell);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(Cell);
 
     /// Type definitions
     typedef boost::numeric::ublas::mapped_vector<double> SparseVectorType;

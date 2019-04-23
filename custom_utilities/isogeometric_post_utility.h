@@ -96,7 +96,7 @@ public:
     typedef std::size_t IndexType;
 
     /// Pointer definition of IsogeometricPostUtility
-    KRATOS_CLASS_POINTER_DEFINITION(IsogeometricPostUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(IsogeometricPostUtility);
 
     ///@}
     ///@name Life Cycle

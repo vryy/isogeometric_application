@@ -36,7 +36,7 @@ class CellTree
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(CellTree);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(CellTree);
 
     /// Type definitions
     typedef Knot<double> KnotType;

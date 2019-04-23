@@ -61,7 +61,7 @@ public:
     ///@{
 
     /// Pointer definition of IsogeometricIntersectionUtility
-    KRATOS_CLASS_POINTER_DEFINITION(IsogeometricIntersectionUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(IsogeometricIntersectionUtility);
 
     ///@}
     ///@name Life Cycle

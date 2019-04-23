@@ -31,7 +31,7 @@ class TsAnchor
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(TsAnchor);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TsAnchor);
 
     /// Default constructor
     TsAnchor(const std::size_t& Id,

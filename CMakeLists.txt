@@ -13,6 +13,8 @@ add_subdirectory(custom_external_libraries/tetgen1.5.0)
 add_definitions( -DISOGEOMETRIC_USE_TETGEN )
 # add_definitions( -DENABLE_BEZIER_GEOMETRY ) # this was promoted to system level
 # add_definitions( -DENABLE_PRECOMPUTE )
+add_definitions( -DISOGEOMETRIC_USE_BOOST_ANY ) # use boost::any
+# add_definitions( -DISOGEOMETRIC_USE_STD_ANY ) # use std::any (only with c++17 support compiler)
 
 if(DEFINED $ENV{HDF5_ROOT})
     SET(HDF5_DIR $ENV{HDF5_ROOT}/share/cmake/hdf5)
@@ -85,9 +87,7 @@ endif()
 
 ## generate variables with the sources
 set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
-#    ${PROJECT_SOURCE_DIR}/kratos/sources/io.cpp
-#    ${PROJECT_SOURCE_DIR}/kratos/sources/model_part_io.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_io/bezier_model_part_io.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/custom_io/bezier_model_part_io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bezier_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bspline_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bezier_post_utility.cpp
@@ -96,8 +96,8 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/bcell_manager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/domain_manager_2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/domain_manager_3d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/hbsplines/deprecated_hb_basis_function.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/hbsplines/deprecated_hb_mesh.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/hbsplines/deprecated_hb_basis_function.cpp
+    # ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/hbsplines/deprecated_hb_mesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/tsplines/tsmesh_2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/import_export/multi_nurbs_patch_geo_importer.cpp
 )
@@ -113,7 +113,10 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_conditions/dummy_isogeometric_condition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/isogeometric_application.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_io_to_python.cpp
+)
+
+set( KRATOS_ISOGEOMETRIC_APPLICATION_PYTHON_INTERFACE_SOURCES
+    # ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_io_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_processes_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_backend_utilities_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_frontend_utilities_to_python.cpp
@@ -131,36 +134,40 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
 )
 
 ###############################################################
-## define library Kratos which defines the basic python interface
-add_library(KratosIsogeometricApplication SHARED ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES})
+## define the application source units
+add_library(KratosIsogeometricApplicationCore SHARED ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES})
+target_link_libraries(KratosIsogeometricApplicationCore PUBLIC KratosCore)
+target_link_libraries(KratosIsogeometricApplicationCore iga_tetgen150)
+set_target_properties(KratosIsogeometricApplicationCore PROPERTIES COMPILE_DEFINITIONS "ISOGEOMETRIC_APPLICATION=EXPORT,API")
+install(TARGETS KratosIsogeometricApplicationCore DESTINATION libs )
+
+if(${ISOGEOMETRIC_USE_HDF5} MATCHES TRUE)
+    target_link_libraries(KratosIsogeometricApplicationCore ${HDF5_LIBRARIES})
+endif()
+if(${ISOGEOMETRIC_USE_MPI} MATCHES TRUE)
+    target_link_libraries(KratosIsogeometricApplicationCore ${METIS_FOR_IGA_LIBRARY})
+    target_link_libraries(KratosIsogeometricApplicationCore ${PARMETIS_FOR_IGA_LIBRARY})
+    target_link_libraries(KratosIsogeometricApplicationCore ${MPI_LIBRARIES})
+endif()
+if(${ISOGEOMETRIC_USE_GISMO} MATCHES TRUE)
+    target_link_libraries(KratosIsogeometricApplicationCore ${GISMO_LIBRARY})
+endif()
+if(${ISOGEOMETRIC_USE_TSPLINE} MATCHES TRUE)
+    target_link_libraries(KratosIsogeometricApplicationCore ${TSPLINE_LIBRARIES})
+endif()
+if(CGAL_FOUND)
+    target_link_libraries(KratosIsogeometricApplicationCore ${CGAL_LIBRARIES})
+    target_link_libraries(KratosIsogeometricApplicationCore ${GMP_LIBRARIES})
+endif()
 
 add_subdirectory(tests)
 
-target_link_libraries(KratosIsogeometricApplication KratosCore)
-#target_link_libraries(KratosIsogeometricApplication KratosStructuralApplication)
-target_link_libraries(KratosIsogeometricApplication iga_tetgen150)
-if(${ISOGEOMETRIC_USE_HDF5} MATCHES TRUE)
-    target_link_libraries(KratosIsogeometricApplication ${HDF5_LIBRARIES})
-endif()
-if(${ISOGEOMETRIC_USE_MPI} MATCHES TRUE)
-    target_link_libraries(KratosIsogeometricApplication ${METIS_FOR_IGA_LIBRARY})
-    target_link_libraries(KratosIsogeometricApplication ${PARMETIS_FOR_IGA_LIBRARY})
-    target_link_libraries(KratosIsogeometricApplication ${MPI_LIBRARIES})
-endif()
-if(${ISOGEOMETRIC_USE_GISMO} MATCHES TRUE)
-    target_link_libraries(KratosIsogeometricApplication ${GISMO_LIBRARY})
-endif()
-if(${ISOGEOMETRIC_USE_TSPLINE} MATCHES TRUE)
-    target_link_libraries(KratosIsogeometricApplication ${TSPLINE_LIBRARIES})
-endif()
-if(CGAL_FOUND)
-    target_link_libraries(KratosIsogeometricApplication ${CGAL_LIBRARIES})
-    target_link_libraries(KratosIsogeometricApplication ${GMP_LIBRARIES})
-endif()
-
+###############################################################
+## define the python interface compilation units
+pybind11_add_module(KratosIsogeometricApplication MODULE ${KRATOS_ISOGEOMETRIC_APPLICATION_PYTHON_INTERFACE_SOURCES})
+target_link_libraries(KratosIsogeometricApplication PUBLIC KratosIsogeometricApplicationCore)
 set_target_properties(KratosIsogeometricApplication PROPERTIES PREFIX "")
 install(TARGETS KratosIsogeometricApplication DESTINATION libs )
-
 
 # changing the .dll suffix to .pyd
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")

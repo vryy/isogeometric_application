@@ -11,6 +11,17 @@
 
 #include <cstring>
 #include <vector>
+#if defined(ISOGEOMETRIC_USE_STD_ANY)
+#include <any>
+#include <utility>
+#elif defined(ISOGEOMETRIC_USE_BOOST_ANY)
+#include <boost/any.hpp>
+#include <boost/move/utility.hpp>
+#else
+#include <boost/any.hpp>
+#include <boost/move/utility.hpp>
+#endif
+
 
 namespace Kratos
 {
@@ -191,6 +202,15 @@ enum PostElementType
 };
 
 /**
+ * Macro to define associated pointers
+ */
+#define ISOGEOMETRIC_CLASS_POINTER_DEFINITION(a) typedef Kratos::shared_ptr<a > Pointer; \
+typedef Kratos::shared_ptr<a > SharedPointer; \
+typedef Kratos::shared_ptr<const a > ConstPointer; \
+typedef Kratos::weak_ptr<a > WeakPointer; \
+typedef Kratos::unique_ptr<a > UniquePointer
+
+/**
  * Helper struct to extract the pointer type
  * One case use typename Isogeometric_Pointer_Helper<TType>::Pointer as replacement for typename TType::Pointer
  * This is useful when TType is used in nested template argument, e.g. template<..., typename type_t<TType> >
@@ -198,9 +218,31 @@ enum PostElementType
 template<class TType>
 struct Isogeometric_Pointer_Helper
 {
-    KRATOS_CLASS_POINTER_DEFINITION(TType);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TType);
 };
 
+#if defined(ISOGEOMETRIC_USE_STD_ANY)
+using any = std::any;
+using bad_any_cast = std::bad_any_cast;
+template<typename T, typename...Args>
+T any_cast(Args &&...args) {
+    return std::any_cast<T>(std::forward<Args>(args)...);
+}
+#elif defined(ISOGEOMETRIC_USE_BOOST_ANY)
+using any = boost::any;
+using bad_any_cast = boost::bad_any_cast;
+template<typename T, typename...Args>
+T any_cast(Args &&...args) {
+    return boost::any_cast<T>(boost::forward<Args>(args)...);
+}
+#else
+using any = boost::any;
+using bad_any_cast = boost::bad_any_cast;
+template<typename T, typename...Args>
+T any_cast(Args &&...args) {
+    return boost::any_cast<T>(boost::forward<Args>(args)...);
+}
+#endif
 
 } // namespace Kratos.
 

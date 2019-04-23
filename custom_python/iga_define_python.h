@@ -9,6 +9,8 @@
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_IGA_DEFINE_PYTHON_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_IGA_DEFINE_PYTHON_H_INCLUDED
 
+#include <pybind11/pybind11.h>
+
 namespace Kratos
 {
 
@@ -73,13 +75,13 @@ void Isogeometric_SetEquationId(TType& rDummy, std::size_t EquationId)
  * Helper function
  */
 template<typename TFESpaceType>
-boost::python::list FESpace_ExtractBoundaryBfsByFlag(TFESpaceType& rDummy, std::size_t boundary_id)
+pybind11::list FESpace_ExtractBoundaryBfsByFlag(TFESpaceType& rDummy, std::size_t boundary_id)
 {
     typedef typename TFESpaceType::bf_t bf_t;
 
     std::vector<bf_t> bf_list = rDummy.ExtractBoundaryBfsByFlag(boundary_id);
 
-    boost::python::list Output;
+    pybind11::list Output;
     for (std::size_t i = 0; i < bf_list.size(); ++i)
         Output.append(bf_list[i]);
 

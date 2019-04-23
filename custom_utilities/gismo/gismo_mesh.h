@@ -54,7 +54,7 @@ public:
     static const int READ_WEIGHTS     = 6;
 
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(GismoMesh);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(GismoMesh);
 
     /// Type definition
 

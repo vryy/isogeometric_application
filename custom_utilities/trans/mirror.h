@@ -73,7 +73,7 @@ class Mirror : public Transformation<TDataType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Mirror);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(Mirror);
 
     /// Type definitions
     typedef Transformation<TDataType> BaseType;

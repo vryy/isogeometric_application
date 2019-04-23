@@ -15,8 +15,8 @@
 #include "includes/legacy_structural_app_vars.h"
 #include "includes/kratos_flags.h"
 #include "utilities/math_utils.h"
-#include "isogeometric_application/custom_utilities/isogeometric_math_utils.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "custom_utilities/isogeometric_math_utils.h"
+#include "isogeometric_application.h"
 
 namespace Kratos
 {

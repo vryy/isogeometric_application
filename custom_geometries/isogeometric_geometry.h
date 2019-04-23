@@ -371,7 +371,7 @@ public:
         return typename GeometryType::Pointer( new IsogeometricGeometryType( ThisPoints ) );
     }
 
-//    virtual boost::shared_ptr< Geometry< Point<3> > > Clone() const
+//    virtual Kratos::shared_ptr< Geometry< Point<3> > > Clone() const
 //    {
 //        IsogeometricGeometry< Point<3> >::PointsArrayType NewPoints;
 
@@ -381,13 +381,13 @@ public:
 //            #if defined(KRATOS_SD_REF_NUMBER_2)
 //            NewPoints.push_back(( *this )[i] );
 //            #elif defined(KRATOS_SD_REF_NUMBER_3)
-//            NewPoints.push_back(boost::make_shared< Point<3> >(( *this )[i]));
+//            NewPoints.push_back(Kratos::make_shared< Point<3> >(( *this )[i]));
 //            #endif
 
 //        //NewPoints[i] = typename Point<3>::Pointer(new Point<3>(*mPoints[i]));
 
 //        //creating a geometry with the new points
-//        boost::shared_ptr< IsogeometricGeometry< Point<3> > > p_clone( new IsogeometricGeometry< Point<3> >( NewPoints ) );
+//        Kratos::shared_ptr< IsogeometricGeometry< Point<3> > > p_clone( new IsogeometricGeometry< Point<3> >( NewPoints ) );
 
 //        p_clone->ClonePoints();
 
@@ -539,8 +539,8 @@ public:
         #ifndef ENABLE_PRECOMPUTE
         if(!mIsInitialized)
         {
-            mpInternal_Ncontainer = boost::shared_ptr<Matrix>(new Matrix());
-            mpInternal_DN_De = boost::shared_ptr<ShapeFunctionsGradientsType>(new ShapeFunctionsGradientsType());
+            mpInternal_Ncontainer = Kratos::shared_ptr<Matrix>(new Matrix());
+            mpInternal_DN_De = Kratos::shared_ptr<ShapeFunctionsGradientsType>(new ShapeFunctionsGradientsType());
             this->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(*mpInternal_Ncontainer, *mpInternal_DN_De, ThisMethod);
             mIsInitialized = true;
         }
@@ -552,8 +552,8 @@ public:
         #ifndef ENABLE_PRECOMPUTE
         if(!mIsInitialized)
         {
-            mpInternal_Ncontainer = boost::shared_ptr<Matrix>(new Matrix());
-            mpInternal_DN_De = boost::shared_ptr<ShapeFunctionsGradientsType>(new ShapeFunctionsGradientsType());
+            mpInternal_Ncontainer = Kratos::shared_ptr<Matrix>(new Matrix());
+            mpInternal_DN_De = Kratos::shared_ptr<ShapeFunctionsGradientsType>(new ShapeFunctionsGradientsType());
             this->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(*mpInternal_Ncontainer, *mpInternal_DN_De, integration_points);
             mIsInitialized = true;
         }
@@ -724,8 +724,8 @@ private:
 
     #ifndef ENABLE_PRECOMPUTE
     bool mIsInitialized;
-    boost::shared_ptr<ShapeFunctionsGradientsType> mpInternal_DN_De;
-    boost::shared_ptr<Matrix> mpInternal_Ncontainer;
+    Kratos::shared_ptr<ShapeFunctionsGradientsType> mpInternal_DN_De;
+    Kratos::shared_ptr<Matrix> mpInternal_Ncontainer;
     #endif
 
     ///@}

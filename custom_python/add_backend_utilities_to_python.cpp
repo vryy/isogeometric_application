@@ -15,13 +15,12 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // Project includes
 #include "includes/define.h"
+#include "includes/define_python.h"
 #include "includes/model_part.h"
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_utilities/bspline_utils.h"
@@ -45,8 +44,6 @@ namespace Kratos
 
 namespace Python
 {
-
-using namespace boost::python;
 
 int BSplineUtils_FindSpan(
     BSplineUtils& dummy,
@@ -94,11 +91,11 @@ void BezierUtils_Bernstein_der(
 
 void BezierUtils_DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients(
     BezierUtils& dummy,
-    ModelPart::Pointer pModelPart,
+    ModelPart& r_model_part,
     std::string FileName
 )
 {
-    dummy.DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients(pModelPart, FileName);
+    dummy.DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients(r_model_part, FileName);
 }
 
 template<class T>
@@ -254,10 +251,10 @@ ModelPart::ConditionsContainerType IsogeometricPostUtility_FindConditions(Isogeo
 }
 
 template<typename TCoordinatesType, typename TPatchType>
-boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(IsogeometricPostUtility& rDummy,
-    const boost::python::list& list_physical_points,
+pybind11::list IsogeometricPostUtility_CreateConditionsByTriangulation(IsogeometricPostUtility& rDummy,
+    const pybind11::list& py_list_physical_points,
     const Vector& center, const Vector& normal, const Vector& t1, const Vector& t2,
-    const boost::python::list& list_local_points, const std::size_t& nrefine,
+    const pybind11::list& py_list_local_points, const std::size_t& nrefine,
     typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
     const std::string& sample_condition_name,
     const std::size_t& last_node_id, const std::size_t& last_condition_id,
@@ -267,30 +264,20 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(Isog
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
-    typedef boost::python::stl_input_iterator<array_1d<double, 3> > iterator_value_type;
-
     std::vector<TCoordinatesType> physical_points;
-    BOOST_FOREACH(const iterator_value_type::value_type& p,
-                std::make_pair(iterator_value_type(list_physical_points), // begin
-                iterator_value_type() ) ) // end
-    {
-        physical_points.push_back(p);
-    }
+    for (auto v : py_list_physical_points)
+        physical_points.push_back(v.cast<TCoordinatesType>());
 
     std::vector<TCoordinatesType> local_points;
-    BOOST_FOREACH(const iterator_value_type::value_type& p,
-                std::make_pair(iterator_value_type(list_local_points), // begin
-                iterator_value_type() ) ) // end
-    {
-        local_points.push_back(p);
-    }
+    for (auto v : py_list_local_points)
+        local_points.push_back(v.cast<TCoordinatesType>());
 
     std::size_t offset = last_node_id + 1;
     std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<std::size_t> > >
     points_and_connectivities = IsogeometricPostUtility::GenerateTriangleGrid(physical_points, center, normal, t1, t2, local_points, offset, nrefine);
 
-    boost::python::list new_nodes;
-    boost::python::list new_local_points;
+    pybind11::list new_nodes;
+    pybind11::list new_local_points;
     std::size_t starting_node_id = last_node_id + 1;
     for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
     {
@@ -314,7 +301,7 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(Isog
     ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
         points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
 
-    boost::python::list output;
+    pybind11::list output;
     output.append(new_local_points);
     output.append(new_nodes);
     output.append(pNewConditions);
@@ -322,7 +309,7 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(Isog
 }
 
 template<typename TCoordinatesType, typename TPatchType>
-boost::python::list IsogeometricPostUtility_CreateConditionsByQuadrilateralization(IsogeometricPostUtility& rDummy,
+pybind11::list IsogeometricPostUtility_CreateConditionsByQuadrilateralization(IsogeometricPostUtility& rDummy,
     const TCoordinatesType& p1, const TCoordinatesType& p2,
     const TCoordinatesType& p3, const TCoordinatesType& p4,
     const std::size_t& num_div_1, const std::size_t& num_div_2,
@@ -339,8 +326,8 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByQuadrilateralizati
     std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<std::size_t> > >
     points_and_connectivities = IsogeometricPostUtility::GenerateQuadGrid(p1, p2, p3, p4, starting_node_id, num_div_1, num_div_2);
 
-    boost::python::list new_nodes;
-    boost::python::list new_local_points;
+    pybind11::list new_nodes;
+    pybind11::list new_local_points;
     for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
     {
         new_local_points.append(points_and_connectivities.first[i]);
@@ -363,7 +350,7 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByQuadrilateralizati
     ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
         points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
 
-    boost::python::list output;
+    pybind11::list output;
     output.append(new_local_points);
     output.append(new_nodes);
     output.append(pNewConditions);
@@ -390,14 +377,14 @@ void BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& d
             r_clone_condition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey);
 }
 
-void BezierClassicalPostUtility_GenerateModelPart2WithCondition(BezierClassicalPostUtility& dummy, ModelPart::Pointer pModelPartPost)
+void BezierClassicalPostUtility_GenerateModelPart2WithCondition(BezierClassicalPostUtility& dummy, ModelPart& r_model_part_post)
 {
-    dummy.GenerateModelPart2(pModelPartPost, true);
+    dummy.GenerateModelPart2(r_model_part_post, true);
 }
 
-void BezierClassicalPostUtility_GenerateModelPart2(BezierClassicalPostUtility& dummy, ModelPart::Pointer pModelPartPost, const bool& generate_for_condition)
+void BezierClassicalPostUtility_GenerateModelPart2(BezierClassicalPostUtility& dummy, ModelPart& r_model_part_post, const bool& generate_for_condition)
 {
-    dummy.GenerateModelPart2(pModelPartPost, generate_for_condition);
+    dummy.GenerateModelPart2(r_model_part_post, generate_for_condition);
 }
 
 //////////////////////////////////////////////////////////
@@ -422,22 +409,24 @@ void BezierPostUtility_TransferVariablesToNodes_Elements(BezierPostUtility& rDum
 
 //////////////////////////////////////////////////////////
 
-void IsogeometricApplication_AddBackendUtilitiesToPython()
+void IsogeometricApplication_AddBackendUtilitiesToPython(pybind11::module& m)
 {
-    enum_<PostElementType>("PostElementType")
+    pybind11::enum_<PostElementType>(m, "PostElementType")
     .value("Triangle", _TRIANGLE_)
     .value("Quadrilateral", _QUADRILATERAL_)
     .value("Tetrahedra", _TETRAHEDRA_)
     .value("Hexahedra", _HEXAHEDRA_)
     ;
 
-    class_<BSplineUtils, BSplineUtils::Pointer, boost::noncopyable>("BSplineUtils", init<>())
+    pybind11::class_<BSplineUtils, BSplineUtils::Pointer>(m, "BSplineUtils")
+    .def(pybind11::init<>())
     .def("FindSpan", BSplineUtils_FindSpan)
     .def("BasisFuns", BSplineUtils_BasisFuns)
     .def("test_ComputeBsplinesKnotInsertionCoefficients1DLocal", &BSplineUtils::test_ComputeBsplinesKnotInsertionCoefficients1DLocal)
     ;
 
-    class_<BezierUtils, BezierUtils::Pointer, boost::noncopyable>("BezierUtils", init<>())
+    pybind11::class_<BezierUtils, BezierUtils::Pointer>(m, "BezierUtils")
+    .def(pybind11::init<>())
     .def("Bernstein", BezierUtils_Bernstein)
     .def("BernsteinDerivative", BezierUtils_Bernstein_der)
     .def("DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients", BezierUtils_DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients)
@@ -447,7 +436,8 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
 //    .def("bezier_extraction_tsplines_1d", &BezierUtils::bezier_extraction_tsplines_1d)
     ;
 
-    class_<IsogeometricPostUtility,IsogeometricPostUtility::Pointer, boost::noncopyable>("IsogeometricPostUtility", init<>())
+    pybind11::class_<IsogeometricPostUtility, IsogeometricPostUtility::Pointer>(m, "IsogeometricPostUtility")
+    .def(pybind11::init<>())
     .def("TransferElements", &IsogeometricPostUtility_TransferElements)
     .def("TransferConditions", &IsogeometricPostUtility_TransferConditions)
     .def("FindElements", &IsogeometricPostUtility_FindElements)
@@ -457,7 +447,8 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("CreateConditions", &IsogeometricPostUtility_CreateConditionsByQuadrilateralization<array_1d<double, 3>, Patch<3> >)
     ;
 
-    class_<BezierClassicalPostUtility, BezierClassicalPostUtility::Pointer, boost::noncopyable>("BezierClassicalPostUtility", init<ModelPart::Pointer>())
+    pybind11::class_<BezierClassicalPostUtility, BezierClassicalPostUtility::Pointer>(m, "BezierClassicalPostUtility")
+    .def(pybind11::init<ModelPart&>())
     .def("GenerateConditions", &BezierClassicalPostUtility_GenerateConditions)
     .def("GenerateModelPart", &BezierClassicalPostUtility::GenerateModelPart)
     .def("GenerateModelPart2", &BezierClassicalPostUtility_GenerateModelPart2WithCondition)
@@ -476,7 +467,8 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("GlobalNodalRenumbering", &BezierClassicalPostUtility::GlobalNodalRenumbering)
     ;
 
-    class_<BezierPostUtility, BezierPostUtility::Pointer, boost::noncopyable>("BezierPostUtility", init<>())
+    pybind11::class_<BezierPostUtility, BezierPostUtility::Pointer>(m, "BezierPostUtility")
+    .def(pybind11::init<>())
     .def("TransferNodalResults", &BezierPostUtility::TransferNodalResults<Variable<double> >)
     .def("TransferNodalResults", &BezierPostUtility::TransferNodalResults<Variable<Vector> >)
     .def("TransferNodalResults", &BezierPostUtility::TransferNodalResults<Variable<array_1d<double, 3> > >)
@@ -489,8 +481,9 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     ;
 
     #ifdef ISOGEOMETRIC_USE_HDF5
-    class_<HDF5PostUtility, HDF5PostUtility::Pointer, boost::noncopyable>("HDF5PostUtility", init<const std::string>())
-    .def(init<const std::string, const std::string>())
+    pybind11::class_<HDF5PostUtility, HDF5PostUtility::Pointer>(m, "HDF5PostUtility")
+    .def(pybind11::init<const std::string>())
+    .def(pybind11::init<const std::string, const std::string>())
     .def("WriteNodes", &HDF5PostUtility::WriteNodes)
     .def("WriteNodalResults", &HDF5PostUtility::WriteNodalResults<double>)
     .def("WriteNodalResults", &HDF5PostUtility::WriteNodalResults<array_1d<double, 3> >)
@@ -503,7 +496,8 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     ;
     #endif
 
-    class_<NURBSTestUtils, NURBSTestUtils::Pointer, boost::noncopyable>("NURBSTestUtils", init<>())
+    pybind11::class_<NURBSTestUtils, NURBSTestUtils::Pointer>(m, "NURBSTestUtils")
+    .def(pybind11::init<>())
     .def("Test1", &NURBSTestUtils::Test1)
     .def("Test2", &NURBSTestUtils::Test2)
     .def("ProbeGlobalCoordinates", &NURBSTestUtils_ProbeGlobalCoordinates2)
@@ -518,8 +512,8 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("DumpNodalValues", &NURBSTestUtils::DumpNodalValues<array_1d<double, 3> >)
     ;
 
-    class_<IsogeometricMergeUtility, IsogeometricMergeUtility::Pointer, boost::noncopyable>(
-        "IsogeometricMergeUtility", init<>())
+    pybind11::class_<IsogeometricMergeUtility, IsogeometricMergeUtility::Pointer>(m, "IsogeometricMergeUtility")
+    .def(pybind11::init<>())
     .def("Add", &IsogeometricMergeUtility::Add)
     .def("Export", &IsogeometricMergeUtility::Export)
     .def("DumpNodalVariablesList", &IsogeometricMergeUtility::DumpNodalVariablesList)
@@ -530,11 +524,11 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     /////////////////////////////////////////////////////////////////
 
     #ifdef ISOGEOMETRIC_USE_GISMO
-    class_<GismoMesh, GismoMesh::Pointer, boost::noncopyable>
-    ("GismoMesh", init<std::string>())
+    pybind11::class_<GismoMesh, GismoMesh::Pointer>(m, "GismoMesh")
+    .def(pybind11::init<std::string>())
     .def("SetEchoLevel", &GismoMesh::SetEchoLevel)
     .def("ReadMesh", &GismoMesh::ReadMesh)
-    .def(self_ns::str(self))
+    .def("__str__", &PrintObject<GismoMesh>)
     ;
     #endif
 

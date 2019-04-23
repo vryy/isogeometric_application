@@ -27,7 +27,7 @@ namespace Kratos
 class TSplinesPatchTSMImporter : public MultiPatchImporter<2>
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(TSplinesPatchTSMImporter);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TSplinesPatchTSMImporter);
 
     virtual Patch<2>::Pointer ImportSingle(const std::string& filename) const;
 

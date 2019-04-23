@@ -13,11 +13,10 @@
 #include <vector>
 #include <list>
 #include <tuple>
+#include <array>
+#include <memory>
 
 // External includes
-#include <boost/any.hpp>
-#include <boost/array.hpp>
-#include <boost/enable_shared_from_this.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -28,7 +27,7 @@
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/weighted_fespace.h"
 #include "custom_utilities/control_grid_utility.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application.h"
 
 #define CONVERT_INDEX_IGA_TO_KRATOS(n) (n+1)
 #define CONVERT_INDEX_KRATOS_TO_IGA(n) (n-1)
@@ -46,17 +45,17 @@ template<int TDim> class PatchInterface;
 This class represents an isogeometric patch in parametric coordinates. An isogeometric patch can be a NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
  */
 template<int TDim>
-class Patch : public boost::enable_shared_from_this<Patch<TDim> >
+class Patch : public std::enable_shared_from_this<Patch<TDim> >
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Patch);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(Patch);
 
     /// Type definition
     typedef ControlPoint<double> ControlPointType;
     typedef Transformation<double> TransformationType;
 
-    typedef std::map<std::string, boost::any> GridFunctionContainerType;
+    typedef std::map<std::string, Kratos::any> GridFunctionContainerType;
 
     typedef GridFunction<TDim, double> DoubleGridFunctionType;
     typedef std::vector<typename DoubleGridFunctionType::Pointer> DoubleGridFunctionContainerType;
@@ -275,11 +274,11 @@ public:
         {
             try
             {
-                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
+                GridFunctionPointerType pGridFunc = Kratos::any_cast<GridFunctionPointerType>(it->second);
                 if (pGridFunc->pControlGrid()->Name() == rVariable.Name())
                     return pGridFunc;
             }
-            catch (boost::bad_any_cast& e)
+            catch (Kratos::bad_any_cast& e)
             {
                 continue;
             }
@@ -299,11 +298,11 @@ public:
         {
             try
             {
-                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
+                GridFunctionPointerType pGridFunc = Kratos::any_cast<GridFunctionPointerType>(it->second);
                 if (pGridFunc->pControlGrid()->Name() == rVariable.Name())
                     return pGridFunc;
             }
-            catch (boost::bad_any_cast& e)
+            catch (Kratos::bad_any_cast& e)
             {
                 continue;
             }
@@ -800,7 +799,7 @@ private:
     typename FESpace<TDim>::Pointer mpFESpace;
 
     // container to contain all the grid functions
-    GridFunctionContainerType mpGridFunctions; // using boost::any to store pointer to grid function
+    GridFunctionContainerType mpGridFunctions; // using Kratos::any to store pointer to grid function
 
     /**
      * interface data
@@ -839,7 +838,7 @@ private:
         }
     }
 
-    /// Helper to extract the grid functions out from boost::any
+    /// Helper to extract the grid functions out from Kratos::any
     template<class TContainerType>
     TContainerType ExtractGridFunctions(const GridFunctionContainerType& pGridFunctions) const
     {
@@ -851,10 +850,10 @@ private:
         {
             try
             {
-                GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
+                GridFunctionPointerType pGridFunc = Kratos::any_cast<GridFunctionPointerType>(it->second);
                 GridFuncs.push_back(pGridFunc);
             }
-            catch (boost::bad_any_cast& e)
+            catch (Kratos::bad_any_cast& e)
             {
                 continue;
             }
@@ -896,7 +895,7 @@ class Patch<0>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Patch);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(Patch);
 
     // Type definitions
     typedef ControlPoint<double> ControlPointType;
@@ -1006,7 +1005,7 @@ class Patch<-1>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Patch);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(Patch);
 
     /// Default constructor
     Patch() : mId(0) {}
@@ -1094,7 +1093,7 @@ class Patch<-2>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(Patch);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(Patch);
 
     /// Default constructor
     Patch() : mId(0) {}

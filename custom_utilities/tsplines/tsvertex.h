@@ -49,7 +49,7 @@ public:
     static const int I_JOINT_UP_DOWN = 10;
 
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(TsVertex);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(TsVertex);
 
     /// Type definitions
     typedef Knot<double>::Pointer knot_t;

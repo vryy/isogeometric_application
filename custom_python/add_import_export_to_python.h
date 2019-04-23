@@ -21,8 +21,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <sstream>
 
 // External includes
-#include <boost/python.hpp>
-
 
 // Project includes
 #include "includes/define.h"

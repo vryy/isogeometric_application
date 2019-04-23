@@ -20,10 +20,10 @@ see isogeometric_application/LICENSE.txt
 
 
 // External includes
-#include <boost/python.hpp>
+#include <pybind11/pybind11.h>
 
 // Project includes
-#include "includes/define.h"
+
 
 namespace Kratos
 {
@@ -31,7 +31,7 @@ namespace Kratos
 namespace Python
 {
 
-void IsogeometricApplication_AddStrategiesToPython();
+void IsogeometricApplication_AddStrategiesToPython(pybind11::module& m);
 
 }  // namespace Python.
 

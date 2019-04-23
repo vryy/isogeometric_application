@@ -41,7 +41,7 @@ class HBSplinesFESpace : public PBBSplinesFESpace<TDim, HBSplinesBasisFunction<T
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(HBSplinesFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(HBSplinesFESpace);
 
     /// Type definition
     typedef PBBSplinesFESpace<TDim, HBSplinesBasisFunction<TDim>, BCellManager<TDim, typename HBSplinesBasisFunction<TDim>::CellType> > BaseType;
@@ -437,7 +437,7 @@ private:
     std::size_t mLastLevel;
     std::size_t mMaxLevel;
 
-    boost::array<knot_container_t, TDim> mKnotVectors;
+    std::array<knot_container_t, TDim> mKnotVectors;
 
     domain_container_t mSupportDomains; // this domain manager manages the support of all bfs in each level
 
@@ -452,7 +452,7 @@ class HBSplinesFESpace<0> : public FESpace<0>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(HBSplinesFESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(HBSplinesFESpace);
 
     /// Type definition
     typedef FESpace<0> BaseType;

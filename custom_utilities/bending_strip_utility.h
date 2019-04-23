@@ -30,7 +30,7 @@ class BendingStripUtility
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BendingStripUtility);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BendingStripUtility);
 
     /// Type definition
     typedef ControlPoint<double> ControlPointType;

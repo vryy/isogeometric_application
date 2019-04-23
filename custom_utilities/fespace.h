@@ -35,7 +35,7 @@ class FESpace
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(FESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(FESpace);
 
     /// Type definition
     typedef CellContainer cell_container_t;
@@ -415,7 +415,7 @@ class FESpace<0>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(FESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(FESpace);
 
     /// Default constructor
     FESpace() : mFunctionId(-1) {}
@@ -525,7 +525,7 @@ class FESpace<-1>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(FESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(FESpace);
 
     /// Default constructor
     FESpace() {}
@@ -602,7 +602,7 @@ class FESpace<-2>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(FESpace);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(FESpace);
 
     /// Default constructor
     FESpace() {}

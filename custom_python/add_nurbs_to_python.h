@@ -16,7 +16,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // System includes
 
 // External includes
-#include <boost/python.hpp>
+#include<pybind11/pybind11.h>
 
 // Project includes
 #include "includes/define.h"
@@ -35,13 +35,13 @@ namespace Python
 template<typename TDataType>
 struct ControlValue_Helper
 {
-    static boost::python::list GetValue(const TDataType& rValue)
+    static pybind11::list GetValue(const TDataType& rValue)
     {
-        boost::python::list dummy;
+        pybind11::list dummy;
         return dummy;
     }
 
-    static TDataType GetValue(boost::python::list rValue)
+    static TDataType GetValue(pybind11::list rValue)
     {
     }
 };
@@ -49,14 +49,14 @@ struct ControlValue_Helper
 template<>
 struct ControlValue_Helper<double>
 {
-    static boost::python::list GetValue(const double& rValue)
+    static pybind11::list GetValue(const double& rValue)
     {
-        boost::python::list v;
+        pybind11::list v;
         v.append(rValue);
         return v;
     }
 
-    static double GetValue(boost::python::list rValue)
+    static double GetValue(pybind11::list rValue)
     {
     }
 };
@@ -64,9 +64,9 @@ struct ControlValue_Helper<double>
 template<>
 struct ControlValue_Helper<ControlPoint<double> >
 {
-    static boost::python::list GetValue(const ControlPoint<double>& rValue)
+    static pybind11::list GetValue(const ControlPoint<double>& rValue)
     {
-        boost::python::list v;
+        pybind11::list v;
         v.append(rValue.WX());
         v.append(rValue.WY());
         v.append(rValue.WZ());
@@ -74,7 +74,7 @@ struct ControlValue_Helper<ControlPoint<double> >
         return v;
     }
 
-    static double GetValue(boost::python::list rValue)
+    static double GetValue(pybind11::list rValue)
     {
     }
 };
@@ -82,23 +82,23 @@ struct ControlValue_Helper<ControlPoint<double> >
 template<>
 struct ControlValue_Helper<array_1d<double, 3> >
 {
-    static boost::python::list GetValue(const array_1d<double, 3>& rValue)
+    static pybind11::list GetValue(const array_1d<double, 3>& rValue)
     {
-        boost::python::list v;
+        pybind11::list v;
         v.append(rValue[0]);
         v.append(rValue[1]);
         v.append(rValue[2]);
         return v;
     }
 
-    static double GetValue(boost::python::list rValue)
+    static double GetValue(pybind11::list rValue)
     {
     }
 };
 
 /////////////////////////////////////////////////
 
-void  IsogeometricApplication_AddNURBSToPython();
+void  IsogeometricApplication_AddNURBSToPython(pybind11::module& m);
 
 }  // namespace Python.
 

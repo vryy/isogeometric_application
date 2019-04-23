@@ -72,7 +72,7 @@ class BaseBCellManager : public CellContainer
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BaseBCellManager);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BaseBCellManager);
 
     /// Type definitions
     typedef CellContainer BaseType;
@@ -272,7 +272,7 @@ template<int TDim, class TCellType>
 class BCellManager : public BaseBCellManager<TCellType>
 {
 public:
-    KRATOS_CLASS_POINTER_DEFINITION(BCellManager);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BCellManager);
 };
 
 
@@ -284,7 +284,7 @@ class BCellManager<1, TCellType> : public BaseBCellManager<TCellType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BCellManager);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BCellManager);
 
     /// Type definitions
     typedef BaseBCellManager<TCellType> BaseType;
@@ -441,7 +441,7 @@ class BCellManager<2, TCellType> : public BaseBCellManager<TCellType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BCellManager);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BCellManager);
 
     /// Type definitions
     typedef BaseBCellManager<TCellType> BaseType;
@@ -600,7 +600,7 @@ class BCellManager<3, TCellType> : public BaseBCellManager<TCellType>
 {
 public:
     /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(BCellManager);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BCellManager);
 
     /// Type definitions
     typedef BaseBCellManager<TCellType> BaseType;

@@ -19,6 +19,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/isogeometric_math_utils.h"
 
 #define FUNCTIONALITY_CHECK // this macro is used to enable the compulsory functionality check of the program. If we are sure if it works, then we can disable it.
@@ -58,7 +59,7 @@ public:
     ///@{
 
     /// Pointer definition of BSplineUtils
-    KRATOS_CLASS_POINTER_DEFINITION(BSplineUtils);
+    ISOGEOMETRIC_CLASS_POINTER_DEFINITION(BSplineUtils);
 
     ///@}
     ///@name Life Cycle

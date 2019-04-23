@@ -48,7 +48,8 @@ public:
 /*    typedef typename TBasisFuncType::WeakPointer bf_wt;*/
     typedef typename Isogeometric_Pointer_Helper<TBasisFuncType>::Pointer bf_t;
     typedef typename Isogeometric_Pointer_Helper<TBasisFuncType>::WeakPointer bf_wt;
-    typedef std::set<bf_wt> bf_container_t;
+    struct bf_compare { bool operator() (const bf_wt& lhs, const bf_wt& rhs) const {bf_t lptr = lhs.lock(), rptr = rhs.lock(); return lptr->Id() < rptr->Id();} };
+    typedef std::set<bf_wt, bf_compare> bf_container_t;
     typedef typename bf_container_t::iterator bf_iterator;
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 

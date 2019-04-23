@@ -124,7 +124,6 @@ public:
         typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
-            std::cout << "Patch " << it->Id() << " is ACTIVE: " << it->Is(ACTIVE) << std::endl;
             if (!it->Is(ACTIVE))
                 continue;
 

@@ -28,7 +28,7 @@
 #include "custom_geometries/isogeometric_geometry.h"
 #include "isogeometric_application/isogeometric_application.h"
 
-#define ENABLE_PROFILING
+// #define ENABLE_PROFILING
 // #define DEBUG_GEN_ENTITY
 
 namespace Kratos
@@ -121,7 +121,7 @@ public:
         #ifdef ENABLE_PROFILING
         std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s" << std::endl;
         #else
-        std::cout << __FUNCTION__ << " completed" << std::endl;
+        // std::cout << __FUNCTION__ << " completed" << std::endl;
         #endif
     }
 
@@ -152,9 +152,9 @@ public:
         #ifdef ENABLE_PROFILING
         std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
         #else
-        std::cout << __FUNCTION__ << " completed, ";
+        // std::cout << __FUNCTION__ << " completed, ";
         #endif
-        std::cout << pNewElements.size() << " elements of type " << element_name << " are generated for patch " << pPatch->Id() << std::endl;
+        // std::cout << pNewElements.size() << " elements of type " << element_name << " are generated for patch " << pPatch->Id() << std::endl;
 
         return pNewElements;
     }
@@ -186,9 +186,9 @@ public:
         #ifdef ENABLE_PROFILING
         std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
         #else
-        std::cout << __FUNCTION__ << " completed, ";
+        // std::cout << __FUNCTION__ << " completed, ";
         #endif
-        std::cout << pNewConditions.size() << " conditions of type " << condition_name << " are generated for patch " << pPatch->Id() << std::endl;
+        // std::cout << pNewConditions.size() << " conditions of type " << condition_name << " are generated for patch " << pPatch->Id() << std::endl;
 
         return pNewConditions;
     }
@@ -238,9 +238,9 @@ public:
         #ifdef ENABLE_PROFILING
         std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
         #else
-        std::cout << __FUNCTION__ << " completed, ";
+        // std::cout << __FUNCTION__ << " completed, ";
         #endif
-        std::cout << pNewConditions.size() << " conditions of type " << condition_name << " are generated for patch " << pPatch->Id() << std::endl;
+        // std::cout << pNewConditions.size() << " conditions of type " << condition_name << " are generated for patch " << pPatch->Id() << std::endl;
 
         return pNewConditions;
     }
@@ -440,7 +440,9 @@ public:
             }
             catch (std::bad_cast& bc)
             {
+                #ifdef ENABLE_MORE_OUTPUT
                 std::cout << "WARNING: cell " << (*it_cell)->Id() << " cannot be casted to BCell" << std::endl;
+                #endif
             }
 
             try
@@ -455,7 +457,9 @@ public:
             }
             catch (std::bad_cast& bc)
             {
+                #ifdef ENABLE_MORE_OUTPUT
                 std::cout << "WARNING: cell " << (*it_cell)->Id() << " cannot be casted to TCell" << std::endl;
+                #endif
             }
             //////////
 
@@ -463,6 +467,7 @@ public:
             pNewElement->SetValue(HIERARCHICAL_LEVEL, (*it_cell)->Level());
             pNewElement->SetValue(CELL_INDEX, (*it_cell)->Id());
 
+            #ifdef ENABLE_MORE_OUTPUT
             std::cout << "Entity " << element_name << " " << pNewElement->Id() << " is created" << std::endl;
             std::cout << "  Connectivity:";
             for (unsigned int i = 0; i < p_temp_geometry->size(); ++i)
@@ -470,6 +475,7 @@ public:
                 std::cout << " " << (*p_temp_geometry)[i].Id();
             }
             std::cout << std::endl;
+            #endif
         }
 
         #ifdef ENABLE_PROFILING
@@ -515,6 +521,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchModelPa
 
 } // namespace Kratos.
 
+#undef ENABLE_MORE_OUTPUT
 #undef DEBUG_GEN_ENTITY
 #undef ENABLE_PROFILING
 

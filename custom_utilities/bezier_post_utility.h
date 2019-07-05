@@ -42,7 +42,7 @@
 //#define DEBUG_LEVEL2
 //#define DEBUG_MULTISOLVE
 //#define DEBUG_GENERATE_MESH
-#define ENABLE_PROFILING
+// #define ENABLE_PROFILING
 
 namespace Kratos
 {

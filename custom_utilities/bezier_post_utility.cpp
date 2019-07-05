@@ -90,7 +90,10 @@ namespace Kratos
                 }
             }
         }
+
+        #ifdef ENABLE_DEBUG
         KRATOS_WATCH(active_nodes.size())
+        #endif
 
         // assign each node an id. That id is the row of this node in the global L2 projection matrix
         std::size_t cnt = 0;
@@ -125,11 +128,13 @@ namespace Kratos
         std::vector<unsigned int> element_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
 
+        #ifdef ENABLE_DEBUG
         KRATOS_WATCH( number_of_threads )
         std::cout << "element_partition:";
         for (std::size_t i = 0; i < element_partition.size(); ++i)
             std::cout << " " << element_partition[i];
         std::cout << std::endl;
+        #endif
 
         //create the array of lock for matrix/vector assembly
         std::vector< omp_lock_t > lock_array(NumberOfNodes);
@@ -236,7 +241,9 @@ namespace Kratos
             r_node.GetSolutionStepValue(rThisVariable) = g(row);
         }
 
+        #ifdef ENABLE_DEBUG
         std::cout << "Transfer variable to node for " << rThisVariable.Name() << " completed" << std::endl;
+        #endif
     }
 
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
@@ -272,11 +279,14 @@ namespace Kratos
                 }
             }
         }
+
+        #ifdef ENABLE_DEBUG
         KRATOS_WATCH(active_nodes.size())
         // std::cout << "active_nodes:";
         // for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
         //     std::cout << " " << *it;
         // std::cout << std::endl;
+        #endif
 
         // assign each node an id. That id is the row of this node in the global L2 projection matrix
         std::size_t cnt = 0;
@@ -309,11 +319,13 @@ namespace Kratos
         std::vector<unsigned int> element_partition;
         OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
 
+        #ifdef ENABLE_DEBUG
         KRATOS_WATCH( number_of_threads )
         std::cout << "element_partition:";
         for (std::size_t i = 0; i < element_partition.size(); ++i)
             std::cout << " " << element_partition[i];
         std::cout << std::endl;
+        #endif
 
         // create a lock array for parallel matrix fill
         std::vector< omp_lock_t > lock_array(NumberOfNodes);
@@ -456,7 +468,9 @@ namespace Kratos
             r_node.GetSolutionStepValue(rThisVariable) = tmp;
         }
 
+        #ifdef ENABLE_DEBUG
         std::cout << "Transfer variable to node for " << rThisVariable.Name() << " completed" << std::endl;
+        #endif
     }
 
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,

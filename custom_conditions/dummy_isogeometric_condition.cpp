@@ -69,7 +69,7 @@ GeometryData::IntegrationMethod DummyIsogeometricCondition::GetIntegrationMethod
     return mThisIntegrationMethod;
 }
 
-void DummyIsogeometricCondition::Initialize()
+void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessInfo)
 {
     KRATOS_TRY
 

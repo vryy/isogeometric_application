@@ -489,6 +489,7 @@ public:
 
                             if(postElementType == _TETRAHEDRA_)
                             {
+                                // TODO: check if creating Tetrahedra is correct
                                 connectivities.push_back(std::vector<IndexType>{Node1, Node2, Node4});
                                 connectivities.push_back(std::vector<IndexType>{Node1, Node4, Node3});
                             }

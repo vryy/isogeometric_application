@@ -76,12 +76,28 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary(
 }
 
 template<int TDim>
+ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2(MultiPatchModelPart<TDim>& rDummy,
+    typename Patch<TDim-1>::Pointer pBoundaryPatch,
+    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+{
+    return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
+}
+
+template<int TDim>
 ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary(MultiMultiPatchModelPart<TDim>& rDummy,
     typename Patch<TDim>::Pointer pPatch, const int& iside,
     const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
+}
+
+template<int TDim>
+ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary2(MultiMultiPatchModelPart<TDim>& rDummy,
+    typename Patch<TDim-1>::Pointer pBoundaryPatch,
+    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+{
+    return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
 }
 
 ////////////////////////////////////////
@@ -128,6 +144,7 @@ void IsogeometricApplication_AddMeshToPython()
     ss << "NonConformingMultipatchLagrangeMesh" << TDim << "D";
     class_<NonConformingMultipatchLagrangeMesh<TDim>, typename NonConformingMultipatchLagrangeMesh<TDim>::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
+    .def("SetEchoLevel", &NonConformingMultipatchLagrangeMesh<TDim>::SetEchoLevel)
     .def("SetBaseElementName", &NonConformingMultipatchLagrangeMesh<TDim>::SetBaseElementName)
     .def("SetLastNodeId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastNodeId)
     .def("SetLastElemId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastElemId)
@@ -171,6 +188,7 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("AddElements", &MultiPatchModelPartType::AddElements)
     .def("AddConditions", &MultiPatchModelPart_AddConditions<TDim>)
     .def("AddConditions", &MultiPatchModelPart_AddConditions_OnBoundary<TDim>)
+    .def("AddConditions", &MultiPatchModelPart_AddConditions_OnBoundary2<TDim>)
     .def("EndModelPart", &MultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &MultiPatchModelPart_GetModelPart<MultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &MultiPatchModelPart_GetMultiPatch<MultiPatchModelPartType>, return_internal_reference<>())
@@ -194,6 +212,7 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("AddElements", &MultiMultiPatchModelPart_AddElements<MultiMultiPatchModelPartType>)
     .def("AddConditions", &MultiMultiPatchModelPart_AddConditions<MultiMultiPatchModelPartType>)
     .def("AddConditions", &MultiMultiPatchModelPart_AddConditions_OnBoundary<TDim>)
+    .def("AddConditions", &MultiMultiPatchModelPart_AddConditions_OnBoundary2<TDim>)
     .def("EndModelPart", &MultiMultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &MultiPatchModelPart_GetModelPart<MultiMultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &MultiPatchModelPart_GetMultiPatch2<MultiMultiPatchModelPartType>, return_internal_reference<>())
@@ -214,6 +233,7 @@ void IsogeometricApplication_AddMeshAndModelPartToPython()
     IsogeometricApplication_AddMeshToPython<2>();
     IsogeometricApplication_AddMeshToPython<3>();
 
+    IsogeometricApplication_AddModelPartToPython<1>();
     IsogeometricApplication_AddModelPartToPython<2>();
     IsogeometricApplication_AddModelPartToPython<3>();
 

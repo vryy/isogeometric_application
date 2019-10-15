@@ -222,7 +222,7 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatch(BSplines
 }
 
 template<int TDim>
-typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatch2(BSplinesPatchUtility& dummy,
+typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatchFromList(BSplinesPatchUtility& dummy,
         boost::python::list patch_list, const int& order)
 {
     std::vector<typename Patch<TDim-1>::Pointer> pPatches;
@@ -234,6 +234,7 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatch2(BSpline
     {
         pPatches.push_back(pPatch);
     }
+    KRATOS_WATCH(pPatches.size())
 
     return BSplinesPatchUtility::CreateConnectedPatch<TDim>(pPatches, order);
 }
@@ -574,12 +575,12 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     ("BSplinesPatchUtility", init<>())
     .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<2>)
     .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<3>)
-    .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch2<2>)
-    .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch2<3>)
+    .def("CreateConnectedPatchFromList2D", &BSplinesPatchUtility_CreateConnectedPatchFromList<2>)
+    .def("CreateConnectedPatchFromList3D", &BSplinesPatchUtility_CreateConnectedPatchFromList<3>)
     .def("CreatePatchFromGeo", &BSplinesPatchUtility_CreatePatchFromGeo)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface3D)
-    // .def("Reverse", &BSplinesPatchUtility_Reverse<1>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<1>)
     .def("Reverse", &BSplinesPatchUtility_Reverse<2>)
     .def("Reverse", &BSplinesPatchUtility_Reverse<3>)
     ;

@@ -104,7 +104,7 @@ public:
     virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
     {
         std::vector<double> values;
-        mpFESpace->GetValue(values, xi);
+        mpFESpace->GetValues(values, xi);
 
         double sum_value = 0.0;
         for (std::size_t j = 0; j < values.size(); ++j)
@@ -120,7 +120,7 @@ public:
     virtual void GetValue(std::vector<double>& new_values, const std::vector<double>& xi) const
     {
         std::vector<double> values;
-        mpFESpace->GetValue(values, xi);
+        mpFESpace->GetValues(values, xi);
 
         if (new_values.size() != values.size())
             new_values.resize(values.size());
@@ -141,7 +141,7 @@ public:
     {
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
-        mpFESpace->GetValueAndDerivative(values, dvalues, xi);
+        mpFESpace->GetValuesAndDerivatives(values, dvalues, xi);
 
         if (new_dvalues.size() != TDim)
             new_dvalues.resize(TDim);
@@ -169,7 +169,7 @@ public:
     {
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
-        mpFESpace->GetValueAndDerivative(values, dvalues, xi);
+        mpFESpace->GetValuesAndDerivatives(values, dvalues, xi);
 
         if (new_dvalues.size() != dvalues.size())
             new_dvalues.resize(dvalues.size());

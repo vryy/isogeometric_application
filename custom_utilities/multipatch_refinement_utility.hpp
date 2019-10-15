@@ -12,7 +12,7 @@
 // Project includes
 #include "custom_utilities/multipatch_refinement_utility.h"
 
-#define DEBUG_INS_KNOTS
+// #define DEBUG_INS_KNOTS
 
 namespace Kratos
 {

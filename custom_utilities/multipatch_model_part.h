@@ -119,7 +119,7 @@ public:
         }
 
         #ifdef ENABLE_PROFILING
-        std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s" << std::endl;
+        std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s" << std::endl;
         #else
         // std::cout << __FUNCTION__ << " completed" << std::endl;
         #endif
@@ -150,7 +150,7 @@ public:
         mpModelPart->Elements().Unique();
 
         #ifdef ENABLE_PROFILING
-        std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
+        std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
         #else
         // std::cout << __FUNCTION__ << " completed, ";
         #endif
@@ -184,7 +184,7 @@ public:
         mpModelPart->Conditions().Unique();
 
         #ifdef ENABLE_PROFILING
-        std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
+        std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
         #else
         // std::cout << __FUNCTION__ << " completed, ";
         #endif
@@ -199,12 +199,22 @@ public:
     {
         if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
 
+        // construct the boundary patch
+        typename Patch<TDim-1>::Pointer pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
+
+        return AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
+    }
+
+    /// create the conditions out from a boundary patch and add to the model_part
+    ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim-1>::Pointer pBoundaryPatch,
+            const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+    {
+        if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
+
         #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();
         #endif
 
-        // construct the boundary patch
-        typename Patch<TDim-1>::Pointer pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
         #ifdef DEBUG_GEN_ENTITY
         KRATOS_WATCH(*pBoundaryPatch)
         #endif
@@ -236,7 +246,7 @@ public:
         mpModelPart->Conditions().Unique();
 
         #ifdef ENABLE_PROFILING
-        std::cout << ">>> " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
+        std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, ";
         #else
         // std::cout << __FUNCTION__ << " completed, ";
         #endif
@@ -337,7 +347,7 @@ public:
         typename cell_container_t::Pointer pCellManager = pFESpace->ConstructCellManager();
 
         #ifdef ENABLE_PROFILING
-        std::cout << "  >> ConstructCellManager: " << OpenMPUtils::GetCurrentTime()-start << " s" << std::endl;
+        std::cout << "  ++ ConstructCellManager: " << OpenMPUtils::GetCurrentTime()-start << " s" << std::endl;
         start = OpenMPUtils::GetCurrentTime();
         #endif
 
@@ -479,7 +489,7 @@ public:
         }
 
         #ifdef ENABLE_PROFILING
-        std::cout << "  >> generate entities: " << OpenMPUtils::GetCurrentTime()-start << " s" << std::endl;
+        std::cout << "  ++ generate entities: " << OpenMPUtils::GetCurrentTime()-start << " s" << std::endl;
         start = OpenMPUtils::GetCurrentTime();
         #endif
 
@@ -494,9 +504,9 @@ public:
 
     virtual void PrintData(std::ostream& rOStream) const
     {
-        rOStream << ">>>ModelPart:" << std::endl;
+        rOStream << "+++ModelPart:" << std::endl;
         rOStream << *mpModelPart << std::endl;
-        rOStream << ">>>MultiPatch" << std::endl;
+        rOStream << "+++MultiPatch" << std::endl;
         rOStream << *mpMultiPatch << std::endl;
     }
 

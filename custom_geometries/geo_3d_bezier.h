@@ -1196,11 +1196,40 @@ public:
         {
             PointPointerType pPoint = PointPointerType(new PointType(0, 0.0, 0.0, 0.0));
             for(std::size_t j = 0; j < number_of_points; ++j)
-                noalias(*pPoint) += mExtractionOperator(j, i) * this->GetPoint(j) * mCtrlWeights[j] / bezier_weights[i];
+                noalias(*pPoint) += mExtractionOperator(j, i) * this->GetPoint(j).GetInitialPosition() * mCtrlWeights[j] / bezier_weights[i];
             pPoint->SetInitialPosition(*pPoint);
             pPoint->SetSolutionStepVariablesList(this->GetPoint(0).pGetVariablesList());
             pPoint->SetBufferSize(this->GetPoint(0).GetBufferSize());
             rPoints.push_back(pPoint);
+        }
+    }
+
+    /**
+     * Sampling the points on NURBS/Bezier geometry
+     */
+    virtual void ExtractPoints(PointsArrayType& rPoints, const std::vector<int>& sampling_size)
+    {
+        CoordinatesArrayType p_ref;
+        CoordinatesArrayType p;
+
+        // create and add nodes
+        typedef typename PointType::Pointer PointPointerType;
+        for(int i = 0; i <= sampling_size[0]; ++i)
+        {
+            p_ref[0] = ((double) i) / sampling_size[0];
+            for(int j = 0; j <= sampling_size[1]; ++j)
+            {
+                p_ref[1] = ((double) j) / sampling_size[1];
+                for(int k = 0; k <= sampling_size[2]; ++k)
+                {
+                    p_ref[2] = ((double) k) / sampling_size[2];
+                    p = BaseType::GlobalCoordinates0(p, p_ref);
+                    PointPointerType pPoint = PointPointerType(new PointType(0, p));
+                    pPoint->SetSolutionStepVariablesList(this->GetPoint(0).pGetVariablesList());
+                    pPoint->SetBufferSize(this->GetPoint(0).GetBufferSize());
+                    rPoints.push_back(pPoint);
+                }
+            }
         }
     }
 
@@ -1237,6 +1266,55 @@ public:
             rValues[i] = TDataType(0.0);
             for(std::size_t j = 0; j < number_of_points; ++j)
                 rValues[i] += mExtractionOperator(j, i) * this->GetPoint(j).GetSolutionStepValue(rVariable) * mCtrlWeights[j] / bezier_weights[i];
+        }
+    }
+
+    /**
+     * Sampling the values on NURBS/Bezier geometry
+     */
+    virtual void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size)
+    {
+        this->ExtractValues<double>(rVariable, rValues, sampling_size);
+    }
+
+    /**
+     * Sampling the values on NURBS/Bezier geometry
+     */
+    virtual void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size)
+    {
+        this->ExtractValues<array_1d<double, 3> >(rVariable, rValues, sampling_size);
+    }
+
+    template<typename TDataType>
+    void ExtractValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues, const std::vector<int>& sampling_size)
+    {
+        Vector shape_functions_values;
+
+        CoordinatesArrayType p_ref;
+        CoordinatesArrayType p;
+
+        typedef typename PointType::Pointer PointPointerType;
+        for(int i = 0; i <= sampling_size[0]; ++i)
+        {
+            p_ref[0] = ((double) i) / sampling_size[0];
+            for(int j = 0; j <= sampling_size[1]; ++j)
+            {
+                p_ref[1] = ((double) j) / sampling_size[1];
+                for(int k = 0; k <= sampling_size[2]; ++k)
+                {
+                    p_ref[2] = ((double) k) / sampling_size[2];
+
+                    ShapeFunctionsValues(shape_functions_values, p_ref);
+
+                    TDataType rResult = shape_functions_values( 0 ) * this->GetPoint( 0 ).GetSolutionStepValue(rVariable);
+                    for ( IndexType i = 1 ; i < this->size() ; ++i )
+                    {
+                        rResult += shape_functions_values( i ) * this->GetPoint( i ).GetSolutionStepValue(rVariable);
+                    }
+
+                    rValues.push_back(rResult);
+                }
+            }
         }
     }
 

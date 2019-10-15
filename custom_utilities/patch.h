@@ -910,7 +910,7 @@ public:
     virtual ~Patch() {}
 
     /// Set the FESpace for the patch
-    void SetFESpace(typename FESpace<0>::Pointer pFESpace) {}
+    void SetFESpace(typename FESpace<0>::Pointer pFESpace) {mpFESpace = pFESpace;}
 
     /// Get the number of basis functions defined over the patch
     virtual const std::size_t TotalNumber() const
@@ -948,12 +948,24 @@ public:
         return NULL;
     }
 
+    /// Get the control point grid function
+    GridFunction<0, ControlPointType>& ControlPointGridFunction() {return *mpControlPointGridFunc;}
+
+    /// Get the control point grid function
+    const GridFunction<0, ControlPointType>& ControlPointGridFunction() const {return *mpControlPointGridFunc;}
+
     /// Create and add the grid function
     template<typename TDataType>
     typename GridFunction<0, TDataType>::Pointer CreateGridFunction(typename ControlGrid<TDataType>::Pointer pControlGrid)
     {
         return NULL;
     }
+
+    /// Get the FESpace pointer
+    typename FESpace<0>::Pointer pFESpace() {return mpFESpace;}
+
+    /// Get the FESpace pointer
+    typename FESpace<0>::ConstPointer pFESpace() const {return mpFESpace;}
 
     /// Compare between two patches in terms of parametric information and grid function data, including the control points.
     bool IsSame(const Patch<0>& rOtherPatch) const
@@ -989,6 +1001,11 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
     }
+
+private:
+
+    typename GridFunction<0, ControlPointType>::Pointer mpControlPointGridFunc;
+    typename FESpace<0>::Pointer mpFESpace;
 };
 
 /**

@@ -177,6 +177,13 @@ public:
     typedef typename BaseType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
 
     /**
+     * A third order tensor to hold shape functions' local second derivatives.
+     * ShapefunctionsLocalGradients function return this
+     * type as its result.
+     */
+    typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
+    /**
      * Type of the normal vector used for normal to edges in geomety.
      */
     typedef typename BaseType::NormalType NormalType;
@@ -385,6 +392,16 @@ public:
     /**
      * Informations
      */
+
+    virtual GeometryData::KratosGeometryFamily GetGeometryFamily()
+    {
+        return GeometryData::Kratos_NURBS;
+    }
+
+    virtual GeometryData::KratosGeometryType GetGeometryType()
+    {
+        return GeometryData::Kratos_Bezier1D;
+    }
 
     /**
      * This method calculates and returns Length or charactereistic
@@ -831,7 +848,7 @@ public:
      * @param rPoint the given point in local coordinates at which the
      * value of the shape function is calculated
      */
-    virtual VectorType& ShapeFunctionValues( VectorType& rResults,
+    virtual VectorType& ShapeFunctionsValues( VectorType& rResults,
             const CoordinatesArrayType& rPoint ) const
     {
         //compute all Bezier shape functions & derivatives at rPoint
@@ -939,6 +956,178 @@ public:
         KRATOS_THROW_ERROR( std::logic_error, "This method is not implemented." , __FUNCTION__);
 
         return rResult;
+    }
+
+    /**
+     * Compute shape function second derivatives at a particular reference point. This function is kept to keep the backward compatibility.
+     */
+    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const
+    {
+        #ifdef DEBUG_LEVEL3
+        std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;
+        #endif
+
+        //compute all univariate Bezier shape functions & derivatives at rPoint
+        VectorType bezier_functions_values(mNumber);
+        VectorType bezier_functions_derivatives(mNumber);
+        VectorType bezier_functions_second_derivatives(mNumber);
+        BezierUtils::bernstein(bezier_functions_values,
+                               bezier_functions_derivatives,
+                               bezier_functions_second_derivatives,
+                               mOrder,
+                               rCoordinates[0]);
+
+        //compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+        double denom = inner_prod(bezier_functions_values, bezier_weights);
+
+        //compute the shape function local second gradients
+        rResults.resize(this->PointsNumber(), false);
+        double aux = inner_prod(bezier_functions_derivatives, bezier_weights);
+        double auxs = inner_prod(bezier_functions_second_derivatives, bezier_weights);
+        VectorType tmp_gradients =
+            prod(mExtractionOperator,
+                    (1 / denom) * bezier_functions_second_derivatives
+                    - (aux / pow(denom, 2)) * bezier_functions_derivatives * 2
+                    - (auxs / pow(denom, 2)) * bezier_functions_values
+                    + 2.0 * pow(aux, 2) / pow(denom, 3) * bezier_functions_values
+            );
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
+        {
+            rResults[i].resize(1, 1, false);
+            rResults[i](0, 0) = tmp_gradients(i) * mCtrlWeights(i);
+        }
+
+        return rResults;
+    }
+
+    /**
+     * Compute the Bezier control points
+     */
+    virtual void ExtractControlPoints(PointsArrayType& rPoints)
+    {
+        std::size_t number_of_points = this->PointsNumber();
+        std::size_t number_of_local_points = mNumber;
+        rPoints.clear();
+        rPoints.reserve(number_of_local_points);
+
+        // compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+
+        // compute the Bezier control points
+        typedef typename PointType::Pointer PointPointerType;
+        for(std::size_t i = 0; i < number_of_local_points; ++i)
+        {
+            PointPointerType pPoint = PointPointerType(new PointType(0, 0.0, 0.0, 0.0));
+            for(std::size_t j = 0; j < number_of_points; ++j)
+                noalias(*pPoint) += mExtractionOperator(j, i) * this->GetPoint(j).GetInitialPosition() * mCtrlWeights[j] / bezier_weights[i];
+            pPoint->SetInitialPosition(*pPoint);
+            pPoint->SetSolutionStepVariablesList(this->GetPoint(0).pGetVariablesList());
+            pPoint->SetBufferSize(this->GetPoint(0).GetBufferSize());
+            rPoints.push_back(pPoint);
+        }
+    }
+
+    /**
+     * Sampling the points on NURBS/Bezier geometry
+     */
+    virtual void ExtractPoints(PointsArrayType& rPoints, const std::vector<int>& sampling_size)
+    {
+        CoordinatesArrayType p_ref;
+        CoordinatesArrayType p;
+
+        // create and add nodes
+        p_ref[1] = 0.0;
+        p_ref[2] = 0.0;
+        typedef typename PointType::Pointer PointPointerType;
+        for(int i = 0; i <= sampling_size[0]; ++i)
+        {
+            p_ref[0] = ((double) i) / sampling_size[0];
+            p = BaseType::GlobalCoordinates0(p, p_ref);
+            PointPointerType pPoint = PointPointerType(new PointType(0, p));
+            pPoint->SetSolutionStepVariablesList(this->GetPoint(0).pGetVariablesList());
+            pPoint->SetBufferSize(this->GetPoint(0).GetBufferSize());
+            rPoints.push_back(pPoint);
+        }
+    }
+
+    /**
+     * Extract the control values from NURBS/Bezier geometry
+     */
+    virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues)
+    {
+        this->ExtractControlValues<double>(rVariable, rValues);
+    }
+
+    /**
+     * Extract the control values from NURBS/Bezier geometry
+     */
+    virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues)
+    {
+        this->ExtractControlValues<array_1d<double, 3> >(rVariable, rValues);
+    }
+
+    template<typename TDataType>
+    void ExtractControlValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues)
+    {
+        std::size_t number_of_points = this->PointsNumber();
+        std::size_t number_of_local_points = mNumber;
+        if (rValues.size() != number_of_local_points)
+            rValues.resize(number_of_local_points);
+
+        // compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+
+        // compute the Bezier control points
+        for(std::size_t i = 0; i < number_of_local_points; ++i)
+        {
+            rValues[i] = TDataType(0.0);
+            for(std::size_t j = 0; j < number_of_points; ++j)
+                rValues[i] += mExtractionOperator(j, i) * this->GetPoint(j).GetSolutionStepValue(rVariable) * mCtrlWeights[j] / bezier_weights[i];
+        }
+    }
+
+    /**
+     * Sampling the values on NURBS/Bezier geometry
+     */
+    virtual void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size)
+    {
+        this->ExtractValues<double>(rVariable, rValues, sampling_size);
+    }
+
+    /**
+     * Sampling the values on NURBS/Bezier geometry
+     */
+    virtual void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size)
+    {
+        this->ExtractValues<array_1d<double, 3> >(rVariable, rValues, sampling_size);
+    }
+
+    template<typename TDataType>
+    void ExtractValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues, const std::vector<int>& sampling_size)
+    {
+        Vector shape_functions_values;
+
+        CoordinatesArrayType p_ref;
+        CoordinatesArrayType p;
+
+        p_ref[1] = 0.0;
+        p_ref[2] = 0.0;
+        typedef typename PointType::Pointer PointPointerType;
+        for(int i = 0; i <= sampling_size[0]; ++i)
+        {
+            p_ref[0] = ((double) i) / sampling_size[0];
+
+            ShapeFunctionsValues(shape_functions_values, p_ref);
+
+            TDataType rResult = shape_functions_values( 0 ) * this->GetPoint( 0 ).GetSolutionStepValue(rVariable);
+            for ( IndexType i = 1 ; i < this->size() ; ++i )
+            {
+                rResult += shape_functions_values( i ) * this->GetPoint( i ).GetSolutionStepValue(rVariable);
+            }
+
+            rValues.push_back(rResult);
+        }
     }
 
     /**

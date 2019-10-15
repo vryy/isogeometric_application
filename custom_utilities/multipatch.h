@@ -260,6 +260,7 @@ public:
     /// Enumerate all the patches, starting at 0
     std::size_t Enumerate()
     {
+        this->ResetFunctionIndices();
         return this->Enumerate(0);
     }
 

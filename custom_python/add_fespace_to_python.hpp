@@ -64,7 +64,7 @@ boost::python::list FESpace_GetValue(FESpace<TDim>& rDummy, boost::python::list 
         xi.push_back(v);
     }
 
-    std::vector<double> values = rDummy.GetValue(xi);
+    std::vector<double> values = rDummy.GetValues(xi);
 
     boost::python::list values_list;
     for (std::size_t i = 0; i < values.size(); ++i)

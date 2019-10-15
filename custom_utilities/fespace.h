@@ -97,13 +97,13 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /// Get the values of the basis function i at point xi
+    /// Get the value of the basis function i at point xi
     virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
-    /// Get the values of the basis function i at point xi
+    /// Get the value of the basis function i at point xi
     double GetValue(const std::size_t& i, const std::vector<double>& xi) const
     {
         double v;
@@ -112,48 +112,48 @@ public:
     }
 
     /// Get the values of the basis functions at point xi
-    virtual void GetValue(std::vector<double>& values, const std::vector<double>& xi) const
+    virtual void GetValues(std::vector<double>& values, const std::vector<double>& xi) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Get the values of the basis functions at point xi
-    std::vector<double> GetValue(const std::vector<double>& xi) const
+    std::vector<double> GetValues(const std::vector<double>& xi) const
     {
         std::vector<double> values;
-        this->GetValue(values, xi);
+        this->GetValues(values, xi);
         return values;
     }
 
     ///////////////
 
-    /// Get the derivatives of the basis function i at point xi
+    /// Get the derivative of the basis function i at point xi
     virtual void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Get the derivatives of the basis function i at point xi
-    std::vector<double> GetDerivative(const std::size_t& i, const std::vector<double>& xi) const
+    std::vector<double> GetDerivatives(const std::size_t& i, const std::vector<double>& xi) const
     {
         std::vector<double> values;
-        this->GetDerivative(values, i, xi);
+        this->GetDerivatives(values, i, xi);
         return values;
     }
 
     /// Get the derivatives of the basis functions at point xi
     /// the output values has the form of values[func_index][dim_index]
-    virtual void GetDerivative(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    virtual void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
 
     /// Get the derivatives of the basis functions at point xi
     /// the return values has the form of values[func_index][dim_index]
-    std::vector<std::vector<double> > GetDerivative(const std::vector<double>& xi) const
+    std::vector<std::vector<double> > GetDerivatives(const std::vector<double>& xi) const
     {
         std::vector<std::vector<double> > values;
-        this->GetDerivative(values);
+        this->GetDerivatives(values);
         return values;
     }
 
@@ -161,7 +161,7 @@ public:
 
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
-    virtual void GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+    virtual void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }
@@ -417,6 +417,9 @@ public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
 
+    /// Type definition
+    typedef CellContainer cell_container_t;
+
     /// Default constructor
     FESpace() : mFunctionId(-1) {}
 
@@ -453,6 +456,12 @@ public:
         return true;
     }
 
+    /// Return the local id of a given global id
+    std::size_t LocalId(const std::size_t& global_id) const
+    {
+        return 0;
+    }
+
     /// Reset all the dof numbers for each grid function to -1
     virtual void ResetFunctionIndices()
     {
@@ -464,6 +473,12 @@ public:
     {
         assert(func_indices.size() == 1);
         mFunctionId = func_indices[0];
+    }
+
+    /// Create the cell manager for all the cells in the support domain of the FESpace
+    virtual cell_container_t::Pointer ConstructCellManager() const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "ConstructCellManager is not supported for FESpace<0>", __FUNCTION__)
     }
 
     /// Get the vector of function indices

@@ -104,7 +104,7 @@ public:
     virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
     {
         std::vector<double> values;
-        mpFESpace->GetValue(values, xi);
+        mpFESpace->GetValues(values, xi);
 
         double sum_value = 0.0;
         for (std::size_t j = 0; j < values.size(); ++j)
@@ -117,10 +117,10 @@ public:
     }
 
     /// Get the values of the basis functions at point xi
-    virtual void GetValue(std::vector<double>& new_values, const std::vector<double>& xi) const
+    virtual void GetValues(std::vector<double>& new_values, const std::vector<double>& xi) const
     {
         std::vector<double> values;
-        mpFESpace->GetValue(values, xi);
+        mpFESpace->GetValues(values, xi);
 
         if (new_values.size() != values.size())
             new_values.resize(values.size());
@@ -141,7 +141,7 @@ public:
     {
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
-        mpFESpace->GetValueAndDerivative(values, dvalues, xi);
+        mpFESpace->GetValuesAndDerivatives(values, dvalues, xi);
 
         if (new_dvalues.size() != TDim)
             new_dvalues.resize(TDim);
@@ -165,11 +165,11 @@ public:
 
     /// Get the derivatives of the basis functions at point xi
     /// the output values has the form of values[func_index][dim_index]
-    virtual void GetDerivative(std::vector<std::vector<double> >& new_dvalues, const std::vector<double>& xi) const
+    virtual void GetDerivatives(std::vector<std::vector<double> >& new_dvalues, const std::vector<double>& xi) const
     {
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
-        mpFESpace->GetValueAndDerivative(values, dvalues, xi);
+        mpFESpace->GetValuesAndDerivatives(values, dvalues, xi);
 
         if (new_dvalues.size() != dvalues.size())
             new_dvalues.resize(dvalues.size());

@@ -40,7 +40,7 @@ struct GridFunction_Helper
         std::vector<double> f_values;
         std::vector<double> xin(xi.size());
         std::copy(xi.begin(), xi.end(), xin.begin());
-        rFESpace.GetValue(f_values, xin);
+        rFESpace.GetValues(f_values, xin);
 
         // then interpolate the value at local coordinates using the control values
         v = f_values[0] * r_control_grid.GetData(0);
@@ -56,7 +56,7 @@ struct GridFunction_Helper
 
         // firstly get the values and derivatives of all the basis functions
         std::vector<std::vector<double> > f_derivatives;
-        rFESpace.GetDerivative(f_derivatives, xin);
+        rFESpace.GetDerivatives(f_derivatives, xin);
 
         // rFESpace.PrintInfo(std::cout); std::cout << std::endl;
 
@@ -94,7 +94,7 @@ struct GridFunction_Helper<TDim, TDataType, std::vector<double> >
     {
         // firstly get the values of all the basis functions
         std::vector<double> f_values;
-        rFESpace.GetValue(f_values, xi);
+        rFESpace.GetValues(f_values, xi);
 
         // then interpolate the value at local coordinates using the control values
         v = f_values[0] * r_control_grid.GetData(0);
@@ -107,7 +107,7 @@ struct GridFunction_Helper<TDim, TDataType, std::vector<double> >
     {
         // firstly get the values and derivatives of all the basis functions
         std::vector<std::vector<double> > f_derivatives;
-        rFESpace.GetDerivative(f_derivatives, xi);
+        rFESpace.GetDerivatives(f_derivatives, xi);
 
         // rFESpace.PrintInfo(std::cout); std::cout << std::endl;
 

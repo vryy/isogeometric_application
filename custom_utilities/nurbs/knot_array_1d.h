@@ -131,7 +131,7 @@ public:
     }
 
     /// Create a clone of this knot vector
-    KnotArray1D<TDataType> Clone(const BoundaryDirection& dir) const
+    KnotArray1D<TDataType> Clone(const BoundaryDirection& dir = _FORWARD_) const
     {
         KnotArray1D<TDataType> kvec;
 

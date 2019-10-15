@@ -448,4 +448,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesPatchUtil
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BSPLINES_INDEXING_UTILITY_H_INCLUDED defined
-

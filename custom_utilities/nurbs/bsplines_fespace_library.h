@@ -54,14 +54,23 @@ public:
     }
 
     /// Create the uniform open knot vector with order p and n basis functions
-    static knot_container_t CreateUniformOpenKnotVector(const std::size_t& number, const std::size_t& order)
+    /// Note that number must be >= order+1
+    static knot_container_t CreateUniformOpenKnotVector(const std::size_t& number, const std::size_t& order, const bool& throw_error = true)
     {
         knot_container_t knot_vector;
         for (std::size_t i = 0; i < order+1; ++i)
             knot_vector.pCreateKnot(0.0);
-        std::size_t m = number - order;
-        for (std::size_t i = 0; i < m-1; ++i)
-            knot_vector.pCreateKnot(((double)(i+1))/m);
+        if (number >= order+1)
+        {
+            std::size_t m = number - order;
+            for (std::size_t i = 0; i < m-1; ++i)
+                knot_vector.pCreateKnot(((double)(i+1))/m);
+        }
+        else
+        {
+            if (throw_error)
+                KRATOS_THROW_ERROR(std::logic_error, "number < order+1", "")
+        }
         for (std::size_t i = 0; i < order+1; ++i)
             knot_vector.pCreateKnot(1.0);
         return knot_vector;

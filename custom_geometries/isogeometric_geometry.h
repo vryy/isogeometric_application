@@ -489,9 +489,9 @@ public:
     }
 
     /**
-     * Compute the global coordinates in "[TODO]" configuration
+     * Compute the global coordinates in reference configuration
      */
-    virtual CoordinatesArrayType& GlobalCoordinates( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
+    virtual CoordinatesArrayType& GlobalCoordinates0( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
     {
         noalias( rResult ) = ZeroVector( 3 );
 
@@ -501,7 +501,7 @@ public:
 
         for ( IndexType i = 0 ; i < this->size() ; ++i )
         {
-            noalias( rResult ) += shape_functions_values( i ) * this->GetPoint( i );
+            noalias( rResult ) += shape_functions_values( i ) * this->GetPoint( i ).GetInitialPosition();
         }
 
         return rResult;
@@ -516,6 +516,14 @@ public:
     }
 
     /**
+     * Sampling the points on NURBS/Bezier geometry
+     */
+    virtual void ExtractPoints(PointsArrayType& rPoints, const std::vector<int>& sampling_size)
+    {
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+    }
+
+    /**
      * Extract the control values from NURBS/Bezier geometry
      */
     virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues)
@@ -524,9 +532,25 @@ public:
     }
 
     /**
+     * Sampling the values on NURBS/Bezier geometry
+     */
+    virtual void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size)
+    {
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+    }
+
+    /**
      * Extract the control values from NURBS/Bezier geometry
      */
     virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues)
+    {
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+    }
+
+    /**
+     * Sampling the values on NURBS/Bezier geometry
+     */
+    virtual void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size)
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
     }

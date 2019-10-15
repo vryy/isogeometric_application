@@ -48,10 +48,18 @@ public:
     typedef std::size_t IndexType;
 
     /// Default constructor
-    NonConformingMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch) : mpMultiPatch(pMultiPatch) {}
+    NonConformingMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch)
+    : mpMultiPatch(pMultiPatch), mEchoLevel(1)
+    {}
 
     /// Destructor
     virtual ~NonConformingMultipatchLagrangeMesh() {}
+
+    /// Set the echo level
+    void SetEchoLevel(const int& level)
+    {
+        mEchoLevel = level;
+    }
 
     /// Set the division for all the patches the same number of division in each dimension
     /// Note that if the division is changed, the post_model_part must be generated again
@@ -63,13 +71,15 @@ public:
             for (IndexType dim = 0; dim < TDim; ++dim)
                 mNumDivision[it->Id()][dim] = num_division;
         }
-
     }
 
     /// Set the division for the patch at specific dimension
     /// Note that if the division is changed, the post_model_part must be generated again
     void SetDivision(const std::size_t& patch_id, const int& dim, const IndexType& num_division)
     {
+        if (dim >= TDim)
+            KRATOS_THROW_ERROR(std::logic_error, "The dimension is invalid", "")
+
         if (mpMultiPatch->Patches().find(patch_id) == mpMultiPatch->end())
         {
             std::stringstream ss;
@@ -95,7 +105,8 @@ public:
     /// Append to model_part, the quad/hex element from patches
     void WriteModelPart(ModelPart& r_model_part) const
     {
-        std::cout << "invoking " << __FUNCTION__ << std::endl;
+        if (mEchoLevel > 0)
+            std::cout << "invoking NonConformingMultipatchLagrangeMesh::" << __FUNCTION__ << std::endl;
 
         // get the sample element
         std::string element_name = mBaseElementName;
@@ -127,6 +138,9 @@ public:
             if (!it->Is(ACTIVE))
                 continue;
 
+            if (mEchoLevel > 1)
+                std::cout << "Elements will be created on patch " << it->Id() << std::endl;
+
             // create new properties and add to model_part
             // Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));
             Properties::Pointer pNewProperties = Properties::Pointer(new Properties(it->Id()));
@@ -144,10 +158,9 @@ public:
 
                 IndexType NumDivision1 = it_num->second[0];
                 IndexType NumDivision2 = it_num->second[1];
-                #ifdef DEBUG_MESH_GENERATION
-                KRATOS_WATCH(NumDivision1)
-                KRATOS_WATCH(NumDivision2)
-                #endif
+                if (mEchoLevel > 1)
+                    std::cout << "Divisioning for patch " << it->Id() << ": " << NumDivision1
+                              << " " << NumDivision2 << std::endl;
 
                 std::vector<array_1d<double, 3> > corners(4);
 
@@ -166,11 +179,9 @@ public:
                 IndexType NumDivision1 = it_num->second[0];
                 IndexType NumDivision2 = it_num->second[1];
                 IndexType NumDivision3 = it_num->second[2];
-                #ifdef DEBUG_MESH_GENERATION
-                KRATOS_WATCH(NumDivision1)
-                KRATOS_WATCH(NumDivision2)
-                KRATOS_WATCH(NumDivision3)
-                #endif
+                if (mEchoLevel > 1)
+                    std::cout << "Divisioning for patch " << it->Id() << ": " << NumDivision1
+                              << " " << NumDivision2 << " " << NumDivision3 << std::endl;
 
                 std::vector<array_1d<double, 3> > corners(8);
 
@@ -193,19 +204,20 @@ public:
             for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
             {
                 r_model_part.AddElement(*it2);
-                #ifdef DEBUG_MESH_GENERATION
-                std::cout << "Element " << (*it2)->Id() << " is created with connectivity:";
-                for (std::size_t n = 0; n < (*it2)->GetGeometry().size(); ++n)
-                    std::cout << " " << (*it2)->GetGeometry()[n].Id();
-                std::cout << std::endl;
-                #endif
+                if (mEchoLevel > 2)
+                {
+                    std::cout << "Element " << (*it2)->Id() << " is created with connectivity:";
+                    for (std::size_t n = 0; n < (*it2)->GetGeometry().size(); ++n)
+                        std::cout << " " << (*it2)->GetGeometry()[n].Id();
+                    std::cout << std::endl;
+                }
             }
-
-            // create and add conditions on the boundary
-            // TODO
 
             // just to make sure everything is organized properly
             r_model_part.Elements().Unique();
+
+            // create and add conditions on the boundary
+            // TODO
         }
     }
 
@@ -230,6 +242,7 @@ private:
     IndexType mLastElemId;
     IndexType mLastPropId;
 
+    int mEchoLevel;
 };
 
 /// output stream function

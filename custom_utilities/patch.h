@@ -87,14 +87,14 @@ public:
 
     /// Constructor with id
     Patch(const std::size_t& Id)
-    : IndexedObject(Id), mpFESpace(NULL), mPrefix("Patch")
+    : IndexedObject(Id), mpFESpace(NULL), mPrefix("Patch"), mLayerIndex(Id)
     {
         this->Set(ACTIVE, true);
     }
 
     /// Constructor with id and FESpace
     Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
-    : IndexedObject(Id), mpFESpace(pFESpace), mPrefix("Patch")
+    : IndexedObject(Id), mpFESpace(pFESpace), mPrefix("Patch"), mLayerIndex(Id)
     {
         this->Set(ACTIVE, true);
         if (mpFESpace == NULL)
@@ -122,6 +122,12 @@ public:
 
     /// Set the prefix for the patch
     void SetPrefix(const std::string& prefix) {mPrefix = prefix;}
+
+    /// Set the layer index
+    void SetLayerIndex(const int& Index) {mLayerIndex = Index;}
+
+    /// Get the layer index
+    const int& LayerIndex() {return mLayerIndex;}
 
     /// Get the prefix of the patch
     const std::string& Prefix() const {return mPrefix;}
@@ -793,6 +799,7 @@ public:
 private:
 
     std::string mPrefix;
+    int mLayerIndex;
 
     // FESpace contains the shape function information and various information with regards to the functional space.
     // Because the control point grid is in homogeneous coordinates, the FESpace shall be an unweighted spaces

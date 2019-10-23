@@ -70,6 +70,18 @@ void Patch_SetPrefix(TPatchType& rDummy, const std::string& Prefix)
 }
 
 template<class TPatchType>
+int Patch_GetLayerIndex(TPatchType& rDummy)
+{
+    return rDummy.LayerIndex();
+}
+
+template<class TPatchType>
+void Patch_SetLayerIndex(TPatchType& rDummy, const int& Index)
+{
+    rDummy.SetLayerIndex(Index);
+}
+
+template<class TPatchType>
 typename TPatchType::FESpaceType::Pointer Patch_pFESpace(TPatchType& rDummy)
 {
     return rDummy.pFESpace();
@@ -248,6 +260,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     (ss.str().c_str(), init<const std::size_t&, typename FESpace<TDim>::Pointer>())
     .add_property("Id", &Patch_GetId<Patch<TDim> >, &Patch_SetId<Patch<TDim> >)
     .add_property("Prefix", &Patch_GetPrefix<Patch<TDim> >, &Patch_SetPrefix<Patch<TDim> >)
+    .add_property("LayerIndex", &Patch_GetLayerIndex<Patch<TDim> >, &Patch_SetLayerIndex<Patch<TDim> >)
     .def("WorkingSpaceDimension", &Patch<TDim>::WorkingSpaceDimension)
     .def("Name", &Patch<TDim>::Name)
     .def("CreateControlPointGridFunction", &Patch<TDim>::CreateControlPointGridFunction)

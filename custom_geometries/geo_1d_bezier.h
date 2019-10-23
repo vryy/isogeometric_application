@@ -924,7 +924,7 @@ public:
             shape_functions_values(i) *= (mCtrlWeights(i) / denom);
 
         //compute the shape function local gradients
-        shape_functions_local_gradients.resize(this->PointsNumber(), 1);
+        shape_functions_local_gradients.resize(this->PointsNumber(), 1, false);
         double tmp = inner_prod(bezier_functions_derivatives, bezier_weights);
         VectorType tmp_gradients =
             prod(

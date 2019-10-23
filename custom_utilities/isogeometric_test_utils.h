@@ -6,8 +6,8 @@
 //
 //
 
-#if !defined(KRATOS_NURBS_TEST_UTILS_H_INCLUDED )
-#define  KRATOS_NURBS_TEST_UTILS_H_INCLUDED
+#if !defined(KRATOS_ISOGEOMETRIC_TEST_UTILS_H_INCLUDED )
+#define  KRATOS_ISOGEOMETRIC_TEST_UTILS_H_INCLUDED
 
 // System includes
 #include <string>
@@ -49,7 +49,7 @@ namespace Kratos
 /// Short class definition.
 /** Detail class definition.
  */
-class NURBSTestUtils
+class IsogeometricTestUtils
 {
 public:
     ///@name Type Definitions
@@ -60,25 +60,25 @@ public:
 
     typedef ModelPart::NodesContainerType NodesArrayType;
 
-    typedef ModelPart::ElementsContainerType ElementsArrayType;
+    typedef ModelPart::ElementsContainerType ElementsContainerType;
 
     typedef typename Element::GeometryType GeometryType;
 
     typedef typename Element::GeometryType::PointType::CoordinatesArrayType CoordinatesArrayType;
 
-    /// Pointer definition of NURBSTestUtils
-    KRATOS_CLASS_POINTER_DEFINITION(NURBSTestUtils);
+    /// Pointer definition of IsogeometricTestUtils
+    KRATOS_CLASS_POINTER_DEFINITION(IsogeometricTestUtils);
 
     ///@}
     ///@name Life Cycle
     ///@{
 
     /// Default constructor.
-    NURBSTestUtils()
+    IsogeometricTestUtils()
     {}
 
     /// Destructor.
-    virtual ~NURBSTestUtils()
+    virtual ~IsogeometricTestUtils()
     {
     }
 
@@ -90,9 +90,12 @@ public:
     ///@name Operations
     ///@{
 
-    void Test1(ModelPart& r_model_part, int NumTestPoints)
+    void Test1(ModelPart& r_model_part, std::size_t NumTestPoints)
     {
-        ElementsArrayType& pElements = r_model_part.Elements();
+        std::cout << std::setprecision(10);
+
+        ElementsContainerType& pElements = r_model_part.Elements();
+        Element::Pointer pElement = (*(pElements.ptr_begin()));
 
         std::vector<CoordinatesArrayType> Points;
         for(unsigned int i = 0; i < NumTestPoints + 1; ++i)
@@ -103,18 +106,23 @@ public:
             Point(2) = 0.0;
             Points.push_back(Point);
         }
+        KRATOS_WATCH(Points.size())
 
-        int NumberOfNodes = (*(pElements.ptr_begin()))->GetGeometry().size();
+        std::cout << "List of test points:" << std::endl;
+        for (unsigned int j = 0; j < Points.size(); j++)
+            std::cout << "xi[" << j  << "] = " << Points[j] << std::endl;
 
-        std::cout << "Inspecting shape function values at points" << std::endl;
+        int NumberOfNodes = pElement->GetGeometry().size();
+
+        std::cout << "Inspecting shape function values at test points" << std::endl;
         Matrix Results(NumberOfNodes, Points.size());
-        for(unsigned int i = 0; i < NumberOfNodes; ++i)
+        for(unsigned int i = 0; i < Points.size(); ++i)
         {
-            std::cout << "N[" << i << "](...) = ( ";
-            for (unsigned int j = 0; j < Points.size(); j++)
+            std::cout << "N(xi[" << i << "])(...) = (";
+            for(unsigned int j = 0; j < NumberOfNodes; ++j)
             {
-                Results(i, j) = (*(pElements.ptr_begin()))->GetGeometry().ShapeFunctionValue(i, Points[j]);
-                std::cout << Results(i, j) << " ";
+                double temp = pElement->GetGeometry().ShapeFunctionValue(j, Points[i]);
+                std::cout << temp << " ";
             }
             std::cout << ")" << std::endl;
         }
@@ -126,7 +134,7 @@ public:
         Probe(1) = 0.0;
         Probe(2) = 0.0;
         Matrix temp;
-        temp = (*(pElements.ptr_begin()))->GetGeometry().ShapeFunctionsLocalGradients(temp, Probe);
+        temp = pElement->GetGeometry().ShapeFunctionsLocalGradients(temp, Probe);
 
         CoordinatesArrayType Probe1;
         Probe1(0) = 0.5 + 1e-6;
@@ -134,19 +142,29 @@ public:
         Probe1(2) = 0.0;
 
         int node = 2;
-        std::cout << "Inspecting derivative at node 2:" << std::endl;
-        double v1 = (*(pElements.ptr_begin()))->GetGeometry().ShapeFunctionValue(node, Probe);
-        double v2 = (*(pElements.ptr_begin()))->GetGeometry().ShapeFunctionValue(node, Probe1);
+        std::cout << "Inspecting derivative at node #" << node << ":" << std::endl;
+        double v1 = pElement->GetGeometry().ShapeFunctionValue(node, Probe);
+        double v2 = pElement->GetGeometry().ShapeFunctionValue(node, Probe1);
         std::cout << "exact derivative = " << temp(2, 0) << std::endl;
         std::cout << "approximate derivative = " << (v2 - v1) / 1e-6 << std::endl;
         std::cout << "------------------------------------------" << std::endl;
 
-        std::cout << "Inspecting shape function derivatives at points" << std::endl;
+        std::cout << "Inspecting shape function derivatives at test points" << std::endl;
         for(unsigned int i = 0; i < Points.size(); ++i)
         {
             std::cout << "dN(xi[" << i << "])(...) = ";
             Matrix temp;
-            temp = (*(pElements.ptr_begin()))->GetGeometry().ShapeFunctionsLocalGradients(temp, Points[i]);
+            temp = pElement->GetGeometry().ShapeFunctionsLocalGradients(temp, Points[i]);
+            std::cout << temp << std::endl;
+        }
+        std::cout << "------------------------------------------" << std::endl;
+
+        std::cout << "Inspecting shape function second derivatives at test points" << std::endl;
+        for(unsigned int i = 0; i < Points.size(); ++i)
+        {
+            std::cout << "d2N(xi[" << i << "])(...) = ";
+            GeometryType::ShapeFunctionsSecondDerivativesType temp;
+            temp = pElement->GetGeometry().ShapeFunctionsSecondDerivatives(temp, Points[i]);
             std::cout << temp << std::endl;
         }
         std::cout << "------------------------------------------" << std::endl;
@@ -157,10 +175,44 @@ public:
         for (unsigned int i = 0; i < Points.size(); ++i)
         {
             CoordinatesArrayType p;
-            p = (*(pElements.ptr_begin()))->GetGeometry().GlobalCoordinates(p, Points[i]);
+            p = pElement->GetGeometry().GlobalCoordinates(p, Points[i]);
 
             std::cout << "Global coordinate at " << Points[i] << ": " << p << std::endl;
             LogFile << p[0] << " " << p[1] << " " << p[2] << std::endl;
+        }
+        LogFile.close();
+        std::cout << "------------------------------------------" << std::endl;
+
+        std::cout << "Calculating Jacobian along the curve" << std::endl;
+        LogFile.open("curve_data.txt", std::ofstream::out | std::ofstream::app);
+        Matrix N;
+        for (unsigned int i = 0; i < Points.size(); ++i)
+        {
+            N = pElement->GetGeometry().ShapeFunctionsLocalGradients(temp, Points[i]);
+            CoordinatesArrayType t;
+            noalias(t) = ZeroVector(3);
+            for(unsigned int j = 0; j < NumberOfNodes; ++j)
+                noalias(t) += N(j, 0)*pElement->GetGeometry()[j].GetInitialPosition();
+
+            std::cout << "Tangent at " << Points[i] << ": " << t << std::endl;
+            LogFile << t[0] << " " << t[1] << " " << t[2] << std::endl;
+        }
+        LogFile.close();
+        std::cout << "------------------------------------------" << std::endl;
+
+        std::cout << "Calculating Hessian along the curve" << std::endl;
+        LogFile.open("curve_data.txt", std::ofstream::out | std::ofstream::app);
+        GeometryType::ShapeFunctionsSecondDerivativesType H;
+        for (unsigned int i = 0; i < Points.size(); ++i)
+        {
+            H = pElement->GetGeometry().ShapeFunctionsSecondDerivatives(H, Points[i]);
+            CoordinatesArrayType h;
+            noalias(h) = ZeroVector(3);
+            for(unsigned int j = 0; j < NumberOfNodes; ++j)
+                noalias(h) += H[j](0, 0)*pElement->GetGeometry()[j].GetInitialPosition();
+
+            std::cout << "Hessian at " << Points[i] << ": " << h << std::endl;
+            LogFile << h[0] << " " << h[1] << " " << h[2] << std::endl;
         }
         LogFile.close();
         std::cout << "------------------------------------------" << std::endl;
@@ -171,7 +223,7 @@ public:
 //        for (unsigned int i = 0; i < Points.size(); ++i)
 //        {
 //            CoordinatesArrayType p;
-//            p = (*(pElements.ptr_begin()))->GetGeometry().GlobalCoordinates(p, Points[i]);
+//            p = pElement->GetGeometry().GlobalCoordinates(p, Points[i]);
 //        }
 //        std::cout << "Calculating time = "<< OpenMPUtils::GetCurrentTime() - start << std::endl;
 
@@ -179,11 +231,12 @@ public:
 
     void Test2(ModelPart& r_model_part)
     {
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
+        Element::Pointer pElement = (*(pElements.ptr_begin()));
 
         std::cout << "Inspecting all integration points:" << std::endl;
         const GeometryType::IntegrationPointsArrayType& integration_points =
-        (*(pElements.ptr_begin()))->GetGeometry().IntegrationPoints( (GeometryData::IntegrationMethod)0 );
+        pElement->GetGeometry().IntegrationPoints( (GeometryData::IntegrationMethod)0 );
 
         for (unsigned int i = 0; i < integration_points.size(); ++i)
         {
@@ -192,12 +245,12 @@ public:
         std::cout << "------------------------------------------" << std::endl;
 
         std::cout << "Inspecting all shape function values at all integration points:" << std::endl;
-        const Matrix& Ncontainer = (*(pElements.ptr_begin()))->GetGeometry().ShapeFunctionsValues( (GeometryData::IntegrationMethod)0 );
+        const Matrix& Ncontainer = pElement->GetGeometry().ShapeFunctionsValues( (GeometryData::IntegrationMethod)0 );
         KRATOS_WATCH(Ncontainer)
         std::cout << "------------------------------------------" << std::endl;
 
         std::cout << "Inspecting all shape function local gradients at all integration points:" << std::endl;
-        const GeometryType::ShapeFunctionsGradientsType& DN_De = (*(pElements.ptr_begin()))->GetGeometry().ShapeFunctionsLocalGradients( (GeometryData::IntegrationMethod)0 );
+        const GeometryType::ShapeFunctionsGradientsType& DN_De = pElement->GetGeometry().ShapeFunctionsLocalGradients( (GeometryData::IntegrationMethod)0 );
         for (unsigned int i = 0; i < DN_De.size(); ++i)
         {
             KRATOS_WATCH(DN_De[i])
@@ -295,14 +348,14 @@ public:
     virtual std::string Info() const
     {
         std::stringstream buffer;
-        buffer << "NURBSTestUtils";
+        buffer << "IsogeometricTestUtils";
         return buffer.str();
     }
 
     /// Print information about this object.
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "NURBSTestUtils";
+        rOStream << "IsogeometricTestUtils";
     }
 
     /// Print object's data.
@@ -374,19 +427,19 @@ private:
     ///@{
 
     /// Assignment operator.
-    NURBSTestUtils& operator=(NURBSTestUtils const& rOther)
+    IsogeometricTestUtils& operator=(IsogeometricTestUtils const& rOther)
     {
         return *this;
     }
 
     /// Copy constructor.
-    NURBSTestUtils(NURBSTestUtils const& rOther)
+    IsogeometricTestUtils(IsogeometricTestUtils const& rOther)
     {
     }
 
     ///@}
 
-}; // Class NURBSTestUtils
+}; // Class IsogeometricTestUtils
 
 ///@}
 
@@ -398,14 +451,14 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream& operator >>(std::istream& rIStream, NURBSTestUtils& rThis)
+inline std::istream& operator >>(std::istream& rIStream, IsogeometricTestUtils& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const NURBSTestUtils& rThis)
+        const IsogeometricTestUtils& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -419,4 +472,4 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 }// namespace Kratos.
 
-#endif // KRATOS_BSPLINE_UTILS_H_INCLUDED  defined
+#endif // KRATOS_ISOGEOMETRIC_TEST_UTILS_H_INCLUDED  defined

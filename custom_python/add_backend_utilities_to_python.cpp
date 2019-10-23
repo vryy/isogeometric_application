@@ -28,7 +28,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/isogeometric_post_utility.h"
 #include "custom_utilities/bezier_classical_post_utility.h"
 #include "custom_utilities/bezier_post_utility.h"
-#include "custom_utilities/nurbs_test_utils.h"
+#include "custom_utilities/isogeometric_test_utils.h"
 #include "custom_utilities/bezier_test_utils.h"
 #include "custom_utilities/isogeometric_merge_utility.h"
 
@@ -111,8 +111,8 @@ void BezierUtils_ComputeCentroid(
     dummy.ComputeCentroid<T>(pElem, P);
 }
 
-void NURBSTestUtils_ProbeGlobalCoordinates2(
-    NURBSTestUtils& dummy,
+void IsogeometricTestUtils_ProbeGlobalCoordinates2(
+    IsogeometricTestUtils& dummy,
     Element::Pointer& pElement,
     double X,
     double Y
@@ -121,8 +121,8 @@ void NURBSTestUtils_ProbeGlobalCoordinates2(
     dummy.ProbeGlobalCoordinates(pElement, X, Y);
 }
 
-void NURBSTestUtils_ProbeGlobalCoordinates3(
-    NURBSTestUtils& dummy,
+void IsogeometricTestUtils_ProbeGlobalCoordinates3(
+    IsogeometricTestUtils& dummy,
     Element::Pointer& pElement,
     double X,
     double Y,
@@ -132,8 +132,8 @@ void NURBSTestUtils_ProbeGlobalCoordinates3(
     dummy.ProbeGlobalCoordinates(pElement, X, Y, Z);
 }
 
-void NURBSTestUtils_ProbeShapeFunctionValues2(
-    NURBSTestUtils& dummy,
+void IsogeometricTestUtils_ProbeShapeFunctionValues2(
+    IsogeometricTestUtils& dummy,
     Element::Pointer& pElement,
     double X,
     double Y
@@ -142,8 +142,8 @@ void NURBSTestUtils_ProbeShapeFunctionValues2(
     dummy.ProbeShapeFunctionValues(pElement, X, Y);
 }
 
-void NURBSTestUtils_ProbeShapeFunctionValues3(
-    NURBSTestUtils& dummy,
+void IsogeometricTestUtils_ProbeShapeFunctionValues3(
+    IsogeometricTestUtils& dummy,
     Element::Pointer& pElement,
     double X,
     double Y,
@@ -153,8 +153,8 @@ void NURBSTestUtils_ProbeShapeFunctionValues3(
     dummy.ProbeShapeFunctionValues(pElement, X, Y, Z);
 }
 
-void NURBSTestUtils_ProbeShapeFunctionDerivatives2(
-    NURBSTestUtils& dummy,
+void IsogeometricTestUtils_ProbeShapeFunctionDerivatives2(
+    IsogeometricTestUtils& dummy,
     Element::Pointer& pElement,
     double X,
     double Y
@@ -163,8 +163,8 @@ void NURBSTestUtils_ProbeShapeFunctionDerivatives2(
     dummy.ProbeShapeFunctionDerivatives(pElement, X, Y);
 }
 
-void NURBSTestUtils_ProbeShapeFunctionDerivatives3(
-    NURBSTestUtils& dummy,
+void IsogeometricTestUtils_ProbeShapeFunctionDerivatives3(
+    IsogeometricTestUtils& dummy,
     Element::Pointer& pElement,
     double X,
     double Y,
@@ -174,8 +174,8 @@ void NURBSTestUtils_ProbeShapeFunctionDerivatives3(
     dummy.ProbeShapeFunctionDerivatives(pElement, X, Y, Z);
 }
 
-void NURBSTestUtils_ProbeJacobian2(
-    NURBSTestUtils& dummy,
+void IsogeometricTestUtils_ProbeJacobian2(
+    IsogeometricTestUtils& dummy,
     Element::Pointer& pElement,
     double X,
     double Y
@@ -184,8 +184,8 @@ void NURBSTestUtils_ProbeJacobian2(
     dummy.ProbeJacobian(pElement, X, Y);
 }
 
-void NURBSTestUtils_ProbeJacobian3(
-    NURBSTestUtils& dummy,
+void IsogeometricTestUtils_ProbeJacobian3(
+    IsogeometricTestUtils& dummy,
     Element::Pointer& pElement,
     double X,
     double Y,
@@ -524,19 +524,19 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     ;
     #endif
 
-    class_<NURBSTestUtils, NURBSTestUtils::Pointer, boost::noncopyable>("NURBSTestUtils", init<>())
-    .def("Test1", &NURBSTestUtils::Test1)
-    .def("Test2", &NURBSTestUtils::Test2)
-    .def("ProbeGlobalCoordinates", &NURBSTestUtils_ProbeGlobalCoordinates2)
-    .def("ProbeGlobalCoordinates", &NURBSTestUtils_ProbeGlobalCoordinates3)
-    .def("ProbeShapeFunctionValues", &NURBSTestUtils_ProbeShapeFunctionValues2)
-    .def("ProbeShapeFunctionValues", &NURBSTestUtils_ProbeShapeFunctionValues3)
-    .def("ProbeShapeFunctionDerivatives", &NURBSTestUtils_ProbeShapeFunctionDerivatives2)
-    .def("ProbeShapeFunctionDerivatives", &NURBSTestUtils_ProbeShapeFunctionDerivatives3)
-    .def("ProbeJacobian", &NURBSTestUtils_ProbeJacobian2)
-    .def("ProbeJacobian", &NURBSTestUtils_ProbeJacobian3)
-    .def("DumpNodalValues", &NURBSTestUtils::DumpNodalValues<double>)
-    .def("DumpNodalValues", &NURBSTestUtils::DumpNodalValues<array_1d<double, 3> >)
+    class_<IsogeometricTestUtils, IsogeometricTestUtils::Pointer, boost::noncopyable>("IsogeometricTestUtils", init<>())
+    .def("Test1", &IsogeometricTestUtils::Test1)
+    .def("Test2", &IsogeometricTestUtils::Test2)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates2)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates3)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues2)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues3)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives2)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives3)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian2)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian3)
+    .def("DumpNodalValues", &IsogeometricTestUtils::DumpNodalValues<double>)
+    .def("DumpNodalValues", &IsogeometricTestUtils::DumpNodalValues<array_1d<double, 3> >)
     ;
 
     class_<IsogeometricMergeUtility, IsogeometricMergeUtility::Pointer, boost::noncopyable>(

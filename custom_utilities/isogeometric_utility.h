@@ -43,6 +43,19 @@ public:
     /// Destructor
     virtual ~IsogeometricUtility() {}
 
+    /// Get the integration method from the integration order
+    static GeometryData::IntegrationMethod GetIntegrationMethod(const int& integration_order)
+    {
+        if (integration_order == 1)
+            return GeometryData::GI_GAUSS_1;
+        else if (integration_order == 2)
+            return GeometryData::GI_GAUSS_2;
+        else if (integration_order == 3)
+            return GeometryData::GI_GAUSS_3;
+        else
+            KRATOS_THROW_ERROR(std::logic_error, "Invalid integration order", integration_order)
+    }
+
     /// Get the last node id of the model part
     static std::size_t GetLastNodeId(ModelPart& r_model_part)
     {

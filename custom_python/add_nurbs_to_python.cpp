@@ -26,12 +26,14 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/patch_interface.h"
+#include "custom_utilities/isogeometric_utility.h"
 #include "custom_utilities/nurbs/domain_manager.h"
 #include "custom_utilities/nurbs/domain_manager_2d.h"
 #include "custom_utilities/nurbs/structured_control_grid.h"
 #include "custom_utilities/nurbs/bsplines_fespace.h"
 #include "custom_utilities/nurbs/bsplines_fespace_library.h"
 #include "custom_utilities/nurbs/bending_strip_nurbs_patch.h"
+#include "custom_utilities/nurbs/nurbs_test_utils.h"
 #include "custom_python/iga_define_python.h"
 #include "custom_python/add_nurbs_to_python.h"
 
@@ -165,6 +167,16 @@ bool DomainManager2D_IsInside(DomainManager2D& rDummy, const double& x1, const d
     box[3] = y2;
 
     return rDummy.IsInside(box);
+}
+
+//////////////////////////////////////////////////
+
+template<int TDim>
+void NURBSTestUtils_ProbeAndTestValuesOnPatch(NURBSTestUtils<TDim>& dummy, typename Patch<TDim>::Pointer pPatch,
+    ModelPart::ConditionsContainerType& rConditions, const int& integration_order, const double& tol)
+{
+    GeometryData::IntegrationMethod integration_method = IsogeometricUtility::GetIntegrationMethod(integration_order);
+    dummy.ProbeAndTestValuesOnPatch(pPatch, rConditions, integration_method, tol);
 }
 
 //////////////////////////////////////////////////
@@ -469,6 +481,22 @@ void IsogeometricApplication_AddBendingStripNURBSToPython()
 
 //////////////////////////////////////////////////
 
+template<int TDim>
+void IsogeometricApplication_AddNURBSTestUtilsToPython()
+{
+    std::stringstream ss;
+
+    ss.str(std::string());
+    ss << "NURBSTestUtils" << TDim << "D";
+    class_<NURBSTestUtils<TDim>, typename NURBSTestUtils<TDim>::Pointer, boost::noncopyable>
+    (ss.str().c_str(), init<>())
+    .def("ProbeAndTestValuesOnPatch", &NURBSTestUtils_ProbeAndTestValuesOnPatch<TDim>)
+    .def(self_ns::str(self))
+    ;
+}
+
+//////////////////////////////////////////////////
+
 void IsogeometricApplication_AddNURBSToPython()
 {
     /////////////////////////////////////////////////////////////////
@@ -521,6 +549,14 @@ void IsogeometricApplication_AddNURBSToPython()
 
     IsogeometricApplication_AddBendingStripNURBSToPython<2>();
     IsogeometricApplication_AddBendingStripNURBSToPython<3>();
+
+    /////////////////////////////////////////////////////////////////
+    ///////////////////////NURBS Tets Utils//////////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    IsogeometricApplication_AddNURBSTestUtilsToPython<1>();
+    // IsogeometricApplication_AddNURBSTestUtilsToPython<2>();
+    // IsogeometricApplication_AddNURBSTestUtilsToPython<3>();
 
 }
 

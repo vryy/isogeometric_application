@@ -31,7 +31,7 @@ namespace Kratos
 /**
 This class is the same as NonConformingMultipatchLagrangeMesh in the sense that the generated meshes are not conformed at the patch boundary.
 This class improves over NonConformingMultipatchLagrangeMesh by allowing transfer selected variables from user, instead of transferring all.
-In addition, transfer the variables from other multipatch is possible providing that the other multipatch has the same number of patches. The results can 
+In addition, transfer the variables from other multipatch is possible providing that the other multipatch has the same number of patches. The results can
 be messy, if user does not control the input multipatch. It is better that the multipatches from mixed interpolation used to transfer the values.
  */
 template<int TDim>
@@ -383,7 +383,7 @@ public:
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "NonConformingVariableMultipatchLagrangeMesh";
+        rOStream << "NonConformingVariableMultipatchLagrangeMesh<" << TDim << ">";
     }
 
     virtual void PrintData(std::ostream& rOStream) const

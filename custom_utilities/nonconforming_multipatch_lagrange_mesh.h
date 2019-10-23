@@ -99,9 +99,6 @@ public:
     /// Set the last element index
     void SetLastElemId(const IndexType& lastElemId) {mLastElemId = lastElemId;}
 
-    /// Set the last properties index
-    void SetLastPropId(const IndexType& lastPropId) {mLastPropId = lastPropId;}
-
     /// Append to model_part, the quad/hex element from patches
     void WriteModelPart(ModelPart& r_model_part) const
     {
@@ -130,8 +127,6 @@ public:
         // generate nodes and elements for each patch
         IndexType NodeCounter = mLastNodeId;
         IndexType ElementCounter = mLastElemId;
-        // IndexType PropertiesCounter = mLastPropId;
-        std::vector<double> p_ref(TDim);
         typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
@@ -142,9 +137,15 @@ public:
                 std::cout << "Elements will be created on patch " << it->Id() << std::endl;
 
             // create new properties and add to model_part
-            // Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));
-            Properties::Pointer pNewProperties = Properties::Pointer(new Properties(it->Id()));
-            r_model_part.AddProperties(pNewProperties);
+            if (it->LayerIndex() < 0)
+            {
+                KRATOS_WATCH(it->LayerIndex())
+                KRATOS_WATCH(it->Id())
+                KRATOS_WATCH(it->Prefix())
+                KRATOS_THROW_ERROR(std::logic_error, "Invalid layer index", it->LayerIndex())
+            }
+            Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->LayerIndex());
+            // Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->Id());
 
             // generate the connectivities
             std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities;
@@ -224,7 +225,7 @@ public:
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "NonConformingMultipatchLagrangeMesh";
+        rOStream << "NonConformingMultipatchLagrangeMesh<" << TDim << ">";
     }
 
     virtual void PrintData(std::ostream& rOStream) const
@@ -240,7 +241,6 @@ private:
     std::string mBaseElementName;
     IndexType mLastNodeId;
     IndexType mLastElemId;
-    IndexType mLastPropId;
 
     int mEchoLevel;
 };

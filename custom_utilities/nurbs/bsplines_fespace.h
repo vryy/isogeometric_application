@@ -182,14 +182,14 @@ public:
     /// Get the values of the basis function i at point xi
     virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
     {
-        // TODO the current approach is expensive (all is computed). Find the way to optimize it.
+        // TODO the current approach is expensive (all is computed). We have to find the way to optimize it.
         std::vector<double> values;
-        this->GetValue(values, xi);
+        this->GetValues(values, xi);
         v = values[i];
     }
 
     /// Get the values of the basis functions at point xi
-    virtual void GetValue(std::vector<double>& values, const std::vector<double>& xi) const
+    virtual void GetValues(std::vector<double>& values, const std::vector<double>& xi) const
     {
         // TODO
         KRATOS_THROW_ERROR(std::logic_error, "GetValue is not implemented for dimension", TDim)
@@ -200,20 +200,20 @@ public:
     {
         // TODO the current approach is expensive (all is computed). Find the way to optimize it.
         std::vector<std::vector<double> > tmp;
-        this->GetDerivative(tmp, xi);
+        this->GetDerivatives(tmp, xi);
         values = tmp[i];
     }
 
     /// Get the derivatives of the basis functions at point xi
-    virtual void GetDerivative(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    virtual void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
     {
         std::vector<double> dummy;
-        this->GetValueAndDerivative(dummy, values, xi);
+        this->GetValuesAndDerivatives(dummy, values, xi);
     }
 
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
-    virtual void GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+    virtual void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "GetValueAndDerivative is not implemented for dimension", TDim)
     }

@@ -19,7 +19,7 @@ namespace Kratos
 {
 
 template<>
-void BSplinesFESpace<1>::GetValue(std::vector<double>& values, const std::vector<double>& xi) const
+void BSplinesFESpace<1>::GetValues(std::vector<double>& values, const std::vector<double>& xi) const
 {
     // initialize the shape functions
     if (values.size() != this->TotalNumber())
@@ -55,7 +55,7 @@ void BSplinesFESpace<1>::GetValue(std::vector<double>& values, const std::vector
 }
 
 template<>
-void BSplinesFESpace<1>::GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+void BSplinesFESpace<1>::GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
 {
     // initialize the shape functions and derivatives
     if (values.size() != this->TotalNumber())
@@ -115,7 +115,7 @@ void BSplinesFESpace<1>::GetValueAndDerivative(std::vector<double>& values, std:
 }
 
 template<>
-void BSplinesFESpace<2>::GetValue(std::vector<double>& values, const std::vector<double>& xi) const
+void BSplinesFESpace<2>::GetValues(std::vector<double>& values, const std::vector<double>& xi) const
 {
     // inititialize the shape functions
     if (values.size() != this->TotalNumber())
@@ -160,7 +160,7 @@ void BSplinesFESpace<2>::GetValue(std::vector<double>& values, const std::vector
 }
 
 template<>
-void BSplinesFESpace<2>::GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+void BSplinesFESpace<2>::GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
 {
     // initialize the shape functions and derivatives
     if (values.size() != this->TotalNumber())
@@ -224,7 +224,7 @@ void BSplinesFESpace<2>::GetValueAndDerivative(std::vector<double>& values, std:
 }
 
 template<>
-void BSplinesFESpace<3>::GetValue(std::vector<double>& values, const std::vector<double>& xi) const
+void BSplinesFESpace<3>::GetValues(std::vector<double>& values, const std::vector<double>& xi) const
 {
     // initialize the shape functions
     if (values.size() != this->TotalNumber())
@@ -278,7 +278,7 @@ void BSplinesFESpace<3>::GetValue(std::vector<double>& values, const std::vector
 }
 
 template<>
-void BSplinesFESpace<3>::GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+void BSplinesFESpace<3>::GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
 {
     // initialize the shape functions and derivatives
     if (values.size() != this->TotalNumber())

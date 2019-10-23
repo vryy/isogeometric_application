@@ -194,7 +194,7 @@ public:
 
     /// Get the values of the basis functions at point xi
     /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
-    virtual void GetValue(std::vector<double>& values, const std::vector<double>& xi) const
+    virtual void GetValues(std::vector<double>& values, const std::vector<double>& xi) const
     {
         if (values.size() != this->TotalNumber())
             values.resize(this->TotalNumber());
@@ -226,7 +226,7 @@ public:
     /// Get the derivative of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
     /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
-    virtual void GetDerivative(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    virtual void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
     {
         if (values.size() != this->TotalNumber())
             values.resize(this->TotalNumber());
@@ -243,7 +243,7 @@ public:
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
     /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
-    virtual void GetValueAndDerivative(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+    virtual void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
     {
         if (values.size() != this->TotalNumber())
             values.resize(this->TotalNumber());

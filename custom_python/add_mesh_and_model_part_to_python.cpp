@@ -23,6 +23,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
+#include "custom_utilities/patch_lagrange_mesh.h"
 #include "custom_utilities/nonconforming_multipatch_lagrange_mesh.h"
 #include "custom_utilities/nonconforming_variable_multipatch_lagrange_mesh.h"
 #include "custom_utilities/multipatch_model_part.h"
@@ -135,10 +136,93 @@ ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions(T& rDu
 ////////////////////////////////////////
 
 template<int TDim>
+boost::python::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDummy, ModelPart& r_model_part,
+    typename Patch<TDim>::Pointer pPatch, const std::string& sample_element_name, boost::python::list list_divs,
+    const std::size_t& last_node_id, const std::size_t& last_elem_id,
+    Properties::Pointer pProperties, const int& echo_level)
+{
+    if (!KratosComponents<Element>::Has(sample_element_name))
+    {
+        std::stringstream buffer;
+        buffer << "Element " << sample_element_name << " is not registered in Kratos.";
+        buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
+        KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+    }
+
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+
+    std::vector<std::size_t> num_divisions;
+    typedef boost::python::stl_input_iterator<int> iterator_value_type;
+    BOOST_FOREACH(const typename iterator_value_type::value_type& v,
+        std::make_pair(iterator_value_type(list_divs), iterator_value_type() ) )
+            num_divisions.push_back(v);
+
+    std::size_t my_last_node_id = last_node_id;
+    std::size_t my_last_elem_id = last_elem_id;
+
+    rDummy.WriteEntities(r_model_part, r_model_part.Elements(),
+        pPatch, r_clone_element, num_divisions,
+        my_last_node_id, my_last_elem_id,
+        pProperties, echo_level);
+
+    boost::python::list output;
+    output.append(my_last_node_id);
+    output.append(my_last_elem_id);
+    return output;
+}
+
+template<int TDim>
+boost::python::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& rDummy, ModelPart& r_model_part,
+    typename Patch<TDim>::Pointer pPatch, const std::string& sample_condition_name, boost::python::list list_divs,
+    const std::size_t& last_node_id, const std::size_t& last_cond_id,
+    Properties::Pointer pProperties, const int& echo_level)
+{
+    if (!KratosComponents<Condition>::Has(sample_condition_name))
+    {
+        std::stringstream buffer;
+        buffer << "Condition " << sample_condition_name << " is not registered in Kratos.";
+        buffer << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
+        KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+    }
+
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+
+    std::vector<std::size_t> num_divisions;
+    typedef boost::python::stl_input_iterator<int> iterator_value_type;
+    BOOST_FOREACH(const typename iterator_value_type::value_type& v,
+        std::make_pair(iterator_value_type(list_divs), iterator_value_type() ) )
+            num_divisions.push_back(v);
+
+    std::size_t my_last_node_id = last_node_id;
+    std::size_t my_last_cond_id = last_cond_id;
+
+    rDummy.WriteEntities(r_model_part, r_model_part.Conditions(),
+        pPatch, r_clone_condition, num_divisions,
+        my_last_node_id, my_last_cond_id,
+        pProperties, echo_level);
+
+    boost::python::list output;
+    output.append(my_last_node_id);
+    output.append(my_last_cond_id);
+    return output;
+}
+
+////////////////////////////////////////
+
+template<int TDim>
 void IsogeometricApplication_AddMeshToPython()
 {
 
     std::stringstream ss;
+
+    ss.str(std::string());
+    ss << "PatchLagrangeMesh" << TDim << "D";
+    class_<PatchLagrangeMesh<TDim>, typename PatchLagrangeMesh<TDim>::Pointer, boost::noncopyable>
+    (ss.str().c_str(), init<>())
+    .def("WriteElements", &PatchLagrangeMesh_WriteElements<TDim>)
+    .def("WriteConditions", &PatchLagrangeMesh_WriteConditions<TDim>)
+    .def(self_ns::str(self))
+    ;
 
     ss.str(std::string());
     ss << "NonConformingMultipatchLagrangeMesh" << TDim << "D";
@@ -148,7 +232,6 @@ void IsogeometricApplication_AddMeshToPython()
     .def("SetBaseElementName", &NonConformingMultipatchLagrangeMesh<TDim>::SetBaseElementName)
     .def("SetLastNodeId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastNodeId)
     .def("SetLastElemId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastElemId)
-    .def("SetLastPropId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastPropId)
     .def("SetDivision", &NonConformingMultipatchLagrangeMesh<TDim>::SetDivision)
     .def("SetUniformDivision", &NonConformingMultipatchLagrangeMesh<TDim>::SetUniformDivision)
     .def("WriteModelPart", &NonConformingMultipatchLagrangeMesh<TDim>::WriteModelPart)

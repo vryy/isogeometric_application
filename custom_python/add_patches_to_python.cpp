@@ -188,6 +188,16 @@ typename TMultiPatchType::PatchContainerType MultiPatch_GetPatches(TMultiPatchTy
     return rDummy.Patches();
 }
 
+template<class TMultiPatchType>
+boost::python::list MultiPatch_GetPatchIndices(TMultiPatchType& rDummy)
+{
+    boost::python::list ids;
+    for (typename TMultiPatchType::patch_const_iterator it = rDummy.Patches().begin();
+            it != rDummy.Patches().end(); ++it)
+        ids.append(it->Id());
+    return ids;
+}
+
 template<class TPatchType, class TMultiPatchType>
 typename TPatchType::Pointer MultiPatch_GetItem(TMultiPatchType& rDummy, std::size_t index)
 {
@@ -319,6 +329,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("AddPatch", &MultiPatch<TDim>::AddPatch)
     .def("RemovePatch", &MultiPatch<TDim>::RemovePatch)
     .def("Patches", &MultiPatch_GetPatches<MultiPatch<TDim> >)
+    .def("PatchIndices", &MultiPatch_GetPatchIndices<MultiPatch<TDim> >)
     .def("__getitem__", &MultiPatch_GetItem<Patch<TDim>, MultiPatch<TDim> >)
     .def("__len__", &MultiPatch_Len<MultiPatch<TDim> >)
     .def("EquationSystemSize", &MultiPatch<TDim>::EquationSystemSize)

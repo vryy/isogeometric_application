@@ -98,6 +98,7 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/nurbs/domain_manager_3d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/hbsplines/deprecated_hb_basis_function.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/hbsplines/deprecated_hb_mesh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/tsplines/tsvertex.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/tsplines/tsmesh_2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/import_export/multi_nurbs_patch_geo_importer.cpp
 )

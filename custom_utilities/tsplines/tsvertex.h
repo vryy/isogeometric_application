@@ -34,19 +34,19 @@ class TsVertex
 {
 public:
     /// Constant declaration
-    static const int UNDEFINED_JOINT = -2;
-    static const int BORDER_JOINT = -1;
-    static const int NORMAL_JOINT = 0;
-    static const int T_JOINT_LEFT = 1;
-    static const int T_JOINT_RIGHT = 2;
-    static const int T_JOINT_UP = 3;
-    static const int T_JOINT_DOWN = 4;
-    static const int L_JOINT_LEFT_DOWN = 5;
-    static const int L_JOINT_LEFT_UP = 6;
-    static const int L_JOINT_RIGHT_DOWN = 7;
-    static const int L_JOINT_RIGHT_UP = 8;
-    static const int I_JOINT_LEFT_RIGHT = 9;
-    static const int I_JOINT_UP_DOWN = 10;
+    static const int UNDEFINED_JOINT;
+    static const int BORDER_JOINT;
+    static const int NORMAL_JOINT;
+    static const int T_JOINT_LEFT;
+    static const int T_JOINT_RIGHT;
+    static const int T_JOINT_UP;
+    static const int T_JOINT_DOWN;
+    static const int L_JOINT_LEFT_DOWN;
+    static const int L_JOINT_LEFT_UP;
+    static const int L_JOINT_RIGHT_DOWN;
+    static const int L_JOINT_RIGHT_UP;
+    static const int I_JOINT_LEFT_RIGHT;
+    static const int I_JOINT_UP_DOWN;
 
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(TsVertex);

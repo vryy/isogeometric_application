@@ -1,5 +1,6 @@
 #include "custom_utilities/bezier_utils.h"
 #include "custom_utilities/bspline_utils.h"
+#include "custom_utilities/tsplines/tsvertex.h"
 #include "custom_utilities/tsplines/tshedge.h"
 #include "custom_utilities/tsplines/tsvedge.h"
 #include "custom_utilities/tsplines/tsvirtualhedge.h"

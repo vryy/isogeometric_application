@@ -50,6 +50,7 @@ public:
     typedef Element::NodeType NodeType;
     typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
     typedef typename Patch<TDim>::ControlPointType ControlPointType;
+    typedef ModelPart::NodesContainerType NodesContainerType;
 
     /// Default constructor
     MultiPatchModelPart(typename MultiPatch<TDim>::Pointer pMultiPatch)
@@ -320,7 +321,14 @@ public:
                 std::size_t global_id = func_ids[i];
                 std::size_t node_id = CONVERT_INDEX_IGA_TO_KRATOS(global_id);
 
-                pControlGrid->SetData(i, mpModelPart->Nodes()[node_id].GetSolutionStepValue(rVariable));
+                NodesContainerType::iterator it_node = mpModelPart->Nodes().find(node_id);
+                if (it_node == mpModelPart->Nodes().end())
+                {
+                    std::stringstream ss;
+                    ss << "Node " << node_id << " does not exist in the model_part " << mpModelPart->Name();
+                    KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                }
+                pControlGrid->SetData(i, it_node->GetSolutionStepValue(rVariable));
             }
         }
     }

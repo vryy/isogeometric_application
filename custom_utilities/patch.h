@@ -22,8 +22,8 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/serializer.h"
+#include "includes/kratos_flags.h"
 #include "containers/array_1d.h"
-#include "containers/flags.h"
 #include "utilities/indexed_object.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/control_point.h"

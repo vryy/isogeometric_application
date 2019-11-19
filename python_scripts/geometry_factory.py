@@ -9,6 +9,7 @@ from KratosMultiphysics.IsogeometricApplication import *
 nurbs_fespace_library = BSplinesFESpaceLibrary()
 grid_lib = ControlGridLibrary()
 multipatch_util = MultiPatchUtility()
+multipatch_refine_util = MultiPatchRefinementUtility()
 bsplines_patch_util = BSplinesPatchUtility()
 
 ### Compute cross product
@@ -29,6 +30,90 @@ def normalize(a):
     a[1] = a[1] / norma
     a[2] = a[2] / norma
     return a
+
+### Compute Gaussian function
+def gaussian(mu, sigma, x):
+    return math.exp(-0.5*((x-mu)/sigma)**2)/sigma/math.sqrt(2.0*math.pi)
+
+### Compute inverse Gaussian function
+def inv_gaussian1(mu, sigma, g):
+    return -sigma*math.sqrt(-2.0*math.log(sigma*math.sqrt(2*math.pi)*g)) + mu
+
+### Compute inverse Gaussian function
+def inv_gaussian2(mu, sigma, g):
+    return sigma*math.sqrt(-2.0*math.log(sigma*math.sqrt(2*math.pi)*g)) + mu
+
+# ### Generate distributed Gaussian array in span (min, max). It is useful to generate a knot vector with Gaussian distribution for testing
+# def GenerateGaussianArray(half_n, min_k, max_k, sigma):
+#     mu = 0.5*(min_k + max_k)
+#     max_g = gaussian(mu, sigma, mu)
+#     min_g = gaussian(mu, sigma, 0.0)
+#     print("min_g:", min_g)
+#     print("max_g:", max_g)
+#     print("mu:", inv_gaussian1(mu, sigma, max_g))
+#     print("mu:", inv_gaussian2(mu, sigma, max_g))
+
+#     k_list = []
+
+#     for i in range(0, half_n+1):
+#         t = float(i+1)/(half_n+1)
+#         g = t*(max_g-min_g) + min_g
+#         # print("g:", g)
+#         k = inv_gaussian1(mu, sigma, g)
+#         # print("k:", k)
+#         k_list.append(k)
+
+#     for i in range(0, half_n):
+#         t = float(half_n-i)/(half_n+1)
+#         g = t*(max_g-min_g) + min_g
+#         k = inv_gaussian2(mu, sigma, g)
+#         k_list.append(k)
+
+#     return k_list
+
+# ### Generate distributed Gaussian array in span (min, max). It is useful to generate a knot vector with Gaussian distribution for testing
+# def GenerateGaussianArray(n, min_k, max_k):
+#     mu = 0.0
+#     sigma = 1.0
+#     k_list = []
+#     g_list = []
+#     min_g = 0.0
+#     max_g = gaussian(mu, sigma, mu)
+#     sum_g = 0.0
+#     for i in range(0, n):
+#         t = 6.0*float(i)/(n-1) - 3.0;
+#         g = gaussian(mu, sigma, t)
+#         g_list.append(g)
+#         sum_g = sum_g + g
+#     t = 0.0
+#     for g in g_list:
+#         t = t + g
+#         k_list.append(t/sum_g)
+#     return k_list
+
+### Generate distributed Gaussian array in span (min, max). It is useful to generate a knot vector with Gaussian distribution for testing
+def GenerateGaussianArray(num_span, max_elem_in_span, sigma, min_k, max_k):
+    k_list = []
+    # make a span in [-3, 3]
+    for i in range(0, num_span):
+        min_t = -3.0 + float(i)/num_span*6.0
+        max_t = -3.0 + float(i+1)/num_span*6.0
+        # print("min_t:", min_t)
+        # print("max_t:", max_t)
+        # get a samping value in [min_t, max_t]
+        t = 0.5*(min_t + max_t)
+        # print("t:", t)
+        g = gaussian(0.0, sigma, t*sigma)
+        # print("g:", g)
+        n = int(max_elem_in_span*g)
+        # print("n:", n)
+        # generate n numbers from min_t to max_t
+        for j in range(0, n):
+            t = min_t + float(j+0.5)/n*(max_t-min_t)
+            t_scale = (t+3.0)/6.0;
+            k_list.append(t_scale*(max_k-min_k)+min_k)
+
+    return k_list
 
 ### Create a line from start_point to end_point with knot vector [0 0 0 ... 1 1 1]
 ### On output the pointer to the patch will be returned
@@ -132,11 +217,11 @@ def CreateRectangle(start_point, end_point):
     face_ptr = bsplines_patch_util.CreateConnectedPatch(line1, line2)
     return face_ptr
 
-### Create the 2D rectangle
+### Create the 2D parallelogram
 ###   P4---P3
 ###   |    |
 ###   P1---P2
-def CreateRectangle(P1, P2, P3, P4):
+def CreateParallelogram(P1, P2, P3, P4):
     line1 = CreateLine(P1, P2)
     line2 = CreateLine(P4, P3)
     face_ptr = bsplines_patch_util.CreateConnectedPatch(line1, line2)
@@ -157,12 +242,111 @@ def CreateSlab(start_point, end_point):
     volume_patch_ptr = bsplines_patch_util.CreateConnectedPatch(face1, face2)
     return volume_patch_ptr
 
+### Create a half circle with 4 patches configuration
+def CreateHalfCircle4(center, axis, radius, rotation_angle, params={}):
+
+    if 'make_interface' in params:
+        make_interface = params['make_interface']
+    else:
+        make_interface = True
+
+    if 'square_control' in params:
+        square_control = params['square_control']
+    else:
+        square_control = 1.0/3
+
+    ### create arcs
+    arc1_ptr = CreateSmallArc(center, axis, radius, 0.0, 45.0)
+    arc1 = arc1_ptr.GetReference()
+
+    arc2_ptr = CreateSmallArc(center, axis, radius, 45.0, 135.0)
+    arc2 = arc2_ptr.GetReference()
+
+    arc3_ptr = CreateSmallArc(center, axis, radius, 135.0, 180.0)
+    arc3 = arc3_ptr.GetReference()
+
+    square_size = square_control*radius
+
+    ### create lines
+    if axis == 'x':
+        p1 = [center[0], center[1] + square_size, center[2]]
+        p2 = [center[0], center[1] + square_size, center[2] + square_size]
+        p3 = [center[0], center[1] - square_size, center[2]]
+        p4 = [center[0], center[1] - square_size, center[2] + square_size]
+    elif axis == 'y':
+        p1 = [center[0], center[1], center[2] + square_size]
+        p2 = [center[0] + square_size, center[1], center[2] + square_size]
+        p3 = [center[0], center[1], center[2] - square_size]
+        p4 = [center[0] + square_size, center[1], center[2] - square_size]
+    elif axis == 'z':
+        p1 = [center[0] + square_size, center[1], center[2]]
+        p2 = [center[0] + square_size, center[1] + square_size, center[2]]
+        p3 = [center[0] - square_size, center[1], center[2]]
+        p4 = [center[0] - square_size, center[1] + square_size, center[2]]
+
+    u_order = arc1.Order(0)
+
+    line1_ptr = CreateLine(p1, p2, u_order)
+    line1 = line1_ptr.GetReference()
+
+    line2_ptr = CreateLine(p2, p4, u_order)
+    line2 = line2_ptr.GetReference()
+
+    line3_ptr = CreateLine(p4, p3, u_order)
+    line3 = line3_ptr.GetReference()
+
+    line4_ptr = CreateLine(p1, p3, u_order)
+    line4 = line4_ptr.GetReference()
+
+    patch1_ptr = bsplines_patch_util.CreateConnectedPatch(arc1, line1)
+    patch2_ptr = bsplines_patch_util.CreateConnectedPatch(arc2, line2)
+    patch3_ptr = bsplines_patch_util.CreateConnectedPatch(arc3, line3)
+    patch4_ptr = bsplines_patch_util.CreateConnectedPatchFromList2D([line2, line4], 1)
+    multipatch_refine_util.DegreeElevate(patch4_ptr, [0, u_order-1])
+
+    patch1 = patch1_ptr.GetReference()
+    patch1.Id = 1
+    patch2 = patch2_ptr.GetReference()
+    patch2.Id = 2
+    patch3 = patch3_ptr.GetReference()
+    patch3.Id = 3
+    patch4 = patch4_ptr.GetReference()
+    patch4.Id = 4
+
+    print("patch1:" + str(patch1))
+    print("patch4:" + str(patch4))
+
+    if rotation_angle != 0.0:
+        trans = Transformation()
+        trans.AppendTransformation(Translation(-center[0], -center[1], -center[2]))
+        if axis == 'z':
+            trans.AppendTransformation(RotationZ(rotation_angle))
+        elif axis == 'y':
+            trans.AppendTransformation(RotationY(rotation_angle))
+        elif axis == 'x':
+            trans.AppendTransformation(RotationX(rotation_angle))
+        trans.AppendTransformation(Translation(center[0], center[1], center[2]))
+        patch1.ApplyTransformation(trans)
+        patch2.ApplyTransformation(trans)
+        patch3.ApplyTransformation(trans)
+        patch4.ApplyTransformation(trans)
+
+    if make_interface:
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide2D.U1, patch2, BoundarySide2D.U0, BoundaryDirection.Forward)
+        bsplines_patch_util.MakeInterface(patch2, BoundarySide2D.U1, patch3, BoundarySide2D.U0, BoundaryDirection.Forward)
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide2D.V1, patch4, BoundarySide2D.U0, BoundaryDirection.Reversed)
+        bsplines_patch_util.MakeInterface(patch2, BoundarySide2D.V1, patch4, BoundarySide2D.V0, BoundaryDirection.Forward)
+        bsplines_patch_util.MakeInterface(patch3, BoundarySide2D.V1, patch4, BoundarySide2D.U1, BoundaryDirection.Forward)
+
+    return [patch1_ptr, patch2_ptr, patch3_ptr, patch4_ptr]
+
 ### Create a list of Frenet frame along a curve. The Frenet frame is stored as a transformation matrix.
 ### zvec is a reference vector to compute B at the first sampling point. It shall not be parallel with the tangent vector of the first sampling point.
 def GenerateLocalFrenetFrame(curve, num_sampling_points, zvec = [1.0, 0.0, 0.0]):
     trans_list = []
     B = Array3()
     ctrl_pnt_grid_func = curve.GridFunction(CONTROL_POINT_COORDINATES)
+    print(ctrl_pnt_grid_func)
     for i in range(0, num_sampling_points):
         xi = float(i) / (num_sampling_points-1)
         pnt = [xi, 0.0, 0.0]

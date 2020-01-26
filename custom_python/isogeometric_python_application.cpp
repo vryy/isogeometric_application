@@ -19,7 +19,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_control_point_to_python.h"
 #include "custom_python/add_control_grids_to_python.h"
-#include "custom_python/add_transformation_to_python.h"
 #include "custom_python/add_nurbs_to_python.h"
 #include "custom_python/add_pbbsplines_to_python.h"
 #include "custom_python/add_hbsplines_to_python.h"
@@ -60,7 +59,6 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
     IsogeometricApplication_AddFrontendUtilitiesToPython();
     IsogeometricApplication_AddControlPointToPython();
     IsogeometricApplication_AddControlGridsToPython();
-    IsogeometricApplication_AddTransformationToPython();
     IsogeometricApplication_AddFESpacesToPython<1>();
     IsogeometricApplication_AddFESpacesToPython<2>();
     IsogeometricApplication_AddFESpacesToPython<3>();

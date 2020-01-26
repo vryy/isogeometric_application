@@ -16,6 +16,7 @@ kratos_root_path=os.environ['KRATOS_ROOT_PATH']
 ##################################################################
 #importing Kratos modules
 from KratosMultiphysics import *
+from KratosMultiphysics.BRepApplication import *
 from KratosMultiphysics.IsogeometricApplication import *
 kernel = Kernel()   #defining kernel
 

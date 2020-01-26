@@ -16,6 +16,7 @@ kratos_root_path=os.environ['KRATOS_ROOT_PATH']
 ##################################################################
 #importing Kratos modules
 from KratosMultiphysics import *
+from KratosMultiphysics.BRepApplication import *
 from KratosMultiphysics.IsogeometricApplication import *
 kernel = Kernel()   #defining kernel
 
@@ -62,7 +63,7 @@ def CreatePatch():
 
     ## create the sweep volume
     order_w = 2
-    vol_ptr = bsplines_patch_util.CreateConnectedPatch(ring_patches, order_w)
+    vol_ptr = bsplines_patch_util.CreateConnectedPatchFromList3D(ring_patches, order_w)
     return vol_ptr
 
 def main():

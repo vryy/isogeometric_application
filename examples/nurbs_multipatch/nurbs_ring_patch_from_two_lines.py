@@ -16,6 +16,7 @@ kratos_root_path=os.environ['KRATOS_ROOT_PATH']
 ##################################################################
 #importing Kratos modules
 from KratosMultiphysics import *
+from KratosMultiphysics.BRepApplication import *
 from KratosMultiphysics.IsogeometricApplication import *
 kernel = Kernel()   #defining kernel
 
@@ -24,6 +25,7 @@ grid_lib = ControlGridLibrary()
 multipatch_util = MultiPatchUtility()
 bsplines_patch_util = BSplinesPatchUtility()
 mpatch_export = MultiNURBSPatchMatlabExporter()
+multipatch_refine_util = MultiPatchRefinementUtility()
 
 import geometry_factory
 
@@ -53,6 +55,9 @@ def CreateMultiPatch():
 
 def main():
     mpatch = CreateMultiPatch()
+
+    multipatch_refine_util.InsertKnots(mpatch[1], [[0.5], []])
+
     mpatch.Enumerate()
     print(mpatch)
     mpatch_export.Export(mpatch, "ring.m")

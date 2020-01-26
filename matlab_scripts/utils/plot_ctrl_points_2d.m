@@ -21,7 +21,7 @@ u_color = 'black';
 v_color = 'cyan';
 
 if ~isfield(params,'point_color')
-    params.point_color = 'blue';
+    params.point_color = 'b'; %'blue';
 end
 
 if ~isfield(params,'label')

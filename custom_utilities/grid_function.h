@@ -134,6 +134,114 @@ struct GridFunction_Helper<TDim, TDataType, std::vector<double> >
     }
 };
 
+template<int TDim, typename TDataType, typename TCoordinatesType>
+struct GridFunction_Predict_Helper
+{
+    template<class TGridFunctionType>
+    static void Execute(TGridFunctionType& rGridFunc,
+        const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling,
+        const TCoordinatesType& xi_min, const TCoordinatesType& xi_max)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented", __FUNCTION__)
+    }
+};
+
+template<>
+struct GridFunction_Predict_Helper<1, array_1d<double, 3>, array_1d<double, 3> >
+{
+    template<class TGridFunctionType>
+    static void Execute(TGridFunctionType& rGridFunc,
+        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling,
+        const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max)
+    {
+        if (nsampling.size() < 1)
+            KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 1", "")
+
+        array_1d<double, 3> xi0, p;
+        xi0[1] = 0.0;
+        xi0[2] = 0.0;
+        double dist, min_dist = 1.0e99;
+        for (int i = 0; i < nsampling[0]+1; ++i)
+        {
+            xi0[0] = ((double) i) / nsampling[0];
+            noalias(p) = rGridFunc.GetValue(xi0);
+            dist = norm_2(p - v);
+            if (dist < min_dist)
+            {
+                noalias(xi) = xi0;
+                min_dist = dist;
+            }
+        }
+    }
+};
+
+template<>
+struct GridFunction_Predict_Helper<2, array_1d<double, 3>, array_1d<double, 3> >
+{
+    template<class TGridFunctionType>
+    static void Execute(TGridFunctionType& rGridFunc,
+        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling,
+        const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max)
+    {
+        if (nsampling.size() < 2)
+            KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 2", "")
+
+        array_1d<double, 3> xi0, p;
+        xi0[2] = 0.0;
+        double dist, min_dist = 1.0e99;
+        for (int i = 0; i < nsampling[0]+1; ++i)
+        {
+            xi0[0] = ((double) i) / nsampling[0];
+            for (int j = 0; j < nsampling[1]+1; ++j)
+            {
+                xi0[1] = ((double) j) / nsampling[1];
+                noalias(p) = rGridFunc.GetValue(xi0);
+                dist = norm_2(p - v);
+                if (dist < min_dist)
+                {
+                    noalias(xi) = xi0;
+                    min_dist = dist;
+                }
+            }
+        }
+    }
+};
+
+template<>
+struct GridFunction_Predict_Helper<3, array_1d<double, 3>, array_1d<double, 3> >
+{
+    template<class TGridFunctionType>
+    static void Execute(TGridFunctionType& rGridFunc,
+        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling,
+        const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max)
+    {
+        if (nsampling.size() < 3)
+            KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 3", "")
+
+        array_1d<double, 3> xi0, p;
+        double dist, min_dist = 1.0e99;
+        for (int i = 0; i < nsampling[0]+1; ++i)
+        {
+            xi0[0] = ((double) i) / nsampling[0];
+            for (int j = 0; j < nsampling[1]+1; ++j)
+            {
+                xi0[1] = ((double) j) / nsampling[1];
+                for (int k = 0; k < nsampling[2]+1; ++k)
+                {
+                    xi0[2] = ((double) k) / nsampling[2];
+                    noalias(p) = rGridFunc.GetValue(xi0);
+                    dist = norm_2(p - v);
+                    if (dist < min_dist)
+                    {
+                        noalias(xi) = xi0;
+                        min_dist = dist;
+                    }
+                }
+            }
+        }
+    }
+};
+
 /**
  * A grid function is a function defined over the parametric domain. It takes the control values at grid point and interpolate the corresponding physical terms.
  */
@@ -221,6 +329,15 @@ public:
         std::vector<TDataType> dv(TDim);
         this->GetDerivative(dv, xi);
         return dv;
+    }
+
+    /// Compute a prediction for LocalCoordinates algorithm. Because LocalCoordinates uses Newton-Raphson algorithm to compute
+    /// the inversion, it requires a good initial starting point
+    template<typename TCoordinatesType>
+    void Predict(const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling,
+        const TCoordinatesType& xi_min, const TCoordinatesType& xi_max) const
+    {
+        GridFunction_Predict_Helper<TDim, TDataType, TCoordinatesType>::Execute(*this, v, xi, nsampling, xi_min, xi_max);
     }
 
     /// Compute the local coordinate of point that has a specific interpolated values

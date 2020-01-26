@@ -345,6 +345,14 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /// Compute a rough estimation of the local coordinates of a point by sampling technique
+    void Predict(const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling,
+        const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max) const
+    {
+        typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        pGridFunc->Predict(point, xi, nsampling, xi_min, xi_max);
+    }
+
     /// Compute the local coordinates of a point
     int LocalCoordinates(const array_1d<double, 3>& point, array_1d<double, 3>& xi) const
     {
@@ -353,7 +361,7 @@ public:
     }
 
     /// Check if the point is inside the patch
-    /// xi0 shall be a point closed to the point you predict
+    /// This subroutine requires xi0, which is a prediction of the projected local point. This has to be determined, i.e. using a sampling technique.
     bool IsInside(const array_1d<double, 3>& point, const array_1d<double, 3>& xi0) const
     {
         array_1d<double, 3> xi;

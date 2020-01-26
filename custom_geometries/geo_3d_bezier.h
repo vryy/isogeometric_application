@@ -38,10 +38,10 @@ see isogeometric_application/LICENSE.txt
 
 namespace Kratos
 {
-/**
- * A geometry representing NURBS curve
- */
 
+/**
+ * Geometry representing Bezier decomposition of a NURBS volume
+ */
 template<class TPointType>
 class Geo3dBezier : public IsogeometricGeometry<TPointType>
 {
@@ -1319,32 +1319,14 @@ public:
     }
 
     /**
-     * Returns whether given arbitrary point is inside the Geometry
+     * Returns whether given local point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
+    virtual bool IsInside( const CoordinatesArrayType& rPoint )
     {
-        this->PointLocalCoordinates( rResult, rPoint );
-
         double tol = 1.0e-6;
-        if ( (rResult[0] > -tol) && (rResult[0] < 1 + tol) )
-            if ( (rResult[1] > -tol) && (rResult[1] < 1 + tol) )
-                if ( (rResult[2] > -tol) && (rResult[2] < 1 + tol) )
-                    return true;
-
-        return false;
-    }
-
-    /**
-     * Returns whether given arbitrary point is inside the Geometry
-     */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
-    {
-        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
-
-        double tol = 1.0e-6;
-        if ( (rResult[0] > -tol) && (rResult[0] < 1 + tol) )
-            if ( (rResult[1] > -tol) && (rResult[1] < 1 + tol) )
-                if ( (rResult[2] > -tol) && (rResult[2] < 1 + tol) )
+        if ( (rPoint[0] > -tol) && (rPoint[0] < 1.0 + tol) )
+            if ( (rPoint[1] > -tol) && (rPoint[1] < 1.0 + tol) )
+                if ( (rPoint[2] > -tol) && (rPoint[2] < 1.0 + tol) )
                     return true;
 
         return false;

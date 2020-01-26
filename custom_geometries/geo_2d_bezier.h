@@ -42,7 +42,6 @@ namespace Kratos
 /**
  * A geometry representing Bezier decomposition of NURBS surface in 2D. In this implementation, surface XY is considerred. For a surface in 3D space, used Geo2dBezier3 instead
  */
-
 template<class TPointType>
 class Geo2dBezier : public IsogeometricGeometry<TPointType>
 {
@@ -1007,25 +1006,11 @@ public:
         }
     }
 
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
+    virtual bool IsInside( const CoordinatesArrayType& rPoint )
     {
-        this->PointLocalCoordinates( rResult, rPoint );
-
         double tol = 1.0e-6;
-        if ( (rResult[0] > -tol) && (rResult[0] < 1 + tol) )
-            if ( (rResult[1] > -tol) && (rResult[1] < 1 + tol) )
-                return true;
-
-        return false;
-    }
-
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult, Matrix& DeltaPosition )
-    {
-        this->PointLocalCoordinates( rResult, rPoint, DeltaPosition );
-
-        double tol = 1.0e-6;
-        if ( (rResult[0] > -tol) && (rResult[0] < 1 + tol) )
-            if ( (rResult[1] > -tol) && (rResult[1] < 1 + tol) )
+        if ( (rPoint[0] > -tol) && (rPoint[0] < 1.0 + tol) )
+            if ( (rPoint[1] > -tol) && (rPoint[1] < 1.0 + tol) )
                 return true;
 
         return false;

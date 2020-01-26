@@ -64,10 +64,10 @@
 
 namespace Kratos
 {
-/**
- * A geometry representing NURBS curve
- */
 
+/**
+ * A geometry representing Bezier decomposition of a NURBS curve
+ */
 template<class TPointType>
 class Geo1dBezier: public IsogeometricGeometry<TPointType>
 {
@@ -377,19 +377,6 @@ public:
     }
 
     /**
-     * lumping factors for the calculation of the lumped mass matrix
-     */
-    virtual VectorType& LumpingFactors( VectorType& rResult ) const
-    {
-        //TODO: check this
-        rResult.resize( 3, false );
-        rResult[0] = 0.25;
-        rResult[2] = 0.5;
-        rResult[1] = 0.25;
-        return rResult;
-    }
-
-    /**
      * Informations
      */
 
@@ -462,14 +449,12 @@ public:
     }
 
     /**
-     * Returns whether given arbitrary point is inside the Geometry
+     * Returns whether given local point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint, CoordinatesArrayType& rResult )
+    virtual bool IsInside( const CoordinatesArrayType& rPoint )
     {
-        this->PointLocalCoordinates( rResult, rPoint );
-
-        if ( fabs( rResult[0] ) < 1 + 1.0e-8 )
-        return true;
+        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
+            return true;
 
         return false;
     }
@@ -497,10 +482,11 @@ public:
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
-        CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
+
         //getting values of shape functions
         MatrixType shape_functions_values =
-        CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
 
         if ( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
         {
@@ -551,10 +537,11 @@ public:
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
-        CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
+
         //getting values of shape functions
         MatrixType shape_functions_values =
-        CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
 
         if ( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
         {
@@ -605,9 +592,10 @@ public:
         rResult.resize( 3, 1 );
         //derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
-        CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
         MatrixType ShapeFunctionsGradientInIntegrationPoint =
-        shape_functions_gradients( IntegrationPointIndex );
+            shape_functions_gradients( IntegrationPointIndex );
+
         //values of shape functions in integration points
         vector<double> ShapeFunctionValuesInIntegrationPoint = ZeroVector( 3 );
         ShapeFunctionValuesInIntegrationPoint = row( CalculateShapeFunctionsIntegrationPointsValues( ThisMethod ),
@@ -648,6 +636,7 @@ public:
     {
         //setting up size of jacobian matrix
         rResult.resize( 3, 1 );
+
         //derivatives of shape functions
         MatrixType shape_functions_gradients;
         shape_functions_gradients = ShapeFunctionsLocalGradients( shape_functions_gradients, rPoint );
@@ -656,6 +645,7 @@ public:
         double j0 = 0.0;
         double j1 = 0.0;
         double j2 = 0.0;
+
         //loop over all nodes
         for ( unsigned int i = 0; i < this->PointsNumber(); ++i )
         {
@@ -1266,13 +1256,14 @@ private:
     MatrixType CalculateShapeFunctionsIntegrationPointsValues(IntegrationMethod ThisMethod ) const
     {
         const IntegrationPointsArrayType& integration_points = BaseType::IntegrationPoints(ThisMethod);
+
         //number of integration points
         const int integration_points_number = integration_points.size();
+
         //setting up return matrix
         MatrixType shape_functions_values( integration_points_number, this->PointsNumber() );
-        //loop over all integration points
 
-        //TODO: this can be optimized
+        //loop over all integration points
         for(IndexType pnt = 0; pnt < integration_points_number; ++pnt)
         {
             for(IndexType node = 0; node < this->PointsNumber(); ++node)

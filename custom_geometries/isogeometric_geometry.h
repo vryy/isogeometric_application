@@ -447,6 +447,33 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
     }
 
+    /**
+     * lumping factors for the calculation of the lumped mass matrix
+     */
+    virtual VectorType& LumpingFactors( VectorType& rResult ) const
+    {
+        if (rResult.size() != this->PointsNumber() )
+            rResult.resize( this->PointsNumber(), false );
+        noalias(rResult) = ZeroVector(this->PointsNumber());
+
+        GeometryData::IntegrationMethod ThisMethod = GeometryData::GI_GAUSS_1;
+        VectorType shape_functions_values;
+
+        const IntegrationPointsArrayType& integration_points = this->IntegrationPoints(ThisMethod);
+
+        for ( unsigned int pnt = 0; pnt < integration_points.size(); ++pnt )
+        {
+            shape_functions_values = ShapeFunctionsValues(shape_functions_values, integration_points[pnt]);
+
+            for (unsigned int i = 0; i < this->PointsNumber(); ++i)
+            {
+                rResult[i] += shape_functions_values[i] * integration_points[pnt].Weight();
+            }
+        }
+
+        return rResult;
+    }
+
     virtual void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
         MatrixType& shape_functions_values,
         ShapeFunctionsGradientsType& shape_functions_local_gradients,

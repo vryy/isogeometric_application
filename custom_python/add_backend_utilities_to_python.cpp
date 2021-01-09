@@ -385,7 +385,7 @@ void IsogeometricPostUtility_TransferValuesToGaussPoints(IsogeometricPostUtility
 
 //////////////////////////////////////////////////////////
 
-void BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& dummy,
+boost::python::list BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& dummy,
         ModelPart& rModelPart,
         Condition& rCondition,
         const std::string& sample_condition_name,
@@ -399,8 +399,110 @@ void BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& d
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ConditionCounter = starting_condition_id;
     const std::string NodeKey = std::string("Node");
+    std::vector<std::size_t> node_ids;
+    std::vector<std::size_t> element_ids;
     dummy.GenerateForOneEntity<Condition, ModelPart::ConditionsContainerType, 2>(rModelPart, rCondition,
-            r_clone_condition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey);
+            r_clone_condition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey, false,
+            node_ids, element_ids, true);
+
+    boost::python::list list_nodes;
+    boost::python::list list_elements;
+    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
+    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    boost::python::list Output;
+    Output.append(list_nodes);
+    Output.append(list_elements);
+    return Output;
+}
+
+boost::python::list BezierClassicalPostUtility_GenerateConditionsWithNodalVariables(BezierClassicalPostUtility& dummy,
+        ModelPart& rModelPart,
+        Condition& rCondition,
+        const std::string& sample_condition_name,
+        const std::size_t& starting_node_id,
+        const std::size_t& starting_condition_id)
+{
+    if (!KratosComponents<Condition>::Has(sample_condition_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+    std::size_t NodeCounter = starting_node_id;
+    std::size_t NodeCounter_old = NodeCounter;
+    std::size_t ConditionCounter = starting_condition_id;
+    const std::string NodeKey = std::string("Node");
+    std::vector<std::size_t> node_ids;
+    std::vector<std::size_t> element_ids;
+    dummy.GenerateForOneEntity<Condition, ModelPart::ConditionsContainerType, 2>(rModelPart, rCondition,
+            r_clone_condition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey, true,
+            node_ids, element_ids, true);
+
+    boost::python::list list_nodes;
+    boost::python::list list_elements;
+    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
+    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    boost::python::list Output;
+    Output.append(list_nodes);
+    Output.append(list_elements);
+    return Output;
+}
+
+boost::python::list BezierClassicalPostUtility_GenerateElements(BezierClassicalPostUtility& dummy,
+        ModelPart& rModelPart,
+        Element& rElement,
+        const std::string& sample_element_name,
+        const std::size_t& starting_node_id,
+        const std::size_t& starting_element_id)
+{
+    if (!KratosComponents<Element>::Has(sample_element_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+    std::size_t NodeCounter = starting_node_id;
+    std::size_t NodeCounter_old = NodeCounter;
+    std::size_t ElementCounter = starting_element_id;
+    const std::string NodeKey = std::string("Node");
+    std::vector<std::size_t> node_ids;
+    std::vector<std::size_t> element_ids;
+    dummy.GenerateForOneEntity<Element, ModelPart::ElementsContainerType, 2>(rModelPart, rElement,
+            r_clone_element, NodeCounter_old, NodeCounter, ElementCounter, NodeKey, false,
+            node_ids, element_ids, true);
+
+    boost::python::list list_nodes;
+    boost::python::list list_elements;
+    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
+    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    boost::python::list Output;
+    Output.append(list_nodes);
+    Output.append(list_elements);
+    return Output;
+}
+
+boost::python::list BezierClassicalPostUtility_GenerateElementsWithNodalVariables(BezierClassicalPostUtility& dummy,
+        ModelPart& rModelPart,
+        Element& rElement,
+        const std::string& sample_element_name,
+        const std::size_t& starting_node_id,
+        const std::size_t& starting_element_id)
+{
+    if (!KratosComponents<Element>::Has(sample_element_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+    std::size_t NodeCounter = starting_node_id;
+    std::size_t NodeCounter_old = NodeCounter;
+    std::size_t ElementCounter = starting_element_id;
+    const std::string NodeKey = std::string("Node");
+    std::vector<std::size_t> node_ids;
+    std::vector<std::size_t> element_ids;
+    dummy.GenerateForOneEntity<Element, ModelPart::ElementsContainerType, 2>(rModelPart, rElement,
+            r_clone_element, NodeCounter_old, NodeCounter, ElementCounter, NodeKey, true,
+            node_ids, element_ids, true);
+
+    boost::python::list list_nodes;
+    boost::python::list list_elements;
+    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
+    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    boost::python::list Output;
+    Output.append(list_nodes);
+    Output.append(list_elements);
+    return Output;
 }
 
 void BezierClassicalPostUtility_GenerateModelPart2WithCondition(BezierClassicalPostUtility& dummy, ModelPart::Pointer pModelPartPost)
@@ -480,6 +582,9 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
 
     class_<BezierClassicalPostUtility, BezierClassicalPostUtility::Pointer, boost::noncopyable>("BezierClassicalPostUtility", init<ModelPart::Pointer>())
     .def("GenerateConditions", &BezierClassicalPostUtility_GenerateConditions)
+    .def("GenerateConditionsWithNodalVariables", &BezierClassicalPostUtility_GenerateConditionsWithNodalVariables)
+    .def("GenerateElements", &BezierClassicalPostUtility_GenerateElements)
+    .def("GenerateElementsWithNodalVariables", &BezierClassicalPostUtility_GenerateElementsWithNodalVariables)
     .def("GenerateModelPart", &BezierClassicalPostUtility::GenerateModelPart)
     .def("GenerateModelPart2", &BezierClassicalPostUtility_GenerateModelPart2WithCondition)
     .def("GenerateModelPart2", &BezierClassicalPostUtility_GenerateModelPart2)

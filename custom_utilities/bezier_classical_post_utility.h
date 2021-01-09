@@ -549,6 +549,7 @@ public:
         IndexType NodeCounter = 0;
         IndexType ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
+        std::vector<std::size_t> dummy_ids;
         for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
         {
             // This is wrong, we will not skill the IS_INACTIVE elements
@@ -606,7 +607,8 @@ public:
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
             GenerateForOneEntity<Element, ElementsArrayType, 1>(*pModelPartPost,
-                *(*it), rCloneElement, NodeCounter_old, NodeCounter, ElementCounter, NodeKey);
+                *(*it), rCloneElement, NodeCounter_old, NodeCounter, ElementCounter, NodeKey, false,
+                dummy_ids, dummy_ids, false);
 
             ++show_progress;
         }
@@ -672,7 +674,8 @@ public:
                 Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
 
                 GenerateForOneEntity<Condition, ConditionsArrayType, 2>(*pModelPartPost,
-                    *(*it), rCloneCondition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey);
+                    *(*it), rCloneCondition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey, false,
+                    dummy_ids, dummy_ids, false);
 
                 ++show_progress2;
             }
@@ -846,7 +849,11 @@ public:
                               IndexType NodeCounter_old,
                               IndexType& NodeCounter,
                               IndexType& EntityCounter,
-                              const std::string& NodeKey)
+                              const std::string& NodeKey,
+                              const bool& transfer_nodal_var,
+                              std::vector<std::size_t>& node_ids,
+                              std::vector<std::size_t>& element_ids,
+                              const bool& get_indices)
     {
 //        int ReducedDim = rE.GetGeometry().WorkingSpaceDimension();
         int ReducedDim = rE.GetGeometry().Dimension();
@@ -855,10 +862,7 @@ public:
         Properties::Pointer pDummyProperties = rE.pGetProperties();
 
         #ifdef DEBUG_LEVEL1
-        if(type == 1)
-            std::cout << "Generating for element " << rE.Id() << std::endl;
-        else
-            std::cout << "Generating for condition " << rE.Id() << std::endl;
+        std::cout << "Generating for " << rE.Info() << std::endl;
         KRATOS_WATCH(*pDummyProperties)
         KRATOS_WATCH(EntityCounter)
         #endif
@@ -875,6 +879,7 @@ public:
             IndexType i, j;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
+            Vector shape_values;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(NumDivision1)
@@ -909,6 +914,37 @@ public:
                         mNodeToLocalCoordinates(pNewNode->Id()) = p_ref;
                         mNodeToElement(pNewNode->Id()) = rE.Id();
                     }
+
+                    if (transfer_nodal_var)
+                    {
+                        shape_values = rE.GetGeometry().ShapeFunctionsValues(shape_values, p_ref);
+
+                        VariablesList& var_list = rModelPart.GetNodalSolutionStepVariablesList();
+
+                        for (VariablesList::const_iterator it = var_list.begin(); it != var_list.end(); ++it)
+                        {
+                            if (typeid(*it) == typeid(Variable<double>))
+                            {
+                                const Variable<double>& my_variable = dynamic_cast<const Variable<double>&>(*it);
+                                double value = 0.0;
+                                for (std::size_t n = 0; n < rE.GetGeometry().size(); ++n)
+                                    value += shape_values[n] * rE.GetGeometry()[n].GetSolutionStepValue(my_variable);
+                                pNewNode->GetSolutionStepValue(my_variable) = value;
+                            }
+                            else if (typeid(*it) == typeid(Variable<array_1d<double, 3> >))
+                            {
+                                const Variable<array_1d<double, 3> >& my_variable = dynamic_cast<const Variable<array_1d<double, 3> >&>(*it);
+                                array_1d<double, 3> value;
+                                noalias(value) = ZeroVector(3);
+                                for (std::size_t n = 0; n < rE.GetGeometry().size(); ++n)
+                                    noalias(value) += shape_values[n] * rE.GetGeometry()[n].GetSolutionStepValue(my_variable);
+                                pNewNode->GetSolutionStepValue(my_variable) = value;
+                            }
+                        }
+                    }
+
+                    if (get_indices)
+                        node_ids.push_back(pNewNode->Id());
                 }
             }
 
@@ -990,6 +1026,14 @@ public:
             else
                 KRATOS_WATCH(rModelPart.Conditions().size())
             #endif
+
+            if (get_indices)
+            {
+                for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
+                {
+                    element_ids.push_back((*it2)->Id());
+                }
+            }
         }
         else if(ReducedDim == 3)
         {
@@ -999,6 +1043,7 @@ public:
             IndexType i, j, k;
             CoordinatesArrayType p_ref;
             CoordinatesArrayType p;
+            Vector shape_values;
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(rE.Id())
@@ -1044,6 +1089,37 @@ public:
                             mNodeToLocalCoordinates(pNewNode->Id()) = p_ref;
                             mNodeToElement(pNewNode->Id()) = rE.Id();
                         }
+
+                        if (transfer_nodal_var)
+                        {
+                            shape_values = rE.GetGeometry().ShapeFunctionsValues(shape_values, p_ref);
+
+                            VariablesList& var_list = rModelPart.GetNodalSolutionStepVariablesList();
+
+                            for (VariablesList::const_iterator it = var_list.begin(); it != var_list.end(); ++it)
+                            {
+                                if (typeid(*it) == typeid(Variable<double>))
+                                {
+                                    const Variable<double>& my_variable = dynamic_cast<const Variable<double>&>(*it);
+                                    double value = 0.0;
+                                    for (std::size_t n = 0; n < rE.GetGeometry().size(); ++n)
+                                        value += shape_values[n] * rE.GetGeometry()[n].GetSolutionStepValue(my_variable);
+                                    pNewNode->GetSolutionStepValue(my_variable) = value;
+                                }
+                                else if (typeid(*it) == typeid(Variable<array_1d<double, 3> >))
+                                {
+                                    const Variable<array_1d<double, 3> >& my_variable = dynamic_cast<const Variable<array_1d<double, 3> >&>(*it);
+                                    array_1d<double, 3> value;
+                                    noalias(value) = ZeroVector(3);
+                                    for (std::size_t n = 0; n < rE.GetGeometry().size(); ++n)
+                                        noalias(value) += shape_values[n] * rE.GetGeometry()[n].GetSolutionStepValue(my_variable);
+                                    pNewNode->GetSolutionStepValue(my_variable) = value;
+                                }
+                            }
+                        }
+
+                        if (get_indices)
+                            node_ids.push_back(pNewNode->Id());
                     }
                 }
             }
@@ -1143,6 +1219,14 @@ public:
             else
                 KRATOS_WATCH(rModelPart.Conditions().size())
             #endif
+
+            if (get_indices)
+            {
+                for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
+                {
+                    element_ids.push_back((*it2)->Id());
+                }
+            }
         }
     }
 

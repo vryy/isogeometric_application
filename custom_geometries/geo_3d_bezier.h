@@ -349,12 +349,12 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily()
+    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
         return GeometryData::Kratos_NURBS;
     }
 
-    virtual GeometryData::KratosGeometryType GetGeometryType()
+    virtual GeometryData::KratosGeometryType GetGeometryType() const override
     {
         return GeometryData::Kratos_Bezier3D;
     }
@@ -1356,7 +1356,7 @@ public:
      */
     virtual void PrintInfo( std::ostream& rOStream ) const
     {
-        rOStream << Info();
+        rOStream << "Geo3dBezier";
     }
 
     /**
@@ -1372,6 +1372,10 @@ public:
     {
         BaseType::PrintData( rOStream );
         rOStream << std::endl;
+        rOStream << "    Control Weights: " << mCtrlWeights << std::endl;
+        rOStream << "    Order: " << mOrder1 << " " << mOrder2 << " " << mOrder3 << std::endl;
+        rOStream << "    Number: " << mNumber1 << " " << mNumber2 << " " << mNumber3 << std::endl;
+        rOStream << "    Extraction Operator: " << mExtractionOperator << std::endl;
     }
 
     virtual void AssignGeometryData(

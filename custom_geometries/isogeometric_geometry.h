@@ -356,12 +356,12 @@ public:
     ///@name Operations
     ///@{
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily()
+    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
         return GeometryData::Kratos_NURBS;
     }
 
-    virtual GeometryData::KratosGeometryType GetGeometryType()
+    virtual GeometryData::KratosGeometryType GetGeometryType() const override
     {
         return GeometryData::Kratos_generic_type;
     }
@@ -410,10 +410,32 @@ public:
 //    }
 
     /**
+     * Set the local range
+     */
+    virtual void SetLocalRange( const IndexType& i, const double& rmin, const double& rmax )
+    {
+    }
+
+    /**
+     * Map the coordinates from local to [0, 1]
+     */
+    virtual double MapLocalToGlobal( const IndexType& i, const double& coord ) const
+    {
+        return coord;
+    }
+
+    /**
+     * Map the coordinates from [0, 1] to local
+     */
+    virtual double MapGlobalToLocal( const IndexType& i, const double& coord ) const
+    {
+        return coord;
+    }
+
+    /**
      * TODO to be removed
      */
-    virtual void GenerateGeometryData
-    (
+    virtual void GenerateGeometryData(
         const ValuesContainerType& Knots1,
         const ValuesContainerType& Knots2,
         const ValuesContainerType& Knots3,
@@ -422,8 +444,7 @@ public:
         const int& Degree1,
         const int& Degree2,
         const int& Degree3,
-        const int& NumberOfIntegrationMethod
-    )
+        const int& NumberOfIntegrationMethod)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
     }
@@ -431,8 +452,7 @@ public:
     /**
      * Subroutine to pass in the data to the Bezier element. This subroutine shall be called from the element/condition
      */
-    virtual void AssignGeometryData
-    (
+    virtual void AssignGeometryData(
         const ValuesContainerType& Knots1,
         const ValuesContainerType& Knots2,
         const ValuesContainerType& Knots3,
@@ -441,8 +461,7 @@ public:
         const int& Degree1,
         const int& Degree2,
         const int& Degree3,
-        const int& NumberOfIntegrationMethod
-    )
+        const int& NumberOfIntegrationMethod)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
     }

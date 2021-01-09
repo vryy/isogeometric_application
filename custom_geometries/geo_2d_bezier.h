@@ -41,6 +41,7 @@ namespace Kratos
 
 /**
  * A geometry representing Bezier decomposition of NURBS surface in 2D. In this implementation, surface XY is considerred. For a surface in 3D space, used Geo2dBezier3 instead
+ * The local range is [0, 1] x [0, 1], hence this geometry shall be used for strict local element formulation.
  */
 template<class TPointType>
 class Geo2dBezier : public IsogeometricGeometry<TPointType>
@@ -345,12 +346,12 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily()
+    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
         return GeometryData::Kratos_NURBS;
     }
 
-    virtual GeometryData::KratosGeometryType GetGeometryType()
+    virtual GeometryData::KratosGeometryType GetGeometryType() const override
     {
         return GeometryData::Kratos_Bezier2D;
     }
@@ -911,10 +912,12 @@ public:
         typedef typename PointType::Pointer PointPointerType;
         for(int i = 0; i <= sampling_size[0]; ++i)
         {
-            p_ref[0] = ((double) i) / sampling_size[0];
+            p_ref[0] = this->MapGlobalToLocal(0, ((double) i) / sampling_size[0]);
+
             for(int j = 0; j <= sampling_size[1]; ++j)
             {
-                p_ref[1] = ((double) j) / sampling_size[1];
+                p_ref[1] = this->MapGlobalToLocal(1, ((double) j) / sampling_size[1]);
+
                 p = BaseType::GlobalCoordinates0(p, p_ref);
                 PointPointerType pPoint = PointPointerType(new PointType(0, p));
                 pPoint->SetSolutionStepVariablesList(this->GetPoint(0).pGetVariablesList());
@@ -988,10 +991,11 @@ public:
         typedef typename PointType::Pointer PointPointerType;
         for(int i = 0; i <= sampling_size[0]; ++i)
         {
-            p_ref[0] = ((double) i) / sampling_size[0];
+            p_ref[0] = this->MapGlobalToLocal(0, ((double) i) / sampling_size[0]);
+
             for(int j = 0; j <= sampling_size[1]; ++j)
             {
-                p_ref[1] = ((double) j) / sampling_size[1];
+                p_ref[1] = this->MapGlobalToLocal(1, ((double) j) / sampling_size[1]);
 
                 ShapeFunctionsValues(shape_functions_values, p_ref);
 
@@ -1040,7 +1044,7 @@ public:
      */
     virtual void PrintInfo( std::ostream& rOStream ) const
     {
-        rOStream << Info();
+        rOStream << "Geo2dBezier";
     }
 
     /**
@@ -1055,10 +1059,11 @@ public:
     virtual void PrintData( std::ostream& rOStream ) const
     {
         BaseType::PrintData( rOStream );
-        std::cout << std::endl;
-//        MatrixType jacobian;
-//        Jacobian( jacobian, PointType() );
-//        rOStream << "    Jacobian in the origin\t : " << jacobian;
+        rOStream << std::endl;
+        rOStream << "    Control Weights: " << mCtrlWeights << std::endl;
+        rOStream << "    Order: " << mOrder1 << " " << mOrder2 << std::endl;
+        rOStream << "    Number: " << mNumber1 << " " << mNumber2 << std::endl;
+        rOStream << "    Extraction Operator: " << mExtractionOperator << std::endl;
     }
 
     /**

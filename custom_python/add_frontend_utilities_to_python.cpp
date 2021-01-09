@@ -215,14 +215,14 @@ void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDum
 //////////////////////////////////////////////////
 
 template<int TDim>
-typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatch(BSplinesPatchUtility& dummy,
+typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatch(BSplinesPatchUtility& dummy,
         typename Patch<TDim-1>::Pointer pPatch1, typename Patch<TDim-1>::Pointer pPatch2)
 {
-    return BSplinesPatchUtility::CreateConnectedPatch<TDim>(pPatch1, pPatch2);
+    return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatch1, pPatch2);
 }
 
 template<int TDim>
-typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatchFromList(BSplinesPatchUtility& dummy,
+typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSplinesPatchUtility& dummy,
         boost::python::list patch_list, const int& order)
 {
     std::vector<typename Patch<TDim-1>::Pointer> pPatches;
@@ -236,7 +236,7 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateConnectedPatchFromList(
     }
     KRATOS_WATCH(pPatches.size())
 
-    return BSplinesPatchUtility::CreateConnectedPatch<TDim>(pPatches, order);
+    return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatches, order);
 }
 
 boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility& dummy,
@@ -573,10 +573,10 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
 
     class_<BSplinesPatchUtility, BSplinesPatchUtility::Pointer, boost::noncopyable>
     ("BSplinesPatchUtility", init<>())
-    .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<2>)
-    .def("CreateConnectedPatch", &BSplinesPatchUtility_CreateConnectedPatch<3>)
-    .def("CreateConnectedPatchFromList2D", &BSplinesPatchUtility_CreateConnectedPatchFromList<2>)
-    .def("CreateConnectedPatchFromList3D", &BSplinesPatchUtility_CreateConnectedPatchFromList<3>)
+    .def("CreateLoftPatch", &BSplinesPatchUtility_CreateLoftPatch<2>)
+    .def("CreateLoftPatch", &BSplinesPatchUtility_CreateLoftPatch<3>)
+    .def("CreateLoftPatchFromList2D", &BSplinesPatchUtility_CreateLoftPatchFromList<2>)
+    .def("CreateLoftPatchFromList3D", &BSplinesPatchUtility_CreateLoftPatchFromList<3>)
     .def("CreatePatchFromGeo", &BSplinesPatchUtility_CreatePatchFromGeo)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface3D)

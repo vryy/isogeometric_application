@@ -45,7 +45,7 @@ def CreateMultiPatch():
     arc2 = arc2_ptr.GetReference()
 
     # create patch 1
-    patch1_ptr = bsplines_patch_util.CreateConnectedPatch(arc1, arc2)
+    patch1_ptr = bsplines_patch_util.CreateLoftPatch(arc1, arc2)
     patch1 = patch1_ptr.GetReference()
     patch1.Id = 1
 
@@ -60,7 +60,7 @@ def CreateMultiPatch():
     arc4 = arc4_ptr.GetReference()
 
     # create patch 2
-    patch2_ptr = bsplines_patch_util.CreateConnectedPatch(arc3, arc4)
+    patch2_ptr = bsplines_patch_util.CreateLoftPatch(arc3, arc4)
     patch2 = patch2_ptr.GetReference()
     patch2.Id = 2
 
@@ -75,7 +75,7 @@ def CreateMultiPatch():
     arc6 = arc6_ptr.GetReference()
 
     # create patch 2
-    patch3_ptr = bsplines_patch_util.CreateConnectedPatch(arc5, arc6)
+    patch3_ptr = bsplines_patch_util.CreateLoftPatch(arc5, arc6)
     patch3 = patch3_ptr.GetReference()
     patch3.Id = 3
 
@@ -90,7 +90,7 @@ def CreateMultiPatch():
     arc8 = arc8_ptr.GetReference()
 
     # create patch 2
-    patch4_ptr = bsplines_patch_util.CreateConnectedPatch(arc7, arc8)
+    patch4_ptr = bsplines_patch_util.CreateLoftPatch(arc7, arc8)
     patch4 = patch4_ptr.GetReference()
     patch4.Id = 4
 
@@ -106,7 +106,7 @@ def CreateMultiPatch():
     arc10 = arc10_ptr.GetReference()
 
     # create patch 1
-    patch5_ptr = bsplines_patch_util.CreateConnectedPatch(arc9, arc10)
+    patch5_ptr = bsplines_patch_util.CreateLoftPatch(arc9, arc10)
     patch5 = patch5_ptr.GetReference()
     patch5.Id = 5
 
@@ -121,7 +121,7 @@ def CreateMultiPatch():
     arc12 = arc12_ptr.GetReference()
 
     # create patch 2
-    patch6_ptr = bsplines_patch_util.CreateConnectedPatch(arc11, arc12)
+    patch6_ptr = bsplines_patch_util.CreateLoftPatch(arc11, arc12)
     patch6 = patch6_ptr.GetReference()
     patch6.Id = 6
 
@@ -136,7 +136,7 @@ def CreateMultiPatch():
     arc14 = arc14_ptr.GetReference()
 
     # create patch 2
-    patch7_ptr = bsplines_patch_util.CreateConnectedPatch(arc13, arc14)
+    patch7_ptr = bsplines_patch_util.CreateLoftPatch(arc13, arc14)
     patch7 = patch7_ptr.GetReference()
     patch7.Id = 7
 
@@ -151,7 +151,7 @@ def CreateMultiPatch():
     arc16 = arc16_ptr.GetReference()
 
     # create patch 2
-    patch8_ptr = bsplines_patch_util.CreateConnectedPatch(arc15, arc16)
+    patch8_ptr = bsplines_patch_util.CreateLoftPatch(arc15, arc16)
     patch8 = patch8_ptr.GetReference()
     patch8.Id = 8
 

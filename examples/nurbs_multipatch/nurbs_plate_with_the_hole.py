@@ -41,7 +41,7 @@ def CreateMultiPatch():
     line1 = line1_ptr.GetReference()
 
     # create patch 1
-    patch1_ptr = bsplines_patch_util.CreateConnectedPatch(line1, arc1)
+    patch1_ptr = bsplines_patch_util.CreateLoftPatch(line1, arc1)
     patch1 = patch1_ptr.GetReference()
     patch1.Id = 1
 
@@ -54,7 +54,7 @@ def CreateMultiPatch():
     line2 = line2_ptr.GetReference()
 
     # create patch 2
-    patch2_ptr = bsplines_patch_util.CreateConnectedPatch(line2, arc2)
+    patch2_ptr = bsplines_patch_util.CreateLoftPatch(line2, arc2)
     patch2 = patch2_ptr.GetReference()
     patch2.Id = 2
 

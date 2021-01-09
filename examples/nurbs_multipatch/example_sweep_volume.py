@@ -63,7 +63,7 @@ def CreatePatch():
 
     ## create the sweep volume
     order_w = 2
-    vol_ptr = bsplines_patch_util.CreateConnectedPatchFromList3D(ring_patches, order_w)
+    vol_ptr = bsplines_patch_util.CreateLoftPatchFromList3D(ring_patches, order_w)
     return vol_ptr
 
 def main():

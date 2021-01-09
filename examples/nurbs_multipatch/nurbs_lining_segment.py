@@ -40,7 +40,7 @@ ring2_ptr = geometry_factory.CreateSmallRing([leng, 0.0, 0.0], 'x', rin, rout, s
 ring2 = ring2_ptr.GetReference()
 
 ## create segment patch by connect the two rings
-segment_patch_ptr = bsplines_patch_util.CreateConnectedPatch(ring1, ring2)
+segment_patch_ptr = bsplines_patch_util.CreateLoftPatch(ring1, ring2)
 segment_patch = segment_patch_ptr.GetReference()
 print(segment_patch)
 mpatch_export.Export(segment_patch, "segment.m")

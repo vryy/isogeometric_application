@@ -44,7 +44,7 @@ patch2.CreateControlPointGridFunction(ctrl_grid_2)
 print(patch2)
 
 ## create cubic patch by connect the two rectangles
-rec_patch_ptr = bsplines_patch_util.CreateConnectedPatch(patch1, patch2)
+rec_patch_ptr = bsplines_patch_util.CreateLoftPatch(patch1, patch2)
 rec_patch = rec_patch_ptr.GetReference()
 rec_patch.Id = 3
 print(rec_patch)

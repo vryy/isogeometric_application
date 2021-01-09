@@ -28,7 +28,7 @@
 #include "custom_geometries/isogeometric_geometry.h"
 #include "isogeometric_application/isogeometric_application.h"
 
-// #define ENABLE_PROFILING
+#define ENABLE_PROFILING
 // #define DEBUG_GEN_ENTITY
 
 namespace Kratos

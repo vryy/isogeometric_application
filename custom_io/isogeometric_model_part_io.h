@@ -3360,7 +3360,7 @@ private:
 
         for(SizeType i_partition = 0 ; i_partition < NumberOfPartitions ; i_partition++)
         {
-            vector<int> neighbours_indices = row(DomainsColoredGraph, i_partition);
+            boost::numeric::ublas::vector<int> neighbours_indices = row(DomainsColoredGraph, i_partition);
 
             for(SizeType i = 0 ; i <  neighbours_indices.size() ; i++)
                 if(SizeType(neighbours_indices[i]) < NumberOfPartitions)

@@ -60,11 +60,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 // Project includes
-#include "includes/define.h"
-#include "includes/io.h"
 #include "includes/model_part_io.h"
-#include "utilities/timer.h"
-#include "containers/flags.h"
 
 
 namespace Kratos
@@ -143,7 +139,7 @@ public:
     typedef PointerVectorSet<BezierInfo, IndexedObject> BezierInfoContainerType;
 
     /// Default Constructor with  filenames.
-	BezierModelPartIO(std::string const& Filename, const Flags Options = IO::READ|IO::NOT_IGNORE_VARIABLES_ERROR);
+    BezierModelPartIO(std::string const& Filename, const Flags Options = IO::READ|IO::NOT_IGNORE_VARIABLES_ERROR);
 
     /// Destructor.
     virtual ~BezierModelPartIO();

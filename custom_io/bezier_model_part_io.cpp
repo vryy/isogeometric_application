@@ -46,7 +46,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 // Project includes
-#include "bezier_model_part_io.h"
+#include "custom_io/bezier_model_part_io.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "custom_geometries/geo_1d_bezier.h"
 #include "custom_geometries/geo_2d_bezier.h"

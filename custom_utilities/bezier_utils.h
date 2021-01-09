@@ -19,14 +19,8 @@
 // External includes
 
 // Project includes
-#include "includes/define.h"
-#include "includes/variables.h"
 #include "includes/ublas_interface.h"
-#include "includes/element.h"
 #include "includes/model_part.h"
-#include "geometries/geometry.h"
-#include "geometries/geometry_data.h"
-#include "integration/quadrature.h"
 #include "integration/line_gauss_legendre_integration_points.h"
 #include "utilities/openmp_utils.h"
 #include "utilities/math_utils.h"

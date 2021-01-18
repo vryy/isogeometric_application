@@ -17,6 +17,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/fespace.h"
@@ -35,7 +36,7 @@ The principle is that each patch will be sampled based on number of divisions de
 At the end, the resulting model_part will have nodal values interpolated from patch. This class is useful for post-processing all types of isogeometric patches, including NURBS, hierarchical B-Splines and T-Splines.
  */
 template<int TDim>
-class NonConformingMultipatchLagrangeMesh
+class NonConformingMultipatchLagrangeMesh : public IsogeometricEcho
 {
 public:
     /// Pointer definition
@@ -54,12 +55,6 @@ public:
 
     /// Destructor
     virtual ~NonConformingMultipatchLagrangeMesh() {}
-
-    /// Set the echo level
-    void SetEchoLevel(const int& level)
-    {
-        mEchoLevel = level;
-    }
 
     /// Set the division for all the patches the same number of division in each dimension
     /// Note that if the division is changed, the post_model_part must be generated again

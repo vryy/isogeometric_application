@@ -33,6 +33,7 @@
 #include "includes/define.h"
 #include "includes/variables.h"
 #include "includes/ublas_interface.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/nurbs/bcell_manager.h"
@@ -50,7 +51,7 @@ namespace Kratos
 Hierarchical B-Splines mesh and refinement
 */
 template<int TDim>
-class DeprecatedHBMesh : public Patch<TDim>
+class DeprecatedHBMesh : public Patch<TDim>, public IsogeometricEcho
 {
 private:
     template<class data_type>
@@ -158,12 +159,6 @@ public:
 
     /// Get the name of this hierarchical mesh
     const std::string& Name() const {return mName;}
-
-    /// Set the echo level for this mesh
-    void SetEchoLevel(const int& Level) {mEchoLevel = Level;}
-
-    /// Get the echo level
-    const int& GetEchoLevel() const {return mEchoLevel;}
 
     /// Get the number of basis functions defined over the patch
     virtual const std::size_t TotalNumber() const {return mBasisFuncs.size();}
@@ -301,7 +296,6 @@ public:
 private:
 
     std::string mName;
-    unsigned int mEchoLevel;
 
     unsigned int mOrder1;
     unsigned int mOrder2;

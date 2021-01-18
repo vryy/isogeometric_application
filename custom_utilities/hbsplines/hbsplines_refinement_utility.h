@@ -221,8 +221,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     double start = OpenMPUtils::GetCurrentTime();
     #endif
 
-    bool echo_refinement = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT);
-    bool echo_refinement_detail = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT_DETAIL);
+    bool echo_refinement = IsogeometricEcho::Has(echo_level, ECHO_REFINEMENT);
+    bool echo_refinement_detail = IsogeometricEcho::Has(echo_level, ECHO_REFINEMENT_DETAIL);
 
     if (echo_refinement)
         std::cout << "Basis function " << p_bf->Id() << " (lvl: " << p_bf->Level() << ") of patch " << pPatch->Id() << " will be refined" << std::endl;
@@ -925,7 +925,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
     double start = OpenMPUtils::GetCurrentTime();
     #endif
 
-    bool echo_refinement = IsogeometricEchoCheck::Has(echo_level, ECHO_REFINEMENT);
+    bool echo_refinement = IsogeometricEcho::Has(echo_level, ECHO_REFINEMENT);
 
     // rebuild support domain
     pFESpace->ClearSupportDomain();

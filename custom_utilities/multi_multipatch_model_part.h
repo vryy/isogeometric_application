@@ -20,6 +20,7 @@
 #include "includes/deprecated_variables.h"
 #include "includes/model_part.h"
 #include "utilities/openmp_utils.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/multipatch_utility.h"
 #include "custom_utilities/multipatch_model_part.h"
@@ -36,7 +37,7 @@ Coupling between KRATOS model_part and multiple multipatch structure. THis is us
 All the multipatch must have the same underlying space.
  */
 template<int TDim>
-class MultiMultiPatchModelPart
+class MultiMultiPatchModelPart : public IsogeometricEcho
 {
 public:
     /// Pointer definition
@@ -142,11 +143,14 @@ public:
             }
         }
 
-        #ifdef ENABLE_PROFILING
-        std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s" << std::endl;
-        #else
-        std::cout << __FUNCTION__ << " completed" << std::endl;
-        #endif
+        if (this->GetEchoLevel() > 0)
+        {
+            #ifdef ENABLE_PROFILING
+            std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s" << std::endl;
+            #else
+            std::cout << __FUNCTION__ << " completed" << std::endl;
+            #endif
+        }
     }
 
     /// create the elements out from the patches and add to the model_part
@@ -172,13 +176,7 @@ public:
         }
 
         // create new elements and add to the model_part
-        ModelPart::ElementsContainerType pNewElements = this->CreateEntitiesFromFESpace<Element, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(
-            pFESpaces,
-            pControlGrids,
-            mpModelPart->Nodes(),
-            element_name,
-            starting_id,
-            pProperties);
+        ModelPart::ElementsContainerType pNewElements = this->CreateEntitiesFromFESpace<Element, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pFESpaces, pControlGrids, mpModelPart->Nodes(), element_name, starting_id, pProperties, this->GetEchoLevel());
 
         for (ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
         {
@@ -188,11 +186,14 @@ public:
         // sort the element container and make it consistent
         mpModelPart->Elements().Unique();
 
-        #ifdef ENABLE_PROFILING
-        std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, " << pNewElements.size() << " elements of type " << element_name << " are generated" << std::endl;
-        #else
-        std::cout << __FUNCTION__ << " completed" << std::endl;
-        #endif
+        if (this->GetEchoLevel() > 0)
+        {
+            #ifdef ENABLE_PROFILING
+            std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, " << pNewElements.size() << " elements of type " << element_name << " are generated" << std::endl;
+            #else
+            std::cout << __FUNCTION__ << " completed" << std::endl;
+            #endif
+        }
 
         return pNewElements;
     }
@@ -220,13 +221,7 @@ public:
         }
 
         // create new elements and add to the model_part
-        ModelPart::ConditionsContainerType pNewConditions = this->CreateEntitiesFromFESpace<Condition, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(
-            pFESpaces,
-            pControlGrids,
-            mpModelPart->Nodes(),
-            condition_name,
-            starting_id,
-            pProperties);
+        ModelPart::ConditionsContainerType pNewConditions = this->CreateEntitiesFromFESpace<Condition, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pFESpaces, pControlGrids, mpModelPart->Nodes(), condition_name, starting_id, pProperties, this->GetEchoLevel());
 
         for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
@@ -236,11 +231,14 @@ public:
         // sort the element container and make it consistent
         mpModelPart->Conditions().Unique();
 
-        #ifdef ENABLE_PROFILING
-        std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, " << pNewConditions.size() << " conditions of type " << condition_name << " are generated" << std::endl;
-        #else
-        std::cout << __FUNCTION__ << " completed" << std::endl;
-        #endif
+        if (this->GetEchoLevel() > 0)
+        {
+            #ifdef ENABLE_PROFILING
+            std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, " << pNewConditions.size() << " conditions of type " << condition_name << " are generated" << std::endl;
+            #else
+            std::cout << __FUNCTION__ << " completed" << std::endl;
+            #endif
+        }
 
         return pNewConditions;
     }
@@ -274,7 +272,7 @@ public:
         const GridFunction<TDim-1, ControlPointType>& rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
 
         // create new conditions and add to the model_part
-        ModelPart::ConditionsContainerType pNewConditions = MultiPatchModelPart<TDim>::template CreateEntitiesFromFESpace<Condition, FESpace<TDim-1>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), condition_name, starting_id, pProperties);
+        ModelPart::ConditionsContainerType pNewConditions = MultiPatchModelPart<TDim>::template CreateEntitiesFromFESpace<Condition, FESpace<TDim-1>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), condition_name, starting_id, pProperties, this->GetEchoLevel());
 
         for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
@@ -284,11 +282,14 @@ public:
         // sort the condition container and make it consistent
         mpModelPart->Conditions().Unique();
 
-        #ifdef ENABLE_PROFILING
-        std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, " << pNewConditions.size() << " conditions of type " << condition_name << " are generated" << std::endl;
-        #else
-        std::cout << __FUNCTION__ << " completed" << std::endl;
-        #endif
+        if (this->GetEchoLevel() > 0)
+        {
+            #ifdef ENABLE_PROFILING
+            std::cout << "+++ " << __FUNCTION__ << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s, " << pNewConditions.size() << " conditions of type " << condition_name << " are generated" << std::endl;
+            #else
+            std::cout << __FUNCTION__ << " completed" << std::endl;
+            #endif
+        }
 
         return pNewConditions;
     }
@@ -406,7 +407,7 @@ private:
         std::vector<typename TFESpace::ConstPointer> pFESpaces,
         std::vector<typename TControlGridType::ConstPointer> pControlGrids,
         TNodeContainerType& rNodes, const std::string& element_name,
-        const std::size_t& starting_id, Properties::Pointer p_temp_properties)
+        const std::size_t& starting_id, Properties::Pointer p_temp_properties, const int& echo_level)
     {
         #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();
@@ -426,10 +427,13 @@ private:
                 KRATOS_THROW_ERROR(std::logic_error, "The cell manager does not match at index", ip)
         }
 
-        #ifdef ENABLE_PROFILING
-        std::cout << "  ++ ConstructCellManager: " << OpenMPUtils::GetCurrentTime()-start << " s" << std::endl;
-        start = OpenMPUtils::GetCurrentTime();
-        #endif
+        if (echo_level > 0)
+        {
+            #ifdef ENABLE_PROFILING
+            std::cout << "  ++ ConstructCellManager: " << OpenMPUtils::GetCurrentTime()-start << " s" << std::endl;
+            start = OpenMPUtils::GetCurrentTime();
+            #endif
+        }
 
         // container for newly created elements
         PointerVectorSet<TEntityType, IndexedObject> pNewElements;
@@ -477,18 +481,19 @@ private:
                     weights[i] = pControlGrids[ip]->GetData(pFESpaces[ip]->LocalId(anchors[i])).W();
                 }
 
-                #ifdef DEBUG_GEN_ENTITY
-                std::cout << "anchors:";
-                for (std::size_t i = 0; i < anchors.size(); ++i)
-                    std::cout << " " << CONVERT_INDEX_IGA_TO_KRATOS(anchors[i]);
-                std::cout << std::endl;
-                KRATOS_WATCH(weights)
-                // KRATOS_WATCH(pcell->GetExtractionOperator())
-                KRATOS_WATCH(pcell->GetCompressedExtractionOperator())
-                KRATOS_WATCH(pFESpace->Order(0))
-                KRATOS_WATCH(pFESpace->Order(1))
-                KRATOS_WATCH(pFESpace->Order(2))
-                #endif
+                if (echo_level > 1)
+                {
+                    std::cout << "anchors:";
+                    for (std::size_t i = 0; i < anchors.size(); ++i)
+                        std::cout << " " << CONVERT_INDEX_IGA_TO_KRATOS(anchors[i]);
+                    std::cout << std::endl;
+                    KRATOS_WATCH(weights)
+                    // KRATOS_WATCH(pcell->GetExtractionOperator())
+                    KRATOS_WATCH(pcell->GetCompressedExtractionOperator())
+                    KRATOS_WATCH(pFESpaces[ip]->Order(0))
+                    KRATOS_WATCH(pFESpaces[ip]->Order(1))
+                    KRATOS_WATCH(pFESpaces[ip]->Order(2))
+                }
 
                 // create the geometry
                 typename IsogeometricGeometryType::Pointer p_temp_geometry
@@ -506,6 +511,7 @@ private:
                                                     static_cast<int>(pFESpaces[ip]->Order(1)),
                                                     static_cast<int>(pFESpaces[ip]->Order(2)),
                                                     max_integration_method);
+
                 p_temp_geometries.push_back(p_temp_geometry);
             }
 
@@ -519,10 +525,11 @@ private:
             pNewElements.push_back(pNewElement);
         }
 
-        #ifdef ENABLE_PROFILING
-        std::cout << "  ++ generate entities: " << OpenMPUtils::GetCurrentTime()-start << " s" << std::endl;
-        start = OpenMPUtils::GetCurrentTime();
-        #endif
+        if (echo_level > 0)
+        {
+            std::cout << "  ++ generate entities: " << OpenMPUtils::GetCurrentTime()-start << " s" << std::endl;
+            start = OpenMPUtils::GetCurrentTime();
+        }
 
         return pNewElements;
     }
@@ -541,8 +548,13 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiMultiPatchMo
 
 } // namespace Kratos.
 
+#ifdef DEBUG_GEN_ENTITY
 #undef DEBUG_GEN_ENTITY
+#endif
+
+#ifdef ENABLE_PROFILING
 #undef ENABLE_PROFILING
+#endif
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_MULTIPATCH_MODEL_PART_H_INCLUDED
 

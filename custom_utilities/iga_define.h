@@ -168,12 +168,21 @@ enum IsogeometricEchoFlags
     ECHO_REFINEMENT_DETAIL   = 0b0000000000000010,
 };
 
-struct IsogeometricEchoCheck
+struct IsogeometricEcho
 {
+    IsogeometricEcho() : mEchoLevel(0) {}
+    ~IsogeometricEcho() {}
+
+    void SetEchoLevel(const int& level) {mEchoLevel = level;}
+
+    int GetEchoLevel() const {return mEchoLevel;}
+
     static bool Has(const int& echo_level, const int& echo_flag)
     {
         return ((echo_level & echo_flag) == echo_flag);
     }
+
+    int mEchoLevel;
 };
 
 enum PreElementType

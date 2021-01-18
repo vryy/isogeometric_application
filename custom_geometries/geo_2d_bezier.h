@@ -53,6 +53,11 @@ public:
      */
 
     /**
+     * Pointer definition of Geo2dBezier
+     */
+    KRATOS_CLASS_POINTER_DEFINITION( Geo2dBezier );
+
+    /**
      * IsogeometricGeometry as base class.
      */
     typedef IsogeometricGeometry<TPointType> BaseType;
@@ -61,11 +66,6 @@ public:
      * The original geometry type
      */
     typedef typename BaseType::GeometryType GeometryType;
-
-    /**
-     * Pointer definition of Geo2dBezier
-     */
-    KRATOS_CLASS_POINTER_DEFINITION( Geo2dBezier );
 
     /**
      * Integration methods implemented in geometry.
@@ -126,26 +126,26 @@ public:
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
     /**
-     * A third order tensor used as shape functions' values
+     * A first order tensor used as shape functions' values
      * container.
      */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
-     * A fourth order tensor used as shape functions' local
+     * A second order tensor used as shape functions' local
      * gradients container in geometry.
      */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
-     * A third order tensor to hold jacobian matrices evaluated at
+     * A first order tensor to hold jacobian matrices evaluated at
      * integration points. Jacobian and InverseOfJacobian functions
      * return this type as their result.
      */
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
+     * A second order tensor to hold shape functions' local
      * gradients. ShapefunctionsLocalGradients function return this
      * type as its result.
      */
@@ -157,6 +157,10 @@ public:
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
+    /** A fourth order tensor to hold shape functions' local third order derivatives
+     */
+    typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -749,7 +753,7 @@ public:
     }
 
     /**
-     * Compute shape function second derivatives at a particular reference point. This function is kept to keep the backward compatibility.
+     * Compute shape function second derivatives at a particular reference point.
      */
     virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const
     {
@@ -867,6 +871,27 @@ public:
             rResults[i](0, 1) = tmp_gradients12(i) * mCtrlWeights(i);
             rResults[i](1, 0) = rResults[i](0, 1);
             rResults[i](1, 1) = tmp_gradients22(i) * mCtrlWeights(i);
+        }
+
+        return rResults;
+    }
+
+    /**
+     * Compute shape function third derivatives at a particular reference point.
+     */
+    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResults, const CoordinatesArrayType& rPoint ) const
+    {
+        // TODO
+        rResults.resize(this->PointsNumber(), false);
+
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
+        {
+            rResults[i].resize(2, false);
+            for(IndexType j = 0; j < 2; ++j)
+            {
+                rResults[i][j].resize(2, 2, false);
+                noalias(rResults[i][j]) = ZeroMatrix(2, 2);
+            }
         }
 
         return rResults;

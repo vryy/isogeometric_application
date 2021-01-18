@@ -78,7 +78,12 @@ public:
      */
 
     /**
-     * Geometry as base class.
+     * Pointer definition of Geo1dBezier
+     */
+    KRATOS_CLASS_POINTER_DEFINITION( Geo1dBezier );
+
+    /**
+     * IsogeometricGeometry as base class.
      */
     typedef IsogeometricGeometry<TPointType> BaseType;
 
@@ -86,11 +91,6 @@ public:
      * The original geometry type
      */
     typedef typename BaseType::GeometryType GeometryType;
-
-    /**
-     * Pointer definition of Geo1dBezier
-     */
-    KRATOS_CLASS_POINTER_DEFINITION( Geo1dBezier );
 
     /**
      * Integration methods implemented in geometry.
@@ -151,26 +151,26 @@ public:
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
     /**
-     * A third order tensor used as shape functions' values
+     * A first order tensor used as shape functions' values
      * container.
      */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
-     * A fourth order tensor used as shape functions' local
+     * A second order tensor used as shape functions' local
      * gradients container in geometry.
      */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
-     * A third order tensor to hold jacobian matrices evaluated at
+     * A first order tensor to hold jacobian matrices evaluated at
      * integration points. Jacobian and InverseOfJacobian functions
      * return this type as their result.
      */
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
+     * A second order tensor to hold shape functions' local
      * gradients. ShapefunctionsLocalGradients function return this
      * type as its result.
      */
@@ -182,6 +182,10 @@ public:
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
+    /** A fourth order tensor to hold shape functions' local third order derivatives
+     */
+    typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -197,6 +201,7 @@ public:
      * Type of Matrix
      */
     typedef typename BaseType::MatrixType MatrixType;
+    typedef boost::numeric::ublas::compressed_matrix<typename MatrixType::value_type> CompressedMatrixType;
 
     /**
      * Type of Vector
@@ -949,7 +954,7 @@ public:
     }
 
     /**
-     * Compute shape function second derivatives at a particular reference point. This function is kept to keep the backward compatibility.
+     * Compute shape function second derivatives at a particular reference point.
      */
     virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const
     {
@@ -974,18 +979,67 @@ public:
         //compute the shape function local second gradients
         rResults.resize(this->PointsNumber(), false);
         double aux = inner_prod(bezier_functions_derivatives, bezier_weights);
-        double auxs = inner_prod(bezier_functions_second_derivatives, bezier_weights);
+        double aux2 = inner_prod(bezier_functions_second_derivatives, bezier_weights);
         VectorType tmp_gradients =
             prod(mExtractionOperator,
                     (1 / denom) * bezier_functions_second_derivatives
-                    - (aux / pow(denom, 2)) * bezier_functions_derivatives * 2
-                    - (auxs / pow(denom, 2)) * bezier_functions_values
+                    - 2.0 * (aux / pow(denom, 2)) * bezier_functions_derivatives
+                    - (aux2 / pow(denom, 2)) * bezier_functions_values
                     + 2.0 * pow(aux, 2) / pow(denom, 3) * bezier_functions_values
             );
         for(IndexType i = 0; i < this->PointsNumber(); ++i)
         {
             rResults[i].resize(1, 1, false);
             rResults[i](0, 0) = tmp_gradients(i) * mCtrlWeights(i);
+        }
+
+        return rResults;
+    }
+
+    /**
+     * Compute shape function third derivatives at a particular reference point.
+     */
+    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const
+    {
+        //compute all univariate Bezier shape functions & derivatives at rPoint
+        VectorType bezier_functions_values(mNumber);
+        VectorType bezier_functions_derivatives(mNumber);
+        VectorType bezier_functions_second_derivatives(mNumber);
+        VectorType bezier_functions_third_derivatives(mNumber);
+        BezierUtils::bernstein(bezier_functions_values,
+                               bezier_functions_derivatives,
+                               bezier_functions_second_derivatives,
+                               bezier_functions_third_derivatives,
+                               mOrder,
+                               rCoordinates[0]);
+
+        //compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+        double denom = inner_prod(bezier_functions_values, bezier_weights);
+
+        //compute the shape function local third gradients
+        rResults.resize(this->PointsNumber(), false);
+        double aux = inner_prod(bezier_functions_derivatives, bezier_weights);
+        double aux2 = inner_prod(bezier_functions_second_derivatives, bezier_weights);
+        double aux3 = inner_prod(bezier_functions_third_derivatives, bezier_weights);
+        VectorType tmp_gradients =
+            prod(mExtractionOperator,
+                    (1 / denom) * bezier_functions_third_derivatives
+                    - 3.0 * (aux / pow(denom, 2)) * bezier_functions_second_derivatives
+                    + ( - 3.0 * (aux2 / pow(denom, 2))
+                        + 6.0 * (pow(aux, 2) / pow(denom, 3)) ) * bezier_functions_derivatives
+                    + ( -(aux3 / pow(denom, 2))
+                        + 6.0 * (aux2 * aux / pow(denom, 3))
+                        - 6.0 * (pow(aux, 3) / pow(denom, 4)) ) * bezier_functions_values
+            );
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
+        {
+            rResults[i].resize(1, false);
+            for(IndexType j = 0; j < 1; ++j)
+            {
+                rResults[i][j].resize(1, 1, false);
+                rResults[i][j](0, 0) = tmp_gradients(i) * mCtrlWeights(i);
+            }
         }
 
         return rResults;

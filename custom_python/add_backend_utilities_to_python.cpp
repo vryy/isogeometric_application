@@ -23,7 +23,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
-#include "custom_python/add_utilities_to_python.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/isogeometric_post_utility.h"
 #include "custom_utilities/bezier_classical_post_utility.h"
@@ -31,6 +31,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/isogeometric_test_utils.h"
 #include "custom_utilities/bezier_test_utils.h"
 #include "custom_utilities/isogeometric_merge_utility.h"
+#include "custom_python/add_utilities_to_python.h"
 
 #ifdef ISOGEOMETRIC_USE_HDF5
 #include "custom_utilities/hdf5_post_utility.h"
@@ -111,88 +112,184 @@ void BezierUtils_ComputeCentroid(
     dummy.ComputeCentroid<T>(pElem, P);
 }
 
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeGlobalCoordinates1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeGlobalCoordinates(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeGlobalCoordinates2(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y
+    typename TEntityType::Pointer pElement,
+    double X, double Y
 )
 {
-    dummy.ProbeGlobalCoordinates(pElement, X, Y);
+    dummy.ProbeGlobalCoordinates(pElement->GetGeometry(), X, Y, 0.0);
 }
 
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeGlobalCoordinates3(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y,
-    double Z
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
 )
 {
-    dummy.ProbeGlobalCoordinates(pElement, X, Y, Z);
+    dummy.ProbeGlobalCoordinates(pElement->GetGeometry(), X, Y, Z);
 }
 
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionValues1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeShapeFunctionValues(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeShapeFunctionValues2(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y
+    typename TEntityType::Pointer pElement,
+    double X, double Y
 )
 {
-    dummy.ProbeShapeFunctionValues(pElement, X, Y);
+    dummy.ProbeShapeFunctionValues(pElement->GetGeometry(), X, Y, 0.0);
 }
 
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeShapeFunctionValues3(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y,
-    double Z
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
 )
 {
-    dummy.ProbeShapeFunctionValues(pElement, X, Y, Z);
+    dummy.ProbeShapeFunctionValues(pElement->GetGeometry(), X, Y, Z);
 }
 
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionDerivatives1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeShapeFunctionDerivatives(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeShapeFunctionDerivatives2(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y
+    typename TEntityType::Pointer pElement,
+    double X, double Y
 )
 {
-    dummy.ProbeShapeFunctionDerivatives(pElement, X, Y);
+    dummy.ProbeShapeFunctionDerivatives(pElement->GetGeometry(), X, Y, 0.0);
 }
 
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeShapeFunctionDerivatives3(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y,
-    double Z
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
 )
 {
-    dummy.ProbeShapeFunctionDerivatives(pElement, X, Y, Z);
+    dummy.ProbeShapeFunctionDerivatives(pElement->GetGeometry(), X, Y, Z);
 }
 
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeJacobian1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeJacobian(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeJacobian2(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y
+    typename TEntityType::Pointer pElement,
+    double X, double Y
 )
 {
-    dummy.ProbeJacobian(pElement, X, Y);
+    dummy.ProbeJacobian(pElement->GetGeometry(), X, Y, 0.0);
 }
 
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeJacobian3(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y,
-    double Z
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
 )
 {
-    dummy.ProbeJacobian(pElement, X, Y, Z);
+    dummy.ProbeJacobian(pElement->GetGeometry(), X, Y, Z);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeShapeFunctionSecondDerivatives(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives2(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X, double Y
+)
+{
+    dummy.ProbeShapeFunctionSecondDerivatives(pElement->GetGeometry(), X, Y, 0.0);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives3(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
+)
+{
+    dummy.ProbeShapeFunctionSecondDerivatives(pElement->GetGeometry(), X, Y, Z);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeShapeFunctionThirdDerivatives(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives2(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X, double Y
+)
+{
+    dummy.ProbeShapeFunctionThirdDerivatives(pElement->GetGeometry(), X, Y, 0.0);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives3(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
+)
+{
+    dummy.ProbeShapeFunctionThirdDerivatives(pElement->GetGeometry(), X, Y, Z);
 }
 
 //////////////////////////////////////////////////////////
@@ -546,6 +643,11 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .value("Hexahedra", _HEXAHEDRA_)
     ;
 
+    class_<IsogeometricEcho, boost::noncopyable>("IsogeometricEcho", init<>())
+    .def("SetEchoLevel", &IsogeometricEcho::SetEchoLevel)
+    // .def("GetEchoLevel", IsogeometricEcho_GetEchoLevel)
+    ;
+
     class_<BSplineUtils, BSplineUtils::Pointer, boost::noncopyable>("BSplineUtils", init<>())
     .def("FindSpan", BSplineUtils_FindSpan)
     .def("BasisFuns", BSplineUtils_BasisFuns)
@@ -632,16 +734,45 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     class_<IsogeometricTestUtils, IsogeometricTestUtils::Pointer, boost::noncopyable>("IsogeometricTestUtils", init<>())
     .def("Test1", &IsogeometricTestUtils::Test1)
     .def("Test2", &IsogeometricTestUtils::Test2)
-    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates2)
-    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates3)
-    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues2)
-    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues3)
-    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives2)
-    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives3)
-    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian2)
-    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian3)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates1<Element>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates1<Condition>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates2<Element>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates2<Condition>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates3<Element>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates3<Condition>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues1<Element>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues1<Condition>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues2<Element>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues2<Condition>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues3<Element>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues3<Condition>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives1<Element>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives1<Condition>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives2<Element>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives2<Condition>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives3<Element>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives3<Condition>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives1<Element>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives1<Condition>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives2<Element>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives2<Condition>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives3<Element>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives3<Condition>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives1<Element>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives1<Condition>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives2<Element>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives2<Condition>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives3<Element>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives3<Condition>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian1<Element>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian1<Condition>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian2<Element>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian2<Condition>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian3<Element>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian3<Condition>)
     .def("DumpNodalValues", &IsogeometricTestUtils::DumpNodalValues<double>)
     .def("DumpNodalValues", &IsogeometricTestUtils::DumpNodalValues<array_1d<double, 3> >)
+    .def("DumpNodalValues", &IsogeometricTestUtils::DumpNodalValues<Vector>)
     ;
 
     class_<IsogeometricMergeUtility, IsogeometricMergeUtility::Pointer, boost::noncopyable>(

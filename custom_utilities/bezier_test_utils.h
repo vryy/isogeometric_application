@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 2014 Jan 28 $
 //   Revision:            $Revision: 1.1 $
@@ -12,9 +12,9 @@
 // System includes
 #include <string>
 #include <vector>
-#include <iostream> 
+#include <iostream>
 
-// External includes 
+// External includes
 #include "boost/numeric/ublas/vector.hpp"
 // Project includes
 #include "includes/define.h"
@@ -59,7 +59,7 @@ public:
     typedef boost::numeric::ublas::vector<double> ValueContainerType;
 
     typedef ModelPart::NodesContainerType NodesArrayType;
-    
+
     typedef ModelPart::ElementsContainerType ElementsArrayType;
 
     typedef typename Element::GeometryType GeometryType;
@@ -95,11 +95,11 @@ public:
         int n = 3;
         Vector v(n + 1);
         BezierUtils::bernstein(v, n, 0.5);
-        
+
         KRATOS_WATCH(v)
     }
-    
-    
+
+
     ///@}
     ///@name Access
     ///@{
@@ -240,4 +240,4 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 }// namespace Kratos.
 
-#endif // KRATOS_BEZIER_UTILS_H_INCLUDED  defined 
+#endif // KRATOS_BEZIER_UTILS_H_INCLUDED  defined

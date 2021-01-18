@@ -55,7 +55,6 @@ public:
     ///@name Type Definitions
     ///@{
 
-//      typedef std::vector<double>       ValueContainerType;
     typedef boost::numeric::ublas::vector<double> ValueContainerType;
 
     typedef ModelPart::NodesContainerType NodesArrayType;
@@ -90,7 +89,7 @@ public:
     ///@name Operations
     ///@{
 
-    void Test1(ModelPart& r_model_part, std::size_t NumTestPoints)
+    void Test1(ModelPart& r_model_part, std::size_t NumTestPoints) const
     {
         std::cout << std::setprecision(10);
 
@@ -229,7 +228,7 @@ public:
 
     }
 
-    void Test2(ModelPart& r_model_part)
+    void Test2(ModelPart& r_model_part) const
     {
         ElementsContainerType& pElements = r_model_part.Elements();
         Element::Pointer pElement = (*(pElements.ptr_begin()));
@@ -259,7 +258,7 @@ public:
 
     }
 
-    void ProbeGlobalCoordinates(Element::Pointer& pElement, double X, double Y, double Z = 0.0)
+    void ProbeGlobalCoordinates(GeometryType& rGeometry, double X, double Y, double Z) const
     {
         CoordinatesArrayType p;
         p[0] = X;
@@ -268,12 +267,12 @@ public:
 
         CoordinatesArrayType Result = ZeroVector( 3 );
 
-        pElement->GetGeometry().GlobalCoordinates(Result, p);
+        rGeometry.GlobalCoordinates(Result, p);
 
         std::cout << "Global coordinates at " << p << ": " << Result << std::endl;
     }
 
-    void ProbeShapeFunctionValues(Element::Pointer& pElement, double X, double Y, double Z = 0.0)
+    void ProbeShapeFunctionValues(GeometryType& rGeometry, double X, double Y, double Z) const
     {
         CoordinatesArrayType p;
         p[0] = X;
@@ -281,15 +280,15 @@ public:
         p[2] = Z;
 
         Vector Result;
-        Result = pElement->GetGeometry().ShapeFunctionsValues(Result, p);
+        Result = rGeometry.ShapeFunctionsValues(Result, p);
 
-        for(int i = 0; i < pElement->GetGeometry().size(); ++i)
+        for(int i = 0; i < rGeometry.size(); ++i)
         {
             std::cout << "Shape function value " << (i+1) << " at " << p << ": " << Result(i) << std::endl;
         }
     }
 
-    void ProbeShapeFunctionDerivatives(Element::Pointer& pElement, double X, double Y, double Z = 0.0)
+    void ProbeShapeFunctionDerivatives(GeometryType& rGeometry, double X, double Y, double Z) const
     {
         CoordinatesArrayType p;
         p[0] = X;
@@ -298,12 +297,40 @@ public:
 
         Matrix Result;
 
-        pElement->GetGeometry().ShapeFunctionsLocalGradients(Result, p);
+        rGeometry.ShapeFunctionsLocalGradients(Result, p);
 
         std::cout << "Shape function local gradients at " << p << ":\n" << Result << std::endl;
     }
 
-    void ProbeJacobian(Element::Pointer& pElement, double X, double Y, double Z = 0.0)
+    void ProbeShapeFunctionSecondDerivatives(GeometryType& rGeometry, double X, double Y, double Z) const
+    {
+        CoordinatesArrayType p;
+        p[0] = X;
+        p[1] = Y;
+        p[2] = Z;
+
+        GeometryType::ShapeFunctionsSecondDerivativesType Result;
+
+        rGeometry.ShapeFunctionsSecondDerivatives(Result, p);
+
+        std::cout << "Shape function second derivatives at " << p << ":\n" << Result << std::endl;
+    }
+
+    void ProbeShapeFunctionThirdDerivatives(GeometryType& rGeometry, double X, double Y, double Z) const
+    {
+        CoordinatesArrayType p;
+        p[0] = X;
+        p[1] = Y;
+        p[2] = Z;
+
+        GeometryType::ShapeFunctionsThirdDerivativesType Result;
+
+        rGeometry.ShapeFunctionsThirdDerivatives(Result, p);
+
+        std::cout << "Shape function third derivatives at " << p << ":\n" << Result << std::endl;
+    }
+
+    void ProbeJacobian(GeometryType& rGeometry, double X, double Y, double Z) const
     {
         CoordinatesArrayType p;
         p[0] = X;
@@ -312,16 +339,13 @@ public:
 
         Matrix Result;
 
-        pElement->GetGeometry().Jacobian(Result, p);
+        rGeometry.Jacobian(Result, p);
 
         std::cout << "Jacobian at " << p << ":\n" << Result << std::endl;
     }
 
     template<class TDataType>
-    void DumpNodalValues(
-        Variable<TDataType>& rVariable,
-        ModelPart& r_model_part
-    )
+    void DumpNodalValues(Variable<TDataType>& rVariable, ModelPart& r_model_part) const
     {
         NodesArrayType& pNodes = r_model_part.Nodes();
 

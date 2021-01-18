@@ -77,23 +77,25 @@ class DummyIsogeometricCondition : public Condition
                          ProcessInfo& CurrentProcessInfo);
 
         virtual void Initialize(const ProcessInfo& rCurrentProcessInfo);
-        /**
-         * Turn back information as a string.
-         * (DEACTIVATED)
-         */
-        //std::string Info();
 
-        /**
-         * Print information about this object.
-         * (DEACTIVATED)
-         */
-        //virtual void PrintInfo(std::ostream& rOStream) const;
+        /// Turn back information as a string.
+        virtual std::string Info() const
+        {
+            return "DummyIsogeometricCondition";
+        }
 
-        /**
-         * Print object's data.
-         * (DEACTIVATED)
-         */
-        //virtual void PrintData(std::ostream& rOStream) const;
+        /// Print information about this object.
+        virtual void PrintInfo(std::ostream& rOStream) const
+        {
+            rOStream << "DummyIsogeometricCondition #" << Id();
+        }
+
+        /// Print object's data.
+        virtual void PrintData(std::ostream& rOStream) const
+        {
+            mpIsogeometricGeometry->PrintData(rOStream);
+            rOStream << " (IntegrationMethod: " << mThisIntegrationMethod << ")" << std::endl;
+        }
 
     private:
 

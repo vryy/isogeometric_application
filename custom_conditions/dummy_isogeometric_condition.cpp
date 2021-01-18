@@ -11,7 +11,6 @@
 
 // Project includes
 #include "custom_conditions/dummy_isogeometric_condition.h"
-#include "includes/deprecated_variables.h"
 #include "includes/legacy_structural_app_vars.h"
 #include "includes/kratos_flags.h"
 #include "utilities/math_utils.h"

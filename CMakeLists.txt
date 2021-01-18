@@ -2,6 +2,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/custom_cmake_modules")
 
+# #include cotire (CMake module to hep generating precompiled header to speed-up the build process)
+# include(cotire)
+
 message("**** configuring KratosIsogeometricApplication ****")
 
 include_directories( ${CMAKE_SOURCE_DIR})
@@ -113,6 +116,7 @@ endif()
 
 set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_elements/dummy_isogeometric_element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_conditions/dummy_isogeometric_condition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/isogeometric_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_io_to_python.cpp
@@ -158,6 +162,7 @@ if(CGAL_FOUND)
     target_link_libraries(KratosIsogeometricApplication ${CGAL_LIBRARIES})
     target_link_libraries(KratosIsogeometricApplication ${GMP_LIBRARIES})
 endif()
+# cotire(KratosIsogeometricApplication)
 
 set_target_properties(KratosIsogeometricApplication PROPERTIES PREFIX "")
 install(TARGETS KratosIsogeometricApplication DESTINATION libs )

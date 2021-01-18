@@ -24,15 +24,16 @@
 #include "includes/kratos_application.h"
 #include "includes/variables.h"
 #include "custom_utilities/control_point.h"
+#include "custom_elements/dummy_isogeometric_element.h"
 #include "custom_conditions/dummy_isogeometric_condition.h"
 
 namespace Kratos
 {
 
-	///@name Kratos Globals
-	///@{
+    ///@name Kratos Globals
+    ///@{
 
-	// Variables definition
+    // Variables definition
     KRATOS_DEFINE_VARIABLE( double, NURBS_WEIGHT )
     KRATOS_DEFINE_VARIABLE( Vector, NURBS_WEIGHTS )
     KRATOS_DEFINE_VARIABLE( Vector, NURBS_KNOTS_1 )
@@ -68,155 +69,159 @@ namespace Kratos
     KRATOS_DEFINE_VARIABLE( int, EQUATION_INDEX )
     KRATOS_DEFINE_VARIABLE( int, CELL_INDEX )
 
-	///@}
-	///@name Type Definitions
-	///@{
+    ///@}
+    ///@name Type Definitions
+    ///@{
 
-	///@}
-	///@name  Enum's
-	///@{
+    ///@}
+    ///@name  Enum's
+    ///@{
 
-	///@}
-	///@name  Functions
-	///@{
+    ///@}
+    ///@name  Functions
+    ///@{
 
-	///@}
-	///@name Kratos Classes
-	///@{
+    ///@}
+    ///@name Kratos Classes
+    ///@{
 
-	/// Short class definition.
-	/** Detail class definition.
-	*/
-	class KratosIsogeometricApplication : public KratosApplication
-	{
-	public:
-		///@name Type Definitions
-		///@{
-
-
-		/// Pointer definition of KratosDiscontinuitiesApplication
-		KRATOS_CLASS_POINTER_DEFINITION(KratosIsogeometricApplication);
-
-		///@}
-		///@name Life Cycle
-		///@{
-
-		/// Default constructor.
-		KratosIsogeometricApplication();
-
-		/// Destructor.
-		virtual ~KratosIsogeometricApplication()
-		{}
+    /// Short class definition.
+    /** Detail class definition.
+    */
+    class KratosIsogeometricApplication : public KratosApplication
+    {
+    public:
+        ///@name Type Definitions
+        ///@{
 
 
-		///@}
-		///@name Operators
-		///@{
+        /// Pointer definition of KratosDiscontinuitiesApplication
+        KRATOS_CLASS_POINTER_DEFINITION(KratosIsogeometricApplication);
+
+        ///@}
+        ///@name Life Cycle
+        ///@{
+
+        /// Default constructor.
+        KratosIsogeometricApplication();
+
+        /// Destructor.
+        virtual ~KratosIsogeometricApplication()
+        {}
 
 
-		///@}
-		///@name Operations
-		///@{
-
-		virtual void Register();
+        ///@}
+        ///@name Operators
+        ///@{
 
 
+        ///@}
+        ///@name Operations
+        ///@{
 
-		///@}
-		///@name Access
-		///@{
-
-
-		///@}
-		///@name Inquiry
-		///@{
+        virtual void Register();
 
 
-		///@}
-		///@name Input and output
-		///@{
 
-		/// Turn back information as a string.
-		virtual std::string Info() const
-		{
-			return "KratosIsogeometricApplication";
-		}
+        ///@}
+        ///@name Access
+        ///@{
 
-		/// Print information about this object.
-		virtual void PrintInfo(std::ostream& rOStream) const
-		{
-			rOStream << Info();
-			PrintData(rOStream);
-		}
 
-		///// Print object's data.
+        ///@}
+        ///@name Inquiry
+        ///@{
+
+
+        ///@}
+        ///@name Input and output
+        ///@{
+
+        /// Turn back information as a string.
+        virtual std::string Info() const
+        {
+            return "KratosIsogeometricApplication";
+        }
+
+        /// Print information about this object.
+        virtual void PrintInfo(std::ostream& rOStream) const
+        {
+            rOStream << Info();
+            PrintData(rOStream);
+        }
+
+        ///// Print object's data.
         virtual void PrintData(std::ostream& rOStream) const
         {
-          	KRATOS_WATCH("in KratosIsogeometricApplication");
-          	KRATOS_WATCH(KratosComponents<VariableData>::GetComponents().size() );
-		    rOStream << "Variables:" << std::endl;
-		    KratosComponents<VariableData>().PrintData(rOStream);
-		    rOStream << std::endl;
-		    rOStream << "Elements:" << std::endl;
-		    KratosComponents<Element>().PrintData(rOStream);
-		    rOStream << std::endl;
-		    rOStream << "Conditions:" << std::endl;
-		    KratosComponents<Condition>().PrintData(rOStream);
+            KRATOS_WATCH("in KratosIsogeometricApplication");
+            KRATOS_WATCH(KratosComponents<VariableData>::GetComponents().size() );
+            rOStream << "Variables:" << std::endl;
+            KratosComponents<VariableData>().PrintData(rOStream);
+            rOStream << std::endl;
+            rOStream << "Elements:" << std::endl;
+            KratosComponents<Element>().PrintData(rOStream);
+            rOStream << std::endl;
+            rOStream << "Conditions:" << std::endl;
+            KratosComponents<Condition>().PrintData(rOStream);
         }
 
 
-		///@}
-		///@name Friends
-		///@{
+        ///@}
+        ///@name Friends
+        ///@{
 
 
-		///@}
+        ///@}
 
-	protected:
-		///@name Protected static Member Variables
-		///@{
-
-
-		///@}
-		///@name Protected member Variables
-		///@{
+    protected:
+        ///@name Protected static Member Variables
+        ///@{
 
 
-		///@}
-		///@name Protected Operators
-		///@{
+        ///@}
+        ///@name Protected member Variables
+        ///@{
 
 
-		///@}
-		///@name Protected Operations
-		///@{
+        ///@}
+        ///@name Protected Operators
+        ///@{
 
 
-		///@}
-		///@name Protected  Access
-		///@{
+        ///@}
+        ///@name Protected Operations
+        ///@{
 
 
-		///@}
-		///@name Protected Inquiry
-		///@{
+        ///@}
+        ///@name Protected  Access
+        ///@{
 
 
-		///@}
-		///@name Protected LifeCycle
-		///@{
+        ///@}
+        ///@name Protected Inquiry
+        ///@{
 
 
-		///@}
-
-	private:
-		///@name Static Member Variables
-		///@{
+        ///@}
+        ///@name Protected LifeCycle
+        ///@{
 
 
-		///@}
-		///@name Member Variables
-		///@{
+        ///@}
+
+    private:
+        ///@name Static Member Variables
+        ///@{
+
+
+        ///@}
+        ///@name Member Variables
+        ///@{
+
+        const DummyIsogeometricElement mDummyElementBezier;
+        const DummyIsogeometricElement mDummyElementBezier2D;
+        const DummyIsogeometricElement mDummyElementBezier3D;
 
         const DummyIsogeometricCondition mDummyConditionBezier;
         const DummyIsogeometricCondition mDummyConditionBezier2D;
@@ -224,53 +229,53 @@ namespace Kratos
         const DummyIsogeometricCondition mDummyConditionBezier3D;
 
 
-		///@}
-		///@name Private Operators
-		///@{
+        ///@}
+        ///@name Private Operators
+        ///@{
 
 
-		///@}
-		///@name Private Operations
-		///@{
+        ///@}
+        ///@name Private Operations
+        ///@{
 
 
-		///@}
-		///@name Private  Access
-		///@{
+        ///@}
+        ///@name Private  Access
+        ///@{
 
 
-		///@}
-		///@name Private Inquiry
-		///@{
+        ///@}
+        ///@name Private Inquiry
+        ///@{
 
 
-		///@}
-		///@name Un accessible methods
-		///@{
+        ///@}
+        ///@name Un accessible methods
+        ///@{
 
-		/// Assignment operator.
-		KratosIsogeometricApplication& operator=(KratosIsogeometricApplication const& rOther);
+        /// Assignment operator.
+        KratosIsogeometricApplication& operator=(KratosIsogeometricApplication const& rOther);
 
-		/// Copy constructor.
-		KratosIsogeometricApplication(KratosIsogeometricApplication const& rOther);
-
-
-		///@}
-
-	}; // Class KratosIsogeometricApplication
-
-	///@}
+        /// Copy constructor.
+        KratosIsogeometricApplication(KratosIsogeometricApplication const& rOther);
 
 
-	///@name Type Definitions
-	///@{
+        ///@}
+
+    }; // Class KratosIsogeometricApplication
+
+    ///@}
 
 
-	///@}
-	///@name Input and output
-	///@{
+    ///@name Type Definitions
+    ///@{
 
-	///@}
+
+    ///@}
+    ///@name Input and output
+    ///@{
+
+    ///@}
 
 
 }  // namespace Kratos.

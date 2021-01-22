@@ -175,7 +175,7 @@ struct IsogeometricEcho
 
     void SetEchoLevel(const int& level) {mEchoLevel = level;}
 
-    int GetEchoLevel() const {return mEchoLevel;}
+    const int& GetEchoLevel() const {return mEchoLevel;}
 
     static bool Has(const int& echo_level, const int& echo_flag)
     {

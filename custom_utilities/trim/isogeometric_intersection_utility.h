@@ -50,9 +50,9 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
-/// Short class definition.
+/// An intersection utility for Isogeometric Analysis
 /**
- * Abstract class to compute the intersection between patches
+ * Compute class to compute the intersection between patches
  */
 class IsogeometricIntersectionUtility
 {
@@ -76,6 +76,14 @@ public:
     virtual ~IsogeometricIntersectionUtility()
     {
     }
+
+    ///@}
+    ///@name Operators
+    ///@{
+
+    ///@}
+    ///@name Operations
+    ///@{
 
     /**
      * Check if a plane intersects with a patch. A plane does not intersect with the patch if all control points of the patch are on one side of the plane
@@ -800,14 +808,6 @@ public:
 
         return -1; // should not come here, just to make the compiler happy
     }
-
-    ///@}
-    ///@name Operators
-    ///@{
-
-    ///@}
-    ///@name Operations
-    ///@{
 
     ///@}
     ///@name Access

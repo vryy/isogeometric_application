@@ -173,6 +173,10 @@ struct IsogeometricEcho
     IsogeometricEcho() : mEchoLevel(0) {}
     ~IsogeometricEcho() {}
 
+    IsogeometricEcho(IsogeometricEcho const& rOther)
+    : mEchoLevel(rOther.mEchoLevel)
+    {}
+
     void SetEchoLevel(const int& level) {mEchoLevel = level;}
 
     const int& GetEchoLevel() const {return mEchoLevel;}

@@ -32,6 +32,22 @@
 namespace Kratos
 {
 
+template<int TDim>
+class BSplinesFESpace;
+
+template<int TDim>
+struct BSplinesFESpace_Helper
+{
+    /// Get the values of the basis functions at point xi
+    static void GetValues(const BSplinesFESpace<TDim>& rFESpace,
+        std::vector<double>& values, const std::vector<double>& xi);
+
+    /// Get the values and derivatives of the basis functions at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    static void GetValuesAndDerivatives(const BSplinesFESpace<TDim>& rFESpace,
+        std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi);
+};
+
 /**
 This class represents the FESpace for a single BSplines patch defined over parametric domain.
  */
@@ -191,8 +207,7 @@ public:
     /// Get the values of the basis functions at point xi
     void GetValues(std::vector<double>& values, const std::vector<double>& xi) const final
     {
-        // TODO
-        KRATOS_THROW_ERROR(std::logic_error, "GetValue is not implemented for dimension", TDim)
+        BSplinesFESpace_Helper<TDim>::GetValues(*this, values, xi);
     }
 
     /// Get the derivatives of the basis function i at point xi
@@ -215,7 +230,7 @@ public:
     /// the output derivatives has the form of values[func_index][dim_index]
     void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const final
     {
-        KRATOS_THROW_ERROR(std::logic_error, "GetValueAndDerivative is not implemented for dimension", TDim)
+        BSplinesFESpace_Helper<TDim>::GetValuesAndDerivatives(*this, values, derivatives, xi);
     }
 
     /// Check if a point lies inside the parametric domain of the BSplinesFESpace

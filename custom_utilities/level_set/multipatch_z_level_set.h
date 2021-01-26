@@ -83,7 +83,7 @@ public:
     /// Default constructor.
     MultiPatchZLevelSet(typename MultiPatchType::Pointer pMultiPatch)
     : BaseType(), mpMultiPatch(pMultiPatch)
-    , mnsampling1(5), mnsampling2(5)
+    , mnsampling1(5), mnsampling2(5), mTolerance(1.0e-10), mMaxIterations(30)
     {
         this->SetEchoLevel(1);
     }
@@ -117,6 +117,18 @@ public:
     }
 
 
+    void SetTolerance(const double& Tol)
+    {
+        mTolerance = Tol;
+    }
+
+
+    void SetMaxIterations(const int& max_iters)
+    {
+        mMaxIterations = max_iters;
+    }
+
+
     virtual LevelSet::Pointer CloneLevelSet() const
     {
         return LevelSet::Pointer(new MultiPatchZLevelSet(*this));
@@ -129,44 +141,14 @@ public:
     }
 
 
-    // virtual double GetValue(const PointType& P) const
-    // {
-    //     const double TOL = 1.0e-10;
-    //     const int max_iters = 30;
-    //     std::vector<double> local_point = {0.5, 0.5};
-    //     PointType global_point;
-    //     int target_patch_id;
-    //     int error_code = IsogeometricProjectionUtility::ComputeVerticalProjection(P, local_point, global_point, target_patch_id, mpMultiPatch, TOL, max_iters);
-    //     if (GetEchoLevel() > 1)
-    //     {
-    //         std::cout << "local_point: " << local_point[0] << ", " << local_point[1] << std::endl;
-    //         KRATOS_WATCH(global_point)
-    //         KRATOS_WATCH(target_patch_id)
-    //     }
-    //     if (error_code != 0)
-    //     {
-    //         if (GetEchoLevel() > 0)
-    //         {
-    //             std::cout << "WARNING!!!Error computing the vertical point projection point on multipatch" << std::endl;
-    //             std::cout << " "; KRATOS_WATCH(P)
-    //             std::cout << " "; KRATOS_WATCH(error_code)
-    //             std::cout << " local_point: " << local_point[0] << ", " << local_point[1] << std::endl;
-    //             std::cout << " "; KRATOS_WATCH(global_point)
-    //         }
-    //     }
-    //     return (P[2] - global_point[2]);
-    // }
-
     virtual double GetValue(const PointType& P) const
     {
-        const double TOL = 1.0e-10;
-        const int max_iters = 30;
         std::vector<double> local_point(2);
         PointType global_point;
         int target_patch_id;
         int error_code = IsogeometricProjectionUtility::ComputeVerticalProjection(P,
             local_point, global_point, target_patch_id,
-            mpMultiPatch, TOL, max_iters,
+            mpMultiPatch, mTolerance, mMaxIterations,
             mnsampling1, mnsampling2,
             this->GetEchoLevel()-2);
         if (this->GetEchoLevel() > 1)
@@ -279,6 +261,8 @@ private:
 
     typename MultiPatchType::Pointer mpMultiPatch;
     std::size_t mnsampling1, mnsampling2;
+    double mTolerance;
+    int mMaxIterations;
 
 
     ///@}

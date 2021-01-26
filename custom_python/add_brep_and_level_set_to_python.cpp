@@ -32,6 +32,8 @@ void IsogeometricApplication_AddBRepAndLevelSetToPython()
     class_<MultiPatchZLevelSet, MultiPatchZLevelSet::Pointer, boost::noncopyable, bases<LevelSet, IsogeometricEcho> >
     ( "MultiPatchZLevelSet", init<typename MultiPatch<2>::Pointer>() )
     .def("SetPredictionSampling", &MultiPatchZLevelSet::SetPredictionSampling)
+    .def("SetTolerance", &MultiPatchZLevelSet::SetTolerance)
+    .def("SetMaxIterations", &MultiPatchZLevelSet::SetMaxIterations)
     .def(self_ns::str(self))
     ;
 }

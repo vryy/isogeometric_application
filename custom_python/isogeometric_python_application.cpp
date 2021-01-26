@@ -77,9 +77,6 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
     IsogeometricApplication_AddProcessesToPython();
     IsogeometricApplication_AddIOToPython();
     IsogeometricApplication_AddStrategiesToPython();
-    #ifdef ISOGEOMETRIC_USE_BREP
-    IsogeometricApplication_AddBRepAndLevelSetToPython();
-    #endif
 
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( NURBS_WEIGHT )
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( NURBS_WEIGHTS )

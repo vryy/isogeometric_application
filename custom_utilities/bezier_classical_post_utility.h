@@ -2039,7 +2039,7 @@ private:
 
                     // get the values at the integration_points
                     std::vector<double> ValuesOnIntPoint(integration_points.size());
-                    (*it)->GetValueOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, pModelPart->GetProcessInfo());
+                    (*it)->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, pModelPart->GetProcessInfo());
 
                     for(unsigned int point = 0; point< integration_points.size(); ++point)
                     {
@@ -2212,7 +2212,7 @@ private:
 
                     // get the values at the integration_points
                     std::vector<Vector> ValuesOnIntPoint(integration_points.size());
-                    (*it)->GetValueOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, pModelPart->GetProcessInfo());
+                    (*it)->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, pModelPart->GetProcessInfo());
 
                     for(unsigned int point = 0; point < integration_points.size(); ++point)
                     {

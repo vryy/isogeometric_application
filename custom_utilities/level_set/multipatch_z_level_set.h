@@ -29,7 +29,7 @@
 #include "includes/define.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/multipatch.h"
-#include "custom_utilities/level_set/isogeometric_projection_utility.h"
+#include "custom_utilities/isogeometric_projection_utility.h"
 #include "custom_algebra/level_set/level_set.h"
 
 
@@ -83,7 +83,7 @@ public:
     /// Default constructor.
     MultiPatchZLevelSet(typename MultiPatchType::Pointer pMultiPatch)
     : BaseType(), mpMultiPatch(pMultiPatch)
-    , mnsampling1(5), mnsampling2(5), mTolerance(1.0e-10), mMaxIterations(30)
+    , mnsampling1(5), mnsampling2(5), mProjectionTolerance(1.0e-10), mMaxIterations(30)
     {
         this->SetEchoLevel(1);
     }
@@ -94,6 +94,8 @@ public:
     , mpMultiPatch(rOther.mpMultiPatch)
     , mnsampling1(rOther.mnsampling1)
     , mnsampling2(rOther.mnsampling2)
+    , mProjectionTolerance(rOther.mProjectionTolerance)
+    , mMaxIterations(rOther.mMaxIterations)
     {}
 
     /// Destructor.
@@ -117,9 +119,9 @@ public:
     }
 
 
-    void SetTolerance(const double& Tol)
+    void SetProjectionTolerance(const double& Tol)
     {
-        mTolerance = Tol;
+        mProjectionTolerance = Tol;
     }
 
 
@@ -129,34 +131,36 @@ public:
     }
 
 
-    virtual LevelSet::Pointer CloneLevelSet() const
+    LevelSet::Pointer CloneLevelSet() const final
     {
         return LevelSet::Pointer(new MultiPatchZLevelSet(*this));
     }
 
 
-    virtual std::size_t WorkingSpaceDimension() const
+    std::size_t WorkingSpaceDimension() const final
     {
         return 3;
     }
 
 
-    virtual double GetValue(const PointType& P) const
+    double GetValue(const PointType& P) const final
     {
         std::vector<double> local_point(2);
         PointType global_point;
         int target_patch_id;
         int error_code = IsogeometricProjectionUtility::ComputeVerticalProjection(P,
             local_point, global_point, target_patch_id,
-            mpMultiPatch, mTolerance, mMaxIterations,
+            mpMultiPatch, mProjectionTolerance, mMaxIterations,
             mnsampling1, mnsampling2,
             this->GetEchoLevel()-2);
+
         if (this->GetEchoLevel() > 1)
         {
             std::cout << "local_point: " << local_point[0] << ", " << local_point[1] << std::endl;
             KRATOS_WATCH(global_point)
             KRATOS_WATCH(target_patch_id)
         }
+
         if (error_code != 0)
         {
             if (this->GetEchoLevel() > 0)
@@ -168,7 +172,87 @@ public:
                 std::cout << " "; KRATOS_WATCH(global_point)
             }
         }
+
         return (P[2] - global_point[2]);
+    }
+
+
+    /// inherit from BRep
+    /// Check if a set of points is cut by the level set
+    int CutStatus(const std::vector<PointType>& r_points) const final
+    {
+        typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;
+
+        std::vector<std::size_t> in_list, out_list, on_list;
+        std::vector<double> bounding_box;
+        bool is_above, is_below;
+        for(std::size_t v = 0; v < r_points.size(); ++v)
+        {
+            // first simply check with the bounding box of each patch
+            is_above = true; is_below = true;
+            for (patch_ptr_iterator it = mpMultiPatch->Patches().ptr_begin(); it != mpMultiPatch->Patches().ptr_end(); ++it)
+            {
+                (*it)->GetBoundingBox(bounding_box);
+
+                if (r_points[v][2] < bounding_box[5])
+                    is_above = false;
+
+                if (r_points[v][2] > bounding_box[4])
+                    is_below = false;
+
+                if (!is_above && !is_below)
+                    break;
+            }
+
+            if (is_above)
+                out_list.push_back(v);
+
+            if (is_below)
+                in_list.push_back(v);
+
+            // if the above or below state cannot be clearly determined, then a projection is necessary
+            if (!is_above && !is_below)
+            {
+                double phi = this->GetValue(r_points[v]);
+                if(phi < -this->GetTolerance())
+                    in_list.push_back(v);
+                else if(phi > this->GetTolerance())
+                    out_list.push_back(v);
+                else
+                    on_list.push_back(v);
+            }
+        }
+
+        int stat;
+        if(in_list.size() == 0 && out_list.size() == 0)
+        {
+            for(std::size_t v = 0; v < r_points.size(); ++v)
+                KRATOS_WATCH(r_points[v])
+            KRATOS_WATCH(in_list.size())
+            KRATOS_WATCH(out_list.size())
+            KRATOS_WATCH(on_list.size())
+            KRATOS_WATCH(this->GetTolerance())
+            KRATOS_THROW_ERROR(std::logic_error, "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.", "")
+        }
+        else
+        {
+            if(in_list.size() == 0)
+            {
+                stat = BRep::_OUT;
+                return stat;
+            }
+
+            if(out_list.size() == 0)
+            {
+                stat = BRep::_IN;
+                return stat;
+            }
+
+            stat = BRep::_CUT;
+            return stat;
+        }
+
+        return -99; // can't come here. Just to silence the compiler.
     }
 
 
@@ -187,19 +271,19 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "MultiPatch Z Level Set";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Info();
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         rOStream << "MultiPatch: " << *mpMultiPatch;
     }
@@ -261,7 +345,7 @@ private:
 
     typename MultiPatchType::Pointer mpMultiPatch;
     std::size_t mnsampling1, mnsampling2;
-    double mTolerance;
+    double mProjectionTolerance;
     int mMaxIterations;
 
 

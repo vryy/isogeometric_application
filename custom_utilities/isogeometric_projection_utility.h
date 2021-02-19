@@ -233,8 +233,22 @@ public:
 
         std::vector<double> InitialLocalPoint = rLocalPoint;
 
+        std::vector<double> bounding_box;
         for (patch_ptr_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
         {
+            // make a check to make sure the point can project into the bounding box
+            (*it)->GetBoundingBox(bounding_box);
+
+            bool is_in = true;
+            is_in = is_in && (rPoint[0] > bounding_box[0] - TOL);
+            is_in = is_in && (rPoint[0] < bounding_box[1] + TOL);
+            is_in = is_in && (rPoint[1] > bounding_box[2] - TOL);
+            is_in = is_in && (rPoint[1] < bounding_box[3] + TOL);
+
+            if (!is_in)
+                continue;
+
+            // compute the vertical projection
             rLocalPoint = InitialLocalPoint; // reset the initial point
             int error_code = ComputeVerticalProjection(rPoint, rLocalPoint, rGlobalPoint, *it, TOL, max_iters, echo_level);
 
@@ -260,8 +274,21 @@ public:
         typedef MultiPatch<2> MultiPatchType;
         typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;
 
+        std::vector<double> bounding_box;
         for (patch_ptr_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
         {
+            // make a check to make sure the point can project into the bounding box
+            (*it)->GetBoundingBox(bounding_box);
+
+            bool is_in = true;
+            is_in = is_in && (rPoint[0] > bounding_box[0] - TOL);
+            is_in = is_in && (rPoint[0] < bounding_box[1] + TOL);
+            is_in = is_in && (rPoint[1] > bounding_box[2] - TOL);
+            is_in = is_in && (rPoint[1] < bounding_box[3] + TOL);
+
+            if (!is_in)
+                continue;
+
             // compute a closest prediction
             PredictVerticalProjection(rPoint, rLocalPoint, *it, nsampling1, nsampling2);
 

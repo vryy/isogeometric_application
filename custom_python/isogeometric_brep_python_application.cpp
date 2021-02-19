@@ -30,6 +30,13 @@ namespace Python
 BOOST_PYTHON_MODULE(KratosIsogeometricBRepApplication)
 {
 
+    using namespace boost::python;
+
+    class_<KratosIsogeometricBRepApplication,
+           KratosIsogeometricBRepApplication::Pointer,
+           bases<KratosApplication>, boost::noncopyable > ("KratosIsogeometricBRepApplication")
+           ;
+
     IsogeometricApplication_AddBRepAndLevelSetToPython();
 
 }

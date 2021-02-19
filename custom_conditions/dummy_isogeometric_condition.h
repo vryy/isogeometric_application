@@ -10,10 +10,8 @@
 
 
 // External includes
-#include "boost/smart_ptr.hpp"
 
 // Project includes
-#include "includes/define.h"
 #include "includes/element.h"
 #include "includes/condition.h"
 #include "includes/serializer.h"
@@ -52,46 +50,46 @@ class DummyIsogeometricCondition : public Condition
          * Operations.
          */
 
-        virtual Condition::Pointer Create(IndexType NewId, NodesArrayType const& ThisNodes,
-                                PropertiesType::Pointer pProperties) const;
+        Condition::Pointer Create(IndexType NewId, NodesArrayType const& ThisNodes,
+                                PropertiesType::Pointer pProperties) const final;
 
-        virtual Condition::Pointer Create(IndexType NewId, GeometryType::Pointer pGeom,
-                                PropertiesType::Pointer pProperties) const;
+        Condition::Pointer Create(IndexType NewId, GeometryType::Pointer pGeom,
+                                PropertiesType::Pointer pProperties) const final;
 
-        IntegrationMethod GetIntegrationMethod() const;
+        IntegrationMethod GetIntegrationMethod() const final;
 
         /**
          * Calculates the local system contributions for this contact element
          */
-        virtual void CalculateLocalSystem( MatrixType& rLeftHandSideMatrix,
+        void CalculateLocalSystem( MatrixType& rLeftHandSideMatrix,
                                    VectorType& rRightHandSideVector,
-                                   ProcessInfo& rCurrentProcessInfo);
+                                   const ProcessInfo& rCurrentProcessInfo) final;
 
-        virtual void CalculateRightHandSide( VectorType& rRightHandSideVector,
-                                     ProcessInfo& rCurrentProcessInfo);
+        void CalculateRightHandSide( VectorType& rRightHandSideVector,
+                                     const ProcessInfo& rCurrentProcessInfo) final;
 
-        virtual void EquationIdVector( EquationIdVectorType& rResult,
-                               ProcessInfo& rCurrentProcessInfo);
+        void EquationIdVector( EquationIdVectorType& rResult,
+                               const ProcessInfo& rCurrentProcessInfo) const final;
 
-        virtual void GetDofList( DofsVectorType& ConditionalDofList,
-                         ProcessInfo& CurrentProcessInfo);
+        void GetDofList( DofsVectorType& ConditionalDofList,
+                         const ProcessInfo& CurrentProcessInfo) const final;
 
-        virtual void Initialize(const ProcessInfo& rCurrentProcessInfo);
+        void Initialize(const ProcessInfo& rCurrentProcessInfo) final;
 
         /// Turn back information as a string.
-        virtual std::string Info() const
+        std::string Info() const final
         {
             return "DummyIsogeometricCondition";
         }
 
         /// Print information about this object.
-        virtual void PrintInfo(std::ostream& rOStream) const
+        void PrintInfo(std::ostream& rOStream) const final
         {
             rOStream << "DummyIsogeometricCondition #" << Id();
         }
 
         /// Print object's data.
-        virtual void PrintData(std::ostream& rOStream) const
+        void PrintData(std::ostream& rOStream) const final
         {
             mpIsogeometricGeometry->PrintData(rOStream);
             rOStream << " (IntegrationMethod: " << mThisIntegrationMethod << ")" << std::endl;
@@ -105,19 +103,19 @@ class DummyIsogeometricCondition : public Condition
 
         friend class Serializer;
 
-        virtual void save ( Serializer& rSerializer ) const
+        void save ( Serializer& rSerializer ) const final
         {
             KRATOS_SERIALIZE_SAVE_BASE_CLASS ( rSerializer, Condition )
         }
 
-        virtual void load ( Serializer& rSerializer )
+        void load ( Serializer& rSerializer ) final
         {
             KRATOS_SERIALIZE_LOAD_BASE_CLASS ( rSerializer, Condition )
         }
 
         void CalculateAll( MatrixType& rLeftHandSideMatrix,
                            VectorType& rRightHandSideVector,
-                           ProcessInfo& rCurrentProcessInfo,
+                           const ProcessInfo& rCurrentProcessInfo,
                            bool CalculateStiffnessMatrixFlag,
                            bool CalculateResidualVectorFlag);
 

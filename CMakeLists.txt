@@ -213,3 +213,6 @@ endif(${INSTALL_PYTHON_FILES} MATCHES ON)
 # Add to the KratosMultiphysics Python module
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/IsogeometricApplication.py" DESTINATION KratosMultiphysics)
 
+if(DEFINED ISOGEOMETRIC_USE_BREP)
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/IsogeometricBRepApplication.py" DESTINATION KratosMultiphysics)
+endif()

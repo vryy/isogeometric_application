@@ -256,7 +256,7 @@ public:
         rGeometry.Clean();
         #endif
 
-        rElement.SetValueOnIntegrationPoints( rVariable, ValuesOnIntPoint, rProcessInfo);
+        rElement.SetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint, rProcessInfo);
     }
 
     /// Generate corner points for regular geometry

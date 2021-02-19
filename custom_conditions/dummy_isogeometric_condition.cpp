@@ -135,7 +135,7 @@ void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessIn
  * calculates only the RHS vector (certainly to be removed due to contact algorithm)
  */
 void DummyIsogeometricCondition::CalculateRightHandSide( VectorType& rRightHandSideVector,
-        ProcessInfo& rCurrentProcessInfo)
+        const ProcessInfo& rCurrentProcessInfo)
 {
     //calculation flags
     bool CalculateStiffnessMatrixFlag = false;
@@ -154,7 +154,7 @@ void DummyIsogeometricCondition::CalculateRightHandSide( VectorType& rRightHandS
  */
 void DummyIsogeometricCondition::CalculateLocalSystem( MatrixType& rLeftHandSideMatrix,
                                           VectorType& rRightHandSideVector,
-                                          ProcessInfo& rCurrentProcessInfo)
+                                          const ProcessInfo& rCurrentProcessInfo)
 {
     //calculation flags
     bool CalculateStiffnessMatrixFlag = true;
@@ -172,7 +172,7 @@ void DummyIsogeometricCondition::CalculateLocalSystem( MatrixType& rLeftHandSide
  */
 void DummyIsogeometricCondition::CalculateAll( MatrixType& rLeftHandSideMatrix,
                                   VectorType& rRightHandSideVector,
-                                  ProcessInfo& rCurrentProcessInfo,
+                                  const ProcessInfo& rCurrentProcessInfo,
                                   bool CalculateStiffnessMatrixFlag,
                                   bool CalculateResidualVectorFlag)
 {
@@ -192,7 +192,7 @@ void DummyIsogeometricCondition::CalculateAll( MatrixType& rLeftHandSideMatrix,
  * All Equation IDs are given Master first, Slave second
  */
 void DummyIsogeometricCondition::EquationIdVector( EquationIdVectorType& rResult,
-                                      ProcessInfo& CurrentProcessInfo)
+                                      const ProcessInfo& CurrentProcessInfo) const
 {
     rResult.resize(0);
 }
@@ -204,7 +204,8 @@ void DummyIsogeometricCondition::EquationIdVector( EquationIdVectorType& rResult
  * All conditions are assumed to be defined in 2D/3D space with 2/3 DOFs per Node.
  * All DOF are given Master first, Slave second
  */
-void DummyIsogeometricCondition::GetDofList( DofsVectorType& ConditionalDofList, ProcessInfo& CurrentProcessInfo)
+void DummyIsogeometricCondition::GetDofList( DofsVectorType& ConditionalDofList,
+                                      const ProcessInfo& CurrentProcessInfo) const
 {
     ConditionalDofList.resize(0);
 }

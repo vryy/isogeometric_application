@@ -503,10 +503,13 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("TransferNodalResults", &BezierPostUtility::TransferNodalResults<Variable<array_1d<double, 3> > >)
     .def("TransferIntegrationPointResults", &BezierPostUtility::TransferIntegrationPointResults<Variable<double> >)
     .def("TransferIntegrationPointResults", &BezierPostUtility::TransferIntegrationPointResults<Variable<Vector> >)
+    .def("TransferIntegrationPointResults", &BezierPostUtility::TransferIntegrationPointResults<Variable<array_1d<double, 3>> >)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_ModelPart<Variable<double> >)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_ModelPart<Variable<Vector> >)
+    .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_ModelPart<Variable<array_1d<double, 3>> >)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<double> >)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<Vector> >)
+    .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<array_1d<double, 3>> >)
     ;
 
     #ifdef ISOGEOMETRIC_USE_HDF5

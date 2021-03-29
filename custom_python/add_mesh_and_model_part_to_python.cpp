@@ -226,7 +226,7 @@ void IsogeometricApplication_AddMeshToPython()
 
     ss.str(std::string());
     ss << "NonConformingMultipatchLagrangeMesh" << TDim << "D";
-    class_<NonConformingMultipatchLagrangeMesh<TDim>, typename NonConformingMultipatchLagrangeMesh<TDim>::Pointer, boost::noncopyable>
+    class_<NonConformingMultipatchLagrangeMesh<TDim>, typename NonConformingMultipatchLagrangeMesh<TDim>::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
     .def("SetEchoLevel", &NonConformingMultipatchLagrangeMesh<TDim>::SetEchoLevel)
     .def("SetBaseElementName", &NonConformingMultipatchLagrangeMesh<TDim>::SetBaseElementName)
@@ -240,7 +240,7 @@ void IsogeometricApplication_AddMeshToPython()
 
     ss.str(std::string());
     ss << "NonConformingVariableMultipatchLagrangeMesh" << TDim << "D";
-    class_<NonConformingVariableMultipatchLagrangeMesh<TDim>, typename NonConformingVariableMultipatchLagrangeMesh<TDim>::Pointer, boost::noncopyable>
+    class_<NonConformingVariableMultipatchLagrangeMesh<TDim>, typename NonConformingVariableMultipatchLagrangeMesh<TDim>::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer, ModelPart::Pointer>())
     .def("SetBaseElementName", &NonConformingVariableMultipatchLagrangeMesh<TDim>::SetBaseElementName)
     .def("SetLastNodeId", &NonConformingVariableMultipatchLagrangeMesh<TDim>::SetLastNodeId)
@@ -264,7 +264,7 @@ void IsogeometricApplication_AddModelPartToPython()
     typedef MultiPatchModelPart<TDim> MultiPatchModelPartType;
     ss.str(std::string());
     ss << "MultiPatchModelPart" << TDim << "D";
-    class_<MultiPatchModelPartType, typename MultiPatchModelPartType::Pointer, boost::noncopyable>
+    class_<MultiPatchModelPartType, typename MultiPatchModelPartType::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
     .def("BeginModelPart", &MultiPatchModelPartType::BeginModelPart)
     .def("CreateNodes", &MultiPatchModelPartType::CreateNodes)
@@ -287,7 +287,7 @@ void IsogeometricApplication_AddModelPartToPython()
     typedef MultiMultiPatchModelPart<TDim> MultiMultiPatchModelPartType;
     ss.str(std::string());
     ss << "MultiMultiPatchModelPart" << TDim << "D";
-    class_<MultiMultiPatchModelPartType, typename MultiMultiPatchModelPartType::Pointer, boost::noncopyable>
+    class_<MultiMultiPatchModelPartType, typename MultiMultiPatchModelPartType::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def("AddMultiPatch", &MultiMultiPatchModelPartType::AddMultiPatch)
     .def("BeginModelPart", &MultiMultiPatchModelPartType::BeginModelPart)

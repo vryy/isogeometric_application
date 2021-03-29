@@ -30,6 +30,9 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/add_processes_to_python.h"
 #include "custom_python/add_io_to_python.h"
 #include "custom_python/add_strategies_to_python.h"
+#ifdef ISOGEOMETRIC_USE_BREP
+#include "custom_python/add_brep_and_level_set_to_python.h"
+#endif
 
 ////utilities
 

@@ -32,6 +32,22 @@
 namespace Kratos
 {
 
+template<int TDim>
+class BSplinesFESpace;
+
+template<int TDim>
+struct BSplinesFESpace_Helper
+{
+    /// Get the values of the basis functions at point xi
+    static void GetValues(const BSplinesFESpace<TDim>& rFESpace,
+        std::vector<double>& values, const std::vector<double>& xi);
+
+    /// Get the values and derivatives of the basis functions at point xi
+    /// the output derivatives has the form of values[func_index][dim_index]
+    static void GetValuesAndDerivatives(const BSplinesFESpace<TDim>& rFESpace,
+        std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi);
+};
+
 /**
 This class represents the FESpace for a single BSplines patch defined over parametric domain.
  */
@@ -66,7 +82,7 @@ public:
     }
 
     /// Get the order of the BSplines patch in specific direction
-    virtual std::size_t Order(const std::size_t& idir) const
+    std::size_t Order(const std::size_t& idir) const final
     {
         if (idir >= TDim) return 0;
         else return mOrders[idir];
@@ -85,7 +101,7 @@ public:
     std::size_t Number(const std::size_t& idir) const {return mNumbers[idir];}
 
     /// Get the number of basis functions defined over the BSplines
-    virtual std::size_t TotalNumber() const
+    std::size_t TotalNumber() const final
     {
         std::size_t Number = 1;
         for (std::size_t i = 0; i < TDim; ++i)
@@ -94,7 +110,7 @@ public:
     }
 
     /// Get the lower and upper bound of the parametric space in a specific direction
-    virtual std::vector<double> ParametricBounds(const std::size_t& idir) const
+    std::vector<double> ParametricBounds(const std::size_t& idir) const final
     {
         std::vector<double> bound(2);
         bound[0] = (*(mKnotVectors[idir].begin()))->Value();
@@ -103,7 +119,7 @@ public:
     }
 
     /// Get the string representing the type of the patch
-    virtual std::string Type() const
+    std::string Type() const final
     {
         return StaticType();
     }
@@ -165,7 +181,7 @@ public:
     }
 
     /// Validate the BSplinesFESpace
-    virtual bool Validate() const
+    bool Validate() const final
     {
         for (std::size_t i = 0; i < TDim; ++i)
         {
@@ -180,7 +196,7 @@ public:
     }
 
     /// Get the values of the basis function i at point xi
-    virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
+    void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const final
     {
         // TODO the current approach is expensive (all is computed). We have to find the way to optimize it.
         std::vector<double> values;
@@ -189,14 +205,13 @@ public:
     }
 
     /// Get the values of the basis functions at point xi
-    virtual void GetValues(std::vector<double>& values, const std::vector<double>& xi) const
+    void GetValues(std::vector<double>& values, const std::vector<double>& xi) const final
     {
-        // TODO
-        KRATOS_THROW_ERROR(std::logic_error, "GetValue is not implemented for dimension", TDim)
+        BSplinesFESpace_Helper<TDim>::GetValues(*this, values, xi);
     }
 
     /// Get the derivatives of the basis function i at point xi
-    virtual void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
+    void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const final
     {
         // TODO the current approach is expensive (all is computed). Find the way to optimize it.
         std::vector<std::vector<double> > tmp;
@@ -205,7 +220,7 @@ public:
     }
 
     /// Get the derivatives of the basis functions at point xi
-    virtual void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const final
     {
         std::vector<double> dummy;
         this->GetValuesAndDerivatives(dummy, values, xi);
@@ -213,13 +228,13 @@ public:
 
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
-    virtual void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+    void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const final
     {
-        KRATOS_THROW_ERROR(std::logic_error, "GetValueAndDerivative is not implemented for dimension", TDim)
+        BSplinesFESpace_Helper<TDim>::GetValuesAndDerivatives(*this, values, derivatives, xi);
     }
 
     /// Check if a point lies inside the parametric domain of the BSplinesFESpace
-    virtual bool IsInside(const std::vector<double>& xi) const
+    bool IsInside(const std::vector<double>& xi) const final
     {
         bool is_inside = true;
         for (std::size_t i = 0; i < TDim; ++i)
@@ -231,7 +246,7 @@ public:
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    virtual bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const
+    bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const final
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -258,7 +273,7 @@ public:
     }
 
     /// Reset all the dof numbers for each grid function to -1.
-    virtual void ResetFunctionIndices()
+    void ResetFunctionIndices() final
     {
         BaseType::mGlobalToLocal.clear();
         if (mFunctionsIds.size() != this->TotalNumber())
@@ -268,7 +283,7 @@ public:
 
     /// Reset the function indices to a given values.
     /// This is useful when assigning the id for the boundary patch.
-    virtual void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
+    void ResetFunctionIndices(const std::vector<std::size_t>& func_indices) final
     {
         if (func_indices.size() != this->TotalNumber())
         {
@@ -291,7 +306,7 @@ public:
 
     /// Enumerate the dofs of each grid function. The enumeration algorithm is pretty straightforward.
     /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
-    virtual std::size_t& Enumerate(std::size_t& start)
+    std::size_t& Enumerate(std::size_t& start) final
     {
         BaseType::mGlobalToLocal.clear();
         for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
@@ -304,13 +319,13 @@ public:
     }
 
     /// Access the function indices (aka global ids)
-    virtual std::vector<std::size_t> FunctionIndices() const
+    std::vector<std::size_t> FunctionIndices() const final
     {
         return mFunctionsIds;
     }
 
     /// Update the function indices using a map. The map shall be the mapping from old index to new index.
-    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
+    void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map) final
     {
         for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
         {
@@ -333,7 +348,7 @@ public:
     }
 
     /// Get the first equation_id in this space
-    virtual std::size_t GetFirstEquationId() const
+    std::size_t GetFirstEquationId() const final
     {
         std::size_t first_id, size = mFunctionsIds.size();
 
@@ -357,7 +372,7 @@ public:
     }
 
     /// Get the last equation_id in this space
-    virtual std::size_t GetLastEquationId() const
+    std::size_t GetLastEquationId() const final
     {
         std::size_t last_id = -1, size = mFunctionsIds.size();
         bool hit = false;
@@ -383,7 +398,7 @@ public:
     }
 
     /// Extract the index of the functions on the boundaries
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(const int& boundary_id) const
+    std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(const int& boundary_id) const final
     {
         std::set<std::size_t> bf_id_set;
         bool first = false;
@@ -418,13 +433,13 @@ public:
     }
 
     /// Extract the index of the functions on the boundary
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const final
     {
         std::vector<std::size_t> size_info;
         return this->ExtractBoundaryFunctionIndices(size_info, side);
     }
 
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(std::vector<std::size_t>& size_info, const BoundarySide& side) const
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(std::vector<std::size_t>& size_info, const BoundarySide& side) const final
     {
         std::vector<std::size_t> func_indices;
 
@@ -546,7 +561,7 @@ public:
     }
 
     /// Extract the index of the functions on the boundary down to some level
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side, const std::size_t& level) const
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side, const std::size_t& level) const final
     {
         std::vector<std::size_t> func_indices;
 
@@ -659,7 +674,7 @@ public:
     }
 
     /// Assign the index for the functions on the boundary
-    virtual void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices)
+    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices) final
     {
         if (side == _BLEFT_)
         {
@@ -800,7 +815,7 @@ public:
     }
 
     /// Construct the boundary patch based on side
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const final
     {
         typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1>::Pointer(new BSplinesFESpace<TDim-1>());
 
@@ -882,8 +897,8 @@ public:
     }
 
     /// Construct the boundary patch based on side and direction
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
-        const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
+    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+        const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const final
     {
         typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1>::Pointer(new BSplinesFESpace<TDim-1>());
         std::vector<int> param_dirs = ParameterDirection<TDim>::Get(side);
@@ -915,7 +930,7 @@ public:
     }
 
     /// Create the cell manager for all the cells in the support domain of the BSplinesFESpace
-    virtual typename BaseType::cell_container_t::Pointer ConstructCellManager() const
+    typename BaseType::cell_container_t::Pointer ConstructCellManager() const final
     {
         typename cell_container_t::Pointer pCellManager;
 
@@ -1148,7 +1163,7 @@ public:
     }
 
     /// Clone this FESpace, this is a deep copy operation
-    virtual typename FESpace<TDim>::Pointer Clone() const
+    typename FESpace<TDim>::Pointer Clone() const final
     {
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
         *pNewFESpace = *this;
@@ -1156,7 +1171,7 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const final
     {
         rOStream << Type() << ", Addr = " << this << ", n = (";
         for (std::size_t i = 0; i < TDim; ++i)
@@ -1167,7 +1182,7 @@ public:
         rOStream << ")";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const final
     {
         for (std::size_t i = 0; i < TDim; ++i)
         {
@@ -1246,16 +1261,16 @@ public:
     virtual ~BSplinesFESpace() {}
 
     /// Get the order of the BSplines patch in specific direction
-    virtual std::size_t Order(const std::size_t& i) const {return 0;}
+    std::size_t Order(const std::size_t& i) const final {return 0;}
 
     /// Get the number of basis functions defined over the BSplines BSplinesFESpace on one direction
-    virtual std::size_t Number(const std::size_t& i) const {return 0;}
+    std::size_t Number(const std::size_t& i) const {return 0;}
 
     /// Get the number of basis functions defined over the BSplines BSplinesFESpace
-    virtual std::size_t Number() const {return 0;}
+    std::size_t Number() const {return 0;}
 
     /// Get the string describing the type of the patch
-    virtual std::string Type() const
+    std::string Type() const final
     {
         return StaticType();
     }
@@ -1286,13 +1301,13 @@ public:
     {}
 
     /// Validate the BSplinesFESpace before using
-    virtual bool Validate() const
+    bool Validate() const final
     {
         return BaseType::Validate();
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    virtual bool IsCompatible(const FESpace<0>& rOtherFESpace) const
+    bool IsCompatible(const FESpace<0>& rOtherFESpace) const
     {
         if (rOtherFESpace.Type() != Type())
         {

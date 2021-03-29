@@ -43,7 +43,7 @@ def CreateMultiPatch():
     arc2.Id = 2
 
     ## create ring patch by connect the two arcs
-    ring_patch_ptr = bsplines_patch_util.CreateConnectedPatch(arc2, arc1)
+    ring_patch_ptr = bsplines_patch_util.CreateLoftPatch(arc2, arc1)
     ring_patch = ring_patch_ptr.GetReference()
     ring_patch.Id = 1
 

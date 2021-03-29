@@ -1,7 +1,7 @@
 //
 //   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
-//   Date:                $Date: 7 Dec 2017$
+//   Date:                $Date: 18 Jan 2021$
 //   Revision:            $Revision: 1.0 $
 //
 //
@@ -10,7 +10,7 @@
 // External includes
 
 // Project includes
-#include "custom_conditions/dummy_isogeometric_condition.h"
+#include "custom_elements/dummy_isogeometric_element.h"
 #include "includes/legacy_structural_app_vars.h"
 #include "includes/kratos_flags.h"
 #include "utilities/math_utils.h"
@@ -22,27 +22,27 @@ namespace Kratos
 
 //************************************************************************************
 //************************************************************************************
-DummyIsogeometricCondition::DummyIsogeometricCondition()
+DummyIsogeometricElement::DummyIsogeometricElement()
 {
 }
 
-DummyIsogeometricCondition::DummyIsogeometricCondition( IndexType NewId,
+DummyIsogeometricElement::DummyIsogeometricElement( IndexType NewId,
                               GeometryType::Pointer pGeometry)
-: Condition( NewId, pGeometry )
+: Element( NewId, pGeometry )
 {
 }
 
-DummyIsogeometricCondition::DummyIsogeometricCondition( IndexType NewId,
+DummyIsogeometricElement::DummyIsogeometricElement( IndexType NewId,
                               GeometryType::Pointer pGeometry,
                               PropertiesType::Pointer pProperties)
-: Condition( NewId, pGeometry, pProperties )
+: Element( NewId, pGeometry, pProperties )
 {
 }
 
 /**
  * Destructor. Never to be called manually
  */
-DummyIsogeometricCondition::~DummyIsogeometricCondition()
+DummyIsogeometricElement::~DummyIsogeometricElement()
 {
 }
 
@@ -51,24 +51,24 @@ DummyIsogeometricCondition::~DummyIsogeometricCondition()
 //**** Operations ****************************************
 //********************************************************
 
-Condition::Pointer DummyIsogeometricCondition::Create(IndexType NewId, NodesArrayType const& ThisNodes,
+Element::Pointer DummyIsogeometricElement::Create(IndexType NewId, NodesArrayType const& ThisNodes,
                                         PropertiesType::Pointer pProperties) const
 {
-    return Condition::Pointer(new DummyIsogeometricCondition(NewId, GetGeometry().Create(ThisNodes), pProperties));
+    return Element::Pointer(new DummyIsogeometricElement(NewId, GetGeometry().Create(ThisNodes), pProperties));
 }
 
-Condition::Pointer DummyIsogeometricCondition::Create(IndexType NewId, GeometryType::Pointer pGeom,
+Element::Pointer DummyIsogeometricElement::Create(IndexType NewId, GeometryType::Pointer pGeom,
                                         PropertiesType::Pointer pProperties) const
 {
-    return Condition::Pointer(new DummyIsogeometricCondition(NewId, pGeom, pProperties));
+    return Element::Pointer(new DummyIsogeometricElement(NewId, pGeom, pProperties));
 }
 
-GeometryData::IntegrationMethod DummyIsogeometricCondition::GetIntegrationMethod() const
+GeometryData::IntegrationMethod DummyIsogeometricElement::GetIntegrationMethod() const
 {
     return mThisIntegrationMethod;
 }
 
-void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessInfo)
+void DummyIsogeometricElement::Initialize(const ProcessInfo& rCurrentProcessInfo)
 {
     KRATOS_TRY
 
@@ -96,7 +96,7 @@ void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessIn
             mThisIntegrationMethod = GeometryData::GI_GAUSS_5;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration rule", this->GetValue(INTEGRATION_ORDER))
+            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricElement does not support for integration rule", this->GetValue(INTEGRATION_ORDER))
     }
     else if(GetProperties().Has( INTEGRATION_ORDER ))
     {
@@ -121,7 +121,7 @@ void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessIn
             mThisIntegrationMethod = GeometryData::GI_GAUSS_5;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration points", GetProperties()[INTEGRATION_ORDER])
+            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricElement does not support for integration points", GetProperties()[INTEGRATION_ORDER])
     }
     else
         mThisIntegrationMethod = GetGeometry().GetDefaultIntegrationMethod(); // default method
@@ -134,7 +134,7 @@ void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessIn
 /**
  * calculates only the RHS vector (certainly to be removed due to contact algorithm)
  */
-void DummyIsogeometricCondition::CalculateRightHandSide( VectorType& rRightHandSideVector,
+void DummyIsogeometricElement::CalculateRightHandSide( VectorType& rRightHandSideVector,
         const ProcessInfo& rCurrentProcessInfo)
 {
     //calculation flags
@@ -152,7 +152,7 @@ void DummyIsogeometricCondition::CalculateRightHandSide( VectorType& rRightHandS
 /**
  * calculates this contact element's local contributions
  */
-void DummyIsogeometricCondition::CalculateLocalSystem( MatrixType& rLeftHandSideMatrix,
+void DummyIsogeometricElement::CalculateLocalSystem( MatrixType& rLeftHandSideMatrix,
                                           VectorType& rRightHandSideVector,
                                           const ProcessInfo& rCurrentProcessInfo)
 {
@@ -170,7 +170,7 @@ void DummyIsogeometricCondition::CalculateLocalSystem( MatrixType& rLeftHandSide
  * with regard to the current master and slave partners.
  * All Conditions are assumed to be defined in 2D/3D space and having 2/3 DOFs per node
  */
-void DummyIsogeometricCondition::CalculateAll( MatrixType& rLeftHandSideMatrix,
+void DummyIsogeometricElement::CalculateAll( MatrixType& rLeftHandSideMatrix,
                                   VectorType& rRightHandSideVector,
                                   const ProcessInfo& rCurrentProcessInfo,
                                   bool CalculateStiffnessMatrixFlag,
@@ -191,7 +191,7 @@ void DummyIsogeometricCondition::CalculateAll( MatrixType& rLeftHandSideMatrix,
  * All conditions are assumed to be defined in 2D/3D space with 2/3 DOFs per node.
  * All Equation IDs are given Master first, Slave second
  */
-void DummyIsogeometricCondition::EquationIdVector( EquationIdVectorType& rResult,
+void DummyIsogeometricElement::EquationIdVector( EquationIdVectorType& rResult,
                                       const ProcessInfo& CurrentProcessInfo) const
 {
     rResult.resize(0);
@@ -204,7 +204,7 @@ void DummyIsogeometricCondition::EquationIdVector( EquationIdVectorType& rResult
  * All conditions are assumed to be defined in 2D/3D space with 2/3 DOFs per Node.
  * All DOF are given Master first, Slave second
  */
-void DummyIsogeometricCondition::GetDofList( DofsVectorType& ConditionalDofList,
+void DummyIsogeometricElement::GetDofList( DofsVectorType& ConditionalDofList,
                                       const ProcessInfo& CurrentProcessInfo) const
 {
     ConditionalDofList.resize(0);

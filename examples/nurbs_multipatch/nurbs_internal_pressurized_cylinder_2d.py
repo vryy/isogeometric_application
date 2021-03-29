@@ -29,18 +29,20 @@ mpatch_export = MultiNURBSPatchMatlabExporter()
 
 import geometry_factory
 
+axis = 'z'
+
 ####### create arc 1
 r1 = 1.0
-arc1_ptr = geometry_factory.CreateSmallArc([0.0, 0.0, 0.0], 'z', r1, 0.0, 90.0)
+arc1_ptr = geometry_factory.CreateSmallArc([0.0, 0.0, 0.0], axis, r1, 0.0, 90.0)
 arc1 = arc1_ptr.GetReference()
 
 ####### create arc 2
 r2 = 2.0
-arc2_ptr = geometry_factory.CreateSmallArc([0.0, 0.0, 0.0], 'z', r2, 0.0, 90.0)
+arc2_ptr = geometry_factory.CreateSmallArc([0.0, 0.0, 0.0], axis, r2, 0.0, 90.0)
 arc2 = arc2_ptr.GetReference()
 
 # create patch 2
-patch_ptr = bsplines_patch_util.CreateConnectedPatch(arc1, arc2)
+patch_ptr = bsplines_patch_util.CreateLoftPatch(arc1, arc2)
 patch = patch_ptr.GetReference()
 patch.Id = 1
 

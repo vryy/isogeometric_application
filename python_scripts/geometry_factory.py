@@ -208,14 +208,14 @@ def CreateSmallRing(center, axis, rin, rout, start_angle, end_angle):
     oarc = oarc_ptr.GetReference()
 
     ## create ring
-    ring_patch_ptr = bsplines_patch_util.CreateConnectedPatch(iarc, oarc)
+    ring_patch_ptr = bsplines_patch_util.CreateLoftPatch(iarc, oarc)
     return ring_patch_ptr
 
 ### Create the 2D rectangle aligned with Cartesian axes
 def CreateRectangle(start_point, end_point):
     line1 = CreateLine(start_point, [end_point[0], start_point[1], start_point[2]])
     line2 = CreateLine([start_point[0], end_point[1], start_point[2]], [end_point[0], end_point[1], start_point[2]])
-    face_ptr = bsplines_patch_util.CreateConnectedPatch(line1, line2)
+    face_ptr = bsplines_patch_util.CreateLoftPatch(line1, line2)
     return face_ptr
 
 ### Create the 2D parallelogram
@@ -225,22 +225,22 @@ def CreateRectangle(start_point, end_point):
 def CreateParallelogram(P1, P2, P3, P4):
     line1 = CreateLine(P1, P2)
     line2 = CreateLine(P4, P3)
-    face_ptr = bsplines_patch_util.CreateConnectedPatch(line1, line2)
+    face_ptr = bsplines_patch_util.CreateLoftPatch(line1, line2)
     return face_ptr
 
 ### Create the 3D slab aligned with Cartesian axes
 def CreateSlab(start_point, end_point):
     line1 = CreateLine(start_point, [end_point[0], start_point[1], start_point[2]])
     line2 = CreateLine([start_point[0], end_point[1], start_point[2]], [end_point[0], end_point[1], start_point[2]])
-    face1_ptr = bsplines_patch_util.CreateConnectedPatch(line1, line2)
+    face1_ptr = bsplines_patch_util.CreateLoftPatch(line1, line2)
     face1 = face1_ptr.GetReference()
 
     line3 = CreateLine([start_point[0], start_point[1], end_point[2]], [end_point[0], start_point[1], end_point[2]])
     line4 = CreateLine([start_point[0], end_point[1], end_point[2]], [end_point[0], end_point[1], end_point[2]])
-    face2_ptr = bsplines_patch_util.CreateConnectedPatch(line3, line4)
+    face2_ptr = bsplines_patch_util.CreateLoftPatch(line3, line4)
     face2 = face2_ptr.GetReference()
 
-    volume_patch_ptr = bsplines_patch_util.CreateConnectedPatch(face1, face2)
+    volume_patch_ptr = bsplines_patch_util.CreateLoftPatch(face1, face2)
     return volume_patch_ptr
 
 ### Create a half circle with 4 patches configuration
@@ -299,10 +299,10 @@ def CreateHalfCircle4(center, axis, radius, rotation_angle, params={}):
     line4_ptr = CreateLine(p1, p3, u_order)
     line4 = line4_ptr.GetReference()
 
-    patch1_ptr = bsplines_patch_util.CreateConnectedPatch(arc1, line1)
-    patch2_ptr = bsplines_patch_util.CreateConnectedPatch(arc2, line2)
-    patch3_ptr = bsplines_patch_util.CreateConnectedPatch(arc3, line3)
-    patch4_ptr = bsplines_patch_util.CreateConnectedPatchFromList2D([line2, line4], 1)
+    patch1_ptr = bsplines_patch_util.CreateLoftPatch(arc1, line1)
+    patch2_ptr = bsplines_patch_util.CreateLoftPatch(arc2, line2)
+    patch3_ptr = bsplines_patch_util.CreateLoftPatch(arc3, line3)
+    patch4_ptr = bsplines_patch_util.CreateLoftPatchFromList2D([line2, line4], 1)
     multipatch_refine_util.DegreeElevate(patch4_ptr, [0, u_order-1])
 
     patch1 = patch1_ptr.GetReference()

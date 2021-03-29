@@ -5,6 +5,7 @@ zmisc
 *.pyc
 doc
 *.bak
-*/bak*
+*/bak/*
+*/bak2/*
 *.zip
 test_examples/*.m

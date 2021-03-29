@@ -351,13 +351,13 @@ private:
 template<int TDim>
 inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatch<TDim>& rThis)
 {
-    rOStream << ">>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    rOStream << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
     rOStream << "-------------Begin MultiPatchInfo-------------" << std::endl;
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
     rThis.PrintData(rOStream);
     rOStream << "-------------End MultiPatchInfo-------------" << std::endl;
-    rOStream << ">>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    rOStream << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
     return rOStream;
 }
 

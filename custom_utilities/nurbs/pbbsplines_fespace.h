@@ -18,6 +18,7 @@
 // Project includes
 #include "includes/define.h"
 #include "containers/array_1d.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/fespace.h"
 #include "isogeometric_application/isogeometric_application.h"
 
@@ -30,7 +31,7 @@ namespace Kratos
  * Abstract class represents the FESpace for a single point-based B-Splines patch.
  */
 template<int TDim, typename TBasisFunctionType, typename TCellManagerType>
-class PBBSplinesFESpace : public FESpace<TDim>
+class PBBSplinesFESpace : public FESpace<TDim>, public IsogeometricEcho
 {
 public:
     /// Pointer definition
@@ -626,17 +627,15 @@ public:
         // print the basis functions
         rOStream << "Basis functions:" << std::endl;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
-            rOStream << " >> " << *(*it) << std::endl;
+            rOStream << " ++ " << *(*it) << std::endl;
 
         // print the cells
         rOStream << "Cells:" << std::endl;
         for(typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
-            rOStream << " >> " << *(*it) << std::endl;
+            rOStream << " ++ " << *(*it) << std::endl;
     }
 
 protected:
-
-    unsigned int mEchoLevel;
 
     boost::array<std::size_t, TDim> mOrders;
 

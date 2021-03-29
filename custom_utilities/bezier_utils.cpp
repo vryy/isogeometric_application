@@ -14,8 +14,8 @@
 // External includes
 
 // Project includes
-#include "bezier_utils.h"
-#include "bspline_utils.h"
+#include "custom_utilities/bezier_utils.h"
+#include "custom_utilities/bspline_utils.h"
 
 namespace Kratos
 {

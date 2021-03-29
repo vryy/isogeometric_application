@@ -48,10 +48,10 @@ public:
     /// To have higher order of the connection one needs to elevate the degree.
     /// Right now, the two sub-patches must have same parameters (knot vectors) and are B-Splines.
     template<int TDim>
-    static typename Patch<TDim>::Pointer CreateConnectedPatch(typename Patch<TDim-1>::Pointer pPatch1, typename Patch<TDim-1>::Pointer pPatch2)
+    static typename Patch<TDim>::Pointer CreateLoftPatch(typename Patch<TDim-1>::Pointer pPatch1, typename Patch<TDim-1>::Pointer pPatch2)
     {
         std::vector<typename Patch<TDim-1>::Pointer> pPatches = {pPatch1, pPatch2};
-        return CreateConnectedPatch<TDim>(pPatches, 1);
+        return CreateLoftPatch<TDim>(pPatches, 1);
     }
 
     /// Construct a higher dimension patch by connecting multiple patches with the B-Splines curve.
@@ -60,7 +60,7 @@ public:
     /// To have higher order of the connection one needs to elevate the degree.
     /// Right now, the two sub-patches must have same parameters (knot vectors) and are B-Splines.
     template<int TDim>
-    static typename Patch<TDim>::Pointer CreateConnectedPatch(std::vector<typename Patch<TDim-1>::Pointer> pPatches, const int& order)
+    static typename Patch<TDim>::Pointer CreateLoftPatch(std::vector<typename Patch<TDim-1>::Pointer> pPatches, const int& order)
     {
         if (pPatches.size() == 0)
             return typename Patch<TDim>::Pointer(new Patch<TDim>(-1));

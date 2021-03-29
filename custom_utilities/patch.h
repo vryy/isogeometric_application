@@ -719,6 +719,41 @@ public:
         }
     }
 
+    /// Get the bounding box of the patch
+    /// The arrangement is [x_min, x_max, y_min, y_max, z_min, z_max]
+    /// This function takes advantage of the convex hull properties of a NURBS patch
+    void GetBoundingBox(std::vector<double>& bounding_box) const
+    {
+        if (bounding_box.size() != 6)
+            bounding_box.resize(6);
+
+        double& x_min = bounding_box[0];
+        double& x_max = bounding_box[1];
+        double& y_min = bounding_box[2];
+        double& y_max = bounding_box[3];
+        double& z_min = bounding_box[4];
+        double& z_max = bounding_box[5];
+
+        x_min = 1.0e99; y_min = 1.0e99; z_min = 1.0e99; 
+        x_max = -1.0e99; y_max = -1.0e99; z_max = -1.0e99; 
+
+        typename ControlGrid<ControlPointType>::ConstPointer pControlPointGrid = pControlPointGridFunction()->pControlGrid();
+        double x, y, z;
+        for (std::size_t i = 0; i < pControlPointGrid->size(); ++i)
+        {
+            x = (*pControlPointGrid)[i].X();
+            y = (*pControlPointGrid)[i].Y();
+            z = (*pControlPointGrid)[i].Z();
+
+            if (x < x_min) x_min = x;
+            if (x > x_max) x_max = x;
+            if (y < y_min) y_min = y;
+            if (y > y_max) y_max = y;
+            if (z < z_min) z_min = z;
+            if (z > z_max) z_max = z;
+        }
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Compare the two patches in terms of its parametric information. The grid function data, including control points, shall not be checked.

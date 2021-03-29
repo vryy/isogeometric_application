@@ -24,7 +24,7 @@ namespace Kratos
 
     template<int TDim>
     DeprecatedHBMesh<TDim>::DeprecatedHBMesh(const std::size_t& Id, const std::string& Name)
-    : BaseType(Id), mName(Name), mEchoLevel(0), mLastLevel(0), mMaxLevels(10)
+    : BaseType(Id), mName(Name), mLastLevel(0), mMaxLevels(10)
     {
     }
 

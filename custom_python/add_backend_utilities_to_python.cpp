@@ -23,7 +23,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
-#include "custom_python/add_utilities_to_python.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/isogeometric_post_utility.h"
 #include "custom_utilities/bezier_classical_post_utility.h"
@@ -31,6 +31,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/isogeometric_test_utils.h"
 #include "custom_utilities/bezier_test_utils.h"
 #include "custom_utilities/isogeometric_merge_utility.h"
+#include "custom_python/add_utilities_to_python.h"
 
 #ifdef ISOGEOMETRIC_USE_HDF5
 #include "custom_utilities/hdf5_post_utility.h"
@@ -111,88 +112,184 @@ void BezierUtils_ComputeCentroid(
     dummy.ComputeCentroid<T>(pElem, P);
 }
 
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeGlobalCoordinates1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeGlobalCoordinates(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeGlobalCoordinates2(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y
+    typename TEntityType::Pointer pElement,
+    double X, double Y
 )
 {
-    dummy.ProbeGlobalCoordinates(pElement, X, Y);
+    dummy.ProbeGlobalCoordinates(pElement->GetGeometry(), X, Y, 0.0);
 }
 
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeGlobalCoordinates3(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y,
-    double Z
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
 )
 {
-    dummy.ProbeGlobalCoordinates(pElement, X, Y, Z);
+    dummy.ProbeGlobalCoordinates(pElement->GetGeometry(), X, Y, Z);
 }
 
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionValues1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeShapeFunctionValues(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeShapeFunctionValues2(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y
+    typename TEntityType::Pointer pElement,
+    double X, double Y
 )
 {
-    dummy.ProbeShapeFunctionValues(pElement, X, Y);
+    dummy.ProbeShapeFunctionValues(pElement->GetGeometry(), X, Y, 0.0);
 }
 
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeShapeFunctionValues3(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y,
-    double Z
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
 )
 {
-    dummy.ProbeShapeFunctionValues(pElement, X, Y, Z);
+    dummy.ProbeShapeFunctionValues(pElement->GetGeometry(), X, Y, Z);
 }
 
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionDerivatives1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeShapeFunctionDerivatives(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeShapeFunctionDerivatives2(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y
+    typename TEntityType::Pointer pElement,
+    double X, double Y
 )
 {
-    dummy.ProbeShapeFunctionDerivatives(pElement, X, Y);
+    dummy.ProbeShapeFunctionDerivatives(pElement->GetGeometry(), X, Y, 0.0);
 }
 
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeShapeFunctionDerivatives3(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y,
-    double Z
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
 )
 {
-    dummy.ProbeShapeFunctionDerivatives(pElement, X, Y, Z);
+    dummy.ProbeShapeFunctionDerivatives(pElement->GetGeometry(), X, Y, Z);
 }
 
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeJacobian1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeJacobian(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeJacobian2(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y
+    typename TEntityType::Pointer pElement,
+    double X, double Y
 )
 {
-    dummy.ProbeJacobian(pElement, X, Y);
+    dummy.ProbeJacobian(pElement->GetGeometry(), X, Y, 0.0);
 }
 
+template<typename TEntityType>
 void IsogeometricTestUtils_ProbeJacobian3(
     IsogeometricTestUtils& dummy,
-    Element::Pointer& pElement,
-    double X,
-    double Y,
-    double Z
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
 )
 {
-    dummy.ProbeJacobian(pElement, X, Y, Z);
+    dummy.ProbeJacobian(pElement->GetGeometry(), X, Y, Z);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeShapeFunctionSecondDerivatives(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives2(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X, double Y
+)
+{
+    dummy.ProbeShapeFunctionSecondDerivatives(pElement->GetGeometry(), X, Y, 0.0);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives3(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
+)
+{
+    dummy.ProbeShapeFunctionSecondDerivatives(pElement->GetGeometry(), X, Y, Z);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives1(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X
+)
+{
+    dummy.ProbeShapeFunctionThirdDerivatives(pElement->GetGeometry(), X, 0.0, 0.0);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives2(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X, double Y
+)
+{
+    dummy.ProbeShapeFunctionThirdDerivatives(pElement->GetGeometry(), X, Y, 0.0);
+}
+
+template<typename TEntityType>
+void IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives3(
+    IsogeometricTestUtils& dummy,
+    typename TEntityType::Pointer pElement,
+    double X, double Y, double Z
+)
+{
+    dummy.ProbeShapeFunctionThirdDerivatives(pElement->GetGeometry(), X, Y, Z);
 }
 
 //////////////////////////////////////////////////////////
@@ -385,7 +482,7 @@ void IsogeometricPostUtility_TransferValuesToGaussPoints(IsogeometricPostUtility
 
 //////////////////////////////////////////////////////////
 
-void BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& dummy,
+boost::python::list BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& dummy,
         ModelPart& rModelPart,
         Condition& rCondition,
         const std::string& sample_condition_name,
@@ -399,8 +496,110 @@ void BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& d
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ConditionCounter = starting_condition_id;
     const std::string NodeKey = std::string("Node");
+    std::vector<std::size_t> node_ids;
+    std::vector<std::size_t> element_ids;
     dummy.GenerateForOneEntity<Condition, ModelPart::ConditionsContainerType, 2>(rModelPart, rCondition,
-            r_clone_condition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey);
+            r_clone_condition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey, false,
+            node_ids, element_ids, true);
+
+    boost::python::list list_nodes;
+    boost::python::list list_elements;
+    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
+    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    boost::python::list Output;
+    Output.append(list_nodes);
+    Output.append(list_elements);
+    return Output;
+}
+
+boost::python::list BezierClassicalPostUtility_GenerateConditionsWithNodalVariables(BezierClassicalPostUtility& dummy,
+        ModelPart& rModelPart,
+        Condition& rCondition,
+        const std::string& sample_condition_name,
+        const std::size_t& starting_node_id,
+        const std::size_t& starting_condition_id)
+{
+    if (!KratosComponents<Condition>::Has(sample_condition_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+    std::size_t NodeCounter = starting_node_id;
+    std::size_t NodeCounter_old = NodeCounter;
+    std::size_t ConditionCounter = starting_condition_id;
+    const std::string NodeKey = std::string("Node");
+    std::vector<std::size_t> node_ids;
+    std::vector<std::size_t> element_ids;
+    dummy.GenerateForOneEntity<Condition, ModelPart::ConditionsContainerType, 2>(rModelPart, rCondition,
+            r_clone_condition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey, true,
+            node_ids, element_ids, true);
+
+    boost::python::list list_nodes;
+    boost::python::list list_elements;
+    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
+    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    boost::python::list Output;
+    Output.append(list_nodes);
+    Output.append(list_elements);
+    return Output;
+}
+
+boost::python::list BezierClassicalPostUtility_GenerateElements(BezierClassicalPostUtility& dummy,
+        ModelPart& rModelPart,
+        Element& rElement,
+        const std::string& sample_element_name,
+        const std::size_t& starting_node_id,
+        const std::size_t& starting_element_id)
+{
+    if (!KratosComponents<Element>::Has(sample_element_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+    std::size_t NodeCounter = starting_node_id;
+    std::size_t NodeCounter_old = NodeCounter;
+    std::size_t ElementCounter = starting_element_id;
+    const std::string NodeKey = std::string("Node");
+    std::vector<std::size_t> node_ids;
+    std::vector<std::size_t> element_ids;
+    dummy.GenerateForOneEntity<Element, ModelPart::ElementsContainerType, 2>(rModelPart, rElement,
+            r_clone_element, NodeCounter_old, NodeCounter, ElementCounter, NodeKey, false,
+            node_ids, element_ids, true);
+
+    boost::python::list list_nodes;
+    boost::python::list list_elements;
+    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
+    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    boost::python::list Output;
+    Output.append(list_nodes);
+    Output.append(list_elements);
+    return Output;
+}
+
+boost::python::list BezierClassicalPostUtility_GenerateElementsWithNodalVariables(BezierClassicalPostUtility& dummy,
+        ModelPart& rModelPart,
+        Element& rElement,
+        const std::string& sample_element_name,
+        const std::size_t& starting_node_id,
+        const std::size_t& starting_element_id)
+{
+    if (!KratosComponents<Element>::Has(sample_element_name))
+        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+    std::size_t NodeCounter = starting_node_id;
+    std::size_t NodeCounter_old = NodeCounter;
+    std::size_t ElementCounter = starting_element_id;
+    const std::string NodeKey = std::string("Node");
+    std::vector<std::size_t> node_ids;
+    std::vector<std::size_t> element_ids;
+    dummy.GenerateForOneEntity<Element, ModelPart::ElementsContainerType, 2>(rModelPart, rElement,
+            r_clone_element, NodeCounter_old, NodeCounter, ElementCounter, NodeKey, true,
+            node_ids, element_ids, true);
+
+    boost::python::list list_nodes;
+    boost::python::list list_elements;
+    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
+    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    boost::python::list Output;
+    Output.append(list_nodes);
+    Output.append(list_elements);
+    return Output;
 }
 
 void BezierClassicalPostUtility_GenerateModelPart2WithCondition(BezierClassicalPostUtility& dummy, ModelPart::Pointer pModelPartPost)
@@ -444,6 +643,11 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .value("Hexahedra", _HEXAHEDRA_)
     ;
 
+    class_<IsogeometricEcho, boost::noncopyable>("IsogeometricEcho", init<>())
+    .def("SetEchoLevel", &IsogeometricEcho::SetEchoLevel)
+    // .def("GetEchoLevel", IsogeometricEcho_GetEchoLevel)
+    ;
+
     class_<BSplineUtils, BSplineUtils::Pointer, boost::noncopyable>("BSplineUtils", init<>())
     .def("FindSpan", BSplineUtils_FindSpan)
     .def("BasisFuns", BSplineUtils_BasisFuns)
@@ -480,6 +684,9 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
 
     class_<BezierClassicalPostUtility, BezierClassicalPostUtility::Pointer, boost::noncopyable>("BezierClassicalPostUtility", init<ModelPart::Pointer>())
     .def("GenerateConditions", &BezierClassicalPostUtility_GenerateConditions)
+    .def("GenerateConditionsWithNodalVariables", &BezierClassicalPostUtility_GenerateConditionsWithNodalVariables)
+    .def("GenerateElements", &BezierClassicalPostUtility_GenerateElements)
+    .def("GenerateElementsWithNodalVariables", &BezierClassicalPostUtility_GenerateElementsWithNodalVariables)
     .def("GenerateModelPart", &BezierClassicalPostUtility::GenerateModelPart)
     .def("GenerateModelPart2", &BezierClassicalPostUtility_GenerateModelPart2WithCondition)
     .def("GenerateModelPart2", &BezierClassicalPostUtility_GenerateModelPart2)
@@ -530,16 +737,45 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     class_<IsogeometricTestUtils, IsogeometricTestUtils::Pointer, boost::noncopyable>("IsogeometricTestUtils", init<>())
     .def("Test1", &IsogeometricTestUtils::Test1)
     .def("Test2", &IsogeometricTestUtils::Test2)
-    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates2)
-    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates3)
-    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues2)
-    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues3)
-    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives2)
-    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives3)
-    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian2)
-    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian3)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates1<Element>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates1<Condition>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates2<Element>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates2<Condition>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates3<Element>)
+    .def("ProbeGlobalCoordinates", &IsogeometricTestUtils_ProbeGlobalCoordinates3<Condition>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues1<Element>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues1<Condition>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues2<Element>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues2<Condition>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues3<Element>)
+    .def("ProbeShapeFunctionValues", &IsogeometricTestUtils_ProbeShapeFunctionValues3<Condition>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives1<Element>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives1<Condition>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives2<Element>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives2<Condition>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives3<Element>)
+    .def("ProbeShapeFunctionDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionDerivatives3<Condition>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives1<Element>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives1<Condition>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives2<Element>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives2<Condition>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives3<Element>)
+    .def("ProbeShapeFunctionSecondDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionSecondDerivatives3<Condition>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives1<Element>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives1<Condition>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives2<Element>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives2<Condition>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives3<Element>)
+    .def("ProbeShapeFunctionThirdDerivatives", &IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives3<Condition>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian1<Element>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian1<Condition>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian2<Element>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian2<Condition>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian3<Element>)
+    .def("ProbeJacobian", &IsogeometricTestUtils_ProbeJacobian3<Condition>)
     .def("DumpNodalValues", &IsogeometricTestUtils::DumpNodalValues<double>)
     .def("DumpNodalValues", &IsogeometricTestUtils::DumpNodalValues<array_1d<double, 3> >)
+    .def("DumpNodalValues", &IsogeometricTestUtils::DumpNodalValues<Vector>)
     ;
 
     class_<IsogeometricMergeUtility, IsogeometricMergeUtility::Pointer, boost::noncopyable>(

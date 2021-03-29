@@ -19,14 +19,8 @@
 // External includes
 
 // Project includes
-#include "includes/define.h"
-#include "includes/variables.h"
 #include "includes/ublas_interface.h"
-#include "includes/element.h"
 #include "includes/model_part.h"
-#include "geometries/geometry.h"
-#include "geometries/geometry_data.h"
-#include "integration/quadrature.h"
 #include "integration/line_gauss_legendre_integration_points.h"
 #include "utilities/openmp_utils.h"
 #include "utilities/math_utils.h"
@@ -341,7 +335,64 @@ public:
 
         v = b * tmp1 + a * tmp2;
         d = p * (tmp2 - tmp1);
-        d2 = p * (p-1) * (tmp3 - 2 * tmp4 + tmp5);
+        d2 = p * (p-1) * (tmp5 - 2 * tmp4 + tmp3);
+    }
+
+    /**
+     * Computes Bernstein basis function value & derivative & second derivative & third derivatives B(i, p)(x) on [0, 1]
+     */
+    static inline void bernstein(double& v, double& d, double& d2, double& d3, const int& i, const int& p, const double& x)
+    {
+        if(i < 0 || i > p)
+        {
+            v = 0.0;
+            d = 0.0;
+            d2 = 0.0;
+            d3 = 0.0;
+            return;
+        }
+
+        if(p == 0)
+        {
+            v = 1.0;
+            d = 0.0;
+            d2 = 0.0;
+            d3 = 0.0;
+            return;
+        }
+
+        if(p == 1)
+        {
+            bernstein(v, d, i, p, x);
+            d2 = 0.0;
+            d3 = 0.0;
+            return;
+        }
+
+        if(p == 2)
+        {
+            bernstein(v, d, d2, i, p, x);
+            d3 = 0.0;
+            return;
+        }
+
+        double a = x;
+        double b = 1 - x;
+
+        double tmp1 = bernstein2(i    , p - 1, x);
+        double tmp2 = bernstein2(i - 1, p - 1, x);
+        double tmp3 = bernstein2(i    , p - 2, x);
+        double tmp4 = bernstein2(i - 1, p - 2, x);
+        double tmp5 = bernstein2(i - 2, p - 2, x);
+        double tmp6 = bernstein2(i    , p - 3, x);
+        double tmp7 = bernstein2(i - 1, p - 3, x);
+        double tmp8 = bernstein2(i - 2, p - 3, x);
+        double tmp9 = bernstein2(i - 3, p - 3, x);
+
+        v = b * tmp1 + a * tmp2;
+        d = p * (tmp2 - tmp1);
+        d2 = p * (p-1) * (tmp5 - 2 * tmp4 + tmp3);
+        d3 = p * (p-1) * (p-2) * (tmp9 - 3 * tmp8 + 3 * tmp7 - tmp6);
     }
 
     template<class ValuesContainerType>
@@ -413,6 +464,20 @@ public:
         for(int i = 0; i < p + 1; ++i)
         {
             bernstein(rS[i], rD[i], rD2[i], i, p, x);
+        }
+    }
+
+    template<class ValuesContainerType>
+    static inline void bernstein(ValuesContainerType& rS,
+                                 ValuesContainerType& rD,
+                                 ValuesContainerType& rD2,
+                                 ValuesContainerType& rD3,
+                                 const int& p,
+                                 const double& x)
+    {
+        for(int i = 0; i < p + 1; ++i)
+        {
+            bernstein(rS[i], rD[i], rD2[i], rD3[i], i, p, x);
         }
     }
 

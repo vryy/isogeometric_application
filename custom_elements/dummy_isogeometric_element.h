@@ -1,12 +1,12 @@
 //
 //   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
-//   Date:                $Date: 7 Dec 17 $
+//   Date:                $Date: 18 Jan 21 $
 //   Revision:            $Revision: 1.0 $
 //
 //
-#if !defined(KRATOS_DUMMY_ISOGEOMETRIC_CONDITION_H_INCLUDED )
-#define  KRATOS_DUMMY_ISOGEOMETRIC_CONDITION_H_INCLUDED
+#if !defined(KRATOS_DUMMY_ISOGEOMETRIC_ELEMENT_H_INCLUDED )
+#define  KRATOS_DUMMY_ISOGEOMETRIC_ELEMENT_H_INCLUDED
 
 
 // External includes
@@ -24,11 +24,11 @@ namespace Kratos
 /**
  * This condition does nothing. But it gives the isogeometric geometry for other condition that contains it.
  */
-class DummyIsogeometricCondition : public Condition
+class DummyIsogeometricElement : public Element
 {
     public:
-        // Counted pointer of DummyIsogeometricCondition
-        KRATOS_CLASS_POINTER_DEFINITION(DummyIsogeometricCondition);
+        // Counted pointer of DummyIsogeometricElement
+        KRATOS_CLASS_POINTER_DEFINITION(DummyIsogeometricElement);
 
         typedef GeometryData::IntegrationMethod IntegrationMethod;
 
@@ -37,23 +37,23 @@ class DummyIsogeometricCondition : public Condition
         /**
          * Default constructor.
          */
-        DummyIsogeometricCondition();
-        DummyIsogeometricCondition( IndexType NewId, GeometryType::Pointer pGeometry);
-        DummyIsogeometricCondition( IndexType NewId, GeometryType::Pointer pGeometry, PropertiesType::Pointer pProperties);
+        DummyIsogeometricElement();
+        DummyIsogeometricElement( IndexType NewId, GeometryType::Pointer pGeometry);
+        DummyIsogeometricElement( IndexType NewId, GeometryType::Pointer pGeometry, PropertiesType::Pointer pProperties);
 
         /**
          * Destructor.
          */
-        virtual ~DummyIsogeometricCondition();
+        virtual ~DummyIsogeometricElement();
 
         /**
          * Operations.
          */
 
-        Condition::Pointer Create(IndexType NewId, NodesArrayType const& ThisNodes,
+        Element::Pointer Create(IndexType NewId, NodesArrayType const& ThisNodes,
                                 PropertiesType::Pointer pProperties) const final;
 
-        Condition::Pointer Create(IndexType NewId, GeometryType::Pointer pGeom,
+        Element::Pointer Create(IndexType NewId, GeometryType::Pointer pGeom,
                                 PropertiesType::Pointer pProperties) const final;
 
         IntegrationMethod GetIntegrationMethod() const final;
@@ -79,13 +79,13 @@ class DummyIsogeometricCondition : public Condition
         /// Turn back information as a string.
         std::string Info() const final
         {
-            return "DummyIsogeometricCondition";
+            return "DummyIsogeometricElement";
         }
 
         /// Print information about this object.
         void PrintInfo(std::ostream& rOStream) const final
         {
-            rOStream << "DummyIsogeometricCondition #" << Id();
+            rOStream << "DummyIsogeometricElement #" << Id();
         }
 
         /// Print object's data.
@@ -105,12 +105,12 @@ class DummyIsogeometricCondition : public Condition
 
         void save ( Serializer& rSerializer ) const final
         {
-            KRATOS_SERIALIZE_SAVE_BASE_CLASS ( rSerializer, Condition )
+            KRATOS_SERIALIZE_SAVE_BASE_CLASS ( rSerializer, Element )
         }
 
         void load ( Serializer& rSerializer ) final
         {
-            KRATOS_SERIALIZE_LOAD_BASE_CLASS ( rSerializer, Condition )
+            KRATOS_SERIALIZE_LOAD_BASE_CLASS ( rSerializer, Element )
         }
 
         void CalculateAll( MatrixType& rLeftHandSideMatrix,
@@ -119,10 +119,10 @@ class DummyIsogeometricCondition : public Condition
                            bool CalculateStiffnessMatrixFlag,
                            bool CalculateResidualVectorFlag);
 
-}; // Class DummyIsogeometricCondition
+}; // Class DummyIsogeometricElement
 
 }  // namespace Kratos.
 
 
-#endif // KRATOS_DUMMY_ISOGEOMETRIC_CONDITION_H_INCLUDED defined
+#endif // KRATOS_DUMMY_ISOGEOMETRIC_ELEMENT_H_INCLUDED defined
 

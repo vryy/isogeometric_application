@@ -23,7 +23,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/io.h"
 #include "processes/process.h"
 #include "custom_python/add_processes_to_python.h"
-#include "python/vector_python_interface.h"
 
 #ifdef ISOGEOMETRIC_USE_PARMETIS
 #include "custom_processes/isogeometric_partitioning_process.h"

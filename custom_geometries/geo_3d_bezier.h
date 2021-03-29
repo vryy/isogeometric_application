@@ -52,7 +52,12 @@ public:
      */
 
     /**
-     * Geometry as base class.
+     * Pointer definition of Geo3dBezier
+     */
+    KRATOS_CLASS_POINTER_DEFINITION( Geo3dBezier );
+
+    /**
+     * IsogeometricGeometry as base class.
      */
     typedef IsogeometricGeometry<TPointType> BaseType;
 
@@ -60,11 +65,6 @@ public:
      * The original geometry type
      */
     typedef typename BaseType::GeometryType GeometryType;
-
-    /**
-     * Pointer definition of Geo3dBezier
-     */
-    KRATOS_CLASS_POINTER_DEFINITION( Geo3dBezier );
 
     /**
      * Integration methods implemented in geometry.
@@ -80,7 +80,7 @@ public:
     /**
      * Redefinition of template parameter TPointType.
      */
-    typedef typename BaseType::PointType PointType;
+    typedef TPointType PointType;
 
     /**
      * Type used for indexing in geometry class.std::size_t used for indexing
@@ -125,26 +125,26 @@ public:
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
     /**
-     * A third order tensor used as shape functions' values
+     * A first order tensor used as shape functions' values
      * container.
      */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
-     * A fourth order tensor used as shape functions' local
+     * A second order tensor used as shape functions' local
      * gradients container in geometry.
      */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
-     * A third order tensor to hold jacobian matrices evaluated at
+     * A first order tensor to hold jacobian matrices evaluated at
      * integration points. Jacobian and InverseOfJacobian functions
      * return this type as their result.
      */
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
+     * A second order tensor to hold shape functions' local
      * gradients. ShapefunctionsLocalGradients function return this
      * type as its result.
      */
@@ -156,6 +156,10 @@ public:
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
+    /** A fourth order tensor to hold shape functions' local third order derivatives
+     */
+    typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -171,6 +175,7 @@ public:
      * Type of Matrix
      */
     typedef typename BaseType::MatrixType MatrixType;
+    typedef boost::numeric::ublas::compressed_matrix<typename MatrixType::value_type> CompressedMatrixType;
 
     /**
      * Type of Vector
@@ -349,12 +354,12 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily()
+    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
         return GeometryData::Kratos_NURBS;
     }
 
-    virtual GeometryData::KratosGeometryType GetGeometryType()
+    virtual GeometryData::KratosGeometryType GetGeometryType() const override
     {
         return GeometryData::Kratos_Bezier3D;
     }
@@ -1178,6 +1183,27 @@ public:
     }
 
     /**
+     * Compute shape function third derivatives at a particular reference point.
+     */
+    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResults, const CoordinatesArrayType& rPoint ) const
+    {
+        // TODO
+        rResults.resize(this->PointsNumber(), false);
+
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
+        {
+            rResults[i].resize(3, false);
+            for(IndexType j = 0; j < 3; ++j)
+            {
+                rResults[i][j].resize(3, 3, false);
+                noalias(rResults[i][j]) = ZeroMatrix(3, 3);
+            }
+        }
+
+        return rResults;
+    }
+
+    /**
      * Compute the Bezier control points
      */
     virtual void ExtractControlPoints(PointsArrayType& rPoints)
@@ -1356,7 +1382,7 @@ public:
      */
     virtual void PrintInfo( std::ostream& rOStream ) const
     {
-        rOStream << Info();
+        rOStream << "Geo3dBezier";
     }
 
     /**
@@ -1372,6 +1398,10 @@ public:
     {
         BaseType::PrintData( rOStream );
         rOStream << std::endl;
+        rOStream << "    Control Weights: " << mCtrlWeights << std::endl;
+        rOStream << "    Order: " << mOrder1 << " " << mOrder2 << " " << mOrder3 << std::endl;
+        rOStream << "    Number: " << mNumber1 << " " << mNumber2 << " " << mNumber3 << std::endl;
+        rOStream << "    Extraction Operator: " << mExtractionOperator << std::endl;
     }
 
     virtual void AssignGeometryData(

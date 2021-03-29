@@ -2,12 +2,14 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/custom_cmake_modules")
 
+# #include cotire (CMake module to hep generating precompiled header to speed-up the build process)
+# include(cotire)
+
 message("**** configuring KratosIsogeometricApplication ****")
 
 include_directories( ${CMAKE_SOURCE_DIR})
 include_directories( ${CMAKE_SOURCE_DIR}/kratos)
 include_directories( ${CMAKE_SOURCE_DIR}/applications)
-include_directories( ${CMAKE_SOURCE_DIR}/applications/brep_application)
 
 # add_subdirectory(custom_external_libraries/geomod)
 add_subdirectory(custom_external_libraries/tetgen1.5.0)
@@ -67,6 +69,11 @@ if(DEFINED TSPLINE_DIR)
     endif()
 endif()
 
+if(DEFINED ISOGEOMETRIC_USE_BREP)
+    include_directories( ${CMAKE_SOURCE_DIR}/applications/brep_application)
+    add_definitions(-DISOGEOMETRIC_USE_BREP)
+endif()
+
 if(EXISTS ${CMAKE_SOURCE_DIR}/kratos/solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation.h)
     add_definitions(-D_residualbased_elimination_builder_and_solver_deactivation_existed_)
 endif()
@@ -105,14 +112,15 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
 )
 
 if(${ISOGEOMETRIC_USE_TSPLINE} MATCHES TRUE)
-set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
-    ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/import_export/tsplines_patch_tsm_importer.cpp
-   )
+    set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
+        ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/import_export/tsplines_patch_tsm_importer.cpp
+       )
 endif()
 
 set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_elements/dummy_isogeometric_element.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_conditions/dummy_isogeometric_condition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/isogeometric_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_io_to_python.cpp
@@ -128,8 +136,21 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_mesh_and_model_part_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_patches_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_strategies_to_python.cpp
+)
+
+set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
+    ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/isogeometric_python_application.cpp
 )
+
+if(DEFINED ISOGEOMETRIC_USE_BREP)
+    set( KRATOS_ISOGEOMETRIC_BREP_APPLICATION_SOURCES
+        ${KRATOS_ISOGEOMETRIC_BREP_APPLICATION_SOURCES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/isogeometric_brep_application.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_brep_and_level_set_to_python.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/isogeometric_brep_python_application.cpp
+    )
+endif()
 
 ###############################################################
 ## define library Kratos which defines the basic python interface
@@ -138,7 +159,6 @@ add_library(KratosIsogeometricApplication SHARED ${KRATOS_ISOGEOMETRIC_APPLICATI
 add_subdirectory(tests)
 
 target_link_libraries(KratosIsogeometricApplication KratosCore)
-#target_link_libraries(KratosIsogeometricApplication KratosStructuralApplication)
 target_link_libraries(KratosIsogeometricApplication iga_tetgen150)
 if(${ISOGEOMETRIC_USE_HDF5} MATCHES TRUE)
     target_link_libraries(KratosIsogeometricApplication ${HDF5_LIBRARIES})
@@ -158,15 +178,29 @@ if(CGAL_FOUND)
     target_link_libraries(KratosIsogeometricApplication ${CGAL_LIBRARIES})
     target_link_libraries(KratosIsogeometricApplication ${GMP_LIBRARIES})
 endif()
+# cotire(KratosIsogeometricApplication)
 
 set_target_properties(KratosIsogeometricApplication PROPERTIES PREFIX "")
 install(TARGETS KratosIsogeometricApplication DESTINATION libs )
-
 
 # changing the .dll suffix to .pyd
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set_target_properties(KratosIsogeometricApplication PROPERTIES SUFFIX .pyd)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+if(DEFINED ISOGEOMETRIC_USE_BREP)
+    add_library(KratosIsogeometricBRepApplication SHARED ${KRATOS_ISOGEOMETRIC_BREP_APPLICATION_SOURCES})
+    target_link_libraries(KratosIsogeometricBRepApplication KratosBRepApplication)
+    target_link_libraries(KratosIsogeometricBRepApplication KratosIsogeometricApplication)
+
+    set_target_properties(KratosIsogeometricBRepApplication PROPERTIES PREFIX "")
+    install(TARGETS KratosIsogeometricBRepApplication DESTINATION libs )
+
+    # changing the .dll suffix to .pyd
+    if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+        set_target_properties(KratosIsogeometricBRepApplication PROPERTIES SUFFIX .pyd)
+    endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+endif()
 
 if(${INSTALL_PYTHON_FILES} MATCHES ON)
   get_filename_component (CURRENT_DIR_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -179,3 +213,6 @@ endif(${INSTALL_PYTHON_FILES} MATCHES ON)
 # Add to the KratosMultiphysics Python module
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/IsogeometricApplication.py" DESTINATION KratosMultiphysics)
 
+if(DEFINED ISOGEOMETRIC_USE_BREP)
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/IsogeometricBRepApplication.py" DESTINATION KratosMultiphysics)
+endif()

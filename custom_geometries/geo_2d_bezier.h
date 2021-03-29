@@ -41,6 +41,7 @@ namespace Kratos
 
 /**
  * A geometry representing Bezier decomposition of NURBS surface in 2D. In this implementation, surface XY is considerred. For a surface in 3D space, used Geo2dBezier3 instead
+ * The local range is [0, 1] x [0, 1], hence this geometry shall be used for strict local element formulation.
  */
 template<class TPointType>
 class Geo2dBezier : public IsogeometricGeometry<TPointType>
@@ -52,6 +53,11 @@ public:
      */
 
     /**
+     * Pointer definition of Geo2dBezier
+     */
+    KRATOS_CLASS_POINTER_DEFINITION( Geo2dBezier );
+
+    /**
      * IsogeometricGeometry as base class.
      */
     typedef IsogeometricGeometry<TPointType> BaseType;
@@ -60,11 +66,6 @@ public:
      * The original geometry type
      */
     typedef typename BaseType::GeometryType GeometryType;
-
-    /**
-     * Pointer definition of Geo2dBezier
-     */
-    KRATOS_CLASS_POINTER_DEFINITION( Geo2dBezier );
 
     /**
      * Integration methods implemented in geometry.
@@ -125,26 +126,26 @@ public:
     typedef typename BaseType::IntegrationPointsContainerType IntegrationPointsContainerType;
 
     /**
-     * A third order tensor used as shape functions' values
+     * A first order tensor used as shape functions' values
      * container.
      */
     typedef typename BaseType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
 
     /**
-     * A fourth order tensor used as shape functions' local
+     * A second order tensor used as shape functions' local
      * gradients container in geometry.
      */
     typedef typename BaseType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
 
     /**
-     * A third order tensor to hold jacobian matrices evaluated at
+     * A first order tensor to hold jacobian matrices evaluated at
      * integration points. Jacobian and InverseOfJacobian functions
      * return this type as their result.
      */
     typedef typename BaseType::JacobiansType JacobiansType;
 
     /**
-     * A third order tensor to hold shape functions' local
+     * A second order tensor to hold shape functions' local
      * gradients. ShapefunctionsLocalGradients function return this
      * type as its result.
      */
@@ -156,6 +157,10 @@ public:
      * type as its result.
      */
     typedef typename BaseType::ShapeFunctionsSecondDerivativesType ShapeFunctionsSecondDerivativesType;
+
+    /** A fourth order tensor to hold shape functions' local third order derivatives
+     */
+    typedef typename BaseType::ShapeFunctionsThirdDerivativesType ShapeFunctionsThirdDerivativesType;
 
     /**
      * Type of the normal vector used for normal to edges in geomety.
@@ -345,12 +350,12 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily()
+    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
         return GeometryData::Kratos_NURBS;
     }
 
-    virtual GeometryData::KratosGeometryType GetGeometryType()
+    virtual GeometryData::KratosGeometryType GetGeometryType() const override
     {
         return GeometryData::Kratos_Bezier2D;
     }
@@ -748,7 +753,7 @@ public:
     }
 
     /**
-     * Compute shape function second derivatives at a particular reference point. This function is kept to keep the backward compatibility.
+     * Compute shape function second derivatives at a particular reference point.
      */
     virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const
     {
@@ -872,6 +877,27 @@ public:
     }
 
     /**
+     * Compute shape function third derivatives at a particular reference point.
+     */
+    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResults, const CoordinatesArrayType& rPoint ) const
+    {
+        // TODO
+        rResults.resize(this->PointsNumber(), false);
+
+        for(IndexType i = 0; i < this->PointsNumber(); ++i)
+        {
+            rResults[i].resize(2, false);
+            for(IndexType j = 0; j < 2; ++j)
+            {
+                rResults[i][j].resize(2, 2, false);
+                noalias(rResults[i][j]) = ZeroMatrix(2, 2);
+            }
+        }
+
+        return rResults;
+    }
+
+    /**
      * Compute the Bezier control points
      */
     virtual void ExtractControlPoints(PointsArrayType& rPoints)
@@ -911,10 +937,12 @@ public:
         typedef typename PointType::Pointer PointPointerType;
         for(int i = 0; i <= sampling_size[0]; ++i)
         {
-            p_ref[0] = ((double) i) / sampling_size[0];
+            p_ref[0] = this->MapGlobalToLocal(0, ((double) i) / sampling_size[0]);
+
             for(int j = 0; j <= sampling_size[1]; ++j)
             {
-                p_ref[1] = ((double) j) / sampling_size[1];
+                p_ref[1] = this->MapGlobalToLocal(1, ((double) j) / sampling_size[1]);
+
                 p = BaseType::GlobalCoordinates0(p, p_ref);
                 PointPointerType pPoint = PointPointerType(new PointType(0, p));
                 pPoint->SetSolutionStepVariablesList(this->GetPoint(0).pGetVariablesList());
@@ -988,10 +1016,11 @@ public:
         typedef typename PointType::Pointer PointPointerType;
         for(int i = 0; i <= sampling_size[0]; ++i)
         {
-            p_ref[0] = ((double) i) / sampling_size[0];
+            p_ref[0] = this->MapGlobalToLocal(0, ((double) i) / sampling_size[0]);
+
             for(int j = 0; j <= sampling_size[1]; ++j)
             {
-                p_ref[1] = ((double) j) / sampling_size[1];
+                p_ref[1] = this->MapGlobalToLocal(1, ((double) j) / sampling_size[1]);
 
                 ShapeFunctionsValues(shape_functions_values, p_ref);
 
@@ -1040,7 +1069,7 @@ public:
      */
     virtual void PrintInfo( std::ostream& rOStream ) const
     {
-        rOStream << Info();
+        rOStream << "Geo2dBezier";
     }
 
     /**
@@ -1055,10 +1084,11 @@ public:
     virtual void PrintData( std::ostream& rOStream ) const
     {
         BaseType::PrintData( rOStream );
-        std::cout << std::endl;
-//        MatrixType jacobian;
-//        Jacobian( jacobian, PointType() );
-//        rOStream << "    Jacobian in the origin\t : " << jacobian;
+        rOStream << std::endl;
+        rOStream << "    Control Weights: " << mCtrlWeights << std::endl;
+        rOStream << "    Order: " << mOrder1 << " " << mOrder2 << std::endl;
+        rOStream << "    Number: " << mNumber1 << " " << mNumber2 << std::endl;
+        rOStream << "    Extraction Operator: " << mExtractionOperator << std::endl;
     }
 
     /**

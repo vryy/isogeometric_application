@@ -67,17 +67,20 @@ namespace Kratos
     KRATOS_CREATE_VARIABLE( int, CELL_INDEX )
 
     KratosIsogeometricApplication::KratosIsogeometricApplication()
-    : mDummyConditionBezier( 0, Element::GeometryType::Pointer( new Geo1dBezier<Node<3> >() ) )
+    : mDummyElementBezier( 0, Element::GeometryType::Pointer( new Geo1dBezier<Node<3> >() ) )
+    , mDummyElementBezier2D( 0, Element::GeometryType::Pointer( new Geo2dBezier<Node<3> >() ) )
+    , mDummyElementBezier3D( 0, Element::GeometryType::Pointer( new Geo3dBezier<Node<3> >() ) )
+    , mDummyConditionBezier( 0, Element::GeometryType::Pointer( new Geo1dBezier<Node<3> >() ) )
     , mDummyConditionBezier2D( 0, Element::GeometryType::Pointer( new Geo2dBezier<Node<3> >() ) )
     , mDummyConditionBezier2D3( 0, Element::GeometryType::Pointer( new Geo2dBezier3<Node<3> >() ) )
     , mDummyConditionBezier3D( 0, Element::GeometryType::Pointer( new Geo3dBezier<Node<3> >() ) )
     {}
 
- 	void KratosIsogeometricApplication::Register()
- 	{
- 		// calling base class to register Kratos components
- 		KratosApplication::Register();
- 		std::cout << "Initializing KratosIsogeometricApplication... " << std::endl;
+    void KratosIsogeometricApplication::Register()
+    {
+        // calling base class to register Kratos components
+        KratosApplication::Register();
+        std::cout << "Initializing KratosIsogeometricApplication... " << std::endl;
 
         //register variables
         KRATOS_REGISTER_VARIABLE( NURBS_WEIGHT )
@@ -130,12 +133,17 @@ namespace Kratos
         Geo3dBezier<Node<3> > Geo3dBezierPrototype;
         Serializer::Register( "Geo3dBezier", Geo3dBezierPrototype );
 
+        // register elements
+        KRATOS_REGISTER_ELEMENT( "DummyElementBezier", mDummyElementBezier )
+        KRATOS_REGISTER_ELEMENT( "DummyElementBezier2D", mDummyElementBezier2D )
+        KRATOS_REGISTER_ELEMENT( "DummyElementBezier3D", mDummyElementBezier3D )
+
         // register conditions
         KRATOS_REGISTER_CONDITION( "DummyConditionBezier", mDummyConditionBezier )
         KRATOS_REGISTER_CONDITION( "DummyConditionBezier2D", mDummyConditionBezier2D )
         KRATOS_REGISTER_CONDITION( "DummyConditionBezier2D3", mDummyConditionBezier2D3 )
         KRATOS_REGISTER_CONDITION( "DummyConditionBezier3D", mDummyConditionBezier3D )
- 	}
+    }
 
 }  // namespace Kratos.
 

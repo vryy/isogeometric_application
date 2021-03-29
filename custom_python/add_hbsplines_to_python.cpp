@@ -178,13 +178,13 @@ void HBSplinesRefinementUtility_LinearDependencyRefine(HBSplinesRefinementUtilit
 
 ////////////////////////////////////////
 
-template<typename TDataType, class TFESpaceType>
-typename ControlGrid<TDataType>::Pointer ControlGridUtility_CreatePointBasedControlGrid(
-        ControlGridUtility& rDummy,
-        const Variable<TDataType>& rVariable, typename TFESpaceType::Pointer pFESpace)
-{
-    return rDummy.CreatePointBasedControlGrid<TDataType, TFESpaceType>(rVariable, pFESpace);
-}
+// template<typename TDataType, class TFESpaceType>
+// typename ControlGrid<TDataType>::Pointer ControlGridUtility_CreatePointBasedControlGrid(
+//         ControlGridUtility& rDummy,
+//         const Variable<TDataType>& rVariable, typename TFESpaceType::Pointer pFESpace)
+// {
+//     return rDummy.CreatePointBasedControlGrid<TDataType, TFESpaceType>(rVariable, pFESpace);
+// }
 
 ////////////////////////////////////////
 

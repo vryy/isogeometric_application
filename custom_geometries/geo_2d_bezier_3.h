@@ -308,12 +308,12 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily()
+    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
         return GeometryData::Kratos_NURBS;
     }
 
-    virtual GeometryData::KratosGeometryType GetGeometryType()
+    virtual GeometryData::KratosGeometryType GetGeometryType() const override
     {
         return GeometryData::Kratos_Bezier2D3;
     }
@@ -540,7 +540,7 @@ public:
      */
     virtual void PrintInfo( std::ostream& rOStream ) const
     {
-        rOStream << Info();
+        rOStream << "Geo2dBezier3";
     }
 
     /**
@@ -555,10 +555,6 @@ public:
     virtual void PrintData( std::ostream& rOStream ) const
     {
         BaseType::PrintData( rOStream );
-        std::cout << std::endl;
-//        MatrixType jacobian;
-//        Jacobian( jacobian, PointType() );
-//        rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
     /**

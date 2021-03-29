@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 15 Feb 2016 $
 //   Revision:            $Revision: 1.0 $
@@ -20,7 +20,7 @@
 #include <set>
 #include <list>
 
-// External includes 
+// External includes
 #include <omp.h>
 #include "boost/progress.hpp"
 #include "boost/algorithm/string.hpp"
@@ -33,6 +33,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
+#include "custom_utilities/iga_define.h"
 
 namespace Kratos
 {
@@ -41,7 +42,7 @@ namespace Kratos
 /**
     Class represents a Hierarchical NURBS mesh by G+Smo
 */
-class GismoMesh
+class GismoMesh : public IsogeometricEcho
 {
 public:
     /// Const definition
@@ -59,7 +60,7 @@ public:
     /// Type definition
 
     /// Default constructor
-    GismoMesh(std::string Name) : mName(Name), mEchoLevel(0)
+    GismoMesh(std::string Name) : mName(Name)
     {}
 
     /// Destructor
@@ -72,12 +73,6 @@ public:
 
     /// Get the name of this hierarchical mesh
     std::string Name() const {return mName;}
-
-    /// Set the echo level for this mesh
-    void SetEchoLevel(int Level) {mEchoLevel = Level;}
-
-    /// Get the echo level
-    int GetEchoLevel() const {return mEchoLevel;}
 
     /**************************************************************************
                             INPUT SUBROUTINES
@@ -108,7 +103,7 @@ public:
             std::getline(infile, line);
             boost::trim_if(line, boost::is_any_of("\t ")); // ignore trailing spaces
             boost::split(words, line, boost::is_any_of(" \t"), boost::token_compress_on);
-            
+
             if(words.size() != 0)
             {
                 if(words[0] == std::string("#") || words[0][0] == '#')

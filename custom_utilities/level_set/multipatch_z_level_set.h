@@ -143,6 +143,7 @@ public:
     }
 
 
+    /// inherit from LevelSet
     double GetValue(const PointType& P) const final
     {
         std::vector<double> local_point(2);
@@ -253,6 +254,21 @@ public:
         }
 
         return -99; // can't come here. Just to silence the compiler.
+    }
+
+
+    /// inherit from BRep
+    /// projects a point on the surface of level_set
+    int ProjectOnSurface(const PointType& P, PointType& Proj) const final
+    {
+        std::vector<double> local_point(2);
+        int target_patch_id;
+        int error_code = IsogeometricProjectionUtility::ComputeVerticalProjection(P,
+            local_point, Proj, target_patch_id,
+            mpMultiPatch, mProjectionTolerance, mMaxIterations,
+            mnsampling1, mnsampling2,
+            this->GetEchoLevel()-2);
+        return error_code;
     }
 
 

@@ -329,7 +329,7 @@ public:
         // compute the triangulation
         typedef std::vector<std::vector<TIndexType> > connectivity_t;
         connectivity_t Connectivities;
-        #if defined(USE_CGAL_FOR_TRIANGULATION)
+        #if defined(USE_CGAL_FOR_TRIANGULATION) && defined(ISOGEOMETRIC_APPLICATION_USE_CGAL)
         typedef CGAL::Exact_predicates_inexact_constructions_kernel                 Kernel;
         typedef CGAL::Triangulation_vertex_base_with_info_2<unsigned int, Kernel>   Vb;
         typedef CGAL::Triangulation_data_structure_2<Vb>                            Tds;
@@ -1133,6 +1133,14 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 ///@} addtogroup block
 
 }// namespace Kratos.
+
+#ifdef USE_TRIANGULATION_UTILS_FOR_TRIANGULATION
+#undef USE_TRIANGULATION_UTILS_FOR_TRIANGULATION
+#endif
+
+#ifdef USE_CGAL_FOR_TRIANGULATION
+#undef USE_CGAL_FOR_TRIANGULATION
+#endif
 
 #endif // KRATOS_ISOGEOMETRIC_POST_UTILITY_H_INCLUDED
 

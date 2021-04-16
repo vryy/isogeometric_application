@@ -601,7 +601,7 @@ namespace Kratos
 
                     // get the values at the integration_points
                     std::vector<array_1d<double, 3>> ValuesOnIntPoint(integration_points.size());
-                    (*it)->GetValueOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
+                    (*it)->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
 
                     for(unsigned int point = 0; point < integration_points.size(); ++point)
                     {

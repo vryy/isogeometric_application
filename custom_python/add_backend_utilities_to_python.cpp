@@ -33,10 +33,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/isogeometric_merge_utility.h"
 #include "custom_python/add_utilities_to_python.h"
 
-#ifdef ISOGEOMETRIC_USE_HDF5
-#include "custom_utilities/hdf5_post_utility.h"
-#endif
-
 #ifdef ISOGEOMETRIC_USE_GISMO
 #include "custom_utilities/gismo/gismo_mesh.h"
 #endif
@@ -715,21 +711,6 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<double> >)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<Vector> >)
     ;
-
-    #ifdef ISOGEOMETRIC_USE_HDF5
-    class_<HDF5PostUtility, HDF5PostUtility::Pointer, boost::noncopyable>("HDF5PostUtility", init<const std::string>())
-    .def(init<const std::string, const std::string>())
-    .def("WriteNodes", &HDF5PostUtility::WriteNodes)
-    .def("WriteNodalResults", &HDF5PostUtility::WriteNodalResults<double>)
-    .def("WriteNodalResults", &HDF5PostUtility::WriteNodalResults<array_1d<double, 3> >)
-    .def("WriteNodalResults", &HDF5PostUtility::WriteNodalResults<Vector>)
-    .def("WriteElementalData", &HDF5PostUtility::WriteElementalData<bool>)
-    .def("ReadNodalResults", &HDF5PostUtility::ReadNodalResults<double>)
-    .def("ReadNodalResults", &HDF5PostUtility::ReadNodalResults<array_1d<double, 3> >)
-    .def("ReadNodalResults", &HDF5PostUtility::ReadNodalResults<Vector>)
-    .def("ReadElementalData", &HDF5PostUtility::ReadElementalData<bool>)
-    ;
-    #endif
 
     class_<IsogeometricTestUtils, IsogeometricTestUtils::Pointer, boost::noncopyable>("IsogeometricTestUtils", init<>())
     .def("Test1", &IsogeometricTestUtils::Test1)

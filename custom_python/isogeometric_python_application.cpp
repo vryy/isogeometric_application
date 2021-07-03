@@ -39,6 +39,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "isogeometric_application.h"
+#include "isogeometric_application_variables.h"
 
 
 namespace Kratos

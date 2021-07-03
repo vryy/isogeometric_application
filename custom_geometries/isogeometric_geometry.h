@@ -91,6 +91,27 @@ namespace Kratos
 ///@name Kratos Classes
 ///@{
 
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+class IsogeometricGeometryData
+{
+public:
+    // because Kratos does not provide the NURBS geometry family and type, they are defined here in the application.
+    // The assigned numbers shall not be clashed with the number in the kernel and other applications
+    enum KratosNURBSGeometryFamily
+    {
+        Kratos_NURBS = 100,
+    };
+
+    enum KratosNURBSGeometryType
+    {
+        Kratos_Bezier1D = 101,
+        Kratos_Bezier2D = 102,
+        Kratos_Bezier2D3 = 103,
+        Kratos_Bezier3D = 104,
+    };
+};
+#endif
+
 ///IsogeometricGeometry base class.
 /** As a base class IsogeometricGeometry has all the common
  * interface of Kratos' geometries. Also it contains array of
@@ -224,12 +245,14 @@ public:
      */
     typedef typename GeometryType::iterator                     iterator;
     typedef typename GeometryType::const_iterator               const_iterator;
-    typedef typename GeometryType::reverse_iterator             reverse_iterator;
-    typedef typename GeometryType::const_reverse_iterator       const_reverse_iterator;
     typedef typename GeometryType::ptr_iterator                 ptr_iterator;
     typedef typename GeometryType::ptr_const_iterator           ptr_const_iterator;
+    #ifndef SD_APP_FORWARD_COMPATIBILITY
+    typedef typename GeometryType::reverse_iterator             reverse_iterator;
+    typedef typename GeometryType::const_reverse_iterator       const_reverse_iterator;
     typedef typename GeometryType::ptr_reverse_iterator         ptr_reverse_iterator;
     typedef typename GeometryType::ptr_const_reverse_iterator   ptr_const_reverse_iterator;
+    #endif
 
     /**
      * Type of Matrix
@@ -358,7 +381,11 @@ public:
 
     virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        return static_cast<GeometryData::KratosGeometryFamily>(IsogeometricGeometryData::Kratos_NURBS);
+        #else
         return GeometryData::Kratos_NURBS;
+        #endif
     }
 
     virtual GeometryData::KratosGeometryType GetGeometryType() const override

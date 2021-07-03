@@ -385,14 +385,13 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
-    {
-        return GeometryData::Kratos_NURBS;
-    }
-
     virtual GeometryData::KratosGeometryType GetGeometryType() const override
     {
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::Kratos_Bezier1D);
+        #else
         return GeometryData::Kratos_Bezier1D;
+        #endif
     }
 
     /**
@@ -1250,7 +1249,11 @@ public:
 
         // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
         mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<1, 3, 1>(NumberOfIntegrationMethod, Degree1);
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        BaseType::SetGeometryData(&(*mpBezierGeometryData));
+        #else
         BaseType::mpGeometryData = &(*mpBezierGeometryData);
+        #endif
     }
 
 protected:

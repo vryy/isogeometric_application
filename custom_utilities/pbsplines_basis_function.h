@@ -20,7 +20,7 @@
 #include "includes/serializer.h"
 #include "containers/data_value_container.h"
 #include "custom_utilities/control_point.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application_variables.h"
 
 
 namespace Kratos
@@ -206,11 +206,13 @@ public:
         return mData.Has(rThisVariable);
     }
 
+    #ifndef SD_APP_FORWARD_COMPATIBILITY
     template<class TAdaptorType>
     bool Has(const VariableComponent<TAdaptorType>& rThisVariable) const
     {
         return mData.Has(rThisVariable);
     }
+    #endif
 
     /**************************************************************************
                             COMPARISON SUBROUTINES

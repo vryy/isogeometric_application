@@ -73,6 +73,9 @@ class BaseBCellManager : public CellContainer
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BaseBCellManager);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const BaseBCellManager> ConstPointer;
+    #endif
 
     /// Type definitions
     typedef CellContainer BaseType;

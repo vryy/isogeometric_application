@@ -20,12 +20,19 @@ namespace Kratos
 This class represents an isogeometric multipatch in parametric coordinates. An isogeometric multipatch comprises a list of similar type patches, i.e NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
  */
 template<int TDim>
-class MultiPatch : public boost::enable_shared_from_this<MultiPatch<TDim> >
+class MultiPatch
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+: public std::enable_shared_from_this<MultiPatch<TDim> >
+#else
+: public boost::enable_shared_from_this<MultiPatch<TDim> >
+#endif
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(MultiPatch);
-
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const MultiPatch> ConstPointer;
+    #endif
     /// Type definition
     typedef Patch<TDim> PatchType;
     typedef PointerVectorSet<PatchType, IndexedObject> PatchContainerType;

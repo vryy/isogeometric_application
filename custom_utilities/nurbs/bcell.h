@@ -42,6 +42,9 @@ class BCell : public Cell
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BCell);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const BCell> ConstPointer;
+    #endif
 
     /// Type definitions
     typedef Cell BaseType;

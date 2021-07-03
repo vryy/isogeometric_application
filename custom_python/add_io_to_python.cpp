@@ -22,7 +22,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/model_part_io.h"
 #include "custom_io/bezier_model_part_io.h"
 #include "custom_io/isogeometric_model_part_io.h"
-#include "add_io_to_python.h"
+#include "custom_python/add_io_to_python.h"
 
 namespace Kratos
 {

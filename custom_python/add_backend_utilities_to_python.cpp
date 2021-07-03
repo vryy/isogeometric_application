@@ -91,11 +91,11 @@ void BezierUtils_Bernstein_der(
 
 void BezierUtils_DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients(
     BezierUtils& dummy,
-    ModelPart::Pointer pModelPart,
+    ModelPart& r_model_part,
     std::string FileName
 )
 {
-    dummy.DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients(pModelPart, FileName);
+    dummy.DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients(r_model_part, FileName);
 }
 
 template<class T>
@@ -598,14 +598,14 @@ boost::python::list BezierClassicalPostUtility_GenerateElementsWithNodalVariable
     return Output;
 }
 
-void BezierClassicalPostUtility_GenerateModelPart2WithCondition(BezierClassicalPostUtility& dummy, ModelPart::Pointer pModelPartPost)
+void BezierClassicalPostUtility_GenerateModelPart2WithCondition(BezierClassicalPostUtility& dummy, ModelPart& rModelPartPost)
 {
-    dummy.GenerateModelPart2(pModelPartPost, true);
+    dummy.GenerateModelPart2(rModelPartPost, true);
 }
 
-void BezierClassicalPostUtility_GenerateModelPart2(BezierClassicalPostUtility& dummy, ModelPart::Pointer pModelPartPost, const bool& generate_for_condition)
+void BezierClassicalPostUtility_GenerateModelPart2(BezierClassicalPostUtility& dummy, ModelPart& rModelPartPost, const bool& generate_for_condition)
 {
-    dummy.GenerateModelPart2(pModelPartPost, generate_for_condition);
+    dummy.GenerateModelPart2(rModelPartPost, generate_for_condition);
 }
 
 //////////////////////////////////////////////////////////
@@ -678,7 +678,7 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("CreateConditions", &IsogeometricPostUtility_CreateConditionsByQuadrilateralization<array_1d<double, 3>, Patch<3> >)
     ;
 
-    class_<BezierClassicalPostUtility, BezierClassicalPostUtility::Pointer, boost::noncopyable>("BezierClassicalPostUtility", init<ModelPart::Pointer>())
+    class_<BezierClassicalPostUtility, BezierClassicalPostUtility::Pointer, boost::noncopyable>("BezierClassicalPostUtility", init<ModelPart&>())
     .def("GenerateConditions", &BezierClassicalPostUtility_GenerateConditions)
     .def("GenerateConditionsWithNodalVariables", &BezierClassicalPostUtility_GenerateConditionsWithNodalVariables)
     .def("GenerateElements", &BezierClassicalPostUtility_GenerateElements)

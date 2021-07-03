@@ -51,23 +51,23 @@ public:
     /************************************/
 
     /// Get the size of underlying data
-    virtual std::size_t Size() const {return mData.size();}
+    std::size_t Size() const override {return mData.size();}
 
     /// Get the size of underlying data
-    virtual std::size_t size() const {return mData.size();}
+    std::size_t size() const override {return mData.size();}
 
     /// Get the data at specific point
-    virtual TDataType GetData(const std::size_t& i) const {return mData[i];}
+    TDataType GetData(const std::size_t& i) const override {return mData[i];}
 
     /// Set the data at specific point
     /// Be careful with this method. You can destroy the coherency of internal data.
-    virtual void SetData(const std::size_t& i, const TDataType& value) {mData[i] = value;}
+    void SetData(const std::size_t& i, const TDataType& value) override {mData[i] = value;}
 
     /// overload operator []
-    virtual TDataType& operator[] (const std::size_t& i) {return mData[i];}
+    TDataType& operator[] (const std::size_t& i) override {return mData[i];}
 
     /// overload operator []
-    virtual const TDataType& operator[] (const std::size_t& i) const {return mData[i];}
+    const TDataType& operator[] (const std::size_t& i) const override {return mData[i];}
 
     /// Overload assignment operator
     BaseStructuredControlGrid<TDataType>& operator=(const BaseStructuredControlGrid<TDataType>& rOther)
@@ -78,7 +78,7 @@ public:
     }
 
     /// Create the clone
-    virtual typename ControlGrid<TDataType>::Pointer Clone() const
+    typename ControlGrid<TDataType>::Pointer Clone() const override
     {
         typename BaseStructuredControlGrid<TDataType>::Pointer pNewControlGrid = typename BaseStructuredControlGrid<TDataType>::Pointer(new BaseStructuredControlGrid<TDataType>());
         *pNewControlGrid = *this;
@@ -106,25 +106,25 @@ public:
     /************************************/
 
     /// Copy the data the other grid. The size of two grids must be equal.
-    virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
+    void CopyFrom(const ControlGrid<TDataType>& rOther) override
     {
         BaseType::CopyFrom(rOther);
     }
 
     /// Copy the data the other grid. The size of two grids must be equal.
-    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther) override
     {
         BaseType::CopyFrom(pOther);
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
-    virtual void ResizeAndCopyFrom(ControlGrid<TDataType>& rOther)
+    void ResizeAndCopyFrom(ControlGrid<TDataType>& rOther) override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
-    virtual void ResizeAndCopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    void ResizeAndCopyFrom(const typename ControlGrid<TDataType>::Pointer pOther) override
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
@@ -164,6 +164,9 @@ class StructuredControlGrid<1, TDataType> : public BaseStructuredControlGrid<TDa
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const StructuredControlGrid> ConstPointer;
+    #endif
 
     // type definitions
     typedef BaseStructuredControlGrid<TDataType> BaseType;
@@ -237,13 +240,13 @@ public:
     const TDataType& operator() (const std::size_t& i) const {return BaseType::Data()[i];}
 
     /// Copy the data the other grid. The size of two grids must be equal.
-    virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
+    void CopyFrom(const ControlGrid<TDataType>& rOther) override
     {
         BaseType::CopyFrom(rOther);
     }
 
     /// Copy the data the other grid. The size of two grids must be equal.
-    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther) override
     {
         BaseType::CopyFrom(pOther);
     }
@@ -279,7 +282,7 @@ public:
     }
 
     /// Reverse the control grid in specific dimension
-    virtual void Reverse(const int& idir)
+    void Reverse(const int& idir) override
     {
         if (idir == 0)
             std::reverse(BaseType::Data().begin(), BaseType::Data().end());
@@ -295,7 +298,7 @@ public:
     }
 
     /// Clone this grid
-    virtual typename ControlGrid<TDataType>::Pointer Clone() const
+    typename ControlGrid<TDataType>::Pointer Clone() const override
     {
         typename StructuredControlGrid<1, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<1, TDataType>::Pointer(new StructuredControlGrid<1, TDataType>(mSize));
         *pNewControlGrid = *this;
@@ -303,12 +306,12 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "StructuredGrid<1> " << BaseType::Name() << "[" << mSize << "]";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << " Data:\n (";
         for (std::size_t i = 0; i < BaseType::Data().size(); ++i)
@@ -326,6 +329,9 @@ class StructuredControlGrid<2, TDataType> : public BaseStructuredControlGrid<TDa
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const StructuredControlGrid> ConstPointer;
+    #endif
 
     // type definitions
     typedef BaseStructuredControlGrid<TDataType> BaseType;
@@ -400,13 +406,13 @@ public:
     const TDataType& operator() (const std::size_t& i, const std::size_t& j) const {return BaseType::Data()[j*mSize[0] + i];}
 
     /// Copy the data the other grid. The size of two grids must be equal.
-    virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
+    void CopyFrom(const ControlGrid<TDataType>& rOther) override
     {
         BaseType::CopyFrom(rOther);
     }
 
     /// Copy the data the other grid. The size of two grids must be equal.
-    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther) override
     {
         BaseType::CopyFrom(pOther);
     }
@@ -468,7 +474,7 @@ public:
     }
 
     /// Reverse the control grid in specific dimension
-    virtual void Reverse(const int& idir)
+    void Reverse(const int& idir) override
     {
         // if (idir == 0)
         // {
@@ -553,7 +559,7 @@ public:
     }
 
     /// Clone this grid
-    virtual typename ControlGrid<TDataType>::Pointer Clone() const
+    typename ControlGrid<TDataType>::Pointer Clone() const override
     {
         typename StructuredControlGrid<2, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<2, TDataType>::Pointer(new StructuredControlGrid<2, TDataType>(mSize[0], mSize[1]));
         *pNewControlGrid = *this;
@@ -561,12 +567,12 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "StructuredGrid<2> " << BaseType::Name() << ": [" << mSize[0] << ", " << mSize[1] << "]";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << " Data:\n (\n";
         for (std::size_t j = 0; j < mSize[1]; ++j)
@@ -591,6 +597,9 @@ class StructuredControlGrid<3, TDataType> : public BaseStructuredControlGrid<TDa
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const StructuredControlGrid> ConstPointer;
+    #endif
 
     // type definitions
     typedef BaseStructuredControlGrid<TDataType> BaseType;
@@ -672,13 +681,13 @@ public:
     }
 
     /// Copy the data the other grid. The size of two grids must be equal.
-    virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
+    void CopyFrom(const ControlGrid<TDataType>& rOther) override
     {
         BaseType::CopyFrom(rOther);
     }
 
     /// Copy the data the other grid. The size of two grids must be equal.
-    virtual void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
+    void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther) override
     {
         BaseType::CopyFrom(pOther);
     }
@@ -754,7 +763,7 @@ public:
     }
 
     /// Reverse the control grid in specific dimension
-    virtual void Reverse(const int& idir)
+    void Reverse(const int& idir) override
     {
         // if (idir == 0)
         // {
@@ -810,27 +819,21 @@ public:
 
         if (side == _BLEFT_)
         {
-            
         }
         else if (side == _BRIGHT_)
         {
-            
         }
         else if (side == _BTOP_)
         {
-        
         }
         else if (side == _BBOTTOM_)
         {
-        
         }
         else if (side == _BFRONT_)
         {
-        
         }
         else if (side == _BBACK_)
         {
-        
         }
 
         return pControlGrid;
@@ -848,7 +851,7 @@ public:
     }
 
     /// Clone this grid
-    virtual typename ControlGrid<TDataType>::Pointer Clone() const
+    typename ControlGrid<TDataType>::Pointer Clone() const override
     {
         typename StructuredControlGrid<3, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<3, TDataType>::Pointer(new StructuredControlGrid<3, TDataType>(mSize[0], mSize[1], mSize[2]));
         *pNewControlGrid = *this;
@@ -856,12 +859,12 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "StructuredGrid<3> " << BaseType::Name() << ": [" << mSize[0] << ", " << mSize[1] << ", " << mSize[2] << "]";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << " Data:\n (";
         for (std::size_t k = 0; k < mSize[2]; ++k)

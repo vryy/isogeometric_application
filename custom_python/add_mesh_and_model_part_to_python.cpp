@@ -44,7 +44,7 @@ using namespace boost::python;
 template<class T>
 ModelPart& MultiPatchModelPart_GetModelPart(T& rDummy)
 {
-    return *(rDummy.pModelPart());
+    return rDummy.GetModelPart();
 }
 
 template<class T>
@@ -241,7 +241,7 @@ void IsogeometricApplication_AddMeshToPython()
     ss.str(std::string());
     ss << "NonConformingVariableMultipatchLagrangeMesh" << TDim << "D";
     class_<NonConformingVariableMultipatchLagrangeMesh<TDim>, typename NonConformingVariableMultipatchLagrangeMesh<TDim>::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
-    (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer, ModelPart::Pointer>())
+    (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer, ModelPart&>())
     .def("SetBaseElementName", &NonConformingVariableMultipatchLagrangeMesh<TDim>::SetBaseElementName)
     .def("SetLastNodeId", &NonConformingVariableMultipatchLagrangeMesh<TDim>::SetLastNodeId)
     .def("SetLastElemId", &NonConformingVariableMultipatchLagrangeMesh<TDim>::SetLastElemId)

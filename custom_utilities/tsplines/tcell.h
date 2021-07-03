@@ -42,6 +42,9 @@ class TCell : public Cell
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(TCell);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const TCell> ConstPointer;
+    #endif
 
     /// Type definitions
     typedef Cell BaseType;

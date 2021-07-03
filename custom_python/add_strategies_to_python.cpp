@@ -15,19 +15,14 @@
 
 
 // Project includes
-#include "includes/model_part.h"
-#include "includes/variables.h"
-#include "includes/deprecated_variables.h"
 #include "spaces/ublas_space.h"
 #include "linear_solvers/linear_solver.h"
-#include "solving_strategies/schemes/scheme.h"
 #include "solving_strategies/builder_and_solvers/builder_and_solver.h"
 #ifdef _residualbased_elimination_builder_and_solver_deactivation_existed_
 #include "solving_strategies/builder_and_solvers/residualbased_elimination_builder_and_solver_deactivation.h"
 #endif
 #include "custom_strategies/builder_and_solvers/row_constraint_builder_and_solver.h"
 #include "custom_python/add_strategies_to_python.h"
-#include "isogeometric_application/isogeometric_application.h"
 
 
 namespace Kratos

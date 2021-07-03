@@ -45,11 +45,19 @@ public:
     virtual ~MultiPatchUtility() {}
 
     /// Create new patch from a FESpace and wrap it with pointer
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    template<int TDim>
+    static iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer> CreatePatchPointer(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
+    {
+        return iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer>(typename Patch<TDim>::Pointer(new Patch<TDim>(Id, pFESpace)));
+    }
+    #else
     template<int TDim>
     static typename Patch<TDim>::Pointer CreatePatchPointer(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
     {
         return typename Patch<TDim>::Pointer(new Patch<TDim>(Id, pFESpace));
     }
+    #endif
 
     /// Make a simple interface between two patches
     /// For BSplines patch, one shall use BSplinesPatchUtility::MakeInterfacexD instead
@@ -60,8 +68,8 @@ public:
         typename PatchInterface<TDim>::Pointer pInterface12;
         typename PatchInterface<TDim>::Pointer pInterface21;
 
-        pInterface12 = boost::make_shared<PatchInterface<TDim> >(pPatch1, side1, pPatch2, side2);
-        pInterface21 = boost::make_shared<PatchInterface<TDim> >(pPatch2, side2, pPatch1, side1);
+        pInterface12 = iga::make_shared<PatchInterface<TDim> >(pPatch1, side1, pPatch2, side2);
+        pInterface21 = iga::make_shared<PatchInterface<TDim> >(pPatch2, side2, pPatch1, side1);
 
         pInterface12->SetOtherInterface(pInterface21);
         pInterface21->SetOtherInterface(pInterface12);

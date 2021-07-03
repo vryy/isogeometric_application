@@ -11,6 +11,59 @@
 
 #include <cstring>
 #include <vector>
+#include "includes/define.h"
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+#include <memory>
+#else
+#include <boost/pointer_cast.hpp>
+#endif
+
+namespace iga
+{
+    // alias for dynamic_pointer_cast
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    template <class T, class U>
+    inline std::shared_ptr<T> dynamic_pointer_cast(const std::shared_ptr<U> &r) noexcept
+    {
+        return std::dynamic_pointer_cast<T>(r);
+    }
+    #else
+    template <class T, class U>
+    inline boost::shared_ptr<T> dynamic_pointer_cast(const boost::shared_ptr<U> &r) noexcept
+    {
+        return boost::dynamic_pointer_cast<T>(r);
+    }
+    #endif
+
+    // alias for make_shared
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    template<typename C, typename...Args>
+    inline std::shared_ptr<C> make_shared(Args &&...args)
+    {
+        return std::make_shared<C>(std::forward<Args>(args)...);
+    }
+    #else
+    template<typename C, typename...Args>
+    inline boost::shared_ptr<C> make_shared(Args &&...args)
+    {
+        return boost::make_shared<C>(std::forward<Args>(args)...);
+    }
+    #endif
+
+    // wrapper for object and pointer to that object
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    template<typename T, typename PT = Kratos::shared_ptr<T> >
+    #else
+    template<typename T, typename PT = boost::shared_ptr<T> >
+    #endif
+    struct Wrapper
+    {
+        Wrapper(PT p) : mp(p) {}
+        PT& GetPointer() {return mp;}
+        T& GetReference() {return *mp;}
+        PT mp;
+    };
+} // namespace iga
 
 namespace Kratos
 {
@@ -170,6 +223,8 @@ enum IsogeometricEchoFlags
 
 struct IsogeometricEcho
 {
+    KRATOS_CLASS_POINTER_DEFINITION(IsogeometricEcho);
+
     IsogeometricEcho() : mEchoLevel(0) {}
     ~IsogeometricEcho() {}
 
@@ -214,8 +269,6 @@ struct Isogeometric_Pointer_Helper
     KRATOS_CLASS_POINTER_DEFINITION(TType);
 };
 
-
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_IGA_DEFINE_H_INCLUDED defined
-

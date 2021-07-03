@@ -35,7 +35,7 @@ In addition, transfer the variables from other multipatch is possible providing 
 be messy, if user does not control the input multipatch. It is better that the multipatches from mixed interpolation used to transfer the values.
  */
 template<int TDim>
-class NonConformingVariableMultipatchLagrangeMesh
+class NonConformingVariableMultipatchLagrangeMesh : public IsogeometricEcho
 {
 public:
     /// Pointer definition
@@ -46,8 +46,8 @@ public:
     typedef typename Element::GeometryType::PointType NodeType;
 
     /// Default constructor
-    NonConformingVariableMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch, ModelPart::Pointer p_model_part)
-    : mpMultiPatch(pMultiPatch), mpModelPart(p_model_part)
+    NonConformingVariableMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch, ModelPart& r_model_part)
+    : mpMultiPatch(pMultiPatch), mr_model_part(r_model_part)
     {}
 
     /// Destructor
@@ -125,7 +125,7 @@ public:
         {
             // create new properties and add to model_part
             Properties::Pointer pNewProperties = Properties::Pointer(new Properties(PropertiesCounter++));
-            mpModelPart->AddProperties(pNewProperties);
+            mr_model_part.AddProperties(pNewProperties);
 
             if (TDim == 2)
             {
@@ -170,13 +170,13 @@ public:
 
                         // TODO: check if jacobian checking is necessary
                         temp_element_nodes.clear();
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node1, NodeKey).base()));
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node2, NodeKey).base()));
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node4, NodeKey).base()));
-                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node3, NodeKey).base()));
+                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node1, NodeKey).base()));
+                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node2, NodeKey).base()));
+                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node4, NodeKey).base()));
+                        temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node3, NodeKey).base()));
 
                         Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
-                        mpModelPart->AddElement(pNewElement);
+                        mr_model_part.AddElement(pNewElement);
                         #ifdef DEBUG_MESH_GENERATION
                         std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
                         for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
@@ -193,7 +193,7 @@ public:
                 NodeCounter_old = NodeCounter;
 
                 // just to make sure everything is organized properly
-                mpModelPart->Elements().Unique();
+                mr_model_part.Elements().Unique();
             }
             else if (TDim == 3)
             {
@@ -246,17 +246,17 @@ public:
 
                             // TODO: check if jacobian checking is necessary
                             temp_element_nodes.clear();
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node1, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node2, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node4, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node3, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node5, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node6, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node8, NodeKey).base()));
-                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mpModelPart->Nodes(), Node7, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node1, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node2, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node4, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node3, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node5, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node6, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node8, NodeKey).base()));
+                            temp_element_nodes.push_back(*(MultiPatchUtility::FindKey(mr_model_part.Nodes(), Node7, NodeKey).base()));
 
                             Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
-                            mpModelPart->AddElement(pNewElement);
+                            mr_model_part.AddElement(pNewElement);
                             #ifdef DEBUG_MESH_GENERATION
                             std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
                             for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
@@ -274,7 +274,7 @@ public:
                 NodeCounter_old = NodeCounter;
 
                 // just to make sure everything is organized properly
-                mpModelPart->Elements().Unique();
+                mr_model_part.Elements().Unique();
             }
         }
     }
@@ -282,9 +282,9 @@ public:
 
 //    /// Transfer the variable to the model_part
 //    template<typename TVariableType>
-//    void TransferVariables(const TVariableType& rVariable, ModelPart::Pointer mpModelPart) const
+//    void TransferVariables(const TVariableType& rVariable, ModelPart::Pointer mr_model_part) const
 //    {
-//        this->TransferVariables(rVariable, mpMultiPatch, mpModelPart);
+//        this->TransferVariables(rVariable, mpMultiPatch, mr_model_part);
 //    }
 
 
@@ -335,7 +335,7 @@ public:
                         std::cout << "p_ref: " << p_ref[0] << " " << p_ref[1] << std::endl;
                         #endif
 
-                        NodeType::Pointer pNode = mpModelPart->pGetNode(NodeCounter);
+                        NodeType::Pointer pNode = mr_model_part.pGetNode(NodeCounter);
                         typename TVariableType::Type value = pGridFunction->GetValue(p_ref);
                         pNode->GetSolutionStepValue(rVariable) = value;
                         ++NodeCounter;
@@ -368,7 +368,7 @@ public:
                         {
                             p_ref[2] = ((double) k) / NumDivision3;
 
-                            NodeType::Pointer pNode = mpModelPart->pGetNode(NodeCounter);
+                            NodeType::Pointer pNode = mr_model_part.pGetNode(NodeCounter);
                             typename TVariableType::Type value = pGridFunction->GetValue(p_ref);
                             pNode->GetSolutionStepValue(rVariable) = value;
                             ++NodeCounter;
@@ -394,7 +394,7 @@ private:
 
     typename MultiPatch<TDim>::Pointer mpMultiPatch;
 
-    ModelPart::Pointer mpModelPart; // pointer to keep track of the generated model_part
+    ModelPart& mr_model_part; // reference to keep track of the generated model_part
 
     std::map<std::size_t, boost::array<std::size_t, TDim> > mNumDivision;
 
@@ -410,7 +410,7 @@ private:
     {
         typename Patch<TDim>::ControlPointType p = rPatch.pControlPointGridFunction()->GetValue(p_ref);
 
-        typename NodeType::Pointer pNewNode = mpModelPart->CreateNewNode(NodeCounter, p.X(), p.Y(), p.Z());
+        typename NodeType::Pointer pNewNode = mr_model_part.CreateNewNode(NodeCounter, p.X(), p.Y(), p.Z());
         #ifdef DEBUG_MESH_GENERATION
         std::cout << "Node " << pNewNode->Id() << " (" << pNewNode->X() << " " << pNewNode->Y() << " " << pNewNode->Z() << ") is created" << std::endl;
         #endif
@@ -430,7 +430,9 @@ inline std::ostream& operator <<(std::ostream& rOStream, const NonConformingVari
 
 } // namespace Kratos.
 
+#ifdef DEBUG_MESH_GENERATION
 #undef DEBUG_MESH_GENERATION
+#endif
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_NONCONFORMING_VARIABLE_MULTIPATCH_LAGRANGE_MESH_H_INCLUDED defined
 

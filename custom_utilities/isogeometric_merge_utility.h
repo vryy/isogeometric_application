@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 29 Jul 2014 $
 //   Revision:            $Revision: 1.0 $
@@ -14,7 +14,7 @@
 #include <vector>
 #include <iostream>
 
-// External includes 
+// External includes
 #include <omp.h>
 
 // Project includes
@@ -28,7 +28,7 @@
 #include "spaces/ublas_space.h"
 #include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
-#include "isogeometric_application.h"
+#include "isogeometric_application_variables.h"
 
 
 //#define DEBUG_LEVEL1
@@ -101,38 +101,38 @@ public:
     ///@{
 
     typedef boost::numeric::ublas::vector<double> ValuesContainerType;
-    
+
     typedef boost::numeric::ublas::matrix<double> ValuesArrayContainerType;
-    
+
     typedef typename ModelPart::NodesContainerType NodesContainerType;
-    
+
     typedef typename ModelPart::ElementsContainerType ElementsContainerType;
 
     typedef typename ModelPart::ConditionsContainerType ConditionsContainerType;
-    
+
     typedef typename Element::GeometryType GeometryType;
-    
+
     typedef GeometryType::PointType PointType;
 
     typedef IsogeometricGeometry<GeometryType::PointType> IsogeometricGeometryType;
-    
+
     typedef typename GeometryType::IntegrationPointsArrayType IntegrationPointsArrayType;
 
     typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
 
     typedef typename Node<3>::DofsContainerType DofsContainerType;
-    
+
     typedef Node<3> NodeType;
 
     typedef UblasSpace<double, CompressedMatrix, Vector> SerialSparseSpaceType;
 
     typedef UblasSpace<double, Matrix, Vector> SerialDenseSpaceType;
-    
+
     typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType> LinearSolverType;
-    
+
     typedef std::size_t IndexType;
-    
-    
+
+
     /// Pointer definition of IsogeometricMergeUtility
     KRATOS_CLASS_POINTER_DEFINITION(IsogeometricMergeUtility);
 
@@ -157,12 +157,12 @@ public:
     ///@}
     ///@name Operations
     ///@{
-    
+
     void Add(ModelPart::Pointer pModelPart)
     {
         mpModelPartContainer.push_back(pModelPart);
     }
-    
+
     void Export(ModelPart::Pointer pModelPart)
     {
         // firstly iterate through all the nodes in all model part to extract a non-repeated list of nodes
@@ -183,7 +183,7 @@ public:
 //            }
 //        }
 //        KRATOS_WATCH(PointSetDummy.size())
-        
+
         for(int i = 0; i < mpModelPartContainer.size(); ++i)
         {
             NodesContainerType ThisNodes = mpModelPartContainer[i]->Nodes();
@@ -196,7 +196,7 @@ public:
             }
         }
         KRATOS_WATCH(PointSet.size())
-        
+
         // create a unified variables_list
         VariablesList ThisVariablesList;
         for(int i = 0; i < mpModelPartContainer.size(); ++i)
@@ -209,7 +209,7 @@ public:
         for(VariablesList::ptr_const_iterator it = ThisVariablesList.ptr_begin(); it != ThisVariablesList.ptr_end(); ++it)
             pModelPart->GetNodalSolutionStepVariablesList().Add(*(*it));
         KRATOS_WATCH(pModelPart->GetNodalSolutionStepVariablesList())
-        
+
         // create a maximum buffer
         int buffer_size = 0;
         for(int i = 0; i < mpModelPartContainer.size(); ++i)
@@ -220,7 +220,7 @@ public:
         }
         pModelPart->SetBufferSize(buffer_size);
         KRATOS_WATCH(pModelPart->GetBufferSize())
-        
+
         // add nodes to the new model part
         int lastNode = 0;
         std::map<LoosePointType<PointType>, int> NodeIds; // map from reduced node set to new node set id
@@ -252,7 +252,7 @@ public:
 //            temp_node.Z0() = temp_node.Z();
 //            pModelPart->Nodes().push_back(temp_node);
         }
-        
+
         // add elements to the new model part
         int lastElement = 0;
         std::string NodeKey = std::string("Node");
@@ -288,7 +288,7 @@ public:
         for( ElementsContainerType::ptr_iterator it = NewElements.ptr_begin(); it != NewElements.ptr_end(); ++it )
             pModelPart->Elements().push_back( *it );
         NewElements.clear();
-        
+
         // add conditions to the new model part
         int lastCondition = 0;
         typedef typename KratosComponents<Condition>::ComponentsContainerType ConditionComponentsContainerType;
@@ -322,8 +322,8 @@ public:
         // add new conditions
         for( ConditionsContainerType::ptr_iterator it = NewConditions.ptr_begin(); it != NewConditions.ptr_end(); ++it )
             pModelPart->Conditions().push_back( *it );
-        NewConditions.clear(); 
-        
+        NewConditions.clear();
+
         // add properties to the model_part
         int lastProperties = 0;
         for(int i = 0; i < mpModelPartContainer.size(); ++i)
@@ -336,8 +336,8 @@ public:
             }
         }
     }
-    
-    
+
+
     ///@}
     ///@name Access
     ///@{
@@ -432,8 +432,8 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
-    
-    
+
+
     //**********AUXILIARY FUNCTION**************************************************************
     //******************************************************************************************
     template<class TContainerType, class TKeyType>
@@ -449,8 +449,8 @@ private:
 
         return i_result;
     }
-    
-    
+
+
     ///@}
     ///@name Private  Access
     ///@{
@@ -458,7 +458,7 @@ private:
     ///@}
     ///@name Private Inquiry
     ///@{
-    
+
     ///@}
     ///@name Un accessible methods
     ///@{

@@ -72,21 +72,28 @@ namespace Kratos
     }
 
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-        ModelPart& r_model_part, ElementsArrayType& ElementsArray,
+        ModelPart& r_model_part, ElementsContainerType& ElementsArray,
         const Variable<double>& rThisVariable, const bool& check_active) const
     {
         std::set<std::size_t> active_nodes;
-        for( ElementsArrayType::ptr_iterator it = ElementsArray.ptr_begin(); it != ElementsArray.ptr_end(); ++it )
+        for( ElementsContainerType::iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
         {
-            bool is_active = true;
+            bool is_inactive = false;
             if (check_active)
-                is_active = ((*it)->GetValue(IS_INACTIVE) == false) || (*it)->Is(ACTIVE);
-
-            if( is_active )
             {
-                for( std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i )
+                if(it->IsDefined ( ACTIVE ))
+                    is_inactive = !(it->Is( ACTIVE ));
+                #ifndef SD_APP_FORWARD_COMPATIBILITY
+                if(it->Has ( IS_INACTIVE ))
+                    is_inactive = is_inactive && it->GetValue( IS_INACTIVE );
+                #endif
+            }
+
+            if( !is_inactive )
+            {
+                for( std::size_t i = 0; i < it->GetGeometry().size(); ++i )
                 {
-                    active_nodes.insert( (*it)->GetGeometry()[i].Id() );
+                    active_nodes.insert( it->GetGeometry()[i].Id() );
                 }
             }
         }
@@ -148,49 +155,60 @@ namespace Kratos
             double DetJ;
             unsigned int row, col;
 
-            typename ElementsArrayType::ptr_iterator it_begin = ElementsArray.ptr_begin() + element_partition[k];
-            typename ElementsArrayType::ptr_iterator it_end = ElementsArray.ptr_begin() + element_partition[k + 1];
+            typename ElementsContainerType::iterator it_begin = ElementsArray.begin() + element_partition[k];
+            typename ElementsContainerType::iterator it_end = ElementsArray.begin() + element_partition[k + 1];
 
-            for( ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it )
+            for( ElementsContainerType::iterator it = it_begin; it != it_end; ++it )
             {
-                if(!(*it)->GetValue(IS_INACTIVE))
+                bool is_inactive = false;
+                if (check_active)
+                {
+                    if(it->IsDefined ( ACTIVE ))
+                        is_inactive = !(it->Is( ACTIVE ));
+                    #ifndef SD_APP_FORWARD_COMPATIBILITY
+                    if(it->Has ( IS_INACTIVE ))
+                        is_inactive = is_inactive && it->GetValue( IS_INACTIVE );
+                    #endif
+                }
+
+                if(!is_inactive)
                 {
                     const IntegrationPointsArrayType& integration_points
-                    = (*it)->GetGeometry().IntegrationPoints((*it)->GetIntegrationMethod());
+                    = it->GetGeometry().IntegrationPoints(it->GetIntegrationMethod());
 
                     GeometryType::JacobiansType J(integration_points.size());
 
-    //                J = (*it)->GetGeometry().Jacobian(J, (*it)->GetIntegrationMethod());
-    //                const Matrix& Ncontainer = (*it)->GetGeometry().ShapeFunctionsValues((*it)->GetIntegrationMethod());
+    //                J = it->GetGeometry().Jacobian(J, it->GetIntegrationMethod());
+    //                const Matrix& Ncontainer = it->GetGeometry().ShapeFunctionsValues(it->GetIntegrationMethod());
 
-                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>((*it)->GetGeometry());
-                    J = rIsogeometricGeometry.Jacobian0(J, (*it)->GetIntegrationMethod());
+                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>(it->GetGeometry());
+                    J = rIsogeometricGeometry.Jacobian0(J, it->GetIntegrationMethod());
 
                     GeometryType::ShapeFunctionsGradientsType DN_De;
                     Matrix Ncontainer;
                     rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
                         Ncontainer,
                         DN_De,
-                        (*it)->GetIntegrationMethod()
+                        it->GetIntegrationMethod()
                     );
 
                     // get the values at the integration_points
                     std::vector<double> ValuesOnIntPoint(integration_points.size());
-                    (*it)->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
+                    it->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
 
                     for(unsigned int point = 0; point< integration_points.size(); ++point)
                     {
                         MathUtils<double>::InvertMatrix(J[point], InvJ, DetJ);
 
                         double dV = DetJ * integration_points[point].Weight();
-                        for(unsigned int prim = 0 ; prim < (*it)->GetGeometry().size(); ++prim)
+                        for(unsigned int prim = 0 ; prim < it->GetGeometry().size(); ++prim)
                         {
-                            row = node_row_id[(*it)->GetGeometry()[prim].Id()];
+                            row = node_row_id[it->GetGeometry()[prim].Id()];
                             omp_set_lock(&lock_array[row]);
                             b(row) += (ValuesOnIntPoint[point]) * Ncontainer(point, prim) * dV;
-                            for(unsigned int sec = 0 ; sec < (*it)->GetGeometry().size(); ++sec)
+                            for(unsigned int sec = 0 ; sec < it->GetGeometry().size(); ++sec)
                             {
-                                col = node_row_id[(*it)->GetGeometry()[sec].Id()];
+                                col = node_row_id[it->GetGeometry()[sec].Id()];
                                 M(row, col) += Ncontainer(point, prim) * Ncontainer(point, sec) * dV;
                             }
                             omp_unset_lock(&lock_array[row]);
@@ -200,14 +218,14 @@ namespace Kratos
                 else
                 {
                     // for inactive elements the contribution to LHS is identity matrix and RHS is zero
-                    for(unsigned int prim = 0 ; prim < (*it)->GetGeometry().size(); ++prim)
+                    for(unsigned int prim = 0 ; prim < it->GetGeometry().size(); ++prim)
                     {
-                        row = node_row_id[(*it)->GetGeometry()[prim].Id()];
+                        row = node_row_id[it->GetGeometry()[prim].Id()];
                         omp_set_lock(&lock_array[row]);
 //                        b(row) += 0.0;
-                        for(unsigned int sec = 0 ; sec < (*it)->GetGeometry().size(); ++sec)
+                        for(unsigned int sec = 0 ; sec < it->GetGeometry().size(); ++sec)
                         {
-                            col = node_row_id[(*it)->GetGeometry()[sec].Id()];
+                            col = node_row_id[it->GetGeometry()[sec].Id()];
                             if(col == row)
                                 M(row, col) += 1.0;
 //                            else
@@ -254,7 +272,7 @@ namespace Kratos
     }
 
     void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-        ModelPart& r_model_part, ElementsArrayType& ElementsArray,
+        ModelPart& r_model_part, ElementsContainerType& ElementsArray,
         const Variable<Vector>& rThisVariable,
         const std::size_t& ncomponents, const bool& check_active) const
     {
@@ -265,17 +283,24 @@ namespace Kratos
         #endif
 
         std::set<std::size_t> active_nodes;
-        for( ElementsArrayType::ptr_iterator it = ElementsArray.ptr_begin(); it != ElementsArray.ptr_end(); ++it )
+        for( ElementsContainerType::iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
         {
-            bool is_active = true;
+            bool is_inactive = false;
             if (check_active)
-                is_active = ((*it)->GetValue(IS_INACTIVE) == false) || (*it)->Is(ACTIVE);
-
-            if( is_active )
             {
-                for( std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i )
+                if(it->IsDefined ( ACTIVE ))
+                    is_inactive = !(it->Is( ACTIVE ));
+                #ifndef SD_APP_FORWARD_COMPATIBILITY
+                if(it->Has ( IS_INACTIVE ))
+                    is_inactive = is_inactive && it->GetValue( IS_INACTIVE );
+                #endif
+            }
+
+            if( !is_inactive )
+            {
+                for( std::size_t i = 0; i < it->GetGeometry().size(); ++i )
                 {
-                    active_nodes.insert( (*it)->GetGeometry()[i].Id() );
+                    active_nodes.insert( it->GetGeometry()[i].Id() );
                 }
             }
         }
@@ -341,39 +366,46 @@ namespace Kratos
             double DetJ;
             unsigned int row, col;
 
-            typename ElementsArrayType::ptr_iterator it_begin = ElementsArray.ptr_begin() + element_partition[k];
-            typename ElementsArrayType::ptr_iterator it_end = ElementsArray.ptr_begin() + element_partition[k + 1];
+            typename ElementsContainerType::iterator it_begin = ElementsArray.begin() + element_partition[k];
+            typename ElementsContainerType::iterator it_end = ElementsArray.begin() + element_partition[k + 1];
 
-            for( ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it )
+            for( ElementsContainerType::iterator it = it_begin; it != it_end; ++it )
             {
-                bool is_active = true;
+                bool is_inactive = false;
                 if (check_active)
-                    is_active = ((*it)->GetValue(IS_INACTIVE) == false) || (*it)->Is(ACTIVE);
+                {
+                    if(it->IsDefined ( ACTIVE ))
+                        is_inactive = !(it->Is( ACTIVE ));
+                    #ifndef SD_APP_FORWARD_COMPATIBILITY
+                    if(it->Has ( IS_INACTIVE ))
+                        is_inactive = is_inactive && it->GetValue( IS_INACTIVE );
+                    #endif
+                }
 
-                if (is_active)
+                if (!is_inactive)
                 {
                     const IntegrationPointsArrayType& integration_points
-                        = (*it)->GetGeometry().IntegrationPoints((*it)->GetIntegrationMethod());
+                        = it->GetGeometry().IntegrationPoints(it->GetIntegrationMethod());
 
                     GeometryType::JacobiansType J(integration_points.size());
 
-    //                J = (*it)->GetGeometry().Jacobian(J, (*it)->GetIntegrationMethod());
-    //                const Matrix& Ncontainer = (*it)->GetGeometry().ShapeFunctionsValues((*it)->GetIntegrationMethod());
+    //                J = it->GetGeometry().Jacobian(J, it->GetIntegrationMethod());
+    //                const Matrix& Ncontainer = it->GetGeometry().ShapeFunctionsValues(it->GetIntegrationMethod());
 
-                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>((*it)->GetGeometry());
-                    J = rIsogeometricGeometry.Jacobian0(J, (*it)->GetIntegrationMethod());
+                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>(it->GetGeometry());
+                    J = rIsogeometricGeometry.Jacobian0(J, it->GetIntegrationMethod());
 
                     GeometryType::ShapeFunctionsGradientsType DN_De;
                     Matrix Ncontainer;
                     rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
                         Ncontainer,
                         DN_De,
-                        (*it)->GetIntegrationMethod()
+                        it->GetIntegrationMethod()
                     );
 
                     // get the values at the integration_points
                     std::vector<Vector> ValuesOnIntPoint(integration_points.size());
-                    (*it)->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
+                    it->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
 
                     for(unsigned int point = 0; point < integration_points.size(); ++point)
                     {
@@ -381,18 +413,18 @@ namespace Kratos
 
                         double dV = DetJ * integration_points[point].Weight();
 
-                        for(unsigned int prim = 0; prim < (*it)->GetGeometry().size(); ++prim)
+                        for(unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
                         {
-                            row = node_row_id[(*it)->GetGeometry()[prim].Id()];
+                            row = node_row_id[it->GetGeometry()[prim].Id()];
 
                             omp_set_lock(&lock_array[row]);
 
                             for(unsigned int i = 0; i < ncomponents; ++i)
                                 b(row, i) += ValuesOnIntPoint[point][i] * Ncontainer(point, prim) * dV;
 
-                            for(unsigned int sec = 0; sec < (*it)->GetGeometry().size(); ++sec)
+                            for(unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
                             {
-                                col = node_row_id[(*it)->GetGeometry()[sec].Id()];
+                                col = node_row_id[it->GetGeometry()[sec].Id()];
                                 M(row, col) += Ncontainer(point, prim) * Ncontainer(point, sec) * dV;
                             }
 
@@ -403,18 +435,18 @@ namespace Kratos
                 else
                 {
                     // for inactive elements the contribution to LHS is identity matrix and RHS is zero
-                    for(unsigned int prim = 0; prim < (*it)->GetGeometry().size(); ++prim)
+                    for(unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
                     {
-                        row = node_row_id[(*it)->GetGeometry()[prim].Id()];
+                        row = node_row_id[it->GetGeometry()[prim].Id()];
 
                         omp_set_lock(&lock_array[row]);
 
 //                        for(unsigned int i = 0; i < ncomponents; ++i)
 //                            b(row, i) += 0.0;
 
-                        for(unsigned int sec = 0; sec < (*it)->GetGeometry().size(); ++sec)
+                        for(unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
                         {
-                            col = node_row_id[(*it)->GetGeometry()[sec].Id()];
+                            col = node_row_id[it->GetGeometry()[sec].Id()];
                             if(col == row)
                                 M(row, col) += 1.0;
 //                            else

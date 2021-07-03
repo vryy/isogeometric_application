@@ -29,14 +29,20 @@
 #include "includes/element.h"
 #include "includes/properties.h"
 #include "includes/ublas_interface.h"
+#ifndef SD_APP_FORWARD_COMPATIBILITY
 #include "includes/legacy_structural_app_vars.h"
+#endif
 #include "spaces/ublas_space.h"
 #include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+#include "custom_utilities/spatial_containers/auto_collapse_spatial_binning.h"
+#else
 #include "utilities/auto_collapse_spatial_binning.h"
+#endif
 #include "custom_geometries/isogeometric_geometry.h"
 #include "custom_utilities/isogeometric_post_utility.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application_variables.h"
 
 // #define DEBUG_LEVEL1
 //#define DEBUG_LEVEL2
@@ -101,7 +107,7 @@ public:
 
     typedef typename ModelPart::NodesContainerType NodesArrayType;
 
-    typedef typename ModelPart::ElementsContainerType ElementsArrayType;
+    typedef typename ModelPart::ElementsContainerType ElementsContainerType;
 
     typedef typename ModelPart::ConditionsContainerType ConditionsArrayType;
 
@@ -163,17 +169,23 @@ public:
 
         NodesArrayType& pTargetNodes = r_model_part_post.Nodes();
 
-        ElementsArrayType& pElements = r_model_part.Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         typename TVariableType::Type Results;
         CoordinatesArrayType LocalPos;
         int ElementId;
 
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        const Variable<int>& PARENT_ELEMENT_ID_var = KratosComponents<const Variable<int> >::Get("PARENT_ELEMENT_ID");
+        #else
+        const Variable<int>& PARENT_ELEMENT_ID_var = PARENT_ELEMENT_ID;
+        #endif
+
 //        #pragma omp parallel for
-        //TODO: check this. This is not parallelized.
+        //TODO: to be parallelized.
         for(typename NodesArrayType::ptr_iterator it = pTargetNodes.ptr_begin(); it != pTargetNodes.ptr_end(); ++it)
         {
-            ElementId = (*it)->GetSolutionStepValue(PARENT_ELEMENT_ID);
+            ElementId = (*it)->GetSolutionStepValue(PARENT_ELEMENT_ID_var);
             noalias(LocalPos) = (*it)->GetSolutionStepValue(LOCAL_COORDINATES);
             Results = BezierPostUtility_Helper<typename TVariableType::Type>::CalculateOnPoint(rThisVariable, Results, pElements(ElementId), LocalPos);
             (*it)->GetSolutionStepValue(rThisVariable) = Results;
@@ -247,7 +259,7 @@ public:
     void TransferVariablesToNodes(
         const TVariableType& rThisVariable,
         ModelPart& r_model_part,
-        ElementsArrayType& ElementsArray,
+        ElementsContainerType& ElementsArray,
         LinearSolverType::Pointer pSolver) const
     {
         #ifdef ENABLE_PROFILING
@@ -369,7 +381,7 @@ private:
      * REMARKS: this subroutine will only transfer the variables to nodes connecting with the mesh defined by ElementsArray
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-                                  ModelPart& r_model_part, ElementsArrayType& ElementsArray,
+                                  ModelPart& r_model_part, ElementsContainerType& ElementsArray,
                                   const Variable<double>& rThisVariable,
                                   const bool& check_active = false) const;
 
@@ -416,7 +428,7 @@ private:
      * REMARKS: this subroutine will only transfer the variables to nodes connecting with the mesh defined by ElementsArray
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-                                  ModelPart& r_model_part, ElementsArrayType& ElementsArray,
+                                  ModelPart& r_model_part, ElementsContainerType& ElementsArray,
                                   const Variable<Vector>& rThisVariable,
                                   const std::size_t& ncomponents = 6,
                                   const bool& check_active = false) const;

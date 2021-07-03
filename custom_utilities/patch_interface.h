@@ -25,11 +25,19 @@ namespace Kratos
  * The interface is designed using half-edge philosophy, in which the interface keeps a pointer to the interface of the other side.
  */
 template<int TDim>
-class PatchInterface : public boost::enable_shared_from_this<PatchInterface<TDim> >
+class PatchInterface
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+: public std::enable_shared_from_this<PatchInterface<TDim> >
+#else
+: public boost::enable_shared_from_this<PatchInterface<TDim> >
+#endif
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(PatchInterface);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const PatchInterface> ConstPointer;
+    #endif
 
     typedef Patch<TDim> PatchType;
 

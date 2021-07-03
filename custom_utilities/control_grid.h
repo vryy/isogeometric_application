@@ -30,6 +30,9 @@ class ControlGrid
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(ControlGrid);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const ControlGrid> ConstPointer;
+    #endif
 
     /// Type definition
     typedef TDataType DataType;

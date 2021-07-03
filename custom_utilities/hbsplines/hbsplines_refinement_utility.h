@@ -131,7 +131,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
 
     // extract the hierarchical B-Splines space
-    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
@@ -157,7 +157,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
 
     // extract the hierarchical B-Splines space
-    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
@@ -231,7 +231,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     std::size_t equation_id = p_bf->EquationId();
 
     // extract the hierarchical B-Splines space
-    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
@@ -759,7 +759,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     for (typename Patch<TDim>::DoubleGridFunctionContainerType::iterator it = DoubleGridFunctions_.begin();
             it != DoubleGridFunctions_.end(); ++it)
     {
-        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
+        typename WeightedFESpace<TDim>::Pointer pThisFESpace = iga::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
         if (pThisFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
         pThisFESpace->SetWeights(Weights);
@@ -769,7 +769,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     for (typename Patch<TDim>::Array1DGridFunctionContainerType::iterator it = Array1DGridFunctions_.begin();
             it != Array1DGridFunctions_.end(); ++it)
     {
-        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
+        typename WeightedFESpace<TDim>::Pointer pThisFESpace = iga::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
         if (pThisFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
         pThisFESpace->SetWeights(Weights);
@@ -779,7 +779,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     for (typename Patch<TDim>::VectorGridFunctionContainerType::iterator it = VectorGridFunctions_.begin();
             it != VectorGridFunctions_.end(); ++it)
     {
-        typename WeightedFESpace<TDim>::Pointer pThisFESpace = boost::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
+        typename WeightedFESpace<TDim>::Pointer pThisFESpace = iga::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
         if (pThisFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
         pThisFESpace->SetWeights(Weights);
@@ -808,7 +808,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         typename Patch<TDim>::Pointer pNeighborPatch = pInterface->pPatch2();
 
         // extract the hierarchical B-Splines space
-        typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
+        typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
         if (pNeighborFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
@@ -861,7 +861,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch
     typedef typename Patch<TDim>::ControlPointType ControlPointType;
 
     // extract the hierarchical B-Splines space
-    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
@@ -915,7 +915,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
     typedef typename Patch<TDim>::ControlPointType ControlPointType;
 
     // extract the hierarchical B-Splines space
-    typename HBSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 

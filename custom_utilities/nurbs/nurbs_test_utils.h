@@ -19,6 +19,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
+#include "custom_utilities/iga_define.h"
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/nurbs/bsplines_fespace.h"
 
@@ -107,7 +108,7 @@ public:
         const IntegrationMethod& ThisIntegrationMethod, const double& tol)
     {
         // get the FESpace
-        typename BSplinesFESpace<1>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<1> >(pPatch->pFESpace());
+        typename BSplinesFESpace<1>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<1> >(pPatch->pFESpace());
         if (pFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace<1> is failed.", "")
 

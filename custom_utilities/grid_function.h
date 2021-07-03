@@ -251,6 +251,9 @@ class GridFunction
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(GridFunction);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const GridFunction> ConstPointer;
+    #endif
 
     /// Type definition
     typedef TDataType DataType;

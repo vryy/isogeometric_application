@@ -38,6 +38,9 @@ class HBCell : public BCell
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(HBCell);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const HBCell> ConstPointer;
+    #endif
 
     /// Type definitions
     typedef Knot<double>::Pointer knot_t;
@@ -115,7 +118,7 @@ public:
         {
             typedef HBCell<TBasisFuncType> HBCellType;
 
-            typename HBCellType::Pointer pOtherCell = boost::dynamic_pointer_cast<HBCellType>(pOther);
+            typename HBCellType::Pointer pOtherCell = iga::dynamic_pointer_cast<HBCellType>(pOther);
             if (pOtherCell == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBCell is failed.", "")
             for(typename HBCellType::bf_iterator it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)

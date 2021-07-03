@@ -19,13 +19,16 @@
 #include "includes/kratos_flags.h"
 #include "includes/deprecated_variables.h"
 #include "includes/model_part.h"
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+#include "containers/model.h"
+#endif
 #include "utilities/openmp_utils.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/multipatch_utility.h"
 #include "custom_utilities/multipatch_model_part.h"
 #include "custom_geometries/isogeometric_geometry.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application_variables.h"
 
 #define ENABLE_PROFILING
 
@@ -53,17 +56,29 @@ public:
     /// Default constructor
     MultiMultiPatchModelPart() : mIsModelPartReady(false)
     {
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        mpModel = Model::Pointer(new Model());
+        #else
         mpModelPart = ModelPart::Pointer(new ModelPart("MultiMultiPatch"));
+        #endif
     }
 
     /// Destructor
     virtual ~MultiMultiPatchModelPart() {}
 
-    /// Get the underlying model_part pointer
-    ModelPart::Pointer pModelPart() {return mpModelPart;}
+    /// Get the underlying model_part
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    ModelPart& GetModelPart() {return mpModel->GetModelPart("MultiPatch");}
+    #else
+    ModelPart& GetModelPart() {return *mpModelPart;}
+    #endif
 
-    /// Get the underlying model_part pointer
-    ModelPart::ConstPointer pModelPart() const {return mpModelPart;}
+    /// Get the underlying model_part
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    const ModelPart& GetModelPart() const {return mpModel->GetModelPart("MultiPatch");}
+    #else
+    const ModelPart& GetModelPart() const {return *mpModelPart;}
+    #endif
 
     /// Add the multipatch to the list
     void AddMultiPatch(typename MultiPatch<TDim>::Pointer pMultiPatch)
@@ -99,11 +114,16 @@ public:
             KRATOS_WATCH(EquationSystemSize)
         }
 
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        mpModel->DeleteModelPart("MultiPatch");
+        mpModel->CreateModelPart("MultiPatch");
+        #else
         // create new model_part
         ModelPart::Pointer pNewModelPart = ModelPart::Pointer(new ModelPart(mpModelPart->Name()));
 
         // swap the internal model_part with new model_part
         mpModelPart.swap(pNewModelPart);
+        #endif
     }
 
     /// create the nodes from the control points and add to the model_part
@@ -138,7 +158,7 @@ public:
                 const ControlPointType& point = mpMultiPatches[ip]->pGetPatch(patch_id)->pControlPointGridFunction()->pControlGrid()->GetData(local_id);
                 // KRATOS_WATCH(point)
 
-                ModelPart::NodeType::Pointer pNewNode = mpModelPart->CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(node_counter), point.X(), point.Y(), point.Z());
+                ModelPart::NodeType::Pointer pNewNode = this->GetModelPart().CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(node_counter), point.X(), point.Y(), point.Z());
                 ++node_counter;
             }
         }
@@ -176,15 +196,15 @@ public:
         }
 
         // create new elements and add to the model_part
-        ModelPart::ElementsContainerType pNewElements = this->CreateEntitiesFromFESpace<Element, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pFESpaces, pControlGrids, mpModelPart->Nodes(), element_name, starting_id, pProperties, this->GetEchoLevel());
+        ModelPart::ElementsContainerType pNewElements = this->CreateEntitiesFromFESpace<Element, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pFESpaces, pControlGrids, this->GetModelPart().Nodes(), element_name, starting_id, pProperties, this->GetEchoLevel());
 
         for (ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
         {
-            mpModelPart->Elements().push_back(*it);
+            this->GetModelPart().Elements().push_back(*it);
         }
 
         // sort the element container and make it consistent
-        mpModelPart->Elements().Unique();
+        this->GetModelPart().Elements().Unique();
 
         if (this->GetEchoLevel() > 0)
         {
@@ -221,15 +241,15 @@ public:
         }
 
         // create new elements and add to the model_part
-        ModelPart::ConditionsContainerType pNewConditions = this->CreateEntitiesFromFESpace<Condition, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pFESpaces, pControlGrids, mpModelPart->Nodes(), condition_name, starting_id, pProperties, this->GetEchoLevel());
+        ModelPart::ConditionsContainerType pNewConditions = this->CreateEntitiesFromFESpace<Condition, FESpace<TDim>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pFESpaces, pControlGrids, this->GetModelPart().Nodes(), condition_name, starting_id, pProperties, this->GetEchoLevel());
 
         for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
-            mpModelPart->Conditions().push_back(*it);
+            this->GetModelPart().Conditions().push_back(*it);
         }
 
         // sort the element container and make it consistent
-        mpModelPart->Conditions().Unique();
+        this->GetModelPart().Conditions().Unique();
 
         if (this->GetEchoLevel() > 0)
         {
@@ -272,15 +292,15 @@ public:
         const GridFunction<TDim-1, ControlPointType>& rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
 
         // create new conditions and add to the model_part
-        ModelPart::ConditionsContainerType pNewConditions = MultiPatchModelPart<TDim>::template CreateEntitiesFromFESpace<Condition, FESpace<TDim-1>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), mpModelPart->Nodes(), condition_name, starting_id, pProperties, this->GetEchoLevel());
+        ModelPart::ConditionsContainerType pNewConditions = MultiPatchModelPart<TDim>::template CreateEntitiesFromFESpace<Condition, FESpace<TDim-1>, ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(), this->GetModelPart().Nodes(), condition_name, starting_id, pProperties, this->GetEchoLevel());
 
         for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
-            mpModelPart->Conditions().push_back(*it);
+            this->GetModelPart().Conditions().push_back(*it);
         }
 
         // sort the condition container and make it consistent
-        mpModelPart->Conditions().Unique();
+        this->GetModelPart().Conditions().Unique();
 
         if (this->GetEchoLevel() > 0)
         {
@@ -330,7 +350,7 @@ public:
                 const typename TVariableType::Type& value = mpMultiPatches[ip]->pGetPatch(patch_id)->pGetGridFunction(rVariable)->pControlGrid()->GetData(local_id);
                 // KRATOS_WATCH(value)
 
-                ModelPart::NodeType::Pointer pNode = mpModelPart->pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(cnt++));
+                ModelPart::NodeType::Pointer pNode = this->GetModelPart().pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(cnt++));
 
                 pNode->GetSolutionStepValue(rVariable) = value;
             }
@@ -366,7 +386,7 @@ public:
                 std::size_t global_id = func_ids[i];
                 std::size_t node_id = CONVERT_INDEX_IGA_TO_KRATOS(global_id);
 
-                pControlGrid->SetData(i, mpModelPart->Nodes()[node_id].GetSolutionStepValue(rVariable));
+                pControlGrid->SetData(i, this->GetModelPart().Nodes()[node_id].GetSolutionStepValue(rVariable));
             }
         }
     }
@@ -380,7 +400,7 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         rOStream << "+++ModelPart:" << std::endl;
-        rOStream << *mpModelPart << std::endl;
+        rOStream << this->GetModelPart() << std::endl;
         for (std::size_t ip = 0; ip < mpMultiPatches.size(); ++ip)
         {
             rOStream << "+++MultiPatch " << ip << std::endl;
@@ -392,7 +412,11 @@ private:
 
     bool mIsModelPartReady;
 
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    Model::Pointer mpModel;
+    #else
     ModelPart::Pointer mpModelPart;
+    #endif
     std::vector<typename MultiPatch<TDim>::Pointer> mpMultiPatches;
 
     /// Create entities (elements/conditions) from FESpaces
@@ -497,7 +521,7 @@ private:
 
                 // create the geometry
                 typename IsogeometricGeometryType::Pointer p_temp_geometry
-                    = boost::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
+                    = iga::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
                 if (p_temp_geometry == NULL)
                     KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
 

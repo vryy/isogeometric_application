@@ -24,9 +24,6 @@
 #include <omp.h>
 #include "boost/progress.hpp"
 #include "boost/algorithm/string.hpp"
-#include "boost/foreach.hpp"
-#include "boost/python.hpp"
-#include "boost/python/stl_iterator.hpp"
 
 
 // Project includes
@@ -190,7 +187,7 @@ public:
     void Refine(const std::size_t& Id);
 
     /// Refine a list of bfs provided by python list. The list will be automatically sorted by the level.
-    void RefineNodes(boost::python::list& pyList);
+    void RefineNodes(const std::set<std::size_t>& node_ids);
 
     /// Refine on a cuboid domain
     void RefineWindow(const double& Xi_min, const double& Xi_max,

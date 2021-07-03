@@ -20,7 +20,7 @@
 #include "containers/array_1d.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/fespace.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application_variables.h"
 
 #define DEBUG_GEN_CELL
 

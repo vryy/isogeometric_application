@@ -11,6 +11,7 @@
 
 // System includes
 #include <vector>
+#include <algorithm>
 
 // External includes
 

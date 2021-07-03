@@ -75,7 +75,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         // compute the transformation matrix
         std::vector<std::vector<double> > new_knots(TDim);
 
-        typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         if (pFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
@@ -178,7 +178,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
         for (typename Patch<TDim>::interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
+            typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
             if (pInterface == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesPatchInterface is failed", "")
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
@@ -284,7 +284,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         pNewPatch->SetPrefix(pPatch->Prefix());
 
         // elevate the degree and initialize new patch
-        typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         if (pFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
@@ -296,7 +296,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             new_size[i] = pFESpace->Number(i);
 
         typename StructuredControlGrid<TDim, ControlPoint<double> >::Pointer pControlPoints
-            = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPoint<double> > >(pPatch->pControlPointGridFunction()->pControlGrid());
+            = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPoint<double> > >(pPatch->pControlPointGridFunction()->pControlGrid());
         if (pControlPoints == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
@@ -336,7 +336,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
                 it != DoubleGridFunctions_.end(); ++it)
         {
             typename StructuredControlGrid<TDim, double>::Pointer pNewDoubleControlGrid = typename StructuredControlGrid<TDim, double>::Pointer(new StructuredControlGrid<TDim, double>(new_size));
-            typename StructuredControlGrid<TDim, double>::Pointer pDoubleControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
+            typename StructuredControlGrid<TDim, double>::Pointer pDoubleControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
             if (pDoubleControlGrid == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
             this->ComputeBsplinesDegreeElevation<TDim, double>(*pDoubleControlGrid, *pFESpace, order_increment, *pNewDoubleControlGrid, new_knots);
@@ -349,7 +349,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         {
             if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
             typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pNewArray1DControlGrid = typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer(new StructuredControlGrid<TDim, array_1d<double, 3> >(new_size));
-            typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pArray1DControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
+            typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pArray1DControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
             if (pArray1DControlGrid == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
             this->ComputeBsplinesDegreeElevation<TDim, array_1d<double, 3> >(*pArray1DControlGrid, *pFESpace, order_increment, *pNewArray1DControlGrid, new_knots);
@@ -361,7 +361,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
                 it != VectorGridFunctions_.end(); ++it)
         {
             typename StructuredControlGrid<TDim, Vector>::Pointer pNewVectorControlGrid = typename StructuredControlGrid<TDim, Vector>::Pointer(new StructuredControlGrid<TDim, Vector>(new_size));
-            typename StructuredControlGrid<TDim, Vector>::Pointer pVectorControlGrid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
+            typename StructuredControlGrid<TDim, Vector>::Pointer pVectorControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
             if (pVectorControlGrid == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
             this->ComputeBsplinesDegreeElevation<TDim, Vector>(*pVectorControlGrid, *pFESpace, order_increment, *pNewVectorControlGrid, new_knots);
@@ -386,7 +386,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
 
         for (typename Patch<TDim>::interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = boost::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
+            typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
             if (pInterface == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesPatchInterface is failed", "")
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();

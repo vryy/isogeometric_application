@@ -62,6 +62,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "includes/define.h"
 #include "includes/io.h"
 #include "utilities/timer.h"
+#include "custom_utilities/iga_define.h"
 
 
 namespace Kratos
@@ -117,6 +118,10 @@ public:
     typedef std::vector<std::ofstream*> OutputFilesContainerType;
 
     typedef std::size_t SizeType;
+
+    #ifndef SD_APP_FORWARD_COMPATIBILITY
+    typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
+    #endif
 
     ///@}
     ///@name Life Cycle
@@ -898,7 +903,7 @@ private:
             number_of_nodes_read++;
         }
         #elif defined(KRATOS_SD_REF_NUMBER_3)
-        NodeType::Pointer temp_node = boost::make_shared< NodeType >( 0, 0.0, 0.0, 0.0);
+        NodeType::Pointer temp_node = Kratos::make_intrusive< NodeType >( 0, 0.0, 0.0, 0.0);
         SizeType temp_id;
 
         std::string word;
@@ -985,7 +990,7 @@ private:
             number_of_nodes_read++;
         }
         #elif defined(KRATOS_SD_REF_NUMBER_3)
-        NodeType::Pointer temp_node = boost::make_shared< NodeType >( 0, 0.0, 0.0, 0.0);
+        NodeType::Pointer temp_node = Kratos::make_intrusive< NodeType >( 0, 0.0, 0.0, 0.0);
         SizeType temp_id;
 
         // Giving model part's variables list to the node
@@ -1086,7 +1091,7 @@ private:
         #if defined(KRATOS_SD_REF_NUMBER_2)
         Properties temp_properties;
         #elif defined(KRATOS_SD_REF_NUMBER_3)
-        Properties::Pointer props = boost::make_shared<Properties>();
+        Properties::Pointer props = iga::make_shared<Properties>();
         Properties& temp_properties = *props;
         #endif
 
@@ -1241,7 +1246,7 @@ private:
     void ReadElementsBlock(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ElementsContainerType& rThisElements)
     {
         KRATOS_TRY
-        
+
         SizeType id;
         SizeType properties_id;
         SizeType node_id;
@@ -1265,7 +1270,7 @@ private:
         }
 
         Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
-        
+
 //        KRATOS_WATCH("clone element created")
 
         SizeType number_of_nodes;
@@ -1283,11 +1288,11 @@ private:
             ReadWord(word); // Reading the properties id;
             ExtractValue(word, properties_id);
             Properties::Pointer p_temp_properties = *(FindKey(rThisProperties, properties_id, "Properties").base());
-            
+
 //            KRATOS_WATCH("temp properties created")
-            
+
             temp_node_ids.clear();
-            
+
             while(mNumberOfLines == CurrentNumberOfLine)
             {
                 ReadWord2(word); // Reading the node id
@@ -1297,25 +1302,25 @@ private:
                     temp_node_ids.push_back(node_id);
                 }
             }
-            
+
             temp_element_nodes.clear();
             for(int i = 0; i < temp_node_ids.size(); i++)
             {
                 temp_element_nodes.push_back( *(FindKey(rThisNodes, temp_node_ids[i], "Node").base()));
             }
-                
+
             Element::Pointer p_temp_element = r_clone_element.Create(id, temp_element_nodes, p_temp_properties);
 
 //            KRATOS_WATCH("element created")
-            
+
             rThisElements.push_back(p_temp_element);
             number_of_read_elements++;
-            
+
             CurrentNumberOfLine = mNumberOfLines;
         }
-        
+
         std::cout << number_of_read_elements << " " << element_name << " read" << std::endl;
-        
+
         rThisElements.Unique();
 
         KRATOS_CATCH("")
@@ -1422,7 +1427,7 @@ private:
             ExtractValue(word, properties_id);
             Properties::Pointer p_temp_properties = *(FindKey(rThisProperties, properties_id, "Properties").base());
             temp_node_ids.clear();
-            
+
             while(mNumberOfLines == CurrentNumberOfLine)
             {
                 ReadWord2(word); // Reading the node id
@@ -1432,34 +1437,32 @@ private:
                     temp_node_ids.push_back(node_id);
                 }
             }
-            
+
             temp_condition_nodes.clear();
             for(int i = 0; i < temp_node_ids.size(); i++)
             {
                 temp_condition_nodes.push_back( *(FindKey(rThisNodes, temp_node_ids[i], "Node").base()));
             }
-                
+
             Condition::Pointer p_temp_condition = r_clone_condition.Create(id, temp_condition_nodes, p_temp_properties);
-            
+
             rThisConditions.push_back(p_temp_condition);
             number_of_read_conditions++;
-            
+
             CurrentNumberOfLine = mNumberOfLines;
         }
-        
+
         std::cout << number_of_read_conditions << " " << condition_name << " read" << std::endl;
-        
+
         rThisConditions.Unique();
 
         KRATOS_CATCH("")
     }
-    
+
     void ReadNodalDataBlock(NodesContainerType& rThisNodes)
     {
         KRATOS_TRY
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
-        
         std::string variable_name;
 
         ReadWord(variable_name);
@@ -1476,10 +1479,12 @@ private:
         {
             ReadNodalDofVariableData(rThisNodes, static_cast<Variable<double> const& >(KratosComponents<Variable<double> >::Get(variable_name)));
         }
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         else if(KratosComponents<array_1d_component_type>::Has(variable_name))
         {
             ReadNodalDofVariableData(rThisNodes, static_cast<array_1d_component_type const& >(KratosComponents<array_1d_component_type>::Get(variable_name)));
         }
+        #endif
         else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
         {
             ReadNodalVectorialVariableData(rThisNodes, static_cast<Variable<array_1d<double, 3> > const& >(KratosComponents<Variable<array_1d<double, 3> > >::Get(variable_name)), Vector(3));
@@ -1660,8 +1665,6 @@ private:
     {
         KRATOS_TRY
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
-
         std::string variable_name;
 
         ReadWord(variable_name);
@@ -1678,10 +1681,12 @@ private:
         {
             ReadElementalScalarVariableData(rThisElements, static_cast<Variable<double> const& >(KratosComponents<Variable<double> >::Get(variable_name)));
         }
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         else if(KratosComponents<array_1d_component_type>::Has(variable_name))
         {
             ReadElementalScalarVariableData(rThisElements, static_cast<array_1d_component_type const& >(KratosComponents<array_1d_component_type>::Get(variable_name)));
         }
+        #endif
         else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
         {
             ReadElementalVectorialVariableData(rThisElements, static_cast<Variable<array_1d<double, 3> > const& >(KratosComponents<Variable<array_1d<double, 3> > >::Get(variable_name)), Vector(3));
@@ -1775,8 +1780,6 @@ private:
     {
         KRATOS_TRY
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
-
         std::string variable_name;
 
         ReadWord(variable_name);
@@ -1793,10 +1796,12 @@ private:
         {
             ReadConditionalScalarVariableData(rThisConditions, static_cast<Variable<int> const& >(KratosComponents<Variable<int> >::Get(variable_name)));
         }
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         else if(KratosComponents<array_1d_component_type>::Has(variable_name))
         {
             ReadConditionalScalarVariableData(rThisConditions, static_cast<array_1d_component_type const& >(KratosComponents<array_1d_component_type>::Get(variable_name)));
         }
+        #endif
         else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
         {
             ReadConditionalVectorialVariableData(rThisConditions, static_cast<Variable<array_1d<double, 3> > const& >(KratosComponents<Variable<array_1d<double, 3> > >::Get(variable_name)), Vector(3));
@@ -1891,15 +1896,15 @@ private:
 //    SizeType ReadElementsConnectivitiesBlock(ConnectivitiesContainerType& rThisConnectivities)
 //    {
 //        KRATOS_TRY
-// 
+//
 //        SizeType id;
 //        SizeType node_id;
 //        SizeType number_of_connectivities = 0;
-// 
-// 
+//
+//
 //        std::string word;
 //        std::string element_name;
-// 
+//
 //        ReadWord(element_name);
 //        if(!KratosComponents<Element>::Has(element_name))
 //        {
@@ -1910,17 +1915,17 @@ private:
 //            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
 //            return number_of_connectivities;
 //        }
-// 
+//
 //        Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
 //        SizeType number_of_nodes = r_clone_element.GetGeometry().size();
 //        ConnectivitiesContainerType::value_type temp_element_nodes;
-// 
+//
 //        while(!mInput.eof())
 //        {
 //            ReadWord(word); // Reading the element id or End
 //            if(CheckEndBlock("Elements", word))
 //                break;
-// 
+//
 //            ExtractValue(word,id);
 //            ReadWord(word); // Reading the properties id;
 //            temp_element_nodes.clear();
@@ -1940,13 +1945,13 @@ private:
 //            {
 //                rThisConnectivities.resize(index+1);
 //                rThisConnectivities[index]= temp_element_nodes;
-// 
+//
 //            }
 //            number_of_connectivities++;
 //        }
-// 
+//
 //        return number_of_connectivities;
-// 
+//
 //        KRATOS_CATCH("")
 //    }
 
@@ -1985,9 +1990,9 @@ private:
 
             ExtractValue(word,id);
             ReadWord(word); // Reading the properties id;
-            
+
             temp_node_ids.clear();
-            
+
             while(mNumberOfLines == CurrentNumberOfLine)
             {
                 ReadWord2(word); // Reading the node id
@@ -1997,7 +2002,7 @@ private:
                     temp_node_ids.push_back(node_id);
                 }
             }
-            
+
             const int index = id - 1;
             const int size = rThisConnectivities.size();
             if(index == size)  // I do push back instead of resizing to size+1
@@ -2010,7 +2015,7 @@ private:
                 rThisConnectivities[index] = temp_node_ids;
             }
             number_of_connectivities++;
-            
+
             CurrentNumberOfLine = mNumberOfLines;
         }
 
@@ -2380,7 +2385,7 @@ private:
             #if defined(KRATOS_SD_REF_NUMBER_2)
             rModelPart.GetMeshes().push_back(empty_mesh.Clone());
             #elif defined(KRATOS_SD_REF_NUMBER_3)
-            rModelPart.GetMeshes().push_back(boost::make_shared<MeshType>(empty_mesh.Clone()));
+            rModelPart.GetMeshes().push_back(iga::make_shared<MeshType>(empty_mesh.Clone()));
             #endif
 
         MeshType& mesh = rModelPart.GetMesh(mesh_id);
@@ -2748,8 +2753,6 @@ private:
     {
         KRATOS_TRY
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
-
         std::string word;
 
         WriteInAllFiles(OutputFiles, "Begin NodalData ");
@@ -2773,10 +2776,12 @@ private:
         {
             DivideDofVariableData(OutputFiles, NodesAllPartitions);
         }
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         else if(KratosComponents<array_1d_component_type>::Has(variable_name))
         {
             DivideDofVariableData(OutputFiles, NodesAllPartitions);
         }
+        #endif
         else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
         {
             DivideVectorialVariableData(OutputFiles, NodesAllPartitions, "NodalData");
@@ -2916,8 +2921,6 @@ private:
     {
         KRATOS_TRY
 
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
-
         std::string word;
 
         WriteInAllFiles(OutputFiles, "Begin ElementalData ");
@@ -2941,10 +2944,12 @@ private:
         {
             DivideScalarVariableData(OutputFiles, ElementsAllPartitions, "ElementalData");
         }
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         else if(KratosComponents<array_1d_component_type>::Has(variable_name))
         {
             DivideScalarVariableData(OutputFiles, ElementsAllPartitions, "ElementalData");
         }
+        #endif
         else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
         {
             DivideVectorialVariableData(OutputFiles, ElementsAllPartitions, "ElementalData");
@@ -3030,9 +3035,6 @@ private:
     {
         KRATOS_TRY
 
-
-        typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
-
         std::string word;
 
         WriteInAllFiles(OutputFiles, "Begin ConditionalData ");
@@ -3056,10 +3058,12 @@ private:
         {
             DivideScalarVariableData(OutputFiles, ConditionsAllPartitions, "ConditionalData");
         }
+        #ifndef SD_APP_FORWARD_COMPATIBILITY
         else if(KratosComponents<array_1d_component_type>::Has(variable_name))
         {
             DivideScalarVariableData(OutputFiles, ConditionsAllPartitions, "ConditionalData");
         }
+        #endif
         else if(KratosComponents<Variable<array_1d<double, 3> > >::Has(variable_name))
         {
             DivideVectorialVariableData(OutputFiles, ConditionsAllPartitions, "ConditionalData");
@@ -3126,7 +3130,7 @@ private:
         WriteInAllFiles(OutputFiles, "End Mesh\n");
 
         KRATOS_CATCH("")
-        
+
     }
 
 
@@ -3543,7 +3547,7 @@ private:
             if(c == '\n')
                 return *this;
         }
-            
+
         while(!mInput.eof() && !IsWhiteSpace(c))
         {
             Word += c;
@@ -3552,7 +3556,7 @@ private:
 
         return *this;
     }
-    
+
     IsogeometricModelPartIO& ReadBlock(std::string& Block, std::string const& BlockName)
     {
         Block.clear();
@@ -3709,4 +3713,4 @@ private:
 
 }  // namespace Kratos.
 
-#endif // KRATOS_MODEL_PART_IO_H_INCLUDED  defined 
+#endif // KRATOS_MODEL_PART_IO_H_INCLUDED  defined

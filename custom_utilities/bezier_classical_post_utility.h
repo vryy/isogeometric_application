@@ -30,16 +30,23 @@
 #include "includes/properties.h"
 #include "includes/ublas_interface.h"
 #include "includes/deprecated_variables.h"
+#ifndef SD_APP_FORWARD_COMPATIBILITY
 #include "includes/legacy_structural_app_vars.h"
+#endif
 #include "spaces/ublas_space.h"
 #include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+#include "custom_utilities/spatial_containers/auto_collapse_spatial_binning.h"
+#else
 #include "utilities/auto_collapse_spatial_binning.h"
+#endif
+#include "containers/vector_map.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "custom_utilities/isogeometric_utility.h"
 #include "custom_utilities/isogeometric_post_utility.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application_variables.h"
 
 //#define DEBUG_LEVEL1
 //#define DEBUG_LEVEL2
@@ -132,8 +139,8 @@ public:
     ///@{
 
     /// Default constructor.
-    BezierClassicalPostUtility(ModelPart::Pointer pModelPart)
-    : mpModelPart(pModelPart)
+    BezierClassicalPostUtility(ModelPart& r_model_part)
+    : mr_model_part(r_model_part)
     {
     }
 
@@ -152,7 +159,7 @@ public:
 
     /// Generate the post model_part from reference model_part
     /// Deprecated
-    void GenerateModelPart(ModelPart::Pointer pModelPartPost, PostElementType postElementType)
+    void GenerateModelPart(ModelPart& rModelPartPost, PostElementType postElementType)
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
@@ -162,7 +169,7 @@ public:
         std::cout << typeid(*this).name() << "::GenerateModelPart" << std::endl;
         #endif
 
-        ElementsArrayType& pElements = mpModelPart->Elements();
+        ElementsArrayType& pElements = mr_model_part.Elements();
 
         #ifdef DEBUG_LEVEL1
         std::cout << "Retrieved pElements" << std::endl;
@@ -196,15 +203,32 @@ public:
         IndexType NodeCounter = 0;
         IndexType ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            if((*it)->GetValue( IS_INACTIVE ))
+            bool is_active = true;
+            if(it->IsDefined ( ACTIVE ))
             {
-//                std::cout << "Element " << (*it)->Id() << " is inactive" << std::endl;
+                is_active = it->Is( ACTIVE );
+            #ifdef SD_APP_FORWARD_COMPATIBILITY
+            }
+            #else
+                if(it->Has ( IS_INACTIVE ))
+                    is_active = is_active && (!it->GetValue( IS_INACTIVE ));
+            }
+            else
+            {
+                if(it->Has ( IS_INACTIVE ))
+                    is_active = !it->GetValue( IS_INACTIVE );
+            }
+            #endif
+
+            if(!is_active)
+            {
+//                std::cout << "Element " << it->Id() << " is inactive" << std::endl;
                 continue;
             }
 
-            int Dim = (*it)->GetGeometry().WorkingSpaceDimension();
+            int Dim = it->GetGeometry().WorkingSpaceDimension();
             IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
@@ -212,7 +236,7 @@ public:
             #endif
 
             //get the properties
-            Properties::Pointer pDummyProperties = (*it)->pGetProperties();
+            Properties::Pointer pDummyProperties = it->pGetProperties();
 
             #ifdef DEBUG_LEVEL1
             KRATOS_WATCH(*pDummyProperties)
@@ -225,8 +249,8 @@ public:
             }
             else if(Dim == 2)
             {
-                IndexType NumDivision1 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_1) );
-                IndexType NumDivision2 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_2) );
+                IndexType NumDivision1 = static_cast<IndexType>( it->GetValue(NUM_DIVISION_1) );
+                IndexType NumDivision2 = static_cast<IndexType>( it->GetValue(NUM_DIVISION_2) );
                 IndexType i, j;
                 CoordinatesArrayType p_ref;
                 CoordinatesArrayType p;
@@ -246,7 +270,7 @@ public:
                     {
                         p_ref[1] = ((double) j) / NumDivision2;
 
-                        p = GlobalCoordinates((*it)->GetGeometry(), p, p_ref);
+                        p = GlobalCoordinates(it->GetGeometry(), p, p_ref);
 
                         NodeType::Pointer pNewNode( new NodeType( 0, p ) );
                         pNewNode->SetId(++NodeCounter);
@@ -260,23 +284,23 @@ public:
                         #endif
 
                         // Giving model part's variables list to the node
-                        pNewNode->SetSolutionStepVariablesList(&pModelPartPost->GetNodalSolutionStepVariablesList());
+                        pNewNode->SetSolutionStepVariablesList(&rModelPartPost.GetNodalSolutionStepVariablesList());
 
                         //set buffer size
-                        pNewNode->SetBufferSize(pModelPartPost->GetBufferSize());
+                        pNewNode->SetBufferSize(rModelPartPost.GetBufferSize());
 
-                        pModelPartPost->AddNode(pNewNode);
+                        rModelPartPost.AddNode(pNewNode);
 
                         mNodeToLocalCoordinates(pNewNode->Id()) = p_ref;
-                        mNodeToElement(pNewNode->Id()) = (*it)->Id();
+                        mNodeToElement(pNewNode->Id()) = it->Id();
                     }
                 }
 
                 //for correct mapping to element, the repetitive node is allowed.
-//                pModelPartPost->Nodes().Unique();
+//                rModelPartPost.Nodes().Unique();
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH(pModelPartPost->Nodes().size())
+                KRATOS_WATCH(rModelPartPost.Nodes().size())
                 std::cout << "Generating Elements..." << std::endl;
                 #endif
 
@@ -295,35 +319,35 @@ public:
                 //         {
                 //             // TODO: check if jacobian checking is necessary
                 //             temp_element_nodes.clear();
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node1, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node2, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node4, NodeKey).base()));
 
                 //             Element::Pointer NewElement1 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                //             pModelPartPost->AddElement(NewElement1);
-                //             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                //             rModelPartPost.AddElement(NewElement1);
+                //             mOldToNewElements[it->Id()].insert(ElementCounter);
 
                 //             temp_element_nodes.clear();
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node1, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node4, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node3, NodeKey).base()));
 
                 //             Element::Pointer NewElement2 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                //             pModelPartPost->AddElement(NewElement2);
-                //             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                //             rModelPartPost.AddElement(NewElement2);
+                //             mOldToNewElements[it->Id()].insert(ElementCounter);
                 //         }
                 //         else if(postElementType == _QUADRILATERAL_)
                 //         {
                 //             // TODO: check if jacobian checking is necessary
                 //             temp_element_nodes.clear();
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                //             temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node1, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node2, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node4, NodeKey).base()));
+                //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node3, NodeKey).base()));
 
                 //             Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                //             pModelPartPost->AddElement(NewElement);
-                //             mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                //             rModelPartPost.AddElement(NewElement);
+                //             mOldToNewElements[it->Id()].insert(ElementCounter);
                 //         }
                 //     }
                 // }
@@ -352,31 +376,31 @@ public:
                 }
 
                 ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
-                    connectivities, *pModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
+                    connectivities, rModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                 {
-                    pModelPartPost->AddElement(*it2);
-                    mOldToNewElements[(*it)->Id()].insert((*it2)->Id());
+                    rModelPartPost.AddElement(*it2);
+                    mOldToNewElements[it->Id()].insert((*it2)->Id());
                 }
 
-                pModelPartPost->Elements().Unique();
+                rModelPartPost.Elements().Unique();
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH(pModelPartPost->Elements().size())
+                KRATOS_WATCH(rModelPartPost.Elements().size())
                 #endif
             }
             else if(Dim == 3)
             {
-                IndexType NumDivision1 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_1) );
-                IndexType NumDivision2 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_2) );
-                IndexType NumDivision3 = static_cast<IndexType>( (*it)->GetValue(NUM_DIVISION_3) );
+                IndexType NumDivision1 = static_cast<IndexType>( it->GetValue(NUM_DIVISION_1) );
+                IndexType NumDivision2 = static_cast<IndexType>( it->GetValue(NUM_DIVISION_2) );
+                IndexType NumDivision3 = static_cast<IndexType>( it->GetValue(NUM_DIVISION_3) );
                 IndexType i, j, k;
                 CoordinatesArrayType p_ref;
                 CoordinatesArrayType p;
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH((*it)->Id())
+                KRATOS_WATCH(it->Id())
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
                 KRATOS_WATCH(NumDivision3)
@@ -394,7 +418,7 @@ public:
                         {
                             p_ref[2] = ((double) k) / NumDivision3;
 
-                            p = GlobalCoordinates((*it)->GetGeometry(), p, p_ref);
+                            p = GlobalCoordinates(it->GetGeometry(), p, p_ref);
 
                             NodeType::Pointer pNewNode( new NodeType( 0, p ) );
                             pNewNode->SetId(++NodeCounter);
@@ -407,24 +431,24 @@ public:
                             #endif
 
                             // Giving model part's variables list to the node
-                            pNewNode->SetSolutionStepVariablesList(&pModelPartPost->GetNodalSolutionStepVariablesList());
+                            pNewNode->SetSolutionStepVariablesList(&rModelPartPost.GetNodalSolutionStepVariablesList());
 
                             //set buffer size
-                            pNewNode->SetBufferSize(pModelPartPost->GetBufferSize());
+                            pNewNode->SetBufferSize(rModelPartPost.GetBufferSize());
 
-                            pModelPartPost->AddNode(pNewNode);
+                            rModelPartPost.AddNode(pNewNode);
 
                             mNodeToLocalCoordinates(pNewNode->Id()) = p_ref;
-                            mNodeToElement(pNewNode->Id()) = (*it)->Id();
+                            mNodeToElement(pNewNode->Id()) = it->Id();
                         }
                     }
                 }
 
                 //for correct mapping to element, the repetitive node is allowed.
-//                pModelPartPost->Nodes().Unique();
+//                rModelPartPost.Nodes().Unique();
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH(pModelPartPost->Nodes().size())
+                KRATOS_WATCH(rModelPartPost.Nodes().size())
                 std::cout << "Generating Elements..." << std::endl;
                 #endif
 
@@ -453,18 +477,18 @@ public:
                 //             {
                 //                 // TODO: check if jacobian checking is necessary
                 //                 temp_element_nodes.clear();
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node1, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node2, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node4, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node3, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node5, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node6, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node8, NodeKey).base()));
-                //                 temp_element_nodes.push_back(*(FindKey(pModelPartPost->Nodes(), Node7, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node1, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node2, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node4, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node3, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node5, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node6, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node8, NodeKey).base()));
+                //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node7, NodeKey).base()));
 
                 //                 Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
-                //                 pModelPartPost->AddElement(NewElement);
-                //                 mOldToNewElements[(*it)->Id()].insert(ElementCounter);
+                //                 rModelPartPost.AddElement(NewElement);
+                //                 mOldToNewElements[it->Id()].insert(ElementCounter);
                 //             }
                 //         }
                 //     }
@@ -502,18 +526,18 @@ public:
                 }
 
                 ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
-                    connectivities, *pModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
+                    connectivities, rModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                 {
-                    pModelPartPost->AddElement(*it2);
-                    mOldToNewElements[(*it)->Id()].insert((*it2)->Id());
+                    rModelPartPost.AddElement(*it2);
+                    mOldToNewElements[it->Id()].insert((*it2)->Id());
                 }
 
-                pModelPartPost->Elements().Unique();
+                rModelPartPost.Elements().Unique();
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH(pModelPartPost->Elements().size())
+                KRATOS_WATCH(rModelPartPost.Elements().size())
                 #endif
             }
             ++show_progress;
@@ -531,7 +555,7 @@ public:
     /// Generate the post model_part from reference model_part
     /// this is the improved version of GenerateModelPart
     /// which uses template function to generate post Elements for both Element and Condition
-    void GenerateModelPart2(ModelPart::Pointer pModelPartPost, const bool& generate_for_condition)
+    void GenerateModelPart2(ModelPart& rModelPartPost, const bool& generate_for_condition)
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
@@ -541,8 +565,8 @@ public:
         std::cout << typeid(*this).name() << "::GenerateModelPart" << std::endl;
         #endif
 
-        ElementsArrayType& pElements = mpModelPart->Elements();
-        ConditionsArrayType& pConditions = mpModelPart->Conditions();
+        ElementsArrayType& pElements = mr_model_part.Elements();
+        ConditionsArrayType& pConditions = mr_model_part.Conditions();
 
         std::string NodeKey = std::string("Node");
 
@@ -550,21 +574,21 @@ public:
         IndexType ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
         std::vector<std::size_t> dummy_ids;
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             // This is wrong, we will not skill the IS_INACTIVE elements
             // TODO: to be deleted
-//            if((*it)->GetValue( IS_INACTIVE ))
+//            if(it->GetValue( IS_INACTIVE ))
 //            {
-////                std::cout << "Element " << (*it)->Id() << " is inactive" << std::endl;
+////                std::cout << "Element " << it->Id() << " is inactive" << std::endl;
 //                ++show_progress;
 //                continue;
 //            }
-            if((*it)->pGetGeometry() == 0)
-                KRATOS_THROW_ERROR(std::logic_error, "Error: geometry is NULL at element", (*it)->Id())
+            if(it->pGetGeometry() == 0)
+                KRATOS_THROW_ERROR(std::logic_error, "Error: geometry is NULL at element", it->Id())
 
-            int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-            int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
+            int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
+            int ReducedDim = it->GetGeometry().Dimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
@@ -590,7 +614,7 @@ public:
             {
                 std::stringstream ss;
                 ss << "Invalid dimension of ";
-                ss << typeid(*(*it)).name();
+                ss << typeid(*it).name();
                 ss << ", Dim = " << Dim;
                 ss << ", ReducedDim = " << ReducedDim;
                 KRATOS_THROW_ERROR(std::logic_error, ss.str(), __FUNCTION__);
@@ -606,8 +630,8 @@ public:
 
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
-            GenerateForOneEntity<Element, ElementsArrayType, 1>(*pModelPartPost,
-                *(*it), rCloneElement, NodeCounter_old, NodeCounter, ElementCounter, NodeKey, false,
+            GenerateForOneEntity<Element, ElementsArrayType, 1>(rModelPartPost,
+                *it, rCloneElement, NodeCounter_old, NodeCounter, ElementCounter, NodeKey, false,
                 dummy_ids, dummy_ids, false);
 
             ++show_progress;
@@ -622,25 +646,25 @@ public:
         if (generate_for_condition)
         {
             boost::progress_display show_progress2( pConditions.size() );
-            for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
+            for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
             {
                 // This is wrong, we will not kill the IS_INACTIVE conditions
                 // TODO: to be deleted
-    //            if((*it)->GetValue( IS_INACTIVE ))
+    //            if(it->GetValue( IS_INACTIVE ))
     //            {
-    ////                std::cout << "Condition " << (*it)->Id() << " is inactive" << std::endl;
+    ////                std::cout << "Condition " << it->Id() << " is inactive" << std::endl;
     //                ++show_progress2;
     //                continue;
     //            }
-                if((*it)->pGetGeometry() == 0)
-                    KRATOS_THROW_ERROR(std::logic_error, "Error: geometry is NULL at condition", (*it)->Id())
+                if(it->pGetGeometry() == 0)
+                    KRATOS_THROW_ERROR(std::logic_error, "Error: geometry is NULL at condition", it->Id())
 
-                int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-                int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
+                int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
+                int ReducedDim = it->GetGeometry().Dimension(); // reduced dimension of the geometry
                 IndexType NodeCounter_old = NodeCounter;
 
                 #ifdef DEBUG_LEVEL1
-                KRATOS_WATCH(typeid((*it)->GetGeometry()).name())
+                KRATOS_WATCH(typeid(it->GetGeometry()).name())
                 KRATOS_WATCH(Dim)
                 KRATOS_WATCH(ReducedDim)
                 #endif
@@ -655,10 +679,10 @@ public:
                 {
                     std::stringstream ss;
                     ss << "Invalid dimension of ";
-                    ss << typeid(*(*it)).name();
+                    ss << typeid(*it).name();
                     ss << ", Dim = " << Dim;
                     ss << ", ReducedDim = " << ReducedDim;
-                    ss << ". Condition " << (*it)->Id() << " will be skipped.";
+                    ss << ". Condition " << it->Id() << " will be skipped.";
     //                KRATOS_THROW_ERROR(std::logic_error, ss.str(), __FUNCTION__);
                     continue;
                 }
@@ -673,8 +697,8 @@ public:
 
                 Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
 
-                GenerateForOneEntity<Condition, ConditionsArrayType, 2>(*pModelPartPost,
-                    *(*it), rCloneCondition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey, false,
+                GenerateForOneEntity<Condition, ConditionsArrayType, 2>(rModelPartPost,
+                    *it, rCloneCondition, NodeCounter_old, NodeCounter, ConditionCounter, NodeKey, false,
                     dummy_ids, dummy_ids, false);
 
                 ++show_progress2;
@@ -698,7 +722,7 @@ public:
     // this is the improved version of GenerateModelPart
     // which uses template function to generate post Elements for both Element and Condition
     // this version used a collapsing utility to collapse nodes automatically
-    void GenerateModelPart2AutoCollapse(ModelPart::Pointer pModelPartPost,
+    void GenerateModelPart2AutoCollapse(ModelPart& rModelPartPost,
                                         double dx, double dy, double dz, double tol)
     {
         #ifdef ENABLE_PROFILING
@@ -711,8 +735,8 @@ public:
 
         AutoCollapseSpatialBinning collapse_util(0.0, 0.0, 0.0, dx, dy, dz, tol);
 
-        ElementsArrayType& pElements = mpModelPart->Elements();
-        ConditionsArrayType& pConditions = mpModelPart->Conditions();
+        ElementsArrayType& pElements = mr_model_part.Elements();
+        ConditionsArrayType& pConditions = mr_model_part.Conditions();
 
         std::string NodeKey = std::string("Node");
 
@@ -720,17 +744,34 @@ public:
         IndexType ElementCounter = 0;
         boost::progress_display show_progress( pElements.size() );
         VectorMap<IndexType, IndexType> MapToCollapseNode;
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            if((*it)->GetValue( IS_INACTIVE ))
+            bool is_active = true;
+            if(it->IsDefined ( ACTIVE ))
             {
-//                std::cout << "Element " << (*it)->Id() << " is inactive" << std::endl;
+                is_active = it->Is( ACTIVE );
+            #ifdef SD_APP_FORWARD_COMPATIBILITY
+            }
+            #else
+                if(it->Has ( IS_INACTIVE ))
+                    is_active = is_active && (!it->GetValue( IS_INACTIVE ));
+            }
+            else
+            {
+                if(it->Has ( IS_INACTIVE ))
+                    is_active = !it->GetValue( IS_INACTIVE );
+            }
+            #endif
+
+            if(!is_active)
+            {
+//                std::cout << "Element " << it->Id() << " is inactive" << std::endl;
                 ++show_progress;
                 continue;
             }
 
-            int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-            int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
+            int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
+            int ReducedDim = it->GetGeometry().Dimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
@@ -748,7 +789,7 @@ public:
             {
                 std::stringstream ss;
                 ss << "Invalid dimension of ";
-                ss << typeid(*(*it)).name();
+                ss << typeid(*it).name();
                 ss << ", Dim = " << Dim;
                 ss << ", ReducedDim = " << ReducedDim;
                 KRATOS_THROW_ERROR(std::logic_error, ss.str(), __FUNCTION__);
@@ -765,7 +806,7 @@ public:
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
             GenerateForOneEntityAutoCollapse<Element, ElementsArrayType, 1>(collapse_util,
-                *pModelPartPost, *(*it), rCloneElement, MapToCollapseNode, NodeCounter_old,
+                rModelPartPost, *it, rCloneElement, MapToCollapseNode, NodeCounter_old,
                 NodeCounter, ElementCounter, NodeKey);
 
             ++show_progress;
@@ -777,21 +818,31 @@ public:
 
         IndexType ConditionCounter = 0;
         boost::progress_display show_progress2( pConditions.size() );
-        for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
+        for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
-            if((*it)->GetValue( IS_INACTIVE ))
+            bool is_active = true;
+            if(it->IsDefined ( ACTIVE ))
             {
-//                std::cout << "Condition " << (*it)->Id() << " is inactive" << std::endl;
-                ++show_progress2;
-                continue;
+                is_active = it->Is( ACTIVE );
+            #ifdef SD_APP_FORWARD_COMPATIBILITY
             }
+            #else
+                if(it->Has ( IS_INACTIVE ))
+                    is_active = is_active && (!it->GetValue( IS_INACTIVE ));
+            }
+            else
+            {
+                if(it->Has ( IS_INACTIVE ))
+                    is_active = !it->GetValue( IS_INACTIVE );
+            }
+            #endif
 
-            int Dim = (*it)->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-            int ReducedDim = (*it)->GetGeometry().Dimension(); // reduced dimension of the geometry
+            int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
+            int ReducedDim = it->GetGeometry().Dimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
-            KRATOS_WATCH(typeid((*it)->GetGeometry()).name())
+            KRATOS_WATCH(typeid(it->GetGeometry()).name())
             KRATOS_WATCH(Dim)
             KRATOS_WATCH(ReducedDim)
             #endif
@@ -806,7 +857,7 @@ public:
             {
                 std::stringstream ss;
                 ss << "Invalid dimension of ";
-                ss << typeid(*(*it)).name();
+                ss << typeid(*it).name();
                 ss << ", Dim = " << Dim;
                 ss << ", ReducedDim = " << ReducedDim;
                 KRATOS_THROW_ERROR(std::logic_error, ss.str(), __FUNCTION__);
@@ -823,7 +874,7 @@ public:
             Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
 
             GenerateForOneEntityAutoCollapse<Condition, ConditionsArrayType, 2>(collapse_util,
-                *pModelPartPost, *(*it), rCloneCondition, MapToCollapseNode, NodeCounter_old,
+                rModelPartPost, *it, rCloneCondition, MapToCollapseNode, NodeCounter_old,
                 NodeCounter, ConditionCounter, NodeKey);
 
             ++show_progress2;
@@ -1029,9 +1080,9 @@ public:
 
             if (get_indices)
             {
-                for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
+                for (typename TEntityContainerType::iterator it2 = pNewEntities.begin(); it2 != pNewEntities.end(); ++it2)
                 {
-                    element_ids.push_back((*it2)->Id());
+                    element_ids.push_back(it2->Id());
                 }
             }
         }
@@ -1222,9 +1273,9 @@ public:
 
             if (get_indices)
             {
-                for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
+                for (typename TEntityContainerType::iterator it2 = pNewEntities.begin(); it2 != pNewEntities.end(); ++it2)
                 {
-                    element_ids.push_back((*it2)->Id());
+                    element_ids.push_back(it2->Id());
                 }
             }
         }
@@ -1581,54 +1632,64 @@ public:
     }
 
     // Synchronize the activation between model_parts
-    void SynchronizeActivation(ModelPart::Pointer pModelPartPost)
+    void SynchronizeActivation(ModelPart& rModelPartPost)
     {
-        ElementsArrayType& pElements = mpModelPart->Elements();
-        for (typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        ElementsArrayType& pElements = mr_model_part.Elements();
+        for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            std::set<IndexType> NewElements = mOldToNewElements[(*it)->Id()];
+            std::set<IndexType> NewElements = mOldToNewElements[it->Id()];
             for(std::set<IndexType>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
             {
-                pModelPartPost->GetElement(*it2).GetValue(IS_INACTIVE) = (*it)->GetValue( IS_INACTIVE );
+                if (it->IsDefined(ACTIVE))
+                    rModelPartPost.GetElement(*it2).Set(ACTIVE, it->Is( ACTIVE ));
+                #ifndef SD_APP_FORWARD_COMPATIBILITY
+                if (it->Has(IS_INACTIVE))
+                    rModelPartPost.GetElement(*it2).GetValue(IS_INACTIVE) = it->GetValue( IS_INACTIVE );
+                #endif
             }
         }
-        ConditionsArrayType& pConditions = mpModelPart->Conditions();
-        for (typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
+        ConditionsArrayType& pConditions = mr_model_part.Conditions();
+        for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
-            std::set<IndexType> NewConditions = mOldToNewConditions[(*it)->Id()];
+            std::set<IndexType> NewConditions = mOldToNewConditions[it->Id()];
             for(std::set<IndexType>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
             {
-                pModelPartPost->GetCondition(*it2).GetValue(IS_INACTIVE) = (*it)->GetValue( IS_INACTIVE );
+                if (it->IsDefined(ACTIVE))
+                    rModelPartPost.GetElement(*it2).Set(ACTIVE, it->Is( ACTIVE ));
+                #ifndef SD_APP_FORWARD_COMPATIBILITY
+                if (it->Has(IS_INACTIVE))
+                    rModelPartPost.GetCondition(*it2).GetValue(IS_INACTIVE) = it->GetValue( IS_INACTIVE );
+                #endif
             }
         }
     }
 
     // transfer the elemental data
     template<class TVariableType>
-    void TransferElementalData(const TVariableType& rThisVariable, ModelPart::Pointer pModelPartPost)
+    void TransferElementalData(const TVariableType& rThisVariable, ModelPart& rModelPartPost)
     {
-        ElementsArrayType& pElements = mpModelPart->Elements();
-        for(typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+        ElementsArrayType& pElements = mr_model_part.Elements();
+        for(typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            std::set<IndexType> NewElements = mOldToNewElements[(*it)->Id()];
+            std::set<IndexType> NewElements = mOldToNewElements[it->Id()];
             for(std::set<IndexType>::iterator it2 = NewElements.begin(); it2 != NewElements.end(); ++it2)
             {
-                pModelPartPost->GetElement(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
+                rModelPartPost.GetElement(*it2).GetValue(rThisVariable) = it->GetValue(rThisVariable);
             }
         }
     }
 
     // transfer the conditional data
     template<class TVariableType>
-    void TransferConditionalData(const TVariableType& rThisVariable, ModelPart::Pointer pModelPartPost)
+    void TransferConditionalData(const TVariableType& rThisVariable, ModelPart& rModelPartPost)
     {
-        ConditionsArrayType& pConditions = mpModelPart->Conditions();
-        for(typename ConditionsArrayType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
+        ConditionsArrayType& pConditions = mr_model_part.Conditions();
+        for(typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
-            std::set<IndexType> NewConditions = mOldToNewConditions[(*it)->Id()];
+            std::set<IndexType> NewConditions = mOldToNewConditions[it->Id()];
             for(std::set<IndexType>::iterator it2 = NewConditions.begin(); it2 != NewConditions.end(); ++it2)
             {
-                pModelPartPost->GetCondition(*it2).GetValue(rThisVariable) = (*it)->GetValue(rThisVariable);
+                rModelPartPost.GetCondition(*it2).GetValue(rThisVariable) = it->GetValue(rThisVariable);
             }
         }
     }
@@ -1637,16 +1698,16 @@ public:
     template<class TVariableType>
     void TransferNodalResults(
         const TVariableType& rThisVariable,
-        const ModelPart::Pointer pModelPartPost
+        ModelPart& rModelPartPost
     )
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
         #endif
 
-        NodesArrayType& pTargetNodes = pModelPartPost->Nodes();
+        NodesArrayType& pTargetNodes = rModelPartPost.Nodes();
 
-        ElementsArrayType& pElements = mpModelPart->Elements();
+        ElementsArrayType& pElements = mr_model_part.Elements();
 
         typename TVariableType::Type Results;
         CoordinatesArrayType LocalPos;
@@ -1654,17 +1715,36 @@ public:
 
 //        #pragma omp parallel for
         //TODO: check this. This is not parallelized.
-        for(NodesArrayType::ptr_iterator it = pTargetNodes.ptr_begin(); it != pTargetNodes.ptr_end(); ++it)
+        for(NodesArrayType::iterator it = pTargetNodes.begin(); it != pTargetNodes.end(); ++it)
         {
-            IndexType key = (*it)->Id();
+            IndexType key = it->Id();
             if(mNodeToElement.find(key) != mNodeToElement.end())
             {
                 ElementId = mNodeToElement[key];
-                if( ! pElements(ElementId)->GetValue(IS_INACTIVE) ) // skip the inactive elements
+                Element::Pointer pElement = pElements(ElementId);
+
+                bool is_active = true;
+                if(pElement->IsDefined ( ACTIVE ))
+                {
+                    is_active = pElement->Is( ACTIVE );
+                #ifdef SD_APP_FORWARD_COMPATIBILITY
+                }
+                #else
+                    if(pElement->Has ( IS_INACTIVE ))
+                        is_active = is_active && (!pElement->GetValue( IS_INACTIVE ));
+                }
+                else
+                {
+                    if(pElement->Has ( IS_INACTIVE ))
+                        is_active = !pElement->GetValue( IS_INACTIVE );
+                }
+                #endif
+
+                if( is_active ) // skip the inactive elements
                 {
                     noalias(LocalPos) = mNodeToLocalCoordinates[key];
                     Results = CalculateOnPoint(rThisVariable, Results, pElements(ElementId), LocalPos);
-                    (*it)->GetSolutionStepValue(rThisVariable) = Results;
+                    it->GetSolutionStepValue(rThisVariable) = Results;
                 }
             }
         }
@@ -1679,7 +1759,7 @@ public:
     template<class TVariableType>
     void TransferIntegrationPointResults(
         const TVariableType& rThisVariable,
-        const ModelPart::Pointer pModelPartPost,
+        ModelPart& rModelPartPost,
         LinearSolverType::Pointer pSolver
     )
     {
@@ -1691,10 +1771,10 @@ public:
         #endif
 
         // firstly transfer rThisVariable from integration points of reference model_part to its nodes
-        TransferVariablesToNodes(pSolver, mpModelPart, rThisVariable);
+        TransferVariablesToNodes(rThisVariable, mr_model_part, pSolver);
 
         // secondly transfer new nodal variables results to the post model_part
-        TransferNodalResults(rThisVariable, pModelPartPost);
+        TransferNodalResults(rThisVariable, rModelPartPost);
 
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
@@ -1707,11 +1787,8 @@ public:
 
     // Transfer the variable to nodes for model_part
     template<class TVariableType>
-    void TransferVariablesToNodes(
-        const TVariableType& rThisVariable,
-        ModelPart::Pointer pModelPart,
-        LinearSolverType::Pointer pSolver
-    )
+    void TransferVariablesToNodes(const TVariableType& rThisVariable,
+            ModelPart& rModelPart, LinearSolverType::Pointer pSolver) const
     {
         #ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
@@ -1720,7 +1797,7 @@ public:
                   << rThisVariable.Name() << " starts" << std::endl;
         #endif
 
-        TransferVariablesToNodes(pSolver, pModelPart, rThisVariable);
+        TransferVariablesToNodes(rThisVariable, rModelPart, pSolver);
 
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
@@ -1734,7 +1811,7 @@ public:
     /**
      * Utility function to renumber the nodes of the post model_part (for parallel merge)
      */
-    void GlobalNodalRenumbering(ModelPart::Pointer pModelPartPost)
+    void GlobalNodalRenumbering(ModelPart& rModelPartPost)
     {
         #ifdef ISOGEOMETRIC_USE_MPI
         int rank, size;
@@ -1743,7 +1820,7 @@ public:
 
         // gather the number of nodes on each process
         int NumberOfNodes[size];
-        int MyNumberOfNodes = pModelPartPost->NumberOfNodes();
+        int MyNumberOfNodes = rModelPartPost.NumberOfNodes();
         MPI_Allgather(&MyNumberOfNodes, 1, MPI_INT, NumberOfNodes, 1, MPI_INT, MPI_COMM_WORLD);
 //        std::cout << "NumberOfNodes:";
 //        for(int i = 0; i < size; ++i)
@@ -1756,7 +1833,7 @@ public:
             offset += NumberOfNodes[i];
 
         // renumber the nodes of the current process
-        for(ModelPart::NodeIterator it = pModelPartPost->NodesBegin(); it != pModelPartPost->NodesEnd(); ++it)
+        for(ModelPart::NodeIterator it = rModelPartPost.NodesBegin(); it != rModelPartPost.NodesEnd(); ++it)
         {
             it->SetId(++offset);
             it->GetSolutionStepValue(PARTITION_INDEX) = rank;
@@ -1839,7 +1916,7 @@ private:
     ///@}
     ///@name Member Variables
     ///@{
-    ModelPart::Pointer mpModelPart; // pointer variable to a model_part
+    ModelPart& mr_model_part; // reference to a model_part
 
     VectorMap<IndexType, CoordinatesArrayType> mNodeToLocalCoordinates; // vector map to store local coordinates of node on a NURBS entity
     VectorMap<IndexType, IndexType> mNodeToElement; // vector map to store local coordinates of node on a NURBS entity
@@ -1960,16 +2037,13 @@ private:
      * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
      * @param rThisVariable the variable need to transfer the respected values
      */
-    void TransferVariablesToNodes(
-            LinearSolverType::Pointer& pSolver,
-            ModelPart::Pointer& pModelPart,
-            const Variable<double>& rThisVariable
-        )
+    void TransferVariablesToNodes(const Variable<double>& rThisVariable,
+            ModelPart& rModelPart, LinearSolverType::Pointer pSolver) const
     {
-        ElementsArrayType& ElementsArray= pModelPart->Elements();
+        ElementsArrayType& ElementsArray= rModelPart.Elements();
 
         //Initialize system of equations
-        int NumberOfNodes = pModelPart->NumberOfNodes();
+        int NumberOfNodes = rModelPart.NumberOfNodes();
         SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
         noalias(M)= ZeroMatrix(NumberOfNodes, NumberOfNodes);
 
@@ -2011,49 +2085,66 @@ private:
             double DetJ;
             unsigned int row, col;
 
-            typename ElementsArrayType::ptr_iterator it_begin = ElementsArray.ptr_begin() + element_partition[k];
-            typename ElementsArrayType::ptr_iterator it_end = ElementsArray.ptr_begin() + element_partition[k + 1];
+            typename ElementsArrayType::iterator it_begin = ElementsArray.begin() + element_partition[k];
+            typename ElementsArrayType::iterator it_end = ElementsArray.begin() + element_partition[k + 1];
 
-            for( ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it )
+            for( ElementsArrayType::iterator it = it_begin; it != it_end; ++it )
             {
-                if(!(*it)->GetValue(IS_INACTIVE))
+                bool is_active = true;
+                if(it->IsDefined ( ACTIVE ))
+                {
+                    is_active = it->Is( ACTIVE );
+                #ifdef SD_APP_FORWARD_COMPATIBILITY
+                }
+                #else
+                    if(it->Has ( IS_INACTIVE ))
+                        is_active = is_active && (!it->GetValue( IS_INACTIVE ));
+                }
+                else
+                {
+                    if(it->Has ( IS_INACTIVE ))
+                        is_active = !it->GetValue( IS_INACTIVE );
+                }
+                #endif
+
+                if(is_active)
                 {
                     const IntegrationPointsArrayType& integration_points
-                    = (*it)->GetGeometry().IntegrationPoints((*it)->GetIntegrationMethod());
+                    = it->GetGeometry().IntegrationPoints(it->GetIntegrationMethod());
 
                     GeometryType::JacobiansType J(integration_points.size());
 
-    //                J = (*it)->GetGeometry().Jacobian(J, (*it)->GetIntegrationMethod());
-    //                const Matrix& Ncontainer = (*it)->GetGeometry().ShapeFunctionsValues((*it)->GetIntegrationMethod());
+    //                J = it->GetGeometry().Jacobian(J, it->GetIntegrationMethod());
+    //                const Matrix& Ncontainer = it->GetGeometry().ShapeFunctionsValues(it->GetIntegrationMethod());
 
-                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>((*it)->GetGeometry());
-                    J = rIsogeometricGeometry.Jacobian0(J, (*it)->GetIntegrationMethod());
+                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>(it->GetGeometry());
+                    J = rIsogeometricGeometry.Jacobian0(J, it->GetIntegrationMethod());
 
                     GeometryType::ShapeFunctionsGradientsType DN_De;
                     Matrix Ncontainer;
                     rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
                         Ncontainer,
                         DN_De,
-                        (*it)->GetIntegrationMethod()
+                        it->GetIntegrationMethod()
                     );
 
                     // get the values at the integration_points
                     std::vector<double> ValuesOnIntPoint(integration_points.size());
-                    (*it)->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, pModelPart->GetProcessInfo());
+                    it->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, rModelPart.GetProcessInfo());
 
                     for(unsigned int point = 0; point< integration_points.size(); ++point)
                     {
                         MathUtils<double>::InvertMatrix(J[point], InvJ, DetJ);
 
                         double dV = DetJ * integration_points[point].Weight();
-                        for(unsigned int prim = 0 ; prim < (*it)->GetGeometry().size(); ++prim)
+                        for(unsigned int prim = 0 ; prim < it->GetGeometry().size(); ++prim)
                         {
-                            row = (*it)->GetGeometry()[prim].Id()-1;
+                            row = it->GetGeometry()[prim].Id()-1;
                             omp_set_lock(&lock_array[row]);
                             b(row) += (ValuesOnIntPoint[point]) * Ncontainer(point, prim) * dV;
-                            for(unsigned int sec = 0 ; sec < (*it)->GetGeometry().size(); ++sec)
+                            for(unsigned int sec = 0 ; sec < it->GetGeometry().size(); ++sec)
                             {
-                                col = (*it)->GetGeometry()[sec].Id()-1;
+                                col = it->GetGeometry()[sec].Id()-1;
                                 M(row, col) += Ncontainer(point, prim) * Ncontainer(point, sec) * dV;
                             }
                             omp_unset_lock(&lock_array[row]);
@@ -2063,14 +2154,14 @@ private:
                 else
                 {
                     // for inactive elements the contribution to LHS is identity matrix and RHS is zero
-                    for(unsigned int prim = 0 ; prim < (*it)->GetGeometry().size(); ++prim)
+                    for(unsigned int prim = 0 ; prim < it->GetGeometry().size(); ++prim)
                     {
-                        row = (*it)->GetGeometry()[prim].Id()-1;
+                        row = it->GetGeometry()[prim].Id()-1;
                         omp_set_lock(&lock_array[row]);
 //                        b(row) += 0.0;
-                        for(unsigned int sec = 0 ; sec < (*it)->GetGeometry().size(); ++sec)
+                        for(unsigned int sec = 0 ; sec < it->GetGeometry().size(); ++sec)
                         {
-                            col = (*it)->GetGeometry()[sec].Id()-1;
+                            col = it->GetGeometry()[sec].Id()-1;
                             if(col == row)
                                 M(row, col) += 1.0;
 //                            else
@@ -2089,7 +2180,7 @@ private:
         pSolver->Solve(M, g, b);
 
         // transfer the solution to the nodal variables
-        for(ModelPart::NodeIterator it = pModelPart->NodesBegin(); it != pModelPart->NodesEnd(); ++it)
+        for(ModelPart::NodeIterator it = rModelPart.NodesBegin(); it != rModelPart.NodesEnd(); ++it)
         {
             it->GetSolutionStepValue(rThisVariable) = g((it->Id()-1));
         }
@@ -2114,13 +2205,10 @@ private:
      * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
      * @param rThisVariable the variable need to transfer the respected values
      */
-    void TransferVariablesToNodes(
-            LinearSolverType::Pointer& pSolver,
-            ModelPart::Pointer& pModelPart,
-            const Variable<Vector>& rThisVariable
-        )
+    void TransferVariablesToNodes(const Variable<Vector>& rThisVariable,
+            ModelPart& rModelPart, LinearSolverType::Pointer& pSolver) const
     {
-        ElementsArrayType& ElementsArray = pModelPart->Elements();
+        ElementsArrayType& ElementsArray = rModelPart.Elements();
 
         const unsigned int& Dim = (*(ElementsArray.ptr_begin()))->GetGeometry().WorkingSpaceDimension();
         unsigned int VariableSize;
@@ -2143,7 +2231,7 @@ private:
         #endif
 
         //Initialize system of equations
-        unsigned int NumberOfNodes = pModelPart->NumberOfNodes();
+        unsigned int NumberOfNodes = rModelPart.NumberOfNodes();
         SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
         noalias(M)= ZeroMatrix(NumberOfNodes, NumberOfNodes);
 
@@ -2184,35 +2272,52 @@ private:
             double DetJ;
             unsigned int row, col;
 
-            typename ElementsArrayType::ptr_iterator it_begin = ElementsArray.ptr_begin() + element_partition[k];
-            typename ElementsArrayType::ptr_iterator it_end = ElementsArray.ptr_begin() + element_partition[k + 1];
+            typename ElementsArrayType::iterator it_begin = ElementsArray.begin() + element_partition[k];
+            typename ElementsArrayType::iterator it_end = ElementsArray.begin() + element_partition[k + 1];
 
-            for( ElementsArrayType::ptr_iterator it = it_begin; it != it_end; ++it )
+            for( ElementsArrayType::iterator it = it_begin; it != it_end; ++it )
             {
-                if(!(*it)->GetValue(IS_INACTIVE))
+                bool is_active = true;
+                if(it->IsDefined ( ACTIVE ))
+                {
+                    is_active = it->Is( ACTIVE );
+                #ifdef SD_APP_FORWARD_COMPATIBILITY
+                }
+                #else
+                    if(it->Has ( IS_INACTIVE ))
+                        is_active = is_active && (!it->GetValue( IS_INACTIVE ));
+                }
+                else
+                {
+                    if(it->Has ( IS_INACTIVE ))
+                        is_active = !it->GetValue( IS_INACTIVE );
+                }
+                #endif
+
+                if(is_active)
                 {
                     const IntegrationPointsArrayType& integration_points
-                    = (*it)->GetGeometry().IntegrationPoints((*it)->GetIntegrationMethod());
+                    = it->GetGeometry().IntegrationPoints(it->GetIntegrationMethod());
 
                     GeometryType::JacobiansType J(integration_points.size());
 
-    //                J = (*it)->GetGeometry().Jacobian(J, (*it)->GetIntegrationMethod());
-    //                const Matrix& Ncontainer = (*it)->GetGeometry().ShapeFunctionsValues((*it)->GetIntegrationMethod());
+    //                J = it->GetGeometry().Jacobian(J, it->GetIntegrationMethod());
+    //                const Matrix& Ncontainer = it->GetGeometry().ShapeFunctionsValues(it->GetIntegrationMethod());
 
-                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>((*it)->GetGeometry());
-                    J = rIsogeometricGeometry.Jacobian0(J, (*it)->GetIntegrationMethod());
+                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>(it->GetGeometry());
+                    J = rIsogeometricGeometry.Jacobian0(J, it->GetIntegrationMethod());
 
                     GeometryType::ShapeFunctionsGradientsType DN_De;
                     Matrix Ncontainer;
                     rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
                         Ncontainer,
                         DN_De,
-                        (*it)->GetIntegrationMethod()
+                        it->GetIntegrationMethod()
                     );
 
                     // get the values at the integration_points
                     std::vector<Vector> ValuesOnIntPoint(integration_points.size());
-                    (*it)->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, pModelPart->GetProcessInfo());
+                    it->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, rModelPart.GetProcessInfo());
 
                     for(unsigned int point = 0; point < integration_points.size(); ++point)
                     {
@@ -2220,18 +2325,18 @@ private:
 
                         double dV = DetJ * integration_points[point].Weight();
 
-                        for(unsigned int prim = 0; prim < (*it)->GetGeometry().size(); ++prim)
+                        for(unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
                         {
-                            row = (*it)->GetGeometry()[prim].Id() - 1;
+                            row = it->GetGeometry()[prim].Id() - 1;
 
                             omp_set_lock(&lock_array[row]);
 
                             for(unsigned int i = 0; i < VariableSize; ++i)
                                 b(row, i) += ValuesOnIntPoint[point][i] * Ncontainer(point, prim) * dV;
 
-                            for(unsigned int sec = 0; sec < (*it)->GetGeometry().size(); ++sec)
+                            for(unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
                             {
-                                col = (*it)->GetGeometry()[sec].Id() - 1;
+                                col = it->GetGeometry()[sec].Id() - 1;
                                 M(row, col) += Ncontainer(point, prim) * Ncontainer(point, sec) * dV;
                             }
 
@@ -2242,18 +2347,18 @@ private:
                 else
                 {
                     // for inactive elements the contribution to LHS is identity matrix and RHS is zero
-                    for(unsigned int prim = 0; prim < (*it)->GetGeometry().size(); ++prim)
+                    for(unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
                     {
-                        row = (*it)->GetGeometry()[prim].Id() - 1;
+                        row = it->GetGeometry()[prim].Id() - 1;
 
                         omp_set_lock(&lock_array[row]);
 
 //                        for(unsigned int i = 0; i < VariableSize; ++i)
 //                            b(row, i) += 0.0;
 
-                        for(unsigned int sec = 0; sec < (*it)->GetGeometry().size(); ++sec)
+                        for(unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
                         {
-                            col = (*it)->GetGeometry()[sec].Id() - 1;
+                            col = it->GetGeometry()[sec].Id() - 1;
                             if(col == row)
                                 M(row, col) += 1.0;
 //                            else
@@ -2290,7 +2395,7 @@ private:
         #endif
 
         // transfer the solution to the nodal variables
-        for(ModelPart::NodeIterator it = pModelPart->NodesBegin(); it != pModelPart->NodesEnd(); ++it)
+        for(ModelPart::NodeIterator it = rModelPart.NodesBegin(); it != rModelPart.NodesEnd(); ++it)
         {
             Vector tmp(VariableSize);
             for(unsigned int i = 0; i < VariableSize; ++i)
@@ -2313,14 +2418,16 @@ private:
     ///@name Un accessible methods
     ///@{
 
-    /// Assignment operator.
-    BezierClassicalPostUtility& operator=(BezierClassicalPostUtility const& rOther)
-    {
-        return *this;
-    }
+    // /// Assignment operator.
+    // BezierClassicalPostUtility& operator=(BezierClassicalPostUtility const& rOther)
+    // {
+    //     this->mr_model_part = rOther.mr_model_part;
+    //     return *this;
+    // }
 
     /// Copy constructor.
     BezierClassicalPostUtility(BezierClassicalPostUtility const& rOther)
+    : mr_model_part(rOther.mr_model_part)
     {
     }
 

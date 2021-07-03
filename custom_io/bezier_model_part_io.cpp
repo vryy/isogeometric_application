@@ -46,6 +46,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 // Project includes
+#include "custom_utilities/iga_define.h"
 #include "custom_io/bezier_model_part_io.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "custom_geometries/geo_1d_bezier.h"
@@ -53,7 +54,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "custom_geometries/geo_2d_bezier_3.h"
 #include "custom_geometries/geo_3d_bezier.h"
 #include "custom_utilities/isogeometric_math_utils.h"
-#include "isogeometric_application.h"
+#include "isogeometric_application_variables.h"
 
 namespace Kratos
 {
@@ -325,7 +326,7 @@ namespace Kratos
 //                p_temp_geometry = IsogeometricGeometryType::Pointer(new Geo3dBezier<NodeType>(temp_element_nodes));
 //            else if(p_temp_info->local_space_dim == 2 && p_temp_info->global_space_dim == 3)
 //                p_temp_geometry = IsogeometricGeometryType::Pointer(new Geo2dBezier3<NodeType>(temp_element_nodes));
-            p_temp_geometry = boost::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
+            p_temp_geometry = iga::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
             if (p_temp_geometry == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
 
@@ -428,7 +429,7 @@ namespace Kratos
 //                p_temp_geometry = IsogeometricGeometryType::Pointer(new Geo3dBezier<NodeType>(temp_condition_nodes));
 //            else if(p_temp_info->local_space_dim == 2 && p_temp_info->global_space_dim == 3)
 //                p_temp_geometry = IsogeometricGeometryType::Pointer(new Geo2dBezier3<NodeType>(temp_condition_nodes));
-            p_temp_geometry = boost::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_condition.GetGeometry().Create(temp_condition_nodes));
+            p_temp_geometry = iga::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_condition.GetGeometry().Create(temp_condition_nodes));
             if (p_temp_geometry == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
 

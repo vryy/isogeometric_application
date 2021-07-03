@@ -10,12 +10,10 @@
 // External includes
 
 // Project includes
-#include "custom_conditions/dummy_isogeometric_condition.h"
+#ifndef SD_APP_FORWARD_COMPATIBILITY
 #include "includes/legacy_structural_app_vars.h"
-#include "includes/kratos_flags.h"
-#include "utilities/math_utils.h"
-#include "isogeometric_application/custom_utilities/isogeometric_math_utils.h"
-#include "isogeometric_application/isogeometric_application.h"
+#endif
+#include "custom_conditions/dummy_isogeometric_condition.h"
 
 namespace Kratos
 {
@@ -63,7 +61,11 @@ Condition::Pointer DummyIsogeometricCondition::Create(IndexType NewId, GeometryT
     return Condition::Pointer(new DummyIsogeometricCondition(NewId, pGeom, pProperties));
 }
 
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+GeometryData::IntegrationMethod DummyIsogeometricCondition::GetIntegrationMethod()
+#else
 GeometryData::IntegrationMethod DummyIsogeometricCondition::GetIntegrationMethod() const
+#endif
 {
     return mThisIntegrationMethod;
 }
@@ -72,56 +74,63 @@ void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessIn
 {
     KRATOS_TRY
 
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    // borrow the variable from other application
+    const Variable<int>& INTEGRATION_ORDER_var = static_cast<const Variable<int>&>(KratosComponents<VariableData>::Get("INTEGRATION_ORDER"));
+    #else
+    const Variable<int>& INTEGRATION_ORDER_var = INTEGRATION_ORDER;
+    #endif
+
     // integration rule
-    if(this->Has( INTEGRATION_ORDER ))
+    if(this->Has( INTEGRATION_ORDER_var ))
     {
-        if(this->GetValue(INTEGRATION_ORDER) == 1)
+        if(this->GetValue(INTEGRATION_ORDER_var) == 1)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_1;
         }
-        else if(this->GetValue(INTEGRATION_ORDER) == 2)
+        else if(this->GetValue(INTEGRATION_ORDER_var) == 2)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_2;
         }
-        else if(this->GetValue(INTEGRATION_ORDER) == 3)
+        else if(this->GetValue(INTEGRATION_ORDER_var) == 3)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_3;
         }
-        else if(this->GetValue(INTEGRATION_ORDER) == 4)
+        else if(this->GetValue(INTEGRATION_ORDER_var) == 4)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_4;
         }
-        else if(this->GetValue(INTEGRATION_ORDER) == 5)
+        else if(this->GetValue(INTEGRATION_ORDER_var) == 5)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_5;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration rule", this->GetValue(INTEGRATION_ORDER))
+            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration rule", this->GetValue(INTEGRATION_ORDER_var))
     }
-    else if(GetProperties().Has( INTEGRATION_ORDER ))
+    else if(GetProperties().Has( INTEGRATION_ORDER_var ))
     {
-        if(GetProperties()[INTEGRATION_ORDER] == 1)
+        if(GetProperties()[INTEGRATION_ORDER_var] == 1)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_1;
         }
-        else if(GetProperties()[INTEGRATION_ORDER] == 2)
+        else if(GetProperties()[INTEGRATION_ORDER_var] == 2)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_2;
         }
-        else if(GetProperties()[INTEGRATION_ORDER] == 3)
+        else if(GetProperties()[INTEGRATION_ORDER_var] == 3)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_3;
         }
-        else if(GetProperties()[INTEGRATION_ORDER] == 4)
+        else if(GetProperties()[INTEGRATION_ORDER_var] == 4)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_4;
         }
-        else if(GetProperties()[INTEGRATION_ORDER] == 5)
+        else if(GetProperties()[INTEGRATION_ORDER_var] == 5)
         {
             mThisIntegrationMethod = GeometryData::GI_GAUSS_5;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration points", GetProperties()[INTEGRATION_ORDER])
+            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration points", GetProperties()[INTEGRATION_ORDER_var])
     }
     else
         mThisIntegrationMethod = GetGeometry().GetDefaultIntegrationMethod(); // default method

@@ -139,7 +139,13 @@ public:
     typedef PointerVectorSet<BezierInfo, IndexedObject> BezierInfoContainerType;
 
     /// Default Constructor with  filenames.
-    BezierModelPartIO(std::string const& Filename, const Flags Options = IO::READ|IO::NOT_IGNORE_VARIABLES_ERROR);
+    BezierModelPartIO(std::string const& Filename,
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        const Flags Options = IO::READ
+        #else
+        const Flags Options = IO::READ|IO::NOT_IGNORE_VARIABLES_ERROR
+        #endif
+        );
 
     /// Destructor.
     virtual ~BezierModelPartIO();

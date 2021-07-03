@@ -33,6 +33,9 @@ class Knot
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Knot);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const Knot> ConstPointer;
+    #endif
 
     /// Default constructor
     Knot(const TDataType& Value) : mValue(Value), mIndex(-1), mIsActive(true)

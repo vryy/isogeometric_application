@@ -13,7 +13,6 @@
 #include <vector>
 
 // External includes
-#include <boost/enable_shared_from_this.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -36,6 +35,9 @@ class FESpace
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const FESpace> ConstPointer;
+    #endif
 
     /// Type definition
     typedef CellContainer cell_container_t;
@@ -416,6 +418,9 @@ class FESpace<0>
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const FESpace> ConstPointer;
+    #endif
 
     /// Type definition
     typedef CellContainer cell_container_t;
@@ -541,6 +546,9 @@ class FESpace<-1>
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const FESpace> ConstPointer;
+    #endif
 
     /// Default constructor
     FESpace() {}
@@ -618,6 +626,9 @@ class FESpace<-2>
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const FESpace> ConstPointer;
+    #endif
 
     /// Default constructor
     FESpace() {}

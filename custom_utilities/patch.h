@@ -13,11 +13,16 @@
 #include <vector>
 #include <list>
 #include <tuple>
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+#include <memory> // for std::enable_shared_from_this
+#endif
 
 // External includes
 #include <boost/any.hpp>
 #include <boost/array.hpp>
+#ifndef SD_APP_FORWARD_COMPATIBILITY
 #include <boost/enable_shared_from_this.hpp>
+#endif
 
 // Project includes
 #include "includes/define.h"
@@ -30,7 +35,7 @@
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/weighted_fespace.h"
 #include "custom_utilities/control_grid_utility.h"
-#include "isogeometric_application/isogeometric_application.h"
+#include "isogeometric_application_variables.h"
 
 #define CONVERT_INDEX_IGA_TO_KRATOS(n) (n+1)
 #define CONVERT_INDEX_KRATOS_TO_IGA(n) (n-1)
@@ -48,11 +53,19 @@ template<int TDim> class PatchInterface;
 This class represents an isogeometric patch in parametric coordinates. An isogeometric patch can be a NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
  */
 template<int TDim>
-class Patch : public IndexedObject, public Flags, public boost::enable_shared_from_this<Patch<TDim> >
+class Patch : public IndexedObject, public Flags
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+, public std::enable_shared_from_this<Patch<TDim> >
+#else
+, public boost::enable_shared_from_this<Patch<TDim> >
+#endif
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const Patch> ConstPointer;
+    #endif
 
     /// Type definition
     typedef ControlPoint<double> ControlPointType;
@@ -946,6 +959,9 @@ class Patch<0> : public IndexedObject, public Flags
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const Patch> ConstPointer;
+    #endif
 
     // Type definitions
     typedef ControlPoint<double> ControlPointType;
@@ -1067,6 +1083,9 @@ class Patch<-1> : public IndexedObject, public Flags
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const Patch> ConstPointer;
+    #endif
 
     /// Default constructor
     Patch() : IndexedObject(0) {}
@@ -1149,6 +1168,9 @@ class Patch<-2> : public IndexedObject, public Flags
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
+    #ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const Patch> ConstPointer;
+    #endif
 
     /// Default constructor
     Patch() : IndexedObject(0) {}

@@ -80,7 +80,7 @@ private:
         if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
             KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
 
-        typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         if (pFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
@@ -131,7 +131,7 @@ void MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<1>(std::ostre
 {
     typedef Patch<1>::ControlPointType ControlPointType;
     typename StructuredControlGrid<1, ControlPointType>::ConstPointer pControlPointGrid
-        = boost::dynamic_pointer_cast<const StructuredControlGrid<1, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+        = iga::dynamic_pointer_cast<const StructuredControlGrid<1, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
     if (pControlPointGrid == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
@@ -149,7 +149,7 @@ void MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<2>(std::ostre
 {
     typedef Patch<2>::ControlPointType ControlPointType;
     typename StructuredControlGrid<2, ControlPointType>::ConstPointer pControlPointGrid
-        = boost::dynamic_pointer_cast<const StructuredControlGrid<2, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+        = iga::dynamic_pointer_cast<const StructuredControlGrid<2, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
     if (pControlPointGrid == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
@@ -170,7 +170,7 @@ void MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<3>(std::ostre
 {
     typedef Patch<3>::ControlPointType ControlPointType;
     typename StructuredControlGrid<3, ControlPointType>::ConstPointer pControlPointGrid
-        = boost::dynamic_pointer_cast<const StructuredControlGrid<3, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+        = iga::dynamic_pointer_cast<const StructuredControlGrid<3, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
     if (pControlPointGrid == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 

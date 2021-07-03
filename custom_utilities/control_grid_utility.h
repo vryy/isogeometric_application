@@ -176,7 +176,7 @@ public:
         }
         else if (typeid(*pFESpace) == typeid(HBSplinesFESpace<TDim>))
         {
-            typename HBSplinesFESpace<TDim>::Pointer pHbFESpace = boost::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pFESpace);
+            typename HBSplinesFESpace<TDim>::Pointer pHbFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pFESpace);
             return CreatePointBasedControlGrid<typename TVariableType::Type, HBSplinesFESpace<TDim> >(rVariable, pHbFESpace);
         }
         else

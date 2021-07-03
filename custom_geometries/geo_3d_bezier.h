@@ -354,14 +354,13 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
-    {
-        return GeometryData::Kratos_NURBS;
-    }
-
     virtual GeometryData::KratosGeometryType GetGeometryType() const override
     {
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::Kratos_Bezier3D);
+        #else
         return GeometryData::Kratos_Bezier3D;
+        #endif
     }
 
     /**
@@ -1451,7 +1450,11 @@ public:
             // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
             mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<3, 3, 3>(NumberOfIntegrationMethod, Degree1, Degree2, Degree3);
             #ifndef ENABLE_PRECOMPUTE
-            BaseType::mpGeometryData = &(*mpBezierGeometryData);
+                #ifdef SD_APP_FORWARD_COMPATIBILITY
+                BaseType::SetGeometryData(&(*mpBezierGeometryData));
+                #else
+                BaseType::mpGeometryData = &(*mpBezierGeometryData);
+                #endif
             #else
             // precompute the values at each integration points; note that it can generate a LOT of data
             IntegrationPointsContainerType all_integration_points
@@ -1481,7 +1484,11 @@ public:
                     )
                 );
 
-            GeometryType::mpGeometryData = &(*mpGeometryData);
+                #ifdef SD_APP_FORWARD_COMPATIBILITY
+                BaseType::SetGeometryData(&(*mpGeometryData));
+                #else
+                BaseType::mpGeometryData = &(*mpGeometryData);
+                #endif
             #endif
         }
     }

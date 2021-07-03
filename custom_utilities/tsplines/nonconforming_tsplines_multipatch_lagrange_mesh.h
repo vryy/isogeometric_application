@@ -127,7 +127,7 @@ public:
             Properties::Pointer pNewProperties = Properties::Pointer(new Properties(it->Id()));
             r_model_part.AddProperties(pNewProperties);
 
-            typename TFESpaceType::cell_container_t::Pointer pFaceManager = boost::dynamic_pointer_cast<TFESpaceType>(it->pFESpace())->pFaceManager();
+            typename TFESpaceType::cell_container_t::Pointer pFaceManager = iga::dynamic_pointer_cast<TFESpaceType>(it->pFESpace())->pFaceManager();
 
             if (TFESpaceType::Dim() == 2)
             {

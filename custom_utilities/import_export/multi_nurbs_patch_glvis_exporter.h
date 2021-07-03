@@ -225,7 +225,7 @@ public:
             if (it->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
                 KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
 
-            typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
+            typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
             for (std::size_t dim = 0; dim < TDim; ++dim)
@@ -299,7 +299,7 @@ private:
             const std::size_t& id = it->Id();
             it->GenerateTopolgyData(start_vertex_id, patch_vertices[id], patch_edges[id], patch_faces[id], patch_volumes[id], start_knotv_id, patch_knotv[id]);
 
-            typename BSplinesFESpace<TDim>::Pointer pFESpace = boost::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
+            typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 

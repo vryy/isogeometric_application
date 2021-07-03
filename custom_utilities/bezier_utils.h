@@ -24,6 +24,9 @@
 #include "integration/line_gauss_legendre_integration_points.h"
 #include "utilities/openmp_utils.h"
 #include "utilities/math_utils.h"
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+#include "geometries/geometry_dimension.h"
+#endif
 #include "custom_geometries/isogeometric_geometry.h"
 #include "custom_utilities/isogeometric_math_utils.h"
 
@@ -177,7 +180,7 @@ public:
     typedef typename GeometryType::ShapeFunctionsValuesContainerType ShapeFunctionsValuesContainerType;
     typedef typename GeometryType::ShapeFunctionsGradientsType ShapeFunctionsGradientsType;
     typedef typename GeometryType::ShapeFunctionsLocalGradientsContainerType ShapeFunctionsLocalGradientsContainerType;
-    typedef typename ModelPart::ElementsContainerType ElementsArrayType;
+    typedef typename ModelPart::ElementsContainerType ElementsContainerType;
     typedef IsogeometricGeometry<GeometryType::PointType> IsogeometricGeometryType;
     typedef Matrix MatrixType;
     typedef Vector VectorType;
@@ -524,6 +527,22 @@ public:
             }
 
             //create the geometry_data pointer
+            #ifdef SD_APP_FORWARD_COMPATIBILITY
+            GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
+                new GeometryDimension(
+                    TDimension,
+                    TWorkingSpaceDimension,
+                    TLocalSpaceDimension) );
+            GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
+                new GeometryData(
+                    &(*pGeometryDimension),
+                    GeometryData::GI_GAUSS_2,           //ThisDefaultMethod
+                    all_integration_points,             //ThisIntegrationPoints
+                    shape_functions_values,             //ThisShapeFunctionsValues
+                    shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                )
+            );
+            #else
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
                 new GeometryData(
                     TDimension,
@@ -535,6 +554,7 @@ public:
                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
                 )
             );
+            #endif
 
             //insert value to map
             mIntegrationMethods.insert(PairType(Key, pNewGeometryData));
@@ -578,6 +598,22 @@ public:
                 );
             }
 
+            #ifdef SD_APP_FORWARD_COMPATIBILITY
+            GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
+                new GeometryDimension(
+                    TDimension,
+                    TWorkingSpaceDimension,
+                    TLocalSpaceDimension) );
+            GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
+                new GeometryData(
+                    &(*pGeometryDimension),
+                    GeometryData::GI_GAUSS_2,           //ThisDefaultMethod
+                    all_integration_points,             //ThisIntegrationPoints
+                    shape_functions_values,             //ThisShapeFunctionsValues
+                    shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                )
+            );
+            #else
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
                 new GeometryData(
                     TDimension,
@@ -589,6 +625,7 @@ public:
                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
                 )
             );
+            #endif
 
             //insert value to map
             mIntegrationMethods.insert(PairType(Key, pNewGeometryData));
@@ -635,6 +672,22 @@ public:
                 );
             }
 
+            #ifdef SD_APP_FORWARD_COMPATIBILITY
+            GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
+                new GeometryDimension(
+                    TDimension,
+                    TWorkingSpaceDimension,
+                    TLocalSpaceDimension) );
+            GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
+                new GeometryData(
+                    &(*pGeometryDimension),
+                    GeometryData::GI_GAUSS_2,           //ThisDefaultMethod
+                    all_integration_points,             //ThisIntegrationPoints
+                    shape_functions_values,             //ThisShapeFunctionsValues
+                    shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                )
+            );
+            #else
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
                 new GeometryData(
                     TDimension,
@@ -646,6 +699,7 @@ public:
                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
                 )
             );
+            #endif
 
             //insert value to map
             mIntegrationMethods.insert(PairType(Key, pNewGeometryData));
@@ -707,6 +761,22 @@ public:
             all_integration_points[ThisIntegrationMethod]
         );
 
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
+            new GeometryDimension(
+                TDimension,
+                TWorkingSpaceDimension,
+                TLocalSpaceDimension) );
+        GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
+            new GeometryData(
+                &(*pGeometryDimension),
+                ThisIntegrationMethod,              //ThisDefaultMethod
+                all_integration_points,             //ThisIntegrationPoints
+                shape_functions_values,             //ThisShapeFunctionsValues
+                shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+            )
+        );
+        #else
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
             new GeometryData(
                 TDimension,
@@ -718,6 +788,7 @@ public:
                 shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
             )
         );
+        #endif
 
         std::cout << "Create BezierGeometryData successfully for " << integration_points.size() << " integration points" << std::endl;
 
@@ -746,6 +817,22 @@ public:
             all_integration_points[ThisIntegrationMethod]
         );
 
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
+            new GeometryDimension(
+                TDimension,
+                TWorkingSpaceDimension,
+                TLocalSpaceDimension) );
+        GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
+            new GeometryData(
+                &(*pGeometryDimension),
+                ThisIntegrationMethod,              //ThisDefaultMethod
+                all_integration_points,             //ThisIntegrationPoints
+                shape_functions_values,             //ThisShapeFunctionsValues
+                shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+            )
+        );
+        #else
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
             new GeometryData(
                 TDimension,
@@ -757,6 +844,7 @@ public:
                 shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
             )
         );
+        #endif
 
         std::cout << "Create BezierGeometryData successfully for " << integration_points.size() << " integration points" << std::endl;
 
@@ -787,6 +875,22 @@ public:
             all_integration_points[ThisIntegrationMethod]
         );
 
+        #ifdef SD_APP_FORWARD_COMPATIBILITY
+        GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
+            new GeometryDimension(
+                TDimension,
+                TWorkingSpaceDimension,
+                TLocalSpaceDimension) );
+        GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
+            new GeometryData(
+                &(*pGeometryDimension),
+                ThisIntegrationMethod,              //ThisDefaultMethod
+                all_integration_points,             //ThisIntegrationPoints
+                shape_functions_values,             //ThisShapeFunctionsValues
+                shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+            )
+        );
+        #else
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
             new GeometryData(
                 TDimension,
@@ -798,6 +902,7 @@ public:
                 shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
             )
         );
+        #endif
 
         std::cout << "Create BezierGeometryData successfully for " << integration_points.size() << " integration points" << std::endl;
 
@@ -922,7 +1027,7 @@ public:
             Dumping utilities
      ********************************************************/
     static void DumpShapeFunctionsIntegrationPointsValuesAndLocalGradients(
-        ModelPart::Pointer pModelPart,
+        ModelPart& r_model_part,
         std::string FileName
     )
     {
@@ -932,13 +1037,13 @@ public:
 
         IntegrationMethod ThisMethod = GeometryData::GI_GAUSS_1;
 
-        ElementsArrayType& pElements = pModelPart->Elements();
+        ElementsContainerType& pElements = r_model_part.Elements();
 
         std::ofstream Out;
         Out.open(FileName.c_str());
 
         Out << "{" << std::endl;
-        for(typename ElementsArrayType::ptr_iterator it = pElements.ptr_begin();
+        for(typename ElementsContainerType::ptr_iterator it = pElements.ptr_begin();
             it != pElements.ptr_end();
             ++it)
         {

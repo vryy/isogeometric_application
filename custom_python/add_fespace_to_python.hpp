@@ -21,10 +21,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <boost/python/operators.hpp>
 
 // Project includes
-#include "includes/define.h"
-#include "includes/model_part.h"
-#include "includes/variables.h"
-#include "custom_python/add_utilities_to_python.h"
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/weighted_fespace.h"
 

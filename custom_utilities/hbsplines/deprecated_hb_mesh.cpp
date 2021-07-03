@@ -9,7 +9,11 @@
 #include "custom_utilities/nurbs/bcell_manager.h"
 #include "custom_utilities/triangulation_utils.h"
 #include "custom_utilities/isogeometric_math_utils.h"
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+#include "custom_utilities/spatial_containers/auto_collapse_spatial_binning.h"
+#else
 #include "utilities/auto_collapse_spatial_binning.h"
+#endif
 
 #ifdef ISOGEOMETRIC_USE_TETGEN
 #define TETLIBRARY
@@ -882,16 +886,8 @@ namespace Kratos
     }
 
     template<int TDim>
-    void DeprecatedHBMesh<TDim>::RefineNodes(boost::python::list& pyList)
+    void DeprecatedHBMesh<TDim>::RefineNodes(const std::set<std::size_t>& NodeIds)
     {
-        // extract the python list to std::set
-        std::set<std::size_t> NodeIds;
-        typedef boost::python::stl_input_iterator<int> iterator_value_type;
-        BOOST_FOREACH(const iterator_value_type::value_type& node_id,
-                      std::make_pair(iterator_value_type(pyList), // begin
-                      iterator_value_type() ) ) // end
-            NodeIds.insert(node_id);
-
         // cluster the nodes based on the level
         std::map<unsigned int, std::set<std::size_t> > NodesToRefineAtLevel;
         for(std::set<std::size_t>::iterator it = NodeIds.begin(); it != NodeIds.end(); ++it)

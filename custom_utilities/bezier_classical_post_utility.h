@@ -236,10 +236,10 @@ public:
             #endif
 
             //get the properties
-            Properties::Pointer pDummyProperties = it->pGetProperties();
+            Properties::Pointer pProperties = rModelPartPost.pGetProperties(it->pGetProperties()->Id());
 
             #ifdef DEBUG_LEVEL1
-            KRATOS_WATCH(*pDummyProperties)
+            KRATOS_WATCH(*pProperties)
             #endif
 
             // generate list of nodes
@@ -323,7 +323,7 @@ public:
                 //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node2, NodeKey).base()));
                 //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node4, NodeKey).base()));
 
-                //             Element::Pointer NewElement1 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
+                //             Element::Pointer NewElement1 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pProperties);
                 //             rModelPartPost.AddElement(NewElement1);
                 //             mOldToNewElements[it->Id()].insert(ElementCounter);
 
@@ -332,7 +332,7 @@ public:
                 //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node4, NodeKey).base()));
                 //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node3, NodeKey).base()));
 
-                //             Element::Pointer NewElement2 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
+                //             Element::Pointer NewElement2 = rCloneElement.Create(++ElementCounter, temp_element_nodes, pProperties);
                 //             rModelPartPost.AddElement(NewElement2);
                 //             mOldToNewElements[it->Id()].insert(ElementCounter);
                 //         }
@@ -345,7 +345,7 @@ public:
                 //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node4, NodeKey).base()));
                 //             temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node3, NodeKey).base()));
 
-                //             Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
+                //             Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pProperties);
                 //             rModelPartPost.AddElement(NewElement);
                 //             mOldToNewElements[it->Id()].insert(ElementCounter);
                 //         }
@@ -376,7 +376,7 @@ public:
                 }
 
                 ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
-                    connectivities, rModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
+                    connectivities, rModelPartPost, rCloneElement, ElementCounter, pProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                 {
@@ -486,7 +486,7 @@ public:
                 //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node8, NodeKey).base()));
                 //                 temp_element_nodes.push_back(*(FindKey(rModelPartPost.Nodes(), Node7, NodeKey).base()));
 
-                //                 Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pDummyProperties);
+                //                 Element::Pointer NewElement = rCloneElement.Create(++ElementCounter, temp_element_nodes, pProperties);
                 //                 rModelPartPost.AddElement(NewElement);
                 //                 mOldToNewElements[it->Id()].insert(ElementCounter);
                 //             }
@@ -526,7 +526,7 @@ public:
                 }
 
                 ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
-                    connectivities, rModelPartPost, rCloneElement, ElementCounter, pDummyProperties, NodeKey);
+                    connectivities, rModelPartPost, rCloneElement, ElementCounter, pProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                 {
@@ -910,11 +910,11 @@ public:
         int ReducedDim = rE.GetGeometry().Dimension();
 
         //get the properties
-        Properties::Pointer pDummyProperties = rE.pGetProperties();
+        Properties::Pointer pProperties = rModelPart.pGetProperties(rE.pGetProperties()->Id());
 
         #ifdef DEBUG_LEVEL1
         std::cout << "Generating for " << rE.Info() << std::endl;
-        KRATOS_WATCH(*pDummyProperties)
+        KRATOS_WATCH(*pProperties)
         KRATOS_WATCH(EntityCounter)
         #endif
 
@@ -1030,7 +1030,7 @@ public:
 
 //                     int NewEntityId = ++EntityCounter;
 // //                    int NewEntityId = rE.Id(); ++EntityCounter;
-//                     typename TEntityType::Pointer NewEntity = rSample.Create(NewEntityId, temp_nodes, pDummyProperties);
+//                     typename TEntityType::Pointer NewEntity = rSample.Create(NewEntityId, temp_nodes, pProperties);
 //                     AddToModelPart<TEntityType>(rModelPart, NewEntity);
 //                     if(type == 1)
 //                         mOldToNewElements[rE.Id()].insert(NewEntityId);
@@ -1055,7 +1055,7 @@ public:
             }
 
             TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
-                connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
+                connectivities, rModelPart, rSample, EntityCounter, pProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
             {
@@ -1215,7 +1215,7 @@ public:
             //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), Node7, NodeKey).base()));
 
             //             int NewEntityId = ++EntityCounter;
-            //             typename TEntityType::Pointer NewEntity = rSample.Create(NewEntityId, temp_nodes, pDummyProperties);
+            //             typename TEntityType::Pointer NewEntity = rSample.Create(NewEntityId, temp_nodes, pProperties);
             //             AddToModelPart<TEntityType>(rModelPart, NewEntity);
             //             if(type == 1)
             //                 mOldToNewElements[rE.Id()].insert(NewEntityId);
@@ -1248,7 +1248,7 @@ public:
             }
 
             TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
-                connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
+                connectivities, rModelPart, rSample, EntityCounter, pProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
             {
@@ -1301,14 +1301,14 @@ public:
         int ReducedDim = rE.GetGeometry().Dimension();
 
         //get the properties
-        Properties::Pointer pDummyProperties = rE.pGetProperties();
+        Properties::Pointer pProperties = rModelPart.pGetProperties(rE.pGetProperties()->Id());
 
         #ifdef DEBUG_LEVEL1
         if(type == 1)
             std::cout << "Generating for element " << rE.Id() << std::endl;
         else
             std::cout << "Generating for condition " << rE.Id() << std::endl;
-        KRATOS_WATCH(*pDummyProperties)
+        KRATOS_WATCH(*pProperties)
         #endif
 
         // generate list of nodes
@@ -1403,7 +1403,7 @@ public:
             //         temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node4], NodeKey).base()));
             //         temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node3], NodeKey).base()));
 
-            //         typename T::Pointer NewEntity = rSample.Create(++EntityCounter, temp_nodes, pDummyProperties);
+            //         typename T::Pointer NewEntity = rSample.Create(++EntityCounter, temp_nodes, pProperties);
             //         AddToModelPart<T>(rModelPart, NewEntity);
             //         if(type == 1)
             //             mOldToNewElements[rE.Id()].insert(EntityCounter);
@@ -1432,7 +1432,7 @@ public:
             }
 
             TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
-                connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
+                connectivities, rModelPart, rSample, EntityCounter, pProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
             {
@@ -1565,7 +1565,7 @@ public:
             //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node8], NodeKey).base()));
             //             temp_nodes.push_back(*(FindKey(rModelPart.Nodes(), rMapToCollapseNode[Node7], NodeKey).base()));
 
-            //             typename T::Pointer NewEntity = rSample.Create(++EntityCounter, temp_nodes, pDummyProperties);
+            //             typename T::Pointer NewEntity = rSample.Create(++EntityCounter, temp_nodes, pProperties);
             //             AddToModelPart<T>(rModelPart, NewEntity);
             //             if(type == 1)
             //                 mOldToNewElements[rE.Id()].insert(EntityCounter);
@@ -1606,7 +1606,7 @@ public:
             }
 
             TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
-                connectivities, rModelPart, rSample, EntityCounter, pDummyProperties, NodeKey);
+                connectivities, rModelPart, rSample, EntityCounter, pProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
             {

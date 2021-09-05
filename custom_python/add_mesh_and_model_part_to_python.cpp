@@ -26,6 +26,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/patch_lagrange_mesh.h"
 #include "custom_utilities/nonconforming_multipatch_lagrange_mesh.h"
 #include "custom_utilities/nonconforming_variable_multipatch_lagrange_mesh.h"
+#include "custom_utilities/multipatch_lagrange_control_mesh.h"
 #include "custom_utilities/multipatch_model_part.h"
 #include "custom_utilities/multi_multipatch_model_part.h"
 #include "custom_python/add_mesh_and_model_part_to_python.h"
@@ -228,7 +229,6 @@ void IsogeometricApplication_AddMeshToPython()
     ss << "NonConformingMultipatchLagrangeMesh" << TDim << "D";
     class_<NonConformingMultipatchLagrangeMesh<TDim>, typename NonConformingMultipatchLagrangeMesh<TDim>::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
-    .def("SetEchoLevel", &NonConformingMultipatchLagrangeMesh<TDim>::SetEchoLevel)
     .def("SetBaseElementName", &NonConformingMultipatchLagrangeMesh<TDim>::SetBaseElementName)
     .def("SetLastNodeId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastNodeId)
     .def("SetLastElemId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastElemId)
@@ -252,6 +252,17 @@ void IsogeometricApplication_AddMeshToPython()
     .def("TransferVariables", &NonConformingVariableMultipatchLagrangeMesh<TDim>::template TransferVariables<Variable<double> >)
     .def("TransferVariables", &NonConformingVariableMultipatchLagrangeMesh<TDim>::template TransferVariables<Variable<array_1d<double, 3> > >)
     .def("TransferVariables", &NonConformingVariableMultipatchLagrangeMesh<TDim>::template TransferVariables<Variable<Vector> >)
+    .def(self_ns::str(self))
+    ;
+
+    ss.str(std::string());
+    ss << "MultipatchLagrangeControlMesh" << TDim << "D";
+    class_<MultipatchLagrangeControlMesh<TDim>, typename MultipatchLagrangeControlMesh<TDim>::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
+    (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
+    .def("SetBaseElementName", &MultipatchLagrangeControlMesh<TDim>::SetBaseElementName)
+    .def("SetLastNodeId", &MultipatchLagrangeControlMesh<TDim>::SetLastNodeId)
+    .def("SetLastElemId", &MultipatchLagrangeControlMesh<TDim>::SetLastElemId)
+    .def("WriteModelPart", &MultipatchLagrangeControlMesh<TDim>::WriteModelPart)
     .def(self_ns::str(self))
     ;
 }

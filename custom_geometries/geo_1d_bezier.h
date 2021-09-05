@@ -1,39 +1,5 @@
 /*
- ==============================================================================
- Kratos
- A General Purpose Software for Multi-Physics Finite Element Analysis
- Version 1.0 (Released on march 05, 2007).
-
- Copyright 2007
- Pooyan Dadvand, Riccardo Rossi
- pooyan@cimne.upc.edu
- rrossi@cimne.upc.edu
- CIMNE (International Center for Numerical Methods in Engineering),
- Gran Capita' s/n, 08034 Barcelona, Spain
-
- Permission is hereby granted, free  of charge, to any person obtaining
- a  copy  of this  software  and  associated  documentation files  (the
- "Software"), to  deal in  the Software without  restriction, including
- without limitation  the rights to  use, copy, modify,  merge, publish,
- distribute,  sublicense and/or  sell copies  of the  Software,  and to
- permit persons to whom the Software  is furnished to do so, subject to
- the following condition:
-
- Distribution of this code for  any  commercial purpose  is permissible
- ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
- The  above  copyright  notice  and  this permission  notice  shall  be
- included in all copies or substantial portions of the Software.
-
- THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
- EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
- CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
- TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
- ==============================================================================
+see isogeometric_application/LICENSE.txt
  */
 
 //
@@ -326,7 +292,7 @@ public:
      * Operations
      */
 
-    virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const final
     {
         Geo1dBezier::Pointer pNewGeom = Geo1dBezier::Pointer( new Geo1dBezier( ThisPoints ) );
         ValuesContainerType DummyKnots;
@@ -366,17 +332,17 @@ public:
      * Informations
      */
 
-    virtual inline SizeType Dimension() const
+    inline SizeType Dimension() const
     {
         return 1;
     }
 
-    virtual inline SizeType WorkingSpaceDimension() const
+    inline SizeType WorkingSpaceDimension() const
     {
         return 3;
     }
 
-    virtual inline SizeType LocalSpaceDimension() const
+    inline SizeType LocalSpaceDimension() const
     {
         return 1;
     }
@@ -385,7 +351,7 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryType GetGeometryType() const override
+    GeometryData::KratosGeometryType GetGeometryType() const final
     {
         #ifdef SD_APP_FORWARD_COMPATIBILITY
         return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::Kratos_Bezier1D);
@@ -407,9 +373,10 @@ public:
      * @see Volume()
      * @see DomainSize()
      */
-    virtual double Length() const
+    double Length() const final
     {
         //TODO: reimplement to account for nurbs curve
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "not yet implemented")
         return 0.0;
     }
 
@@ -424,13 +391,13 @@ public:
      * @see Volume()
      * @see DomainSize()
      */
-    virtual double Area() const
+    double Area() const final
     {
         // Area is not relevant for 1d geometry
         return 0.0;
     }
 
-    virtual double Volume() const
+    double Volume() const final
     {
         // Volume is not relevant for 1d geometry
         return 0.0;
@@ -447,7 +414,7 @@ public:
      * @see Area()
      * @see Volume()
      */
-    virtual double DomainSize() const
+    double DomainSize() const final
     {
         return Length();
     }
@@ -455,7 +422,7 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    virtual bool IsInside( const CoordinatesArrayType& rPoint )
+    bool IsInside( const CoordinatesArrayType& rPoint ) const final
     {
         if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
             return true;
@@ -481,8 +448,8 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    virtual JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod ) const
+    JacobiansType& Jacobian( JacobiansType& rResult,
+            IntegrationMethod ThisMethod ) const final
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
@@ -535,9 +502,9 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    virtual JacobiansType& Jacobian( JacobiansType& rResult,
+    JacobiansType& Jacobian( JacobiansType& rResult,
             IntegrationMethod ThisMethod,
-            MatrixType & DeltaPosition ) const
+            MatrixType & DeltaPosition ) const final
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
@@ -588,9 +555,9 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    virtual MatrixType& Jacobian( MatrixType& rResult,
+    MatrixType& Jacobian( MatrixType& rResult,
             IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const
+            IntegrationMethod ThisMethod ) const final
     {
         //setting up size of jacobian matrix
         rResult.resize( 3, 1 );
@@ -636,7 +603,7 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    virtual MatrixType& Jacobian( MatrixType& rResult, const CoordinatesArrayType& rPoint ) const
+    MatrixType& Jacobian( MatrixType& rResult, const CoordinatesArrayType& rPoint ) const final
     {
         //setting up size of jacobian matrix
         rResult.resize( 3, 1 );
@@ -677,8 +644,8 @@ public:
      * @see Jacobian
      * @see InverseOfJacobian
      */
-    virtual VectorType& DeterminantOfJacobian( VectorType& rResult,
-            IntegrationMethod ThisMethod ) const
+    VectorType& DeterminantOfJacobian( VectorType& rResult,
+            IntegrationMethod ThisMethod ) const final
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return rResult;
@@ -703,8 +670,8 @@ public:
      * @see Jacobian
      * @see InverseOfJacobian
      */
-    virtual double DeterminantOfJacobian( IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const
+    double DeterminantOfJacobian( IndexType IntegrationPointIndex,
+            IntegrationMethod ThisMethod ) const final
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return 0.0;
@@ -726,7 +693,7 @@ public:
      * KLUDGE: PointType needed for proper functionality
      * KLUDGE: works only with explicitly generated MatrixType object
      */
-    virtual double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const
+    double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const final
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return 0.0;
@@ -748,8 +715,8 @@ public:
      *
      * KLUDGE: works only with explicitly generated MatrixType object
      */
-    virtual JacobiansType& InverseOfJacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod ) const
+    JacobiansType& InverseOfJacobian( JacobiansType& rResult,
+            IntegrationMethod ThisMethod ) const final
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return rResult;
@@ -776,9 +743,9 @@ public:
      *
      * KLUDGE: works only with explicitly generated MatrixType object
      */
-    virtual MatrixType& InverseOfJacobian( MatrixType& rResult,
+    MatrixType& InverseOfJacobian( MatrixType& rResult,
             IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const
+            IntegrationMethod ThisMethod ) const final
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return rResult;
@@ -797,7 +764,7 @@ public:
      *
      * KLUDGE: works only with explicitly generated MatrixType object
      */
-    virtual MatrixType& InverseOfJacobian( MatrixType& rResult, const CoordinatesArrayType& rPoint ) const
+    MatrixType& InverseOfJacobian( MatrixType& rResult, const CoordinatesArrayType& rPoint ) const final
     {
         KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
         return rResult;
@@ -816,8 +783,8 @@ public:
      *
      * @return the value of the shape function at the given point
      */
-    virtual double ShapeFunctionValue( IndexType ShapeFunctionIndex,
-            const CoordinatesArrayType& rPoint ) const
+    double ShapeFunctionValue( IndexType ShapeFunctionIndex,
+            const CoordinatesArrayType& rPoint ) const final
     {
         //compute all Bezier shape functions & derivatives at rPoint
         VectorType bezier_functions_values(mNumber);
@@ -842,8 +809,8 @@ public:
      * @param rPoint the given point in local coordinates at which the
      * value of the shape function is calculated
      */
-    virtual VectorType& ShapeFunctionsValues( VectorType& rResults,
-            const CoordinatesArrayType& rPoint ) const
+    VectorType& ShapeFunctionsValues( VectorType& rResults,
+            const CoordinatesArrayType& rPoint ) const final
     {
         //compute all Bezier shape functions & derivatives at rPoint
         VectorType bezier_functions_values(mNumber);
@@ -866,8 +833,8 @@ public:
     /**
      * Calculates the local gradients at a given point
      */
-    virtual MatrixType& ShapeFunctionsLocalGradients( MatrixType& rResult,
-            const CoordinatesArrayType& rPoint ) const
+    MatrixType& ShapeFunctionsLocalGradients( MatrixType& rResult,
+            const CoordinatesArrayType& rPoint ) const final
     {
         //compute all Bezier shape functions & derivatives at rPoint
         VectorType bezier_functions_values(mNumber);
@@ -943,9 +910,7 @@ public:
      * KLUDGE: method call only works with explicit JacobiansType rather than creating
      * JacobiansType within argument list
      */
-    virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(
-            ShapeFunctionsGradientsType& rResult,
-            IntegrationMethod ThisMethod ) const
+    ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod ) const final
     {
         KRATOS_THROW_ERROR( std::logic_error, "This method is not implemented." , __FUNCTION__);
 
@@ -955,7 +920,7 @@ public:
     /**
      * Compute shape function second derivatives at a particular reference point.
      */
-    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const
+    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const final
     {
         #ifdef DEBUG_LEVEL3
         std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;
@@ -998,7 +963,7 @@ public:
     /**
      * Compute shape function third derivatives at a particular reference point.
      */
-    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const
+    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const final
     {
         //compute all univariate Bezier shape functions & derivatives at rPoint
         VectorType bezier_functions_values(mNumber);
@@ -1047,7 +1012,7 @@ public:
     /**
      * Compute the Bezier control points
      */
-    virtual void ExtractControlPoints(PointsArrayType& rPoints)
+    void ExtractControlPoints(PointsArrayType& rPoints) final
     {
         std::size_t number_of_points = this->PointsNumber();
         std::size_t number_of_local_points = mNumber;
@@ -1074,7 +1039,7 @@ public:
     /**
      * Sampling the points on NURBS/Bezier geometry
      */
-    virtual void ExtractPoints(PointsArrayType& rPoints, const std::vector<int>& sampling_size)
+    void ExtractPoints(PointsArrayType& rPoints, const std::vector<int>& sampling_size) final
     {
         CoordinatesArrayType p_ref;
         CoordinatesArrayType p;
@@ -1097,80 +1062,33 @@ public:
     /**
      * Extract the control values from NURBS/Bezier geometry
      */
-    virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues)
+    void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues) const final
     {
-        this->ExtractControlValues<double>(rVariable, rValues);
+        this->template ExtractControlValues_<double>(rVariable, rValues);
     }
 
     /**
      * Extract the control values from NURBS/Bezier geometry
      */
-    virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues)
+    void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues) const final
     {
-        this->ExtractControlValues<array_1d<double, 3> >(rVariable, rValues);
-    }
-
-    template<typename TDataType>
-    void ExtractControlValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues)
-    {
-        std::size_t number_of_points = this->PointsNumber();
-        std::size_t number_of_local_points = mNumber;
-        if (rValues.size() != number_of_local_points)
-            rValues.resize(number_of_local_points);
-
-        // compute the Bezier weight
-        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
-
-        // compute the Bezier control points
-        for(std::size_t i = 0; i < number_of_local_points; ++i)
-        {
-            rValues[i] = TDataType(0.0);
-            for(std::size_t j = 0; j < number_of_points; ++j)
-                rValues[i] += mExtractionOperator(j, i) * this->GetPoint(j).GetSolutionStepValue(rVariable) * mCtrlWeights[j] / bezier_weights[i];
-        }
+        this->template ExtractControlValues_<array_1d<double, 3> >(rVariable, rValues);
     }
 
     /**
      * Sampling the values on NURBS/Bezier geometry
      */
-    virtual void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size)
+    void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size) const final
     {
-        this->ExtractValues<double>(rVariable, rValues, sampling_size);
+        this->template ExtractValues_<double>(rVariable, rValues, sampling_size);
     }
 
     /**
      * Sampling the values on NURBS/Bezier geometry
      */
-    virtual void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size)
+    void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size) const final
     {
-        this->ExtractValues<array_1d<double, 3> >(rVariable, rValues, sampling_size);
-    }
-
-    template<typename TDataType>
-    void ExtractValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues, const std::vector<int>& sampling_size)
-    {
-        Vector shape_functions_values;
-
-        CoordinatesArrayType p_ref;
-        CoordinatesArrayType p;
-
-        p_ref[1] = 0.0;
-        p_ref[2] = 0.0;
-        typedef typename PointType::Pointer PointPointerType;
-        for(int i = 0; i <= sampling_size[0]; ++i)
-        {
-            p_ref[0] = ((double) i) / sampling_size[0];
-
-            ShapeFunctionsValues(shape_functions_values, p_ref);
-
-            TDataType rResult = shape_functions_values( 0 ) * this->GetPoint( 0 ).GetSolutionStepValue(rVariable);
-            for ( IndexType i = 1 ; i < this->size() ; ++i )
-            {
-                rResult += shape_functions_values( i ) * this->GetPoint( i ).GetSolutionStepValue(rVariable);
-            }
-
-            rValues.push_back(rResult);
-        }
+        this->template ExtractValues_<array_1d<double, 3> >(rVariable, rValues, sampling_size);
     }
 
     /**
@@ -1183,7 +1101,7 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    virtual std::string Info() const
+    std::string Info() const final
     {
         return "1 dimensional Bezier extraction from NURBS curve in 3D space";
     }
@@ -1195,7 +1113,7 @@ public:
      * @see PrintData()
      * @see Info()
      */
-    virtual void PrintInfo( std::ostream& rOStream ) const
+    void PrintInfo( std::ostream& rOStream ) const final
     {
         rOStream << Info();
     }
@@ -1209,7 +1127,7 @@ public:
      * @see PrintInfo()
      * @see Info()
      */
-    virtual void PrintData( std::ostream& rOStream ) const
+    void PrintData( std::ostream& rOStream ) const final
     {
         BaseType::PrintData( rOStream );
         std::cout << std::endl;
@@ -1218,7 +1136,7 @@ public:
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
-    virtual void AssignGeometryData
+    void AssignGeometryData
     (
         const ValuesContainerType& Knots1,
         const ValuesContainerType& Knots2,
@@ -1229,7 +1147,7 @@ public:
         const int& Degree2,
         const int& Degree3,
         const int& NumberOfIntegrationMethod
-    )
+    ) final
     {
         mCtrlWeights = Weights;
         mOrder = Degree1;
@@ -1256,12 +1174,6 @@ public:
         #endif
     }
 
-protected:
-
-    /**
-     * there are no protected class members
-     */
-
 private:
 
     /**
@@ -1284,12 +1196,12 @@ private:
 
     friend class Serializer;
 
-    virtual void save( Serializer& rSerializer ) const
+    void save( Serializer& rSerializer ) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
     }
 
-    virtual void load( Serializer& rSerializer )
+    void load( Serializer& rSerializer ) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
     }
@@ -1357,15 +1269,12 @@ private:
         return DN_De;
     }
 
-    /**
-     * TODO
-     */
-    virtual void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients
+    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients
     (
         MatrixType& shape_functions_values,
         ShapeFunctionsGradientsType& shape_functions_local_gradients,
         const IntegrationPointsArrayType& integration_points
-    ) const
+    ) const final
     {
         if(shape_functions_local_gradients.size() != integration_points.size())
             shape_functions_local_gradients.resize(integration_points.size());
@@ -1388,12 +1297,12 @@ private:
         }
     }
 
-    virtual void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients
+    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients
     (
         MatrixType& shape_functions_values,
         ShapeFunctionsGradientsType& shape_functions_local_gradients,
         IntegrationMethod ThisMethod
-    ) const
+    ) const final
     {
         const IntegrationPointsArrayType& integration_points = BaseType::IntegrationPoints(ThisMethod);
         CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(shape_functions_values, shape_functions_local_gradients, integration_points);
@@ -1403,10 +1312,52 @@ private:
     // end of method to build to GeometryData
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    template<typename TDataType>
+    void ExtractValues_(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues, const std::vector<int>& sampling_size) const
+    {
+        Vector shape_functions_values;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // end of method to construct GeometryData
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        CoordinatesArrayType p_ref;
+        CoordinatesArrayType p;
+
+        p_ref[1] = 0.0;
+        p_ref[2] = 0.0;
+        typedef typename PointType::Pointer PointPointerType;
+        for(int i = 0; i <= sampling_size[0]; ++i)
+        {
+            p_ref[0] = ((double) i) / sampling_size[0];
+
+            ShapeFunctionsValues(shape_functions_values, p_ref);
+
+            TDataType rResult = shape_functions_values( 0 ) * this->GetPoint( 0 ).GetSolutionStepValue(rVariable);
+            for ( IndexType i = 1 ; i < this->size() ; ++i )
+            {
+                rResult += shape_functions_values( i ) * this->GetPoint( i ).GetSolutionStepValue(rVariable);
+            }
+
+            rValues.push_back(rResult);
+        }
+    }
+
+    template<typename TDataType>
+    void ExtractControlValues_(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues) const
+    {
+        std::size_t number_of_points = this->PointsNumber();
+        std::size_t number_of_local_points = mNumber;
+        if (rValues.size() != number_of_local_points)
+            rValues.resize(number_of_local_points);
+
+        // compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+
+        // compute the Bezier control points
+        for(std::size_t i = 0; i < number_of_local_points; ++i)
+        {
+            rValues[i] = TDataType(0.0);
+            for(std::size_t j = 0; j < number_of_points; ++j)
+                rValues[i] += mExtractionOperator(j, i) * this->GetPoint(j).GetSolutionStepValue(rVariable) * mCtrlWeights[j] / bezier_weights[i];
+        }
+    }
 
     /**
      * Private Friends

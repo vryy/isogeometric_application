@@ -272,7 +272,7 @@ public:
      * Operations
      */
 
-    virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
         Geo2dBezier3::Pointer pNewGeom = Geo2dBezier3::Pointer( new Geo2dBezier3( ThisPoints ) );
         ValuesContainerType DummyKnots;
@@ -308,7 +308,7 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryType GetGeometryType() const override
+    GeometryData::KratosGeometryType GetGeometryType() const override
     {
         #ifdef SD_APP_FORWARD_COMPATIBILITY
         return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::Kratos_Bezier2D3);
@@ -348,7 +348,7 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    virtual JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod ) const
+    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod ) const final
     {
         MatrixType shape_functions_values;
         ShapeFunctionsGradientsType shape_functions_local_gradients;
@@ -405,7 +405,7 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    virtual JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, Matrix& DeltaPosition ) const
+    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, Matrix& DeltaPosition ) const final
     {
         MatrixType shape_functions_values;
         ShapeFunctionsGradientsType shape_functions_local_gradients;
@@ -451,8 +451,7 @@ public:
     /**
      * Determinants of Jacobian for given  method.
      */
-    virtual VectorType& DeterminantOfJacobian( VectorType& rResults,
-            IntegrationMethod ThisMethod ) const
+    VectorType& DeterminantOfJacobian( VectorType& rResults, IntegrationMethod ThisMethod ) const final
     {
         JacobiansType J;
         J = Jacobian( J, ThisMethod );
@@ -472,7 +471,7 @@ public:
         return rResults;
     }
 
-    virtual JacobiansType& Jacobian0( JacobiansType& rResult, IntegrationMethod ThisMethod ) const
+    JacobiansType& Jacobian0( JacobiansType& rResult, IntegrationMethod ThisMethod ) const final
     {
         MatrixType shape_functions_values;
         ShapeFunctionsGradientsType shape_functions_local_gradients;
@@ -525,7 +524,7 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "2 dimensional Bezier decomposition surface in 3D space";
     }
@@ -537,7 +536,7 @@ public:
      * @see PrintData()
      * @see Info()
      */
-    virtual void PrintInfo( std::ostream& rOStream ) const
+    void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << "Geo2dBezier3";
     }
@@ -551,7 +550,7 @@ public:
      * @see PrintInfo()
      * @see Info()
      */
-    virtual void PrintData( std::ostream& rOStream ) const
+    void PrintData( std::ostream& rOStream ) const override
     {
         BaseType::PrintData( rOStream );
     }
@@ -560,7 +559,7 @@ public:
      * TO BE CALLED BY ELEMENT
      * TODO: optimized this by integrating pre-computed values at Gauss points
      */
-    virtual void AssignGeometryData(
+    void AssignGeometryData(
         const ValuesContainerType& Knots1, //not used
         const ValuesContainerType& Knots2, //not used
         const ValuesContainerType& Knots3, //not used
@@ -570,7 +569,7 @@ public:
         const int& Degree2,
         const int& Degree3, //not used
         const int& NumberOfIntegrationMethod
-    )
+    ) final
     {
         BaseType::mCtrlWeights = Weights;
         BaseType::mOrder1 = Degree1;
@@ -623,12 +622,12 @@ private:
 
     friend class Serializer;
 
-    virtual void save( Serializer& rSerializer ) const
+    void save( Serializer& rSerializer ) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
     }
 
-    virtual void load( Serializer& rSerializer )
+    void load( Serializer& rSerializer ) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
     }

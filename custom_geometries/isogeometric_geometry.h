@@ -379,7 +379,7 @@ public:
     ///@name Operations
     ///@{
 
-    virtual GeometryData::KratosGeometryFamily GetGeometryFamily() const override
+    GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
         #ifdef SD_APP_FORWARD_COMPATIBILITY
         return static_cast<GeometryData::KratosGeometryFamily>(IsogeometricGeometryData::Kratos_NURBS);
@@ -388,12 +388,12 @@ public:
         #endif
     }
 
-    virtual GeometryData::KratosGeometryType GetGeometryType() const override
+    GeometryData::KratosGeometryType GetGeometryType() const override
     {
         return GeometryData::Kratos_generic_type;
     }
 
-    virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
         return typename GeometryType::Pointer( new IsogeometricGeometryType( ThisPoints ) );
     }
@@ -496,7 +496,7 @@ public:
     /**
      * lumping factors for the calculation of the lumped mass matrix
      */
-    virtual VectorType& LumpingFactors( VectorType& rResult ) const
+    VectorType& LumpingFactors( VectorType& rResult ) const override
     {
         if (rResult.size() != this->PointsNumber() )
             rResult.resize( this->PointsNumber(), false );
@@ -564,7 +564,7 @@ public:
     /**
      * Compute the global coordinates in reference configuration
      */
-    virtual CoordinatesArrayType& GlobalCoordinates0( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates )
+    CoordinatesArrayType& GlobalCoordinates0( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates ) const
     {
         noalias( rResult ) = ZeroVector( 3 );
 
@@ -599,7 +599,7 @@ public:
     /**
      * Extract the control values from NURBS/Bezier geometry
      */
-    virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues)
+    virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues) const
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
     }
@@ -607,7 +607,7 @@ public:
     /**
      * Sampling the values on NURBS/Bezier geometry
      */
-    virtual void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size)
+    virtual void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size) const
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
     }
@@ -615,7 +615,7 @@ public:
     /**
      * Extract the control values from NURBS/Bezier geometry
      */
-    virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues)
+    virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues) const
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
     }
@@ -623,7 +623,7 @@ public:
     /**
      * Sampling the values on NURBS/Bezier geometry
      */
-    virtual void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size)
+    virtual void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size) const
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
     }
@@ -631,7 +631,7 @@ public:
     /******************************************************
         OVERRIDE FROM GEOMETRY
     *******************************************************/
-    virtual void Initialize(IntegrationMethod ThisMethod)
+    void Initialize(IntegrationMethod ThisMethod) final
     {
         #ifndef ENABLE_PRECOMPUTE
         if(!mIsInitialized)
@@ -644,7 +644,7 @@ public:
         #endif
     }
 
-    virtual void Initialize(const IntegrationPointsArrayType& integration_points)
+    void Initialize(const IntegrationPointsArrayType& integration_points) final
     {
         #ifndef ENABLE_PRECOMPUTE
         if(!mIsInitialized)
@@ -659,7 +659,7 @@ public:
         #endif
     }
 
-    virtual void Clean()
+    void Clean() final
     {
         #ifndef ENABLE_PRECOMPUTE
         if (mIsInitialized)
@@ -672,34 +672,34 @@ public:
     }
 
     #ifndef ENABLE_PRECOMPUTE
-    virtual const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const
+    const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const final
     {
         return *mpInternal_Ncontainer;
     }
 
-    virtual const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const
+    const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const final
     {
         return *mpInternal_DN_De;
     }
     #else
-    virtual const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const
+    const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const final
     {
         return GeometryType::ShapeFunctionsValues( ThisMethod );
     }
 
-    virtual const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const
+    const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const final
     {
         return GeometryType::ShapeFunctionsLocalGradients( ThisMethod );
     }
     #endif
 
-    virtual Vector& ShapeFunctionsValues( Vector& rResults, const CoordinatesArrayType& rCoordinates ) const
+    Vector& ShapeFunctionsValues( Vector& rResults, const CoordinatesArrayType& rCoordinates ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class ShapeFunctionsValues method instead of derived class one. Please check the definition of derived class.", *this );
         return rResults;
     }
 
-    virtual Matrix& ShapeFunctionsLocalGradients( Matrix& rResults, const CoordinatesArrayType& rCoordinates ) const
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResults, const CoordinatesArrayType& rCoordinates ) const override
     {
         KRATOS_THROW_ERROR( std::logic_error, "Calling base class ShapeFunctionsLocalGradients method instead of derived class one. Please check the definition of derived class.", *this );
         return rResults;
@@ -720,7 +720,7 @@ public:
     @see PrintData()
     @see PrintInfo()
     */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         std::stringstream buffer;
         buffer << GeometryType::Dimension()
@@ -736,7 +736,7 @@ public:
     @see PrintData()
     @see Info()
     */
-    virtual void PrintInfo( std::ostream& rOStream ) const
+    void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << GeometryType::Dimension()
                  << " dimensional isogeometric geometry in "
@@ -752,7 +752,7 @@ public:
     @see PrintInfo()
     @see Info()
     */
-    virtual void PrintData( std::ostream& rOStream ) const
+    void PrintData( std::ostream& rOStream ) const override
     {
         GeometryType::PrintData(rOStream);
     }
@@ -831,13 +831,13 @@ private:
 
     friend class Serializer;
 
-    virtual void save( Serializer& rSerializer ) const
+    void save( Serializer& rSerializer ) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, GeometryType );
 //        rSerializer.save( "IsogeometricGeometry Data", mpGeometryData );
     }
 
-    virtual void load( Serializer& rSerializer )
+    void load( Serializer& rSerializer ) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, GeometryType );
 //        rSerializer.load( "IsogeometricGeometry Data", const_cast<GeometryData*>( mpGeometryData ) );

@@ -314,7 +314,7 @@ public:
      * Operations
      */
 
-    virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
         Geo2dBezier::Pointer pNewGeom = Geo2dBezier::Pointer( new Geo2dBezier( ThisPoints ) );
         ValuesContainerType DummyKnots;
@@ -350,7 +350,7 @@ public:
      * Informations
      */
 
-    virtual GeometryData::KratosGeometryType GetGeometryType() const override
+    GeometryData::KratosGeometryType GetGeometryType() const override
     {
         #ifdef SD_APP_FORWARD_COMPATIBILITY
         return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::Kratos_Bezier2D);
@@ -359,11 +359,11 @@ public:
         #endif
     }
 
-    virtual void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
+    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
         MatrixType& shape_functions_values,
         ShapeFunctionsGradientsType& shape_functions_local_gradients,
         IntegrationMethod ThisMethod
-    ) const
+    ) const final
     {
         #ifdef DEBUG_LEVEL3
         std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;
@@ -446,8 +446,7 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    virtual JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod ) const
+    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod ) const override
     {
         MatrixType shape_functions_values;
         ShapeFunctionsGradientsType shape_functions_local_gradients;
@@ -502,8 +501,7 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    virtual JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod, Matrix& DeltaPosition ) const
+    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, Matrix& DeltaPosition ) const override
     {
         MatrixType shape_functions_values;
         ShapeFunctionsGradientsType shape_functions_local_gradients;
@@ -589,7 +587,7 @@ public:
 //        return rResults;
 //    }
 
-    virtual JacobiansType& Jacobian0( JacobiansType& rResult, IntegrationMethod ThisMethod ) const
+    JacobiansType& Jacobian0( JacobiansType& rResult, IntegrationMethod ThisMethod ) const override
     {
         MatrixType shape_functions_values;
         ShapeFunctionsGradientsType shape_functions_local_gradients;
@@ -637,7 +635,7 @@ public:
     /**
      * Compute shape function values at a particular reference point. This function is kept to keep the backward compatibility. The function ShapeFunctionsValuesAndLocalGradients is more general and direct to use.
      */
-    virtual Vector& ShapeFunctionsValues( Vector& rResults, const CoordinatesArrayType& rCoordinates ) const
+    Vector& ShapeFunctionsValues( Vector& rResults, const CoordinatesArrayType& rCoordinates ) const final
     {
         //compute all univariate Bezier shape functions & derivatives at rPoint
         VectorType bezier_functions_values1(mNumber1);
@@ -677,7 +675,7 @@ public:
     /**
      * Compute shape function local gradients at a particular reference point. This function is kept to keep the backward compatibility. The function ShapeFunctionsValuesAndLocalGradients is more general and direct to use.
      */
-    virtual Matrix& ShapeFunctionsLocalGradients( Matrix& rResults, const CoordinatesArrayType& rCoordinates ) const
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResults, const CoordinatesArrayType& rCoordinates ) const final
     {
         #ifdef DEBUG_LEVEL3
         std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;
@@ -754,7 +752,7 @@ public:
     /**
      * Compute shape function second derivatives at a particular reference point.
      */
-    virtual ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const
+    ShapeFunctionsSecondDerivativesType& ShapeFunctionsSecondDerivatives( ShapeFunctionsSecondDerivativesType& rResults, const CoordinatesArrayType& rCoordinates ) const final
     {
         #ifdef DEBUG_LEVEL3
         std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;
@@ -878,7 +876,7 @@ public:
     /**
      * Compute shape function third derivatives at a particular reference point.
      */
-    virtual ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResults, const CoordinatesArrayType& rPoint ) const
+    ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResults, const CoordinatesArrayType& rPoint ) const final
     {
         // TODO
         rResults.resize(this->PointsNumber(), false);
@@ -899,7 +897,7 @@ public:
     /**
      * Compute the Bezier control points
      */
-    virtual void ExtractControlPoints(PointsArrayType& rPoints)
+    void ExtractControlPoints(PointsArrayType& rPoints) final
     {
         std::size_t number_of_points = this->PointsNumber();
         std::size_t number_of_local_points = mNumber1*mNumber2;
@@ -926,7 +924,7 @@ public:
     /**
      * Sampling the points on NURBS/Bezier geometry
      */
-    virtual void ExtractPoints(PointsArrayType& rPoints, const std::vector<int>& sampling_size)
+    void ExtractPoints(PointsArrayType& rPoints, const std::vector<int>& sampling_size) final
     {
         CoordinatesArrayType p_ref;
         CoordinatesArrayType p;
@@ -954,87 +952,36 @@ public:
     /**
      * Extract the control values from NURBS/Bezier geometry
      */
-    virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues)
+    void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues) const final
     {
-        this->ExtractControlValues<double>(rVariable, rValues);
+        this->template ExtractControlValues_<double>(rVariable, rValues);
     }
 
     /**
      * Extract the control values from NURBS/Bezier geometry
      */
-    virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues)
+    void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues) const final
     {
-        this->ExtractControlValues<array_1d<double, 3> >(rVariable, rValues);
-    }
-
-    template<typename TDataType>
-    void ExtractControlValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues)
-    {
-        std::size_t number_of_points = this->PointsNumber();
-        std::size_t number_of_local_points = mNumber1*mNumber2;
-        if (rValues.size() != number_of_local_points)
-            rValues.resize(number_of_local_points);
-
-        // compute the Bezier weight
-        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
-
-        // compute the Bezier control points
-        for(std::size_t i = 0; i < number_of_local_points; ++i)
-        {
-            rValues[i] = TDataType(0.0);
-            for(std::size_t j = 0; j < number_of_points; ++j)
-                rValues[i] += mExtractionOperator(j, i) * this->GetPoint(j).GetSolutionStepValue(rVariable) * mCtrlWeights[j] / bezier_weights[i];
-        }
+        this->template ExtractControlValues_<array_1d<double, 3> >(rVariable, rValues);
     }
 
     /**
      * Sampling the values on NURBS/Bezier geometry
      */
-    virtual void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size)
+    void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size) const final
     {
-        this->ExtractValues<double>(rVariable, rValues, sampling_size);
+        this->template ExtractValues_<double>(rVariable, rValues, sampling_size);
     }
 
     /**
      * Sampling the values on NURBS/Bezier geometry
      */
-    virtual void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size)
+    void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size) const final
     {
-        this->ExtractValues<array_1d<double, 3> >(rVariable, rValues, sampling_size);
+        this->template ExtractValues_<array_1d<double, 3> >(rVariable, rValues, sampling_size);
     }
 
-    template<typename TDataType>
-    void ExtractValues(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues, const std::vector<int>& sampling_size)
-    {
-        Vector shape_functions_values;
-
-        CoordinatesArrayType p_ref;
-        CoordinatesArrayType p;
-
-        p_ref[2] = 0.0;
-        typedef typename PointType::Pointer PointPointerType;
-        for(int i = 0; i <= sampling_size[0]; ++i)
-        {
-            p_ref[0] = this->MapGlobalToLocal(0, ((double) i) / sampling_size[0]);
-
-            for(int j = 0; j <= sampling_size[1]; ++j)
-            {
-                p_ref[1] = this->MapGlobalToLocal(1, ((double) j) / sampling_size[1]);
-
-                ShapeFunctionsValues(shape_functions_values, p_ref);
-
-                TDataType rResult = shape_functions_values( 0 ) * this->GetPoint( 0 ).GetSolutionStepValue(rVariable);
-                for ( IndexType i = 1 ; i < this->size() ; ++i )
-                {
-                    rResult += shape_functions_values( i ) * this->GetPoint( i ).GetSolutionStepValue(rVariable);
-                }
-
-                rValues.push_back(rResult);
-            }
-        }
-    }
-
-    virtual bool IsInside( const CoordinatesArrayType& rPoint )
+    bool IsInside( const CoordinatesArrayType& rPoint ) const final
     {
         double tol = 1.0e-6;
         if ( (rPoint[0] > -tol) && (rPoint[0] < 1.0 + tol) )
@@ -1054,7 +1001,7 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "2 dimensional Bezier decomposition surface in 2D space";
     }
@@ -1066,7 +1013,7 @@ public:
      * @see PrintData()
      * @see Info()
      */
-    virtual void PrintInfo( std::ostream& rOStream ) const
+    void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << "Geo2dBezier";
     }
@@ -1080,7 +1027,7 @@ public:
      * @see PrintInfo()
      * @see Info()
      */
-    virtual void PrintData( std::ostream& rOStream ) const
+    void PrintData( std::ostream& rOStream ) const override
     {
         BaseType::PrintData( rOStream );
         rOStream << std::endl;
@@ -1094,7 +1041,7 @@ public:
      * TO BE CALLED BY ELEMENT
      * TODO: optimized this by integrating pre-computed values at Gauss points
      */
-    virtual void AssignGeometryData(
+    void AssignGeometryData(
         const ValuesContainerType& Knots1, //not used
         const ValuesContainerType& Knots2, //not used
         const ValuesContainerType& Knots3, //not used
@@ -1104,7 +1051,7 @@ public:
         const int& Degree2,
         const int& Degree3, //not used
         const int& NumberOfIntegrationMethod
-    )
+    ) override
     {
         mCtrlWeights = Weights;
         mOrder1 = Degree1;
@@ -1165,12 +1112,12 @@ private:
 
     friend class Serializer;
 
-    virtual void save( Serializer& rSerializer ) const
+    void save( Serializer& rSerializer ) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, PointsArrayType );
     }
 
-    virtual void load( Serializer& rSerializer )
+    void load( Serializer& rSerializer ) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, PointsArrayType );
     }
@@ -1182,11 +1129,11 @@ private:
     /**
      * Calculate shape function values and local gradient at a particular point
      */
-    virtual void ShapeFunctionsValuesAndLocalGradients(
+    void ShapeFunctionsValuesAndLocalGradients(
         VectorType& shape_functions_values,
         MatrixType& shape_functions_local_gradients,
         const CoordinatesArrayType& rPoint
-    ) const
+    ) const override
     {
         #ifdef DEBUG_LEVEL3
         std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;
@@ -1256,6 +1203,57 @@ private:
         {
             shape_functions_local_gradients(i, 0) = tmp_gradients1(i) * mCtrlWeights(i);
             shape_functions_local_gradients(i, 1) = tmp_gradients2(i) * mCtrlWeights(i);
+        }
+    }
+
+    template<typename TDataType>
+    void ExtractValues_(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues, const std::vector<int>& sampling_size) const
+    {
+        Vector shape_functions_values;
+
+        CoordinatesArrayType p_ref;
+        CoordinatesArrayType p;
+
+        p_ref[2] = 0.0;
+        typedef typename PointType::Pointer PointPointerType;
+        for(int i = 0; i <= sampling_size[0]; ++i)
+        {
+            p_ref[0] = this->MapGlobalToLocal(0, ((double) i) / sampling_size[0]);
+
+            for(int j = 0; j <= sampling_size[1]; ++j)
+            {
+                p_ref[1] = this->MapGlobalToLocal(1, ((double) j) / sampling_size[1]);
+
+                ShapeFunctionsValues(shape_functions_values, p_ref);
+
+                TDataType rResult = shape_functions_values( 0 ) * this->GetPoint( 0 ).GetSolutionStepValue(rVariable);
+                for ( IndexType i = 1 ; i < this->size() ; ++i )
+                {
+                    rResult += shape_functions_values( i ) * this->GetPoint( i ).GetSolutionStepValue(rVariable);
+                }
+
+                rValues.push_back(rResult);
+            }
+        }
+    }
+
+    template<typename TDataType>
+    void ExtractControlValues_(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues) const
+    {
+        std::size_t number_of_points = this->PointsNumber();
+        std::size_t number_of_local_points = mNumber1*mNumber2;
+        if (rValues.size() != number_of_local_points)
+            rValues.resize(number_of_local_points);
+
+        // compute the Bezier weight
+        VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
+
+        // compute the Bezier control points
+        for(std::size_t i = 0; i < number_of_local_points; ++i)
+        {
+            rValues[i] = TDataType(0.0);
+            for(std::size_t j = 0; j < number_of_points; ++j)
+                rValues[i] += mExtractionOperator(j, i) * this->GetPoint(j).GetSolutionStepValue(rVariable) * mCtrlWeights[j] / bezier_weights[i];
         }
     }
 

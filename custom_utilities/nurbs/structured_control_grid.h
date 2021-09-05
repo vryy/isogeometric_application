@@ -135,6 +135,12 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
+    /// Create a connectivity for the structured control grid
+    virtual void CreateConnectivity(const std::size_t& offset, std::vector<std::vector<std::size_t> >& connectivities) const
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+    }
+
 private:
 
     DataContainerType mData;
@@ -286,6 +292,20 @@ public:
     {
         if (idir == 0)
             std::reverse(BaseType::Data().begin(), BaseType::Data().end());
+    }
+
+    /// Create a connectivity for the structured control grid
+    void CreateConnectivity(const std::size_t& offset, std::vector<std::vector<std::size_t> >& connectivities) const override
+    {
+        connectivities.clear();
+        connectivities.resize(this->Size()-1);
+
+        for (std::size_t i = 0; i < this->Size()-1; ++i)
+        {
+            connectivities[i].resize(2);
+            connectivities[i][0] = i + offset;
+            connectivities[i][1] = i+1 + offset;
+        }
     }
 
     /// Overload assignment operator
@@ -546,6 +566,27 @@ public:
             KRATOS_THROW_ERROR(std::logic_error, "Invalid side", side)
 
         return pControlGrid;
+    }
+
+    /// Create a connectivity for the structured control grid
+    void CreateConnectivity(const std::size_t& offset, std::vector<std::vector<std::size_t> >& connectivities) const override
+    {
+        connectivities.clear();
+        connectivities.resize((this->Size(0)-1) * (this->Size(1)-1));
+
+        std::size_t cnt = 0;
+        for (std::size_t i = 0; i < this->Size(0)-1; ++i)
+        {
+            for (std::size_t j = 0; j < this->Size(1)-1; ++j)
+            {
+                connectivities[cnt].resize(4);
+                connectivities[cnt][0] = i + j*this->Size(0) + offset;
+                connectivities[cnt][1] = i + 1 + j*this->Size(0) + offset;
+                connectivities[cnt][2] = i + 1 + (j+1)*this->Size(0) + offset;
+                connectivities[cnt][3] = i + (j+1)*this->Size(0) + offset;
+                ++cnt;
+            }
+        }
     }
 
     /// Overload assignment operator
@@ -837,6 +878,34 @@ public:
         }
 
         return pControlGrid;
+    }
+
+    /// Create a connectivity for the structured control grid
+    void CreateConnectivity(const std::size_t& offset, std::vector<std::vector<std::size_t> >& connectivities) const override
+    {
+        connectivities.clear();
+        connectivities.resize((this->Size(0)-1) * (this->Size(1)-1) * (this->Size(2)-1));
+
+        std::size_t cnt = 0;
+        for (std::size_t i = 0; i < this->Size(0)-1; ++i)
+        {
+            for (std::size_t j = 0; j < this->Size(1)-1; ++j)
+            {
+                for (std::size_t k = 0; k < this->Size(2)-1; ++k)
+                {
+                    connectivities[cnt].resize(8);
+                    connectivities[cnt][0] = i + j*this->Size(0) + k*this->Size(0)*this->Size(1) + offset;
+                    connectivities[cnt][1] = i + 1 + j*this->Size(0) + k*this->Size(0)*this->Size(1) + offset;
+                    connectivities[cnt][2] = i + 1 + (j+1)*this->Size(0) + k*this->Size(0)*this->Size(1) + offset;
+                    connectivities[cnt][3] = i + (j+1)*this->Size(0) + k*this->Size(0)*this->Size(1) + offset;
+                    connectivities[cnt][4] = connectivities[cnt][0] + this->Size(0)*this->Size(1) + offset;
+                    connectivities[cnt][5] = connectivities[cnt][1] + this->Size(0)*this->Size(1) + offset;
+                    connectivities[cnt][6] = connectivities[cnt][2] + this->Size(0)*this->Size(1) + offset;
+                    connectivities[cnt][7] = connectivities[cnt][3] + this->Size(0)*this->Size(1) + offset;
+                    ++cnt;
+                }
+            }
+        }
     }
 
     /// Overload assignment operator

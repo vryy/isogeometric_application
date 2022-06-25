@@ -493,6 +493,7 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
     }
 
+    #ifndef SD_APP_FORWARD_COMPATIBILITY
     /**
      * lumping factors for the calculation of the lumped mass matrix
      */
@@ -519,6 +520,7 @@ public:
 
         return rResult;
     }
+    #endif
 
     virtual void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
         MatrixType& shape_functions_values,
@@ -636,9 +638,7 @@ public:
         #ifndef ENABLE_PRECOMPUTE
         if(!mIsInitialized)
         {
-            mpInternal_Ncontainer = boost::shared_ptr<Matrix>(new Matrix());
-            mpInternal_DN_De = boost::shared_ptr<ShapeFunctionsGradientsType>(new ShapeFunctionsGradientsType());
-            this->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(*mpInternal_Ncontainer, *mpInternal_DN_De, ThisMethod);
+            this->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(mInternal_Ncontainer, mInternal_DN_De, ThisMethod);
             mIsInitialized = true;
         }
         #endif
@@ -649,9 +649,7 @@ public:
         #ifndef ENABLE_PRECOMPUTE
         if(!mIsInitialized)
         {
-            mpInternal_Ncontainer = boost::shared_ptr<Matrix>(new Matrix());
-            mpInternal_DN_De = boost::shared_ptr<ShapeFunctionsGradientsType>(new ShapeFunctionsGradientsType());
-            this->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(*mpInternal_Ncontainer, *mpInternal_DN_De, integration_points);
+            this->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(mInternal_Ncontainer, mInternal_DN_De, integration_points);
             mIsInitialized = true;
         }
         #else
@@ -664,8 +662,8 @@ public:
         #ifndef ENABLE_PRECOMPUTE
         if (mIsInitialized)
         {
-            mpInternal_DN_De.reset();
-            mpInternal_Ncontainer.reset();
+            mInternal_DN_De.resize(0);
+            mInternal_Ncontainer.resize(0, 0);
             mIsInitialized = false;
         }
         #endif
@@ -674,12 +672,12 @@ public:
     #ifndef ENABLE_PRECOMPUTE
     const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const final
     {
-        return *mpInternal_Ncontainer;
+        return mInternal_Ncontainer;
     }
 
     const ShapeFunctionsGradientsType& ShapeFunctionsLocalGradients( IntegrationMethod ThisMethod ) const final
     {
-        return *mpInternal_DN_De;
+        return mInternal_DN_De;
     }
     #else
     const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const final
@@ -821,8 +819,8 @@ private:
 
     #ifndef ENABLE_PRECOMPUTE
     bool mIsInitialized;
-    boost::shared_ptr<ShapeFunctionsGradientsType> mpInternal_DN_De;
-    boost::shared_ptr<Matrix> mpInternal_Ncontainer;
+    ShapeFunctionsGradientsType mInternal_DN_De;
+    Matrix mInternal_Ncontainer;
     #endif
 
     ///@}

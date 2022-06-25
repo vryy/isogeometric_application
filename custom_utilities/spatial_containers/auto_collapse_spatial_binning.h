@@ -1,5 +1,5 @@
-//   
-//   Project Name:        Kratos       
+//
+//   Project Name:        Kratos
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 18 Sep 2014 $
 //   Revision:            $Revision: 1.0 $
@@ -16,7 +16,7 @@
 #include <iostream>
 #include <map>
 
-// External includes 
+// External includes
 
 // Project includes
 #include "includes/define.h"
@@ -70,7 +70,7 @@ class SpatialKey
 {
     public:
         KRATOS_CLASS_POINTER_DEFINITION(SpatialKey);
-        
+
         SpatialKey(int ix, int iy, int iz) : x(ix), y(iy), z(iz) {}
         ~SpatialKey() {}
         bool operator<(const SpatialKey& rOther) const
@@ -105,11 +105,11 @@ public:
     ///@name Type Definitions
     ///@{
 
-    typedef std::size_t IndexType;    
-    
+    typedef std::size_t IndexType;
+
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(AutoCollapseSpatialBinning);
-    
+
     ///@}
     ///@name Life Cycle
     ///@{
@@ -133,7 +133,7 @@ public:
     ///@}
     ///@name Operations
     ///@{
-    
+
     /**
      * This function add node to the spatial binning and return the id of this node in the bin
      */
@@ -143,7 +143,7 @@ public:
         int ix = (int) floor((X - mX0) / mDx);
         int iy = (int) floor((Y - mY0) / mDy);
         int iz = (int) floor((Z - mZ0) / mDz);
-        
+
         // check if the spatial key exist
         SpatialKey key(ix, iy, iz);
     //    std::cout << "ix = " << ix << ", iy = " << iy << ", iz = " << iz << std::endl;
@@ -165,7 +165,7 @@ public:
                 }
             }
             // node does not exist in cell, insert the node into spatial bin
-            mPointList.push_back(boost::shared_ptr<SpatialPoint>(new SpatialPoint(++mLastNode, X, Y, Z)));
+            mPointList.push_back(SpatialPoint::Pointer(new SpatialPoint(++mLastNode, X, Y, Z)));
             mBin[key].push_back(mLastNode);
     //        std::cout << "node does not exist in cell, insert the node into spatial bin, mLastNode = " << mLastNode << ", mBin[key].size() = " << mBin[key].size() << std::endl;
             return mLastNode;
@@ -173,7 +173,7 @@ public:
         else
         {
             // insert the node into spatial bin
-            mPointList.push_back(boost::shared_ptr<SpatialPoint>(new SpatialPoint(++mLastNode, X, Y, Z)));
+            mPointList.push_back(SpatialPoint::Pointer(new SpatialPoint(++mLastNode, X, Y, Z)));
             mBin[key].push_back(mLastNode);
     //        std::cout << "insert the node into spatial bin, mLastNode = " << mLastNode << ", mBin[key].size() = " << mBin[key].size() << std::endl;
             return mLastNode;
@@ -259,8 +259,8 @@ private:
     double mTol;
 
     std::map<SpatialKey, std::vector<int> > mBin;
-    std::vector<boost::shared_ptr<SpatialPoint> > mPointList;
-    
+    std::vector<SpatialPoint::Pointer> mPointList;
+
     ///@}
     ///@name Member Variables
     ///@{
@@ -272,8 +272,8 @@ private:
     ///@}
     ///@name Private Operations
     ///@{
-    
-    
+
+
     ///@}
     ///@name Private  Access
     ///@{
@@ -281,7 +281,7 @@ private:
     ///@}
     ///@name Private Inquiry
     ///@{
-    
+
     ///@}
     ///@name Un accessible methods
     ///@{

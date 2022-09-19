@@ -1187,6 +1187,9 @@ public:
     ShapeFunctionsThirdDerivativesType& ShapeFunctionsThirdDerivatives( ShapeFunctionsThirdDerivativesType& rResults, const CoordinatesArrayType& rPoint ) const final
     {
         // TODO
+
+        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented")
+
         rResults.resize(this->PointsNumber(), false);
 
         for(IndexType i = 0; i < this->PointsNumber(); ++i)
@@ -1295,7 +1298,7 @@ public:
      */
     bool IsInside( const CoordinatesArrayType& rPoint ) const final
     {
-        double tol = 1.0e-6;
+        const double tol = 1.0e-8;
         if ( (rPoint[0] > -tol) && (rPoint[0] < 1.0 + tol) )
             if ( (rPoint[1] > -tol) && (rPoint[1] < 1.0 + tol) )
                 if ( (rPoint[2] > -tol) && (rPoint[2] < 1.0 + tol) )

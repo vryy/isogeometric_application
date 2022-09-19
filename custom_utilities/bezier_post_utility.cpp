@@ -3,7 +3,9 @@
 #include "custom_utilities/isogeometric_math_utils.h"
 #include "custom_utilities/bezier_post_utility.h"
 
-//#define DEBUG_MULTISOLVE
+// #define DEBUG_MULTISOLVE
+// #define ENABLE_DEBUG
+// #define ENABLE_PROFILING
 
 namespace Kratos
 {
@@ -514,4 +516,16 @@ namespace Kratos
     }
 
 }
+
+#ifdef ENABLE_DEBUG
+#define ENABLE_DEBUG
+#endif
+
+#ifdef DEBUG_MULTISOLVE
+#undef DEBUG_MULTISOLVE
+#endif
+
+#ifdef ENABLE_PROFILING
+#undef ENABLE_PROFILING
+#endif
 

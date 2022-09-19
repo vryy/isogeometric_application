@@ -424,7 +424,8 @@ public:
      */
     bool IsInside( const CoordinatesArrayType& rPoint ) const final
     {
-        if ( fabs( rPoint[0] ) < 1 + 1.0e-8 )
+        const double tol = 1.0e-8;
+        if ( (rPoint[0] > -tol) && (rPoint[0] < 1.0 + tol) )
             return true;
 
         return false;

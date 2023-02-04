@@ -311,9 +311,9 @@ public:
     GeometryData::KratosGeometryType GetGeometryType() const override
     {
         #ifdef SD_APP_FORWARD_COMPATIBILITY
-        return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::Kratos_Bezier2D3);
+        return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::KratosIsogeometricGeometryType::Kratos_Bezier2D3);
         #else
-        return GeometryData::Kratos_Bezier2D3;
+        return GeometryData::KratosGeometryType::Kratos_Bezier2D3;
         #endif
     }
 
@@ -680,7 +680,7 @@ template<class TPointType> inline std::ostream& operator <<(
 //    2,
 //    3,
 //    2,
-//    GeometryData::GI_GAUSS_2,
+//    GeometryData::IntegrationMethod::GI_GAUSS_2,
 //    IntegrationPointsContainerType(),
 //    ShapeFunctionsValuesContainerType(),
 //    ShapeFunctionsLocalGradientsContainerType()

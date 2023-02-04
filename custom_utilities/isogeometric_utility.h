@@ -47,11 +47,11 @@ public:
     static GeometryData::IntegrationMethod GetIntegrationMethod(const int& integration_order)
     {
         if (integration_order == 1)
-            return GeometryData::GI_GAUSS_1;
+            return GeometryData::IntegrationMethod::GI_GAUSS_1;
         else if (integration_order == 2)
-            return GeometryData::GI_GAUSS_2;
+            return GeometryData::IntegrationMethod::GI_GAUSS_2;
         else if (integration_order == 3)
-            return GeometryData::GI_GAUSS_3;
+            return GeometryData::IntegrationMethod::GI_GAUSS_3;
         else
             KRATOS_THROW_ERROR(std::logic_error, "Invalid integration order", integration_order)
     }
@@ -168,7 +168,7 @@ public:
     template<typename TVariableType>
     static std::size_t GetEquationId(ModelPart::NodeType& rNode, const TVariableType& rVariable)
     {
-    	return rNode.GetDof(rVariable).EquationId();
+        return rNode.GetDof(rVariable).EquationId();
     }
 
     /// Information

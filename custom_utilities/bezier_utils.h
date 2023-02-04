@@ -536,7 +536,7 @@ public:
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
                 new GeometryData(
                     &(*pGeometryDimension),
-                    GeometryData::GI_GAUSS_2,           //ThisDefaultMethod
+                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
                     all_integration_points,             //ThisIntegrationPoints
                     shape_functions_values,             //ThisShapeFunctionsValues
                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
@@ -548,7 +548,7 @@ public:
                     TDimension,
                     TWorkingSpaceDimension,
                     TLocalSpaceDimension,
-                    GeometryData::GI_GAUSS_2,           //ThisDefaultMethod
+                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
                     all_integration_points,             //ThisIntegrationPoints
                     shape_functions_values,             //ThisShapeFunctionsValues
                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
@@ -607,7 +607,7 @@ public:
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
                 new GeometryData(
                     &(*pGeometryDimension),
-                    GeometryData::GI_GAUSS_2,           //ThisDefaultMethod
+                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
                     all_integration_points,             //ThisIntegrationPoints
                     shape_functions_values,             //ThisShapeFunctionsValues
                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
@@ -619,7 +619,7 @@ public:
                     TDimension,
                     TWorkingSpaceDimension,
                     TLocalSpaceDimension,
-                    GeometryData::GI_GAUSS_2,           //ThisDefaultMethod
+                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
                     all_integration_points,             //ThisIntegrationPoints
                     shape_functions_values,             //ThisShapeFunctionsValues
                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
@@ -681,7 +681,7 @@ public:
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
                 new GeometryData(
                     &(*pGeometryDimension),
-                    GeometryData::GI_GAUSS_2,           //ThisDefaultMethod
+                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
                     all_integration_points,             //ThisIntegrationPoints
                     shape_functions_values,             //ThisShapeFunctionsValues
                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
@@ -693,7 +693,7 @@ public:
                     TDimension,
                     TWorkingSpaceDimension,
                     TLocalSpaceDimension,
-                    GeometryData::GI_GAUSS_2,           //ThisDefaultMethod
+                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
                     all_integration_points,             //ThisIntegrationPoints
                     shape_functions_values,             //ThisShapeFunctionsValues
                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
@@ -752,13 +752,13 @@ public:
         ShapeFunctionsValuesContainerType shape_functions_values;
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients;
 
-        all_integration_points[ThisIntegrationMethod] = integration_points;
+        all_integration_points[static_cast<int>(ThisIntegrationMethod)] = integration_points;
 
         CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
             Order1,
-            shape_functions_values[ThisIntegrationMethod],
-            shape_functions_local_gradients[ThisIntegrationMethod],
-            all_integration_points[ThisIntegrationMethod]
+            shape_functions_values[static_cast<int>(ThisIntegrationMethod)],
+            shape_functions_local_gradients[static_cast<int>(ThisIntegrationMethod)],
+            all_integration_points[static_cast<int>(ThisIntegrationMethod)]
         );
 
         #ifdef SD_APP_FORWARD_COMPATIBILITY
@@ -807,14 +807,14 @@ public:
         ShapeFunctionsValuesContainerType shape_functions_values;
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients;
 
-        all_integration_points[ThisIntegrationMethod] = integration_points;
+        all_integration_points[static_cast<int>(ThisIntegrationMethod)] = integration_points;
 
         CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
             Order1,
             Order2,
-            shape_functions_values[ThisIntegrationMethod],
-            shape_functions_local_gradients[ThisIntegrationMethod],
-            all_integration_points[ThisIntegrationMethod]
+            shape_functions_values[static_cast<int>(ThisIntegrationMethod)],
+            shape_functions_local_gradients[static_cast<int>(ThisIntegrationMethod)],
+            all_integration_points[static_cast<int>(ThisIntegrationMethod)]
         );
 
         #ifdef SD_APP_FORWARD_COMPATIBILITY
@@ -864,15 +864,15 @@ public:
         ShapeFunctionsValuesContainerType shape_functions_values;
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients;
 
-        all_integration_points[ThisIntegrationMethod] = integration_points;
+        all_integration_points[static_cast<int>(ThisIntegrationMethod)] = integration_points;
 
         CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
             Order1,
             Order2,
             Order3,
-            shape_functions_values[ThisIntegrationMethod],
-            shape_functions_local_gradients[ThisIntegrationMethod],
-            all_integration_points[ThisIntegrationMethod]
+            shape_functions_values[static_cast<int>(ThisIntegrationMethod)],
+            shape_functions_local_gradients[static_cast<int>(ThisIntegrationMethod)],
+            all_integration_points[static_cast<int>(ThisIntegrationMethod)]
         );
 
         #ifdef SD_APP_FORWARD_COMPATIBILITY
@@ -1035,7 +1035,7 @@ public:
         double start_compute = OpenMPUtils::GetCurrentTime();
         #endif
 
-        IntegrationMethod ThisMethod = GeometryData::GI_GAUSS_1;
+        IntegrationMethod ThisMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
 
         ElementsContainerType& pElements = r_model_part.Elements();
 

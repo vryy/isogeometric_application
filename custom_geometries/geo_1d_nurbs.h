@@ -1059,7 +1059,7 @@ public:
                     3,        //ThisDimension
                     3,//ThisWorkingSpaceDimension
                     1,//ThisLocalSpaceDimension
-                    GeometryData::GI_GAUSS_1,//ThisDefaultMethod
+                    GeometryData::IntegrationMethod::GI_GAUSS_1,//ThisDefaultMethod
                     all_integration_points,//ThisIntegrationPoints
                     shape_functions_values,//ThisShapeFunctionsValues
                     shape_functions_local_gradients//ThisShapeFunctionsLocalGradients
@@ -1078,7 +1078,7 @@ public:
 //                        3,
 //                        3,
 //                        1,
-//                        GeometryData::GI_GAUSS_1,
+//                        GeometryData::IntegrationMethod::GI_GAUSS_1,
 //                        integration_points,
 //                        shape_functions_values,
 //                        shape_functions_local_gradients
@@ -1148,8 +1148,8 @@ private:
      */
     Matrix CalculateShapeFunctionsIntegrationPointsValues(IntegrationMethod ThisMethod ) const
     {
-        IntegrationPointsContainerType all_integration_points = AllIntegrationPoints(ThisMethod);
-        const IntegrationPointsArrayType& integration_points = all_integration_points[ThisMethod];
+        IntegrationPointsContainerType all_integration_points = AllIntegrationPoints(static_cast<int>(ThisMethod));
+        const IntegrationPointsArrayType& integration_points = all_integration_points[static_cast<int>(ThisMethod)];
         //number of integration points
         const int integration_points_number = integration_points.size();
         //setting up return matrix
@@ -1184,8 +1184,8 @@ private:
     ShapeFunctionsGradientsType
     CalculateShapeFunctionsIntegrationPointsLocalGradients(IntegrationMethod ThisMethod ) const
     {
-        IntegrationPointsContainerType all_integration_points = AllIntegrationPoints(ThisMethod);
-        const IntegrationPointsArrayType& IntegrationPoints = all_integration_points[ThisMethod];
+        IntegrationPointsContainerType all_integration_points = AllIntegrationPoints(static_cast<int>(ThisMethod));
+        const IntegrationPointsArrayType& IntegrationPoints = all_integration_points[static_cast<int>(ThisMethod)];
         ShapeFunctionsGradientsType DN_De( IntegrationPoints.size() );
         std::fill( DN_De.begin(), DN_De.end(), Matrix( mNumber, 1 ) );
 
@@ -1259,7 +1259,7 @@ private:
     virtual IntegrationPointsContainerType AllIntegrationPoints(int NumberOfIntegrationMethod) const
     {
         //check the size of relevant integration method
-        if(NumberOfIntegrationMethod > GeometryData::NumberOfIntegrationMethods - mOrder + 1)
+        if(NumberOfIntegrationMethod > static_cast<int>(GeometryData::IntegrationMethod::NumberOfIntegrationMethods) - mOrder + 1)
         {
             KRATOS_THROW_ERROR(std::logic_error, "Number of integration methods exceeds the allowance defined by boost.array", __FUNCTION__)
         }
@@ -1328,7 +1328,7 @@ private:
         ShapeFunctionsValuesContainerType shape_functions_values =
         {
             {
-                CalculateShapeFunctionsIntegrationPointsValues( GeometryData::GI_GAUSS_1 )
+                CalculateShapeFunctionsIntegrationPointsValues( GeometryData::IntegrationMethod::GI_GAUSS_1 )
             }
         };
         return shape_functions_values;
@@ -1342,7 +1342,7 @@ private:
         ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients =
         {
             {
-                CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::GI_GAUSS_1 )
+                CalculateShapeFunctionsIntegrationPointsLocalGradients( GeometryData::IntegrationMethod::GI_GAUSS_1 )
             }
         };
         return shape_functions_local_gradients;

@@ -353,9 +353,9 @@ public:
     GeometryData::KratosGeometryType GetGeometryType() const override
     {
         #ifdef SD_APP_FORWARD_COMPATIBILITY
-        return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::Kratos_Bezier2D);
+        return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::KratosIsogeometricGeometryType::Kratos_Bezier2D);
         #else
-        return GeometryData::Kratos_Bezier2D;
+        return GeometryData::KratosGeometryType::Kratos_Bezier2D;
         #endif
     }
 

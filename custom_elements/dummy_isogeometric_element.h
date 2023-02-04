@@ -92,7 +92,7 @@ class DummyIsogeometricElement : public Element
         void PrintData(std::ostream& rOStream) const final
         {
             mpIsogeometricGeometry->PrintData(rOStream);
-            rOStream << " (IntegrationMethod: " << mThisIntegrationMethod << ")" << std::endl;
+            rOStream << " (IntegrationMethod: " << static_cast<int>(mThisIntegrationMethod) << ")" << std::endl;
         }
 
     private:

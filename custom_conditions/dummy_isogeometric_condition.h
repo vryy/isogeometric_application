@@ -56,13 +56,7 @@ class DummyIsogeometricCondition : public Condition
         Condition::Pointer Create(IndexType NewId, GeometryType::Pointer pGeom,
                                 PropertiesType::Pointer pProperties) const final;
 
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
-        // there is an inconsistency in the kernel that this function is not marked constant.
-        // As a workaround, the const is removed here, but this can be added when the kernel is updated.
-        IntegrationMethod GetIntegrationMethod() final;
-        #else
         IntegrationMethod GetIntegrationMethod() const final;
-        #endif
 
         /**
          * Calculates the local system contributions for this contact element
@@ -98,7 +92,7 @@ class DummyIsogeometricCondition : public Condition
         void PrintData(std::ostream& rOStream) const final
         {
             mpIsogeometricGeometry->PrintData(rOStream);
-            rOStream << " (IntegrationMethod: " << mThisIntegrationMethod << ")" << std::endl;
+            rOStream << " (IntegrationMethod: " << static_cast<int>(mThisIntegrationMethod) << ")" << std::endl;
         }
 
     private:

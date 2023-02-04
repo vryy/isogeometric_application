@@ -97,12 +97,12 @@ class IsogeometricGeometryData
 public:
     // because Kratos does not provide the NURBS geometry family and type, they are defined here in the application.
     // The assigned numbers shall not be clashed with the number in the kernel and other applications
-    enum KratosNURBSGeometryFamily
+    enum class KratosIsogeometricGeometryFamily // : public GeometryData::KratosGeometryFamily
     {
         Kratos_NURBS = 100,
     };
 
-    enum KratosNURBSGeometryType
+    enum class KratosIsogeometricGeometryType //: public GeometryData::KratosGeometryType
     {
         Kratos_Bezier1D = 101,
         Kratos_Bezier2D = 102,
@@ -382,15 +382,15 @@ public:
     GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
         #ifdef SD_APP_FORWARD_COMPATIBILITY
-        return static_cast<GeometryData::KratosGeometryFamily>(IsogeometricGeometryData::Kratos_NURBS);
+        return static_cast<GeometryData::KratosGeometryFamily>(IsogeometricGeometryData::KratosIsogeometricGeometryFamily::Kratos_NURBS);
         #else
-        return GeometryData::Kratos_NURBS;
+        return GeometryData::KratosGeometryFamily::Kratos_NURBS;
         #endif
     }
 
     GeometryData::KratosGeometryType GetGeometryType() const override
     {
-        return GeometryData::Kratos_generic_type;
+        return GeometryData::KratosGeometryType::Kratos_generic_type;
     }
 
     typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const override
@@ -503,7 +503,7 @@ public:
             rResult.resize( this->PointsNumber(), false );
         noalias(rResult) = ZeroVector(this->PointsNumber());
 
-        GeometryData::IntegrationMethod ThisMethod = GeometryData::GI_GAUSS_1;
+        GeometryData::IntegrationMethod ThisMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
         VectorType shape_functions_values;
 
         const IntegrationPointsArrayType& integration_points = this->IntegrationPoints(ThisMethod);

@@ -233,7 +233,7 @@ public:
         // construct the boundary patch
         typename Patch<TDim-1>::Pointer pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
 
-        return AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
+        return this->AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
     }
 
     /// create the conditions out from a boundary patch and add to the model_part

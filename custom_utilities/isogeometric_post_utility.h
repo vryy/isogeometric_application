@@ -123,9 +123,9 @@ public:
     /// Create a node for a model_part with a specific Id and transfer the values
     template<class TPatchType, typename TCoordinatesType, typename TIndexType>
     static typename NodeType::Pointer CreateNodeAndTransferValues(const TCoordinatesType& p_ref, const TPatchType& rPatch,
-        ModelPart& r_model_part, const TIndexType& NodeCounter)
+        ModelPart& r_model_part, const TIndexType& NodeId)
     {
-        typename NodeType::Pointer pNewNode = CreateNode(p_ref, rPatch, r_model_part, NodeCounter);
+        typename NodeType::Pointer pNewNode = CreateNode(p_ref, rPatch, r_model_part, NodeId);
         TransferValuesToNodes(*pNewNode, p_ref, rPatch);
         return pNewNode;
     }
@@ -133,10 +133,10 @@ public:
     /// Create a node for a model_part with a specific Id
     template<class TPatchType, typename TCoordinatesType, typename TIndexType>
     static typename NodeType::Pointer CreateNode(const TCoordinatesType& p_ref, const TPatchType& rPatch,
-        ModelPart& r_model_part, const TIndexType& NodeCounter)
+        ModelPart& r_model_part, const TIndexType& NodeId)
     {
         typename TPatchType::ControlPointType p = rPatch.pControlPointGridFunction()->GetValue(p_ref);
-        typename NodeType::Pointer pNewNode = r_model_part.CreateNewNode(NodeCounter, p.X(), p.Y(), p.Z());
+        typename NodeType::Pointer pNewNode = r_model_part.CreateNewNode(NodeId, p.X(), p.Y(), p.Z());
         return pNewNode;
     }
 

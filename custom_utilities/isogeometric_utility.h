@@ -171,6 +171,89 @@ public:
         return rNode.GetDof(rVariable).EquationId();
     }
 
+    /// Compute the normal vector of a surface patch
+    template<typename TCoordinatesType>
+    static array_1d<double, 3> ComputeNormal(const Patch<2>& rPatch, const TCoordinatesType& xi, const bool& normalize = true)
+    {
+        auto tangents = rPatch.pGetGridFunction(CONTROL_POINT_COORDINATES)->GetDerivative(xi);
+
+        const auto& a = tangents[0];
+        const auto& b = tangents[1];
+        array_1d<double, 3> normal;
+        normal[0] = a[1]*b[2] - a[2]*b[1];
+        normal[1] = a[2]*b[0] - a[0]*b[2];
+        normal[2] = a[0]*b[1] - a[1]*b[0];
+
+        if (normalize)
+        {
+            double norm = norm_2(normal);
+            normal *= 1.0/norm;
+        }
+
+        return normal;
+    }
+
+    /// Check if normal on the side of the patch is pointing outward
+    /// This is done by comparing the vector connecting the patch inner point and face center point
+    /// and the face normal
+    static bool IsNormalPointingOutward(const Patch<3>& rPatch, const BoundarySide& side, const double& delta = 1.0e-2)
+    {
+        Patch<2>::Pointer pBoundaryPatch = rPatch.ConstructBoundaryPatch(side);
+
+        const std::vector<double> xic = {0.5, 0.5, 0.5};
+
+        const std::vector<std::vector<double> > xic_boundary = {
+                {0.0, 0.5, 0.5}, {1.0, 0.5, 0.5},
+                {0.5, 0.0, 0.5}, {0.5, 1.0, 0.5},
+                {0.5, 0.5, 0.0}, {0.5, 0.5, 1.0} };
+
+        array_1d<double, 3> face_center = pBoundaryPatch->pGetGridFunction(CONTROL_POINT_COORDINATES)->GetValue(xic);
+        array_1d<double, 3> face_normal = ComputeNormal(*pBoundaryPatch, xic, true);
+        // KRATOS_WATCH(face_center)
+        // KRATOS_WATCH(face_normal)
+
+        // we find the local coordinates of the face center in the local frame of the patch by look-up technique.
+        // Since we know that the face center can only have values contained in xic_boundary
+        array_1d<double, 3> ref_point;
+        array_1d<double, 3> ref_local_point;
+        bool found = false;
+        for (std::size_t i = 0; i < xic_boundary.size(); ++i)
+        {
+            noalias(ref_point) = rPatch.pGetGridFunction(CONTROL_POINT_COORDINATES)->GetValue(xic_boundary[i]);
+            if (norm_2(ref_point - face_center) < 1.0e-10)
+            {
+                for (int j = 0; j < 3; ++j)
+                    ref_local_point[j] = xic_boundary[i][j];
+                found = true;
+                break;
+            }
+        }
+        if (found)
+        {
+            // if we find the local coordinates, we adjust the other coordinate (0.0 or 1.0) with a small pertubation
+            for (int j = 0; j < 3; ++j)
+            {
+                if (std::abs(ref_local_point[j]) < 1.0e-10)
+                    ref_local_point[j] += delta;
+                else if (std::abs(ref_local_point[j] - 1.0) < 1.0e-10)
+                    ref_local_point[j] -= delta;
+            }
+        }
+        else
+        {
+            // if we can't find it, which is not likely to happen, we take the center point of the patch as a reference point
+            for (int j = 0; j < 3; ++j)
+                ref_local_point[j] = xic[j];
+        }
+        // KRATOS_WATCH(ref_local_point)
+        noalias(ref_point) = rPatch.pGetGridFunction(CONTROL_POINT_COORDINATES)->GetValue(ref_local_point);
+        // KRATOS_WATCH(ref_point)
+
+        array_1d<double, 3> v = face_center - ref_point;
+
+        return (inner_prod(v, face_normal) > 1.0e-13);
+    }
+
     /// Information
     template<class TClassType>
     static void PrintAddress(std::ostream& rOStream, typename TClassType::Pointer pInstance)

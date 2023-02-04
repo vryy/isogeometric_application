@@ -25,6 +25,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/model_part.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/bspline_utils.h"
+#include "custom_utilities/isogeometric_utility.h"
 #include "custom_utilities/isogeometric_post_utility.h"
 #include "custom_utilities/bezier_classical_post_utility.h"
 #include "custom_utilities/bezier_post_utility.h"
@@ -610,6 +611,14 @@ void BezierClassicalPostUtility_GenerateModelPart2(BezierClassicalPostUtility& d
 
 //////////////////////////////////////////////////////////
 
+bool IsogeometricUtility_IsNormalPointingOutward(IsogeometricUtility& rDummy, const Patch<3>& rPatch, const std::size_t& iside)
+{
+    BoundarySide side = static_cast<BoundarySide>(iside);
+    return IsogeometricUtility::IsNormalPointingOutward(rPatch, side);
+}
+
+//////////////////////////////////////////////////////////
+
 template<typename TVariableType>
 void BezierPostUtility_TransferVariablesToNodes_ModelPart(BezierPostUtility& rDummy,
     const TVariableType& rThisVariable,
@@ -763,6 +772,11 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("DumpNodalVariablesList", &IsogeometricMergeUtility::DumpNodalVariablesList)
     ;
 
+    class_<IsogeometricUtility, IsogeometricUtility::Pointer, boost::noncopyable>(
+        "IsogeometricUtility", init<>())
+    // .def("IsNormalPointingOutward", (bool (IsogeometricUtility::*)(const Patch<3>&, const BoundarySide&)&IsogeometricUtility::IsNormalPointingOutward)).staticmethod("IsNormalPointingOutward")
+    .def("IsNormalPointingOutward", &IsogeometricUtility_IsNormalPointingOutward);
+
     /////////////////////////////////////////////////////////////////
     ///////////////////////GISMO/////////////////////////////////////
     /////////////////////////////////////////////////////////////////
@@ -781,4 +795,3 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

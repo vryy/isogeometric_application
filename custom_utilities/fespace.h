@@ -266,6 +266,12 @@ public:
         return true;
     }
 
+    /// Reverse the evaluation in i-direction
+    virtual void Reverse(const std::size_t& idir)
+    {
+        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Extract the index of the functions based on the boundary flag. It allows to extract the corner one.

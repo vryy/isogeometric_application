@@ -157,7 +157,7 @@ public:
     const knot_container_t& KnotVector(const std::size_t& idir) const {return mKnotVectors[idir];}
 
     /// Reverse the evaluation in i-direction
-    void Reverse(const std::size_t& idir)
+    void Reverse(const std::size_t& idir) override
     {
         // reverse the knot vector
         mKnotVectors[idir].Reverse();

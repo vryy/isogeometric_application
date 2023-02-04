@@ -115,7 +115,7 @@ public:
         Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
         // generate nodes and elements for each patch
-        std::size_t NodeCounter = mLastNodeId;
+        std::size_t NodeCounter = mLastNodeId + 1;
         std::size_t ElementCounter = mLastElemId;
         // std::size_t PropertiesCounter = mLastPropId;
         std::vector<double> p_ref(TFESpaceType::Dim());

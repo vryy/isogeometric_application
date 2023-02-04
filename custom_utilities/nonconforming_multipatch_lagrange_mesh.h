@@ -120,7 +120,7 @@ public:
         Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
         // generate nodes and elements for each patch
-        IndexType NodeCounter = mLastNodeId;
+        IndexType NodeCounter = mLastNodeId + 1;
         IndexType ElementCounter = mLastElemId;
         typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)

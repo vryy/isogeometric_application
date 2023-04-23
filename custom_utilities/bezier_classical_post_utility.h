@@ -38,10 +38,11 @@
 #include "utilities/openmp_utils.h"
 #ifdef SD_APP_FORWARD_COMPATIBILITY
 #include "custom_utilities/spatial_containers/auto_collapse_spatial_binning.h"
+#include "layer_application/custom_utilities/containers/vector_map.h"
 #else
 #include "utilities/auto_collapse_spatial_binning.h"
-#endif
 #include "containers/vector_map.h"
+#endif
 #include "custom_utilities/iga_define.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "custom_utilities/isogeometric_utility.h"

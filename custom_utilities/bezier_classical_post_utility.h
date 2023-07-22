@@ -589,7 +589,7 @@ public:
                 KRATOS_THROW_ERROR(std::logic_error, "Error: geometry is NULL at element", it->Id())
 
             int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-            int ReducedDim = it->GetGeometry().Dimension(); // reduced dimension of the geometry
+            int ReducedDim = it->GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
@@ -661,7 +661,7 @@ public:
                     KRATOS_THROW_ERROR(std::logic_error, "Error: geometry is NULL at condition", it->Id())
 
                 int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-                int ReducedDim = it->GetGeometry().Dimension(); // reduced dimension of the geometry
+                int ReducedDim = it->GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
                 IndexType NodeCounter_old = NodeCounter;
 
                 #ifdef DEBUG_LEVEL1
@@ -772,7 +772,7 @@ public:
             }
 
             int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-            int ReducedDim = it->GetGeometry().Dimension(); // reduced dimension of the geometry
+            int ReducedDim = it->GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
@@ -839,7 +839,7 @@ public:
             #endif
 
             int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-            int ReducedDim = it->GetGeometry().Dimension(); // reduced dimension of the geometry
+            int ReducedDim = it->GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
             #ifdef DEBUG_LEVEL1
@@ -907,8 +907,7 @@ public:
                               std::vector<std::size_t>& element_ids,
                               const bool& get_indices)
     {
-//        int ReducedDim = rE.GetGeometry().WorkingSpaceDimension();
-        int ReducedDim = rE.GetGeometry().Dimension();
+        int ReducedDim = rE.GetGeometry().LocalSpaceDimension();
 
         //get the properties
         Properties::Pointer pProperties = rModelPart.pGetProperties(rE.pGetProperties()->Id());
@@ -1298,8 +1297,7 @@ public:
                                           IndexType& EntityCounter,
                                           const std::string& NodeKey)
     {
-//        int ReducedDim = rE.GetGeometry().WorkingSpaceDimension();
-        int ReducedDim = rE.GetGeometry().Dimension();
+        int ReducedDim = rE.GetGeometry().LocalSpaceDimension();
 
         //get the properties
         Properties::Pointer pProperties = rModelPart.pGetProperties(rE.pGetProperties()->Id());

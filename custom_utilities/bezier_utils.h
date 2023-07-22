@@ -530,7 +530,6 @@ public:
             #ifdef SD_APP_FORWARD_COMPATIBILITY
             GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
                 new GeometryDimension(
-                    TDimension,
                     TWorkingSpaceDimension,
                     TLocalSpaceDimension) );
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
@@ -601,7 +600,6 @@ public:
             #ifdef SD_APP_FORWARD_COMPATIBILITY
             GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
                 new GeometryDimension(
-                    TDimension,
                     TWorkingSpaceDimension,
                     TLocalSpaceDimension) );
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
@@ -675,7 +673,6 @@ public:
             #ifdef SD_APP_FORWARD_COMPATIBILITY
             GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
                 new GeometryDimension(
-                    TDimension,
                     TWorkingSpaceDimension,
                     TLocalSpaceDimension) );
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
@@ -764,7 +761,6 @@ public:
         #ifdef SD_APP_FORWARD_COMPATIBILITY
         GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
             new GeometryDimension(
-                TDimension,
                 TWorkingSpaceDimension,
                 TLocalSpaceDimension) );
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
@@ -820,7 +816,6 @@ public:
         #ifdef SD_APP_FORWARD_COMPATIBILITY
         GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
             new GeometryDimension(
-                TDimension,
                 TWorkingSpaceDimension,
                 TLocalSpaceDimension) );
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
@@ -878,7 +873,6 @@ public:
         #ifdef SD_APP_FORWARD_COMPATIBILITY
         GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
             new GeometryDimension(
-                TDimension,
                 TWorkingSpaceDimension,
                 TLocalSpaceDimension) );
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(

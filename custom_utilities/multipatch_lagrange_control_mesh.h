@@ -84,10 +84,8 @@ public:
 
         if(!KratosComponents<Element>::Has(element_name))
         {
-            std::stringstream buffer;
-            buffer << "Element " << element_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-            KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                         << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
         }
 
         Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
@@ -110,7 +108,7 @@ public:
                 KRATOS_WATCH(it->LayerIndex())
                 KRATOS_WATCH(it->Id())
                 KRATOS_WATCH(it->Prefix())
-                KRATOS_THROW_ERROR(std::logic_error, "Invalid layer index", it->LayerIndex())
+                KRATOS_ERROR << "Invalid layer index " << it->LayerIndex();
             }
             Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->LayerIndex());
             // Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->Id());
@@ -134,9 +132,7 @@ public:
             }
             else
             {
-                std::stringstream ss;
-                ss << "FESpace of type " << it->pFESpace()->Type() << " is not yet handled";
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << "FESpace of type " << it->pFESpace()->Type() << " is not yet handled";
             }
 
             // create elements

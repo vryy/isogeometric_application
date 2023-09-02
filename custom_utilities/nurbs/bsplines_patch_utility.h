@@ -68,17 +68,17 @@ public:
         // check prerequisites
         for (std::size_t i = 0; i < pPatches.size(); ++i)
         {
-	        if (pPatches[i]->pFESpace()->Type() != BSplinesFESpace<TDim-1>::StaticType())
-	        {
+            if (pPatches[i]->pFESpace()->Type() != BSplinesFESpace<TDim-1>::StaticType())
+            {
                 std::stringstream ss;
                 ss << "Patch " << pPatches[i]->Name() << " is not B-Splines patch";
                 KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
-	        }
+            }
 
-	        // check the FESpace
+            // check the FESpace
             if (i != 0)
                if ( !pPatches[0]->pFESpace()->IsCompatible(*(pPatches[i]->pFESpace())) )
-		            KRATOS_THROW_ERROR(std::logic_error, "The patch is not compatible with patch 0", "")
+                    KRATOS_THROW_ERROR(std::logic_error, "The patch is not compatible with patch 0", "")
         }
 
         // create the new FESpace

@@ -57,14 +57,14 @@ public:
     virtual ~MultiNURBSPatchMatlabExporterWriter() {}
 
     /// Export a single patch
-    virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const
+    void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const override
     {
         rOStream << std::setprecision(BaseType::Accuracy());
         this->ExportMatlab(rOStream, pPatch, pPatch->Name());
     }
 
     /// Export a multipatch
-    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, std::ostream& rOStream) const
+    void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, std::ostream& rOStream) const override
     {
         rOStream << std::setprecision(BaseType::Accuracy());
 

@@ -56,7 +56,7 @@ public:
     virtual ~MultiNURBSPatchGeoExporterWriter() {}
 
     /// Export a single patch
-    virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ofstream& rOStream) const
+    void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const override
     {
         rOStream << std::setprecision(BaseType::Accuracy());
 
@@ -97,10 +97,10 @@ public:
     }
 
     /// Export a single patch
-    virtual void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, std::ostream& rOStream) const
+    void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, std::ostream& rOStream) const override
     {
         // BaseType::Export(pMultiPatch, rOStream); // this will eventually throw an error
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplented function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling unimplemented function MultiNURBSPatchGeoExporterWriter::" << __FUNCTION__;
     }
 }; // end class MultiNURBSPatchGeoExporterWriter
 

@@ -73,13 +73,11 @@ public:
     void SetDivision(const std::size_t& patch_id, const int& dim, const IndexType& num_division)
     {
         if (dim >= TDim)
-            KRATOS_THROW_ERROR(std::logic_error, "The dimension is invalid", "")
+            KRATOS_ERROR << "The dimension " << dim << " is invalid";
 
         if (mpMultiPatch->Patches().find(patch_id) == mpMultiPatch->end())
         {
-            std::stringstream ss;
-            ss << "Patch " << patch_id << " is not found in the multipatch";
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << "Patch " << patch_id << " is not found in the multipatch";
         }
 
         mNumDivision[patch_id][dim] = num_division;
@@ -111,10 +109,8 @@ public:
 
         if(!KratosComponents<Element>::Has(element_name))
         {
-            std::stringstream buffer;
-            buffer << "Element " << element_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-            KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                         << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
         }
 
         Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
@@ -137,7 +133,7 @@ public:
                 KRATOS_WATCH(it->LayerIndex())
                 KRATOS_WATCH(it->Id())
                 KRATOS_WATCH(it->Prefix())
-                KRATOS_THROW_ERROR(std::logic_error, "Invalid layer index", it->LayerIndex())
+                KRATOS_ERROR << "Invalid layer index " << it->LayerIndex();
             }
             Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->LayerIndex());
             // Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->Id());
@@ -150,7 +146,7 @@ public:
                 // create new nodes and elements
                 typename std::map<IndexType, boost::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
-                    KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
+                    KRATOS_ERROR << "NumDivision is not set for patch " << it->Id();
 
                 IndexType NumDivision1 = it_num->second[0];
                 IndexType NumDivision2 = it_num->second[1];
@@ -170,7 +166,7 @@ public:
                 // create new nodes and elements
                 typename std::map<IndexType, boost::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
-                    KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
+                    KRATOS_ERROR << "NumDivision is not set for patch " << it->Id();
 
                 IndexType NumDivision1 = it_num->second[0];
                 IndexType NumDivision2 = it_num->second[1];

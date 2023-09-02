@@ -105,6 +105,8 @@ public:
     enum class KratosIsogeometricGeometryType //: public GeometryData::KratosGeometryType
     {
         Kratos_Bezier1D = 101,
+        Kratos_Bezier1D2 = 105,
+        Kratos_Bezier1D3 = 106,
         Kratos_Bezier2D = 102,
         Kratos_Bezier2D3 = 103,
         Kratos_Bezier3D = 104,

@@ -1345,12 +1345,11 @@ public:
      */
     void PrintData( std::ostream& rOStream ) const override
     {
-        BaseType::PrintData( rOStream );
-        rOStream << std::endl;
         rOStream << "    Control Weights: " << mCtrlWeights << std::endl;
         rOStream << "    Order: " << mOrder1 << " " << mOrder2 << " " << mOrder3 << std::endl;
         rOStream << "    Number: " << mNumber1 << " " << mNumber2 << " " << mNumber3 << std::endl;
         rOStream << "    Extraction Operator: " << mExtractionOperator << std::endl;
+        BaseType::PrintData( rOStream );
     }
 
     void AssignGeometryData(

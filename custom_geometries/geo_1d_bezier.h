@@ -292,7 +292,7 @@ public:
      * Operations
      */
 
-    typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const final
+    typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
         Geo1dBezier::Pointer pNewGeom = Geo1dBezier::Pointer( new Geo1dBezier( ThisPoints ) );
         ValuesContainerType DummyKnots;
@@ -332,26 +332,7 @@ public:
      * Informations
      */
 
-    inline SizeType Dimension() const
-    {
-        return 1;
-    }
-
-    inline SizeType WorkingSpaceDimension() const
-    {
-        return 3;
-    }
-
-    inline SizeType LocalSpaceDimension() const
-    {
-        return 1;
-    }
-
-    /**
-     * Informations
-     */
-
-    GeometryData::KratosGeometryType GetGeometryType() const final
+    GeometryData::KratosGeometryType GetGeometryType() const override
     {
         #ifdef SD_APP_FORWARD_COMPATIBILITY
         return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::KratosIsogeometricGeometryType::Kratos_Bezier1D);
@@ -360,48 +341,48 @@ public:
         #endif
     }
 
-    /**
-     * This method calculates and returns Length or charactereistic
-     * length of this geometry depending on it's dimension. For one
-     * dimensional geometry for example Line it returns length of it
-     * and for the other geometries it gives Characteristic length
-     * otherwise.
-     *
-     * @return double value contains length or Characteristic
-     * length
-     * @see Area()
-     * @see Volume()
-     * @see DomainSize()
-     */
-    double Length() const final
-    {
-        //TODO: reimplement to account for nurbs curve
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "not yet implemented")
-        return 0.0;
-    }
+    // /**
+    //  * This method calculates and returns Length or charactereistic
+    //  * length of this geometry depending on it's dimension. For one
+    //  * dimensional geometry for example Line it returns length of it
+    //  * and for the other geometries it gives Characteristic length
+    //  * otherwise.
+    //  *
+    //  * @return double value contains length or Characteristic
+    //  * length
+    //  * @see Area()
+    //  * @see Volume()
+    //  * @see DomainSize()
+    //  */
+    // double Length() const final
+    // {
+    //     //TODO: reimplement to account for nurbs curve
+    //     KRATOS_ERROR <<  __FUNCTION__ << " is not yet implemented";
+    //     return 0.0;
+    // }
 
-    /**
-     * This method calculates and returns area or surface area of
-     * this geometry depending to it's dimension. For one dimensional
-     * geometry it returns zero, for two dimensional it gives area
-     * and for three dimensional geometries it gives surface area.
-     *
-     * @return double value contains area or surface area.
-     * @see Length()
-     * @see Volume()
-     * @see DomainSize()
-     */
-    double Area() const final
-    {
-        // Area is not relevant for 1d geometry
-        return 0.0;
-    }
+    // /**
+    //  * This method calculates and returns area or surface area of
+    //  * this geometry depending to it's dimension. For one dimensional
+    //  * geometry it returns zero, for two dimensional it gives area
+    //  * and for three dimensional geometries it gives surface area.
+    //  *
+    //  * @return double value contains area or surface area.
+    //  * @see Length()
+    //  * @see Volume()
+    //  * @see DomainSize()
+    //  */
+    // double Area() const final
+    // {
+    //     // Area is not relevant for 1d geometry
+    //     return 0.0;
+    // }
 
-    double Volume() const final
-    {
-        // Volume is not relevant for 1d geometry
-        return 0.0;
-    }
+    // double Volume() const final
+    // {
+    //     // Volume is not relevant for 1d geometry
+    //     return 0.0;
+    // }
 
     /**
      * This method calculate and return length, area or volume of
@@ -414,10 +395,10 @@ public:
      * @see Area()
      * @see Volume()
      */
-    double DomainSize() const final
-    {
-        return Length();
-    }
+    // double DomainSize() const final
+    // {
+    //     return Length();
+    // }
 
     /**
      * Returns whether given local point is inside the Geometry
@@ -450,7 +431,7 @@ public:
      * @see InverseOfJacobian
      */
     JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod ) const final
+            IntegrationMethod ThisMethod ) const override
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
@@ -470,14 +451,12 @@ public:
         for ( unsigned int pnt = 0; pnt < this->IntegrationPointsNumber( ThisMethod ); ++pnt )
         {
             //defining single jacobian matrix
-            MatrixType jacobian = ZeroMatrix( 3, 1 );
+            MatrixType jacobian = ZeroMatrix( 1, 1 );
             //loop over all nodes
 
             for ( unsigned int i = 0; i < this->PointsNumber(); ++i )
             {
                 jacobian( 0, 0 ) += ( this->GetPoint( i ).X() ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-                jacobian( 1, 0 ) += ( this->GetPoint( i ).Y() ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-                jacobian( 2, 0 ) += ( this->GetPoint( i ).Z() ) * ( shape_functions_gradients[pnt]( i, 0 ) );
             }
 
             rResult[pnt] = jacobian;
@@ -505,7 +484,7 @@ public:
      */
     JacobiansType& Jacobian( JacobiansType& rResult,
             IntegrationMethod ThisMethod,
-            MatrixType & DeltaPosition ) const final
+            MatrixType & DeltaPosition ) const override
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
@@ -525,14 +504,12 @@ public:
         for ( unsigned int pnt = 0; pnt < this->IntegrationPointsNumber( ThisMethod ); ++pnt )
         {
             //defining single jacobian matrix
-            MatrixType jacobian = ZeroMatrix( 3, 1 );
+            MatrixType jacobian = ZeroMatrix( 1, 1 );
             //loop over all nodes
 
             for ( unsigned int i = 0; i < this->PointsNumber(); ++i )
             {
                 jacobian( 0, 0 ) += ( this->GetPoint( i ).X() + DeltaPosition(i,0) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-                jacobian( 1, 0 ) += ( this->GetPoint( i ).Y() + DeltaPosition(i,1) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-                jacobian( 2, 0 ) += ( this->GetPoint( i ).Z() + DeltaPosition(i,2) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
             }
 
             rResult[pnt] = jacobian;
@@ -558,10 +535,10 @@ public:
      */
     MatrixType& Jacobian( MatrixType& rResult,
             IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const final
+            IntegrationMethod ThisMethod ) const override
     {
         //setting up size of jacobian matrix
-        rResult.resize( 3, 1 );
+        rResult.resize( 1, 1 );
         //derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
             CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
@@ -575,19 +552,13 @@ public:
 
         //Elements of jacobian matrix (e.g. J(1,1) = dX1/dXi1)
         double j0 = 0.0;
-        double j1 = 0.0;
-        double j2 = 0.0;
         //loop over all nodes
         for ( unsigned int i = 0; i < this->PointsNumber(); ++i )
         {
             j0 += ( this->GetPoint( i ).X() ) * ( ShapeFunctionsGradientInIntegrationPoint( i, 0 ) );
-            j1 += ( this->GetPoint( i ).Y() ) * ( ShapeFunctionsGradientInIntegrationPoint( i, 0 ) );
-            j2 += ( this->GetPoint( i ).Z() ) * ( ShapeFunctionsGradientInIntegrationPoint( i, 0 ) );
         }
 
         rResult( 0, 0 ) = j0;
-        rResult( 1, 0 ) = j1;
-        rResult( 2, 0 ) = j2;
 
         return rResult;
     }
@@ -604,10 +575,10 @@ public:
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    MatrixType& Jacobian( MatrixType& rResult, const CoordinatesArrayType& rPoint ) const final
+    MatrixType& Jacobian( MatrixType& rResult, const CoordinatesArrayType& rPoint ) const override
     {
         //setting up size of jacobian matrix
-        rResult.resize( 3, 1 );
+        rResult.resize( 1, 1 );
 
         //derivatives of shape functions
         MatrixType shape_functions_gradients;
@@ -615,20 +586,14 @@ public:
 
         //Elements of jacobian matrix (e.g. J(1,1) = dX1/dXi1)
         double j0 = 0.0;
-        double j1 = 0.0;
-        double j2 = 0.0;
 
         //loop over all nodes
         for ( unsigned int i = 0; i < this->PointsNumber(); ++i )
         {
             j0 += ( this->GetPoint( i ).X() ) * ( shape_functions_gradients( i, 0 ) );
-            j1 += ( this->GetPoint( i ).Y() ) * ( shape_functions_gradients( i, 0 ) );
-            j2 += ( this->GetPoint( i ).Z() ) * ( shape_functions_gradients( i, 0 ) );
         }
 
         rResult( 0, 0 ) = j0;
-        rResult( 1, 0 ) = j1;
-        rResult( 2, 0 ) = j2;
 
         return rResult;
     }
@@ -645,12 +610,12 @@ public:
      * @see Jacobian
      * @see InverseOfJacobian
      */
-    VectorType& DeterminantOfJacobian( VectorType& rResult,
-            IntegrationMethod ThisMethod ) const final
-    {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
-        return rResult;
-    }
+    // VectorType& DeterminantOfJacobian( VectorType& rResult,
+    //         IntegrationMethod ThisMethod ) const final
+    // {
+    //     // TODO
+    //     return rResult;
+    // }
 
     /**
      * Determinant of jacobian in specific integration point of
@@ -671,12 +636,12 @@ public:
      * @see Jacobian
      * @see InverseOfJacobian
      */
-    double DeterminantOfJacobian( IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const final
-    {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
-        return 0.0;
-    }
+    // double DeterminantOfJacobian( IndexType IntegrationPointIndex,
+    //         IntegrationMethod ThisMethod ) const final
+    // {
+    //     // TODO
+    //     return 0.0;
+    // }
 
     /**
      * Determinant of jacobian in given point.
@@ -694,11 +659,11 @@ public:
      * KLUDGE: PointType needed for proper functionality
      * KLUDGE: works only with explicitly generated MatrixType object
      */
-    double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const final
-    {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
-        return 0.0;
-    }
+    // double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const final
+    // {
+    //     // TODO
+    //     return 0.0;
+    // }
 
     /**
      * Inverse of jacobians for given integration method.
@@ -716,12 +681,12 @@ public:
      *
      * KLUDGE: works only with explicitly generated MatrixType object
      */
-    JacobiansType& InverseOfJacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod ) const final
-    {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
-        return rResult;
-    }
+    // JacobiansType& InverseOfJacobian( JacobiansType& rResult,
+    //         IntegrationMethod ThisMethod ) const final
+    // {
+    //     // TODO
+    //     return rResult;
+    // }
 
     /**
      * Inverse of jacobian in specific integration point of given integration
@@ -744,13 +709,13 @@ public:
      *
      * KLUDGE: works only with explicitly generated MatrixType object
      */
-    MatrixType& InverseOfJacobian( MatrixType& rResult,
-            IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const final
-    {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
-        return rResult;
-    }
+    // MatrixType& InverseOfJacobian( MatrixType& rResult,
+    //         IndexType IntegrationPointIndex,
+    //         IntegrationMethod ThisMethod ) const final
+    // {
+    //     // TODO
+    //     return rResult;
+    // }
 
     /**
      * Inverse of jacobian in given point.
@@ -765,11 +730,11 @@ public:
      *
      * KLUDGE: works only with explicitly generated MatrixType object
      */
-    MatrixType& InverseOfJacobian( MatrixType& rResult, const CoordinatesArrayType& rPoint ) const final
-    {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
-        return rResult;
-    }
+    // MatrixType& InverseOfJacobian( MatrixType& rResult, const CoordinatesArrayType& rPoint ) const final
+    // {
+    //     // TODO
+    //     return rResult;
+    // }
 
     /**
      * Shape Function
@@ -913,7 +878,7 @@ public:
      */
     ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients( ShapeFunctionsGradientsType& rResult, IntegrationMethod ThisMethod ) const final
     {
-        KRATOS_THROW_ERROR( std::logic_error, "This method is not implemented." , __FUNCTION__);
+        KRATOS_ERROR << __FUNCTION__ << " is not yet implemented.";
 
         return rResult;
     }
@@ -1102,9 +1067,9 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    std::string Info() const final
+    std::string Info() const override
     {
-        return "1 dimensional Bezier extraction from NURBS curve in 3D space";
+        return "1 dimensional Bezier extraction from NURBS curve in 1D space";
     }
 
     /**
@@ -1137,8 +1102,10 @@ public:
         rOStream << "    Jacobian in the origin\t : " << jacobian;
     }
 
-    void AssignGeometryData
-    (
+    /**
+     *
+     */
+    void AssignGeometryData(
         const ValuesContainerType& Knots1,
         const ValuesContainerType& Knots2,
         const ValuesContainerType& Knots3,
@@ -1148,7 +1115,7 @@ public:
         const int& Degree2,
         const int& Degree3,
         const int& NumberOfIntegrationMethod
-    ) final
+    ) override
     {
         mCtrlWeights = Weights;
         mOrder = Degree1;
@@ -1157,17 +1124,17 @@ public:
 
         // size checking
         if(mExtractionOperator.size1() != this->PointsNumber())
-            KRATOS_THROW_ERROR(std::logic_error, "The number of row of extraction operator must be equal to number of nodes", __FUNCTION__)
+            KRATOS_ERROR << "The number of row of extraction operator must be equal to number of nodes";
         if(mExtractionOperator.size2() != mNumber)
-            KRATOS_THROW_ERROR(std::logic_error, "The number of column of extraction operator must be equal to (p_u+1)", __FUNCTION__)
+            KRATOS_ERROR << "The number of column of extraction operator must be equal to (p_u+1)";
         if(mCtrlWeights.size() != this->PointsNumber())
-            KRATOS_THROW_ERROR(std::logic_error, "The number of weights must be equal to number of nodes", __FUNCTION__)
+            KRATOS_ERROR << "The number of weights must be equal to number of nodes";
 
         // find the existing integration rule or create new one if not existed
-        BezierUtils::RegisterIntegrationRule<1, 3, 1>(NumberOfIntegrationMethod, Degree1);
+        BezierUtils::RegisterIntegrationRule<1, 1, 1>(NumberOfIntegrationMethod, Degree1);
 
         // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
-        mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<1, 3, 1>(NumberOfIntegrationMethod, Degree1);
+        mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<1, 1, 1>(NumberOfIntegrationMethod, Degree1);
         #ifdef SD_APP_FORWARD_COMPATIBILITY
         BaseType::SetGeometryData(&(*mpBezierGeometryData));
         #else
@@ -1175,7 +1142,7 @@ public:
         #endif
     }
 
-private:
+protected:
 
     /**
      * Member Variables
@@ -1190,26 +1157,6 @@ private:
     int mOrder; // order of the curve
 
     int mNumber; // number of Bezier shape functions
-
-    ///@}
-    ///@name Serialization
-    ///@{
-
-    friend class Serializer;
-
-    void save( Serializer& rSerializer ) const override
-    {
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
-    }
-
-    void load( Serializer& rSerializer ) override
-    {
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
-    }
-
-    /**
-     * Private Operations
-     */
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     // method to build GeometryData
@@ -1255,8 +1202,7 @@ private:
      *
      * KLUGDE: gradients are hard-coded!
      */
-    ShapeFunctionsGradientsType
-    CalculateShapeFunctionsIntegrationPointsLocalGradients(IntegrationMethod ThisMethod ) const
+    ShapeFunctionsGradientsType CalculateShapeFunctionsIntegrationPointsLocalGradients(IntegrationMethod ThisMethod ) const
     {
         const IntegrationPointsArrayType& integration_points = BaseType::IntegrationPoints(ThisMethod);
         ShapeFunctionsGradientsType DN_De( integration_points.size() );
@@ -1270,8 +1216,7 @@ private:
         return DN_De;
     }
 
-    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients
-    (
+    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
         MatrixType& shape_functions_values,
         ShapeFunctionsGradientsType& shape_functions_local_gradients,
         const IntegrationPointsArrayType& integration_points
@@ -1298,8 +1243,7 @@ private:
         }
     }
 
-    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients
-    (
+    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
         MatrixType& shape_functions_values,
         ShapeFunctionsGradientsType& shape_functions_local_gradients,
         IntegrationMethod ThisMethod
@@ -1360,6 +1304,28 @@ private:
         }
     }
 
+private:
+
+    ///@}
+    ///@name Serialization
+    ///@{
+
+    friend class Serializer;
+
+    void save( Serializer& rSerializer ) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
+    }
+
+    void load( Serializer& rSerializer ) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
+    }
+
+    /**
+     * Private Operations
+     */
+
     /**
      * Private Friends
      */
@@ -1398,4 +1364,3 @@ template<class TPointType> inline std::ostream& operator <<(
 }    // namespace Kratos.
 
 #endif
-

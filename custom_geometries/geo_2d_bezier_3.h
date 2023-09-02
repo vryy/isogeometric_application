@@ -13,24 +13,12 @@ see isogeometric_application/LICENSE.txt
 #define  KRATOS_GEO_2D_BEZIER_3_H_INCLUDED
 
 // System includes
-#include <iostream>
 
 // External includes
-#include <boost/array.hpp>
 
 // Project includes
 #include "includes/define.h"
-#include "utilities/math_utils.h"
-#include "utilities/openmp_utils.h"
-#include "geometries/geometry.h"
-#include "geometries/geometry_data.h"
-#include "custom_geometries/isogeometric_geometry.h"
-#include "integration/quadrature.h"
-#include "custom_utilities/bspline_utils.h"
-#include "custom_utilities/bezier_utils.h"
 #include "custom_geometries/geo_2d_bezier.h"
-//#include "integration/quadrature.h"
-//#include "integration/line_gauss_legendre_integration_points.h"
 
 //#define DEBUG_LEVEL1
 //#define DEBUG_LEVEL2
@@ -53,7 +41,12 @@ public:
      */
 
     /**
-     * Geometry as base class.
+     * Pointer definition of Geo2dBezier3
+     */
+    KRATOS_CLASS_POINTER_DEFINITION( Geo2dBezier3 );
+
+    /**
+     * Geo2dBezier as base class.
      */
     typedef Geo2dBezier<TPointType> BaseType;
 
@@ -61,11 +54,6 @@ public:
      * The original geometry type
      */
     typedef typename BaseType::GeometryType GeometryType;
-
-    /**
-     * Pointer definition of Geo2dBezier3
-     */
-    KRATOS_CLASS_POINTER_DEFINITION( Geo2dBezier3 );
 
     /**
      * Integration methods implemented in geometry.

@@ -79,7 +79,7 @@ public:
     }
 
     /// Construct the 12 edge patches of a 3D patch
-    static std::vector<Patch<1>::Pointer> ConstructEdgePatches(Patch<3>::Pointer pPatch)
+    static std::vector<Patch<1>::Pointer> ConstructEdgePatches(Patch<3>::ConstPointer pPatch)
     {
         Patch<2>::Pointer pTopPatch = pPatch->ConstructBoundaryPatch(_BTOP_);
         Patch<2>::Pointer pBottomPatch = pPatch->ConstructBoundaryPatch(_BBOTTOM_);
@@ -106,12 +106,12 @@ public:
         return pEdgePatches;
     }
 
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "MultiPatchUtility";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 

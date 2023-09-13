@@ -56,6 +56,46 @@ void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<T
     rDummy.MakeInterface<TDim>(pPatch1, side1, pPatch2, side2);
 }
 
+template<int TDim>
+boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
+     boost::python::list& P, boost::python::list& list_nsampling)
+{
+    typedef boost::python::stl_input_iterator<double> iterator_value_type;
+
+    std::vector<double> P_vec;
+    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
+    {
+        P_vec.push_back(v);
+    }
+
+    array_1d<double, 3> point, xi;
+    noalias(point) = ZeroVector(3);
+    noalias(xi) = ZeroVector(3);
+
+    for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+        point[i] = P_vec[i];
+
+    typedef boost::python::stl_input_iterator<int> iterator_index_type;
+
+    std::vector<int> nsampling;
+    BOOST_FOREACH(const iterator_index_type::value_type& i, std::make_pair(iterator_index_type(list_nsampling), iterator_index_type() ) )
+    {
+        nsampling.push_back(i);
+    }
+
+    int patch_id = rDummy.LocalCoordinates(*pMultiPatch, point, xi, nsampling);
+
+    boost::python::list out_point;
+    out_point.append(xi[0]);
+    out_point.append(xi[1]);
+    out_point.append(xi[2]);
+
+    boost::python::list output;
+    output.append(patch_id);
+    output.append(out_point);
+    return output;
+}
+
 std::size_t MultiPatchUtility_GetLastNodeId(MultiPatchUtility& rDummy, ModelPart& r_model_part)
 {
     return rDummy.GetLastNodeId(r_model_part);
@@ -540,6 +580,8 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<1>)
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<2>)
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<3>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<2>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<3>)
     .def("GetLastNodeId", &MultiPatchUtility_GetLastNodeId)
     .def("GetLastElementId", &MultiPatchUtility_GetLastElementId)
     .def("GetLastConditionId", &MultiPatchUtility_GetLastConditionId)

@@ -158,6 +158,42 @@ boost::python::list Patch_Predict(TPatchType& rDummy, boost::python::list& P, bo
 }
 
 template<class TPatchType>
+boost::python::list Patch_Predict1(TPatchType& rDummy, boost::python::list& P, boost::python::list& list_nsampling)
+{
+    typedef boost::python::stl_input_iterator<double> iterator_value_type;
+
+    std::vector<double> P_vec;
+    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
+    {
+        P_vec.push_back(v);
+    }
+
+    array_1d<double, 3> point, xi;
+    noalias(point) = ZeroVector(3);
+    noalias(xi) = ZeroVector(3);
+
+    for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+        point[i] = P_vec[i];
+
+    typedef boost::python::stl_input_iterator<int> iterator_index_type;
+
+    std::vector<int> nsampling;
+    BOOST_FOREACH(const iterator_index_type::value_type& i, std::make_pair(iterator_index_type(list_nsampling), iterator_index_type() ) )
+    {
+        nsampling.push_back(i);
+    }
+
+    rDummy.Predict(point, xi, nsampling);
+
+    boost::python::list out_point;
+    out_point.append(xi[0]);
+    out_point.append(xi[1]);
+    out_point.append(xi[2]);
+
+    return out_point;
+}
+
+template<class TPatchType>
 boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, boost::python::list& P, boost::python::list& xi0)
 {
     typedef boost::python::stl_input_iterator<double> iterator_value_type;
@@ -344,6 +380,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("TotalNumber", &Patch<TDim>::TotalNumber)
     .def("FESpace", &Patch_pFESpace<Patch<TDim> >)
     .def("Predict", &Patch_Predict<Patch<TDim> >)
+    .def("Predict", &Patch_Predict1<Patch<TDim> >)
     .def("LocalCoordinates", &Patch_LocalCoordinates<Patch<TDim> >)
     .def("IsInside", &Patch_IsInside<Patch<TDim> >)
     .def("NumberOfInterfaces", &Patch<TDim>::NumberOfInterfaces)
@@ -396,6 +433,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("Enumerate", &MultiPatch_Enumerate1<TDim>)
     .def("Enumerate", &MultiPatch_Enumerate2<TDim>)
     .def("IsEnumerated", &MultiPatch<TDim>::IsEnumerated)
+    .def("LocalCoordinates", &Patch_LocalCoordinates<MultiPatch<TDim> >)
     .def(self_ns::str(self))
     ;
 }

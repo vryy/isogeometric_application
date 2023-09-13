@@ -366,11 +366,23 @@ public:
         pGridFunc->Predict(point, xi, nsampling, xi_min, xi_max);
     }
 
+    /// Compute a rough estimation of the local coordinates of a point by sampling technique
+    void Predict(const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling) const
+    {
+        typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        pGridFunc->Predict(point, xi, nsampling);
+    }
+
     /// Compute the local coordinates of a point
     int LocalCoordinates(const array_1d<double, 3>& point, array_1d<double, 3>& xi) const
     {
         typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
-        return pGridFunc->LocalCoordinates(point, xi);
+        int error_code = pGridFunc->LocalCoordinates(point, xi);
+        bool is_inside = this->pFESpace()->IsInside(std::vector<double>{xi[0], xi[1], xi[2]});
+        if (!is_inside)
+            return 2;
+        else
+            return error_code;
     }
 
     /// Check if the point is inside the patch

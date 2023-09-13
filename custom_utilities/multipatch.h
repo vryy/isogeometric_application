@@ -333,6 +333,23 @@ public:
         return start + mEquationSystemSize;
     }
 
+    /// Compute the local coordinates of a point. On output returns the index of the patch containing the point if found, -1 otherwise
+    int LocalCoordinates(const array_1d<double, 3>& point, array_1d<double, 3>& xi) const
+    {
+        int error_code;
+
+        const array_1d<double, 3> xi0 = xi;
+        for (patch_const_iterator it = this->begin(); it != this->end(); ++it)
+        {
+            noalias(xi) = xi0;
+            error_code = it->LocalCoordinates(point, xi);
+            if (error_code == 0)
+                return it->Id();
+        }
+
+        return -1;
+    }
+
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {

@@ -139,8 +139,7 @@ struct GridFunction_Predict_Helper
 {
     template<class TGridFunctionType>
     static void Execute(TGridFunctionType& rGridFunc,
-        const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling,
-        const TCoordinatesType& xi_min, const TCoordinatesType& xi_max)
+        const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented", __FUNCTION__)
     }
@@ -151,8 +150,7 @@ struct GridFunction_Predict_Helper<1, array_1d<double, 3>, array_1d<double, 3> >
 {
     template<class TGridFunctionType>
     static void Execute(TGridFunctionType& rGridFunc,
-        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling,
-        const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max)
+        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         if (nsampling.size() < 1)
             KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 1", "")
@@ -180,8 +178,7 @@ struct GridFunction_Predict_Helper<2, array_1d<double, 3>, array_1d<double, 3> >
 {
     template<class TGridFunctionType>
     static void Execute(TGridFunctionType& rGridFunc,
-        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling,
-        const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max)
+        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         if (nsampling.size() < 2)
             KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 2", "")
@@ -212,8 +209,7 @@ struct GridFunction_Predict_Helper<3, array_1d<double, 3>, array_1d<double, 3> >
 {
     template<class TGridFunctionType>
     static void Execute(TGridFunctionType& rGridFunc,
-        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling,
-        const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max)
+        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         if (nsampling.size() < 3)
             KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 3", "")
@@ -340,7 +336,16 @@ public:
     void Predict(const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling,
         const TCoordinatesType& xi_min, const TCoordinatesType& xi_max) const
     {
-        GridFunction_Predict_Helper<TDim, TDataType, TCoordinatesType>::Execute(*this, v, xi, nsampling, xi_min, xi_max);
+        std::cout << "WARNING!!!Predict on range {xi_min, xi_max} is not yet implemented. {0, 1} is used for now." << std::endl;
+        GridFunction_Predict_Helper<TDim, TDataType, TCoordinatesType>::Execute(*this, v, xi, nsampling);
+    }
+
+    /// Compute a prediction for LocalCoordinates algorithm. Because LocalCoordinates uses Newton-Raphson algorithm to compute
+    /// the inversion, it requires a good initial starting point
+    template<typename TCoordinatesType>
+    void Predict(const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling) const
+    {
+        GridFunction_Predict_Helper<TDim, TDataType, TCoordinatesType>::Execute(*this, v, xi, nsampling);
     }
 
     /// Compute the local coordinate of point that has a specific interpolated values

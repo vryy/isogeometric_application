@@ -106,6 +106,39 @@ public:
         return pEdgePatches;
     }
 
+    /// Find the local coordinates of a point on a patch. The sampling is performed
+    /// on the patch to determine the best initial point.
+    /// On output return the error code (0: successful)
+    template<int TDim>
+    static int LocalCoordinates(const Patch<TDim>& rPatch,
+            const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
+    {
+        /// find the best initial point by sampling
+        rPatch.Predict(point, xi, nsampling);
+
+        /// compute the local coordinates
+        return rPatch.LocalCoordinates(point, xi);
+    }
+
+    /// Find the local coordinates of a point on a multipatch. The sampling is performed
+    /// on each patch to determine the best initial point.
+    /// On output return the patch_id if sucessful; -1 otherwise
+    template<int TDim>
+    static int LocalCoordinates(const MultiPatch<TDim>& rMultiPatch,
+            const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
+    {
+        int error_code;
+
+        for (typename MultiPatch<TDim>::patch_const_iterator it = rMultiPatch.begin(); it != rMultiPatch.end(); ++it)
+        {
+            error_code = LocalCoordinates( *it, point, xi, nsampling);
+            if (error_code == 0)
+                return it->Id();
+        }
+
+        return -1;
+    }
+
     void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "MultiPatchUtility";

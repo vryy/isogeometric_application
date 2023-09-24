@@ -15,10 +15,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
 #include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -32,6 +29,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/isogeometric_test_utils.h"
 #include "custom_utilities/bezier_test_utils.h"
 #include "custom_utilities/isogeometric_merge_utility.h"
+#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_utilities_to_python.h"
 
 #ifdef ISOGEOMETRIC_USE_GISMO
@@ -361,23 +359,11 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(Isog
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
-    typedef boost::python::stl_input_iterator<array_1d<double, 3> > iterator_value_type;
-
     std::vector<TCoordinatesType> physical_points;
-    BOOST_FOREACH(const iterator_value_type::value_type& p,
-                std::make_pair(iterator_value_type(list_physical_points), // begin
-                iterator_value_type() ) ) // end
-    {
-        physical_points.push_back(p);
-    }
+    IsogeometricPythonUtils::Unpack<array_1d<double, 3>, TCoordinatesType>(list_physical_points, physical_points);
 
     std::vector<TCoordinatesType> local_points;
-    BOOST_FOREACH(const iterator_value_type::value_type& p,
-                std::make_pair(iterator_value_type(list_local_points), // begin
-                iterator_value_type() ) ) // end
-    {
-        local_points.push_back(p);
-    }
+    IsogeometricPythonUtils::Unpack<array_1d<double, 3>, TCoordinatesType>(list_local_points, local_points);
 
     std::size_t offset = last_node_id + 1;
     std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<std::size_t> > >
@@ -637,6 +623,85 @@ void BezierPostUtility_TransferVariablesToNodes_Elements(BezierPostUtility& rDum
     rDummy.TransferVariablesToNodes(rThisVariable, r_model_part, ElementsArray, pSolver);
 }
 
+boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Double(BezierPostUtility& rDummy,
+    const Variable<double>& rThisVariable,
+    const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
+    BezierPostUtility::LinearSolverType::Pointer pSolver)
+{
+    // compute the nodal values
+    std::set<std::size_t> active_nodes;
+    std::map<std::size_t, std::size_t> node_row_id;
+    BezierPostUtility::SerialSparseSpaceType::VectorType g;
+    const bool check_active = true;
+
+    rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
+            ElementsArray, rThisVariable, check_active);
+
+    boost::python::dict Output;
+
+    for (auto it = active_nodes.begin(); it != active_nodes.end(); ++it)
+    {
+        std::size_t row = node_row_id[*it];
+        Output[*it] = g[row];
+    }
+
+    return Output;
+}
+
+boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Array1D(BezierPostUtility& rDummy,
+    const Variable<array_1d<double, 3> >& rThisVariable,
+    const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
+    BezierPostUtility::LinearSolverType::Pointer pSolver)
+{
+    // compute the nodal values
+    std::set<std::size_t> active_nodes;
+    std::map<std::size_t, std::size_t> node_row_id;
+    BezierPostUtility::SerialDenseSpaceType::MatrixType g;
+    const bool check_active = true;
+
+    rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
+            ElementsArray, rThisVariable, check_active);
+
+    boost::python::dict Output;
+
+    array_1d<double, 3> aux;
+    for (auto it = active_nodes.begin(); it != active_nodes.end(); ++it)
+    {
+        std::size_t this_row = node_row_id[*it];
+        noalias(aux) = row(g, this_row);
+        Output[*it] = aux;
+    }
+
+    return Output;
+}
+
+boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Vector(BezierPostUtility& rDummy,
+    const Variable<Vector>& rThisVariable,
+    const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
+    BezierPostUtility::LinearSolverType::Pointer pSolver, std::size_t ncomponents)
+{
+    // compute the nodal values
+    std::set<std::size_t> active_nodes;
+    std::map<std::size_t, std::size_t> node_row_id;
+    BezierPostUtility::SerialDenseSpaceType::MatrixType g;
+    const bool check_active = true;
+
+    rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
+            ElementsArray, rThisVariable, ncomponents, check_active);
+
+    boost::python::dict Output;
+
+    Vector aux(ncomponents);
+    for (auto it = active_nodes.begin(); it != active_nodes.end(); ++it)
+    {
+        std::size_t this_row = node_row_id[*it];
+        noalias(aux) = row(g, this_row);
+        Output[*it] = aux;
+    }
+
+    return Output;
+}
+
 //////////////////////////////////////////////////////////
 
 void IsogeometricApplication_AddBackendUtilitiesToPython()
@@ -721,6 +786,9 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<double> >)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<Vector> >)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<array_1d<double, 3> > >)
+    .def("TransferVariablesToNodalArray", &BezierPostUtility_TransferVariablesToNodalArray_Elements_Double)
+    .def("TransferVariablesToNodalArray", &BezierPostUtility_TransferVariablesToNodalArray_Elements_Vector)
+    .def("TransferVariablesToNodalArray", &BezierPostUtility_TransferVariablesToNodalArray_Elements_Array1D)
     ;
 
     class_<IsogeometricTestUtils, IsogeometricTestUtils::Pointer, boost::noncopyable>("IsogeometricTestUtils", init<>())

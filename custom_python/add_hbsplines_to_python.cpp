@@ -15,10 +15,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
 #include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -32,6 +29,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/hbsplines/hbsplines_refinement_utility.h"
 #include "custom_utilities/import_export/multi_hbsplines_patch_matlab_exporter.h"
 #include "custom_python/iga_define_python.h"
+#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_hbsplines_to_python.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
 #include "custom_python/add_import_export_to_python.h"
@@ -154,18 +152,7 @@ void HBSplinesRefinementUtility_RefineWindow(HBSplinesRefinementUtility& rDummy,
         typename Patch<TDim>::Pointer pPatch, const boost::python::list& window, int EchoLevel)
 {
     std::vector<std::vector<double> > window_vector;
-    std::size_t cnt1 = 0, cnt2 = 0;
-    typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& vect, std::make_pair(iterator_value_type(window), iterator_value_type() ) )
-    {
-        typedef boost::python::stl_input_iterator<double> iterator_value_type2;
-        std::vector<double> win_vect;
-        BOOST_FOREACH(const iterator_value_type2::value_type& v, std::make_pair(iterator_value_type2(vect), iterator_value_type2() ) )
-        {
-            win_vect.push_back(v);
-        }
-        window_vector.push_back(win_vect);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(window, window_vector);
     rDummy.RefineWindow<TDim>(pPatch, window_vector, EchoLevel);
 }
 

@@ -15,10 +15,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
 #include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -31,6 +28,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/import_export/multi_nurbs_patch_matlab_exporter.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_glvis_exporter.h"
 #include "custom_python/iga_define_python.h"
+#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_import_export_to_python.h"
 #include "custom_python/add_patches_to_python.h"
 
@@ -104,25 +102,14 @@ template<class TPatchType>
 boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& list_nsampling,
     const boost::python::list& list_xi_min, const boost::python::list& list_xi_max)
 {
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-
     std::vector<double> xi_min_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(list_xi_min), iterator_value_type() ) )
-    {
-        xi_min_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(list_xi_min, xi_min_vec);
 
     std::vector<double> xi_max_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(list_xi_max), iterator_value_type() ) )
-    {
-        xi_max_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(list_xi_max, xi_max_vec);
 
     std::vector<double> P_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
-    {
-        P_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi, xi_min, xi_max;
     noalias(point) = ZeroVector(3);
@@ -139,13 +126,8 @@ boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list&
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi_max_vec.size()); ++i)
         xi_max[i] = xi_max_vec[i];
 
-    typedef boost::python::stl_input_iterator<int> iterator_index_type;
-
     std::vector<int> nsampling;
-    BOOST_FOREACH(const iterator_index_type::value_type& i, std::make_pair(iterator_index_type(list_nsampling), iterator_index_type() ) )
-    {
-        nsampling.push_back(i);
-    }
+    IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
 
     rDummy.Predict(point, xi, nsampling, xi_min, xi_max);
 
@@ -160,13 +142,8 @@ boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list&
 template<class TPatchType>
 boost::python::list Patch_Predict1(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& list_nsampling)
 {
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-
     std::vector<double> P_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
-    {
-        P_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
@@ -175,13 +152,8 @@ boost::python::list Patch_Predict1(TPatchType& rDummy, const boost::python::list
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
         point[i] = P_vec[i];
 
-    typedef boost::python::stl_input_iterator<int> iterator_index_type;
-
     std::vector<int> nsampling;
-    BOOST_FOREACH(const iterator_index_type::value_type& i, std::make_pair(iterator_index_type(list_nsampling), iterator_index_type() ) )
-    {
-        nsampling.push_back(i);
-    }
+    IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
 
     rDummy.Predict(point, xi, nsampling);
 
@@ -196,18 +168,11 @@ boost::python::list Patch_Predict1(TPatchType& rDummy, const boost::python::list
 template<class TPatchType>
 boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& xi0)
 {
-
     std::vector<double> xi0_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi0), iterator_value_type() ) )
-    {
-        xi0_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(xi0, xi0_vec);
 
     std::vector<double> P_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
-    {
-        P_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
@@ -235,19 +200,11 @@ boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, const boost::pyth
 template<class TPatchType>
 bool Patch_IsInside(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& xi0)
 {
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-
     std::vector<double> xi0_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi0), iterator_value_type() ) )
-    {
-        xi0_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(xi0, xi0_vec);
 
     std::vector<double> P_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
-    {
-        P_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);

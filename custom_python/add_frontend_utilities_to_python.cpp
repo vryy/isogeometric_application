@@ -15,22 +15,20 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
 #include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
 
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
 #include "python/pointer_vector_set_python_interface.h"
-#include "custom_python/add_utilities_to_python.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/nurbs/bsplines_patch_utility.h"
 #include "custom_utilities/multipatch_utility.h"
 #include "custom_utilities/multipatch_refinement_utility.h"
 #include "custom_utilities/bending_strip_utility.h"
 #include "custom_utilities/trim/isogeometric_intersection_utility.h"
+#include "custom_python/iga_python_utils.h"
+#include "custom_python/add_utilities_to_python.h"
 
 
 namespace Kratos
@@ -60,13 +58,8 @@ template<int TDim>
 boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
      const boost::python::list& P, const boost::python::list& list_nsampling)
 {
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-
     std::vector<double> P_vec;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(P), iterator_value_type() ) )
-    {
-        P_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
@@ -75,13 +68,8 @@ boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
         point[i] = P_vec[i];
 
-    typedef boost::python::stl_input_iterator<int> iterator_index_type;
-
     std::vector<int> nsampling;
-    BOOST_FOREACH(const iterator_index_type::value_type& i, std::make_pair(iterator_index_type(list_nsampling), iterator_index_type() ) )
-    {
-        nsampling.push_back(i);
-    }
+    IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
 
     int patch_id = rDummy.LocalCoordinates(*pMultiPatch, point, xi, nsampling);
 
@@ -158,27 +146,7 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
        const boost::python::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
-    std::size_t dim = 0;
-
-    typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& ins_knots_x,
-                std::make_pair(iterator_value_type(ins_knots), // begin
-                iterator_value_type() ) ) // end
-    {
-        std::vector<double> knots;
-
-        typedef boost::python::stl_input_iterator<double> iterator_value_type2;
-        BOOST_FOREACH(const iterator_value_type2::value_type& knot,
-                    std::make_pair(iterator_value_type2(ins_knots_x), // begin
-                    iterator_value_type2() ) ) // end
-        {
-            knots.push_back(knot);
-        }
-
-        ins_knots_array[dim++] = knots;
-        if (dim == TDim)
-            break;
-    }
+    std::size_t dim = IsogeometricPythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
 
     if (dim != TDim)
         KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
@@ -192,27 +160,7 @@ boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinemen
        const boost::python::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
-    std::size_t dim = 0;
-
-    typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& ins_knots_x,
-                std::make_pair(iterator_value_type(ins_knots), // begin
-                iterator_value_type() ) ) // end
-    {
-        std::vector<double> knots;
-
-        typedef boost::python::stl_input_iterator<double> iterator_value_type2;
-        BOOST_FOREACH(const iterator_value_type2::value_type& knot,
-                    std::make_pair(iterator_value_type2(ins_knots_x), // begin
-                    iterator_value_type2() ) ) // end
-        {
-            knots.push_back(knot);
-        }
-
-        ins_knots_array[dim++] = knots;
-        if (dim == TDim)
-            break;
-    }
+    std::size_t dim = IsogeometricPythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
 
     if (dim != TDim)
         KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
@@ -234,17 +182,7 @@ void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDum
        const boost::python::list& order_increment)
 {
     std::vector<std::size_t> order_incr_array(TDim);
-    std::size_t dim = 0;
-
-    typedef boost::python::stl_input_iterator<int> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& t,
-               std::make_pair(iterator_value_type(order_increment), // begin
-               iterator_value_type() ) ) // end
-    {
-       order_incr_array[dim++] = static_cast<std::size_t>(t);
-       if (dim == TDim)
-            break;
-    }
+    std::size_t dim = IsogeometricPythonUtils::Unpack<int, std::size_t>(order_increment, order_incr_array, TDim);
 
     if (dim != TDim)
         KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
@@ -265,15 +203,9 @@ template<int TDim>
 typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSplinesPatchUtility& dummy,
         const boost::python::list& patch_list, int order)
 {
-    std::vector<typename Patch<TDim-1>::Pointer> pPatches;
-
-    typedef boost::python::stl_input_iterator<typename Patch<TDim-1>::Pointer> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& pPatch,
-                std::make_pair(iterator_value_type(patch_list), // begin
-                iterator_value_type() ) ) // end
-    {
-        pPatches.push_back(pPatch);
-    }
+    typedef typename Patch<TDim-1>::Pointer TPatchPointerType;
+    std::vector<TPatchPointerType> pPatches;
+    IsogeometricPythonUtils::Unpack<TPatchPointerType, TPatchPointerType>(patch_list, pPatches);
     KRATOS_WATCH(pPatches.size())
 
     return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatches, order);
@@ -343,18 +275,7 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
         const boost::python::list& order_list)
 {
     std::vector<int> Orders(TDim);
-
-    std::size_t dim = 0;
-
-    typedef boost::python::stl_input_iterator<int> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& t,
-                std::make_pair(iterator_value_type(order_list), // begin
-                iterator_value_type() ) ) // end
-    {
-        Orders[dim++] = static_cast<int>(t);
-        if (dim == TDim)
-            break;
-    }
+    IsogeometricPythonUtils::Unpack<int, int>(order_list, Orders, TDim);
 
     return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Orders);
 }
@@ -418,13 +339,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
     std::vector<double> starting_points;
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& v,
-               std::make_pair(iterator_value_type(list_starting_points), // begin
-               iterator_value_type() ) ) // end
-    {
-        starting_points.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(list_starting_points, starting_points);
 
     std::vector<std::vector<double> > intersection_points;
 
@@ -460,13 +375,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
     std::vector<double> starting_points;
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& v,
-               std::make_pair(iterator_value_type(list_starting_points), // begin
-               iterator_value_type() ) ) // end
-    {
-        starting_points.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(list_starting_points, starting_points);
 
     std::vector<std::vector<double> > intersection_points;
 

@@ -15,10 +15,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
 #include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -26,6 +23,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/grid_function.h"
+#include "custom_python/iga_python_utils.h"
 
 
 namespace Kratos
@@ -64,12 +62,7 @@ template<class TGridFrunctionType>
 typename TGridFrunctionType::DataType GridFunction_GetValue1(TGridFrunctionType& rDummy, const boost::python::list& xi)
 {
     std::vector<double> xi_vec;
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi), iterator_value_type() ) )
-    {
-        xi_vec.push_back(v);
-    }
-
+    IsogeometricPythonUtils::Unpack<double, double>(xi, xi_vec);
     return rDummy.GetValue(xi_vec);
 }
 
@@ -83,11 +76,7 @@ template<class TGridFrunctionType>
 boost::python::list GridFunction_GetDerivative1(TGridFrunctionType& rDummy, const boost::python::list& xi)
 {
     std::vector<double> xi_vec;
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi), iterator_value_type() ) )
-    {
-        xi_vec.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(xi, xi_vec);
 
     std::vector<typename TGridFrunctionType::DataType> derivatives;
     rDummy.GetDerivative(derivatives, xi_vec);

@@ -15,10 +15,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
 #include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -31,6 +28,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/nurbs/pbbsplines_fespace.h"
 #include "custom_utilities/hbsplines/hbsplines_basis_function.h"
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
+#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_control_grids_to_python.h"
 
@@ -161,18 +159,7 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicContro
     ngrid[2] = n_points_w;
 
     std::vector<std::vector<double> > spacing_vectors;
-    std::size_t cnt1 = 0, cnt2 = 0;
-    typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
-    BOOST_FOREACH(const iterator_value_type::value_type& vect, std::make_pair(iterator_value_type(spacing_vectors_data), iterator_value_type() ) )
-    {
-        typedef boost::python::stl_input_iterator<double> iterator_value_type2;
-        std::vector<double> space_vect;
-        BOOST_FOREACH(const iterator_value_type2::value_type& v, std::make_pair(iterator_value_type2(vect), iterator_value_type2() ) )
-        {
-            space_vect.push_back(v);
-        }
-        spacing_vectors.push_back(space_vect);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(spacing_vectors_data, spacing_vectors);
 
     return rDummy.CreateStructuredControlPointGrid<3>(start, ngrid, spacing_vectors);
 }

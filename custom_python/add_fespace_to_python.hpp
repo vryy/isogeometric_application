@@ -15,14 +15,12 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
 #include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
 
 // Project includes
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/weighted_fespace.h"
+#include "custom_python/iga_python_utils.h"
 
 
 namespace Kratos
@@ -53,12 +51,7 @@ template<int TDim>
 boost::python::list FESpace_GetValue(FESpace<TDim>& rDummy, boost::python::list xi_list)
 {
     std::vector<double> xi;
-
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi_list), iterator_value_type() ) )
-    {
-        xi.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(xi_list, xi);
 
     std::vector<double> values = rDummy.GetValues(xi);
 
@@ -73,12 +66,7 @@ template<int TDim>
 bool FESpace_IsInside(FESpace<TDim>& rDummy, boost::python::list xi_list)
 {
     std::vector<double> xi;
-
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi_list), iterator_value_type() ) )
-    {
-        xi.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<double, double>(xi_list, xi);
 
     return rDummy.IsInside(xi);
 }

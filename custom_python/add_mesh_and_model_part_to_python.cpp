@@ -15,10 +15,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
-#include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -29,6 +25,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/multipatch_lagrange_control_mesh.h"
 #include "custom_utilities/multipatch_model_part.h"
 #include "custom_utilities/multi_multipatch_model_part.h"
+#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_mesh_and_model_part_to_python.h"
 
 
@@ -85,51 +82,34 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2
     return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
 }
 
-template<int TDim>
-ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary(MultiMultiPatchModelPart<TDim>& rDummy,
-    typename Patch<TDim>::Pointer pPatch, const int& iside,
-    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+template<int TDim, typename TVariableType>
+void MultiPatchModelPart_SynchronizeBackward(MultiPatchModelPart<TDim>& rDummy,
+    const TVariableType& rVariable, const boost::python::dict& rPatchNodalValues)
 {
-    BoundarySide side = static_cast<BoundarySide>(iside);
-    return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
-}
+    std::map<std::size_t, std::map<std::size_t, typename TVariableType::Type> > patch_nodal_values;
+    IsogeometricPythonUtils::Unpack(rPatchNodalValues, patch_nodal_values);
 
-template<int TDim>
-ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary2(MultiMultiPatchModelPart<TDim>& rDummy,
-    typename Patch<TDim-1>::Pointer pBoundaryPatch,
-    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
-{
-    return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
+    rDummy.SynchronizeBackwardFromData(rVariable, patch_nodal_values);
 }
 
 ////////////////////////////////////////
 
 template<class T>
-ModelPart::ElementsContainerType MultiMultiPatchModelPart_AddElements(T& rDummy, boost::python::list patch_list,
-    const std::string& element_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+ModelPart::ElementsContainerType MultiMultiPatchModelPart_AddElements(T& rDummy, const boost::python::list& patch_list,
+    const std::string& element_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     std::vector<typename T::PatchType::Pointer> pPatches;
-
-    typedef boost::python::stl_input_iterator<typename T::PatchType::Pointer> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& v, std::make_pair(iterator_value_type(patch_list), iterator_value_type() ) )
-    {
-        pPatches.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<T>(patch_list, pPatches);
 
     return rDummy.AddElements(pPatches, element_name, starting_id, pProperties);
 }
 
 template<class T>
-ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions(T& rDummy, boost::python::list patch_list,
-    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions(T& rDummy, const boost::python::list& patch_list,
+    const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     std::vector<typename T::PatchType::Pointer> pPatches;
-
-    typedef boost::python::stl_input_iterator<typename T::PatchType::Pointer> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& v, std::make_pair(iterator_value_type(patch_list), iterator_value_type() ) )
-    {
-        pPatches.push_back(v);
-    }
+    IsogeometricPythonUtils::Unpack<T>(patch_list, pPatches);
 
     return rDummy.AddConditions(pPatches, condition_name, starting_id, pProperties);
 }
@@ -153,10 +133,7 @@ boost::python::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDu
     Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
 
     std::vector<std::size_t> num_divisions;
-    typedef boost::python::stl_input_iterator<int> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& v,
-        std::make_pair(iterator_value_type(list_divs), iterator_value_type() ) )
-            num_divisions.push_back(v);
+    IsogeometricPythonUtils::Unpack<int, std::size_t>(list_divs, num_divisions);
 
     std::size_t my_last_node_id = last_node_id;
     std::size_t my_last_elem_id = last_elem_id;
@@ -189,10 +166,7 @@ boost::python::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& r
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
     std::vector<std::size_t> num_divisions;
-    typedef boost::python::stl_input_iterator<int> iterator_value_type;
-    BOOST_FOREACH(const typename iterator_value_type::value_type& v,
-        std::make_pair(iterator_value_type(list_divs), iterator_value_type() ) )
-            num_divisions.push_back(v);
+    IsogeometricPythonUtils::Unpack<int, std::size_t>(list_divs, num_divisions);
 
     std::size_t my_last_node_id = last_node_id;
     std::size_t my_last_cond_id = last_cond_id;
@@ -213,7 +187,6 @@ boost::python::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& r
 template<int TDim>
 void IsogeometricApplication_AddMeshToPython()
 {
-
     std::stringstream ss;
 
     ss.str(std::string());
@@ -292,6 +265,9 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("SynchronizeBackward", &MultiPatchModelPartType::template SynchronizeBackward<Variable<array_1d<double, 3> > >)
     .def("SynchronizeForward", &MultiPatchModelPartType::template SynchronizeForward<Variable<Vector> >)
     .def("SynchronizeBackward", &MultiPatchModelPartType::template SynchronizeBackward<Variable<Vector> >)
+    .def("SynchronizeBackward", &MultiPatchModelPart_SynchronizeBackward<TDim, Variable<double> >)
+    .def("SynchronizeBackward", &MultiPatchModelPart_SynchronizeBackward<TDim, Variable<array_1d<double, 3> > >)
+    .def("SynchronizeBackward", &MultiPatchModelPart_SynchronizeBackward<TDim, Variable<Vector> >)
     .def(self_ns::str(self))
     ;
 

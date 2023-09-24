@@ -15,10 +15,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <string>
 
 // External includes
-#include <boost/foreach.hpp>
 #include <boost/python.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/python/operators.hpp>
 
 // Project includes
 #include "includes/define.h"
@@ -35,6 +32,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/nurbs/bending_strip_nurbs_patch.h"
 #include "custom_utilities/nurbs/nurbs_test_utils.h"
 #include "custom_python/iga_define_python.h"
+#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_nurbs_to_python.h"
 
 
@@ -70,11 +68,7 @@ void BSplinesFESpace_SetKnotVector(BSplinesFESpace<TDim>& rDummy, const boost::p
     if (TWhichDim < TDim)
     {
         std::vector<double> knot_vec;
-        typedef boost::python::stl_input_iterator<double> iterator_value_type;
-        BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(knot_list), iterator_value_type() ) )
-        {
-            knot_vec.push_back(v);
-        }
+        IsogeometricPythonUtils::Unpack<double, double>(knot_list, knot_vec);
 
         rDummy.SetKnotVector(TWhichDim, knot_vec);
     }

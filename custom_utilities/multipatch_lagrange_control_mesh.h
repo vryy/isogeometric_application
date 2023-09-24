@@ -62,10 +62,10 @@ public:
     void SetBaseElementName(const std::string& BaseElementName) {mBaseElementName = BaseElementName;}
 
     /// Set the last node index
-    void SetLastNodeId(const IndexType& lastNodeId) {mLastNodeId = lastNodeId;}
+    void SetLastNodeId(IndexType lastNodeId) {mLastNodeId = lastNodeId;}
 
     /// Set the last element index
-    void SetLastElemId(const IndexType& lastElemId) {mLastElemId = lastElemId;}
+    void SetLastElemId(IndexType lastElemId) {mLastElemId = lastElemId;}
 
     /// Append to model_part, the quad/hex element from patches
     void WriteModelPart(ModelPart& r_model_part) const

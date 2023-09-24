@@ -31,19 +31,19 @@ std::size_t BSplinesIndexingUtility::Index<3>(const std::vector<std::size_t>& I,
 }
 
 template<>
-std::vector<std::size_t> BSplinesIndexingUtility::IndexArray<1>(const std::size_t& I, const std::vector<std::size_t>& N)
+std::vector<std::size_t> BSplinesIndexingUtility::IndexArray<1>(std::size_t I, const std::vector<std::size_t>& N)
 {
     return BSplinesIndexingUtility_Helper::IndexArray1D(I, N[0]);
 }
 
 template<>
-std::vector<std::size_t> BSplinesIndexingUtility::IndexArray<2>(const std::size_t& I, const std::vector<std::size_t>& N)
+std::vector<std::size_t> BSplinesIndexingUtility::IndexArray<2>(std::size_t I, const std::vector<std::size_t>& N)
 {
     return BSplinesIndexingUtility_Helper::IndexArray2D(I, N[0], N[1]);
 }
 
 template<>
-std::vector<std::size_t> BSplinesIndexingUtility::IndexArray<3>(const std::size_t& I, const std::vector<std::size_t>& N)
+std::vector<std::size_t> BSplinesIndexingUtility::IndexArray<3>(std::size_t I, const std::vector<std::size_t>& N)
 {
     return BSplinesIndexingUtility_Helper::IndexArray3D(I, N[0], N[1], N[2]);
 }

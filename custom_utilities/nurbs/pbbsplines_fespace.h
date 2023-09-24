@@ -82,7 +82,7 @@ public:
 
     /// Check if the bf exists in the list; otherwise create new bf and return
     /// The Id is only used when the new bf is created. User must always check the Id of the returned function.
-    bf_t CreateBf(const std::size_t& Id, const std::vector<std::vector<knot_t> >& rpKnots)
+    bf_t CreateBf(std::size_t Id, const std::vector<std::vector<knot_t> >& rpKnots)
     {
         // search in the current list of basis functions, the one that has the same local knot vector with provided ones
         for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
@@ -118,20 +118,20 @@ public:
     std::size_t LastId() const {bf_const_iterator it = bf_end(); --it; return (*it)->Id();}
 
     /// Set the order for the point-based B-Splines
-    void SetInfo(const std::size_t& i, const std::size_t& order) {mOrders[i] = order;}
+    void SetInfo(std::size_t i, std::size_t order) {mOrders[i] = order;}
 
     /// Get the order of the BSplines patch in specific direction
-    virtual std::size_t Order(const std::size_t& i) const
+    std::size_t Order(std::size_t i) const override
     {
         if (i >= TDim) return 0;
         else return mOrders[i];
     }
 
     /// Get the number of basis functions defined over the BSplines
-    virtual std::size_t TotalNumber() const {return mpBasisFuncs.size();}
+    std::size_t TotalNumber() const override {return mpBasisFuncs.size();}
 
     /// Get the lower and upper bound of the parametric space in a specific direction
-    virtual std::vector<double> ParametricBounds(const std::size_t& di) const
+    std::vector<double> ParametricBounds(std::size_t di) const override
     {
         std::vector<double> bound = {1.0e99, -1.0e99};
 
@@ -156,7 +156,7 @@ public:
     }
 
     /// Get the string representing the type of the patch
-    virtual std::string Type() const
+    std::string Type() const override
     {
         return StaticType();
     }
@@ -170,7 +170,7 @@ public:
     }
 
     /// Validate the PBBSplinesFESpace
-    virtual bool Validate() const
+    bool Validate() const override
     {
         // TODO validate more
         return BaseType::Validate();
@@ -178,7 +178,7 @@ public:
 
     /// Get the values of the basis function i at point xi
     /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
-    virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
+    void GetValue(double& v, std::size_t i, const std::vector<double>& xi) const override
     {
         std::size_t j = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
@@ -195,7 +195,7 @@ public:
 
     /// Get the values of the basis functions at point xi
     /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
-    virtual void GetValues(std::vector<double>& values, const std::vector<double>& xi) const
+    void GetValues(std::vector<double>& values, const std::vector<double>& xi) const override
     {
         if (values.size() != this->TotalNumber())
             values.resize(this->TotalNumber());
@@ -207,7 +207,7 @@ public:
     /// Get the derivative of the basis function i at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
     /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
-    virtual void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const
+    void GetDerivative(std::vector<double>& values, std::size_t i, const std::vector<double>& xi) const override
     {
         std::size_t j = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
@@ -227,7 +227,7 @@ public:
     /// Get the derivative of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
     /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
-    virtual void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const override
     {
         if (values.size() != this->TotalNumber())
             values.resize(this->TotalNumber());
@@ -244,7 +244,8 @@ public:
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
     /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
-    virtual void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+    void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives,
+            const std::vector<double>& xi) const override
     {
         if (values.size() != this->TotalNumber())
             values.resize(this->TotalNumber());
@@ -263,14 +264,14 @@ public:
     }
 
     /// Check if a point lies inside the parametric domain of the BSplinesFESpace
-    virtual bool IsInside(const std::vector<double>& xi) const
+    bool IsInside(const std::vector<double>& xi) const override
     {
         // TODO
         KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    virtual bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const
+    bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -294,7 +295,7 @@ public:
 
     /// Reset the function indices to -1.
     /// This is useful when assigning the id for the boundary patch.
-    virtual void ResetFunctionIndices()
+    void ResetFunctionIndices() override
     {
         BaseType::mGlobalToLocal.clear();
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
@@ -305,7 +306,7 @@ public:
 
     /// Reset the function indices to a given values.
     /// This is useful when assigning the id for the boundary patch.
-    virtual void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
+    void ResetFunctionIndices(const std::vector<std::size_t>& func_indices) override
     {
         if (func_indices.size() != this->TotalNumber())
         {
@@ -328,7 +329,7 @@ public:
     /// Enumerate the dofs of each grid function. This function is used to initialize the equation id for all basis functions.
     /// If the dof does not have pre-existing value, which assumes -1, it will be assigned the incremental value.
     /// This function can be used after refinement, providing that all the -1 are overrided, and the start value must be the latest one on the multipatch.
-    virtual std::size_t& Enumerate(std::size_t& start)
+    std::size_t& Enumerate(std::size_t& start) override
     {
         BaseType::mGlobalToLocal.clear();
         std::size_t cnt = 0;
@@ -342,7 +343,7 @@ public:
     }
 
     /// Access the function indices (aka global ids)
-    virtual std::vector<std::size_t> FunctionIndices() const
+    std::vector<std::size_t> FunctionIndices() const override
     {
         std::vector<std::size_t> func_indices(this->TotalNumber());
         std::size_t cnt = 0;
@@ -355,7 +356,7 @@ public:
     }
 
     /// Update the function indices using a map. The map shall be the mapping from old index to new index.
-    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
+    void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map) override
     {
         std::size_t cnt = 0;
         BaseType::mGlobalToLocal.clear();
@@ -376,7 +377,7 @@ public:
     }
 
     /// Get the first equation_id in this space
-    virtual std::size_t GetFirstEquationId() const
+    std::size_t GetFirstEquationId() const override
     {
         std::size_t first_id;
 
@@ -400,7 +401,7 @@ public:
     }
 
     /// Get the last equation_id in this space
-    virtual std::size_t GetLastEquationId() const
+    std::size_t GetLastEquationId() const override
     {
         std::size_t last_id = -1;
         bool hit = false;
@@ -426,7 +427,7 @@ public:
     }
 
     /// Get the basis functions based on boundary flag. This allows to extract the corner bf.
-    std::vector<bf_t> ExtractBoundaryBfsByFlag(const std::size_t& boundary_id) const
+    std::vector<bf_t> ExtractBoundaryBfsByFlag(std::size_t boundary_id) const
     {
         // firstly we organize the basis functions based on its equation_id
         // it may happen that one bf is encountered twice, so we use a map here
@@ -456,7 +457,7 @@ public:
     }
 
     /// Extract the index of the functions on the boundaries
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(const int& boundary_id) const
+    std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(int boundary_id) const override
     {
         std::vector<bf_t> bfs = this->ExtractBoundaryBfsByFlag(boundary_id);
 
@@ -472,7 +473,7 @@ public:
     }
 
     /// Extract the index of the functions on the boundary
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const override
     {
         std::vector<std::size_t> func_indices;
 
@@ -496,7 +497,7 @@ public:
     }
 
     /// Assign the index for the functions on the boundary
-    virtual void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices)
+    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices) override
     {
         // firstly we organize the basis functions based on its equation_id
         std::map<std::size_t, bf_t> map_bfs;
@@ -545,13 +546,13 @@ public:
     }
 
     /// Create the cell manager for all the cells in the support domain of the PBBSplinesFESpace
-    virtual typename BaseType::cell_container_t::Pointer ConstructCellManager() const
+    typename BaseType::cell_container_t::Pointer ConstructCellManager() const override
     {
         return mpCellManager;
     }
 
     /// Overload operator[], this allows to access the basis function randomly based on index
-    bf_t operator[](const std::size_t& i)
+    bf_t operator[](std::size_t i)
     {
         typename bf_container_t::iterator it = mpBasisFuncs.begin();
         std::advance(it, i);
@@ -559,7 +560,7 @@ public:
     }
 
     /// Overload operator(), this allows to access the basis function based on its id
-    bf_t operator()(const std::size_t& Id)
+    bf_t operator()(std::size_t Id)
     {
         // create the index map if it's not created yet
         if(!m_function_map_is_created)
@@ -574,19 +575,19 @@ public:
     }
 
     /// Check if the functional space has the function with equation id
-    bool HasBfByEquationId(const std::size_t& EquationId) const
+    bool HasBfByEquationId(std::size_t EquationId) const
     {
         return (BaseType::mGlobalToLocal.find(EquationId) != BaseType::mGlobalToLocal.end());
     }
 
     /// Check if the functional space has the function with Id
-    bool HasBfById(const std::size_t& Id) const
+    bool HasBfById(std::size_t Id) const
     {
         return (mFunctionsMap.find(Id) != mFunctionsMap.end());
     }
 
     /// Get the basis function by equation id
-    bf_t pGetBfByEquationId(const std::size_t& EquationId)
+    bf_t pGetBfByEquationId(std::size_t EquationId)
     {
         return this->operator[](BaseType::mGlobalToLocal[EquationId]);
     }
@@ -601,7 +602,7 @@ public:
     }
 
     /// Clone this FESpace, this is a deep copy operation
-    virtual typename FESpace<TDim>::Pointer Clone() const
+    typename FESpace<TDim>::Pointer Clone() const override
     {
         typename PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>::Pointer pNewFESpace = typename PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>::Pointer(new PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>());
         *pNewFESpace = *this;
@@ -609,7 +610,7 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Type() << ", Addr = " << this << ", n = " << this->TotalNumber();
         rOStream << ", p = (";
@@ -618,7 +619,7 @@ public:
         rOStream << ")";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
         rOStream << std::endl;

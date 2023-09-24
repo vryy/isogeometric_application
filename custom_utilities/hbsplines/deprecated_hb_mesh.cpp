@@ -27,7 +27,7 @@ namespace Kratos
 {
 
     template<int TDim>
-    DeprecatedHBMesh<TDim>::DeprecatedHBMesh(const std::size_t& Id, const std::string& Name)
+    DeprecatedHBMesh<TDim>::DeprecatedHBMesh(std::size_t Id, const std::string& Name)
     : BaseType(Id), mName(Name), mLastLevel(0), mMaxLevels(10)
     {
     }
@@ -547,7 +547,7 @@ namespace Kratos
     }
 
     template<int TDim>
-    void DeprecatedHBMesh<TDim>::Refine(const std::size_t& Id)
+    void DeprecatedHBMesh<TDim>::Refine(std::size_t Id)
     {
         #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();
@@ -906,8 +906,8 @@ namespace Kratos
     }
 
     template<int TDim>
-    void DeprecatedHBMesh<TDim>::RefineWindow(const double& Xi_min, const double& Xi_max,
-            const double& Eta_min, const double& Eta_max, const double& Zeta_min, const double& Zeta_max)
+    void DeprecatedHBMesh<TDim>::RefineWindow(double Xi_min, double Xi_max,
+            double Eta_min, double Eta_max, double Zeta_min, double Zeta_max)
     {
         // search and mark all basis functions need to refine on all level (starting from the last level) which support is contained in the refining domain
         double bounding_box_xi_min;
@@ -942,7 +942,7 @@ namespace Kratos
     }
 
     template<int TDim>
-    void DeprecatedHBMesh<TDim>::LinearDependencyRefine(const std::size_t& refine_cycle)
+    void DeprecatedHBMesh<TDim>::LinearDependencyRefine(std::size_t refine_cycle)
     {
         if(mLastLevel < 1)
             return;

@@ -83,26 +83,26 @@ public:
     }
 
     /// Get the data at specific point
-    virtual TDataType GetData(const std::size_t& i) const
+    virtual TDataType GetData(std::size_t i) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
     /// Set the data at specific point
     /// Be careful with this method. You can destroy the coherency of internal data.
-    virtual void SetData(const std::size_t& i, const TDataType& value)
+    virtual void SetData(std::size_t i, const TDataType& value)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
     /// overload operator []
-    virtual TDataType& operator[] (const std::size_t& i)
+    virtual TDataType& operator[] (std::size_t i)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
     /// overload operator []
-    virtual const TDataType& operator[] (const std::size_t& i) const
+    virtual const TDataType& operator[] (std::size_t i) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }

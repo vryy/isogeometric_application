@@ -115,7 +115,7 @@ public:
 
     /// Locate the patch of the global equation id and the corresponding local id to determine the control value
     /// IMPORTANT: user must make sure that the multipatch is fully enumerated by checking IsEnumerated()
-    std::tuple<std::size_t, std::size_t> EquationIdLocation(const std::size_t& global_id) const
+    std::tuple<std::size_t, std::size_t> EquationIdLocation(std::size_t global_id) const
     {
         std::map<std::size_t, std::size_t>::const_iterator it = mGlobalIdToPatchId.find(global_id);
         if (it == mGlobalIdToPatchId.end())
@@ -128,8 +128,8 @@ public:
             KRATOS_THROW_ERROR(std::logic_error, "The global id does not exist in the global_to_patch map.", "")
         }
 
-        const std::size_t& patch_id = it->second;
-        const std::size_t& local_id = pGetPatch(it->second)->pFESpace()->LocalId(global_id);
+        std::size_t patch_id = it->second;
+        std::size_t local_id = pGetPatch(it->second)->pFESpace()->LocalId(global_id);
 
         return std::make_tuple(patch_id, local_id);
     }
@@ -155,7 +155,7 @@ public:
     }
 
     /// Get the patch with specific Id
-    typename PatchType::Pointer pGetPatch(const std::size_t& Id)
+    typename PatchType::Pointer pGetPatch(std::size_t Id)
     {
         patch_ptr_iterator it_patch = mpPatches.find(Id).base();
         if(it_patch == mpPatches.ptr_end())
@@ -168,7 +168,7 @@ public:
     }
 
     /// Get the patch with specific Id
-    typename PatchType::ConstPointer pGetPatch(const std::size_t& Id) const
+    typename PatchType::ConstPointer pGetPatch(std::size_t Id) const
     {
         typename PatchContainerType::ptr_const_iterator it_patch = mpPatches.find(Id).base();
         if(it_patch == mpPatches.ptr_end())
@@ -272,7 +272,7 @@ public:
     }
 
     /// Enumerate all the patches, with the given starting id
-    std::size_t Enumerate(const std::size_t& start)
+    std::size_t Enumerate(std::size_t start)
     {
         // enumerate each patch
         std::size_t last = start;

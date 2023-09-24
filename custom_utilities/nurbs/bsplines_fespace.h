@@ -82,7 +82,7 @@ public:
     }
 
     /// Get the order of the BSplines patch in specific direction
-    std::size_t Order(const std::size_t& idir) const final
+    std::size_t Order(std::size_t idir) const final
     {
         if (idir >= TDim) return 0;
         else return mOrders[idir];
@@ -98,7 +98,7 @@ public:
     }
 
     /// Get the number of control points of the BSplines in specific direction
-    std::size_t Number(const std::size_t& idir) const {return mNumbers[idir];}
+    std::size_t Number(std::size_t idir) const {return mNumbers[idir];}
 
     /// Get the number of basis functions defined over the BSplines
     std::size_t TotalNumber() const final
@@ -110,7 +110,7 @@ public:
     }
 
     /// Get the lower and upper bound of the parametric space in a specific direction
-    std::vector<double> ParametricBounds(const std::size_t& idir) const final
+    std::vector<double> ParametricBounds(std::size_t idir) const final
     {
         std::vector<double> bound(2);
         bound[0] = (*(mKnotVectors[idir].begin()))->Value();
@@ -133,13 +133,13 @@ public:
     }
 
     /// Set the knot vector in direction i.
-    void SetKnotVector(const std::size_t& idir, const knot_container_t& p_knot_vector)
+    void SetKnotVector(std::size_t idir, const knot_container_t& p_knot_vector)
     {
         mKnotVectors[idir] = p_knot_vector;
     }
 
     /// Create and set the knot vector in direction i.
-    void SetKnotVector(const std::size_t& idir, const std::vector<double>& values)
+    void SetKnotVector(std::size_t idir, const std::vector<double>& values)
     {
         if (idir >= TDim)
         {
@@ -154,10 +154,10 @@ public:
     }
 
     /// Get the knot vector in i-direction
-    const knot_container_t& KnotVector(const std::size_t& idir) const {return mKnotVectors[idir];}
+    const knot_container_t& KnotVector(std::size_t idir) const {return mKnotVectors[idir];}
 
     /// Reverse the evaluation in i-direction
-    void Reverse(const std::size_t& idir) override
+    void Reverse(std::size_t idir) override
     {
         // reverse the knot vector
         mKnotVectors[idir].Reverse();
@@ -174,7 +174,7 @@ public:
     }
 
     /// Set the BSplines information in the direction i
-    void SetInfo(const std::size_t& idir, const std::size_t& Number, const std::size_t& Order)
+    void SetInfo(std::size_t idir, std::size_t Number, std::size_t Order)
     {
         mOrders[idir] = Order;
         mNumbers[idir] = Number;
@@ -196,7 +196,7 @@ public:
     }
 
     /// Get the values of the basis function i at point xi
-    void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const final
+    void GetValue(double& v, std::size_t i, const std::vector<double>& xi) const final
     {
         // TODO the current approach is expensive (all is computed). We have to find the way to optimize it.
         std::vector<double> values;
@@ -211,7 +211,7 @@ public:
     }
 
     /// Get the derivatives of the basis function i at point xi
-    void GetDerivative(std::vector<double>& values, const std::size_t& i, const std::vector<double>& xi) const final
+    void GetDerivative(std::vector<double>& values, std::size_t i, const std::vector<double>& xi) const final
     {
         // TODO the current approach is expensive (all is computed). Find the way to optimize it.
         std::vector<std::vector<double> > tmp;
@@ -398,7 +398,7 @@ public:
     }
 
     /// Extract the index of the functions on the boundaries
-    std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(const int& boundary_id) const final
+    std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(int boundary_id) const final
     {
         std::set<std::size_t> bf_id_set;
         bool first = false;
@@ -561,7 +561,7 @@ public:
     }
 
     /// Extract the index of the functions on the boundary down to some level
-    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side, const std::size_t& level) const final
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side, std::size_t level) const final
     {
         std::vector<std::size_t> func_indices;
 
@@ -687,7 +687,7 @@ public:
             {
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                 {
-                    const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))];
+                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))];
                     if (aux != -1)
                         mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1, j+1, this->Number(0), this->Number(1))] = aux;
                 }
@@ -698,7 +698,7 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
                         if (aux != -1)
                             mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
@@ -716,7 +716,7 @@ public:
             {
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                 {
-                    const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))];
+                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))];
                     if (aux != -1)
                         mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))] = aux;
                 }
@@ -727,7 +727,7 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
                         if (aux != -1)
                             mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
@@ -740,7 +740,7 @@ public:
             {
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                 {
-                    const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))];
+                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))];
                     if (aux != -1)
                         mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, 1, this->Number(0), this->Number(1))] = aux;
                 }
@@ -751,7 +751,7 @@ public:
                 {
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
                         if (aux != -1)
                             mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
@@ -764,7 +764,7 @@ public:
             {
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                 {
-                    const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))];
+                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))];
                     if (aux != -1)
                         mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))] = aux;
                 }
@@ -775,7 +775,7 @@ public:
                 {
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
                         if (aux != -1)
                             mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
@@ -790,7 +790,7 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
                         if (aux != -1)
                             mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
@@ -805,7 +805,7 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        const std::size_t& aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
                         if (aux != -1)
                             mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
                     }
@@ -1261,10 +1261,10 @@ public:
     virtual ~BSplinesFESpace() {}
 
     /// Get the order of the BSplines patch in specific direction
-    std::size_t Order(const std::size_t& i) const final {return 0;}
+    std::size_t Order(std::size_t i) const final {return 0;}
 
     /// Get the number of basis functions defined over the BSplines BSplinesFESpace on one direction
-    std::size_t Number(const std::size_t& i) const {return 0;}
+    std::size_t Number(std::size_t i) const {return 0;}
 
     /// Get the number of basis functions defined over the BSplines BSplinesFESpace
     std::size_t Number() const {return 0;}
@@ -1282,11 +1282,11 @@ public:
     }
 
     /// Set the knot vector in direction i.
-    void SetKnotVector(const std::size_t& i, const knot_container_t& p_knot_vector)
+    void SetKnotVector(std::size_t i, const knot_container_t& p_knot_vector)
     {}
 
     /// Get the knot vector in i-direction
-    const knot_container_t KnotVector(const std::size_t& i) const
+    const knot_container_t KnotVector(std::size_t i) const
     {
         return knot_container_t();
     }
@@ -1297,7 +1297,7 @@ public:
     }
 
     /// Set the BSplines information in the direction i
-    void SetInfo(const std::size_t& i, const std::size_t& Number, const std::size_t& Order)
+    void SetInfo(std::size_t i, std::size_t Number, std::size_t Order)
     {}
 
     /// Validate the BSplinesFESpace before using

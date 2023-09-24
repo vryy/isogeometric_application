@@ -137,7 +137,7 @@ public:
 
     //**************************************************************************
     //**************************************************************************
-    void AddConstraint(const std::size_t& row1, const std::size_t& row2)
+    void AddConstraint(std::size_t row1, std::size_t row2)
     {
         mRowConstraints[row1] = row2;
     }
@@ -155,8 +155,8 @@ public:
 
         for (std::map<std::size_t, std::size_t>::iterator it = mRowConstraints.begin(); it != mRowConstraints.end(); ++it)
         {
-            const std::size_t& row1 = it->first;
-            const std::size_t& row2 = it->second;
+            std::size_t row1 = it->first;
+            std::size_t row2 = it->second;
 
             noalias( row(A, row1) ) = row(A, row2);
             noalias( column(A, row1) ) = column(A, row2);

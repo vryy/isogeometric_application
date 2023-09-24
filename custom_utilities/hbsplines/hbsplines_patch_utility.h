@@ -84,7 +84,7 @@ public:
     /// Get the basis function based on equation id
     template<int TDim>
     static typename HBSplinesFESpace<TDim>::bf_t GetBfByEquationId(typename MultiPatch<TDim>::Pointer pMultiPatch,
-        const std::size_t& EquationId)
+        std::size_t EquationId)
     {
         typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
@@ -253,7 +253,7 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             std::size_t i_func = j * number_1 + i;
             std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
 
-            const std::size_t& func_id = func_indices[i_func];
+            std::size_t func_id = func_indices[i_func];
             typename HBSplinesBasisFunction<2>::Pointer p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
             p_bf->SetEquationId(func_id);
 
@@ -296,7 +296,7 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             for (std::size_t i = 0; i < double_var_list.size(); ++i)
             {
                 GridFunction<2, double>::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<double> >(*double_var_list[i]);
-                const double& v = pGridFunction->pControlGrid()->GetData(i_func);
+                double v = pGridFunction->pControlGrid()->GetData(i_func);
                 p_bf->SetValue(*double_var_list[i], v);
             }
 
@@ -407,7 +407,7 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
                 std::size_t i_func = (l * number_2 + j) * number_1 + i;
                 std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2, pLocalKnots3};
 
-                const std::size_t& func_id = func_indices[i_func];
+                std::size_t func_id = func_indices[i_func];
                 typename HBSplinesBasisFunction<3>::Pointer p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
                 p_bf->SetEquationId(func_id);
 

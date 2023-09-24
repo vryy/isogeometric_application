@@ -38,7 +38,7 @@ public:
     typedef TsEdge BaseType;
 
     /// Constructor
-    TsVEdge(const std::size_t& Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)
+    TsVEdge(std::size_t Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)
     : BaseType(Id, pV1, pV2)
     {
         // check if the index is valid
@@ -47,7 +47,7 @@ public:
     }
 
     /// check if the edge was cut by a horizontal ray
-    virtual bool IsCut(const double& anchor_eta_index) const
+    bool IsCut(double anchor_eta_index) const override
     {
         std::size_t edge_eta_index1 = BaseType::pV1()->Index2();
         std::size_t edge_eta_index2 = BaseType::pV2()->Index2();
@@ -60,13 +60,13 @@ public:
     /// 0: a general edge
     /// 1: a vertical edge
     /// 2: a horizontal edge
-    virtual int EdgeType() const
+    int EdgeType() const override
     {
         return BaseType::VERTICAL_EDGE;
     }
 
     /// Return the horizontal index of this edge
-    virtual std::size_t Index() const
+    std::size_t Index() const override
     {
         return pV1()->Index1();
     }

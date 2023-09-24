@@ -94,7 +94,7 @@ static int GetDimensionOfGeoHelper(const std::string& fn)
 template<int TDim>
 struct BoundarySideHelper
 {
-    static BoundarySide Get(const int& i)
+    static BoundarySide Get(int i)
     {
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not implemented")
     }
@@ -152,14 +152,14 @@ private:
         std::vector<GeoInterface>& interfaces) const;
 
     void ReadPatchData(std::ifstream& infile,
-        const int& rdim,
+        int rdim,
         std::vector<std::size_t>& orders,
         std::vector<std::size_t>& numbers,
         std::vector<std::vector<double> >& knots,
         std::vector<std::vector<double> >& wcoords,
         std::vector<double>& weights) const;
 
-    typename Patch<TDim>::Pointer CreateNewPatch(const std::size_t& Id,
+    typename Patch<TDim>::Pointer CreateNewPatch(std::size_t Id,
         const std::vector<std::size_t>& orders,
         const std::vector<std::size_t>& numbers,
         const std::vector<std::vector<double> >& knots,
@@ -170,7 +170,7 @@ private:
 template<>
 struct BoundarySideHelper<2>
 {
-    static BoundarySide Get(const int& i)
+    static BoundarySide Get(int i)
     {
         switch(i)
         {
@@ -187,7 +187,7 @@ struct BoundarySideHelper<2>
 template<>
 struct BoundarySideHelper<3>
 {
-    static BoundarySide Get(const int& i)
+    static BoundarySide Get(int i)
     {
         switch(i)
         {

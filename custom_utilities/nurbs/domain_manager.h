@@ -37,21 +37,21 @@ public:
     typedef std::set<double> coords_container_t;
 
     /// Default constructor
-    DomainManager(const std::size_t& Id) : mId(Id) {}
+    DomainManager(std::size_t Id) : mId(Id) {}
 
     /// Destructor
     virtual ~DomainManager() {}
 
     /// Get the Id of this domain manager
-    const std::size_t& Id() const {return mId;}
+    std::size_t Id() const {return mId;}
 
     /// Set the id for this domain manager
-    void SetId(const std::size_t& Id) {mId = Id;}
+    void SetId(std::size_t Id) {mId = Id;}
 
     /// Fill the internal array of X & Y-coordinates. It must be done before cells are added to this container.
-    virtual void AddXcoord(const double& X) {mXcoords.insert(X);}
-    virtual void AddYcoord(const double& Y) {mYcoords.insert(Y);}
-    virtual void AddZcoord(const double& Z) {mZcoords.insert(Z);}
+    virtual void AddXcoord(double X) {mXcoords.insert(X);}
+    virtual void AddYcoord(double Y) {mYcoords.insert(Y);}
+    virtual void AddZcoord(double Z) {mZcoords.insert(Z);}
 
     /// Add the cell to the set
     virtual void AddCell(const std::vector<double>& box)
@@ -66,7 +66,7 @@ public:
     }
 
     /// Export the domain to Matlab for visualization
-    virtual void ExportDomain(const std::string& fn, const std::string& color, const double& distance) const
+    virtual void ExportDomain(const std::string& fn, const std::string& color, double distance) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
     }

@@ -52,17 +52,17 @@ public:
     typedef std::vector<double> knot_container_t;
 
     /// Constructor with knots
-    TCell(const std::size_t& Id, double XiMin, double XiMax)
+    TCell(std::size_t Id, double XiMin, double XiMax)
     : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(0.0), mEtaMin(0.0), mZetaMax(0.0), mZetaMin(0.0)
     {}
 
     /// Constructor with knots
-    TCell(const std::size_t& Id, double XiMin, double XiMax, double EtaMin, double EtaMax)
+    TCell(std::size_t Id, double XiMin, double XiMax, double EtaMin, double EtaMax)
     : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(EtaMax), mEtaMin(EtaMin), mZetaMax(0.0), mZetaMin(0.0)
     {}
 
     /// Constructor with knots
-    TCell(const std::size_t& Id, double XiMin, double XiMax, double EtaMin, double EtaMax, double ZetaMin, double ZetaMax)
+    TCell(std::size_t Id, double XiMin, double XiMax, double EtaMin, double EtaMax, double ZetaMin, double ZetaMax)
     : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(EtaMax), mEtaMin(EtaMin), mZetaMax(ZetaMax), mZetaMin(ZetaMin)
     {}
 
@@ -102,7 +102,7 @@ public:
     }
 
     /// Check if this cell cover a point in knot space
-    bool IsCoverage(const double& rXi, const double& rEta) const
+    bool IsCoverage(double rXi, double rEta) const
     {
         if(    XiMinValue()  <= rXi  && XiMaxValue()  >= rXi
             && EtaMinValue() <= rEta && EtaMaxValue() >= rEta )
@@ -111,7 +111,7 @@ public:
     }
 
     /// Check if this cell cover a point in knot space
-    bool IsCoverage(const double& rXi, const double& rEta, const double& rZeta) const
+    bool IsCoverage(double rXi, double rEta, double rZeta) const
     {
         if(    XiMinValue()   <= rXi   && XiMaxValue()   >= rXi
             && EtaMinValue()  <= rEta  && EtaMaxValue()  >= rEta
@@ -121,7 +121,7 @@ public:
     }
 
     /// check if this cell is the same as the reference cell. Two cells are the same if it has the same bounding knot values.
-    bool IsSame(const TCell::Pointer p_cell, const double& tol) const
+    bool IsSame(const TCell::Pointer p_cell, double tol) const
     {
         if(    fabs( XiMinValue()   - p_cell->XiMinValue()   ) < tol
             && fabs( XiMaxValue()   - p_cell->XiMaxValue()   ) < tol

@@ -104,10 +104,10 @@ public:
     }
 
     /// Set the tolerance for the internal searching algorithm
-    void SetTolerance(const double& Tol) {mTol = Tol;}
+    void SetTolerance(double Tol) {mTol = Tol;}
 
     /// Get the tolerance for the internal searching algorithm
-    const double& GetTolerance() const {return mTol;}
+    double GetTolerance() const {return mTol;}
 
     /// Check if the cell exists in the list; otherwise create new cell and return
     virtual cell_t CreateCell(const std::vector<knot_t>& pKnots)
@@ -137,7 +137,7 @@ public:
     }
 
     /// Get a cell based on its Id
-    cell_t get(const std::size_t& Id)
+    cell_t get(std::size_t Id)
     {
         // create the index map if it's not created yet
         if(!cell_map_is_created)
@@ -152,7 +152,7 @@ public:
     }
 
     /// Overload operator[]
-    cell_t operator[](const std::size_t& Id)
+    cell_t operator[](std::size_t Id)
     {
         return get(Id);
     }

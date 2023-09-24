@@ -83,7 +83,7 @@ pybind11::list FESpace_FunctionIndices(FESpace<TDim>& rDummy)
 }
 
 template<int TDim>
-pybind11::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, const int& iside)
+pybind11::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, int iside)
 {
     pybind11::list indices;
     BoundarySide side = static_cast<BoundarySide>(iside);
@@ -94,7 +94,7 @@ pybind11::list FESpace_BoundaryFunctionIndices(FESpace<TDim>& rDummy, const int&
 }
 
 template<int TDim>
-pybind11::list FESpace_BoundaryFunctionIndicesByFlag(FESpace<TDim>& rDummy, const int& boundary_id)
+pybind11::list FESpace_BoundaryFunctionIndicesByFlag(FESpace<TDim>& rDummy, int boundary_id)
 {
     pybind11::list indices;
     std::vector<std::size_t> boundary_indices = rDummy.ExtractBoundaryFunctionIndicesByFlag(boundary_id);
@@ -104,7 +104,7 @@ pybind11::list FESpace_BoundaryFunctionIndicesByFlag(FESpace<TDim>& rDummy, cons
 }
 
 template<int TDim>
-pybind11::list FESpace_BoundaryShiftedFunctionIndices(FESpace<TDim>& rDummy, const int& iside)
+pybind11::list FESpace_BoundaryShiftedFunctionIndices(FESpace<TDim>& rDummy, int iside)
 {
     pybind11::list indices;
     BoundarySide side = static_cast<BoundarySide>(iside);
@@ -115,7 +115,7 @@ pybind11::list FESpace_BoundaryShiftedFunctionIndices(FESpace<TDim>& rDummy, con
 }
 
 template<int TDim>
-typename FESpace<TDim-1>::Pointer FESpace_ConstructBoundaryFESpace(FESpace<TDim>& rDummy, const int& iside)
+typename FESpace<TDim-1>::Pointer FESpace_ConstructBoundaryFESpace(FESpace<TDim>& rDummy, int iside)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.ConstructBoundaryFESpace(side);

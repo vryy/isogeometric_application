@@ -1020,10 +1020,10 @@ public:
         const ValuesContainerType& Knots3, //not used
         const ValuesContainerType& Weights,
         const MatrixType& ExtractionOperator, //not used
-        const int& Degree1,
-        const int& Degree2, //not used
-        const int& Degree3, //not used
-        const int& NumberOfIntegrationMethod
+        int Degree1,
+        int Degree2, //not used
+        int Degree3, //not used
+        int NumberOfIntegrationMethod
     )
     {
         mKnots = Knots1;

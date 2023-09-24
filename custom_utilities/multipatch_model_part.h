@@ -128,8 +128,8 @@ public:
         {
             std::tuple<std::size_t, std::size_t> loc = mpMultiPatch->EquationIdLocation(idof);
 
-            const std::size_t& patch_id = std::get<0>(loc);
-            const std::size_t& local_id = std::get<1>(loc);
+            std::size_t patch_id = std::get<0>(loc);
+            std::size_t local_id = std::get<1>(loc);
             // KRATOS_WATCH(patch_id)
             // KRATOS_WATCH(local_id)
 
@@ -152,7 +152,7 @@ public:
 
     /// create the elements out from the patch and add to the model_part
     ModelPart::ElementsContainerType AddElements(typename Patch<TDim>::Pointer pPatch, const std::string& element_name,
-            const std::size_t& starting_id, Properties::Pointer pProperties)
+            std::size_t starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ElementsContainerType(); // call BeginModelPart first before adding elements
 
@@ -189,7 +189,7 @@ public:
 
     /// create the conditions out from the patch and add to the model_part
     ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim>::Pointer pPatch, const std::string& condition_name,
-            const std::size_t& starting_id, Properties::Pointer pProperties)
+            std::size_t starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
 
@@ -226,7 +226,7 @@ public:
 
     /// create the conditions out from the boundary of the patch and add to the model_part
     ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim>::Pointer pPatch, const BoundarySide& side,
-            const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+            const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
 
@@ -238,7 +238,7 @@ public:
 
     /// create the conditions out from a boundary patch and add to the model_part
     ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim-1>::Pointer pBoundaryPatch,
-            const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+            const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
 
@@ -310,8 +310,8 @@ public:
         {
             std::tuple<std::size_t, std::size_t> loc = mpMultiPatch->EquationIdLocation(idof);
 
-            const std::size_t& patch_id = std::get<0>(loc);
-            const std::size_t& local_id = std::get<1>(loc);
+            std::size_t patch_id = std::get<0>(loc);
+            std::size_t local_id = std::get<1>(loc);
             // KRATOS_WATCH(patch_id)
             // KRATOS_WATCH(local_id)
 
@@ -324,16 +324,15 @@ public:
         }
     }
 
-    /// Synchronize from model_part to the multipatch
+    /// Synchronize values from model_part to the multipatch
     template<class TVariableType>
     void SynchronizeBackward(const TVariableType& rVariable)
     {
         if (!IsReady()) return;
 
         // loop through each patch, we construct a map from each function id to the patch id
-        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
-        for (patch_iterator it = mpMultiPatch->begin();
-                it != mpMultiPatch->end(); ++it)
+        typedef typename MultiPatch<TDim>::patch_const_iterator patch_const_iterator;
+        for (patch_const_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             std::vector<std::size_t> func_ids = it->pFESpace()->FunctionIndices();
 
@@ -345,10 +344,10 @@ public:
                 it->template CreateGridFunction<TVariableType>(rVariable, pNewControlGrid);
             }
 
-            // get the control grid
+            // get the control value grid
             typename ControlGrid<typename TVariableType::Type>::Pointer pControlGrid = it->pGetGridFunction(rVariable)->pControlGrid();
 
-            // set the data for the control grid
+            // set the data for the control value grid
             for (std::size_t i = 0; i < pControlGrid->size(); ++i)
             {
                 std::size_t global_id = func_ids[i];
@@ -357,9 +356,7 @@ public:
                 NodesContainerType::iterator it_node = this->GetModelPart().Nodes().find(node_id);
                 if (it_node == this->GetModelPart().Nodes().end())
                 {
-                    std::stringstream ss;
-                    ss << "Node " << node_id << " does not exist in the model_part " << this->GetModelPart().Name();
-                    KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                    KRATOS_ERROR << "Node " << node_id << " does not exist in the model_part " << this->GetModelPart().Name();
                 }
                 pControlGrid->SetData(i, it_node->GetSolutionStepValue(rVariable));
             }
@@ -377,8 +374,8 @@ public:
     static PointerVectorSet<TEntityType, IndexedObject> CreateEntitiesFromFESpace(typename TFESpace::ConstPointer pFESpace,
         typename TControlGridType::ConstPointer pControlPointGrid,
         TNodeContainerType& rNodes, const std::string& element_name,
-        const std::size_t& starting_id, Properties::Pointer p_temp_properties,
-        const int& echo_level)
+        std::size_t starting_id, Properties::Pointer p_temp_properties,
+        int echo_level)
     {
         #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();

@@ -52,7 +52,7 @@ std::size_t Patch_GetId(TPatchType& rDummy)
 }
 
 template<class TPatchType>
-void Patch_SetId(TPatchType& rDummy, const std::size_t& Id)
+void Patch_SetId(TPatchType& rDummy, std::size_t Id)
 {
     rDummy.SetId(Id);
 }
@@ -76,7 +76,7 @@ int Patch_GetLayerIndex(TPatchType& rDummy)
 }
 
 template<class TPatchType>
-void Patch_SetLayerIndex(TPatchType& rDummy, const int& Index)
+void Patch_SetLayerIndex(TPatchType& rDummy, int Index)
 {
     rDummy.SetLayerIndex(Index);
 }
@@ -101,8 +101,8 @@ typename GridFunction<TDim, typename TVariableType::Type>::Pointer Patch_GridFun
 
 
 template<class TPatchType>
-boost::python::list Patch_Predict(TPatchType& rDummy, boost::python::list& P, boost::python::list& list_nsampling,
-    boost::python::list& list_xi_min, boost::python::list& list_xi_max)
+boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& list_nsampling,
+    const boost::python::list& list_xi_min, const boost::python::list& list_xi_max)
 {
     typedef boost::python::stl_input_iterator<double> iterator_value_type;
 
@@ -158,7 +158,7 @@ boost::python::list Patch_Predict(TPatchType& rDummy, boost::python::list& P, bo
 }
 
 template<class TPatchType>
-boost::python::list Patch_Predict1(TPatchType& rDummy, boost::python::list& P, boost::python::list& list_nsampling)
+boost::python::list Patch_Predict1(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& list_nsampling)
 {
     typedef boost::python::stl_input_iterator<double> iterator_value_type;
 
@@ -194,9 +194,8 @@ boost::python::list Patch_Predict1(TPatchType& rDummy, boost::python::list& P, b
 }
 
 template<class TPatchType>
-boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, boost::python::list& P, boost::python::list& xi0)
+boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& xi0)
 {
-    typedef boost::python::stl_input_iterator<double> iterator_value_type;
 
     std::vector<double> xi0_vec;
     BOOST_FOREACH(const iterator_value_type::value_type& v, std::make_pair(iterator_value_type(xi0), iterator_value_type() ) )
@@ -234,7 +233,7 @@ boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, boost::python::li
 }
 
 template<class TPatchType>
-bool Patch_IsInside(TPatchType& rDummy, boost::python::list& P, boost::python::list& xi0)
+bool Patch_IsInside(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& xi0)
 {
     typedef boost::python::stl_input_iterator<double> iterator_value_type;
 
@@ -264,13 +263,13 @@ bool Patch_IsInside(TPatchType& rDummy, boost::python::list& P, boost::python::l
 }
 
 template<int TDim>
-typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, const std::size_t& i)
+typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, std::size_t i)
 {
     return rDummy.pInterface(i);
 }
 
 template<int TDim>
-typename Patch<TDim-1>::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, const std::size_t& iside)
+typename Patch<TDim-1>::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, std::size_t iside)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.ConstructBoundaryPatch(side);
@@ -316,7 +315,7 @@ std::size_t MultiPatch_Enumerate1(MultiPatch<TDim>& rDummy)
 }
 
 template<int TDim>
-std::size_t MultiPatch_Enumerate2(MultiPatch<TDim>& rDummy, const std::size_t& start)
+std::size_t MultiPatch_Enumerate2(MultiPatch<TDim>& rDummy, std::size_t start)
 {
     std::size_t system_size;
 
@@ -361,7 +360,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     ss << "Patch" << TDim << "D";
     class_<Patch<TDim>, bases<Flags> >
     // class_<Patch<TDim>, typename Patch<TDim>::Pointer > // do not use this to export Patch pointer
-    (ss.str().c_str(), init<const std::size_t&, typename FESpace<TDim>::Pointer>())
+    (ss.str().c_str(), init<std::size_t, typename FESpace<TDim>::Pointer>())
     .add_property("Id", &Patch_GetId<Patch<TDim> >, &Patch_SetId<Patch<TDim> >)
     .add_property("Prefix", &Patch_GetPrefix<Patch<TDim> >, &Patch_SetPrefix<Patch<TDim> >)
     .add_property("LayerIndex", &Patch_GetLayerIndex<Patch<TDim> >, &Patch_SetLayerIndex<Patch<TDim> >)

@@ -150,7 +150,7 @@ public:
     }
 
     /// Get the knot at index i
-    const knot_t pKnotAt(const std::size_t& i) const
+    const knot_t pKnotAt(std::size_t i) const
     {
         if(i >= 0 && i < mpKnots.size())
             return mpKnots[i];
@@ -159,7 +159,7 @@ public:
     }
 
     /// Get the knot at index i
-    knot_t pKnotAt(const std::size_t& i)
+    knot_t pKnotAt(std::size_t i)
     {
         if(i >= 0 && i < mpKnots.size())
             return mpKnots[i];
@@ -188,7 +188,7 @@ public:
     }
 
     /// Get the two knots bounded the span (the closest one)
-    std::tuple<knot_t, knot_t> span(const std::size_t& i_span) const
+    std::tuple<knot_t, knot_t> span(std::size_t i_span) const
     {
         std::size_t i = 0;
         knot_t left = *begin();
@@ -340,7 +340,7 @@ public:
 
     /// Check if a local knot vector is on the left side. It is on the left side if the outer left knots are repeated (p+1) times.
     /// It is assumed that the input local knot vector must have size (p+2).
-    static bool IsOnLeft(const std::vector<knot_t>& knots, const std::size_t& p)
+    static bool IsOnLeft(const std::vector<knot_t>& knots, std::size_t p)
     {
         for (std::size_t i = 0; i < p; ++i)
             if (knots[i+1]->Value() != knots[i]->Value())
@@ -350,7 +350,7 @@ public:
 
     /// Check if a local knot vector is on the right side. It is on the right side if the outer right knots are repeated (p+1) times.
     /// It is assumed that the input local knot vector must have size (p+2).
-    static bool IsOnRight(const std::vector<knot_t>& knots, const std::size_t& p)
+    static bool IsOnRight(const std::vector<knot_t>& knots, std::size_t p)
     {
         std::size_t last = knots.size() - 1;
         for (std::size_t i = 0; i < p; ++i)
@@ -415,25 +415,25 @@ public:
     }
 
     // overload operator ()
-    knot_t operator() (const std::size_t& i)
+    knot_t operator() (std::size_t i)
     {
         return pKnotAt(i);
     }
 
     // overload operator ()
-    const_knot_t operator() (const std::size_t& i) const
+    const_knot_t operator() (std::size_t i) const
     {
         return pKnotAt(i);
     }
 
     // overload operator []
-    TDataType& operator[] (const std::size_t& i)
+    TDataType& operator[] (std::size_t i)
     {
         return pKnotAt(i)->Value();
     }
 
     // overload operator []
-    const TDataType& operator[] (const std::size_t& i) const
+    const TDataType& operator[] (std::size_t i) const
     {
         return pKnotAt(i)->Value();
     }

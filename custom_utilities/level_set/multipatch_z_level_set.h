@@ -112,20 +112,20 @@ public:
     ///@{
 
 
-    void SetPredictionSampling(const std::size_t& nsampling1, const std::size_t& nsampling2)
+    void SetPredictionSampling(std::size_t nsampling1, std::size_t nsampling2)
     {
         mnsampling1 = nsampling1;
         mnsampling2 = nsampling2;
     }
 
 
-    void SetProjectionTolerance(const double& Tol)
+    void SetProjectionTolerance(double Tol)
     {
         mProjectionTolerance = Tol;
     }
 
 
-    void SetMaxIterations(const int& max_iters)
+    void SetMaxIterations(int max_iters)
     {
         mMaxIterations = max_iters;
     }

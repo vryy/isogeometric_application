@@ -43,17 +43,17 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(TsEdge);
 
     /// Default constructor
-    TsEdge(const std::size_t& Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)
+    TsEdge(std::size_t Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)
     : mId(Id), mpV1(pV1), mpV2(pV2)
     {}
 
     /// Get and Set for edge identification
-    const std::size_t& Id() const {return mId;}
-    void SetId(const std::size_t& Id) {mId = Id;}
+    std::size_t Id() const {return mId;}
+    void SetId(std::size_t Id) {mId = Id;}
 
     /// check if the edge was cut by a straight ray
     /// It is noted that the value to be checked against is the index value, not the knot value (which is real)
-    virtual bool IsCut(const double& index) const {return false;}
+    virtual bool IsCut(double index) const {return false;}
 
     /// Get associated vertices
     TsVertex::Pointer pV1() const {return mpV1;}

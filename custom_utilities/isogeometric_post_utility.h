@@ -377,7 +377,7 @@ public:
         const TVectorType& rTangent2,
         const std::vector<TCoordinatesType>& local_points,
         const TIndexType& offset,
-        const std::size_t& nrefine)
+        std::size_t nrefine)
     {
         // compute the triangulation
         typedef std::vector<std::vector<TIndexType> > connectivity_t;
@@ -405,7 +405,7 @@ public:
     GenerateQuadGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
         const TCoordinatesType& p3, const TCoordinatesType& p4,
         const TIndexType& starting_node_id,
-        const std::size_t& num_div_1, const std::size_t& num_div_2)
+        std::size_t num_div_1, std::size_t num_div_2)
     {
         TCoordinatesType p, pm, pn;
 
@@ -500,7 +500,7 @@ public:
         const TCoordinatesType& p5, const TCoordinatesType& p6,
         const TCoordinatesType& p7, const TCoordinatesType& p8,
         const TIndexType& starting_node_id,
-        const std::size_t& num_div_1, const std::size_t& num_div_2, const std::size_t& num_div_3)
+        std::size_t num_div_1, std::size_t num_div_2, std::size_t num_div_3)
     {
         TCoordinatesType p, pm1, pn1, pm2, pn2, pq1, pq2;
 
@@ -691,7 +691,7 @@ public:
     /// It is noted that the newly created entities are not added to the other model_part. User must do it manually.
     template<class TEntityType, class TEntitiesContainerType>
     static TEntitiesContainerType CreateEntities(
-        TEntitiesContainerType& pEntities,
+        const TEntitiesContainerType& pEntities,
         ModelPart& r_other_model_part,
         TEntityType const& r_sample_entity,
         std::size_t& last_entity_id,
@@ -701,11 +701,12 @@ public:
         // first collect all the nodes from the elements
         std::map<std::size_t, NodeType::Pointer> pNodes;
 
-        for (typename TEntitiesContainerType::ptr_iterator it = pEntities.ptr_begin(); it != pEntities.ptr_end(); ++it)
+        for (typename TEntitiesContainerType::const_iterator it = pEntities.begin();
+                it != pEntities.end(); ++it)
         {
-            for (std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i)
+            for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
             {
-                pNodes[(*it)->GetGeometry()[i].Id()] = (*it)->GetGeometry().pGetPoint(i);
+                pNodes[it->GetGeometry()[i].Id()] = it->GetGeometry().pGetPoint(i);
             }
         }
 
@@ -723,12 +724,13 @@ public:
         const std::string NodeKey = std::string("Node");
         typename TEntityType::NodesArrayType temp_entity_nodes;
         TEntitiesContainerType pNewEntities;
-        for (typename TEntitiesContainerType::ptr_iterator it = pEntities.ptr_begin(); it != pEntities.ptr_end(); ++it)
+        for (typename TEntitiesContainerType::const_iterator it = pEntities.begin();
+                it != pEntities.end(); ++it)
         {
             temp_entity_nodes.clear();
-            for (std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i)
+            for (std::size_t i = 0; i < it->GetGeometry().size(); ++i)
             {
-                std::size_t node_id = MapOldToNew[(*it)->GetGeometry()[i].Id()];
+                std::size_t node_id = MapOldToNew[it->GetGeometry()[i].Id()];
                 temp_entity_nodes.push_back(*(FindKey(r_other_model_part.Nodes(), node_id, NodeKey).base()));
             }
             if (!retain_prop_id)
@@ -737,7 +739,7 @@ public:
             }
             else
             {
-                Properties::Pointer pNewProperties = r_other_model_part.pGetProperties((*it)->GetProperties().Id());
+                Properties::Pointer pNewProperties = r_other_model_part.pGetProperties(it->GetProperties().Id());
                 pNewEntities.push_back(r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pNewProperties));
             }
         }
@@ -759,7 +761,7 @@ public:
     //     const TVectorType& rTangent1,
     //     const TVectorType& rTangent2,
     //     const TPointsContainerType& local_points,
-    //     const std::size_t& nrefine,
+    //     std::size_t nrefine,
     //     ModelPart& r_model_part,
     //     TEntityType const& r_sample_entity,
     //     std::size_t& last_node_id,
@@ -816,18 +818,22 @@ public:
     template<typename TElementType, typename TCompressedMatrixType, typename TElementsArrayType>
     static void ConstructL2MatrixStructure (
         TCompressedMatrixType& A,
-        TElementsArrayType& rElements,
-        std::map<std::size_t, std::size_t> MapNodeIdToVec)
+        const TElementsArrayType& rElements,
+        const std::map<std::size_t, std::size_t>& MapNodeIdToVec)
     {
         std::size_t equation_size = A.size1();
         std::vector<std::vector<std::size_t> > indices(equation_size);
 
         typename TElementType::EquationIdVectorType ids;
-        for(typename TElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
+        for(typename TElementsArrayType::const_iterator i_element = rElements.begin();
+                i_element != rElements.end(); ++i_element)
         {
             ids.resize((i_element)->GetGeometry().size());
             for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
-                ids[i] = MapNodeIdToVec[(i_element)->GetGeometry()[i].Id()];
+            {
+                auto it = MapNodeIdToVec.find((i_element)->GetGeometry()[i].Id());
+                ids[i] = it->second;
+            }
 
             for(std::size_t i = 0 ; i < ids.size() ; ++i)
             {
@@ -897,13 +903,14 @@ public:
     template<typename TElementType, typename TCompressedMatrixType, typename TElementsArrayType>
     static void ConstructL2MatrixStructure (
         TCompressedMatrixType& A,
-        TElementsArrayType& rElements)
+        const TElementsArrayType& rElements)
     {
         std::size_t equation_size = A.size1();
         std::vector<std::vector<std::size_t> > indices(equation_size);
 
         typename TElementType::EquationIdVectorType ids;
-        for(typename TElementsArrayType::iterator i_element = rElements.begin() ; i_element != rElements.end() ; ++i_element)
+        for(typename TElementsArrayType::const_iterator i_element = rElements.begin();
+                i_element != rElements.end(); ++i_element)
         {
             ids.resize((i_element)->GetGeometry().size());
             for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
@@ -972,7 +979,7 @@ public:
     //**********AUXILIARY FUNCTION**************************************************************
     // Support function for ConstructMatrixStructure
     //******************************************************************************************
-    static inline void AddUnique(std::vector<std::size_t>& v, const std::size_t& candidate)
+    static inline void AddUnique(std::vector<std::size_t>& v, std::size_t candidate)
     {
         std::vector<std::size_t>::iterator i = v.begin();
         std::vector<std::size_t>::iterator endit = v.end();
@@ -988,7 +995,7 @@ public:
 
     //**********AUXILIARY FUNCTION**************************************************************
     //******************************************************************************************
-    static inline double CoordinateScaling(const double& x, const int& Type)
+    static inline double CoordinateScaling(double x, int Type)
     {
         if(Type == _NURBS_)
         {

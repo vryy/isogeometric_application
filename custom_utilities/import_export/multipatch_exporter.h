@@ -43,10 +43,10 @@ public:
     virtual ~MultiPatchExporter() {}
 
     /// Set the accuracy
-    void SetAccuracy(const std::size_t& Accuracy) {mAccuracy = Accuracy;}
+    void SetAccuracy(std::size_t Accuracy) {mAccuracy = Accuracy;}
 
     /// Get the accuracy
-    const std::size_t& Accuracy() const {return mAccuracy;}
+    std::size_t Accuracy() const {return mAccuracy;}
 
     /// Export a single patch
     virtual void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const

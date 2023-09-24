@@ -48,7 +48,7 @@ struct ControlValue_Helper
 template<>
 struct ControlValue_Helper<double>
 {
-    static pybind11::list GetValue(const double& rValue)
+    static pybind11::list GetValue(double rValue)
     {
         pybind11::list v;
         v.append(rValue);

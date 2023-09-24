@@ -41,13 +41,13 @@ using namespace pybind11;
 
 #ifdef SD_APP_FORWARD_COMPATIBILITY
 template<int TDim>
-iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer> MultiPatchUtility_CreatePatchPointer(MultiPatchUtility& rDummy, const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
+iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer> MultiPatchUtility_CreatePatchPointer(MultiPatchUtility& rDummy, std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
 {
     return rDummy.template CreatePatchPointer<TDim>(Id, pFESpace);
 }
 #else
 template<int TDim>
-typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUtility& rDummy, const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
+typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUtility& rDummy, std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
 {
     return rDummy.template CreatePatchPointer<TDim>(Id, pFESpace);
 }
@@ -206,7 +206,7 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatch(BSplinesPatch
 
 template<int TDim>
 typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSplinesPatchUtility& dummy,
-        const pybind11::list& patch_list, const int& order)
+        const pybind11::list& patch_list, int order)
 {
     std::vector<typename Patch<TDim-1>::Pointer> pPatches;
 
@@ -232,8 +232,8 @@ pybind11::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility& dum
 }
 
 void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
-    typename Patch<2>::Pointer pPatch1, const int& iside1,
-    typename Patch<2>::Pointer pPatch2, const int& iside2,
+    typename Patch<2>::Pointer pPatch1, int iside1,
+    typename Patch<2>::Pointer pPatch2, int iside2,
     const BoundaryDirection& direction)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
@@ -242,8 +242,8 @@ void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
 }
 
 void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
-    typename Patch<3>::Pointer pPatch1, const int& iside1,
-    typename Patch<3>::Pointer pPatch2, const int& iside2,
+    typename Patch<3>::Pointer pPatch1, int iside1,
+    typename Patch<3>::Pointer pPatch2, int iside2,
     const bool& uv_or_vu,
     const BoundaryDirection& direction1, const BoundaryDirection& direction2)
 {
@@ -254,7 +254,7 @@ void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
 
 template<int TDim>
 void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
-    typename Patch<TDim>::Pointer pPatch, const std::size_t& idir)
+    typename Patch<TDim>::Pointer pPatch, std::size_t idir)
 {
     rDummy.Reverse<TDim>(pPatch, idir);
 }
@@ -264,10 +264,10 @@ void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
 template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch1(
         BendingStripUtility& rDummy,
-        const std::size_t& Id,
+        std::size_t Id,
         typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
         typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
-        const int& Order)
+        int Order)
 {
     return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Order);
 }
@@ -275,7 +275,7 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch1(
 template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
         BendingStripUtility& rDummy,
-        const std::size_t& Id,
+        std::size_t Id,
         typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
         typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
         const pybind11::list& order_list)
@@ -297,13 +297,13 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
 //////////////////////////////////////////////////
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Two_Curves(IsogeometricIntersectionUtility& rDummy,
-    const double& starting_point_1,
-    const double& starting_point_2,
+    double starting_point_1,
+    double starting_point_2,
     Patch<1>::Pointer pPatch1,
     Patch<1>::Pointer pPatch2,
-    const int& max_iters,
-    const double& TOL,
-    const int& option_space)
+    int max_iters,
+    double TOL,
+    int option_space)
 {
     double intersection_point_1, intersection_point_2;
 
@@ -322,11 +322,11 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 }
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Curve_Plane(IsogeometricIntersectionUtility& rDummy,
-    const double& starting_point,
+    double starting_point,
     Patch<1>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D,
-    const int& max_iters,
-    const double& TOL)
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -346,9 +346,9 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch2_Plane(IsogeometricIntersectionUtility& rDummy,
     const pybind11::list& list_starting_points,
     Patch<2>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D,
-    const int& max_iters,
-    const double& TOL)
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -383,9 +383,9 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
     const pybind11::list& list_starting_points,
     Patch<3>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D,
-    const int& max_iters,
-    const double& TOL)
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -420,9 +420,9 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByBisection_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
     Patch<3>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D,
-    const int& max_iters,
-    const double& TOL)
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -445,13 +445,13 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByBisection_Pa
 }
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Surface(IsogeometricIntersectionUtility& rDummy,
-    const double& starting_point_1,
-    const double& starting_point_2_1,
-    const double& starting_point_2_2,
+    double starting_point_1,
+    double starting_point_2_1,
+    double starting_point_2_2,
     Patch<1>::Pointer pPatch1,
     Patch<2>::Pointer pPatch2,
-    const int& max_iters,
-    const double& TOL)
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -479,7 +479,7 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Surface
 template<int TDim>
 pybind11::list IsogeometricIntersectionUtility_CheckIntersection(IsogeometricIntersectionUtility& rDummy,
     typename Patch<TDim>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D)
+    double A, double B, double C, double D)
 {
     std::pair<int, std::vector<int> > result = rDummy.CheckIntersection<TDim, 0>(pPatch, A, B, C, D);
     pybind11::list output;

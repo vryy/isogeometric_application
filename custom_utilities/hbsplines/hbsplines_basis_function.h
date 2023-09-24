@@ -76,12 +76,12 @@ public:
     {}
 
     /// Constructor with Id
-    HBSplinesBasisFunction(const std::size_t& Id)
+    HBSplinesBasisFunction(std::size_t Id)
     : BaseType(Id), mLevel(0)
     {}
 
     /// Constructor with Id and Level
-    HBSplinesBasisFunction(const std::size_t& Id, const std::size_t& Level)
+    HBSplinesBasisFunction(std::size_t Id, std::size_t Level)
     : BaseType(Id), mLevel(Level)
     {}
 
@@ -93,12 +93,12 @@ public:
         #endif
     }
 
-    static typename HBSplinesBasisFunction::Pointer Create(const std::size_t& Id)
+    static typename HBSplinesBasisFunction::Pointer Create(std::size_t Id)
     {
         return typename HBSplinesBasisFunction::Pointer(new HBSplinesBasisFunction(Id));
     }
 
-    static typename HBSplinesBasisFunction::Pointer Create(const std::size_t& Id, const std::size_t& Level)
+    static typename HBSplinesBasisFunction::Pointer Create(std::size_t Id, std::size_t Level)
     {
         return typename HBSplinesBasisFunction::Pointer(new HBSplinesBasisFunction(Id, Level));
     }
@@ -133,7 +133,7 @@ public:
     std::size_t NumberOfChildren() const {return mpChilds.size();}
 
     /// Add a child which support this basis function
-    void AddChild(bf_t p_bf, const double& RefinedCoefficient)
+    void AddChild(bf_t p_bf, double RefinedCoefficient)
     {
         mpChilds.push_back(p_bf);
         mRefinedCoefficients[p_bf->Id()] = RefinedCoefficient;
@@ -170,11 +170,11 @@ public:
     bf_const_iterator bf_end() const {return mpChilds.end();}
 
     /// Get and set the level of this basis function
-    void SetLevel(const std::size_t& Level) {mLevel = Level;}
-    const std::size_t& Level() const {return mLevel;}
+    void SetLevel(std::size_t Level) {mLevel = Level;}
+    std::size_t Level() const {return mLevel;}
 
     /// Get the refined coefficient of a child
-    double GetRefinedCoefficient(const int& child_id) const
+    double GetRefinedCoefficient(int child_id) const
     {
         std::map<int, double>::const_iterator it = mRefinedCoefficients.find(child_id);
         if(it != mRefinedCoefficients.end())
@@ -192,7 +192,7 @@ public:
     **************************************************************************/
 
     /// Construct the hierarchical B-Splines basis function in subspace
-    typename HBSplinesBasisFunction<TDim-1>::Pointer Project(const std::size_t& dim) const
+    typename HBSplinesBasisFunction<TDim-1>::Pointer Project(std::size_t dim) const
     {
         typename HBSplinesBasisFunction<TDim-1>::Pointer pNewSubBf;
 
@@ -359,28 +359,28 @@ public:
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
     /// Default constructor
-    HBSplinesBasisFunction(const std::size_t& Id) {}
+    HBSplinesBasisFunction(std::size_t Id) {}
 
     /// Default constructor
-    HBSplinesBasisFunction(const std::size_t& Id, const std::size_t& Level) {}
+    HBSplinesBasisFunction(std::size_t Id, std::size_t Level) {}
 
     /// Get the Id of the basis function
     std::size_t Id() const {return 0;}
 
     /// Set the equation Id for this basis function. One shall use this function only in the enumeration process
-    void SetEquationId(const std::size_t& EquationId) {}
+    void SetEquationId(std::size_t EquationId) {}
 
     /// Get the equation Id of this basis function. Each basis function should have unique equation Id accross patches
     std::size_t EquationId() const {return -1;}
 
     /// Set the information in each direction
-    void SetInfo(const int& dim, const std::size_t& Order) {}
+    void SetInfo(int dim, std::size_t Order) {}
 
     /// Set the local knot vectors to this basis function
-    void SetLocalKnotVectors(const int& dim, const std::vector<knot_t>& rpKnots) {}
+    void SetLocalKnotVectors(int dim, const std::vector<knot_t>& rpKnots) {}
 
     /// return the internal reference of the knot vectors; use it with care
-    std::vector<knot_t> LocalKnots(const int& dim) const {return std::vector<knot_t>{};}
+    std::vector<knot_t> LocalKnots(int dim) const {return std::vector<knot_t>{};}
 
     /// Add a cell support this basis function to the list
     cell_iterator AddCell(cell_t p_cell) {return mpCells.end();}
@@ -392,7 +392,7 @@ public:
     void RemoveCell(CellType& r_cell) {}
 
     /// Add the boundary information to this basis function
-    void AddBoundary(const std::size_t& BoundaryInfo) {}
+    void AddBoundary(std::size_t BoundaryInfo) {}
 
 private:
 

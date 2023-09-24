@@ -38,7 +38,7 @@ public:
     typedef TsVEdge BaseType;
 
     /// Constructor
-    TsVirtualVEdge(const std::size_t& Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)
+    TsVirtualVEdge(std::size_t Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)
     : BaseType(Id, pV1, pV2)
     {}
 

@@ -441,14 +441,14 @@ public:
     /**
      * Set the local range
      */
-    virtual void SetLocalRange( const IndexType& i, const double& rmin, const double& rmax )
+    virtual void SetLocalRange( IndexType i, double rmin, double rmax )
     {
     }
 
     /**
      * Map the coordinates from local to [0, 1]
      */
-    virtual double MapLocalToGlobal( const IndexType& i, const double& coord ) const
+    virtual double MapLocalToGlobal( IndexType i, double coord ) const
     {
         return coord;
     }
@@ -456,7 +456,7 @@ public:
     /**
      * Map the coordinates from [0, 1] to local
      */
-    virtual double MapGlobalToLocal( const IndexType& i, const double& coord ) const
+    virtual double MapGlobalToLocal( IndexType i, double coord ) const
     {
         return coord;
     }
@@ -470,10 +470,10 @@ public:
         const ValuesContainerType& Knots3,
         const ValuesContainerType& Weights,
         const MatrixType& ExtractionOperator,
-        const int& Degree1,
-        const int& Degree2,
-        const int& Degree3,
-        const int& NumberOfIntegrationMethod)
+        int Degree1,
+        int Degree2,
+        int Degree3,
+        int NumberOfIntegrationMethod)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
     }
@@ -487,10 +487,10 @@ public:
         const ValuesContainerType& Knots3,
         const ValuesContainerType& Weights,
         const MatrixType& ExtractionOperator,
-        const int& Degree1,
-        const int& Degree2,
-        const int& Degree3,
-        const int& NumberOfIntegrationMethod)
+        int Degree1,
+        int Degree2,
+        int Degree3,
+        int NumberOfIntegrationMethod)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
     }

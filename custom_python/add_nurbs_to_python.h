@@ -49,7 +49,7 @@ struct ControlValue_Helper
 template<>
 struct ControlValue_Helper<double>
 {
-    static boost::python::list GetValue(const double& rValue)
+    static boost::python::list GetValue(double rValue)
     {
         boost::python::list v;
         v.append(rValue);

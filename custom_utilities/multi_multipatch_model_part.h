@@ -87,10 +87,10 @@ public:
     }
 
     /// Get the underlying multipatch pointer
-    typename MultiPatch<TDim>::Pointer pMultiPatch(const std::size_t& ip) {return mpMultiPatches[ip];}
+    typename MultiPatch<TDim>::Pointer pMultiPatch(std::size_t ip) {return mpMultiPatches[ip];}
 
     /// Get the underlying multipatch pointer
-    typename MultiPatch<TDim>::ConstPointer pMultiPatch(const std::size_t& ip) const {return mpMultiPatches[ip];}
+    typename MultiPatch<TDim>::ConstPointer pMultiPatch(std::size_t ip) const {return mpMultiPatches[ip];}
 
     /// Check if the multipatch model_part ready for transferring/transmitting data
     bool IsReady() const
@@ -150,8 +150,8 @@ public:
             {
                 std::tuple<std::size_t, std::size_t> loc = mpMultiPatches[ip]->EquationIdLocation(cnt++);
 
-                const std::size_t& patch_id = std::get<0>(loc);
-                const std::size_t& local_id = std::get<1>(loc);
+                std::size_t patch_id = std::get<0>(loc);
+                std::size_t local_id = std::get<1>(loc);
                 // KRATOS_WATCH(patch_id)
                 // KRATOS_WATCH(local_id)
 
@@ -176,7 +176,7 @@ public:
     /// create the elements out from the patches and add to the model_part
     ModelPart::ElementsContainerType AddElements(std::vector<typename Patch<TDim>::Pointer> pPatches,
             const std::string& element_name,
-            const std::size_t& starting_id, Properties::Pointer pProperties)
+            std::size_t starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ElementsContainerType(); // call BeginModelPart first before adding elements
 
@@ -221,7 +221,7 @@ public:
     /// create the elements out from the patches and add to the model_part
     ModelPart::ConditionsContainerType AddConditions(std::vector<typename Patch<TDim>::Pointer> pPatches,
             const std::string& condition_name,
-            const std::size_t& starting_id, Properties::Pointer pProperties)
+            std::size_t starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding elements
 
@@ -265,7 +265,7 @@ public:
 
     /// create the conditions out from the boundary of the patch and add to the model_part
     ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim>::Pointer pPatch, const BoundarySide& side,
-            const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+            const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
 
@@ -278,7 +278,7 @@ public:
 
     /// create the conditions out from the boundary of the patch and add to the model_part
     ModelPart::ConditionsContainerType AddConditions(typename Patch<TDim-1>::Pointer pBoundaryPatch,
-            const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+            const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
     {
         if (IsReady()) return ModelPart::ConditionsContainerType(); // call BeginModelPart first before adding conditions
 
@@ -342,8 +342,8 @@ public:
             {
                 std::tuple<std::size_t, std::size_t> loc = mpMultiPatches[ip]->EquationIdLocation(i);
 
-                const std::size_t& patch_id = std::get<0>(loc);
-                const std::size_t& local_id = std::get<1>(loc);
+                std::size_t patch_id = std::get<0>(loc);
+                std::size_t local_id = std::get<1>(loc);
                 // KRATOS_WATCH(patch_id)
                 // KRATOS_WATCH(local_id)
 
@@ -359,7 +359,7 @@ public:
 
     /// Synchronize from model_part to the multipatch
     template<class TVariableType>
-    void SynchronizeBackward(const std::size_t& ip, const TVariableType& rVariable)
+    void SynchronizeBackward(std::size_t ip, const TVariableType& rVariable)
     {
         if (!IsReady()) return;
 
@@ -431,7 +431,7 @@ private:
         std::vector<typename TFESpace::ConstPointer> pFESpaces,
         std::vector<typename TControlGridType::ConstPointer> pControlGrids,
         TNodeContainerType& rNodes, const std::string& element_name,
-        const std::size_t& starting_id, Properties::Pointer p_temp_properties, const int& echo_level)
+        std::size_t starting_id, Properties::Pointer p_temp_properties, int echo_level)
     {
         #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();

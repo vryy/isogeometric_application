@@ -60,7 +60,7 @@ public:
     /// To have higher order of the connection one needs to elevate the degree.
     /// Right now, the two sub-patches must have same parameters (knot vectors) and are B-Splines.
     template<int TDim>
-    static typename Patch<TDim>::Pointer CreateLoftPatch(std::vector<typename Patch<TDim-1>::Pointer> pPatches, const int& order)
+    static typename Patch<TDim>::Pointer CreateLoftPatch(std::vector<typename Patch<TDim-1>::Pointer> pPatches, int order)
     {
         if (pPatches.size() == 0)
             return typename Patch<TDim>::Pointer(new Patch<TDim>(-1));
@@ -147,7 +147,7 @@ public:
 
     /// Reverse the B-Splines patch in specific direction
     template<int TDim>
-    static void Reverse(typename Patch<TDim>::Pointer pPatch, const std::size_t& idir)
+    static void Reverse(typename Patch<TDim>::Pointer pPatch, std::size_t idir)
     {
         std::set<std::size_t> reversed_patches;
         ReverseImpl<TDim>(pPatch, idir, reversed_patches);
@@ -155,7 +155,7 @@ public:
 
     /// Reverse the B-Splines patch in specific direction
     template<int TDim>
-    static void ReverseImpl(typename Patch<TDim>::Pointer pPatch, const std::size_t& idir, std::set<std::size_t>& reversed_patches)
+    static void ReverseImpl(typename Patch<TDim>::Pointer pPatch, std::size_t idir, std::set<std::size_t>& reversed_patches)
     {
         if (reversed_patches.find(pPatch->Id()) != reversed_patches.end())
             return;

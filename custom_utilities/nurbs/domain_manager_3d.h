@@ -41,23 +41,23 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(DomainManager3D);
 
     /// Default constructor
-    DomainManager3D(const std::size_t& Id) : BaseType(Id) {}
+    DomainManager3D(std::size_t Id) : BaseType(Id) {}
 
     /// Destructor
     virtual ~DomainManager3D() {}
 
     /// Add the Cuboid to the Cuboid set
-    virtual void AddCell(const std::vector<double>& box);
+    void AddCell(const std::vector<double>& box) override;
 
     /// Check if a Cuboid if it is contained in the Cuboid set.
-    virtual bool IsInside(const std::vector<double>& bounding_box) const;
+    bool IsInside(const std::vector<double>& bounding_box) const override;
 
     /// Export the domain to Matlab for visualization
-    virtual void ExportDomain(const std::string& fn, const std::string& color, const double& distance) const;
+    void ExportDomain(const std::string& fn, const std::string& color, double distance) const override;
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const;
-    virtual void PrintData(std::ostream& rOStream) const;
+    void PrintInfo(std::ostream& rOStream) const override;
+    void PrintData(std::ostream& rOStream) const override;
 
 private:
     map_t mActiveCells;

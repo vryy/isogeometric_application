@@ -42,16 +42,16 @@ struct HBSplinesRefinementUtility_Helper
     typedef typename HBSplinesFESpace<TDim>::BasisFunctionType BasisFunctionType;
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
-    static void Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& echo_level);
+    static void Refine(typename Patch<TDim>::Pointer pPatch, std::size_t Id, int echo_level);
 
-    static void Refine(typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, const int& echo_level);
+    static void Refine(typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, int echo_level);
 
     static std::pair<std::vector<std::size_t>, std::vector<bf_t> > Refine(typename Patch<TDim>::Pointer pPatch,
-            typename HBSplinesFESpace<TDim>::bf_t p_bf, std::set<std::size_t>& refined_patches, const int& echo_level);
+            typename HBSplinesFESpace<TDim>::bf_t p_bf, std::set<std::size_t>& refined_patches, int echo_level);
 
-    static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, const int& echo_level);
+    static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, int echo_level);
 
-    static void LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& echo_level);
+    static void LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, std::size_t refine_cycle, int echo_level);
 };
 
 
@@ -72,21 +72,21 @@ public:
 
     /// Refine a single B-Splines basis function
     template<int TDim>
-    static void Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& echo_level)
+    static void Refine(typename Patch<TDim>::Pointer pPatch, std::size_t Id, int echo_level)
     {
         HBSplinesRefinementUtility_Helper<TDim>::Refine(pPatch, Id, echo_level);
     }
 
     /// Refine a single B-Splines basis function
     template<int TDim>
-    static void Refine(typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, const int& echo_level)
+    static void Refine(typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, int echo_level)
     {
         HBSplinesRefinementUtility_Helper<TDim>::Refine(pPatch, p_bf, echo_level);
     }
 
     /// Refine all basis functions in a region
     template<int TDim>
-    static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, const int& echo_level)
+    static void RefineWindow(typename Patch<TDim>::Pointer pPatch, const std::vector<std::vector<double> >& window, int echo_level)
     {
         HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(pPatch, window, echo_level);
     }
@@ -94,7 +94,7 @@ public:
     /// Perform additional refinement to ensure linear independence
     /// In this algorithm, every bf in each level will be checked. If the support domain of a bf contained in the domain_manager of that level, this bf will be refined. According to the paper of Vuong et al, this will produce a linear independent bases.
     template<int TDim>
-    static void LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& echo_level)
+    static void LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, std::size_t refine_cycle, int echo_level)
     {
         HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(pPatch, refine_cycle, echo_level);
     }
@@ -122,7 +122,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesRefineme
 
 template<int TDim>
 inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>::Pointer pPatch,
-        typename HBSplinesFESpace<TDim>::bf_t p_bf, const int& echo_level)
+        typename HBSplinesFESpace<TDim>::bf_t p_bf, int echo_level)
 {
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
     typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
@@ -148,7 +148,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
 }
 
 template<int TDim>
-inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& echo_level)
+inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>::Pointer pPatch, std::size_t Id, int echo_level)
 {
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
     typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
@@ -194,7 +194,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
 template<int TDim>
 std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>::bf_t> > HBSplinesRefinementUtility_Helper<TDim>::Refine(
         typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf,
-        std::set<std::size_t>& refined_patches, const int& echo_level)
+        std::set<std::size_t>& refined_patches, int echo_level)
 {
     // Type definitions
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
@@ -420,7 +420,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 {
                     if (echo_refinement_detail)
                         std::cout << "Transfer double variable " << double_variables[i]->Name();
-                    const double& old_value = p_bf->GetValue(*double_variables[i]);
+                    double old_value = p_bf->GetValue(*double_variables[i]);
                     double& new_value = pnew_bf->GetValue(*double_variables[i]);
                     new_value += RefinedCoeffs[i_func] * old_value;
                     // pnew_bf->SetValue(*double_variables[i], new_value);
@@ -563,7 +563,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                     // transfer the control point information
                     const ControlPointType& oldC = p_bf->GetValue(CONTROL_POINT);
-                    const double& weight = oldC.W();
+                    double weight = oldC.W();
                     ControlPointType& newC = pnew_bf->GetValue(CONTROL_POINT);
                     newC += RefinedCoeffs[i_func] * oldC;
                     // pnew_bf->SetValue(CONTROL_POINT, newC);
@@ -571,7 +571,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     // transfer other control values from p_bf to pnew_bf
                     for (std::size_t i = 0; i < double_variables.size(); ++i)
                     {
-                        const double& old_value = p_bf->GetValue(*double_variables[i]);
+                        double old_value = p_bf->GetValue(*double_variables[i]);
                         double& new_value = pnew_bf->GetValue(*double_variables[i]);
                         new_value += RefinedCoeffs[i_func] * old_value;
                         // pnew_bf->SetValue(*double_variables[i], new_value);
@@ -847,7 +847,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
 template<int TDim>
 inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch<TDim>::Pointer pPatch,
-        const std::vector<std::vector<double> >& window, const int& echo_level)
+        const std::vector<std::vector<double> >& window, int echo_level)
 {
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
@@ -900,7 +900,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch
 }
 
 template<int TDim>
-inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& echo_level)
+inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, std::size_t refine_cycle, int echo_level)
 {
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")

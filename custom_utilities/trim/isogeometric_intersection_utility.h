@@ -91,7 +91,7 @@ public:
      * In the case TOption == 0, the patch intersects the plane if there is a point lie on the plane
      */
     template<int TDim, int TOption = 0>
-    static std::pair<int, std::vector<int> > CheckIntersection(typename Patch<TDim>::Pointer pPatch, const double& A, const double& B, const double& C, const double& D)
+    static std::pair<int, std::vector<int> > CheckIntersection(typename Patch<TDim>::Pointer pPatch, double A, double B, double C, double D)
     {
         typedef GridFunction<TDim, array_1d<double, 3> > GridFunctionType;
 
@@ -163,15 +163,15 @@ public:
      *   4: the intersection point is not found. It is because the curves intersect in the specified plane, but does not cut in the remaining direction.
      *   5: the Newton-Raphson iteration does not converge within maximum iterations. The existence of intersection point is unknown.
      */
-    static int ComputeIntersectionByNewtonRaphson(const double& starting_point_1,
-            const double& starting_point_2,
+    static int ComputeIntersectionByNewtonRaphson(double starting_point_1,
+            double starting_point_2,
             double& intersection_point_1,
             double& intersection_point_2,
             Patch<1>::Pointer pPatch1,
             Patch<1>::Pointer pPatch2,
-            const int& max_iters,
-            const double& TOL,
-            const int& option_space = 1)
+            int max_iters,
+            double TOL,
+            int option_space = 1)
     {
         // extract the control point grid function of both curves
         typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc1 = pPatch1->pGetGridFunction(CONTROL_POINT_COORDINATES);
@@ -333,9 +333,9 @@ public:
      */
     static int ComputeIntersectionByNewtonRaphson(double& intersection_point,
             Patch<1>::Pointer pPatch,
-            const double& A, const double& B, const double& C, const double& D,
-            const int& max_iters,
-            const double& TOL)
+            double A, double B, double C, double D,
+            int max_iters,
+            double TOL)
     {
         // extract the control point grid function of both curves
         typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
@@ -433,9 +433,9 @@ public:
      */
     static int ComputeIntersectionByBisection(double& intersection_point,
             Patch<1>::Pointer pPatch,
-            const double& A, const double& B, const double& C, const double& D,
-            const int& max_iters,
-            const double& TOL)
+            double A, double B, double C, double D,
+            int max_iters,
+            double TOL)
     {
         // extract the control point grid function of both curves
         typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
@@ -541,9 +541,9 @@ public:
     static std::vector<int> ComputeIntersectionByNewtonRaphson(const std::vector<double>& starting_points,
             std::vector<std::vector<double> >& intersection_points,
             Patch<2>::Pointer pPatch,
-            const double& A, const double& B, const double& C, const double& D,
-            const int& max_iters,
-            const double& TOL)
+            double A, double B, double C, double D,
+            int max_iters,
+            double TOL)
     {
         if (intersection_points.size() != 4)
             intersection_points.resize(4);
@@ -590,9 +590,9 @@ public:
     static std::vector<int> ComputeIntersectionByNewtonRaphson(const std::vector<double>& starting_points,
             std::vector<TCoordinatesType>& intersection_points,
             Patch<3>::Pointer pPatch,
-            const double& A, const double& B, const double& C, const double& D,
-            const int& max_iters,
-            const double& TOL)
+            double A, double B, double C, double D,
+            int max_iters,
+            double TOL)
     {
         std::vector<Patch<1>::Pointer> pEdgePatches = MultiPatchUtility::ConstructEdgePatches(pPatch);
 
@@ -638,9 +638,9 @@ public:
     template<typename TCoordinatesType>
     static std::vector<int> ComputeIntersectionByBisection(std::vector<TCoordinatesType>& intersection_points,
             Patch<3>::Pointer pPatch,
-            const double& A, const double& B, const double& C, const double& D,
-            const int& max_iters,
-            const double& TOL)
+            double A, double B, double C, double D,
+            int max_iters,
+            double TOL)
     {
         std::vector<Patch<1>::Pointer> pEdgePatches = MultiPatchUtility::ConstructEdgePatches(pPatch);
 
@@ -686,14 +686,14 @@ public:
      *   2: the intersection point is found but intersection point on the surface does not lie in the parametric boundary of the patch (usually [0, 1] x [0, 1])
      *   3: the Newton-Raphson iteration does not converge within maximum iterations. The existence of intersection point is unknown.
      */
-    static int ComputeIntersectionByNewtonRaphson(const double& starting_point_1,
+    static int ComputeIntersectionByNewtonRaphson(double starting_point_1,
             const std::vector<double>& starting_point_2,
             double& intersection_point_1,
             std::vector<double>& intersection_point_2,
             Patch<1>::Pointer pPatch1,
             Patch<2>::Pointer pPatch2,
-            const int& max_iters,
-            const double& TOL)
+            int max_iters,
+            double TOL)
     {
         // extract the control point grid function of both curves
         typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc1 = pPatch1->pGetGridFunction(CONTROL_POINT_COORDINATES);

@@ -48,7 +48,7 @@ void MultiPatchExporter_Export_Variable(TExporter& rDummy,
 
 template<int TDim, class TExporter, class TPatchType, typename TVariableType>
 void MultiPatchExporter_Export_Variable_WithComponents(TExporter& rDummy,
-        typename TPatchType::Pointer pPatch, const TVariableType& rVariable, const std::string& filename, const std::size_t& ncomponents)
+        typename TPatchType::Pointer pPatch, const TVariableType& rVariable, const std::string& filename, std::size_t ncomponents)
 {
     rDummy.template Export<TDim, TVariableType>(pPatch, rVariable, filename, ncomponents);
 }

@@ -145,7 +145,7 @@ public:
     **************************************************************************/
 
     /// Default constructor
-    DeprecatedHBMesh(const std::size_t& Id, const std::string& Name);
+    DeprecatedHBMesh(std::size_t Id, const std::string& Name);
 
     /// Destructor
     ~DeprecatedHBMesh() {}
@@ -158,10 +158,10 @@ public:
     const std::string& Name() const {return mName;}
 
     /// Get the number of basis functions defined over the patch
-    virtual const std::size_t TotalNumber() const {return mBasisFuncs.size();}
+    std::size_t TotalNumber() const override {return mBasisFuncs.size();}
 
     /// Get the order of the patch in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    std::size_t Order(std::size_t i) const override
     {
         if (i == 0) return mOrder1;
         else if (i == 1) return mOrder2;
@@ -170,7 +170,7 @@ public:
     }
 
     /// Set the maximum level allowed in the hierarchical mesh
-    void SetMaxLevels(const std::size_t& MaxLevels) {mMaxLevels = MaxLevels;}
+    void SetMaxLevels(std::size_t MaxLevels) {mMaxLevels = MaxLevels;}
 
     /**************************************************************************
                             INPUT SUBROUTINES
@@ -184,19 +184,19 @@ public:
     **************************************************************************/
 
     /// Refine a basis function specified by the Id
-    void Refine(const std::size_t& Id);
+    void Refine(std::size_t Id);
 
     /// Refine a list of bfs provided by python list. The list will be automatically sorted by the level.
     void RefineNodes(const std::set<std::size_t>& node_ids);
 
     /// Refine on a cuboid domain
-    void RefineWindow(const double& Xi_min, const double& Xi_max,
-            const double& Eta_min, const double& Eta_max,
-            const double& Zeta_min, const double& Zeta_max);
+    void RefineWindow(double Xi_min, double Xi_max,
+            double Eta_min, double Eta_max,
+            double Zeta_min, double Zeta_max);
 
     /// Perform additional refinement to ensure linear independence
     /// In this algorithm, every bf in each level will be checked. If the support domain of a bf contained in the domain_manager of that level, this bf will be refined. According to the paper of Vuong et al, this will produce a linear independent bases.
-    void LinearDependencyRefine(const std::size_t& refine_cycle);
+    void LinearDependencyRefine(std::size_t refine_cycle);
 
     /// Finalize the hierarchical mesh construction and compute the Bezier decomposition at each cell
     void BuildMesh();
@@ -355,7 +355,7 @@ class DeprecatedHBMesh<0> : public Patch<0>
     KRATOS_CLASS_POINTER_DEFINITION(DeprecatedHBMesh);
 
     /// Default constructor
-    DeprecatedHBMesh(const std::size_t& Id, const std::string& Name) : Patch<0>(Id), mName(Name) {}
+    DeprecatedHBMesh(std::size_t Id, const std::string& Name) : Patch<0>(Id), mName(Name) {}
 
     /// Destructor
     ~DeprecatedHBMesh() {}

@@ -1358,10 +1358,10 @@ public:
         const ValuesContainerType& Knots3, //not used
         const ValuesContainerType& Weights,
         const MatrixType& ExtractionOperator,
-        const int& Degree1,
-        const int& Degree2,
-        const int& Degree3,
-        const int& NumberOfIntegrationMethod
+        int Degree1,
+        int Degree2,
+        int Degree3,
+        int NumberOfIntegrationMethod
     ) final
     {
         mCtrlWeights = Weights;

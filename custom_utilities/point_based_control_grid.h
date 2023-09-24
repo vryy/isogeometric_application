@@ -54,7 +54,7 @@ public:
     }
 
     /// Clone this grid function
-    virtual typename BaseType::Pointer Clone() const
+    typename BaseType::Pointer Clone() const override
     {
         return PointBasedControlGrid::Pointer(new PointBasedControlGrid(mrVariable, mpFESpace));
     }
@@ -66,20 +66,20 @@ public:
     typename FESpaceType::ConstPointer pFESpace() const {return mpFESpace;}
 
     /// Get the size of underlying data
-    virtual std::size_t Size() const
+    std::size_t Size() const override
     {
         return mpFESpace->TotalNumber();
     }
 
     /// Get the size of underlying data
-    virtual std::size_t size() const
+    std::size_t size() const override
     {
         return mpFESpace->TotalNumber();
     }
 
     /// Get the data at specific point
     /// It is noted that the return value is unweighted one
-    virtual DataType GetData(const std::size_t& i) const
+    DataType GetData(std::size_t i) const override
     {
         // TODO Get and Set data in the sequential manner can be expensive if the underlying FESPace uses std::set to store the basis functions.
         // It is suggested to implement the iterator for get and set the values.
@@ -88,33 +88,33 @@ public:
 
     /// Set the data at specific point
     /// It is noted that the setting value is unweighted one
-    virtual void SetData(const std::size_t& i, const DataType& value)
+    void SetData(std::size_t i, const DataType& value) override
     {
         // TODO see comment in GetData
         (*mpFESpace)[i]->SetValue(mrVariable, value * (*mpFESpace)[i]->Weight());
     }
 
     // overload operator []
-    virtual DataType& operator[] (const std::size_t& i)
+    DataType& operator[] (std::size_t i) override
     {
         // TODO see comment in GetData
         return (*mpFESpace)[i]->GetValue(mrVariable);
     }
 
     // overload operator []
-    virtual const DataType& operator[] (const std::size_t& i) const
+    const DataType& operator[] (std::size_t i) const override
     {
         // TODO see comment in GetData
         return (*mpFESpace)[i]->GetValue(mrVariable);
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "Point-Based Control Grid " << BaseType::Name() << "[" << Size() << "]";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         // print out the control values
         // TODO we shall use the iterator here for more efficiency, especially for hierarchical B-Splines
@@ -157,7 +157,7 @@ public:
     }
 
     /// Clone this grid function
-    virtual typename BaseType::Pointer Clone() const
+    typename BaseType::Pointer Clone() const override
     {
         return PointBasedControlGrid::Pointer(new PointBasedControlGrid(mrVariable, mpFESpace));
     }
@@ -169,45 +169,45 @@ public:
     typename FESpaceType::ConstPointer pFESpace() const {return mpFESpace;}
 
     /// Get the size of underlying data
-    virtual std::size_t Size() const
+    std::size_t Size() const override
     {
         return mpFESpace->TotalNumber();
     }
 
     /// Get the size of underlying data
-    virtual std::size_t size() const
+    std::size_t size() const override
     {
         return mpFESpace->TotalNumber();
     }
 
     /// Get the data at specific point
-    virtual DataType GetData(const std::size_t& i) const
+    DataType GetData(std::size_t i) const override
     {
         // TODO Get and Set data in the sequential manner can be expensive if the underlying FESPace uses set to store the basis functions. It is suggested to implement the iterator for get and set the values.
         return (*mpFESpace)[i]->GetValue(mrVariable);
     }
 
     // overload operator []
-    virtual DataType& operator[] (const std::size_t& i)
+    DataType& operator[] (std::size_t i) override
     {
         // TODO see comment in GetData
         return (*mpFESpace)[i]->GetValue(mrVariable);
     }
 
     // overload operator []
-    virtual const DataType& operator[] (const std::size_t& i) const
+    const DataType& operator[] (std::size_t i) const override
     {
         // TODO see comment in GetData
         return (*mpFESpace)[i]->GetValue(mrVariable);
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "Point-Based Control Grid " << BaseType::Name() << "[" << Size() << "]";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         // print out the control values
         // TODO we shall use the iterator here for more efficiency, especially for hierarchical B-Splines

@@ -346,10 +346,10 @@ template<typename TCoordinatesType, typename TPatchType>
 pybind11::list IsogeometricPostUtility_CreateConditionsByTriangulation(IsogeometricPostUtility& rDummy,
     const pybind11::list& list_physical_points,
     const Vector& center, const Vector& normal, const Vector& t1, const Vector& t2,
-    const pybind11::list& list_local_points, const std::size_t& nrefine,
+    const pybind11::list& list_local_points, std::size_t nrefine,
     typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
     const std::string& sample_condition_name,
-    const std::size_t& last_node_id, const std::size_t& last_condition_id,
+    std::size_t last_node_id, std::size_t last_condition_id,
     Properties::Pointer pProperties)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
@@ -404,10 +404,10 @@ template<typename TCoordinatesType, typename TPatchType>
 pybind11::list IsogeometricPostUtility_CreateConditionsByQuadrilateralization(IsogeometricPostUtility& rDummy,
     const TCoordinatesType& p1, const TCoordinatesType& p2,
     const TCoordinatesType& p3, const TCoordinatesType& p4,
-    const std::size_t& num_div_1, const std::size_t& num_div_2,
+    std::size_t num_div_1, std::size_t num_div_2,
     typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
     const std::string& sample_condition_name,
-    const std::size_t& last_node_id, const std::size_t& last_condition_id,
+    std::size_t last_node_id, std::size_t last_condition_id,
     Properties::Pointer pProperties)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
@@ -468,8 +468,8 @@ pybind11::list BezierClassicalPostUtility_GenerateConditions(BezierClassicalPost
         ModelPart& rModelPart,
         Condition& rCondition,
         const std::string& sample_condition_name,
-        const std::size_t& starting_node_id,
-        const std::size_t& starting_condition_id)
+        std::size_t starting_node_id,
+        std::size_t starting_condition_id)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
@@ -498,8 +498,8 @@ pybind11::list BezierClassicalPostUtility_GenerateConditionsWithNodalVariables(B
         ModelPart& rModelPart,
         Condition& rCondition,
         const std::string& sample_condition_name,
-        const std::size_t& starting_node_id,
-        const std::size_t& starting_condition_id)
+        std::size_t starting_node_id,
+        std::size_t starting_condition_id)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
@@ -528,8 +528,8 @@ pybind11::list BezierClassicalPostUtility_GenerateElements(BezierClassicalPostUt
         ModelPart& rModelPart,
         Element& rElement,
         const std::string& sample_element_name,
-        const std::size_t& starting_node_id,
-        const std::size_t& starting_element_id)
+        std::size_t starting_node_id,
+        std::size_t starting_element_id)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
@@ -558,8 +558,8 @@ pybind11::list BezierClassicalPostUtility_GenerateElementsWithNodalVariables(Bez
         ModelPart& rModelPart,
         Element& rElement,
         const std::string& sample_element_name,
-        const std::size_t& starting_node_id,
-        const std::size_t& starting_element_id)
+        std::size_t starting_node_id,
+        std::size_t starting_element_id)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")

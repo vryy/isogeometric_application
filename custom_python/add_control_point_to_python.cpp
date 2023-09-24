@@ -45,7 +45,7 @@ inline double ControlPoint_GetWX(ControlPoint<double>& rDummy)
     return rDummy.WX();
 }
 
-inline void ControlPoint_SetWX(ControlPoint<double>& rDummy, const double& newWX)
+inline void ControlPoint_SetWX(ControlPoint<double>& rDummy, double newWX)
 {
     rDummy.WX() = newWX;
 }
@@ -60,7 +60,7 @@ inline double ControlPoint_GetWY(ControlPoint<double>& rDummy)
     return rDummy.WY();
 }
 
-inline void ControlPoint_SetWY(ControlPoint<double>& rDummy, const double& newWY)
+inline void ControlPoint_SetWY(ControlPoint<double>& rDummy, double newWY)
 {
     rDummy.WY() = newWY;
 }
@@ -75,7 +75,7 @@ inline double ControlPoint_GetZ(ControlPoint<double>& rDummy)
     return rDummy.Z();
 }
 
-inline void ControlPoint_SetWZ(ControlPoint<double>& rDummy, const double& newWZ)
+inline void ControlPoint_SetWZ(ControlPoint<double>& rDummy, double newWZ)
 {
     rDummy.WZ() = newWZ;
 }
@@ -85,7 +85,7 @@ inline double ControlPoint_GetW(ControlPoint<double>& rDummy)
     return rDummy.W();
 }
 
-inline void ControlPoint_SetW(ControlPoint<double>& rDummy, const double& newW)
+inline void ControlPoint_SetW(ControlPoint<double>& rDummy, double newW)
 {
     rDummy.W() = newW;
 }
@@ -101,7 +101,7 @@ void IsogeometricApplication_AddControlPointToPython()
 {
     class_<ControlPoint<double>, ControlPoint<double>::Pointer>
     ("ControlPoint", init<>())
-    .def(init<const double&, const double&, const double&, const double&>())
+    .def(init<double, double, double, double>())
     .add_property("WX", ControlPoint_GetWX, ControlPoint_SetWX)
     .add_property("WY", ControlPoint_GetWY, ControlPoint_SetWY)
     .add_property("WZ", ControlPoint_GetWZ, ControlPoint_SetWZ)

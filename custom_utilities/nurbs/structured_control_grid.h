@@ -57,17 +57,17 @@ public:
     std::size_t size() const override {return mData.size();}
 
     /// Get the data at specific point
-    TDataType GetData(const std::size_t& i) const override {return mData[i];}
+    TDataType GetData(std::size_t i) const override {return mData[i];}
 
     /// Set the data at specific point
     /// Be careful with this method. You can destroy the coherency of internal data.
-    void SetData(const std::size_t& i, const TDataType& value) override {mData[i] = value;}
+    void SetData(std::size_t i, const TDataType& value) override {mData[i] = value;}
 
     /// overload operator []
-    TDataType& operator[] (const std::size_t& i) override {return mData[i];}
+    TDataType& operator[] (std::size_t i) override {return mData[i];}
 
     /// overload operator []
-    const TDataType& operator[] (const std::size_t& i) const override {return mData[i];}
+    const TDataType& operator[] (std::size_t i) const override {return mData[i];}
 
     /// Overload assignment operator
     BaseStructuredControlGrid<TDataType>& operator=(const BaseStructuredControlGrid<TDataType>& rOther)
@@ -90,10 +90,10 @@ public:
     /************************************/
 
     /// resize the underlying container
-    void Resize(const std::size_t& new_size) {mData.resize(new_size);}
+    void Resize(std::size_t new_size) {mData.resize(new_size);}
 
     /// resize the underlying container
-    void resize(const std::size_t& new_size) {mData.resize(new_size);}
+    void resize(std::size_t new_size) {mData.resize(new_size);}
 
     /// Access the underlying data
     DataContainerType& Data() {return mData;}
@@ -130,13 +130,13 @@ public:
     }
 
     /// Reverse the control grid in specific dimension
-    virtual void Reverse(const int& idir)
+    virtual void Reverse(int idir)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
     /// Create a connectivity for the structured control grid
-    virtual void CreateConnectivity(const std::size_t& offset, std::vector<std::vector<std::size_t> >& connectivities) const
+    virtual void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
@@ -187,7 +187,7 @@ public:
     }
 
     /// Constructor with size
-    StructuredControlGrid(const std::size_t& n) : BaseType(), mSize(n)
+    StructuredControlGrid(std::size_t n) : BaseType(), mSize(n)
     {
         BaseType::Data().resize(n);
         std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
@@ -203,13 +203,13 @@ public:
     }
 
     /// resize the grid
-    void Resize(const std::size_t& new_size)
+    void Resize(std::size_t new_size)
     {
         resize(new_size);
     }
 
     /// resize the grid
-    void resize(const std::size_t& new_size)
+    void resize(std::size_t new_size)
     {
         mSize = new_size;
         BaseType::Data().resize(new_size);
@@ -219,31 +219,31 @@ public:
     std::size_t Size() const {return BaseType::Data().size();}
 
     /// Get the size of the grid is specific dimension
-    const std::size_t& Size(const std::size_t& dim) const {return mSize;}
+    std::size_t Size(std::size_t dim) const {return mSize;}
 
     /// Get the value at specific grid point
-    TDataType& GetValue(const std::size_t& i)
+    TDataType& GetValue(std::size_t i)
     {
         return BaseType::Data()[i];
     }
 
     /// Get the value at specific grid point
-    const TDataType& GetValue(const std::size_t& i) const
+    const TDataType& GetValue(std::size_t i) const
     {
         return BaseType::Data()[i];
     }
 
     /// Set the value at specific grid point
-    void SetValue(const std::size_t& i, const TDataType& value)
+    void SetValue(std::size_t i, const TDataType& value)
     {
         BaseType::Data()[i] = value;
     }
 
     // overload operator ()
-    TDataType& operator() (const std::size_t& i) {return BaseType::Data()[i];}
+    TDataType& operator() (std::size_t i) {return BaseType::Data()[i];}
 
     // overload operator ()
-    const TDataType& operator() (const std::size_t& i) const {return BaseType::Data()[i];}
+    const TDataType& operator() (std::size_t i) const {return BaseType::Data()[i];}
 
     /// Copy the data the other grid. The size of two grids must be equal.
     void CopyFrom(const ControlGrid<TDataType>& rOther) override
@@ -288,14 +288,14 @@ public:
     }
 
     /// Reverse the control grid in specific dimension
-    void Reverse(const int& idir) override
+    void Reverse(int idir) override
     {
         if (idir == 0)
             std::reverse(BaseType::Data().begin(), BaseType::Data().end());
     }
 
     /// Create a connectivity for the structured control grid
-    void CreateConnectivity(const std::size_t& offset, std::vector<std::vector<std::size_t> >& connectivities) const override
+    void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const override
     {
         connectivities.clear();
         connectivities.resize(this->Size()-1);
@@ -366,7 +366,7 @@ public:
     }
 
     /// Constructor with size
-    StructuredControlGrid(const std::size_t& m, const std::size_t& n) : mSize{m, n}
+    StructuredControlGrid(std::size_t m, std::size_t n) : mSize{m, n}
     {
         BaseType::Data().resize(m*n);
         std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
@@ -382,13 +382,13 @@ public:
     }
 
     /// resize the grid
-    void Resize(const std::size_t& new_size1, const std::size_t& new_size2)
+    void Resize(std::size_t new_size1, std::size_t new_size2)
     {
         resize(new_size1, new_size2);
     }
 
     /// resize the grid
-    void resize(const std::size_t& new_size1, const std::size_t& new_size2)
+    void resize(std::size_t new_size1, std::size_t new_size2)
     {
         mSize[0] = new_size1;
         mSize[1] = new_size2;
@@ -399,31 +399,31 @@ public:
     std::size_t Size() const {return BaseType::Data().size();}
 
     /// Get the size of the grid is specific dimension
-    const std::size_t& Size(const std::size_t& dim) const {return mSize[dim];}
+    std::size_t Size(std::size_t dim) const {return mSize[dim];}
 
     /// Get the value at specific grid point
-    TDataType& GetValue(const std::size_t& i, const std::size_t& j)
+    TDataType& GetValue(std::size_t i, std::size_t j)
     {
         return BaseType::Data()[j*mSize[0] + i];
     }
 
     /// Get the value at specific grid point
-    const TDataType& GetValue(const std::size_t& i, const std::size_t& j) const
+    const TDataType& GetValue(std::size_t i, std::size_t j) const
     {
         return BaseType::Data()[j*mSize[0] + i];
     }
 
     /// Set the value at specific grid point
-    void SetValue(const std::size_t& i, const std::size_t& j, const TDataType& value)
+    void SetValue(std::size_t i, std::size_t j, const TDataType& value)
     {
         BaseType::Data()[j*mSize[0] + i] = value;
     }
 
     // overload operator ()
-    TDataType& operator() (const std::size_t& i, const std::size_t& j) {return BaseType::Data()[j*mSize[0] + i];}
+    TDataType& operator() (std::size_t i, std::size_t j) {return BaseType::Data()[j*mSize[0] + i];}
 
     // overload operator ()
-    const TDataType& operator() (const std::size_t& i, const std::size_t& j) const {return BaseType::Data()[j*mSize[0] + i];}
+    const TDataType& operator() (std::size_t i, std::size_t j) const {return BaseType::Data()[j*mSize[0] + i];}
 
     /// Copy the data the other grid. The size of two grids must be equal.
     void CopyFrom(const ControlGrid<TDataType>& rOther) override
@@ -456,7 +456,7 @@ public:
     /// Copy the data from a column of structured control_grid in 1D
     /// If dir==0, the column of grid will be copied along u-direction
     /// If dir==1, the column of grid will be copied along v-direction
-    void CopyFrom(const int& dir, const std::vector<typename StructuredControlGrid<1, TDataType>::Pointer>& pOthers)
+    void CopyFrom(int dir, const std::vector<typename StructuredControlGrid<1, TDataType>::Pointer>& pOthers)
     {
         if (pOthers.size() != this->Size(dir))
             KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
@@ -494,7 +494,7 @@ public:
     }
 
     /// Reverse the control grid in specific dimension
-    void Reverse(const int& idir) override
+    void Reverse(int idir) override
     {
         // if (idir == 0)
         // {
@@ -522,7 +522,7 @@ public:
     }
 
     /// Get the layer of control grid from the boundary, if the level = 0, the control grid on the boundary will be extracted.
-    typename StructuredControlGrid<1, TDataType>::Pointer Get(const BoundarySide& side, const std::size_t& level)
+    typename StructuredControlGrid<1, TDataType>::Pointer Get(const BoundarySide& side, std::size_t level)
     {
         typename StructuredControlGrid<1, TDataType>::Pointer pControlGrid;
 
@@ -569,7 +569,7 @@ public:
     }
 
     /// Create a connectivity for the structured control grid
-    void CreateConnectivity(const std::size_t& offset, std::vector<std::vector<std::size_t> >& connectivities) const override
+    void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const override
     {
         connectivities.clear();
         connectivities.resize((this->Size(0)-1) * (this->Size(1)-1));
@@ -655,7 +655,7 @@ public:
     }
 
     /// Constructor with size
-    StructuredControlGrid(const std::size_t& m, const std::size_t& n, const std::size_t& p) : mSize{m, n, p}
+    StructuredControlGrid(std::size_t m, std::size_t n, std::size_t p) : mSize{m, n, p}
     {
         BaseType::Data().resize(m*n*p);
         std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
@@ -671,13 +671,13 @@ public:
     }
 
     /// resize the grid
-    void Resize(const std::size_t& new_size1, const std::size_t& new_size2, const std::size_t& new_size3)
+    void Resize(std::size_t new_size1, std::size_t new_size2, std::size_t new_size3)
     {
         resize(new_size1, new_size2, new_size3);
     }
 
     /// resize the grid
-    void resize(const std::size_t& new_size1, const std::size_t& new_size2, const std::size_t& new_size3)
+    void resize(std::size_t new_size1, std::size_t new_size2, std::size_t new_size3)
     {
         mSize[0] = new_size1;
         mSize[1] = new_size2;
@@ -689,34 +689,34 @@ public:
     std::size_t Size() const {return BaseType::Data().size();}
 
     /// Get the size of the grid is specific dimension
-    const std::size_t& Size(const std::size_t& dim) const {return mSize[dim];}
+    std::size_t Size(std::size_t dim) const {return mSize[dim];}
 
     /// Get the value at specific grid point
-    TDataType& GetValue(const std::size_t& i, const std::size_t& j, const std::size_t& k)
+    TDataType& GetValue(std::size_t i, std::size_t j, std::size_t k)
     {
         return BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i];
     }
 
     /// Get the value at specific grid point
-    const TDataType& GetValue(const std::size_t& i, const std::size_t& j, const std::size_t& k) const
+    const TDataType& GetValue(std::size_t i, std::size_t j, std::size_t k) const
     {
         return BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i];
     }
 
     /// Set the value at specific grid point
-    void SetValue(const std::size_t& i, const std::size_t& j, const std::size_t& k, const TDataType& value)
+    void SetValue(std::size_t i, std::size_t j, std::size_t k, const TDataType& value)
     {
         BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i] = value;
     }
 
     // overload operator ()
-    TDataType& operator() (const std::size_t& i, const std::size_t& j, const std::size_t& k)
+    TDataType& operator() (std::size_t i, std::size_t j, std::size_t k)
     {
         return BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i];
     }
 
     // overload operator ()
-    const TDataType& operator() (const std::size_t& i, const std::size_t& j, const std::size_t& k) const
+    const TDataType& operator() (std::size_t i, std::size_t j, std::size_t k) const
     {
         return BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i];
     }
@@ -756,7 +756,7 @@ public:
     /// If dir==0, the column of grid will be copied along u-direction
     /// If dir==1, the column of grid will be copied along v-direction
     /// If dir==2, the column of grid will be copied along w-direction
-    void CopyFrom(const int& dir, const std::vector<typename StructuredControlGrid<2, TDataType>::Pointer>& pOthers)
+    void CopyFrom(int dir, const std::vector<typename StructuredControlGrid<2, TDataType>::Pointer>& pOthers)
     {
         if (pOthers.size() != this->Size(dir))
             KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
@@ -804,7 +804,7 @@ public:
     }
 
     /// Reverse the control grid in specific dimension
-    void Reverse(const int& idir) override
+    void Reverse(int idir) override
     {
         // if (idir == 0)
         // {
@@ -881,7 +881,7 @@ public:
     }
 
     /// Create a connectivity for the structured control grid
-    void CreateConnectivity(const std::size_t& offset, std::vector<std::vector<std::size_t> >& connectivities) const override
+    void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const override
     {
         connectivities.clear();
         connectivities.resize((this->Size(0)-1) * (this->Size(1)-1) * (this->Size(2)-1));

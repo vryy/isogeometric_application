@@ -896,16 +896,16 @@ public:
      */
     template<class TEntityType, class TEntityContainerType, std::size_t type>
     void GenerateForOneEntity(ModelPart& rModelPart,
-                              TEntityType& rE,
+                              const TEntityType& rE,
                               TEntityType const& rSample,
                               IndexType NodeCounter_old,
                               IndexType& NodeCounter,
                               IndexType& EntityCounter,
                               const std::string& NodeKey,
-                              const bool& transfer_nodal_var,
+                              bool transfer_nodal_var,
                               std::vector<std::size_t>& node_ids,
                               std::vector<std::size_t>& element_ids,
-                              const bool& get_indices)
+                              bool get_indices)
     {
         int ReducedDim = rE.GetGeometry().LocalSpaceDimension();
 
@@ -1289,7 +1289,7 @@ public:
     template<class TEntityType, class TEntityContainerType, std::size_t type>
     void GenerateForOneEntityAutoCollapse(AutoCollapseSpatialBinning& collapse_util,
                                           ModelPart& rModelPart,
-                                          TEntityType& rE,
+                                          const TEntityType& rE,
                                           TEntityType const& rSample,
                                           VectorMap<IndexType, IndexType>& rMapToCollapseNode,
                                           IndexType NodeCounter_old,
@@ -1934,10 +1934,10 @@ private:
      * Calculate global coodinates w.r.t initial configuration
      */
     CoordinatesArrayType& GlobalCoordinates(
-        GeometryType& rGeometry,
+        const GeometryType& rGeometry,
         CoordinatesArrayType& rResult,
         CoordinatesArrayType const& LocalCoordinates
-    )
+    ) const
     {
         noalias( rResult ) = ZeroVector( 3 );
 
@@ -1959,9 +1959,9 @@ private:
     double CalculateOnPoint(
         const Variable<double>& rVariable,
         double& rResult,
-        Element::Pointer& pElement,
+        Element::Pointer pElement,
         const CoordinatesArrayType& rCoordinates
-    )
+    ) const
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
@@ -1981,9 +1981,9 @@ private:
     Vector& CalculateOnPoint(
         const Variable<Vector>& rVariable,
         Vector& rResult,
-        Element::Pointer& pElement,
+        Element::Pointer pElement,
         const CoordinatesArrayType& rCoordinates
-    )
+    ) const
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);
@@ -2010,9 +2010,9 @@ private:
     array_1d<double, 3>& CalculateOnPoint(
         const Variable<array_1d<double, 3> >& rVariable,
         array_1d<double, 3>& rResult,
-        Element::Pointer& pElement,
+        Element::Pointer pElement,
         const CoordinatesArrayType& rCoordinates
-    )
+    ) const
     {
         Vector N;
         pElement->GetGeometry().ShapeFunctionsValues(N, rCoordinates);

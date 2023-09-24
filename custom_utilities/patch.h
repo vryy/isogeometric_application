@@ -99,14 +99,14 @@ public:
     typedef FESpace<TDim> FESpaceType;
 
     /// Constructor with id
-    Patch(const std::size_t& Id)
+    Patch(std::size_t Id)
     : IndexedObject(Id), mpFESpace(NULL), mPrefix("Patch"), mLayerIndex(Id)
     {
         this->Set(ACTIVE, true);
     }
 
     /// Constructor with id and FESpace
-    Patch(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
+    Patch(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
     : IndexedObject(Id), mpFESpace(pFESpace), mPrefix("Patch"), mLayerIndex(Id)
     {
         this->Set(ACTIVE, true);
@@ -125,7 +125,7 @@ public:
     }
 
     /// Helper function to create new patch pointer
-    static typename Patch<TDim>::Pointer Create(const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
+    static typename Patch<TDim>::Pointer Create(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
     {
         return typename Patch<TDim>::Pointer(new Patch<TDim>(Id, pFESpace));
     }
@@ -137,10 +137,10 @@ public:
     void SetPrefix(const std::string& prefix) {mPrefix = prefix;}
 
     /// Set the layer index
-    void SetLayerIndex(const int& Index) {mLayerIndex = Index;}
+    void SetLayerIndex(int Index) {mLayerIndex = Index;}
 
     /// Get the layer index
-    const int& LayerIndex() {return mLayerIndex;}
+    int LayerIndex() {return mLayerIndex;}
 
     /// Get the prefix of the patch
     const std::string& Prefix() const {return mPrefix;}
@@ -163,14 +163,14 @@ public:
     typename FESpace<TDim>::ConstPointer pFESpace() const {return mpFESpace;}
 
     /// Get the number of basis functions defined over the patch
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         assert(mpFESpace == NULL);
         return mpFESpace->TotalNumber();
     }
 
     /// Get the order of the patch in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(std::size_t i) const
     {
         assert(mpFESpace == NULL);
         if (i >= TDim) return 0;
@@ -608,7 +608,7 @@ public:
     interface_const_iterator InterfaceEnd() const {return mpInterfaces.end();}
 
     /// Get the interface
-    typename PatchInterface<TDim>::Pointer pInterface(const std::size_t& i)
+    typename PatchInterface<TDim>::Pointer pInterface(std::size_t i)
     {
         std::size_t cnt = 0;
         for (interface_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
@@ -621,7 +621,7 @@ public:
         return NULL;
     }
 
-    typename PatchInterface<TDim>::ConstPointer pInterface(const std::size_t& i) const
+    typename PatchInterface<TDim>::ConstPointer pInterface(std::size_t i) const
     {
         std::size_t cnt = 0;
         for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
@@ -982,7 +982,7 @@ public:
     Patch() : IndexedObject(0) {}
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : IndexedObject(Id) {}
+    Patch(std::size_t Id) : IndexedObject(Id) {}
 
     /// Destructor
     virtual ~Patch() {}
@@ -991,13 +991,13 @@ public:
     void SetFESpace(typename FESpace<0>::Pointer pFESpace) {mpFESpace = pFESpace;}
 
     /// Get the number of basis functions defined over the patch
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return 0;
     }
 
     /// Get the order of the patch in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(std::size_t i) const
     {
         return 0;
     }
@@ -1103,7 +1103,7 @@ public:
     Patch() : IndexedObject(0) {}
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : IndexedObject(Id) {}
+    Patch(std::size_t Id) : IndexedObject(Id) {}
 
     /// Destructor
     virtual ~Patch() {}
@@ -1112,13 +1112,13 @@ public:
     void SetFESpace(typename FESpace<-1>::Pointer pFESpace) {}
 
     /// Get the number of basis functions defined over the patch
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return 0;
     }
 
     /// Get the order of the patch in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(std::size_t i) const
     {
         return 0;
     }
@@ -1188,7 +1188,7 @@ public:
     Patch() : IndexedObject(0) {}
 
     /// Constructor with id
-    Patch(const std::size_t& Id) : IndexedObject(Id) {}
+    Patch(std::size_t Id) : IndexedObject(Id) {}
 
     /// Destructor
     virtual ~Patch() {}
@@ -1197,13 +1197,13 @@ public:
     void SetFESpace(typename FESpace<-2>::Pointer pFESpace) {}
 
     /// Get the number of basis functions defined over the patch
-    virtual const std::size_t TotalNumber() const
+    virtual std::size_t TotalNumber() const
     {
         return 0;
     }
 
     /// Get the order of the patch in specific direction
-    virtual const std::size_t Order(const std::size_t& i) const
+    virtual std::size_t Order(std::size_t i) const
     {
         return 0;
     }

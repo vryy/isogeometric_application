@@ -91,7 +91,7 @@ public:
     static int PredictVerticalProjection(const PointType& rPoint,
         std::vector<double>& rLocalPoint,
         typename Patch<2>::Pointer pPatch,
-        const std::size_t& nsampling1, const std::size_t& nsampling2)
+        std::size_t nsampling1, std::size_t nsampling2)
     {
         typedef Patch<2> PatchType;
         typedef typename PatchType::ControlPointType ControlPointType;
@@ -130,8 +130,8 @@ public:
     static int ComputeVerticalProjection(const PointType& rPoint,
         std::vector<double>& rLocalPoint, PointType& rGlobalPoint,
         typename Patch<2>::Pointer pPatch,
-        const double& TOL, const int& max_iters,
-        const int& echo_level)
+        double TOL, int max_iters,
+        int echo_level)
     {
         typedef Patch<2> PatchType;
         typedef typename PatchType::ControlPointType ControlPointType;
@@ -225,8 +225,8 @@ public:
     static int ComputeVerticalProjection(const PointType& rPoint,
         std::vector<double>& rLocalPoint, PointType& rGlobalPoint, int& patch_id,
         typename MultiPatch<2>::Pointer pMultiPatch,
-        const double& TOL, const int& max_iters,
-        const int& echo_level)
+        double TOL, int max_iters,
+        int echo_level)
     {
         typedef MultiPatch<2> MultiPatchType;
         typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;
@@ -267,9 +267,9 @@ public:
     static int ComputeVerticalProjection(const PointType& rPoint,
         std::vector<double>& rLocalPoint, PointType& rGlobalPoint, int& patch_id,
         typename MultiPatch<2>::Pointer pMultiPatch,
-        const double& TOL, const int& max_iters,
-        const int& nsampling1, const int& nsampling2,
-        const int& echo_level)
+        double TOL, int max_iters,
+        int nsampling1, int nsampling2,
+        int echo_level)
     {
         typedef MultiPatch<2> MultiPatchType;
         typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;

@@ -44,7 +44,7 @@ using namespace boost::python;
 ////////////////////////////////////////
 
 template<int TDim>
-typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUtility& rDummy, const std::size_t& Id, typename FESpace<TDim>::Pointer pFESpace)
+typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUtility& rDummy, std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
 {
     return rDummy.template CreatePatchPointer<TDim>(Id, pFESpace);
 }
@@ -58,7 +58,7 @@ void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<T
 
 template<int TDim>
 boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
-     boost::python::list& P, boost::python::list& list_nsampling)
+     const boost::python::list& P, const boost::python::list& list_nsampling)
 {
     typedef boost::python::stl_input_iterator<double> iterator_value_type;
 
@@ -155,7 +155,7 @@ void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassTy
 template<int TDim>
 void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy,
        typename Patch<TDim>::Pointer& pPatch,
-       boost::python::list ins_knots)
+       const boost::python::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
     std::size_t dim = 0;
@@ -189,7 +189,7 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
 template<int TDim>
 boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinementUtility& rDummy,
        typename Patch<TDim>::Pointer& pPatch,
-       boost::python::list ins_knots)
+       const boost::python::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
     std::size_t dim = 0;
@@ -231,7 +231,7 @@ boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinemen
 template<int TDim>
 void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDummy,
        typename Patch<TDim>::Pointer& pPatch,
-       boost::python::list order_increment)
+       const boost::python::list& order_increment)
 {
     std::vector<std::size_t> order_incr_array(TDim);
     std::size_t dim = 0;
@@ -263,7 +263,7 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatch(BSplinesPatch
 
 template<int TDim>
 typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSplinesPatchUtility& dummy,
-        boost::python::list patch_list, const int& order)
+        const boost::python::list& patch_list, int order)
 {
     std::vector<typename Patch<TDim-1>::Pointer> pPatches;
 
@@ -294,8 +294,8 @@ boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility
 }
 
 void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
-    typename Patch<2>::Pointer pPatch1, const int& iside1,
-    typename Patch<2>::Pointer pPatch2, const int& iside2,
+    typename Patch<2>::Pointer pPatch1, int iside1,
+    typename Patch<2>::Pointer pPatch2, int iside2,
     const BoundaryDirection& direction)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
@@ -304,8 +304,8 @@ void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
 }
 
 void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
-    typename Patch<3>::Pointer pPatch1, const int& iside1,
-    typename Patch<3>::Pointer pPatch2, const int& iside2,
+    typename Patch<3>::Pointer pPatch1, int iside1,
+    typename Patch<3>::Pointer pPatch2, int iside2,
     const bool& uv_or_vu,
     const BoundaryDirection& direction1, const BoundaryDirection& direction2)
 {
@@ -316,7 +316,7 @@ void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
 
 template<int TDim>
 void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
-    typename Patch<TDim>::Pointer pPatch, const std::size_t& idir)
+    typename Patch<TDim>::Pointer pPatch, std::size_t idir)
 {
     rDummy.Reverse<TDim>(pPatch, idir);
 }
@@ -326,10 +326,10 @@ void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
 template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch1(
         BendingStripUtility& rDummy,
-        const std::size_t& Id,
+        std::size_t Id,
         typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
         typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
-        const int& Order)
+        int Order)
 {
     return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Order);
 }
@@ -337,10 +337,10 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch1(
 template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
         BendingStripUtility& rDummy,
-        const std::size_t& Id,
+        std::size_t Id,
         typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
         typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
-        boost::python::list order_list)
+        const boost::python::list& order_list)
 {
     std::vector<int> Orders(TDim);
 
@@ -362,13 +362,13 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
 //////////////////////////////////////////////////
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Two_Curves(IsogeometricIntersectionUtility& rDummy,
-    const double& starting_point_1,
-    const double& starting_point_2,
+    double starting_point_1,
+    double starting_point_2,
     Patch<1>::Pointer pPatch1,
     Patch<1>::Pointer pPatch2,
-    const int& max_iters,
-    const double& TOL,
-    const int& option_space)
+    int max_iters,
+    double TOL,
+    int option_space)
 {
     double intersection_point_1, intersection_point_2;
 
@@ -387,11 +387,11 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 }
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Curve_Plane(IsogeometricIntersectionUtility& rDummy,
-    const double& starting_point,
+    double starting_point,
     Patch<1>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D,
-    const int& max_iters,
-    const double& TOL)
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -409,11 +409,11 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 }
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch2_Plane(IsogeometricIntersectionUtility& rDummy,
-    boost::python::list list_starting_points,
+    const boost::python::list& list_starting_points,
     Patch<2>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D,
-    const int& max_iters,
-    const double& TOL)
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -451,11 +451,11 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 }
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
-    boost::python::list list_starting_points,
+    const boost::python::list& list_starting_points,
     Patch<3>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D,
-    const int& max_iters,
-    const double& TOL)
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -495,9 +495,9 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByBisection_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
     Patch<3>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D,
-    const int& max_iters,
-    const double& TOL)
+    double A, double B, double C, double D,
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -520,13 +520,13 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByBisecti
 }
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Surface(IsogeometricIntersectionUtility& rDummy,
-    const double& starting_point_1,
-    const double& starting_point_2_1,
-    const double& starting_point_2_2,
+    double starting_point_1,
+    double starting_point_2_1,
+    double starting_point_2_2,
     Patch<1>::Pointer pPatch1,
     Patch<2>::Pointer pPatch2,
-    const int& max_iters,
-    const double& TOL)
+    int max_iters,
+    double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -554,7 +554,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Su
 template<int TDim>
 boost::python::list IsogeometricIntersectionUtility_CheckIntersection(IsogeometricIntersectionUtility& rDummy,
     typename Patch<TDim>::Pointer pPatch,
-    const double& A, const double& B, const double& C, const double& D)
+    double A, double B, double C, double D)
 {
     std::pair<int, std::vector<int> > result = rDummy.CheckIntersection<TDim, 0>(pPatch, A, B, C, D);
     boost::python::list output;

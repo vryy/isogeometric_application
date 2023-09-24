@@ -104,7 +104,7 @@ public:
     }
 
     /// Get a basis function based on its Id
-    bf_t get(const std::size_t& Id)
+    bf_t get(std::size_t Id)
     {
         // create the index map if it's not created yet
         if(!function_map_is_created)
@@ -119,7 +119,7 @@ public:
     }
 
     /// Overload operator[]
-    bf_t operator[](const std::size_t& Id)
+    bf_t operator[](std::size_t Id)
     {
         return get(Id);
     }

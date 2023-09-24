@@ -156,7 +156,7 @@ namespace Kratos
         return true;
     }
 
-    void DomainManager3D::ExportDomain(const std::string& fn, const std::string& color, const double& distance) const
+    void DomainManager3D::ExportDomain(const std::string& fn, const std::string& color, double distance) const
     {
         std::ofstream outfile(fn.c_str(), std::ios_base::app);
 

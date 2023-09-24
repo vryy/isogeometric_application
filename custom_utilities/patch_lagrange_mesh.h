@@ -58,7 +58,7 @@ public:
         typename Patch<TDim>::Pointer pPatch, const TEntityType& r_clone_entity,
         const std::vector<std::size_t>& num_divisions,
         std::size_t& last_node_id, std::size_t& last_entity_id,
-        Properties::Pointer pProperties, const int& echo_level = 0)
+        Properties::Pointer pProperties, int echo_level = 0)
     {
         if (echo_level > 0)
             std::cout << "invoking PatchLagrangeMesh::" << __FUNCTION__ << std::endl;

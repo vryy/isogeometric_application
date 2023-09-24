@@ -55,7 +55,7 @@ public:
 
     /// Set the division for all the patches the same number of division in each dimension
     /// Note that if the division is changed, the post_model_part must be generated again
-    void SetUniformDivision(const std::size_t& num_division)
+    void SetUniformDivision(std::size_t num_division)
     {
         typedef typename MultiPatch<TFESpaceType::Dim()>::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
@@ -68,7 +68,7 @@ public:
 
     /// Set the division for the patch at specific dimension
     /// Note that if the division is changed, the post_model_part must be generated again
-    void SetDivision(const std::size_t& patch_id, const int& dim, const std::size_t& num_division)
+    void SetDivision(std::size_t patch_id, int dim, std::size_t num_division)
     {
         if (mpMultiPatch->Patches().find(patch_id) == mpMultiPatch->end())
         {
@@ -84,13 +84,13 @@ public:
     void SetBaseElementName(const std::string& BaseElementName) {mBaseElementName = BaseElementName;}
 
     /// Set the last node index
-    void SetLastNodeId(const std::size_t& lastNodeId) {mLastNodeId = lastNodeId;}
+    void SetLastNodeId(std::size_t lastNodeId) {mLastNodeId = lastNodeId;}
 
     /// Set the last element index
-    void SetLastElemId(const std::size_t& lastElemId) {mLastElemId = lastElemId;}
+    void SetLastElemId(std::size_t lastElemId) {mLastElemId = lastElemId;}
 
     /// Set the last properties index
-    void SetLastPropId(const std::size_t& lastPropId) {mLastPropId = lastPropId;}
+    void SetLastPropId(std::size_t lastPropId) {mLastPropId = lastPropId;}
 
     /// Append to model_part, the quad/hex element from patches
     void WriteModelPart(ModelPart& r_model_part) const

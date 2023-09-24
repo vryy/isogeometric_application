@@ -74,7 +74,7 @@ std::size_t HBSplinesBasisFunction_GetLevel(HBSplinesBasisFunction<TDim>& rDummy
 // }
 
 template<int TDim>
-pybind11::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<TDim>& rDummy, const std::size_t& boundary_id)
+pybind11::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<TDim>& rDummy, std::size_t boundary_id)
 {
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
@@ -94,7 +94,7 @@ std::size_t HBSplinesFESpace_MaxLevel(HBSplinesFESpace<TDim>& rDummy)
 }
 
 template<int TDim>
-typename HBSplinesBasisFunction<TDim>::Pointer HBSplinesFESpace_GetItem(HBSplinesFESpace<TDim>& rDummy, const std::size_t& i)
+typename HBSplinesBasisFunction<TDim>::Pointer HBSplinesFESpace_GetItem(HBSplinesFESpace<TDim>& rDummy, std::size_t i)
 {
     return rDummy[i];
 }
@@ -117,7 +117,7 @@ typename Patch<TDim>::Pointer HBSplinesPatchUtility_CreatePatchFromBSplines(HBSp
 
 template<int TDim>
 typename HBSplinesFESpace<TDim>::bf_t HBSplinesPatchUtility_GetBfByEquationId(HBSplinesPatchUtility& rDummy,
-    typename MultiPatch<TDim>::Pointer pMultiPatch, const std::size_t& EquationId)
+    typename MultiPatch<TDim>::Pointer pMultiPatch, std::size_t EquationId)
 {
     return rDummy.GetBfByEquationId<TDim>(pMultiPatch, EquationId);
 }
@@ -133,21 +133,21 @@ void HBSplinesPatchUtility_ReportDuplicatedEquationId(HBSplinesPatchUtility& rDu
 
 template<int TDim>
 void HBSplinesRefinementUtility_Refine(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& EchoLevel)
+        typename Patch<TDim>::Pointer pPatch, std::size_t Id, int EchoLevel)
 {
     rDummy.Refine<TDim>(pPatch, Id, EchoLevel);
 }
 
 template<int TDim>
 void HBSplinesRefinementUtility_RefineBf(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, const int& EchoLevel)
+        typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, int EchoLevel)
 {
     rDummy.Refine<TDim>(pPatch, p_bf, EchoLevel);
 }
 
 template<int TDim>
 void HBSplinesRefinementUtility_RefineWindow(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, pybind11::list& window, const int& EchoLevel)
+        typename Patch<TDim>::Pointer pPatch, pybind11::list& window, int EchoLevel)
 {
     std::vector<std::vector<double> > window_vector;
     std::size_t cnt1 = 0, cnt2 = 0;
@@ -165,7 +165,7 @@ void HBSplinesRefinementUtility_RefineWindow(HBSplinesRefinementUtility& rDummy,
 
 template<int TDim>
 void HBSplinesRefinementUtility_LinearDependencyRefine(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& EchoLevel)
+        typename Patch<TDim>::Pointer pPatch, std::size_t refine_cycle, int EchoLevel)
 {
     rDummy.LinearDependencyRefine<TDim>(pPatch, refine_cycle, EchoLevel);
 }
@@ -192,7 +192,7 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython(pybind11::module& m)
     ss << "HBSplinesBasisFunction" << TDim << "D";
     class_<HBSplinesBasisFunction<TDim>, typename HBSplinesBasisFunction<TDim>::Pointer>
     (m, ss.str().c_str())
-    .def(init<const std::size_t&, const std::size_t&>())
+    .def(init<std::size_t, std::size_t>())
     // .add_property("Id", HBSplinesBasisFunction_GetId<TDim>, HBSplinesBasisFunction_SetId<TDim>)
     .def_property("Id", Isogeometric_GetId<HBSplinesBasisFunction<TDim> >, HBSplinesBasisFunction_SetId<TDim>)
     // .add_property("EquationId", HBSplinesBasisFunction_GetEquationId<TDim>, HBSplinesBasisFunction_SetEquationId<TDim>)
@@ -234,7 +234,7 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython(pybind11::module& m)
     // class_<DeprecatedHBMesh<TDim>, Patch<TDim> > // does not compile
     class_<DeprecatedHBMesh<TDim>, typename DeprecatedHBMesh<TDim>::Pointer, Patch<TDim> >
     (m, ss.str().c_str())
-    .def(init<const std::size_t&, const std::string&>())
+    .def(init<std::size_t, const std::string&>())
     .def("SetEchoLevel", &DeprecatedHBMesh<TDim>::SetEchoLevel)
     .def("ReadMesh", &DeprecatedHBMesh<TDim>::ReadMesh)
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/

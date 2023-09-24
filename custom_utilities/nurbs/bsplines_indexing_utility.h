@@ -24,42 +24,42 @@ namespace Kratos
 struct BSplinesIndexingUtility_Helper
 {
     /// Compute the BSplines index in 1D.
-    static inline std::size_t Index1D(const std::size_t& i, const std::size_t& n1)
+    static inline std::size_t Index1D(std::size_t i, std::size_t n1)
     {
         return i-1;
     }
 
     /// Compute the BSplines index in 2D
-    static inline std::size_t Index2D(const std::size_t& i, const std::size_t& j,
-        const std::size_t& n1, const std::size_t& n2)
+    static inline std::size_t Index2D(std::size_t i, std::size_t j,
+        std::size_t n1, std::size_t n2)
     {
         return (j-1)*n1 + (i-1);
     }
 
     /// Compute the BSplines index in 3D
-    static inline std::size_t Index3D(const std::size_t& i, const std::size_t& j, const std::size_t& k,
-        const std::size_t& n1, const std::size_t& n2, const std::size_t& n3)
+    static inline std::size_t Index3D(std::size_t i, std::size_t j, std::size_t k,
+        std::size_t n1, std::size_t n2, std::size_t n3)
     {
         return ((k-1)*n2 + (j-1))*n1 + (i-1);
     }
 
     /// Compute the BSplines index array in 1D
-    static inline std::vector<std::size_t> IndexArray1D(const std::size_t& i,
-        const std::size_t& n1)
+    static inline std::vector<std::size_t> IndexArray1D(std::size_t i,
+        std::size_t n1)
     {
         return std::vector<std::size_t>{(i-1) % n1 + 1};
     }
 
     /// Compute the BSplines index array in 2D
-    static inline std::vector<std::size_t> IndexArray2D(const std::size_t& i,
-        const std::size_t& n1, const std::size_t& n2)
+    static inline std::vector<std::size_t> IndexArray2D(std::size_t i,
+        std::size_t n1, std::size_t n2)
     {
         return std::vector<std::size_t>{(i-1) % n1 + 1, (i-1) / n1 + 1};
     }
 
     /// Compute the BSplines index array in 3D
-    static inline std::vector<std::size_t> IndexArray3D(const std::size_t& i,
-        const std::size_t& n1, const std::size_t& n2, const std::size_t& n3)
+    static inline std::vector<std::size_t> IndexArray3D(std::size_t i,
+        std::size_t n1, std::size_t n2, std::size_t n3)
     {
         return std::vector<std::size_t>{(i-1) % n1 + 1, ((i-1) / n1) % n2 + 1, ((std::size_t)((i-1) / n1)) / n2 + 1};
     }
@@ -68,7 +68,7 @@ struct BSplinesIndexingUtility_Helper
 template<int TDim, class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Reverse_Helper
 {
-    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, const std::size_t& idir)
+    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         return;
     }
@@ -101,7 +101,7 @@ public:
 
     /// Generic function to compute the BSplines index array
     template<int TDim>
-    static std::vector<std::size_t> IndexArray(const std::size_t& I, const std::vector<std::size_t>& N)
+    static std::vector<std::size_t> IndexArray(std::size_t I, const std::vector<std::size_t>& N)
     {
         return std::vector<std::size_t>{};
     }
@@ -109,7 +109,7 @@ public:
     /// Reverse an array in specific direction
     /// The array is a {dim}D-tensor which is addressed by using IndexArray
     template<int TDim, class TContainerType, class TIndexContainerType>
-    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, const std::size_t& idir)
+    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         BSplinesIndexingUtility_Reverse_Helper<TDim, TContainerType, TIndexContainerType>::Reverse(values, sizes, idir);
     }
@@ -137,7 +137,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesIndexingU
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Reverse_Helper<1, TContainerType, TIndexContainerType>
 {
-    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, const std::size_t& idir)
+    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         if (idir == 0)
             std::reverse(values.begin(), values.end());
@@ -147,7 +147,7 @@ struct BSplinesIndexingUtility_Reverse_Helper<1, TContainerType, TIndexContainer
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Reverse_Helper<2, TContainerType, TIndexContainerType>
 {
-    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, const std::size_t& idir)
+    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         if (idir == 0)
         {
@@ -184,7 +184,7 @@ struct BSplinesIndexingUtility_Reverse_Helper<2, TContainerType, TIndexContainer
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainerType>
 {
-    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, const std::size_t& idir)
+    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         if (idir == 0)
         {

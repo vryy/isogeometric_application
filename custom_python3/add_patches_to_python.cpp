@@ -48,7 +48,7 @@ std::size_t Patch_GetId(TPatchType& rDummy)
 }
 
 template<class TPatchType>
-void Patch_SetId(TPatchType& rDummy, const std::size_t& Id)
+void Patch_SetId(TPatchType& rDummy, std::size_t Id)
 {
     rDummy.SetId(Id);
 }
@@ -72,7 +72,7 @@ int Patch_GetLayerIndex(TPatchType& rDummy)
 }
 
 template<class TPatchType>
-void Patch_SetLayerIndex(TPatchType& rDummy, const int& Index)
+void Patch_SetLayerIndex(TPatchType& rDummy, int Index)
 {
     rDummy.SetLayerIndex(Index);
 }
@@ -200,13 +200,13 @@ bool Patch_IsInside(TPatchType& rDummy, pybind11::list& P, pybind11::list& xi0)
 }
 
 template<int TDim>
-typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, const std::size_t& i)
+typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, std::size_t i)
 {
     return rDummy.pInterface(i);
 }
 
 template<int TDim>
-typename Patch<TDim-1>::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, const std::size_t& iside)
+typename Patch<TDim-1>::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, std::size_t iside)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.ConstructBoundaryPatch(side);
@@ -266,7 +266,7 @@ std::size_t MultiPatch_Enumerate1(MultiPatch<TDim>& rDummy)
 }
 
 template<int TDim>
-std::size_t MultiPatch_Enumerate2(MultiPatch<TDim>& rDummy, const std::size_t& start)
+std::size_t MultiPatch_Enumerate2(MultiPatch<TDim>& rDummy, std::size_t start)
 {
     std::size_t system_size;
 
@@ -311,7 +311,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper(pybind11::module& m)
     ss << "Patch" << TDim << "D";
     class_<Patch<TDim>, typename Patch<TDim>::Pointer, Flags>
     (m, ss.str().c_str())
-    .def(init<const std::size_t&, typename FESpace<TDim>::Pointer>())
+    .def(init<std::size_t, typename FESpace<TDim>::Pointer>())
     .def_property("Id", &Patch_GetId<Patch<TDim> >, &Patch_SetId<Patch<TDim> >)
     .def_property("Prefix", &Patch_GetPrefix<Patch<TDim> >, &Patch_SetPrefix<Patch<TDim> >)
     .def_property("LayerIndex", &Patch_GetLayerIndex<Patch<TDim> >, &Patch_SetLayerIndex<Patch<TDim> >)

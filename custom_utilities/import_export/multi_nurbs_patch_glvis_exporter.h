@@ -76,7 +76,7 @@ struct MultiNURBSPatchGLVisExporterWriter_Helper<TDim, Variable<array_1d<double,
 template<int TDim>
 struct MultiNURBSPatchGLVisExporterWriter_Helper<TDim, Variable<Vector> >
 {
-    static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const Variable<Vector>& rVariable, std::ostream& rOStream, const std::size_t& ncomponents)
+    static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const Variable<Vector>& rVariable, std::ostream& rOStream, std::size_t ncomponents)
     {
         rOStream << "FiniteElementSpace" << std::endl;
         rOStream << "FiniteElementCollection: NURBS1" << std::endl;
@@ -139,7 +139,7 @@ public:
 
     /// Export the results from single patch
     template<typename TVariableType>
-    void Export(typename Patch<TDim>::Pointer pPatch, const TVariableType& rVariable, std::ostream& rOStream, const std::size_t& ncomponents) const
+    void Export(typename Patch<TDim>::Pointer pPatch, const TVariableType& rVariable, std::ostream& rOStream, std::size_t ncomponents) const
     {
         typename MultiPatch<TDim>::Pointer pMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
         pMultiPatch->AddPatch(pPatch);
@@ -262,7 +262,7 @@ public:
 
     /// Export the results from multipatch
     template<typename TVariableType>
-    void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const TVariableType& rVariable, std::ostream& rOStream, const std::size_t& ncomponents) const
+    void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const TVariableType& rVariable, std::ostream& rOStream, std::size_t ncomponents) const
     {
         MultiNURBSPatchGLVisExporterWriter_Helper<TDim, TVariableType>::Export(pMultiPatch, rVariable, rOStream, ncomponents);
     }
@@ -296,7 +296,7 @@ private:
         std::map<std::size_t, std::vector<double> > all_knotvec;
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
             it->GenerateTopolgyData(start_vertex_id, patch_vertices[id], patch_edges[id], patch_faces[id], patch_volumes[id], start_knotv_id, patch_knotv[id]);
 
             typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
@@ -314,7 +314,7 @@ private:
         #ifdef DEBUG_GLVIS_EXPORT
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
 
             std::cout << "edge (p1) for patch " << id << std::endl;
             for (std::size_t i = 0; i < patch_edges[id].size(); ++i)
@@ -331,11 +331,11 @@ private:
         // for all patch, account for the corners and then renumbering the vertex and edge
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
 
             if (it->pNeighbor(_BLEFT_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_BLEFT_)->Id();
+                std::size_t other_id = it->pNeighbor(_BLEFT_)->Id();
                 // TODO accommodate for different type of synchronization. Because the left neighbor does not always tie by the right boundary.
                 SynchronizeVertices(TDim, _BLEFT_, patch_vertices[id], _BRIGHT_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 if (TDim == 2)
@@ -357,7 +357,7 @@ private:
 
             if (it->pNeighbor(_BRIGHT_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_BRIGHT_)->Id();
+                std::size_t other_id = it->pNeighbor(_BRIGHT_)->Id();
                 // TODO accommodate for different type of synchronization. Because the right neighbor does not always tie by the left boundary.
                 SynchronizeVertices(TDim, _BRIGHT_, patch_vertices[id], _BLEFT_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 if (TDim == 2)
@@ -379,7 +379,7 @@ private:
 
             if (it->pNeighbor(_BTOP_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_BTOP_)->Id();
+                std::size_t other_id = it->pNeighbor(_BTOP_)->Id();
                 SynchronizeVertices(TDim, _BTOP_, patch_vertices[id], _BBOTTOM_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 if (TDim == 2)
                 {
@@ -400,7 +400,7 @@ private:
 
             if (it->pNeighbor(_BBOTTOM_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_BBOTTOM_)->Id();
+                std::size_t other_id = it->pNeighbor(_BBOTTOM_)->Id();
                 SynchronizeVertices(TDim, _BBOTTOM_, patch_vertices[id], _BTOP_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 if (TDim == 2)
                 {
@@ -421,7 +421,7 @@ private:
 
             if (it->pNeighbor(_BFRONT_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_BFRONT_)->Id();
+                std::size_t other_id = it->pNeighbor(_BFRONT_)->Id();
                 SynchronizeVertices(TDim, _BFRONT_, patch_vertices[id], _BBACK_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 patch_knotv[other_id][0] = patch_knotv[id][0];
                 patch_knotv[other_id][2] = patch_knotv[id][2];
@@ -431,7 +431,7 @@ private:
 
             if (it->pNeighbor(_BBACK_) != NULL)
             {
-                const std::size_t& other_id = it->pNeighbor(_BBACK_)->Id();
+                std::size_t other_id = it->pNeighbor(_BBACK_)->Id();
                 SynchronizeVertices(TDim, _BBACK_, patch_vertices[id], _BFRONT_, patch_vertices[other_id], patch_edges[other_id], patch_faces[other_id], patch_volumes[other_id]);
                 patch_knotv[other_id][0] = patch_knotv[id][0];
                 patch_knotv[other_id][2] = patch_knotv[id][2];
@@ -443,7 +443,7 @@ private:
         #ifdef DEBUG_GLVIS_EXPORT
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
 
             std::cout << "edge (p2) for patch " << id << std::endl;
             for (std::size_t i = 0; i < patch_edges[id].size(); ++i)
@@ -461,7 +461,7 @@ private:
         std::set<vertex_t> all_vertices;
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
             all_vertices.insert(patch_vertices[id].begin(), patch_vertices[id].end());
         }
 
@@ -474,7 +474,7 @@ private:
         // finally reassign the new id for all patches
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
 
             for (std::size_t i = 0; i < patch_vertices[id].size(); ++i)
             {
@@ -512,7 +512,7 @@ private:
         std::set<std::size_t> all_knotvs;
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
             for (std::size_t i = 0; i < TDim; ++i)
                 all_knotvs.insert(patch_knotv[id][i]);
         }
@@ -533,7 +533,7 @@ private:
         // finally reassign the new id for all patches
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
             for (std::size_t i = 0; i < TDim; ++i)
                 patch_knotv[id][i] = old_to_new_knotv[patch_knotv[id][i]];
         }
@@ -541,7 +541,7 @@ private:
         // reassign the knot vector index in each edge
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
             for (std::size_t i = 0; i < patch_edges[id].size(); ++i)
             {
                 std::get<2>(patch_edges[id][i]) = old_to_new_knotv[std::get<2>(patch_edges[id][i])];
@@ -551,7 +551,7 @@ private:
         // assign the knot vector accordingly
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
             for (std::size_t i = 0; i < TDim; ++i)
                 knotvecs[ old_to_new_knotv[patch_knotv[id][i]] ] = all_knotvec[ patch_knotv[id][i] ];
         }
@@ -560,7 +560,7 @@ private:
         std::set<edge_t> all_edges;
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
-            const std::size_t& id = it->Id();
+            std::size_t id = it->Id();
             for (std::size_t i = 0; i < patch_edges[id].size(); ++i)
             {
                 all_edges.insert(patch_edges[id][i]);
@@ -577,7 +577,7 @@ private:
         {
             for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
             {
-                const std::size_t& id = it->Id();
+                std::size_t id = it->Id();
 
                 std::vector<std::size_t> elem(4);
                 elem[0] = std::get<0>(patch_faces[id][0]);
@@ -597,7 +597,7 @@ private:
 
     /// Synchronize from 1->2
     template<typename vertex_t, typename edge_t, typename face_t, typename volume_t>
-    void SynchronizeVertices( const int& Dim,
+    void SynchronizeVertices( int Dim,
         const BoundarySide& side1,
         std::vector<vertex_t>& vertices1,
         const BoundarySide& side2,
@@ -649,7 +649,7 @@ private:
 
     /// Support function to generate an array to map node from left to right, top to bottom, etc...
     /// The node indexing convention follows Burstedde paper of P4est
-    std::vector<int> GetJointMapping(const int& dim, const BoundarySide& side1, const BoundarySide& side2) const
+    std::vector<int> GetJointMapping(int dim, const BoundarySide& side1, const BoundarySide& side2) const
     {
         if (dim == 2)
         {
@@ -732,7 +732,7 @@ public:
 
     /// Write the results from single patch to the results file
     template<int TDim, typename TVariableType>
-    static void Export(typename Patch<TDim>::Pointer pPatch, const TVariableType& rVariable, const std::string& filename, const std::size_t& ncomponents)
+    static void Export(typename Patch<TDim>::Pointer pPatch, const TVariableType& rVariable, const std::string& filename, std::size_t ncomponents)
     {
         std::ofstream outfile;
         outfile.open(filename, std::ios::out);
@@ -774,7 +774,7 @@ public:
 
     /// Write the results from multipatch to the results file
     template<int TDim, typename TVariableType>
-    static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const TVariableType& rVariable, const std::string& filename, const std::size_t& ncomponents)
+    static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const TVariableType& rVariable, const std::string& filename, std::size_t ncomponents)
     {
         std::ofstream outfile;
         outfile.open(filename, std::ios::out);

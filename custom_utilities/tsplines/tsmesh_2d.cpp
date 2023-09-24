@@ -40,14 +40,14 @@ namespace Kratos
     }
 
     /// Set the order of T-splines
-    void TsMesh2D::SetOrder(const int& dim, const int& order)
+    void TsMesh2D::SetOrder(int dim, int order)
     {
         LockQuery();
         mOrder[dim] = order;
     }
 
     /// Insert knot into the knot vectors
-    knot_t TsMesh2D::InsertKnot(const int& dim, const double& value)
+    knot_t TsMesh2D::InsertKnot(int dim, double value)
     {
         LockQuery();
         knot_t pKnot = knot_t(new Knot<double>(value));
@@ -303,19 +303,19 @@ namespace Kratos
     /*****************************************************************************/
 
     /// Get the order in specific dimension
-    int TsMesh2D::Order(const int& dim) const
+    int TsMesh2D::Order(int dim) const
     {
         return mOrder[dim];
     }
 
     /// Get the number of knots in specific dimension
-    std::size_t TsMesh2D::NumberOfKnots(const int& dim) const
+    std::size_t TsMesh2D::NumberOfKnots(int dim) const
     {
         return mKnots[dim].size();
     }
 
     /// Get the knot in specific dimension
-    knot_t TsMesh2D::GetKnot(const int& dim, const std::size_t& index) const
+    knot_t TsMesh2D::GetKnot(int dim, std::size_t index) const
     {
         return mKnots[dim][index];
     }

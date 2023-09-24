@@ -73,7 +73,7 @@ public:
     }
 
     /// Get the string representing the type of the patch
-    virtual std::string Type() const
+    std::string Type() const override
     {
         return StaticType();
     }
@@ -93,14 +93,14 @@ public:
     typename cell_container_t::ConstPointer pFaceManager() const {return mpFaceManager;}
 
     /// Validate the TSplinesFESpace
-    virtual bool Validate() const
+    bool Validate() const override
     {
         // TODO validate more
         return BaseType::Validate();
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    virtual bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const
+    bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -132,7 +132,7 @@ public:
     }
 
     /// Clone this FESpace, this is a deep copy operation
-    virtual typename FESpace<TDim>::Pointer Clone() const
+    typename FESpace<TDim>::Pointer Clone() const override
     {
         typename TSplinesFESpace::Pointer pNewFESpace = typename TSplinesFESpace::Pointer(new TSplinesFESpace());
         *pNewFESpace = *this;
@@ -140,7 +140,7 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Type() << ", Addr = " << this << ", n = " << this->TotalNumber();
         rOStream << ", p = (";
@@ -149,7 +149,7 @@ public:
         rOStream << ")";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
         rOStream << std::endl;

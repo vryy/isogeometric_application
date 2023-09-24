@@ -42,7 +42,7 @@ public:
     ControlPoint() : BaseType() {}
 
     /// Constant constructor
-    ControlPoint(const double& v)
+    ControlPoint(double v)
     {
         BaseType::WV()[0] = v;
         BaseType::WV()[1] = v;
@@ -51,7 +51,7 @@ public:
     }
 
     /// Constructor with full coordinates
-    ControlPoint(const double& wx, const double& wy, const double& wz, const double& w)
+    ControlPoint(double wx, double wy, double wz, double w)
     {
         BaseType::WV()[0] = wx;
         BaseType::WV()[1] = wy;
@@ -102,7 +102,7 @@ public:
     }
 
     // overload operator []
-    TDataType& operator[] (const int& i)
+    TDataType& operator[] (int i)
     {
         if (i == 0) return WX();
         else if (i == 1) return WY();
@@ -110,7 +110,7 @@ public:
         else if (i == 3) return BaseType::W();
     }
 
-    const TDataType& operator[] (const int& i) const
+    const TDataType& operator[] (int i) const
     {
         if (i == 0) return WX();
         else if (i == 1) return WY();
@@ -119,7 +119,7 @@ public:
     }
 
     // overload operator ()
-    TDataType operator() (const int& i) const
+    TDataType operator() (int i) const
     {
         if (i == 0) return X();
         else if (i == 1) return Y();

@@ -46,9 +46,9 @@ using namespace boost::python;
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateLinearControlPointGrid(
         ControlGridLibrary& rDummy,
-        const double& start_x, const double& start_y, const double& start_z,
-        const std::size_t& n_points_u,
-        const double& end_x, const double& end_y, const double& end_z)
+        double start_x, double start_y, double start_z,
+        std::size_t n_points_u,
+        double end_x, double end_y, double end_z)
 {
     std::vector<double> start(3);
     start[0] = start_x;
@@ -68,9 +68,9 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateLinearContr
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangularControlPointGrid1(
         ControlGridLibrary& rDummy,
-        const double& start_x, const double& start_y,
-        const std::size_t& n_points_u, const std::size_t& n_points_v,
-        const double& end_x, const double& end_y)
+        double start_x, double start_y,
+        std::size_t n_points_u, std::size_t n_points_v,
+        double end_x, double end_y)
 {
     std::vector<double> start(2);
     start[0] = start_x;
@@ -89,10 +89,10 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangular
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangularControlPointGrid2(
         ControlGridLibrary& rDummy,
-        const double& start_x, const double& start_y, const double& start_z,
-        const std::size_t& n_points_u, const std::size_t& n_points_v,
-        const double& space1_x, const double& space1_y, const double& space1_z,
-        const double& space2_x, const double& space2_y, const double& space2_z)
+        double start_x, double start_y, double start_z,
+        std::size_t n_points_u, std::size_t n_points_v,
+        double space1_x, double space1_y, double space1_z,
+        double space2_x, double space2_y, double space2_z)
 {
     std::vector<double> start(3);
     start[0] = start_x;
@@ -122,9 +122,9 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangular
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicControlPointGrid1(
         ControlGridLibrary& rDummy,
-        const double& start_x, const double& start_y, const double& start_z,
-        const std::size_t& n_points_u, const std::size_t& n_points_v, const std::size_t& n_points_w,
-        const double& end_x, const double& end_y, const double& end_z)
+        double start_x, double start_y, double start_z,
+        std::size_t n_points_u, std::size_t n_points_v, std::size_t n_points_w,
+        double end_x, double end_y, double end_z)
 {
     std::vector<double> start(3);
     start[0] = start_x;
@@ -146,9 +146,9 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicContro
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicControlPointGrid2(
         ControlGridLibrary& rDummy,
-        const double& start_x, const double& start_y, const double& start_z,
-        const std::size_t& n_points_u, const std::size_t& n_points_v, const std::size_t& n_points_w,
-        boost::python::list spacing_vectors_data)
+        double start_x, double start_y, double start_z,
+        std::size_t n_points_u, std::size_t n_points_v, std::size_t n_points_w,
+        const boost::python::list& spacing_vectors_data)
 {
     std::vector<double> start(3);
     start[0] = start_x;
@@ -183,7 +183,7 @@ template<class TVariableType>
 inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_CreateLinearZeroControlGridWithVariable(
         ControlGridLibrary& rDummy,
         const TVariableType& rVariable,
-        const std::size_t& n_points_u)
+        std::size_t n_points_u)
 {
     std::vector<std::size_t> ngrid(1);
     ngrid[0] = n_points_u;
@@ -194,7 +194,7 @@ template<class TVariableType>
 inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_CreateRectangularZeroControlGridWithVariable(
         ControlGridLibrary& rDummy,
         const TVariableType& rVariable,
-        const std::size_t& n_points_u, const std::size_t& n_points_v)
+        std::size_t n_points_u, std::size_t n_points_v)
 {
     std::vector<std::size_t> ngrid(2);
     ngrid[0] = n_points_u;
@@ -206,7 +206,7 @@ template<class TVariableType>
 inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_CreateCubicZeroControlGridWithVariable(
         ControlGridLibrary& rDummy,
         const TVariableType& rVariable,
-        const std::size_t& n_points_u, const std::size_t& n_points_v, const std::size_t& n_points_w)
+        std::size_t n_points_u, std::size_t n_points_v, std::size_t n_points_w)
 {
     std::vector<std::size_t> ngrid(3);
     ngrid[0] = n_points_u;
@@ -270,22 +270,22 @@ void IsogeometricApplication_AddControlGridsToPython()
     /////////////////////////////////////////////////////////////////////////////////////////////////
 
     class_<UnstructuredControlGrid<ControlPoint<double> >, UnstructuredControlGrid<ControlPoint<double> >::Pointer, bases<ControlGrid<ControlPoint<double> > >, boost::noncopyable>
-    ("UnstructuredControlPointGrid", init<const std::size_t&>())
+    ("UnstructuredControlPointGrid", init<std::size_t>())
     .def(self_ns::str(self))
     ;
 
     class_<UnstructuredControlGrid<double>, UnstructuredControlGrid<double>::Pointer, bases<ControlGrid<double> >, boost::noncopyable>
-    ("UnstructuredDoubleControlGrid", init<const std::size_t&>())
+    ("UnstructuredDoubleControlGrid", init<std::size_t>())
     .def(self_ns::str(self))
     ;
 
     class_<UnstructuredControlGrid<array_1d<double, 3> >, UnstructuredControlGrid<array_1d<double, 3> >::Pointer, bases<ControlGrid<array_1d<double, 3> > >, boost::noncopyable>
-    ("UnstructuredArray1DControlGrid", init<const std::size_t&>())
+    ("UnstructuredArray1DControlGrid", init<std::size_t>())
     .def(self_ns::str(self))
     ;
 
     class_<UnstructuredControlGrid<Vector>, UnstructuredControlGrid<Vector>::Pointer, bases<ControlGrid<Vector> >, boost::noncopyable>
-    ("UnstructuredVectorControlGrid", init<const std::size_t&>())
+    ("UnstructuredVectorControlGrid", init<std::size_t>())
     .def(self_ns::str(self))
     ;
 

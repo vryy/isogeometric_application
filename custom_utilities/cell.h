@@ -39,7 +39,7 @@ public:
     // typedef boost::numeric::ublas::vector<double> SparseVectorType;
 
     /// Default constructor
-    Cell(const std::size_t& Id) : mId(Id)
+    Cell(std::size_t Id) : mId(Id)
     {}
 
     /// Destructor
@@ -64,7 +64,7 @@ public:
     }
 
     /// Add supported anchor and the respective extraction operator of this cell to the anchor
-    void AddAnchor(const std::size_t& Id, const double& W, const Vector& Crow)
+    void AddAnchor(std::size_t Id, double W, const Vector& Crow)
     {
         mSupportedAnchors.push_back(Id);
         mAnchorWeights.push_back(W);

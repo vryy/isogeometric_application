@@ -232,11 +232,11 @@ struct IsogeometricEcho
     : mEchoLevel(rOther.mEchoLevel)
     {}
 
-    void SetEchoLevel(const int& level) {mEchoLevel = level;}
+    void SetEchoLevel(int level) {mEchoLevel = level;}
 
-    const int& GetEchoLevel() const {return mEchoLevel;}
+    int GetEchoLevel() const {return mEchoLevel;}
 
-    static bool Has(const int& echo_level, const int& echo_flag)
+    static bool Has(int echo_level, int echo_flag)
     {
         return ((echo_level & echo_flag) == echo_flag);
     }

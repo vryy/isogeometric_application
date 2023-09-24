@@ -50,7 +50,7 @@ void IsogeometricApplication_AddPBBSplinesSpaceToPython(pybind11::module& m)
     typedef PBBSplinesBasisFunction<TDim, TCell> PBBSplinesBasisFunctionType;
     class_<PBBSplinesBasisFunctionType, typename PBBSplinesBasisFunctionType::Pointer>
     (m, ss.str().c_str())
-    .def(init<const std::size_t&>())
+    .def(init<std::size_t>())
     .def_property("Id", Isogeometric_GetId<PBBSplinesBasisFunctionType>, Isogeometric_DoNotSetId<PBBSplinesBasisFunctionType>)
     .def_property("EquationId", Isogeometric_GetEquationId<PBBSplinesBasisFunctionType>, Isogeometric_SetEquationId<PBBSplinesBasisFunctionType>)
     .def_property_readonly("Weight", &PBBSplinesBasisFunctionType::Weight)

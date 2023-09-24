@@ -351,10 +351,10 @@ template<typename TCoordinatesType, typename TPatchType>
 boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(IsogeometricPostUtility& rDummy,
     const boost::python::list& list_physical_points,
     const Vector& center, const Vector& normal, const Vector& t1, const Vector& t2,
-    const boost::python::list& list_local_points, const std::size_t& nrefine,
+    const boost::python::list& list_local_points, std::size_t nrefine,
     typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
     const std::string& sample_condition_name,
-    const std::size_t& last_node_id, const std::size_t& last_condition_id,
+    std::size_t last_node_id, std::size_t last_condition_id,
     Properties::Pointer pProperties)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
@@ -419,10 +419,10 @@ template<typename TCoordinatesType, typename TPatchType>
 boost::python::list IsogeometricPostUtility_CreateConditionsByQuadrilateralization(IsogeometricPostUtility& rDummy,
     const TCoordinatesType& p1, const TCoordinatesType& p2,
     const TCoordinatesType& p3, const TCoordinatesType& p4,
-    const std::size_t& num_div_1, const std::size_t& num_div_2,
+    std::size_t num_div_1, std::size_t num_div_2,
     typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
     const std::string& sample_condition_name,
-    const std::size_t& last_node_id, const std::size_t& last_condition_id,
+    std::size_t last_node_id, std::size_t last_condition_id,
     Properties::Pointer pProperties)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
@@ -481,10 +481,10 @@ void IsogeometricPostUtility_TransferValuesToGaussPoints(IsogeometricPostUtility
 
 boost::python::list BezierClassicalPostUtility_GenerateConditions(BezierClassicalPostUtility& dummy,
         ModelPart& rModelPart,
-        Condition& rCondition,
+        const Condition& rCondition,
         const std::string& sample_condition_name,
-        const std::size_t& starting_node_id,
-        const std::size_t& starting_condition_id)
+        std::size_t starting_node_id,
+        std::size_t starting_condition_id)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
@@ -511,10 +511,10 @@ boost::python::list BezierClassicalPostUtility_GenerateConditions(BezierClassica
 
 boost::python::list BezierClassicalPostUtility_GenerateConditionsWithNodalVariables(BezierClassicalPostUtility& dummy,
         ModelPart& rModelPart,
-        Condition& rCondition,
+        const Condition& rCondition,
         const std::string& sample_condition_name,
-        const std::size_t& starting_node_id,
-        const std::size_t& starting_condition_id)
+        std::size_t starting_node_id,
+        std::size_t starting_condition_id)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
@@ -541,10 +541,10 @@ boost::python::list BezierClassicalPostUtility_GenerateConditionsWithNodalVariab
 
 boost::python::list BezierClassicalPostUtility_GenerateElements(BezierClassicalPostUtility& dummy,
         ModelPart& rModelPart,
-        Element& rElement,
+        const Element& rElement,
         const std::string& sample_element_name,
-        const std::size_t& starting_node_id,
-        const std::size_t& starting_element_id)
+        std::size_t starting_node_id,
+        std::size_t starting_element_id)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
@@ -571,10 +571,10 @@ boost::python::list BezierClassicalPostUtility_GenerateElements(BezierClassicalP
 
 boost::python::list BezierClassicalPostUtility_GenerateElementsWithNodalVariables(BezierClassicalPostUtility& dummy,
         ModelPart& rModelPart,
-        Element& rElement,
+        const Element& rElement,
         const std::string& sample_element_name,
-        const std::size_t& starting_node_id,
-        const std::size_t& starting_element_id)
+        std::size_t starting_node_id,
+        std::size_t starting_element_id)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
@@ -604,14 +604,14 @@ void BezierClassicalPostUtility_GenerateModelPart2WithCondition(BezierClassicalP
     dummy.GenerateModelPart2(rModelPartPost, true);
 }
 
-void BezierClassicalPostUtility_GenerateModelPart2(BezierClassicalPostUtility& dummy, ModelPart& rModelPartPost, const bool& generate_for_condition)
+void BezierClassicalPostUtility_GenerateModelPart2(BezierClassicalPostUtility& dummy, ModelPart& rModelPartPost, bool generate_for_condition)
 {
     dummy.GenerateModelPart2(rModelPartPost, generate_for_condition);
 }
 
 //////////////////////////////////////////////////////////
 
-bool IsogeometricUtility_IsNormalPointingOutward(IsogeometricUtility& rDummy, const Patch<3>& rPatch, const std::size_t& iside)
+bool IsogeometricUtility_IsNormalPointingOutward(IsogeometricUtility& rDummy, const Patch<3>& rPatch, std::size_t iside)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return IsogeometricUtility::IsNormalPointingOutward(rPatch, side);
@@ -631,7 +631,7 @@ void BezierPostUtility_TransferVariablesToNodes_ModelPart(BezierPostUtility& rDu
 template<typename TVariableType>
 void BezierPostUtility_TransferVariablesToNodes_Elements(BezierPostUtility& rDummy,
     const TVariableType& rThisVariable,
-    ModelPart& r_model_part, BezierPostUtility::ElementsArrayType& ElementsArray,
+    ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
     BezierPostUtility::LinearSolverType::Pointer pSolver)
 {
     rDummy.TransferVariablesToNodes(rThisVariable, r_model_part, ElementsArray, pSolver);

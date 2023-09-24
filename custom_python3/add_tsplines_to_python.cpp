@@ -54,7 +54,7 @@ void TSplinesUtils_ExportMatlab(TSplinesUtils& rDummy, TsMesh2D& tmesh,
 }
 
 void TSplinesUtils_ExportMDPA(TSplinesUtils& rDummy, const TsMesh2D& tmesh,
-    const std::string& fn, const int& division1, const int& division2)
+    const std::string& fn, int division1, int division2)
 {
     rDummy.ExportMDPA(tmesh, fn, std::vector<int>{division1, division2});
 }

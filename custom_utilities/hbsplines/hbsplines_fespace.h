@@ -83,7 +83,7 @@ public:
 
     /// Check if the bf exists in the list; otherwise create new bf and return
     /// The Id is only used when the new bf is created. User must always check the Id of the returned function.
-    bf_t CreateBf(const std::size_t& Id, const std::size_t& Level, const std::vector<std::vector<knot_t> >& rpKnots)
+    bf_t CreateBf(std::size_t Id, std::size_t Level, const std::vector<std::vector<knot_t> >& rpKnots)
     {
         // search in the current list of basis functions, the one that has the same local knot vector with provided ones
         for(bf_iterator it = BaseType::bf_begin(); it != BaseType::bf_end(); ++it)
@@ -123,25 +123,25 @@ public:
 
     /// Get the knot vector in i-direction, i=0..Dim
     /// User must be careful to use this function because it can modify the internal knot vectors
-    knot_container_t& KnotVector(const std::size_t& i) {return mKnotVectors[i];}
+    knot_container_t& KnotVector(std::size_t i) {return mKnotVectors[i];}
 
     /// Get the knot vector in i-direction, i=0..Dim
-    const knot_container_t& KnotVector(const std::size_t& i) const {return mKnotVectors[i];}
+    const knot_container_t& KnotVector(std::size_t i) const {return mKnotVectors[i];}
 
     /// Get the last refinement level ain the hierarchical mesh
-    const std::size_t& LastLevel() const {return mLastLevel;}
+    std::size_t LastLevel() const {return mLastLevel;}
 
     /// Set the last level in the hierarchical mesh
-    void SetLastLevel(const std::size_t& LastLevel) {mLastLevel = LastLevel;}
+    void SetLastLevel(std::size_t LastLevel) {mLastLevel = LastLevel;}
 
     /// Get the maximum level allowed in the hierarchical mesh
-    const std::size_t& MaxLevel() const {return mMaxLevel;}
+    std::size_t MaxLevel() const {return mMaxLevel;}
 
     /// Set the maximum level allowed in the hierarchical mesh
-    void SetMaxLevel(const std::size_t& MaxLevel) {mMaxLevel = MaxLevel;}
+    void SetMaxLevel(std::size_t MaxLevel) {mMaxLevel = MaxLevel;}
 
     /// Get the string representing the type of the patch
-    virtual std::string Type() const
+    std::string Type() const override
     {
         return StaticType();
     }
@@ -155,14 +155,14 @@ public:
     }
 
     /// Validate the HBSplinesFESpace
-    virtual bool Validate() const
+    bool Validate() const override
     {
         // TODO validate more
         return BaseType::Validate();
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    virtual bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const
+    bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -193,13 +193,13 @@ public:
     void ClearRefinementHistory() {mRefinementHistory.clear();}
 
     /// Add the bf's id to the refinement history
-    void RecordRefinementHistory(const std::size_t& Id) {mRefinementHistory.push_back(Id);}
+    void RecordRefinementHistory(std::size_t Id) {mRefinementHistory.push_back(Id);}
 
     /// Clear the support domain container
     void ClearSupportDomain() {mSupportDomains.clear();}
 
     /// Get the domain manager for support domain for level k. In the case that does not exist, create the new one.
-    domain_t GetSupportDomain(const std::size_t& Level)
+    domain_t GetSupportDomain(std::size_t Level)
     {
         domain_container_t::iterator it = mSupportDomains.find(Level);
         if(it != mSupportDomains.end())
@@ -217,7 +217,7 @@ public:
     }
 
     /// Construct the boundary FESpace based on side
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
     {
         typedef HBSplinesFESpace<TDim-1> BoundaryFESpaceType;
         typename BoundaryFESpaceType::Pointer pBFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
@@ -374,8 +374,9 @@ public:
     }
 
     /// Construct the boundary FESpace based on side and rotation
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
-        const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
+    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+        const std::map<std::size_t, std::size_t>& local_parameter_map,
+        const std::vector<BoundaryDirection>& directions) const override
     {
         return this->ConstructBoundaryFESpace(side);
     }
@@ -390,7 +391,7 @@ public:
     }
 
     /// Clone this FESpace, this is a deep copy operation
-    virtual typename FESpace<TDim>::Pointer Clone() const
+    typename FESpace<TDim>::Pointer Clone() const override
     {
         typename HBSplinesFESpace<TDim>::Pointer pNewFESpace = typename HBSplinesFESpace<TDim>::Pointer(new HBSplinesFESpace<TDim>());
         *pNewFESpace = *this;
@@ -398,7 +399,7 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         BaseType::PrintInfo(rOStream);
         rOStream << "Number of levels = " << mLastLevel << std::endl;
@@ -414,7 +415,7 @@ public:
         rOStream << "###############End knot vectors##################" << std::endl;
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
         rOStream << std::endl;
@@ -476,13 +477,13 @@ public:
     virtual ~HBSplinesFESpace() {}
 
     /// Get the order of the BSplines patch in specific direction
-    virtual std::size_t Order(const std::size_t& i) const {return 0;}
+    std::size_t Order(std::size_t i) const override {return 0;}
 
     /// Get the number of basis functions defined over the BSplines HBSplinesFESpace
-    virtual std::size_t Number() const {return 0;}
+    std::size_t TotalNumber() const override {return 0;}
 
     /// Get the string describing the type of the patch
-    virtual std::string Type() const
+    std::string Type() const override
     {
         return StaticType();
     }
@@ -494,13 +495,13 @@ public:
     }
 
     /// Validate the HBSplinesFESpace before using
-    virtual bool Validate() const
+    bool Validate() const override
     {
         return BaseType::Validate();
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    virtual bool IsCompatible(const FESpace<0>& rOtherFESpace) const
+    bool IsCompatible(const FESpace<0>& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -523,17 +524,17 @@ public:
     bf_const_iterator bf_end() const {return mpBasisFuncs.end();}
 
     /// Set the last level in the hierarchical mesh
-    void SetLastLevel(const std::size_t& LastLevel) {}
+    void SetLastLevel(std::size_t LastLevel) {}
 
     /// Set the order for the B-Splines
-    void SetInfo(const std::size_t& i, const std::size_t& order) {}
+    void SetInfo(std::size_t i, std::size_t order) {}
 
     /// Get the knot vector in i-direction, i=0..Dim
     /// User must be careful to use this function because it can modify the internal knot vectors
-    knot_container_t& KnotVector(const std::size_t& i) {return mDummyKnotVector;}
+    knot_container_t& KnotVector(std::size_t i) {return mDummyKnotVector;}
 
     /// Get the knot vector in i-direction, i=0..Dim
-    const knot_container_t& KnotVector(const std::size_t& i) const {return mDummyKnotVector;}
+    const knot_container_t& KnotVector(std::size_t i) const {return mDummyKnotVector;}
 
     /// Get the underlying cell manager
     typename cell_container_t::Pointer pCellManager() {return mpCellManager;}
@@ -542,7 +543,7 @@ public:
     typename cell_container_t::ConstPointer pCellManager() const {return mpCellManager;}
 
     /// Update the function indices using a map. The map shall be the mapping from old index to new index.
-    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map) {}
+    void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map) override {}
 
     /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
     void UpdateCells() {}

@@ -34,33 +34,33 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(TsAnchor);
 
     /// Default constructor
-    TsAnchor(const std::size_t& Id,
-        const double& Xi, const double& Eta,
-        const double& X, const double& Y,
-        const double& W)
+    TsAnchor(std::size_t Id,
+        double Xi, double Eta,
+        double X, double Y,
+        double W)
     : mId(Id), mXi(Xi), mEta(Eta), mZeta(0.0), mX(X), mY(Y), mZ(0.0), mW(W)
     {}
 
-    TsAnchor(const std::size_t& Id,
-        const double& Xi, const double& Eta, const double& Zeta,
-        const double& X, const double& Y, const double& Z,
-        const double& W)
+    TsAnchor(std::size_t Id,
+        double Xi, double Eta, double Zeta,
+        double X, double Y, double Z,
+        double W)
     : mId(Id), mXi(Xi), mEta(Eta), mZeta(Zeta), mX(X), mY(Y), mZ(Z), mW(W)
     {}
 
     /// Get the topology coordinates of the anchor
-    const double& Xi()   const {return mXi;}
-    const double& Eta()  const {return mEta;}
-    const double& Zeta() const {return mZeta;}
+    double Xi()   const {return mXi;}
+    double Eta()  const {return mEta;}
+    double Zeta() const {return mZeta;}
 
     /// Get the coordinates
-    const double& X() const {return mX;}
-    const double& Y() const {return mY;}
-    const double& Z() const {return mZ;}
-    const double& W() const {return mW;}
+    double X() const {return mX;}
+    double Y() const {return mY;}
+    double Z() const {return mZ;}
+    double W() const {return mW;}
 
     /// Get the Id of the anchor
-    const std::size_t& Id() const {return mId;}
+    std::size_t Id() const {return mId;}
 
     /// Information
     void PrintInfo(std::ostream& rOStream) const

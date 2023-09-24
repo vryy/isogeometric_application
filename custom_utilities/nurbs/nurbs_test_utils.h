@@ -105,7 +105,7 @@ public:
      * and then compares it with the values computed from the patch
      */
     static void ProbeAndTestValuesOnPatch(typename Patch<1>::Pointer pPatch, ConditionsContainerType& rConditions,
-        const IntegrationMethod& ThisIntegrationMethod, const double& tol)
+        const IntegrationMethod& ThisIntegrationMethod, double tol)
     {
         // get the FESpace
         typename BSplinesFESpace<1>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<1> >(pPatch->pFESpace());

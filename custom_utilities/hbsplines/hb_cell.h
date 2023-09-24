@@ -57,17 +57,17 @@ public:
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
     /// Constructor for 1D
-    HBCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax)
+    HBCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax)
     : BaseType(Id, pXiMin, pXiMax)
     {}
 
     /// Constructor for 2D
-    HBCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
+    HBCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
     : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax)
     {}
 
     /// Constructor for 3D
-    HBCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
+    HBCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
     : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax)
     {}
 
@@ -80,7 +80,7 @@ public:
     }
 
     /// Set the level for this cell
-    void SetLevel(const std::size_t& Level) {mLevel = Level;}
+    void SetLevel(std::size_t Level) {mLevel = Level;}
 
     /// Get the level of this cell
     virtual std::size_t Level() const {return mLevel;}

@@ -44,17 +44,17 @@ public:
     typedef typename PatchType::ControlPointType ControlPointType;
 
     /// Default Constructor
-    BendingStripNURBSPatch(const std::size_t& Id, const int& Order) : PatchType(Id), mNormalOrder(Order)
+    BendingStripNURBSPatch(std::size_t Id, int Order) : PatchType(Id), mNormalOrder(Order)
     {}
 
     /// Full Constructor
     /// Note that the two patches must represent the NURBS patches
     /// Right now this constructor only support even order bending strip
     /// In this constructor the knot vector on the boundary will be taken as the same as the original patch
-    BendingStripNURBSPatch(const std::size_t& Id,
+    BendingStripNURBSPatch(std::size_t Id,
         typename PatchType::Pointer pPatch1, const BoundarySide& side1,
         typename PatchType::Pointer pPatch2, const BoundarySide& side2,
-        const int& Order) : PatchType(Id), BaseType(pPatch1, side1, pPatch2, side2), mNormalOrder(Order)
+        int Order) : PatchType(Id), BaseType(pPatch1, side1, pPatch2, side2), mNormalOrder(Order)
     {
         // check if the order is even
         if (this->NormalOrder()%2 != 0)
@@ -105,7 +105,7 @@ public:
     /// Note that the two patches must represent the NURBS patches
     /// Right now this constructor only support even order bending strip
     /// In this constructor the knot vector on the strip patch can be specified
-    BendingStripNURBSPatch(const std::size_t& Id,
+    BendingStripNURBSPatch(std::size_t Id,
         typename PatchType::Pointer pPatch1, const BoundarySide& side1,
         typename PatchType::Pointer pPatch2, const BoundarySide& side2,
         const std::vector<int>& Orders) : PatchType(Id), BaseType(pPatch1, side1, pPatch2, side2), mNormalOrder(Orders[TDim-1])
@@ -164,16 +164,16 @@ public:
     }
 
     /// Return true if this patch is a primary patch
-    virtual bool IsPrimary() const
+    bool IsPrimary() const override
     {
         return false;
     }
 
     /// Get the order of the strip patch in the orthogonal direction
-    const int& NormalOrder() const {return mNormalOrder;}
+    int NormalOrder() const {return mNormalOrder;}
 
     /// Get the string representing the type of the patch
-    virtual std::string Type() const
+    std::string Type() const override
     {
         return StaticType();
     }
@@ -210,7 +210,7 @@ public:
     }
 
     /// Enumerate on the interface, taking the enumeration from the parent patches
-    virtual void Enumerate()
+    void Enumerate() override
     {
         std::vector<std::size_t> patch_indices = this->GetIndicesFromParent();
         this->pFESpace()->ResetFunctionIndices(patch_indices);
@@ -290,13 +290,13 @@ public:
     typedef Patch<1> PatchType;
     typedef PatchInterface<1> BaseType;
 
-    BendingStripNURBSPatch(const std::size_t& Id, const int& Order) : PatchType(Id), BaseType()
+    BendingStripNURBSPatch(std::size_t Id, int Order) : PatchType(Id), BaseType()
     {}
 
-    BendingStripNURBSPatch(const std::size_t& Id,
+    BendingStripNURBSPatch(std::size_t Id,
         typename PatchType::Pointer pPatch1, const BoundarySide& side1,
         typename PatchType::Pointer pPatch2, const BoundarySide& side2,
-        const int& Order) : PatchType(Id), BaseType(pPatch1, side1, pPatch2, side2)
+        int Order) : PatchType(Id), BaseType(pPatch1, side1, pPatch2, side2)
     {}
 };
 

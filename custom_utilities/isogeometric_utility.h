@@ -44,7 +44,7 @@ public:
     virtual ~IsogeometricUtility() {}
 
     /// Get the integration method from the integration order
-    static GeometryData::IntegrationMethod GetIntegrationMethod(const int& integration_order)
+    static GeometryData::IntegrationMethod GetIntegrationMethod(int integration_order)
     {
         if (integration_order == 1)
             return GeometryData::IntegrationMethod::GI_GAUSS_1;
@@ -57,10 +57,10 @@ public:
     }
 
     /// Get the last node id of the model part
-    static std::size_t GetLastNodeId(ModelPart& r_model_part)
+    static std::size_t GetLastNodeId(const ModelPart& r_model_part)
     {
         std::size_t lastNodeId = 0;
-        for(typename ModelPart::NodesContainerType::iterator it = r_model_part.Nodes().begin();
+        for(typename ModelPart::NodesContainerType::const_iterator it = r_model_part.Nodes().begin();
                 it != r_model_part.Nodes().end(); ++it)
         {
             if(it->Id() > lastNodeId)
@@ -71,42 +71,42 @@ public:
     }
 
     /// Get the last element id of the model part
-    static std::size_t GetLastElementId(ModelPart& r_model_part)
+    static std::size_t GetLastElementId(const ModelPart& r_model_part)
     {
         std::size_t lastElementId = 0;
-        for(typename ModelPart::ElementsContainerType::ptr_iterator it = r_model_part.Elements().ptr_begin();
-                it != r_model_part.Elements().ptr_end(); ++it)
+        for(typename ModelPart::ElementsContainerType::const_iterator it = r_model_part.Elements().begin();
+                it != r_model_part.Elements().end(); ++it)
         {
-            if((*it)->Id() > lastElementId)
-                lastElementId = (*it)->Id();
+            if(it->Id() > lastElementId)
+                lastElementId = it->Id();
         }
 
         return lastElementId;
     }
 
     /// Get the last condition id of the model part
-    static std::size_t GetLastConditionId(ModelPart& r_model_part)
+    static std::size_t GetLastConditionId(const ModelPart& r_model_part)
     {
         std::size_t lastCondId = 0;
-        for(typename ModelPart::ConditionsContainerType::ptr_iterator it = r_model_part.Conditions().ptr_begin();
-                it != r_model_part.Conditions().ptr_end(); ++it)
+        for(typename ModelPart::ConditionsContainerType::const_iterator it = r_model_part.Conditions().begin();
+                it != r_model_part.Conditions().end(); ++it)
         {
-            if((*it)->Id() > lastCondId)
-                lastCondId = (*it)->Id();
+            if(it->Id() > lastCondId)
+                lastCondId = it->Id();
         }
 
         return lastCondId;
     }
 
     /// Get the last properties id of the model_part
-    static std::size_t GetLastPropertiesId(ModelPart& r_model_part)
+    static std::size_t GetLastPropertiesId(const ModelPart& r_model_part)
     {
         std::size_t lastPropId = 0;
-        for(typename ModelPart::PropertiesContainerType::ptr_iterator it = r_model_part.rProperties().ptr_begin();
-                it != r_model_part.rProperties().ptr_end(); ++it)
+        for(typename ModelPart::PropertiesConstantIterator it = r_model_part.PropertiesBegin();
+                it != r_model_part.PropertiesEnd(); ++it)
         {
-            if((*it)->Id() > lastPropId)
-                lastPropId = (*it)->Id();
+            if(it->Id() > lastPropId)
+                lastPropId = it->Id();
         }
 
         return lastPropId;
@@ -114,9 +114,10 @@ public:
 
     /// Find the element in the KRATOS container with specific key
     template<class TContainerType, class TKeyType>
-    static typename TContainerType::iterator FindKey(TContainerType& ThisContainer , TKeyType ThisKey, std::string ComponentName)
+    static typename TContainerType::const_iterator FindKey(const TContainerType& ThisContainer,
+            TKeyType ThisKey, std::string ComponentName)
     {
-        typename TContainerType::iterator i_result;
+        typename TContainerType::const_iterator i_result;
         if((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
         {
             std::stringstream buffer;
@@ -196,7 +197,7 @@ public:
     /// Check if normal on the side of the patch is pointing outward
     /// This is done by comparing the vector connecting the patch inner point and face center point
     /// and the face normal
-    static bool IsNormalPointingOutward(const Patch<3>& rPatch, const BoundarySide& side, const double& delta = 1.0e-2)
+    static bool IsNormalPointingOutward(const Patch<3>& rPatch, const BoundarySide& side, double delta = 1.0e-2)
     {
         Patch<2>::Pointer pBoundaryPatch = rPatch.ConstructBoundaryPatch(side);
 

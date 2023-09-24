@@ -60,13 +60,13 @@ public:
     }
 
     /// Get the number of basis functions defined over the WeightedFESpace
-    virtual std::size_t TotalNumber() const
+    std::size_t TotalNumber() const override
     {
         return mpFESpace->TotalNumber();
     }
 
     /// Get the order of the WeightedFESpace in specific direction
-    virtual std::size_t Order(const std::size_t& i) const
+    std::size_t Order(std::size_t i) const override
     {
         return mpFESpace->Order(i);
     }
@@ -83,7 +83,7 @@ public:
     const std::vector<double>& Weights() const {return mWeights;}
 
     /// Get the string representing the type of the WeightedFESpace
-    virtual std::string Type() const
+    std::string Type() const override
     {
         std::stringstream ss;
         ss << StaticType() << "_over_" << mpFESpace->Type();
@@ -101,7 +101,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Get the values of the basis function i at point xi
-    virtual void GetValue(double& v, const std::size_t& i, const std::vector<double>& xi) const
+    void GetValue(double& v, std::size_t i, const std::vector<double>& xi) const override
     {
         std::vector<double> values;
         mpFESpace->GetValues(values, xi);
@@ -117,7 +117,7 @@ public:
     }
 
     /// Get the values of the basis functions at point xi
-    virtual void GetValues(std::vector<double>& new_values, const std::vector<double>& xi) const
+    void GetValues(std::vector<double>& new_values, const std::vector<double>& xi) const override
     {
         std::vector<double> values;
         mpFESpace->GetValues(values, xi);
@@ -137,7 +137,7 @@ public:
     }
 
     /// Get the derivatives of the basis function i at point xi
-    virtual void GetDerivative(std::vector<double>& new_dvalues, const std::size_t& i, const std::vector<double>& xi) const
+    void GetDerivative(std::vector<double>& new_dvalues, std::size_t i, const std::vector<double>& xi) const override
     {
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
@@ -165,7 +165,7 @@ public:
 
     /// Get the derivatives of the basis functions at point xi
     /// the output values has the form of values[func_index][dim_index]
-    virtual void GetDerivatives(std::vector<std::vector<double> >& new_dvalues, const std::vector<double>& xi) const
+    void GetDerivatives(std::vector<std::vector<double> >& new_dvalues, const std::vector<double>& xi) const override
     {
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
@@ -215,7 +215,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Check if a point lies inside the parametric domain of the BSplinesFESpace
-    virtual bool IsInside(const std::vector<double>& xi) const
+    bool IsInside(const std::vector<double>& xi) const override
     {
         return mpFESpace->IsInside(xi);
     }
@@ -223,58 +223,58 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Reset all the dof numbers for each grid function to -1.
-    virtual void ResetFunctionIndices()
+    void ResetFunctionIndices() override
     {
         mpFESpace->ResetFunctionIndices();
     }
 
     /// Reset the function indices to a given values.
     /// This is useful when assigning the id for the boundary patch.
-    virtual void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
+    void ResetFunctionIndices(const std::vector<std::size_t>& func_indices) override
     {
         mpFESpace->ResetFunctionIndices(func_indices);
     }
 
     /// Enumerate the dofs of each grid function. The enumeration algorithm is pretty straightforward.
     /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
-    virtual std::size_t& Enumerate(std::size_t& start)
+    std::size_t& Enumerate(std::size_t& start) override
     {
         return mpFESpace->Enumerate(start);
     }
 
     /// Access the function indices (aka global ids)
-    virtual std::vector<std::size_t> FunctionIndices() const
+    std::vector<std::size_t> FunctionIndices() const override
     {
         return mpFESpace->FunctionIndices();
     }
 
     /// Update the function indices using a map. The map shall be the mapping from old index to new index.
-    virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
+    void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map) override
     {
         mpFESpace->UpdateFunctionIndices(indices_map);
     }
 
     /// Get the first equation_id in this space
-    virtual std::size_t GetFirstEquationId() const
+    std::size_t GetFirstEquationId() const override
     {
         return mpFESpace->GetFirstEquationId();
     }
 
     /// Get the last equation_id in this space
-    virtual std::size_t GetLastEquationId() const
+    std::size_t GetLastEquationId() const override
     {
         return mpFESpace->GetLastEquationId();
     }
 
     /// Check the compatibility between boundaries of two WeightedFESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpace<TDim>& rFESpace1, const BoundarySide& side1,
-            const FESpace<TDim>& rFESpace2, const BoundarySide& side2) const
+    bool CheckBoundaryCompatibility(const FESpace<TDim>& rFESpace1, const BoundarySide& side1,
+            const FESpace<TDim>& rFESpace2, const BoundarySide& side2) const override
     {
         return rFESpace1 == rFESpace2;
     }
 
     /// Validate the WeightedFESpace before using
-    virtual bool Validate() const
+    bool Validate() const override
     {
         if (mWeights.size() != this->TotalNumber())
         {
@@ -287,19 +287,19 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Extract the index of the functions on the boundary
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const override
     {
         return mpFESpace->ExtractBoundaryFunctionIndices(side);
     }
 
     /// Assign the index for the functions on the boundary
-    virtual void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices)
+    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices) override
     {
         mpFESpace->AssignBoundaryFunctionIndices(side, func_indices);
     }
 
     /// Construct the boundary WeightedFESpace based on side
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
     {
         typename FESpace<TDim-1>::Pointer pBFESpace = mpFESpace->ConstructBoundaryFESpace(side);
         // TODO extract/compute the weights on the boundary
@@ -312,7 +312,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Compare the two weighted FESpaces in terms of its parametric information.
-    virtual bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const
+    bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() == this->Type())
         {
@@ -340,7 +340,7 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const WeightedFESpace<TDim>& rOther) const
+    bool operator==(const FESpace<TDim>& rOther) const override
     {
         return this->IsCompatible(rOther);
     }
@@ -357,7 +357,7 @@ public:
     }
 
     /// Clone this WeightedFESpace, this is a deep copy operation
-    virtual typename FESpace<TDim>::Pointer Clone() const
+    typename FESpace<TDim>::Pointer Clone() const override
     {
         typename WeightedFESpace<TDim>::Pointer pNewWeightedFESpace = typename WeightedFESpace<TDim>::Pointer(new WeightedFESpace<TDim>(mpFESpace, mWeights));
         *pNewWeightedFESpace = *this;
@@ -367,12 +367,12 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         BaseType::PrintInfo(rOStream);
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
         rOStream << " Weights:";
@@ -388,13 +388,13 @@ private:
     /// Serializer
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer,  BaseType );
         rSerializer.save( "mWeights", mWeights );
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer,  BaseType );
         rSerializer.load( "mWeights", mWeights );
@@ -418,19 +418,19 @@ public:
     virtual ~WeightedFESpace() {}
 
     /// Get the number of basis functions defined over the WeightedFESpace
-    virtual std::size_t TotalNumber() const
+    std::size_t TotalNumber() const override
     {
         return 0;
     }
 
     /// Get the order of the WeightedFESpace in specific direction
-    virtual std::size_t Order(const std::size_t& i) const
+    std::size_t Order(std::size_t i) const override
     {
         return 0;
     }
 
     /// Get the string describing the type of the WeightedFESpace
-    virtual std::string Type() const
+    std::string Type() const override
     {
         return StaticType();
     }
@@ -442,7 +442,7 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const WeightedFESpace<0>& rOther) const
+    bool operator==(const FESpace<0>& rOther) const override
     {
         return true;
     }
@@ -464,14 +464,14 @@ public:
     std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t>{mFunctionId};}
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const WeightedFESpace<0>& rFESpace1, const BoundarySide& side1,
-            const WeightedFESpace<0>& rFESpace2, const BoundarySide& side2) const
+    bool CheckBoundaryCompatibility(const FESpace<0>& rFESpace1, const BoundarySide& side1,
+            const FESpace<0>& rFESpace2, const BoundarySide& side2) const override
     {
         return true;
     }
 
     /// Validate the WeightedFESpace before using
-    virtual bool Validate() const
+    bool Validate() const override
     {
         return true;
     }
@@ -483,12 +483,12 @@ public:
     // }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "WeightedFESpace<0>";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -501,11 +501,11 @@ private:
     /// Serializer
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
     }
 };
@@ -528,19 +528,19 @@ public:
     virtual ~WeightedFESpace() {}
 
     /// Get the number of basis functions defined over the WeightedFESpace
-    virtual std::size_t TotalNumber() const
+    std::size_t TotalNumber() const override
     {
         return 0;
     }
 
     /// Get the order of the WeightedFESpace in specific direction
-    virtual std::size_t Order(const std::size_t& i) const
+    std::size_t Order(std::size_t i) const override
     {
         return 0;
     }
 
     /// Get the string describing the type of the WeightedFESpace
-    virtual std::string Type() const
+    std::string Type() const override
     {
         return StaticType();
     }
@@ -552,20 +552,20 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const WeightedFESpace<-1>& rOther) const
+    bool operator==(const FESpace<-1>& rOther) const override
     {
         return true;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const WeightedFESpace<-1>& rFESpace1, const BoundarySide& side1,
-            const WeightedFESpace<-1>& rFESpace2, const BoundarySide& side2) const
+    bool CheckBoundaryCompatibility(const FESpace<-1>& rFESpace1, const BoundarySide& side1,
+            const FESpace<-1>& rFESpace2, const BoundarySide& side2) const override
     {
         return true;
     }
 
     /// Validate the WeightedFESpace before using
-    virtual bool Validate() const
+    bool Validate() const override
     {
         return true;
     }
@@ -577,12 +577,12 @@ public:
     // }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "WeightedFESpace<-1>";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 };
@@ -605,19 +605,19 @@ public:
     virtual ~WeightedFESpace() {}
 
     /// Get the number of basis functions defined over the WeightedFESpace
-    virtual std::size_t TotalNumber() const
+    std::size_t TotalNumber() const override
     {
         return 0;
     }
 
     /// Get the order of the WeightedFESpace in specific direction
-    virtual std::size_t Order(const std::size_t& i) const
+    std::size_t Order(std::size_t i) const override
     {
         return 0;
     }
 
     /// Get the string describing the type of the WeightedFESpace
-    virtual std::string Type() const
+    std::string Type() const override
     {
         return StaticType();
     }
@@ -629,20 +629,20 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const WeightedFESpace<-2>& rOther) const
+    bool operator==(const FESpace<-2>& rOther) const override
     {
         return true;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const WeightedFESpace<-2>& rFESpace1, const BoundarySide& side1,
-            const WeightedFESpace<-2>& rFESpace2, const BoundarySide& side2) const
+    bool CheckBoundaryCompatibility(const FESpace<-2>& rFESpace1, const BoundarySide& side1,
+            const FESpace<-2>& rFESpace2, const BoundarySide& side2) const override
     {
         return true;
     }
 
     /// Validate the WeightedFESpace before using
-    virtual bool Validate() const
+    bool Validate() const override
     {
         return true;
     }
@@ -654,12 +654,12 @@ public:
     // }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "WeightedFESpace<-2>";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 };

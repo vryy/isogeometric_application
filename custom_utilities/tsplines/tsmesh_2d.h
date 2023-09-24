@@ -87,17 +87,17 @@ public:
 
     /// Subroutines to modify the T-splines mesh
     void BeginConstruct();
-    void SetOrder(const int& dim, const int& order);
-    knot_t InsertKnot(const int& dim, const double& knot);
+    void SetOrder(int dim, int order);
+    knot_t InsertKnot(int dim, double knot);
     TsVertex::Pointer AddVertex(knot_t pXi, knot_t pEta);
     TsEdge::Pointer AddHEdge(TsVertex::Pointer pV1, TsVertex::Pointer pV2);
     TsEdge::Pointer AddVEdge(TsVertex::Pointer pV1, TsVertex::Pointer pV2);
     void EndConstruct();
 
     /// Subroutines to query the T-splines mesh
-    int Order(const int& dim) const;
-    std::size_t NumberOfKnots(const int& dim) const;
-    knot_t GetKnot(const int& dim, const std::size_t& index) const;
+    int Order(int dim) const;
+    std::size_t NumberOfKnots(int dim) const;
+    knot_t GetKnot(int dim, std::size_t index) const;
     const edge_container_t& Edges() const;
     const anchor_container_t& Anchors() const;
     const cell_container_t& Cells() const;
@@ -127,7 +127,7 @@ public:
     ///     Call FindKnots<1, double> if one wants to find the local knot vector associated with the anchor
     ///     Call FindKnots<2, int> if one wants to find the index in topology coordinates of local knot vector associated with the anchor
     template<int FuncType, class DataType>
-    void FindKnots(const double& Anchor_xi_index, const double& Anchor_eta_index,
+    void FindKnots(double Anchor_xi_index, double Anchor_eta_index,
     	std::vector<DataType>& Knots1, std::vector<DataType>& Knots2) const
     {
         std::set<std::size_t> tmp_knot_index_left;
@@ -329,7 +329,7 @@ private:
     }
 
     /// For debugging only
-    void FindKnots2(const double& Anchor_xi_index, const double& Anchor_eta_index,
+    void FindKnots2(double Anchor_xi_index, double Anchor_eta_index,
     	Vector& Knots1, Vector& Knots2) const
     {
         std::vector<double> tmpKnots1;

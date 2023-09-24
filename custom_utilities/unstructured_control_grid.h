@@ -36,22 +36,22 @@ public:
     typedef std::vector<TDataType> DataContainerType;
 
     /// Default constructor
-    UnstructuredControlGrid(const std::size_t& size) : BaseType() {mData.resize(size);}
+    UnstructuredControlGrid(std::size_t size) : BaseType() {mData.resize(size);}
 
     /// Constructor with name
-    UnstructuredControlGrid(const std::string& Name, const std::size_t& size) : BaseType(Name) {mData.resize(size);}
+    UnstructuredControlGrid(const std::string& Name, std::size_t size) : BaseType(Name) {mData.resize(size);}
 
     /// Destructor
     virtual ~UnstructuredControlGrid() {}
 
     /// Create a new control grid pointer
-    static typename UnstructuredControlGrid::Pointer Create(const std::size_t& size)
+    static typename UnstructuredControlGrid::Pointer Create(std::size_t size)
     {
         return typename UnstructuredControlGrid::Pointer(new UnstructuredControlGrid(size));
     }
 
     /// Clone this grid function
-    virtual typename BaseType::Pointer const Clone()
+    typename BaseType::Pointer Clone() const override
     {
         UnstructuredControlGrid::Pointer pNewControlGrid = Create(size());
         for (std::size_t i = 0; i < size(); ++i)
@@ -60,34 +60,34 @@ public:
     }
 
     /// Get the size of underlying data
-    virtual std::size_t Size() const {return mData.size();}
+    std::size_t Size() const override {return mData.size();}
 
     /// Get the size of underlying data
-    virtual std::size_t size() const {return mData.size();}
+    std::size_t size() const override {return mData.size();}
 
     /// Resize the underlying container
-    void resize(const std::size_t& new_size) {mData.resize(new_size);}
+    void resize(std::size_t new_size) {mData.resize(new_size);}
 
     /// Get the data at specific point
-    virtual TDataType GetData(const std::size_t& i) const {return mData[i];}
+    TDataType GetData(std::size_t i) const override {return mData[i];}
 
     /// Set the data at specific point
     /// Be careful with this method. You can destroy the coherency of internal data.
-    virtual void SetData(const std::size_t& i, const TDataType& value) {mData[i] = value;}
+    void SetData(std::size_t i, const TDataType& value) override {mData[i] = value;}
 
     /// overload operator []
-    virtual TDataType& operator[] (const std::size_t& i) {return mData[i];}
+    TDataType& operator[] (std::size_t i) override {return mData[i];}
 
     /// overload operator []
-    virtual const TDataType& operator[] (const std::size_t& i) const {return mData[i];}
+    const TDataType& operator[] (std::size_t i) const override {return mData[i];}
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "Unstructured Control Grid " << BaseType::Name() << "[" << Size() << "]";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << "Data:";
         for (std::size_t i = 0; i < mData.size(); ++i)

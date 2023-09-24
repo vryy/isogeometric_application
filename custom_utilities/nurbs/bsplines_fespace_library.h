@@ -43,7 +43,7 @@ public:
 
     /// Create the primitive open knot vector with order p
     /// The primitive knot vector is the knot vector of only 0 and 1.
-    static knot_container_t CreatePrimitiveOpenKnotVector(const std::size_t& order)
+    static knot_container_t CreatePrimitiveOpenKnotVector(std::size_t order)
     {
         knot_container_t knot_vector;
         for (std::size_t i = 0; i < order+1; ++i)
@@ -55,7 +55,7 @@ public:
 
     /// Create the uniform open knot vector with order p and n basis functions
     /// Note that number must be >= order+1
-    static knot_container_t CreateUniformOpenKnotVector(const std::size_t& number, const std::size_t& order, const bool& throw_error = true)
+    static knot_container_t CreateUniformOpenKnotVector(std::size_t number, std::size_t order, const bool& throw_error = true)
     {
         knot_container_t knot_vector;
         for (std::size_t i = 0; i < order+1; ++i)

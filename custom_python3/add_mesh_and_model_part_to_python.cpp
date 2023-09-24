@@ -50,7 +50,7 @@ typename T::MultiPatchType& MultiPatchModelPart_GetMultiPatch(T& rDummy)
 }
 
 template<class T>
-typename T::MultiPatchType& MultiPatchModelPart_GetMultiPatch2(T& rDummy, const std::size_t& i)
+typename T::MultiPatchType& MultiPatchModelPart_GetMultiPatch2(T& rDummy, std::size_t i)
 {
     return *(rDummy.pMultiPatch(i));
 }
@@ -58,15 +58,15 @@ typename T::MultiPatchType& MultiPatchModelPart_GetMultiPatch2(T& rDummy, const 
 template<int TDim>
 ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions(MultiPatchModelPart<TDim>& rDummy,
     typename Patch<TDim>::Pointer pPatch,
-    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+    const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     return rDummy.AddConditions(pPatch, condition_name, starting_id, pProperties);
 }
 
 template<int TDim>
 ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary(MultiPatchModelPart<TDim>& rDummy,
-    typename Patch<TDim>::Pointer pPatch, const int& iside,
-    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+    typename Patch<TDim>::Pointer pPatch, int iside,
+    const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
@@ -75,15 +75,15 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary(
 template<int TDim>
 ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2(MultiPatchModelPart<TDim>& rDummy,
     typename Patch<TDim-1>::Pointer pBoundaryPatch,
-    const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+    const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
 }
 
 // template<int TDim>
 // ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary(MultiMultiPatchModelPart<TDim>& rDummy,
-//     typename Patch<TDim>::Pointer pPatch, const int& iside,
-//     const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+//     typename Patch<TDim>::Pointer pPatch, int iside,
+//     const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 // {
 //     BoundarySide side = static_cast<BoundarySide>(iside);
 //     return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
@@ -92,7 +92,7 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2
 // template<int TDim>
 // ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary2(MultiMultiPatchModelPart<TDim>& rDummy,
 //     typename Patch<TDim-1>::Pointer pBoundaryPatch,
-//     const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+//     const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 // {
 //     return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
 // }
@@ -101,7 +101,7 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2
 
 // template<class T>
 // ModelPart::ElementsContainerType MultiMultiPatchModelPart_AddElements(T& rDummy, pybind11::list& patch_list,
-//     const std::string& element_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+//     const std::string& element_name, std::size_t starting_id, Properties::Pointer pProperties)
 // {
 //     std::vector<typename T::PatchType::Pointer> pPatches;
 
@@ -113,7 +113,7 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2
 
 // template<class T>
 // ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions(T& rDummy, pybind11::list& patch_list,
-//     const std::string& condition_name, const std::size_t& starting_id, Properties::Pointer pProperties)
+//     const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 // {
 //     std::vector<typename T::PatchType::Pointer> pPatches;
 
@@ -128,8 +128,8 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2
 template<int TDim>
 pybind11::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDummy, ModelPart& r_model_part,
     typename Patch<TDim>::Pointer pPatch, const std::string& sample_element_name, pybind11::list& list_divs,
-    const std::size_t& last_node_id, const std::size_t& last_elem_id,
-    Properties::Pointer pProperties, const int& echo_level)
+    std::size_t last_node_id, std::size_t last_elem_id,
+    Properties::Pointer pProperties, int echo_level)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
     {
@@ -162,8 +162,8 @@ pybind11::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDummy, 
 template<int TDim>
 pybind11::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& rDummy, ModelPart& r_model_part,
     typename Patch<TDim>::Pointer pPatch, const std::string& sample_condition_name, pybind11::list& list_divs,
-    const std::size_t& last_node_id, const std::size_t& last_cond_id,
-    Properties::Pointer pProperties, const int& echo_level)
+    std::size_t last_node_id, std::size_t last_cond_id,
+    Properties::Pointer pProperties, int echo_level)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
     {

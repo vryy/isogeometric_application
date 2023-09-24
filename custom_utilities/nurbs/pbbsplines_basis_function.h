@@ -67,7 +67,7 @@ public:
     {}
 
     /// Constructor with Id
-    PBBSplinesBasisFunction(const std::size_t& Id) : BaseType(Id), mBoundaryId(0)
+    PBBSplinesBasisFunction(std::size_t Id) : BaseType(Id), mBoundaryId(0)
     {}
 
     /// Destructor
@@ -78,7 +78,7 @@ public:
         #endif
     }
 
-    static typename PBBSplinesBasisFunction::Pointer Create(const std::size_t& Id)
+    static typename PBBSplinesBasisFunction::Pointer Create(std::size_t Id)
     {
         return typename PBBSplinesBasisFunction::Pointer(new PBBSplinesBasisFunction(Id));
     }
@@ -88,29 +88,29 @@ public:
     **************************************************************************/
 
     /// Get the boundary information of this basis function
-    const std::size_t& BoundaryId() const {return mBoundaryId;}
+    std::size_t BoundaryId() const {return mBoundaryId;}
 
     /// Add the boundary information to this basis function
-    void AddBoundary(const std::size_t& BoundaryInfo) {mBoundaryId |= BoundaryInfo;}
+    void AddBoundary(std::size_t BoundaryInfo) {mBoundaryId |= BoundaryInfo;}
 
     /// Remove the boundary information from this basis function
-    void RemoveBoundary(const std::size_t& BoundaryInfo) {mBoundaryId &= (0xff - BoundaryInfo);}
+    void RemoveBoundary(std::size_t BoundaryInfo) {mBoundaryId &= (0xff - BoundaryInfo);}
 
     /// Function to identify the location of this basis function
-    bool IsOnSide(const std::size_t& BoundaryInfo) const {return (this->BoundaryId() & BoundaryInfo) == BoundaryInfo;}
+    bool IsOnSide(std::size_t BoundaryInfo) const {return (this->BoundaryId() & BoundaryInfo) == BoundaryInfo;}
 
     /// Set the information in each direction
-    void SetInfo(const int& dim, const std::size_t& Order) {mOrders[dim] = Order;}
+    void SetInfo(int dim, std::size_t Order) {mOrders[dim] = Order;}
 
     /// Get the order in specific direction
-    const std::size_t& Order(const int& dim) const {return mOrders[dim];}
+    std::size_t Order(int dim) const {return mOrders[dim];}
 
     /// return the internal reference of the knot vectors; use it with care
-    const std::vector<knot_t>& LocalKnots(const int& dim) const {return mpLocalKnots[dim];}
+    const std::vector<knot_t>& LocalKnots(int dim) const {return mpLocalKnots[dim];}
 
     /// Get the local knot vectors
     template<class ValuesContainerType>
-    void LocalKnots(const int& dim, ValuesContainerType& rKnots) const
+    void LocalKnots(int dim, ValuesContainerType& rKnots) const
     {
         if(rKnots.size() != mpLocalKnots[dim].size())
             rKnots.resize(mpLocalKnots[dim].size());
@@ -119,7 +119,7 @@ public:
     }
 
     /// Set the local knot vectors to this basis function
-    void SetLocalKnotVectors(const int& dim, const std::vector<knot_t>& rpKnots)
+    void SetLocalKnotVectors(int dim, const std::vector<knot_t>& rpKnots)
     {
         mpLocalKnots[dim].clear();
         for(std::size_t i = 0; i < rpKnots.size(); ++i)

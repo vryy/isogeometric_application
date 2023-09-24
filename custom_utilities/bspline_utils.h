@@ -133,9 +133,9 @@ public:
     // note: this only works with open knot vector (i.e. 0  and 1 are repeated p + 1 times)
     template<class ValuesContainerType>
     static int FindSpan(
-            const int& rN,
-            const int& rP,
-            const double& rXi,
+            int rN,
+            int rP,
+            double rXi,
             const ValuesContainerType& rU
     )
     {
@@ -167,9 +167,9 @@ public:
     // Note: this implementation has linear, rather than log complexity
     template<class ValuesContainerType>
     static int FindSpan2(
-            const int& rN,
-            const int& rP,
-            const double& rXi,
+            int rN,
+            int rP,
+            double rXi,
             const ValuesContainerType& rU
     )
     {
@@ -262,9 +262,9 @@ public:
     // This function works slightly faster than the above implementation
     template<class ValuesContainerType1, class ValuesContainerType2>
     static void BasisFuns(ValuesContainerType1& rS,
-                          const int& rI,
-                          const double& rXi,
-                          const int& rP,
+                          int rI,
+                          double rXi,
+                          int rP,
                           const ValuesContainerType2& rU)
     {
         unsigned int j, r;
@@ -300,14 +300,14 @@ public:
 
     struct MatrixOp
     {
-        void InitZero(Matrix& S, const int& m, const int& n) const
+        void InitZero(Matrix& S, int m, int n) const
         {
             if (S.size1() != m || S.size2() != n)
                 S.resize(m, n, false);
             noalias(S) = ZeroMatrix(m, n);
         }
 
-        double& Get(Matrix& S, const int& i, const int& j) const
+        double& Get(Matrix& S, int i, int j) const
         {
             return S(i, j);
         }
@@ -318,7 +318,7 @@ public:
     {
         typedef std::vector<std::vector<TDataType> > Matrix;
 
-        void InitZero(Matrix& S, const int& m, const int& n) const
+        void InitZero(Matrix& S, int m, int n) const
         {
             if (S.size() != m) S.resize(m);
             for (int i = 0; i < m; ++i)
@@ -328,7 +328,7 @@ public:
             }
         }
 
-        double& Get(Matrix& S, const int& i, const int& j) const
+        double& Get(Matrix& S, int i, int j) const
         {
             return S[i][j];
         }
@@ -340,10 +340,10 @@ public:
     template<class ValuesContainerType1, class ValuesContainerType1Operator, class ValuesContainerType2>
     static void BasisFunsDer(ValuesContainerType1& rS,
                              int rI,
-                             const double& rXi,
-                             const int& rP,
+                             double rXi,
+                             int rP,
                              const ValuesContainerType2& rU,
-                             const int& rD,
+                             int rD,
                              const ValuesContainerType1Operator& Op) // use MatrixOp() or StdVector2DOp()
     {
         int j, r, k, rk, pk, j1, j2, s1, s2;
@@ -492,7 +492,7 @@ public:
     //    %   knots   local knot vector, must be ascending
     //    % Output: function value
     template<class ValuesContainerType>
-    static double CoxDeBoor(const double& u, const int& i, const int& p, const ValuesContainerType& knots)
+    static double CoxDeBoor(double u, int i, int p, const ValuesContainerType& knots)
     {
         double y = 0.0;
 
@@ -530,7 +530,7 @@ public:
     //    %   knots   local knot vector, must be ascending
     //    % Output: function value
     template<class ValuesContainerType>
-    static double CoxDeBoor2(const double& u, const int& i, const int& p, const ValuesContainerType& knots, const double TOL = 1.0e-10)
+    static double CoxDeBoor2(double u, int i, int p, const ValuesContainerType& knots, const double TOL = 1.0e-10)
     {
         double y = 0.0;
 
@@ -562,7 +562,7 @@ public:
     //    %   knots   local knot vector, must be ascending
     //    % Output: function value
     template<class ValuesContainerType>
-    static double CoxDeBoor3(const double& u, const int& i, const int& p, const ValuesContainerType& knots)
+    static double CoxDeBoor3(double u, int i, int p, const ValuesContainerType& knots)
     {
         double last_knot = *(knots.end()-1);
         double first_knot = *(knots.begin());
@@ -589,9 +589,9 @@ public:
     template<class MatrixType, class ValuesContainerType>
     static void ComputeBsplinesKnotInsertionCoefficients1D(MatrixType& D,
                                                            ValuesContainerType& new_knots,
-                                                           const int& p,
+                                                           int p,
                                                            const ValuesContainerType& knots,
-                                                           const double& k)
+                                                           double k)
     {
         // compute the number of basis function
         int n = knots.size() - p - 1;
@@ -638,7 +638,7 @@ public:
     template<class MatrixType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3>
     static void ComputeBsplinesKnotInsertionCoefficients1D(MatrixType& D,
                                                            ValuesContainerType& new_knots,
-                                                           const int& p,
+                                                           int p,
                                                            const ValuesContainerType2& knots,
                                                            const ValuesContainerType3& ins_knots)
     {
@@ -681,8 +681,8 @@ public:
     static void ComputeBsplinesKnotInsertionCoefficients2D(MatrixType& D,
                                                            ValuesContainerType& new_knots1,
                                                            ValuesContainerType& new_knots2,
-                                                           const int& p1,
-                                                           const int& p2,
+                                                           int p1,
+                                                           int p2,
                                                            const ValuesContainerType2& knots1,
                                                            const ValuesContainerType2& knots2,
                                                            const ValuesContainerType3& ins_knots1,
@@ -703,9 +703,9 @@ public:
                                                            ValuesContainerType& new_knots1,
                                                            ValuesContainerType& new_knots2,
                                                            ValuesContainerType& new_knots3,
-                                                           const int& p1,
-                                                           const int& p2,
-                                                           const int& p3,
+                                                           int p1,
+                                                           int p2,
+                                                           int p3,
                                                            const ValuesContainerType2& knots1,
                                                            const ValuesContainerType2& knots2,
                                                            const ValuesContainerType2& knots3,
@@ -728,7 +728,7 @@ public:
     static void ComputeNURBSKnotInsertionCoefficients1D(MatrixType& D,
                                                         ValuesContainerType& new_knots,
                                                         ValuesContainerType& new_weights,
-                                                        const int& p,
+                                                        int p,
                                                         const ValuesContainerType2& knots,
                                                         const ValuesContainerType3& ins_knots,
                                                         const ValuesContainerType4& weights)
@@ -757,8 +757,8 @@ public:
                                                         ValuesContainerType& new_knots1,
                                                         ValuesContainerType& new_knots2,
                                                         ValuesContainerType& new_weights,
-                                                        const int& p1,
-                                                        const int& p2,
+                                                        int p1,
+                                                        int p2,
                                                         const ValuesContainerType2& knots1,
                                                         const ValuesContainerType2& knots2,
                                                         const ValuesContainerType3& ins_knots1,
@@ -796,9 +796,9 @@ public:
                                                         ValuesContainerType& new_knots2,
                                                         ValuesContainerType& new_knots3,
                                                         ValuesContainerType& new_weights,
-                                                        const int& p1,
-                                                        const int& p2,
-                                                        const int& p3,
+                                                        int p1,
+                                                        int p2,
+                                                        int p3,
                                                         const ValuesContainerType2& knots1,
                                                         const ValuesContainerType2& knots2,
                                                         const ValuesContainerType2& knots3,
@@ -832,7 +832,7 @@ public:
     template<class VectorType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3>
     static void ComputeBsplinesKnotInsertionCoefficients1DLocal(VectorType& D,
                                                                 ValuesContainerType& new_knots,
-                                                                const int& p,
+                                                                int p,
                                                                 const ValuesContainerType2& local_knots,
                                                                 const ValuesContainerType3& ins_knots)
     {
@@ -872,8 +872,8 @@ public:
     static void ComputeBsplinesKnotInsertionCoefficients2DLocal(VectorType& D,
                                                                 ValuesContainerType& new_knots1,
                                                                 ValuesContainerType& new_knots2,
-                                                                const int& p1,
-                                                                const int& p2,
+                                                                int p1,
+                                                                int p2,
                                                                 const ValuesContainerType2& local_knots1,
                                                                 const ValuesContainerType2& local_knots2,
                                                                 const ValuesContainerType3& ins_knots1,
@@ -891,9 +891,9 @@ public:
                                                                 ValuesContainerType& new_knots1,
                                                                 ValuesContainerType& new_knots2,
                                                                 ValuesContainerType& new_knots3,
-                                                                const int& p1,
-                                                                const int& p2,
-                                                                const int& p3,
+                                                                int p1,
+                                                                int p2,
+                                                                int p3,
                                                                 const ValuesContainerType2& local_knots1,
                                                                 const ValuesContainerType2& local_knots2,
                                                                 const ValuesContainerType2& local_knots3,
@@ -926,10 +926,10 @@ public:
     ///                          int t, int *nh, double *ic, double *ik)
     /// REMARKS: This function can also be used to elevate the degree of NURBS
     template<typename TDataType, class ValuesContainerType, class ValuesContainerType1, class ValuesContainerType2>
-    static int ComputeBsplinesDegreeElevation1D(const int& d, // order of B-Splines
+    static int ComputeBsplinesDegreeElevation1D(int d, // order of B-Splines
             const ValuesContainerType& ctrl, // control values
             const ValuesContainerType1& k, // knot vector
-            const int& t, // order increment
+            int t, // order increment
             ValuesContainerType& ictrl, // new control values
             ValuesContainerType2& ik, // new knot vector
             const TDataType& zero) // a sample zero control value to avoid explicit declaring TDataType
@@ -1157,12 +1157,12 @@ public:
     /// Degree elevation for B-Splines surface
     /// REMARKS: This function can also be used to elevate the degree of NURBS
     template<typename TDataType, class ValuesContainerType, class ValuesContainerType1, class ValuesContainerType2>
-    static int ComputeBsplinesDegreeElevation2D(const int& d1, const int& d2, // order of B-Splines
+    static int ComputeBsplinesDegreeElevation2D(int d1, int d2, // order of B-Splines
             const ValuesContainerType& ctrl, // control values
             const ValuesContainerType1& k1, // knot vector
             const ValuesContainerType1& k2, // knot vector
-            const int& t1, // order increment
-            const int& t2, // order increment
+            int t1, // order increment
+            int t2, // order increment
             ValuesContainerType& ictrl, // new control values
             ValuesContainerType2& ik1, // new knot vector
             ValuesContainerType2& ik2, // new knot vector
@@ -1227,14 +1227,14 @@ public:
     /// Degree elevation for B-Splines volume
     /// REMARKS: This function can also be used to elevate the degree of NURBS
     template<typename TDataType, class ValuesContainerType, class ValuesContainerType1, class ValuesContainerType2>
-    static int ComputeBsplinesDegreeElevation3D(const int& d1, const int& d2, const int& d3, // order of B-Splines
+    static int ComputeBsplinesDegreeElevation3D(int d1, int d2, int d3, // order of B-Splines
             const ValuesContainerType& ctrl, // control values
             const ValuesContainerType1& k1, // knot vector
             const ValuesContainerType1& k2, // knot vector
             const ValuesContainerType1& k3, // knot vector
-            const int& t1, // order increment
-            const int& t2, // order increment
-            const int& t3, // order increment
+            int t1, // order increment
+            int t2, // order increment
+            int t3, // order increment
             ValuesContainerType& ictrl, // new control values
             ValuesContainerType2& ik1, // new knot vector
             ValuesContainerType2& ik2, // new knot vector
@@ -1418,7 +1418,7 @@ private:
     ///@{
 
     /* Algorithm from 'Numerical Recipes in C, 2nd Edition' pg215. */
-    static double bincoeff(const int& n, const int& k)
+    static double bincoeff(int n, int k)
     {
         return floor(0.5+exp(factln(n)-factln(k)-factln(n-k)));
     }
@@ -1426,7 +1426,7 @@ private:
     /* computes ln(n!) */
     /* Numerical Recipes in C */
     /* Algorithm from 'Numerical Recipes in C, 2nd Edition' pg215. */
-    static double factln(const int& n)
+    static double factln(int n)
     {
         static int ntop = 0;
         static double a[101];
@@ -1442,7 +1442,7 @@ private:
 
     /* Compute logarithm of the gamma function */
     /* Algorithm from 'Numerical Recipes in C, 2nd Edition' pg214. */
-    static double gammaln(const double& xx)
+    static double gammaln(double xx)
     {
         double x,y,tmp,ser;
         static double cof[6] = {76.18009172947146,-86.50532032291677,

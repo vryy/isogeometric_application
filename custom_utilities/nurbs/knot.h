@@ -42,8 +42,8 @@ public:
     {}
 
     /// Get and Set for knot index
-    const std::size_t& Index() const {return mIndex;}
-    void UpdateIndex(const std::size_t& Index) {mIndex = Index;}
+    std::size_t Index() const {return mIndex;}
+    void UpdateIndex(std::size_t Index) {mIndex = Index;}
 
     /// Get the knot value
     TDataType& Value() {return mValue;}

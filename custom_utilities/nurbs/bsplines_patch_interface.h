@@ -60,14 +60,14 @@ class BSplinesPatchInterface<1> : public PatchInterface<1>
     }
 
     /// Get the local parameter space mapping
-    std::size_t LocalParameterMapping(const std::size_t& dim) const
+    std::size_t LocalParameterMapping(std::size_t dim) const
     {
         return 0;
     }
 
     /// Get the relative direction between the local parameter space
     const BoundaryDirection& Direction() const {return _UNDEFINED_DIR_;}
-    const BoundaryDirection& Direction(const std::size_t& dim) const {return _UNDEFINED_DIR_;}
+    const BoundaryDirection& Direction(std::size_t dim) const {return _UNDEFINED_DIR_;}
 
     /// Validate the compatibility of two patches on the interface
     virtual bool Validate() const
@@ -125,14 +125,14 @@ public:
     }
 
     /// Get the local parameter space mapping
-    std::size_t LocalParameterMapping(const std::size_t& dim) const
+    std::size_t LocalParameterMapping(std::size_t dim) const
     {
         return 0;
     }
 
     /// Get the relative direction between the local parameter space
     const BoundaryDirection& Direction() const {return mDirection;}
-    const BoundaryDirection& Direction(const std::size_t& dim) const
+    const BoundaryDirection& Direction(std::size_t dim) const
     {
         if (dim == 0)
             return mDirection;
@@ -259,7 +259,7 @@ public:
     }
 
     /// Get the local parameter space mapping
-    std::size_t LocalParameterMapping(const std::size_t& dim) const
+    std::size_t LocalParameterMapping(std::size_t dim) const
     {
         std::map<std::size_t, std::size_t>::const_iterator it = mLocalParameterMap.find(dim);
         if (it != mLocalParameterMap.end())
@@ -269,7 +269,7 @@ public:
     }
 
     /// Get the relative direction between the local parameter space
-    const BoundaryDirection& Direction(const std::size_t& dim) const {return mDirections[dim];}
+    const BoundaryDirection& Direction(std::size_t dim) const {return mDirections[dim];}
 
     /// Validate the compatibility of two patches on the interface
     virtual bool Validate() const

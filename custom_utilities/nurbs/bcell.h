@@ -53,17 +53,17 @@ public:
     typedef typename knot_container_t::KnotType KnotType;
 
     /// Constructor with knots
-    BCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax)
+    BCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax)
     : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(new KnotType(0.0)), mpEtaMin(new KnotType(0.0)), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
-    BCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
+    BCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
     : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
-    BCell(const std::size_t& Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
+    BCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
     : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(pZetaMax), mpZetaMin(pZetaMin)
     {}
 
@@ -164,7 +164,7 @@ public:
     }
 
     /// Check if this cell cover a point in knot space
-    bool IsCoverage(const double& rXi, const double& rEta) const
+    bool IsCoverage(double rXi, double rEta) const
     {
         if(    XiMinValue()  <= rXi  && XiMaxValue()  >= rXi
             && EtaMinValue() <= rEta && EtaMaxValue() >= rEta )
@@ -173,7 +173,7 @@ public:
     }
 
     /// Check if this cell cover a point in knot space
-    bool IsCoverage(const double& rXi, const double& rEta, const double& rZeta) const
+    bool IsCoverage(double rXi, double rEta, double rZeta) const
     {
         if(    XiMinValue()   <= rXi   && XiMaxValue()   >= rXi
             && EtaMinValue()  <= rEta  && EtaMaxValue()  >= rEta
@@ -183,7 +183,7 @@ public:
     }
 
     /// check if this cell is the same as the reference cell. Two cells are the same if it has the same bounding knot values.
-    bool IsSame(const BCell::Pointer p_cell, const double& tol) const
+    bool IsSame(BCell::ConstPointer p_cell, double tol) const
     {
         if(    fabs( XiMinValue()   - p_cell->XiMinValue() )   < tol
             && fabs( XiMaxValue()   - p_cell->XiMaxValue() )   < tol

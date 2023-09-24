@@ -544,7 +544,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
 /// Read the data for one patch
 template<int TDim>
 void MultiNURBSPatchGeoImporter<TDim>::ReadPatchData(std::ifstream& infile,
-    const int& rdim,
+    int rdim,
     std::vector<std::size_t>& orders,
     std::vector<std::size_t>& numbers,
     std::vector<std::vector<double> >& knots,
@@ -655,7 +655,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadPatchData(std::ifstream& infile,
 
 /// Create a new patch based on patch data
 template<int TDim>
-typename Patch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::CreateNewPatch(const std::size_t& Id,
+typename Patch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::CreateNewPatch(std::size_t Id,
     const std::vector<std::size_t>& orders,
     const std::vector<std::size_t>& numbers,
     const std::vector<std::vector<double> >& knots,

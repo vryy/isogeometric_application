@@ -121,7 +121,7 @@ typename Patch<TDim>::Pointer HBSplinesPatchUtility_CreatePatchFromBSplines(HBSp
 
 template<int TDim>
 typename HBSplinesFESpace<TDim>::bf_t HBSplinesPatchUtility_GetBfByEquationId(HBSplinesPatchUtility& rDummy,
-    typename MultiPatch<TDim>::Pointer pMultiPatch, const std::size_t& EquationId)
+    typename MultiPatch<TDim>::Pointer pMultiPatch, std::size_t EquationId)
 {
     return rDummy.GetBfByEquationId<TDim>(pMultiPatch, EquationId);
 }
@@ -137,21 +137,21 @@ void HBSplinesPatchUtility_ReportDuplicatedEquationId(HBSplinesPatchUtility& rDu
 
 template<int TDim>
 void HBSplinesRefinementUtility_Refine(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, const std::size_t& Id, const int& EchoLevel)
+        typename Patch<TDim>::Pointer pPatch, std::size_t Id, int EchoLevel)
 {
     rDummy.Refine<TDim>(pPatch, Id, EchoLevel);
 }
 
 template<int TDim>
 void HBSplinesRefinementUtility_RefineBf(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, const int& EchoLevel)
+        typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, int EchoLevel)
 {
     rDummy.Refine<TDim>(pPatch, p_bf, EchoLevel);
 }
 
 template<int TDim>
 void HBSplinesRefinementUtility_RefineWindow(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, boost::python::list& window, const int& EchoLevel)
+        typename Patch<TDim>::Pointer pPatch, const boost::python::list& window, int EchoLevel)
 {
     std::vector<std::vector<double> > window_vector;
     std::size_t cnt1 = 0, cnt2 = 0;
@@ -171,7 +171,7 @@ void HBSplinesRefinementUtility_RefineWindow(HBSplinesRefinementUtility& rDummy,
 
 template<int TDim>
 void HBSplinesRefinementUtility_LinearDependencyRefine(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, const std::size_t& refine_cycle, const int& EchoLevel)
+        typename Patch<TDim>::Pointer pPatch, std::size_t refine_cycle, int EchoLevel)
 {
     rDummy.LinearDependencyRefine<TDim>(pPatch, refine_cycle, EchoLevel);
 }
@@ -197,7 +197,7 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     ss.str(std::string());
     ss << "HBSplinesBasisFunction" << TDim << "D";
     class_<HBSplinesBasisFunction<TDim>, typename HBSplinesBasisFunction<TDim>::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<const std::size_t&, const std::size_t&>())
+    (ss.str().c_str(), init<std::size_t, std::size_t>())
     // .add_property("Id", HBSplinesBasisFunction_GetId<TDim>, HBSplinesBasisFunction_SetId<TDim>)
     .add_property("Id", Isogeometric_GetId<HBSplinesBasisFunction<TDim> >, HBSplinesBasisFunction_SetId<TDim>)
     // .add_property("EquationId", HBSplinesBasisFunction_GetEquationId<TDim>, HBSplinesBasisFunction_SetEquationId<TDim>)
@@ -237,7 +237,7 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     ss << "DeprecatedHBMesh" << TDim << "D";
     class_<DeprecatedHBMesh<TDim>, bases<Patch<TDim> > >
     // class_<DeprecatedHBMesh<TDim>, typename DeprecatedHBMesh<TDim>::Pointer, bases<Patch<TDim> > >
-    (ss.str().c_str(), init<const std::size_t&, const std::string&>())
+    (ss.str().c_str(), init<std::size_t, const std::string&>())
     .def("SetEchoLevel", &DeprecatedHBMesh<TDim>::SetEchoLevel)
     .def("ReadMesh", &DeprecatedHBMesh<TDim>::ReadMesh)
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/

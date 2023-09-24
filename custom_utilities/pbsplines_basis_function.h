@@ -67,7 +67,7 @@ public:
     {}
 
     /// Constructor with Id
-    PBSplinesBasisFunction(const std::size_t& Id)
+    PBSplinesBasisFunction(std::size_t Id)
     : mId(Id), mEquationId(-1)
     {}
 
@@ -129,13 +129,13 @@ public:
     cell_const_iterator cell_end() const {return mpCells.end();}
 
     /// Get the Id of this basis function. Each basis function should have unique Id within a patch
-    const std::size_t& Id() const {return mId;}
+    std::size_t Id() const {return mId;}
 
     /// Get the equation Id of this basis function. Each basis function should have unique equation Id accross patches
-    const std::size_t& EquationId() const {return mEquationId;}
+    std::size_t EquationId() const {return mEquationId;}
 
     /// Set the equation Id for this basis function. One shall use this function only in the enumeration process
-    void SetEquationId(const std::size_t& EquationId) {mEquationId = EquationId;}
+    void SetEquationId(std::size_t EquationId) {mEquationId = EquationId;}
 
     /// Get the weight associated with the control point
     double Weight() const

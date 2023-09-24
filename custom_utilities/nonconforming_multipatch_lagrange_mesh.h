@@ -31,9 +31,13 @@ namespace Kratos
 {
 
 /**
-Construct the standard FEM mesh based on Lagrange basis functions from isogeometric multipatch. Each patch can have different division and is non-conformed at the boundary.
-The principle is that each patch will be sampled based on number of divisions defined by used. Therefore user is not able to see the knot density.
-At the end, the resulting model_part will have nodal values interpolated from patch. This class is useful for post-processing all types of isogeometric patches, including NURBS, hierarchical B-Splines and T-Splines.
+ * Construct the standard FEM mesh based on Lagrange basis functions from isogeometric multipatch.
+ * Each patch can have different division and is non-conformed at the boundary.
+ * The principle is that each patch will be sampled based on number of divisions defined by user.
+ * Therefore user is not able to see the knot density.
+ * At the end, the resulting model_part will have nodal values interpolated from patch.
+ * This class is useful for post-processing all types of isogeometric patches, including NURBS,
+ * hierarchical B-Splines and T-Splines.
  */
 template<int TDim>
 class NonConformingMultipatchLagrangeMesh : public IsogeometricEcho
@@ -58,7 +62,7 @@ public:
 
     /// Set the division for all the patches the same number of division in each dimension
     /// Note that if the division is changed, the post_model_part must be generated again
-    void SetUniformDivision(const IndexType& num_division)
+    void SetUniformDivision(IndexType num_division)
     {
         typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
@@ -70,7 +74,7 @@ public:
 
     /// Set the division for the patch at specific dimension
     /// Note that if the division is changed, the post_model_part must be generated again
-    void SetDivision(const std::size_t& patch_id, const int& dim, const IndexType& num_division)
+    void SetDivision(std::size_t patch_id, int dim, IndexType num_division)
     {
         if (dim >= TDim)
             KRATOS_ERROR << "The dimension " << dim << " is invalid";
@@ -87,10 +91,10 @@ public:
     void SetBaseElementName(const std::string& BaseElementName) {mBaseElementName = BaseElementName;}
 
     /// Set the last node index
-    void SetLastNodeId(const IndexType& lastNodeId) {mLastNodeId = lastNodeId;}
+    void SetLastNodeId(IndexType lastNodeId) {mLastNodeId = lastNodeId;}
 
     /// Set the last element index
-    void SetLastElemId(const IndexType& lastElemId) {mLastElemId = lastElemId;}
+    void SetLastElemId(IndexType lastElemId) {mLastElemId = lastElemId;}
 
     /// Append to model_part, the quad/hex element from patches
     void WriteModelPart(ModelPart& r_model_part) const
@@ -183,7 +187,7 @@ public:
                         corners[4], corners[5], corners[6], corners[7], NodeCounter, NumDivision1, NumDivision2, NumDivision3);
             }
 
-            // create nodes
+            // create nodes and transfer values to nodes
             for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
             {
                 IsogeometricPostUtility::CreateNodeAndTransferValues(points_and_connectivities.first[i], *it, r_model_part, NodeCounter++);

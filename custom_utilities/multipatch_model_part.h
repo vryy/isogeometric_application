@@ -363,6 +363,55 @@ public:
         }
     }
 
+    /// Synchronize values from a map to the multipatch
+    /// This is useful when the values are available patch-based. For example when transferring
+    /// the values from integration points to patch
+    template<class TVariableType>
+    void SynchronizeBackwardFromData(const TVariableType& rVariable,
+            const std::map<std::size_t, std::map<std::size_t, typename TVariableType::Type> >& rNodalValues)
+    {
+        if (!IsReady()) return;
+
+        // loop through each patch, we construct a map from each function id to the patch id
+        typedef typename MultiPatch<TDim>::patch_const_iterator patch_const_iterator;
+        for (patch_const_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
+        {
+            std::vector<std::size_t> func_ids = it->pFESpace()->FunctionIndices();
+
+            // check if the grid function existed in the patch
+            if (!it->template HasGridFunction<TVariableType>(rVariable))
+            {
+                // --> if not then create the new grid function
+                typename ControlGrid<typename TVariableType::Type>::Pointer pNewControlGrid = ControlGridUtility::CreateControlGrid<TDim, TVariableType>(it->pFESpace(), rVariable);
+                it->template CreateGridFunction<TVariableType>(rVariable, pNewControlGrid);
+            }
+
+            // get the control value grid
+            typename ControlGrid<typename TVariableType::Type>::Pointer pControlGrid = it->pGetGridFunction(rVariable)->pControlGrid();
+
+            // get the patch control values
+            auto it_patch = rNodalValues.find(it->Id());
+            if (it_patch == rNodalValues.end())
+            {
+                KRATOS_ERROR << "Patch " << it->Id() << " does not exist in the provided data map";
+            }
+
+            // set the data for the control value grid
+            for (std::size_t i = 0; i < pControlGrid->size(); ++i)
+            {
+                std::size_t global_id = func_ids[i];
+                std::size_t node_id = CONVERT_INDEX_IGA_TO_KRATOS(global_id);
+
+                auto it_node = it_patch->second.find(node_id);
+                if (it_node == it_patch->second.end())
+                {
+                    KRATOS_ERROR << "Node " << node_id << " does not exist in the provided data map for patch " << it->Id();
+                }
+                pControlGrid->SetData(i, it_node->second);
+            }
+        }
+    }
+
     /// Create entities (elements/conditions) from FESpace
     /// @param pFESpace the finite element space to provide the cell manager
     /// @param pControlPointGrid control grid to provide control points

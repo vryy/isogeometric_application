@@ -73,12 +73,14 @@ namespace Kratos
         return rResult;
     }
 
-    void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-        ModelPart& r_model_part, ElementsContainerType& ElementsArray,
-        const Variable<double>& rThisVariable, const bool& check_active) const
+    void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
+        std::map<std::size_t, std::size_t>& node_row_id, SerialSparseSpaceType::VectorType& rValues,
+        LinearSolverType::Pointer pSolver, const ModelPart& r_model_part,
+        const ElementsContainerType& ElementsArray,
+        const Variable<double>& rThisVariable, bool check_active) const
     {
-        std::set<std::size_t> active_nodes;
-        for( ElementsContainerType::iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
+        active_nodes.clear();
+        for( ElementsContainerType::const_iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
         {
             bool is_inactive = false;
             if (check_active)
@@ -106,7 +108,7 @@ namespace Kratos
 
         // assign each node an id. That id is the row of this node in the global L2 projection matrix
         std::size_t cnt = 0;
-        std::map<std::size_t, std::size_t> node_row_id;
+        node_row_id.clear();
         for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
         {
             node_row_id[*it] = cnt++;
@@ -117,8 +119,9 @@ namespace Kratos
         SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
         noalias(M) = ZeroMatrix(NumberOfNodes, NumberOfNodes);
 
-        SerialSparseSpaceType::VectorType g(NumberOfNodes);
-        noalias(g) = ZeroVector(NumberOfNodes);
+        if (rValues.size() != NumberOfNodes)
+            rValues.resize(NumberOfNodes, false);
+        noalias(rValues) = ZeroVector(NumberOfNodes);
 
         SerialSparseSpaceType::VectorType b(NumberOfNodes);
         noalias(b) = ZeroVector(NumberOfNodes);
@@ -157,10 +160,10 @@ namespace Kratos
             double DetJ;
             unsigned int row, col;
 
-            typename ElementsContainerType::iterator it_begin = ElementsArray.begin() + element_partition[k];
-            typename ElementsContainerType::iterator it_end = ElementsArray.begin() + element_partition[k + 1];
+            typename ElementsContainerType::const_iterator it_begin = ElementsArray.begin() + element_partition[k];
+            typename ElementsContainerType::const_iterator it_end = ElementsArray.begin() + element_partition[k + 1];
 
-            for( ElementsContainerType::iterator it = it_begin; it != it_end; ++it )
+            for( ElementsContainerType::const_iterator it = it_begin; it != it_end; ++it )
             {
                 bool is_inactive = false;
                 if (check_active)
@@ -242,283 +245,15 @@ namespace Kratos
         for(unsigned int i = 0; i < NumberOfNodes; ++i)
             omp_destroy_lock(&lock_array[i]);
 
-        // solver the system
-        pSolver->Solve(M, g, b);
-
-        // transfer the solution to the nodal variables
-        // for(ModelPart::NodeIterator it = r_model_part.NodesBegin(); it != r_model_part.NodesEnd(); ++it)
-        // {
-        //     unsigned int row = node_row_id[it->Id()];
-        //     std::map<std::size_t, std::size_t>::iterator it_r = node_row_id.find(it->Id());
-        //     if (it_r == node_row_id.end()) continue;
-        //     it->GetSolutionStepValue(rThisVariable) = g(*it_r);
-        // }
-
-        for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
-        {
-            std::size_t row = node_row_id[*it];
-            NodeType& r_node = r_model_part.GetMesh().GetNode(*it);
-            r_node.GetSolutionStepValue(rThisVariable) = g(row);
-        }
-
-        #ifdef ENABLE_DEBUG
-        std::cout << "Transfer variable to node for " << rThisVariable.Name() << " completed" << std::endl;
-        #endif
-    }
-
-    void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-        ModelPart& r_model_part,
-        const Variable<double>& rThisVariable, const bool& check_active) const
-    {
-        TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable, check_active);
-    }
-
-    void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-        ModelPart& r_model_part, ElementsContainerType& ElementsArray,
-        const Variable<Vector>& rThisVariable,
-        const std::size_t& ncomponents, const bool& check_active) const
-    {
-        #ifdef ENABLE_PROFILING
-        //profiling variables
-        double start_compute, end_compute;
-        start_compute = OpenMPUtils::GetCurrentTime();
-        #endif
-
-        std::set<std::size_t> active_nodes;
-        for( ElementsContainerType::iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
-        {
-            bool is_inactive = false;
-            if (check_active)
-            {
-                if(it->IsDefined ( ACTIVE ))
-                    is_inactive = !(it->Is( ACTIVE ));
-                #ifndef SD_APP_FORWARD_COMPATIBILITY
-                if(it->Has ( IS_INACTIVE ))
-                    is_inactive = is_inactive && it->GetValue( IS_INACTIVE );
-                #endif
-            }
-
-            if( !is_inactive )
-            {
-                for( std::size_t i = 0; i < it->GetGeometry().size(); ++i )
-                {
-                    active_nodes.insert( it->GetGeometry()[i].Id() );
-                }
-            }
-        }
-
-        #ifdef ENABLE_DEBUG
-        KRATOS_WATCH(active_nodes.size())
-        // std::cout << "active_nodes:";
-        // for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
-        //     std::cout << " " << *it;
-        // std::cout << std::endl;
-        #endif
-
-        // assign each node an id. That id is the row of this node in the global L2 projection matrix
-        std::size_t cnt = 0;
-        std::map<std::size_t, std::size_t> node_row_id;
-        for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
-        {
-            node_row_id[*it] = cnt++;
-        }
-
-        // create and initialize matrix
-        std::size_t NumberOfNodes = active_nodes.size();
-        SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
-        noalias(M) = ZeroMatrix(NumberOfNodes, NumberOfNodes);
-        ConstructL2MatrixStructure<Element>(M, ElementsArray, node_row_id);
-
-        #ifdef ENABLE_PROFILING
-        end_compute = OpenMPUtils::GetCurrentTime();
-        std::cout << "ConstructMatrixStructure completed: " << end_compute - start_compute << " s" << std::endl;
-        start_compute = end_compute;
-        #endif
-
-        // create and initialize vectors
-        SerialDenseSpaceType::MatrixType g(NumberOfNodes, ncomponents);
-        noalias(g)= ZeroMatrix(NumberOfNodes, ncomponents);
-        SerialDenseSpaceType::MatrixType b(NumberOfNodes, ncomponents);
-        noalias(b)= ZeroMatrix(NumberOfNodes, ncomponents);
-
-        //create a partition of the elements
-        int number_of_threads = omp_get_max_threads();
-        std::vector<unsigned int> element_partition;
-        OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
-
-        #ifdef ENABLE_DEBUG
-        KRATOS_WATCH( number_of_threads )
-        std::cout << "element_partition:";
-        for (std::size_t i = 0; i < element_partition.size(); ++i)
-            std::cout << " " << element_partition[i];
-        std::cout << std::endl;
-        #endif
-
-        // create a lock array for parallel matrix fill
-        std::vector< omp_lock_t > lock_array(NumberOfNodes);
-        for(unsigned int i = 0; i < NumberOfNodes; ++i)
-            omp_init_lock(&lock_array[i]);
-
-        const unsigned int& Dim = (*(ElementsArray.ptr_begin()))->GetGeometry().WorkingSpaceDimension();
-
-        #pragma omp parallel for
-        for(int k = 0; k < number_of_threads; ++k)
-        {
-            Matrix InvJ(Dim, Dim);
-            double DetJ;
-            unsigned int row, col;
-
-            typename ElementsContainerType::iterator it_begin = ElementsArray.begin() + element_partition[k];
-            typename ElementsContainerType::iterator it_end = ElementsArray.begin() + element_partition[k + 1];
-
-            for( ElementsContainerType::iterator it = it_begin; it != it_end; ++it )
-            {
-                bool is_inactive = false;
-                if (check_active)
-                {
-                    if(it->IsDefined ( ACTIVE ))
-                        is_inactive = !(it->Is( ACTIVE ));
-                    #ifndef SD_APP_FORWARD_COMPATIBILITY
-                    if(it->Has ( IS_INACTIVE ))
-                        is_inactive = is_inactive && it->GetValue( IS_INACTIVE );
-                    #endif
-                }
-
-                if (!is_inactive)
-                {
-                    const IntegrationPointsArrayType& integration_points
-                        = it->GetGeometry().IntegrationPoints(it->GetIntegrationMethod());
-
-                    GeometryType::JacobiansType J(integration_points.size());
-
-    //                J = it->GetGeometry().Jacobian(J, it->GetIntegrationMethod());
-    //                const Matrix& Ncontainer = it->GetGeometry().ShapeFunctionsValues(it->GetIntegrationMethod());
-
-                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>(it->GetGeometry());
-                    J = rIsogeometricGeometry.Jacobian0(J, it->GetIntegrationMethod());
-
-                    GeometryType::ShapeFunctionsGradientsType DN_De;
-                    Matrix Ncontainer;
-                    rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
-                        Ncontainer,
-                        DN_De,
-                        it->GetIntegrationMethod()
-                    );
-
-                    // get the values at the integration_points
-                    std::vector<Vector> ValuesOnIntPoint(integration_points.size());
-                    it->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
-
-                    for(unsigned int point = 0; point < integration_points.size(); ++point)
-                    {
-                        MathUtils<double>::InvertMatrix(J[point], InvJ, DetJ);
-
-                        double dV = DetJ * integration_points[point].Weight();
-
-                        for(unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
-                        {
-                            row = node_row_id[it->GetGeometry()[prim].Id()];
-
-                            omp_set_lock(&lock_array[row]);
-
-                            for(unsigned int i = 0; i < ncomponents; ++i)
-                                b(row, i) += ValuesOnIntPoint[point][i] * Ncontainer(point, prim) * dV;
-
-                            for(unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
-                            {
-                                col = node_row_id[it->GetGeometry()[sec].Id()];
-                                M(row, col) += Ncontainer(point, prim) * Ncontainer(point, sec) * dV;
-                            }
-
-                            omp_unset_lock(&lock_array[row]);
-                        }
-                    }
-                }
-                else
-                {
-                    // for inactive elements the contribution to LHS is identity matrix and RHS is zero
-                    for(unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
-                    {
-                        row = node_row_id[it->GetGeometry()[prim].Id()];
-
-                        omp_set_lock(&lock_array[row]);
-
-//                        for(unsigned int i = 0; i < ncomponents; ++i)
-//                            b(row, i) += 0.0;
-
-                        for(unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
-                        {
-                            col = node_row_id[it->GetGeometry()[sec].Id()];
-                            if(col == row)
-                                M(row, col) += 1.0;
-//                            else
-//                                M(row, col) += 0.0;
-                        }
-
-                        omp_unset_lock(&lock_array[row]);
-                    }
-                }
-            }
-        }
-
-        for(unsigned int i = 0; i < NumberOfNodes; ++i)
-            omp_destroy_lock(&lock_array[i]);
-
-        #ifdef ENABLE_PROFILING
-        end_compute = OpenMPUtils::GetCurrentTime();
-        std::cout << "Assemble the matrix completed: " << end_compute - start_compute << " s" << std::endl;
-        start_compute = end_compute;
-        #endif
-
-        #ifdef DEBUG_MULTISOLVE
-        KRATOS_WATCH(M)
-        KRATOS_WATCH(b)
-        KRATOS_WATCH(*pSolver)
-        #endif
-
         // solve the system
-        // solver must support the multisove method
-        pSolver->Solve(M, g, b);
-
-        #ifdef DEBUG_MULTISOLVE
-        KRATOS_WATCH(g)
-        #endif
-
-        // transfer the solution to the nodal variables
-        Vector tmp(ncomponents);
-        // for(ModelPart::NodeIterator it = r_model_part.NodesBegin(); it != r_model_part.NodesEnd(); ++it)
-        // {
-        //     std::map<std::size_t, std::size_t>::iterator it_r = node_row_id.find(it->Id());
-        //     if (it_r == node_row_id.end()) continue;
-        //     noalias(tmp) = row(g, *it_r);
-        //     it->GetSolutionStepValue(rThisVariable) = tmp;
-        // }
-
-        for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
-        {
-            std::size_t this_row = node_row_id[*it];
-            NodeType& r_node = r_model_part.GetMesh().GetNode(*it);
-            noalias(tmp) = row(g, this_row);
-            r_node.GetSolutionStepValue(rThisVariable) = tmp;
-        }
-
-        #ifdef ENABLE_DEBUG
-        std::cout << "Transfer variable to node for " << rThisVariable.Name() << " completed" << std::endl;
-        #endif
+        pSolver->Solve(M, rValues, b);
     }
 
-    void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-        ModelPart& r_model_part,
-        const Variable<Vector>& rThisVariable,
-        const std::size_t& ncomponents, const bool& check_active) const
-    {
-        TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable, ncomponents, check_active);
-    }
-
-    void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-        ModelPart& r_model_part, ElementsContainerType& ElementsArray,
-        const Variable<array_1d<double, 3> >& rThisVariable,
-        const bool& check_active) const
+    void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
+        std::map<std::size_t, std::size_t>& node_row_id,
+        SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
+        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+        const Variable<array_1d<double, 3> >& rThisVariable, bool check_active) const
     {
         #ifdef ENABLE_PROFILING
         //profiling variables
@@ -526,8 +261,8 @@ namespace Kratos
         start_compute = OpenMPUtils::GetCurrentTime();
         #endif
 
-        std::set<std::size_t> active_nodes;
-        for( ElementsContainerType::iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
+        active_nodes.clear();
+        for( ElementsContainerType::const_iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
         {
             bool is_inactive = false;
             if (check_active)
@@ -559,7 +294,7 @@ namespace Kratos
 
         // assign each node an id. That id is the row of this node in the global L2 projection matrix
         std::size_t cnt = 0;
-        std::map<std::size_t, std::size_t> node_row_id;
+        node_row_id.clear();
         for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
         {
             node_row_id[*it] = cnt++;
@@ -578,10 +313,11 @@ namespace Kratos
         #endif
 
         // create and initialize vectors
-        SerialDenseSpaceType::MatrixType g(NumberOfNodes, 3);
-        noalias(g)= ZeroMatrix(NumberOfNodes, 3);
+        if (rValues.size1() != NumberOfNodes || rValues.size2() !=3 )
+            rValues.resize(NumberOfNodes, 3);
+        noalias(rValues) = ZeroMatrix(NumberOfNodes, 3);
         SerialDenseSpaceType::MatrixType b(NumberOfNodes, 3);
-        noalias(b)= ZeroMatrix(NumberOfNodes, 3);
+        noalias(b) = ZeroMatrix(NumberOfNodes, 3);
 
         //create a partition of the elements
         int number_of_threads = omp_get_max_threads();
@@ -610,10 +346,10 @@ namespace Kratos
             double DetJ;
             unsigned int row, col;
 
-            typename ElementsContainerType::iterator it_begin = ElementsArray.begin() + element_partition[k];
-            typename ElementsContainerType::iterator it_end = ElementsArray.begin() + element_partition[k + 1];
+            typename ElementsContainerType::const_iterator it_begin = ElementsArray.begin() + element_partition[k];
+            typename ElementsContainerType::const_iterator it_end = ElementsArray.begin() + element_partition[k + 1];
 
-            for( ElementsContainerType::iterator it = it_begin; it != it_end; ++it )
+            for( ElementsContainerType::const_iterator it = it_begin; it != it_end; ++it )
             {
                 bool is_inactive = false;
                 if (check_active)
@@ -720,22 +456,295 @@ namespace Kratos
 
         // solve the system
         // solver must support the multisove method
-        pSolver->Solve(M, g, b);
+        pSolver->Solve(M, rValues, b);
 
         #ifdef DEBUG_MULTISOLVE
         KRATOS_WATCH(g)
         #endif
+    }
+
+    void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
+        std::map<std::size_t, std::size_t>& node_row_id,
+        SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
+        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+        const Variable<Vector>& rThisVariable, std::size_t ncomponents, bool check_active) const
+    {
+        #ifdef ENABLE_PROFILING
+        //profiling variables
+        double start_compute, end_compute;
+        start_compute = OpenMPUtils::GetCurrentTime();
+        #endif
+
+        active_nodes.clear();
+        for( ElementsContainerType::const_iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
+        {
+            bool is_inactive = false;
+            if (check_active)
+            {
+                if(it->IsDefined ( ACTIVE ))
+                    is_inactive = !(it->Is( ACTIVE ));
+                #ifndef SD_APP_FORWARD_COMPATIBILITY
+                if(it->Has ( IS_INACTIVE ))
+                    is_inactive = is_inactive && it->GetValue( IS_INACTIVE );
+                #endif
+            }
+
+            if( !is_inactive )
+            {
+                for( std::size_t i = 0; i < it->GetGeometry().size(); ++i )
+                {
+                    active_nodes.insert( it->GetGeometry()[i].Id() );
+                }
+            }
+        }
+
+        #ifdef ENABLE_DEBUG
+        KRATOS_WATCH(active_nodes.size())
+        // std::cout << "active_nodes:";
+        // for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
+        //     std::cout << " " << *it;
+        // std::cout << std::endl;
+        #endif
+
+        // assign each node an id. That id is the row of this node in the global L2 projection matrix
+        std::size_t cnt = 0;
+        node_row_id.clear();
+        for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
+        {
+            node_row_id[*it] = cnt++;
+        }
+
+        // create and initialize matrix
+        std::size_t NumberOfNodes = active_nodes.size();
+        SerialSparseSpaceType::MatrixType M(NumberOfNodes, NumberOfNodes);
+        noalias(M) = ZeroMatrix(NumberOfNodes, NumberOfNodes);
+        ConstructL2MatrixStructure<Element>(M, ElementsArray, node_row_id);
+
+        #ifdef ENABLE_PROFILING
+        end_compute = OpenMPUtils::GetCurrentTime();
+        std::cout << "ConstructMatrixStructure completed: " << end_compute - start_compute << " s" << std::endl;
+        start_compute = end_compute;
+        #endif
+
+        // create and initialize vectors
+        if (rValues.size1() != NumberOfNodes || rValues.size2() != ncomponents)
+            rValues.resize(NumberOfNodes, ncomponents, false);
+        noalias(rValues)= ZeroMatrix(NumberOfNodes, ncomponents);
+        SerialDenseSpaceType::MatrixType b(NumberOfNodes, ncomponents);
+        noalias(b)= ZeroMatrix(NumberOfNodes, ncomponents);
+
+        //create a partition of the elements
+        int number_of_threads = omp_get_max_threads();
+        std::vector<unsigned int> element_partition;
+        OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
+
+        #ifdef ENABLE_DEBUG
+        KRATOS_WATCH( number_of_threads )
+        std::cout << "element_partition:";
+        for (std::size_t i = 0; i < element_partition.size(); ++i)
+            std::cout << " " << element_partition[i];
+        std::cout << std::endl;
+        #endif
+
+        // create a lock array for parallel matrix fill
+        std::vector< omp_lock_t > lock_array(NumberOfNodes);
+        for(unsigned int i = 0; i < NumberOfNodes; ++i)
+            omp_init_lock(&lock_array[i]);
+
+        const unsigned int& Dim = (*(ElementsArray.ptr_begin()))->GetGeometry().WorkingSpaceDimension();
+
+        #pragma omp parallel for
+        for(int k = 0; k < number_of_threads; ++k)
+        {
+            Matrix InvJ(Dim, Dim);
+            double DetJ;
+            unsigned int row, col;
+
+            typename ElementsContainerType::const_iterator it_begin = ElementsArray.begin() + element_partition[k];
+            typename ElementsContainerType::const_iterator it_end = ElementsArray.begin() + element_partition[k + 1];
+
+            for( ElementsContainerType::const_iterator it = it_begin; it != it_end; ++it )
+            {
+                bool is_inactive = false;
+                if (check_active)
+                {
+                    if(it->IsDefined ( ACTIVE ))
+                        is_inactive = !(it->Is( ACTIVE ));
+                    #ifndef SD_APP_FORWARD_COMPATIBILITY
+                    if(it->Has ( IS_INACTIVE ))
+                        is_inactive = is_inactive && it->GetValue( IS_INACTIVE );
+                    #endif
+                }
+
+                if (!is_inactive)
+                {
+                    const IntegrationPointsArrayType& integration_points
+                        = it->GetGeometry().IntegrationPoints(it->GetIntegrationMethod());
+
+                    GeometryType::JacobiansType J(integration_points.size());
+
+    //                J = it->GetGeometry().Jacobian(J, it->GetIntegrationMethod());
+    //                const Matrix& Ncontainer = it->GetGeometry().ShapeFunctionsValues(it->GetIntegrationMethod());
+
+                    IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>(it->GetGeometry());
+                    J = rIsogeometricGeometry.Jacobian0(J, it->GetIntegrationMethod());
+
+                    GeometryType::ShapeFunctionsGradientsType DN_De;
+                    Matrix Ncontainer;
+                    rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
+                        Ncontainer,
+                        DN_De,
+                        it->GetIntegrationMethod()
+                    );
+
+                    // get the values at the integration_points
+                    std::vector<Vector> ValuesOnIntPoint(integration_points.size());
+                    it->CalculateOnIntegrationPoints(rThisVariable, ValuesOnIntPoint, r_model_part.GetProcessInfo());
+
+                    for(unsigned int point = 0; point < integration_points.size(); ++point)
+                    {
+                        MathUtils<double>::InvertMatrix(J[point], InvJ, DetJ);
+
+                        double dV = DetJ * integration_points[point].Weight();
+
+                        for(unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
+                        {
+                            row = node_row_id[it->GetGeometry()[prim].Id()];
+
+                            omp_set_lock(&lock_array[row]);
+
+                            for(unsigned int i = 0; i < ncomponents; ++i)
+                                b(row, i) += ValuesOnIntPoint[point][i] * Ncontainer(point, prim) * dV;
+
+                            for(unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
+                            {
+                                col = node_row_id[it->GetGeometry()[sec].Id()];
+                                M(row, col) += Ncontainer(point, prim) * Ncontainer(point, sec) * dV;
+                            }
+
+                            omp_unset_lock(&lock_array[row]);
+                        }
+                    }
+                }
+                else
+                {
+                    // for inactive elements the contribution to LHS is identity matrix and RHS is zero
+                    for(unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
+                    {
+                        row = node_row_id[it->GetGeometry()[prim].Id()];
+
+                        omp_set_lock(&lock_array[row]);
+
+//                        for(unsigned int i = 0; i < ncomponents; ++i)
+//                            b(row, i) += 0.0;
+
+                        for(unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
+                        {
+                            col = node_row_id[it->GetGeometry()[sec].Id()];
+                            if(col == row)
+                                M(row, col) += 1.0;
+//                            else
+//                                M(row, col) += 0.0;
+                        }
+
+                        omp_unset_lock(&lock_array[row]);
+                    }
+                }
+            }
+        }
+
+        for(unsigned int i = 0; i < NumberOfNodes; ++i)
+            omp_destroy_lock(&lock_array[i]);
+
+        #ifdef ENABLE_PROFILING
+        end_compute = OpenMPUtils::GetCurrentTime();
+        std::cout << "Assemble the matrix completed: " << end_compute - start_compute << " s" << std::endl;
+        start_compute = end_compute;
+        #endif
+
+        #ifdef DEBUG_MULTISOLVE
+        KRATOS_WATCH(M)
+        KRATOS_WATCH(rValues)
+        KRATOS_WATCH(*pSolver)
+        #endif
+
+        // solve the system
+        // solver must support the multisove method
+        pSolver->Solve(M, rValues, b);
+
+        #ifdef DEBUG_MULTISOLVE
+        KRATOS_WATCH(rValues)
+        #endif
+    }
+
+    void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
+        ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+        const Variable<double>& rThisVariable, bool check_active) const
+    {
+        // compute the nodal values
+        std::set<std::size_t> active_nodes;
+        std::map<std::size_t, std::size_t> node_row_id;
+        SerialSparseSpaceType::VectorType g;
+
+        this->TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
+                ElementsArray, rThisVariable, check_active);
+
+        // transfer the solution to the nodal variables
+        for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
+        {
+            std::size_t row = node_row_id[*it];
+            NodeType& r_node = r_model_part.GetMesh().GetNode(*it);
+            r_node.GetSolutionStepValue(rThisVariable) = g(row);
+        }
+
+        #ifdef ENABLE_DEBUG
+        std::cout << "Transfer variable to node for " << rThisVariable.Name() << " completed" << std::endl;
+        #endif
+    }
+
+    void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
+        ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+        const Variable<Vector>& rThisVariable,
+        std::size_t ncomponents, bool check_active) const
+    {
+        // compute the nodal values
+        std::set<std::size_t> active_nodes;
+        std::map<std::size_t, std::size_t> node_row_id;
+        SerialDenseSpaceType::MatrixType g;
+
+        this->TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
+                ElementsArray, rThisVariable, ncomponents, check_active);
+
+        // transfer the solution to the nodal variables
+        Vector tmp(ncomponents);
+        for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
+        {
+            std::size_t this_row = node_row_id[*it];
+            NodeType& r_node = r_model_part.GetMesh().GetNode(*it);
+            noalias(tmp) = row(g, this_row);
+            r_node.GetSolutionStepValue(rThisVariable) = tmp;
+        }
+
+        #ifdef ENABLE_DEBUG
+        std::cout << "Transfer variable to node for " << rThisVariable.Name() << " completed" << std::endl;
+        #endif
+    }
+
+    void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
+        ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+        const Variable<array_1d<double, 3> >& rThisVariable,
+        bool check_active) const
+    {
+        // compute the nodal values
+        std::set<std::size_t> active_nodes;
+        std::map<std::size_t, std::size_t> node_row_id;
+        SerialDenseSpaceType::MatrixType g;
+
+        this->TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
+                ElementsArray, rThisVariable, check_active);
 
         // transfer the solution to the nodal variables
         array_1d<double, 3> tmp;
-        // for(ModelPart::NodeIterator it = r_model_part.NodesBegin(); it != r_model_part.NodesEnd(); ++it)
-        // {
-        //     std::map<std::size_t, std::size_t>::iterator it_r = node_row_id.find(it->Id());
-        //     if (it_r == node_row_id.end()) continue;
-        //     noalias(tmp) = row(g, *it_r);
-        //     it->GetSolutionStepValue(rThisVariable) = tmp;
-        // }
-
         for( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
         {
             std::size_t this_row = node_row_id[*it];
@@ -747,14 +756,6 @@ namespace Kratos
         #ifdef ENABLE_DEBUG
         std::cout << "Transfer variable to node for " << rThisVariable.Name() << " completed" << std::endl;
         #endif
-    }
-
-    void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-        ModelPart& r_model_part,
-        const Variable<array_1d<double, 3> >& rThisVariable,
-        const bool& check_active) const
-    {
-        TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable, check_active);
     }
 
 }

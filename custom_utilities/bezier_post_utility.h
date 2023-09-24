@@ -215,7 +215,7 @@ public:
         #endif
 
         // firstly transfer rThisVariable from integration points of reference model_part to its nodes
-        TransferVariablesToNodes(pSolver, r_model_part, rThisVariable);
+        TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable);
 
         // secondly transfer new nodal variables results to the post model_part
         TransferNodalResults(rThisVariable, r_model_part, r_model_part_post);
@@ -229,7 +229,7 @@ public:
         #endif
     }
 
-    // Transfer the variable to nodes for model_part
+    /// Transfer the variable to nodes for model_part
     template<class TVariableType>
     void TransferVariablesToNodes(
         const TVariableType& rThisVariable,
@@ -243,7 +243,7 @@ public:
                   << rThisVariable.Name() << " starts" << std::endl;
         #endif
 
-        TransferVariablesToNodes(pSolver, r_model_part, rThisVariable);
+        TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable);
 
         #ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
@@ -254,12 +254,12 @@ public:
         #endif
     }
 
-    // Transfer the variable to nodes for model_part
+    /// Transfer the variable to nodes for model_part
     template<class TVariableType>
     void TransferVariablesToNodes(
         const TVariableType& rThisVariable,
         ModelPart& r_model_part,
-        ElementsContainerType& ElementsArray,
+        const ElementsContainerType& ElementsArray,
         LinearSolverType::Pointer pSolver) const
     {
         #ifdef ENABLE_PROFILING
@@ -280,6 +280,27 @@ public:
         #endif
     }
 
+    /// Compute the nodal values from the integration values
+    void TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
+        std::map<std::size_t, std::size_t>& node_row_id,
+        SerialSparseSpaceType::VectorType& rValues, LinearSolverType::Pointer pSolver,
+        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+        const Variable<double>& rThisVariable, bool check_active) const;
+
+    /// Compute the nodal values from the integration values
+    void TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
+        std::map<std::size_t, std::size_t>& node_row_id,
+        SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
+        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+        const Variable<array_1d<double, 3> >& rThisVariable, bool check_active) const;
+
+    /// Compute the nodal values from the integration values
+    void TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
+        std::map<std::size_t, std::size_t>& node_row_id,
+        SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
+        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+        const Variable<Vector>& rThisVariable, std::size_t ncomponents, bool check_active) const;
+
     ///@}
     ///@name Access
     ///@{
@@ -293,7 +314,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         std::stringstream buffer;
         buffer << "BezierPostUtility";
@@ -301,13 +322,13 @@ public:
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "BezierPostUtility";
     }
 
     /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {}
 
     ///@}
@@ -380,33 +401,10 @@ private:
      * @param check_active  if false the activeness of the elements will not be checked; true otherwise
      * REMARKS: this subroutine will only transfer the variables to nodes connecting with the mesh defined by ElementsArray
      */
-    void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-                                  ModelPart& r_model_part, ElementsContainerType& ElementsArray,
+    void TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
+                                  ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
                                   const Variable<double>& rThisVariable,
-                                  const bool& check_active = false) const;
-
-    /**
-     * Transfer of rThisVariable defined on integration points to corresponding
-     * nodal values. The transformation is done in a form that ensures a minimization
-     * of L_2-norm error (/sum{rThisVariable- f(x)) whereas
-     * f(x)= /sum{shape_func_i*rThisVariable_i}
-     * @param model_part model_part on which the transfer should be done
-     * @param rThisVariable Vector-Variable which should be transferred
-     * @ref Jiao&Heath: "Common-refinement-based data transfer...", Int.
-     * Journal for numer. meth. in eng. 61 (2004) 2402--2427
-     * WARNING: this may cause segmentation faults as the respective variables
-     * will be created on nodal level while they are originally intended to be
-     * stored on integration points!
-     * @param pSolver       the solver used for solving the local system matrix
-     * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
-     * @param rThisVariable the variable need to transfer the respected values
-     * REMARKS: + this subroutine will transfer the variables to nodes connecting with the model_part. Shall not use this subroutine if there are many types of element in the model_part.
-     *   + the activeness of the element will not be checked
-     */
-    void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-                                  ModelPart& r_model_part,
-                                  const Variable<double>& rThisVariable,
-                                  const bool& check_active = false) const;
+                                  bool check_active = false) const;
 
     /**
      * Transfer of rThisVariable defined on integration points to corresponding
@@ -426,33 +424,10 @@ private:
      * @param check_active  if false the activeness of the elements will not be checked; true otherwise
      * REMARKS: this subroutine will only transfer the variables to nodes connecting with the mesh defined by ElementsArray
      */
-    void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-                                  ModelPart& r_model_part, ElementsContainerType& ElementsArray,
+    void TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
+                                  ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
                                   const Variable<array_1d<double, 3> >& rThisVariable,
-                                  const bool& check_active = false) const;
-
-    /**
-     * Transfer of rThisVariable defined on integration points to corresponding
-     * nodal values. The transformation is done in a form that ensures a minimization
-     * of L_2-norm error (/sum{rThisVariable- f(x)) whereas
-     * f(x)= /sum{shape_func_i*rThisVariable_i}
-     * @param model_part model_part on which the transfer should be done
-     * @param rThisVariable Vector-Variable which should be transferred
-     * @ref Jiao&Heath: "Common-refinement-based data transfer...", Int.
-     * Journal for numer. meth. in eng. 61 (2004) 2402--2427
-     * WARNING: this may cause segmentation faults as the respective variables
-     * will be created on nodal level while they are originally intended to be
-     * stored on integration points!
-     * @param pSolver       the solver used for solving the local system matrix
-     * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
-     * @param rThisVariable the variable need to transfer the respected values
-     * REMARKS: + this subroutine will transfer the variables to nodes connecting with the model_part. Shall not use this subroutine if there are many types of element in the model_part.
-     *   + the activeness of the element will not be checked
-     */
-    void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-                                  ModelPart& r_model_part,
-                                  const Variable<array_1d<double, 3> >& rThisVariable,
-                                  const bool& check_active = false) const;
+                                  bool check_active = false) const;
 
     /**
      * Transfer of rThisVariable defined on integration points to corresponding
@@ -473,38 +448,11 @@ private:
      * @param check_active  if false the activeness of the elements will not be checked; true otherwise
      * REMARKS: this subroutine will only transfer the variables to nodes connecting with the mesh defined by ElementsArray
      */
-    void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-                                  ModelPart& r_model_part, ElementsContainerType& ElementsArray,
+    void TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
+                                  ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
                                   const Variable<Vector>& rThisVariable,
-                                  const std::size_t& ncomponents = 6,
-                                  const bool& check_active = false) const;
-
-    /**
-     * Transfer of rThisVariable defined on integration points to corresponding
-     * nodal values. The transformation is done in a form that ensures a minimization
-     * of L_2-norm error (/sum{rThisVariable- f(x)) whereas
-     * f(x)= /sum{shape_func_i*rThisVariable_i}
-     * @param model_part model_part on which the transfer should be done
-     * @param rThisVariable Vector-Variable which should be transferred
-     * @ref Jiao&Heath: "Common-refinement-based data transfer...", Int.
-     * Journal for numer. meth. in eng. 61 (2004) 2402--2427
-     * WARNING: this may cause segmentation faults as the respective variables
-     * will be created on nodal level while they are originally intended to be
-     * stored on integration points!
-     * REMARKS:
-     *  +   currently this method only works with 6-components variable like STRESSES, PRESTRESS, etc
-     * @param pSolver       the solver used for solving the local system matrix
-     * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
-     * @param rThisVariable the variable need to transfer the respected values
-     * @param ncomponents   number of components of the nodal vector
-     * REMARKS: + this subroutine will transfer the variables to nodes connecting with the model_part. Shall not use this subroutine if there are many types of element in the model_part.
-     *   + the activeness of the element will not be checked
-     */
-    void TransferVariablesToNodes(LinearSolverType::Pointer& pSolver,
-                                  ModelPart& r_model_part,
-                                  const Variable<Vector>& rThisVariable,
-                                  const std::size_t& ncomponents = 6,
-                                  const bool& check_active = false) const;
+                                  std::size_t ncomponents = 6,
+                                  bool check_active = false) const;
 
     ///@}
     ///@name Private  Access

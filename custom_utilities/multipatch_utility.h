@@ -18,6 +18,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
+#include "utilities/math_utils.h"
 #include "custom_utilities/isogeometric_utility.h"
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/patch.h"
@@ -137,6 +138,103 @@ public:
         }
 
         return -1;
+    }
+
+    /// Compute the spatial derivatives of a scalar grid function. The values are
+    /// a matrix that is organized such as
+    ///     [dv/dx dv/dy dv/dz] in 3D
+    /// and
+    ///     [dv/dx dv/dy] in 2D
+    template<int TDim>
+    static Vector ComputeSpatialDerivatives(const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
+            const GridFunction<TDim, double>& rControlValueGridFunction,
+            const std::vector<double>& rCoordinates)
+    {
+        // compute the Jacobian
+        std::vector<array_1d<double, 3> > tmp;
+        rControlPointGridFunction.GetDerivative(tmp, rCoordinates);
+
+        Matrix Jac(TDim, TDim);
+
+        for (int i = 0; i < TDim; ++i)
+        {
+            for (int j = 0; j < TDim; ++j)
+            {
+                Jac(i, j) = tmp[j][i];
+            }
+        }
+
+        // compute the spatial derivatives
+        std::vector<double> tmp1;
+        rControlValueGridFunction.GetDerivative(tmp1, rCoordinates);
+
+        Vector dv(TDim);
+
+        for (int i = 0; i < TDim; ++i)
+        {
+            dv(i) = tmp1[i];
+        }
+
+        Matrix InvJ(TDim, TDim);
+        double DetJ;
+        MathUtils<double>::InvertMatrix(Jac, InvJ, DetJ);
+
+        Vector Result(TDim);
+        noalias(Result) = prod(InvJ, dv);
+
+        return Result;
+    }
+
+    /// Compute the spatial derivatives of a vector 3d grid function. The values are
+    /// a matrix that is organized such as
+    ///     [dvx/dx dvx/dy dvx/dz
+    ///      dvy/dx dvy/dy dvy/dz
+    ///      dvz/dx dvz/dy dvz/dz] in 3D
+    /// and
+    ///     [dvx/dx dvx/dy
+    ///      dvy/dx dvy/dy
+    ///      dvz/dx dvz/dy] in 2D
+    template<int TDim>
+    static Matrix ComputeSpatialDerivatives(const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
+            const GridFunction<TDim, array_1d<double, 3> >& rControlValueGridFunction,
+            const std::vector<double>& rCoordinates)
+    {
+        // compute the Jacobian
+        std::vector<array_1d<double, 3> > tmp;
+        rControlPointGridFunction.GetDerivative(tmp, rCoordinates);
+
+        Matrix Jac(TDim, TDim);
+
+        for (int i = 0; i < TDim; ++i)
+        {
+            for (int j = 0; j < TDim; ++j)
+            {
+                Jac(i, j) = tmp[j][i];
+            }
+        }
+
+        // compute the spatial derivatives
+        std::vector<array_1d<double, 3> > tmp1;
+        rControlValueGridFunction.GetDerivative(tmp1, rCoordinates);
+
+        Matrix Dv(3, TDim);
+
+        for (int i = 0; i < 3; ++i)
+        {
+            for (int j = 0; j < TDim; ++j)
+            {
+                Dv(i, j) = tmp1[j][i];
+            }
+        }
+
+        Matrix InvJ(TDim, TDim);
+        double DetJ;
+        MathUtils<double>::InvertMatrix(Jac, InvJ, DetJ);
+
+        Matrix Result(3, TDim);
+        noalias(Result) = prod(Dv, InvJ);
+
+        return Result;
     }
 
     void PrintInfo(std::ostream& rOStream) const override

@@ -84,6 +84,19 @@ boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy
     return output;
 }
 
+template<int TDim>
+Matrix MultiPatchUtility_ComputeSpatialDerivatives(MultiPatchUtility& rDummy,
+    const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
+    const GridFunction<TDim, array_1d<double, 3> >& rControlValueGridFunction,
+    const boost::python::list& xi_list)
+{
+    std::vector<double> xi;
+    IsogeometricPythonUtils::Unpack<double, double>(xi_list, xi);
+
+    return rDummy.ComputeSpatialDerivatives(rControlPointGridFunction,
+            rControlValueGridFunction, xi);
+}
+
 std::size_t MultiPatchUtility_GetLastNodeId(MultiPatchUtility& rDummy, ModelPart& r_model_part)
 {
     return rDummy.GetLastNodeId(r_model_part);
@@ -491,6 +504,8 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<3>)
     .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<2>)
     .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<3>)
+    .def("ComputeSpatialDerivatives", &MultiPatchUtility_ComputeSpatialDerivatives<2>)
+    .def("ComputeSpatialDerivatives", &MultiPatchUtility_ComputeSpatialDerivatives<3>)
     .def("GetLastNodeId", &MultiPatchUtility_GetLastNodeId)
     .def("GetLastElementId", &MultiPatchUtility_GetLastElementId)
     .def("GetLastConditionId", &MultiPatchUtility_GetLastConditionId)

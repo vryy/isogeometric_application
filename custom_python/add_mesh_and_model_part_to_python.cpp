@@ -114,6 +114,23 @@ ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions(T& rDu
     return rDummy.AddConditions(pPatches, condition_name, starting_id, pProperties);
 }
 
+template<int TDim>
+ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary(MultiMultiPatchModelPart<TDim>& rDummy,
+    typename Patch<TDim>::Pointer pPatch, int iside,
+    const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
+{
+    BoundarySide side = static_cast<BoundarySide>(iside);
+    return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
+}
+
+template<int TDim>
+ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary2(MultiMultiPatchModelPart<TDim>& rDummy,
+    typename Patch<TDim-1>::Pointer pBoundaryPatch,
+    const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
+{
+    return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
+}
+
 ////////////////////////////////////////
 
 template<int TDim>

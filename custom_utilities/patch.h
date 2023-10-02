@@ -469,12 +469,8 @@ public:
         typename FESpace<TDim-1>::Pointer pBFESpace = this->pFESpace()->ConstructBoundaryFESpace(side);
         pBPatch->SetFESpace(pBFESpace);
 
-        // extract the local id associated with the boundary indices
-        std::vector<std::size_t> local_ids = this->pFESpace()->LocalId(pBFESpace->FunctionIndices());
-
         // transfer the control values
         // std::cout << "Control point grid function " << this->pControlPointGridFunction()->pControlGrid()->Name() << " will be constructed" << std::endl;
-//        typename ControlGrid<ControlPointType>::Pointer pBoundaryControlPointGrid = ControlGridUtility::ExtractSubGrid<ControlPointType>(this->pControlPointGridFunction()->pControlGrid(), local_ids);
         typename ControlGrid<ControlPointType>::Pointer pBoundaryControlPointGrid = ControlGridUtility::ExtractSubGrid<TDim, ControlPointType>(this->pControlPointGridFunction()->pControlGrid(), *(this->pFESpace()), *pBFESpace);
         pBPatch->CreateControlPointGridFunction(pBoundaryControlPointGrid);
 
@@ -484,7 +480,6 @@ public:
                 it != DoubleGridFunctions_.end(); ++it)
         {
             // std::cout << "Double grid function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
-//            typename ControlGrid<double>::Pointer pBoundaryDoubleControlGrid = ControlGridUtility::ExtractSubGrid<double>((*it)->pControlGrid(), local_ids);
             typename ControlGrid<double>::Pointer pBoundaryDoubleControlGrid = ControlGridUtility::ExtractSubGrid<TDim, double>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
             pBPatch->template CreateGridFunction<double>(pBoundaryDoubleControlGrid);
         }
@@ -495,7 +490,6 @@ public:
         {
             if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
             // std::cout << "Array1D function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
-//            typename ControlGrid<array_1d<double, 3> >::Pointer pBoundaryArray1DControlGrid = ControlGridUtility::ExtractSubGrid<array_1d<double, 3> >((*it)->pControlGrid(), local_ids);
             typename ControlGrid<array_1d<double, 3> >::Pointer pBoundaryArray1DControlGrid = ControlGridUtility::ExtractSubGrid<TDim, array_1d<double, 3> >((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
             pBPatch->template CreateGridFunction<array_1d<double, 3> >(pBoundaryArray1DControlGrid);
         }
@@ -505,7 +499,6 @@ public:
                 it != VectorGridFunctions_.end(); ++it)
         {
             // std::cout << "Vector grid function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
-//            typename ControlGrid<Vector>::Pointer pBoundaryVectorControlGrid = ControlGridUtility::ExtractSubGrid<Vector>((*it)->pControlGrid(), local_ids);
             typename ControlGrid<Vector>::Pointer pBoundaryVectorControlGrid = ControlGridUtility::ExtractSubGrid<TDim, Vector>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
             pBPatch->template CreateGridFunction<Vector>(pBoundaryVectorControlGrid);
         }

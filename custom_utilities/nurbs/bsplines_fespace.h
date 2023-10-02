@@ -836,22 +836,12 @@ public:
         // assign the knot vectors
         if (TDim == 2)
         {
-            if (side == _BLEFT_)
+            if (side == _BLEFT_ || side == _BRIGHT_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(1).Clone());
                 pBFESpace->SetInfo(0, Number(1), Order(1));
             }
-            else if (side == _BRIGHT_)
-            {
-                pBFESpace->SetKnotVector(0, KnotVector(1).Clone());
-                pBFESpace->SetInfo(0, Number(1), Order(1));
-            }
-            else if (side == _BTOP_)
-            {
-                pBFESpace->SetKnotVector(0, KnotVector(0).Clone());
-                pBFESpace->SetInfo(0, Number(0), Order(0));
-            }
-            else if (side == _BBOTTOM_)
+            else if (side == _BTOP_ || side == _BBOTTOM_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(0).Clone());
                 pBFESpace->SetInfo(0, Number(0), Order(0));
@@ -859,42 +849,21 @@ public:
         }
         else if (TDim == 3)
         {
-            if (side == _BLEFT_)
+            if (side == _BLEFT_ || side == _BRIGHT_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(1).Clone());
                 pBFESpace->SetKnotVector(1, KnotVector(2).Clone());
                 pBFESpace->SetInfo(0, Number(1), Order(1));
                 pBFESpace->SetInfo(1, Number(2), Order(2));
             }
-            else if (side == _BRIGHT_)
-            {
-                pBFESpace->SetKnotVector(0, KnotVector(1).Clone());
-                pBFESpace->SetKnotVector(1, KnotVector(2).Clone());
-                pBFESpace->SetInfo(0, Number(1), Order(1));
-                pBFESpace->SetInfo(1, Number(2), Order(2));
-            }
-            else if (side == _BTOP_)
+            else if (side == _BTOP_ || side == _BBOTTOM_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(0).Clone());
                 pBFESpace->SetKnotVector(1, KnotVector(1).Clone());
                 pBFESpace->SetInfo(0, Number(0), Order(0));
                 pBFESpace->SetInfo(1, Number(1), Order(1));
             }
-            else if (side == _BBOTTOM_)
-            {
-                pBFESpace->SetKnotVector(0, KnotVector(0).Clone());
-                pBFESpace->SetKnotVector(1, KnotVector(1).Clone());
-                pBFESpace->SetInfo(0, Number(0), Order(0));
-                pBFESpace->SetInfo(1, Number(1), Order(1));
-            }
-            else if (side == _BFRONT_)
-            {
-                pBFESpace->SetKnotVector(0, KnotVector(0).Clone());
-                pBFESpace->SetKnotVector(1, KnotVector(2).Clone());
-                pBFESpace->SetInfo(0, Number(0), Order(0));
-                pBFESpace->SetInfo(1, Number(2), Order(2));
-            }
-            else if (side == _BBACK_)
+            else if (side == _BFRONT_ || side == _BBACK_)
             {
                 pBFESpace->SetKnotVector(0, KnotVector(0).Clone());
                 pBFESpace->SetKnotVector(1, KnotVector(2).Clone());

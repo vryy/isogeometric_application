@@ -141,7 +141,7 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
     }
 
-    /// Create a connectivity for the structured control grid
+    /// Create a connectivity matrix for the structured control grid
     virtual void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
@@ -306,7 +306,7 @@ public:
             std::reverse(BaseType::Data().begin(), BaseType::Data().end());
     }
 
-    /// Create a connectivity for the structured control grid
+    /// Create a connectivity matrix for the structured control grid
     void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const override
     {
         connectivities.clear();

@@ -513,6 +513,52 @@ public:
         return pBPatch;
     }
 
+    /// Construct the sliced patch on a specific direction
+    virtual typename Patch<TDim-1>::Pointer ConstructSlicedPatch(int idir, double xi) const
+    {
+        typename Patch<TDim-1>::Pointer pSPatch = typename Patch<TDim-1>::Pointer(new Patch<TDim-1>(-1));
+
+        // construct the sliced FESpace
+        typename FESpace<TDim-1>::Pointer pSFESpace = this->pFESpace()->ConstructSlicedFESpace(idir, xi);
+        pSPatch->SetFESpace(pSFESpace);
+
+        // transfer the control values
+        std::cout << "Control point grid function " << this->pControlPointGridFunction()->pControlGrid()->Name() << " will be constructed" << std::endl;
+        typename ControlGrid<ControlPointType>::Pointer pSlicedControlPointGrid = ControlGridUtility::ComputeSlicedGrid<TDim, ControlPointType>(this->pControlPointGridFunction()->pControlGrid(), *(this->pFESpace()), idir, xi);
+        pSPatch->CreateControlPointGridFunction(pSlicedControlPointGrid);
+
+        // transfer other values
+        DoubleGridFunctionContainerType DoubleGridFunctions_ = this->DoubleGridFunctions();
+        for (typename DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
+                it != DoubleGridFunctions_.end(); ++it)
+        {
+            std::cout << "Double grid function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
+            typename ControlGrid<double>::Pointer pSlicedDoubleControlGrid = ControlGridUtility::ComputeSlicedGrid<TDim, double>((*it)->pControlGrid(), *(this->pFESpace()), idir, xi);
+            pSPatch->template CreateGridFunction<double>(pSlicedDoubleControlGrid);
+        }
+
+        Array1DGridFunctionContainerType Array1DGridFunctions_ = this->Array1DGridFunctions();
+        for (typename Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
+                it != Array1DGridFunctions_.end(); ++it)
+        {
+            if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
+            std::cout << "Array1D function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
+            typename ControlGrid<array_1d<double, 3> >::Pointer pSlicedArray1DControlGrid = ControlGridUtility::ComputeSlicedGrid<TDim, array_1d<double, 3> >((*it)->pControlGrid(), *(this->pFESpace()), idir, xi);
+            pSPatch->template CreateGridFunction<array_1d<double, 3> >(pSlicedArray1DControlGrid);
+        }
+
+        VectorGridFunctionContainerType VectorGridFunctions_ = this->VectorGridFunctions();
+        for (typename VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
+                it != VectorGridFunctions_.end(); ++it)
+        {
+            std::cout << "Vector grid function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
+            typename ControlGrid<Vector>::Pointer pSlicedVectorControlGrid = ControlGridUtility::ComputeSlicedGrid<TDim, Vector>((*it)->pControlGrid(), *(this->pFESpace()), idir, xi);
+            pSPatch->template CreateGridFunction<Vector>(pSlicedVectorControlGrid);
+        }
+
+        return pSPatch;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Search for the neighbor

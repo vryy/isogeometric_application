@@ -230,12 +230,11 @@ public:
         if (it == mGlobalToLocal.end())
         {
             KRATOS_WATCH(TDim)
-            KRATOS_WATCH(global_id)
             std::cout << "mGlobalToLocal:";
             for(std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalToLocal.begin(); it2 != mGlobalToLocal.end(); ++it2)
                 std::cout << " " << it2->first << "->" << it2->second;
             std::cout << std::endl;
-            KRATOS_THROW_ERROR(std::logic_error, "The global id does not exist in global_to_local map", "")
+            KRATOS_ERROR << "The global id " << global_id << " does not exist in mGlobalToLocal map";
         }
 
         return it->second;
@@ -313,6 +312,12 @@ public:
     /// Construct the boundary FESpace based on side and local relative configuration between two patches
     virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
         const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
+    {
+        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+    }
+
+    /// Construct the sliced FESpace
+    virtual typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir, double xi) const
     {
         KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
     }
@@ -402,13 +407,11 @@ private:
 
     virtual void save(Serializer& rSerializer) const
     {
-//        rSerializer.save( "mFunctionsIds", mFunctionsIds ); // can't save std::vector
 //        rSerializer.save( "mGlobalToLocal", mGlobalToLocal ); // can't save std::map
     }
 
     virtual void load(Serializer& rSerializer)
     {
-//        rSerializer.load( "mFunctionsIds", mFunctionsIds );
 //        rSerializer.load( "mGlobalToLocal", mGlobalToLocal );
     }
 };

@@ -16,6 +16,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "custom_utilities/control_value.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/fespace.h"
@@ -29,18 +30,6 @@
 
 namespace Kratos
 {
-
-
-template<int TDim, typename TDataType>
-struct ControlGridUtility_Helper
-{
-    /// Generate regular control grid with a specific data type
-    static typename ControlGrid<TDataType>::Pointer CreateStructuredZeroControlGrid(const std::string& Name, const std::vector<std::size_t>& ngrid)
-    {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not implemented")
-    }
-};
-
 
 /**
 Utility class to manipulate the control grid and Helpers to generate control grid for isogeometric analysis.
@@ -263,6 +252,86 @@ public:
         return pTmpControlGrid;
     }
 
+
+    /// Helper function to compute the sliced control grid
+    /// If the sub-fespace is structured (e.g. b-splines fespace), the structured control grid will be generated
+    template<int TDim, typename TDataType>
+    static typename ControlGrid<TDataType>::Pointer ComputeSlicedGrid(typename ControlGrid<TDataType>::ConstPointer pControlGrid,
+            const FESpace<TDim>& rFESpace, int idir, double xi)
+    {
+        if (idir >= TDim)
+            KRATOS_ERROR << "Invalid direction " << idir;
+
+        if (typeid(rFESpace) == typeid(BSplinesFESpace<TDim>)
+         && typeid(*pControlGrid) == typeid(StructuredControlGrid<TDim, TDataType>))
+        {
+            const auto& rStructuredControlGrid = dynamic_cast<const StructuredControlGrid<TDim, TDataType>&>(*pControlGrid);
+            const auto& rBSplinesFESpace = dynamic_cast<const BSplinesFESpace<TDim>&>(rFESpace);
+
+            std::size_t DirNumber = rBSplinesFESpace.Number(idir);
+            std::vector<std::size_t> SubNumbers = rBSplinesFESpace.Numbers(idir);
+            typename StructuredControlGrid<TDim-1, TDataType>::Pointer pNewControlGrid = StructuredControlGrid<TDim-1, TDataType>::Create(SubNumbers);
+            pNewControlGrid->SetName(pControlGrid->Name());
+
+            FESpace<1>::Pointer pUniaxialFESpace = rBSplinesFESpace.ConstructUniaxialFESpace(idir);
+
+            std::vector<std::size_t> i_vec(TDim);
+            const std::vector<double> xi_vec = {xi};
+            double s;
+            std::size_t index;
+            if (TDim == 2)
+            {
+                for (std::size_t i = 0; i < SubNumbers[0]; ++i)
+                {
+                    i_vec[1-idir] = i;
+                    TDataType value;
+                    for (std::size_t k = 0; k < DirNumber; ++k)
+                    {
+                        i_vec[idir] = k;
+                        index = rStructuredControlGrid.GetIndex(i_vec);
+                        s = pUniaxialFESpace->GetValue(k, xi_vec);
+                        if (k == 0)
+                            value = s * rStructuredControlGrid.GetData(index);
+                        else
+                            value += s * rStructuredControlGrid.GetData(index);
+                    }
+                    pNewControlGrid->SetData(i, value);
+                }
+            }
+            else if (TDim == 3)
+            {
+                std::vector<int> perm(3);
+                if (idir == 0) {perm[0] = 1; perm[1] = 2; perm[2] = 0;}
+                else if (idir == 1) {perm[0] = 0; perm[1] = 2; perm[2] = 1;}
+                else if (idir == 2) {perm[0] = 0; perm[1] = 1; perm[2] = 2;}
+
+                for (std::size_t i = 0; i < SubNumbers[0]; ++i)
+                {
+                    i_vec[perm[0]] = i;
+                    for (std::size_t j = 0; j < SubNumbers[1]; ++j)
+                    {
+                        i_vec[perm[1]] = j;
+                        TDataType value;
+                        for (std::size_t k = 0; k < DirNumber; ++k)
+                        {
+                            i_vec[idir] = k; // idir == perm[2]
+                            index = rStructuredControlGrid.GetIndex(i_vec);
+                            s = pUniaxialFESpace->GetValue(k, xi_vec);
+                            if (k == 0)
+                                value = s * rStructuredControlGrid.GetData(index);
+                            else
+                                value += s * rStructuredControlGrid.GetData(index);
+                        }
+                        pNewControlGrid->SetData(pNewControlGrid->GetIndex(std::vector<std::size_t>{i, j}), value);
+                    }
+                }
+            }
+
+            return pNewControlGrid;
+        }
+
+        KRATOS_ERROR << "Unsupported sliced grid computation";
+    }
 
 
     /// Information

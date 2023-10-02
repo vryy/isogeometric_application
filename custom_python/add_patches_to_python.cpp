@@ -344,6 +344,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("RemoveInterface", &Patch<TDim>::RemoveInterface)
     .def("GetInterface", &Patch_GetInterface<TDim>)
     .def("ConstructBoundaryPatch", &Patch_ConstructBoundaryPatch<TDim>)
+    .def("ConstructSlicedPatch", &Patch<TDim>::ConstructSlicedPatch)
     .def("FindBoundarySide", &Patch<TDim>::FindBoundarySide)
     .def(self_ns::str(self))
     ;

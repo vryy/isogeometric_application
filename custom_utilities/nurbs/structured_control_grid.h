@@ -89,6 +89,12 @@ public:
     /****** EXCLUSIVE SUBROUTINES *******/
     /************************************/
 
+    /// Get the global index of the grid value providing the index vector
+    virtual std::size_t GetIndex(const std::vector<std::size_t>& index) const
+    {
+        KRATOS_ERROR << "Calling base class function";
+    }
+
     /// resize the underlying container
     void Resize(std::size_t new_size) {mData.resize(new_size);}
 
@@ -220,6 +226,12 @@ public:
 
     /// Get the size of the grid is specific dimension
     std::size_t Size(std::size_t dim) const {return mSize;}
+
+    /// Get the global index of the grid value providing the index vector
+    std::size_t GetIndex(const std::vector<std::size_t>& index) const override
+    {
+        return index[0];
+    }
 
     /// Get the value at specific grid point
     TDataType& GetValue(std::size_t i)
@@ -400,6 +412,12 @@ public:
 
     /// Get the size of the grid is specific dimension
     std::size_t Size(std::size_t dim) const {return mSize[dim];}
+
+    /// Get the global index of the grid value providing the index vector
+    std::size_t GetIndex(const std::vector<std::size_t>& index) const override
+    {
+        return index[1]*mSize[0] + index[0];
+    }
 
     /// Get the value at specific grid point
     TDataType& GetValue(std::size_t i, std::size_t j)
@@ -690,6 +708,12 @@ public:
 
     /// Get the size of the grid is specific dimension
     std::size_t Size(std::size_t dim) const {return mSize[dim];}
+
+    /// Get the global index of the grid value providing the index vector
+    std::size_t GetIndex(const std::vector<std::size_t>& index) const override
+    {
+        return (index[2]*mSize[1] + index[1])*mSize[0] + index[0];
+    }
 
     /// Get the value at specific grid point
     TDataType& GetValue(std::size_t i, std::size_t j, std::size_t k)

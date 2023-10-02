@@ -97,6 +97,20 @@ public:
         return numbers;
     }
 
+    /// Get the number of control points of the BSplines in all direction except the specified one
+    /// This function is useful to extract the number of shape functions in each direction of a sliced patch
+    std::vector<std::size_t> Numbers(std::size_t idir) const
+    {
+        std::vector<std::size_t> numbers(TDim-1);
+        std::size_t cnt = 0;
+        for (std::size_t dim = 0; dim < TDim; ++dim)
+        {
+            if (dim != idir)
+                numbers[cnt++] = mNumbers[dim];
+        }
+        return numbers;
+    }
+
     /// Get the number of control points of the BSplines in specific direction
     std::size_t Number(std::size_t idir) const {return mNumbers[idir];}
 
@@ -926,6 +940,48 @@ public:
         std::vector<std::size_t> b_func_indices = this->ExtractBoundaryFunctionIndices(side);
         pBFESpace->ResetFunctionIndices(b_func_indices);
 
+        return pBFESpace;
+    }
+
+    /// Construct the sliced FESpace
+    typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir, double xi) const final
+    {
+        return this->ConstructSlicedFESpace(idir);
+    }
+
+    /// Construct the sliced FESpace
+    typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir) const
+    {
+        typename FESpace<TDim-1>::Pointer pSFESpace;
+
+        if (idir == 0)
+        {
+            pSFESpace = this->ConstructBoundaryFESpace(_BLEFT_);
+        }
+        else if (idir == 1)
+        {
+            pSFESpace = this->ConstructBoundaryFESpace(_BBOTTOM_);
+        }
+        else if (idir == 2)
+        {
+            pSFESpace = this->ConstructBoundaryFESpace(_BBACK_);
+        }
+        else
+        {
+            KRATOS_ERROR << "Invalid direction " << idir;
+        }
+
+        pSFESpace->ResetFunctionIndices(); // the sliced FESpace should contain no function indices
+        return pSFESpace;
+    }
+
+    /// Construct the FESpace in single direction
+    typename FESpace<1>::Pointer ConstructUniaxialFESpace(int idir) const
+    {
+        typename BSplinesFESpace<1>::Pointer pBFESpace = typename BSplinesFESpace<1>::Pointer(new BSplinesFESpace<1>());
+        pBFESpace->SetKnotVector(0, KnotVector(idir).Clone());
+        pBFESpace->SetInfo(0, Number(idir), Order(idir));
+        pBFESpace->ResetFunctionIndices();
         return pBFESpace;
     }
 

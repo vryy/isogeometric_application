@@ -623,13 +623,19 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadPatchData(std::ifstream& infile,
             if(words.size() != num_basis)
                 KRATOS_THROW_ERROR(std::logic_error, "The Coordinates section must contained number of information equal to prod(ni), current number of information =", words.size())
 
+            wcoords[dim_index].resize(num_basis);
             for(std::size_t i = 0; i < num_basis; ++i)
-                wcoords[dim_index].push_back(atof(words[i].c_str()));
+                wcoords[dim_index][i] = atof(words[i].c_str());
 
             ++dim_index;
             if(dim_index == rdim)
             {
                 dim_index = 0;
+                if (rdim < 3) // in the case of 2D patch, the third coordinates are zero
+                {
+                    wcoords[2].resize(num_basis);
+                    wcoords[2].assign(num_basis, 0.0);
+                }
                 read_mode = _READ_WEIGHTS;
             }
             continue;
@@ -686,10 +692,7 @@ typename Patch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::CreateNewPatch(s
     for (std::size_t i = 0; i < total_number; ++i)
     {
         ControlPointType c;
-        if (TDim == 2)
-            c.SetCoordinates(wcoords[0][i]/weights[i], wcoords[1][i]/weights[i], 0.0, weights[i]);
-        else if (TDim == 3)
-            c.SetCoordinates(wcoords[0][i]/weights[i], wcoords[1][i]/weights[i], wcoords[2][i]/weights[i], weights[i]);
+        c.SetCoordinates(wcoords[0][i]/weights[i], wcoords[1][i]/weights[i], wcoords[2][i]/weights[i], weights[i]);
         pControlPointGrid->SetData(i, c);
     }
 

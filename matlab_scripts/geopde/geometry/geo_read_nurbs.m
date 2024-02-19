@@ -17,7 +17,7 @@
 %
 % Copyright (C) 2009 Carlo de Falco
 % Copyright (C) 2010, 2011 Rafael Vazquez
-% 
+%
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation; either version 3 of the License, or
@@ -27,7 +27,7 @@
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU General Public License
 % along with Octave; see the file COPYING.  If not, see
 % <http://www.gnu.org/licenses/>.
@@ -91,12 +91,12 @@ for iptc = 1:npatches
 
   switch (dim)
    case 2
-    line = fgetl (fid); 
+    line = fgetl (fid);
     while (line(1) == '#')
       line = fgetl (fid);
     end
     cp_x = reshape(str2num (line), geom(iptc).nurbs.number);
-    
+
     line = fgetl (fid);
     while (line(1) == '#')
       line = fgetl (fid);
@@ -104,7 +104,7 @@ for iptc = 1:npatches
     cp_y = reshape(str2num (line), geom(iptc).nurbs.number);
 
     cp_z = zeros(geom(iptc).nurbs.number);
-    
+
     line = fgetl (fid);
     while (line(1) == '#')
       line = fgetl (fid);
@@ -148,7 +148,7 @@ for iptc = 1:npatches
     geom(iptc).nurbs.coefs(4,:,:,:) = weights;
 
   end
-  
+
   if (dim == 2)
     geom(iptc).map      = @(PTS) geo_2d_nurbs (geom(iptc).nurbs, PTS, 0);
     geom(iptc).map_der  = @(PTS) geo_2d_nurbs (geom(iptc).nurbs, PTS, 1);

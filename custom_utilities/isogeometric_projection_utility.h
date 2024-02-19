@@ -124,6 +124,8 @@ public:
                 }
             }
         }
+
+        return 0;
     }
 
     /// Compute the vertical projection of a point on patch
@@ -290,13 +292,13 @@ public:
                 continue;
 
             // compute a closest prediction
-            PredictVerticalProjection(rPoint, rLocalPoint, *it, nsampling1, nsampling2);
+            int error_code = PredictVerticalProjection(rPoint, rLocalPoint, *it, nsampling1, nsampling2);
 
             if (echo_level > 0)
                 std::cout << "Prediction local point for patch " << (*it)->Id() << ": " << rLocalPoint[0] << ", " << rLocalPoint[1] << std::endl;
 
             // compute the vertical projection
-            int error_code = ComputeVerticalProjection(rPoint, rLocalPoint, rGlobalPoint, *it, TOL, max_iters, echo_level);
+            error_code = ComputeVerticalProjection(rPoint, rLocalPoint, rGlobalPoint, *it, TOL, max_iters, echo_level);
 
             if (error_code == 0)
             {

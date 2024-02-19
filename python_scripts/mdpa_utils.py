@@ -6,10 +6,10 @@ class MdpaWriter():
         self.data = data
         self.fid.write("//KRATOS isogeometric application data file\n")
         self.fid.write("//(c) 2014 Hoang Giang Bui, Ruhr-University Bochum\n\n")
-    
+
     def Finalize(self):
         self.fid.close()
-        
+
     def WriteMdpaData(self):
         self.fid.write("Begin ModelPartData\n")
         self.fid.write("End ModelPartData\n\n")
@@ -56,7 +56,7 @@ class MdpaWriter():
                     self.fid.write(" " + str(i_node))
                 self.fid.write("\n")
             self.fid.write("End " + str_entity + "\n\n")
-            
+
             # write entity data
             for str_info in self.data.layer_entity_info_sets[str_layer]:
                 self.fid.write("Begin " + str_entity_data + " " + str(str_info) + "\n")

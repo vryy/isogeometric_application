@@ -166,7 +166,7 @@ public:
         {
             if (this->GetEchoLevel() > 0)
             {
-                std::cout << "WARNING!!!Error computing the vertical point projection point on multipatch" << std::endl;
+                std::cout << "WARNING!!!Error computing the vertical projection point on multipatch" << std::endl;
                 std::cout << " "; KRATOS_WATCH(P)
                 std::cout << " "; KRATOS_WATCH(error_code)
                 std::cout << " local_point: " << local_point[0] << ", " << local_point[1] << std::endl;

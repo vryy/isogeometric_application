@@ -56,7 +56,7 @@ def Collapse(Layers):
 
     tol = 1.0e-6
     binning_util = SpatialBinningUtility(0, 0, 0, 0.5, 0.5, 0.5, tol)
-    
+
     # extract all the nodes and put into the spatial binning
     node_map = {}
     for str_layer in Layer.layer_list:

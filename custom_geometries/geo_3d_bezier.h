@@ -504,7 +504,7 @@ public:
     /**
      * Compute Jacobian at every integration points for an integration method
      */
-    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, Matrix& DeltaPosition ) const final
+    JacobiansType& Jacobian( JacobiansType& rResult, IntegrationMethod ThisMethod, const Matrix& DeltaPosition ) const final
     {
         MatrixType shape_functions_values;
         ShapeFunctionsGradientsType shape_functions_local_gradients;
@@ -589,7 +589,7 @@ public:
     /**
      * Compute Jacobian at an integration point for an integration method
      */
-    Matrix& Jacobian( Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod, Matrix& DeltaPosition ) const final
+    Matrix& Jacobian( Matrix& rResult, IndexType IntegrationPointIndex, IntegrationMethod ThisMethod, const Matrix& DeltaPosition ) const final
     {
         MatrixType shape_functions_values;
         ShapeFunctionsGradientsType shape_functions_local_gradients;
@@ -655,7 +655,7 @@ public:
     /**
      * Compute Jacobian at a particular point
      */
-    Matrix& Jacobian( Matrix& rResult, const CoordinatesArrayType& rPoint, Matrix& DeltaPosition ) const final
+    Matrix& Jacobian( Matrix& rResult, const CoordinatesArrayType& rPoint, const Matrix& DeltaPosition ) const final
     {
         VectorType shape_functions_values;
         MatrixType shape_functions_local_gradients;

@@ -484,7 +484,7 @@ public:
      */
     JacobiansType& Jacobian( JacobiansType& rResult,
             IntegrationMethod ThisMethod,
-            MatrixType & DeltaPosition ) const override
+            const MatrixType& DeltaPosition ) const override
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =

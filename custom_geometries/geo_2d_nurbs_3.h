@@ -191,7 +191,7 @@ public:
      * Type of Matrix
      */
     typedef typename BaseType::MatrixType MatrixType;
-    
+
     /**
      * Type of Vector
      */
@@ -401,14 +401,14 @@ public:
      * integration point index of given integration method.
      *
      * @param DeltaPosition Matrix with the nodes position increment which describes
-     * the configuration where the jacobian has to be calculated.     
+     * the configuration where the jacobian has to be calculated.
      *
      * @see DeterminantOfJacobian
      * @see InverseOfJacobian
      */
-    virtual JacobiansType& Jacobian( JacobiansType& rResult,
+    JacobiansType& Jacobian( JacobiansType& rResult,
             IntegrationMethod ThisMethod,
-            Matrix & DeltaPosition ) const
+            const Matrix& DeltaPosition ) const override
     {
 //        //getting derivatives of shape functions
 //        const ShapeFunctionsGradientsType& shape_functions_gradients = BaseType::ShapeFunctionsLocalGradients( ThisMethod );
@@ -489,7 +489,7 @@ public:
 //        rResult( 0, 1 ) = j01;
 //        rResult( 1, 0 ) = j10;
 //        rResult( 1, 1 ) = j11;
-//        
+//
 //        return rResult;
     }
 
@@ -529,7 +529,7 @@ public:
 //            j10 += ( this->GetPoint( i ).Y() ) * ( shape_functions_gradients( i, 0 ) );
 //            j11 += ( this->GetPoint( i ).Y() ) * ( shape_functions_gradients( i, 1 ) );
 //        }
-//        
+//
 //        rResult( 0, 0 ) = j00;
 //        rResult( 0, 1 ) = j01;
 //        rResult( 1, 0 ) = j10;

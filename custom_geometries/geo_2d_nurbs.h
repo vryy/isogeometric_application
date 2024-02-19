@@ -576,7 +576,7 @@ public:
      */
     virtual JacobiansType& Jacobian( JacobiansType& rResult,
             IntegrationMethod ThisMethod,
-            Matrix & DeltaPosition ) const
+            const Matrix& DeltaPosition ) const
     {
         //getting derivatives of shape functions
         const ShapeFunctionsGradientsType& shape_functions_gradients = BaseType::ShapeFunctionsLocalGradients( ThisMethod );

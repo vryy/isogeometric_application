@@ -60,7 +60,7 @@ public:
     }
 
     /// Insert a cell to the container.
-    iterator insert(cell_t p_cell)
+    void insert(cell_t p_cell)
     {
         mpCells.insert(p_cell);
     }

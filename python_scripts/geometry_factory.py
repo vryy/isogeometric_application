@@ -197,7 +197,7 @@ def CreateSmallArc(center, axis, radius, start_angle, end_angle):
     return patch_ptr
 
 ### Create a 2D ring at center on the surface perpendicular to the axis. By default, the quadratic arc is generated. The knot vector will be [0 0 0 1 1 1]
-### On output the pointer to the patch will be returned. Small ring means that the open angle is less than 90 degrees.
+### On output the pointer to the patch will be returned. Small ring means that the open angle is typically less than 180 degrees.
 def CreateSmallRing(center, axis, rin, rout, start_angle, end_angle):
     ## create inner arc
     iarc_ptr = CreateSmallArc(center, axis, rin, start_angle, end_angle)

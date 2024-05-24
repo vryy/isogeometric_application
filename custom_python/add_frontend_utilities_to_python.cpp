@@ -219,7 +219,6 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSpli
     typedef typename Patch<TDim-1>::Pointer TPatchPointerType;
     std::vector<TPatchPointerType> pPatches;
     IsogeometricPythonUtils::Unpack<TPatchPointerType, TPatchPointerType>(patch_list, pPatches);
-    KRATOS_WATCH(pPatches.size())
 
     return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatches, order);
 }
@@ -251,7 +250,7 @@ void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
 void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
     typename Patch<3>::Pointer pPatch1, int iside1,
     typename Patch<3>::Pointer pPatch2, int iside2,
-    const bool& uv_or_vu,
+    const bool uv_or_vu,
     const BoundaryDirection& direction1, const BoundaryDirection& direction2)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);

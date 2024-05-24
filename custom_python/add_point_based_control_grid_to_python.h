@@ -10,11 +10,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ADD_POINT_BASED_CONTROL_GRID_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_ADD_POINT_BASED_CONTROL_GRID_TO_PYTHON_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -23,11 +20,9 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // External includes
 #include <boost/python.hpp>
 
-
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/point_based_control_grid.h"
-
 
 namespace Kratos
 {
@@ -102,4 +97,3 @@ struct IsogeometricApplication_AddPointBasedControlGrid_Helper<Variable<Vector>,
 }  // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_ADD_POINT_BASED_CONTROL_GRID_TO_PYTHON_H_INCLUDED  defined
-

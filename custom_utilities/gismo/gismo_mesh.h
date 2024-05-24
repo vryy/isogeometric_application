@@ -29,7 +29,6 @@
 #include "boost/python/stl_iterator.hpp"
 #include "gismo.h"
 
-
 // Project includes
 #include "includes/define.h"
 #include "includes/ublas_interface.h"
@@ -37,7 +36,6 @@
 
 namespace Kratos
 {
-
 
 /**
     Class represents a Hierarchical NURBS mesh by G+Smo
@@ -82,10 +80,10 @@ public:
     void ReadMesh(std::string fn)
     {
         std::ifstream infile(fn.c_str());
-        if(!infile)
+        if (!infile)
             KRATOS_THROW_ERROR(std::logic_error, "Error open file", fn)
 
-        std::string line;
+            std::string line;
         std::vector<std::string> words;
         int read_mode = READ_PATCH;
         int npatches, dim_index = 0;
@@ -98,21 +96,23 @@ public:
         std::vector<std::vector<double> > y_coords;
         std::vector<std::vector<double> > z_coords;
         std::vector<std::vector<double> > weights;
-        while(!infile.eof())
+        while (!infile.eof())
         {
             std::getline(infile, line);
             boost::trim_if(line, boost::is_any_of("\t ")); // ignore trailing spaces
             boost::split(words, line, boost::is_any_of(" \t"), boost::token_compress_on);
 
-            if(words.size() != 0)
+            if (words.size() != 0)
             {
-                if(words[0] == std::string("#") || words[0][0] == '#')
+                if (words[0] == std::string("#") || words[0][0] == '#')
+                {
                     continue;
+                }
 
-                if(read_mode == READ_PATCH)
+                if (read_mode == READ_PATCH)
                 {
                     // bound check
-                    if(words.size() < 2)
+                    if (words.size() < 2)
                     {
                         std::cout << "Error at line: " << line << std::endl;
                         KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain information about dimension and number of patches, current number of information =", words.size())
@@ -125,74 +125,84 @@ public:
                     continue;
                 }
 
-                if(read_mode == READ_ORDER)
+                if (read_mode == READ_ORDER)
                 {
                     // bound check
-                    if(words.size() != mDim)
+                    if (words.size() != mDim)
                         KRATOS_THROW_ERROR(std::logic_error, "The Order section must contained number of information equal to dimension, current number of information =", words.size())
 
-                    // read info
-                    std::vector<int> dummy;
+                        // read info
+                        std::vector<int> dummy;
                     orders.push_back(dummy);
-                    for(std::size_t i = 0; i < mDim; ++i)
+                    for (std::size_t i = 0; i < mDim; ++i)
+                    {
                         orders.back().push_back(atoi(words[i].c_str()));
+                    }
                     read_mode = READ_NUMBER;
                     continue;
                 }
 
-                if(read_mode == READ_NUMBER)
+                if (read_mode == READ_NUMBER)
                 {
                     // bound check
-                    if(words.size() != mDim)
+                    if (words.size() != mDim)
                         KRATOS_THROW_ERROR(std::logic_error, "The Number section must contained number of information equal to dimension, current number of information =", words.size())
 
-                    // read info
-                    std::vector<int> dummy;
+                        // read info
+                        std::vector<int> dummy;
                     numbers.push_back(dummy);
-                    for(std::size_t i = 0; i < mDim; ++i)
+                    for (std::size_t i = 0; i < mDim; ++i)
+                    {
                         numbers.back().push_back(atoi(words[i].c_str()));
+                    }
                     read_mode = READ_KNOTS;
                     continue;
                 }
 
-                if(read_mode == READ_KNOTS)
+                if (read_mode == READ_KNOTS)
                 {
                     // bound check
                     int knot_len = numbers.back()[dim_index] + orders.back()[dim_index] + 1;
-                    if(words.size() != knot_len)
+                    if (words.size() != knot_len)
                         KRATOS_THROW_ERROR(std::logic_error, "The Knots section must contained number of information equal to n+p+1, current number of information =", words.size())
 
-                    // read info
-                    if(dim_index == 0)
-                    {
-                        std::vector<double> dummy;
-                        knots_1.push_back(dummy);
-                    }
-                    else if(dim_index == 1)
-                    {
-                        std::vector<double> dummy;
-                        knots_2.push_back(dummy);
-                    }
-                    else if(dim_index == 2)
-                    {
-                        std::vector<double> dummy;
-                        knots_3.push_back(dummy);
-                    }
-                    for(std::size_t i = 0; i < knot_len; ++i)
+                        // read info
+                        if (dim_index == 0)
+                        {
+                            std::vector<double> dummy;
+                            knots_1.push_back(dummy);
+                        }
+                        else if (dim_index == 1)
+                        {
+                            std::vector<double> dummy;
+                            knots_2.push_back(dummy);
+                        }
+                        else if (dim_index == 2)
+                        {
+                            std::vector<double> dummy;
+                            knots_3.push_back(dummy);
+                        }
+                    for (std::size_t i = 0; i < knot_len; ++i)
                     {
                         double k = atof(words[i].c_str());
-                        if(dim_index == 0)
+                        if (dim_index == 0)
+                        {
                             knots_1.back().push_back(k);
-                        else if(dim_index == 1)
+                        }
+                        else if (dim_index == 1)
+                        {
                             knots_2.back().push_back(k);
-                        else if(dim_index == 2)
+                        }
+                        else if (dim_index == 2)
+                        {
                             knots_3.back().push_back(k);
+                        }
                         else
                             KRATOS_THROW_ERROR(std::logic_error, "Wrong knot dimension index. Something must be wrong", "")
-                    }
+                        }
 
                     ++dim_index;
-                    if(dim_index == mDim)
+                    if (dim_index == mDim)
                     {
                         dim_index = 0;
                         read_mode = READ_COORDINATES;
@@ -200,39 +210,47 @@ public:
                     continue;
                 }
 
-                if(read_mode == READ_COORDINATES)
+                if (read_mode == READ_COORDINATES)
                 {
                     // bound check
                     int num_basis = 1;
-                    for(std::size_t i = 0; i < mDim; ++i)
+                    for (std::size_t i = 0; i < mDim; ++i)
+                    {
                         num_basis *= numbers.back()[i];
-                    if(words.size() != num_basis)
+                    }
+                    if (words.size() != num_basis)
                         KRATOS_THROW_ERROR(std::logic_error, "The Coordinates section must contained number of information equal to prod(ni), current number of information =", words.size())
 
-                    if(dim_index == 0)
-                    {
-                        std::vector<double> dummy;
-                        x_coords.push_back(dummy);
-                        for(std::size_t i = 0; i < num_basis; ++i)
-                            x_coords.back().push_back(atof(words[i].c_str()));
-                    }
-                    else if(dim_index == 1)
-                    {
-                        std::vector<double> dummy;
-                        y_coords.push_back(dummy);
-                        for(std::size_t i = 0; i < num_basis; ++i)
-                            y_coords.back().push_back(atof(words[i].c_str()));
-                    }
-                    else if(dim_index == 2)
-                    {
-                        std::vector<double> dummy;
-                        z_coords.push_back(dummy);
-                        for(std::size_t i = 0; i < num_basis; ++i)
-                            z_coords.back().push_back(atof(words[i].c_str()));
-                    }
+                        if (dim_index == 0)
+                        {
+                            std::vector<double> dummy;
+                            x_coords.push_back(dummy);
+                            for (std::size_t i = 0; i < num_basis; ++i)
+                            {
+                                x_coords.back().push_back(atof(words[i].c_str()));
+                            }
+                        }
+                        else if (dim_index == 1)
+                        {
+                            std::vector<double> dummy;
+                            y_coords.push_back(dummy);
+                            for (std::size_t i = 0; i < num_basis; ++i)
+                            {
+                                y_coords.back().push_back(atof(words[i].c_str()));
+                            }
+                        }
+                        else if (dim_index == 2)
+                        {
+                            std::vector<double> dummy;
+                            z_coords.push_back(dummy);
+                            for (std::size_t i = 0; i < num_basis; ++i)
+                            {
+                                z_coords.back().push_back(atof(words[i].c_str()));
+                            }
+                        }
 
                     ++dim_index;
-                    if(dim_index == mDim)
+                    if (dim_index == mDim)
                     {
                         dim_index = 0;
                         read_mode = READ_WEIGHTS;
@@ -240,28 +258,34 @@ public:
                     continue;
                 }
 
-                if(read_mode == READ_WEIGHTS)
+                if (read_mode == READ_WEIGHTS)
                 {
                     // bound check
                     int num_basis = 1;
-                    for(std::size_t i = 0; i < mDim; ++i)
+                    for (std::size_t i = 0; i < mDim; ++i)
+                    {
                         num_basis *= numbers.back()[i];
-                    if(words.size() != num_basis)
+                    }
+                    if (words.size() != num_basis)
                         KRATOS_THROW_ERROR(std::logic_error, "The Weights section must contained number of information equal to prod(ni), current number of information =", words.size())
 
-                    // read info
-                    std::vector<double> dummy;
+                        // read info
+                        std::vector<double> dummy;
                     weights.push_back(dummy);
-                    for(std::size_t i = 0; i < num_basis; ++i)
+                    for (std::size_t i = 0; i < num_basis; ++i)
+                    {
                         weights.back().push_back(atof(words[i].c_str()));
+                    }
 
-                    if(npatches > 1)
+                    if (npatches > 1)
                     {
                         read_mode = READ_ORDER;
                         npatches--;
                     }
                     else
+                    {
                         read_mode = NO_READ;
+                    }
                     continue;
                 }
             }
@@ -272,9 +296,9 @@ public:
 
         // create Gismo geometries
         npatches = orders.size();
-        if(mDim == 2)
+        if (mDim == 2)
         {
-            for(unsigned int ipatch = 0; ipatch < npatches; ++ipatch)
+            for (unsigned int ipatch = 0; ipatch < npatches; ++ipatch)
             {
                 gismo::gsKnotVector<real_t> kv1, kv2;
                 FillKnotVector(knots_1[ipatch], kv1, 1.0e-6);
@@ -286,8 +310,10 @@ public:
                 KRATOS_WATCH(num_basis)
 
                 gismo::gsMatrix<real_t> coefs(num_basis, 3);
-                for(unsigned int i = 0; i < num_basis; ++i)
-                    coefs << x_coords[ipatch][i] / weights[ipatch][i] , y_coords[ipatch][i] / weights[ipatch][i] , weights[ipatch][i];
+                for (unsigned int i = 0; i < num_basis; ++i)
+                {
+                    coefs << x_coords[ipatch][i] / weights[ipatch][i], y_coords[ipatch][i] / weights[ipatch][i], weights[ipatch][i];
+                }
 
                 gismo::gsTensorBSplineBasis<2, real_t> basis(kv1, kv2);
 
@@ -296,9 +322,9 @@ public:
                 gismo::gsWriteParaview(patch, mName.c_str());
             }
         }
-        else if(mDim == 3)
+        else if (mDim == 3)
         {
-            for(unsigned int ipatch = 0; ipatch < npatches; ++ipatch)
+            for (unsigned int ipatch = 0; ipatch < npatches; ++ipatch)
             {
                 gismo::gsKnotVector<real_t> kv1, kv2, kv3;
                 FillKnotVector(knots_1[ipatch], kv1, 1.0e-6);
@@ -311,8 +337,10 @@ public:
                 unsigned int num_basis = numbers[ipatch][0] * numbers[ipatch][1] * numbers[ipatch][2];
 
                 gismo::gsMatrix<real_t> coefs(num_basis, 4);
-                for(unsigned int i = 0; i < num_basis; ++i)
-                    coefs << x_coords[ipatch][i] / weights[ipatch][i] , y_coords[ipatch][i] / weights[ipatch][i] , z_coords[ipatch][i] / weights[ipatch][i] , weights[ipatch][i];
+                for (unsigned int i = 0; i < num_basis; ++i)
+                {
+                    coefs << x_coords[ipatch][i] / weights[ipatch][i], y_coords[ipatch][i] / weights[ipatch][i], z_coords[ipatch][i] / weights[ipatch][i], weights[ipatch][i];
+                }
 
                 gismo::gsTensorBSplineBasis<3, real_t> basis(kv1, kv2, kv3);
 
@@ -321,8 +349,10 @@ public:
             }
         }
 
-        if(GetEchoLevel() > 0)
+        if (GetEchoLevel() > 0)
+        {
             std::cout << __FUNCTION__ << ": Traverse file completed" << std::endl;
+        }
     }
 
     /**************************************************************************
@@ -361,17 +391,19 @@ private:
     void FillKnotVector(const std::vector<double>& knots, knot_vector_t& knotvec, double tol)
     {
         std::cout << "knots:";
-        for(unsigned int i = 0; i < knots.size(); ++i)
+        for (unsigned int i = 0; i < knots.size(); ++i)
+        {
             std::cout << " " << knots[i];
+        }
         std::cout << std::endl;
         double k;
         int cnt = 0, mult;
         k = knots[cnt];
         mult = 1;
-        while(cnt < knots.size()-1)
+        while (cnt < knots.size() - 1)
         {
             ++cnt;
-            if(fabs(knots[cnt] - k) < tol)
+            if (fabs(knots[cnt] - k) < tol)
             {
                 ++mult;
             }
@@ -397,4 +429,3 @@ inline std::ostream& operator<<(std::ostream& rOStream, const GismoMesh& rThis)
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_GISMO_MESH_H_INCLUDED
-

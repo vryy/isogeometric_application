@@ -32,10 +32,10 @@ template<int TDim, typename TDataType>
 struct ComputeBsplinesDegreeElevation_Helper
 {
     static void Compute(const StructuredControlGrid<TDim, TDataType>& ControlValues,
-        const BSplinesFESpace<TDim>& rFESpace,
-        const std::vector<std::size_t>& order_increment,
-        StructuredControlGrid<TDim, TDataType>& NewControlValues,
-        std::vector<std::vector<double> >& new_knots)
+                        const BSplinesFESpace<TDim>& rFESpace,
+                        const std::vector<std::size_t>& order_increment,
+                        StructuredControlGrid<TDim, TDataType>& NewControlValues,
+                        std::vector<std::vector<double> >& new_knots)
     {
         std::stringstream ss;
         ss << __FUNCTION__ << " is not implemented for dimension " << TDim;
@@ -47,9 +47,9 @@ template<int TDim>
 struct ComputeBsplinesKnotInsertionCoefficients_Helper
 {
     static void Compute(Matrix& T,
-        std::vector<std::vector<double> >& new_knots,
-        typename BSplinesFESpace<TDim>::Pointer& pFESpace,
-        const std::vector<std::vector<double> >& ins_knots)
+                        std::vector<std::vector<double> >& new_knots,
+                        typename BSplinesFESpace<TDim>::Pointer& pFESpace,
+                        const std::vector<std::vector<double> >& ins_knots)
     {
         std::stringstream ss;
         ss << __FUNCTION__ << " is not implemented for dimension " << TDim;
@@ -83,7 +83,7 @@ public:
     /// Insert the knots to the NURBS patch and make it compatible across neighbors
     template<int TDim>
     void InsertKnots(typename Patch<TDim>::Pointer& pPatch,
-        const std::vector<std::vector<double> >& ins_knots)
+                     const std::vector<std::vector<double> >& ins_knots)
     {
         std::map<std::size_t, std::vector<int> > refined_patches;
         std::map<std::size_t, Matrix> trans_mats;
@@ -95,8 +95,8 @@ public:
     /// The transformation matrix will be stored. It will be useful for geometric multigrid.
     template<int TDim>
     void InsertKnots(typename Patch<TDim>::Pointer& pPatch,
-        const std::vector<std::vector<double> >& ins_knots,
-        std::map<std::size_t, Matrix>& trans_mats)
+                     const std::vector<std::vector<double> >& ins_knots,
+                     std::map<std::size_t, Matrix>& trans_mats)
     {
         std::map<std::size_t, std::vector<int> > refined_patches;
         bool record_trans_mat = true;
@@ -107,15 +107,15 @@ public:
     /// if record_trans_mat is true, the transformation matrix for each patch will be stored in trans_mats
     template<int TDim>
     void InsertKnots(typename Patch<TDim>::Pointer& pPatch,
-        std::map<std::size_t, std::vector<int> >& refined_patches,
-        const std::vector<std::vector<double> >& ins_knots,
-        std::map<std::size_t, Matrix>& trans_mats,
-        bool record_trans_mat = false);
+                     std::map<std::size_t, std::vector<int> >& refined_patches,
+                     const std::vector<std::vector<double> >& ins_knots,
+                     std::map<std::size_t, Matrix>& trans_mats,
+                     bool record_trans_mat = false);
 
     /// Degree elevation for the NURBS patch and make it compatible across neighbors
     template<int TDim>
     void DegreeElevate(typename Patch<TDim>::Pointer& pPatch,
-        const std::vector<std::size_t>& order_increment)
+                       const std::vector<std::size_t>& order_increment)
     {
         std::map<std::size_t, std::vector<int> > refined_patches;
         this->DegreeElevate<TDim>(pPatch, refined_patches, order_increment);
@@ -124,8 +124,8 @@ public:
     /// Degree elevation for the NURBS patch and make it compatible across neighbors
     template<int TDim>
     void DegreeElevate(typename Patch<TDim>::Pointer& pPatch,
-        std::map<std::size_t, std::vector<int> >& refined_patches,
-        const std::vector<std::size_t>& order_increment);
+                       std::map<std::size_t, std::vector<int> >& refined_patches,
+                       const std::vector<std::size_t>& order_increment);
 
     /*************************************************************************
                               HIERARCHICAL B-SPLINES
@@ -163,7 +163,7 @@ private:
         std::vector<std::vector<double> >& new_knots) const
     {
         ComputeBsplinesDegreeElevation_Helper<TDim, TDataType>::Compute(ControlValues,
-            rFESpace, order_increment, NewControlValues, new_knots);
+                rFESpace, order_increment, NewControlValues, new_knots);
     }
 
 };
@@ -182,4 +182,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchRefinem
 #include "multipatch_refinement_utility.hpp"
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_REFINEMENT_UTILITY_H_INCLUDED defined
-

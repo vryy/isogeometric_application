@@ -152,7 +152,6 @@ private:
     DataContainerType mData;
 };
 
-
 /**
 Class for control value container by a regular grid
 */
@@ -169,16 +168,15 @@ public:
 
 };
 
-
 template<typename TDataType>
 class StructuredControlGrid<1, TDataType> : public BaseStructuredControlGrid<TDataType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const StructuredControlGrid> ConstPointer;
-    #endif
+#endif
 
     // type definitions
     typedef BaseStructuredControlGrid<TDataType> BaseType;
@@ -274,8 +272,10 @@ public:
     {
         if (rOther.Size() != this->Size())
             KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
-        for (std::size_t i = 0; i < this->Size(); ++i)
-            this->SetValue(i, rOther.GetValue(i));
+            for (std::size_t i = 0; i < this->Size(); ++i)
+            {
+                this->SetValue(i, rOther.GetValue(i));
+            }
     }
 
     /// Copy the data the other grid
@@ -288,9 +288,13 @@ public:
     virtual void ResizeAndCopyFrom(const StructuredControlGrid<1, TDataType>& rOther)
     {
         if (rOther.Size() != this->Size())
+        {
             BaseType::Data().resize(rOther.Size());
+        }
         for (std::size_t i = 0; i < this->Size(); ++i)
+        {
             this->SetValue(i, rOther.GetValue(i));
+        }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
@@ -303,20 +307,22 @@ public:
     void Reverse(int idir) override
     {
         if (idir == 0)
+        {
             std::reverse(BaseType::Data().begin(), BaseType::Data().end());
+        }
     }
 
     /// Create a connectivity matrix for the structured control grid
     void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const override
     {
         connectivities.clear();
-        connectivities.resize(this->Size()-1);
+        connectivities.resize(this->Size() - 1);
 
-        for (std::size_t i = 0; i < this->Size()-1; ++i)
+        for (std::size_t i = 0; i < this->Size() - 1; ++i)
         {
             connectivities[i].resize(2);
             connectivities[i][0] = i + offset;
-            connectivities[i][1] = i+1 + offset;
+            connectivities[i][1] = i + 1 + offset;
         }
     }
 
@@ -347,7 +353,9 @@ public:
     {
         rOStream << " Data:\n (";
         for (std::size_t i = 0; i < BaseType::Data().size(); ++i)
+        {
             rOStream << " " << BaseType::Data()[i];
+        }
         rOStream << ")" << std::endl;
     }
 
@@ -361,9 +369,9 @@ class StructuredControlGrid<2, TDataType> : public BaseStructuredControlGrid<TDa
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const StructuredControlGrid> ConstPointer;
-    #endif
+#endif
 
     // type definitions
     typedef BaseStructuredControlGrid<TDataType> BaseType;
@@ -380,7 +388,7 @@ public:
     /// Constructor with size
     StructuredControlGrid(std::size_t m, std::size_t n) : mSize{m, n}
     {
-        BaseType::Data().resize(m*n);
+        BaseType::Data().resize(m * n);
         std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
     }
 
@@ -404,7 +412,7 @@ public:
     {
         mSize[0] = new_size1;
         mSize[1] = new_size2;
-        BaseType::Data().resize(new_size1*new_size2);
+        BaseType::Data().resize(new_size1 * new_size2);
     }
 
     /// Get the size of underlying data
@@ -416,32 +424,32 @@ public:
     /// Get the global index of the grid value providing the index vector
     std::size_t GetIndex(const std::vector<std::size_t>& index) const override
     {
-        return index[1]*mSize[0] + index[0];
+        return index[1] * mSize[0] + index[0];
     }
 
     /// Get the value at specific grid point
     TDataType& GetValue(std::size_t i, std::size_t j)
     {
-        return BaseType::Data()[j*mSize[0] + i];
+        return BaseType::Data()[j * mSize[0] + i];
     }
 
     /// Get the value at specific grid point
     const TDataType& GetValue(std::size_t i, std::size_t j) const
     {
-        return BaseType::Data()[j*mSize[0] + i];
+        return BaseType::Data()[j * mSize[0] + i];
     }
 
     /// Set the value at specific grid point
     void SetValue(std::size_t i, std::size_t j, const TDataType& value)
     {
-        BaseType::Data()[j*mSize[0] + i] = value;
+        BaseType::Data()[j * mSize[0] + i] = value;
     }
 
     // overload operator ()
-    TDataType& operator() (std::size_t i, std::size_t j) {return BaseType::Data()[j*mSize[0] + i];}
+    TDataType& operator() (std::size_t i, std::size_t j) {return BaseType::Data()[j * mSize[0] + i];}
 
     // overload operator ()
-    const TDataType& operator() (std::size_t i, std::size_t j) const {return BaseType::Data()[j*mSize[0] + i];}
+    const TDataType& operator() (std::size_t i, std::size_t j) const {return BaseType::Data()[j * mSize[0] + i];}
 
     /// Copy the data the other grid. The size of two grids must be equal.
     void CopyFrom(const ControlGrid<TDataType>& rOther) override
@@ -460,9 +468,11 @@ public:
     {
         if ( ( rOther.Size(0) != this->Size(1) ) || ( rOther.Size(1) != this->Size(1) ) )
             KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
-        for (std::size_t i = 0; i < this->Size(0); ++i)
-            for (std::size_t j = 0; j < this->Size(1); ++j)
-                this->SetValue(i, j, rOther.GetValue(i, j));
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                {
+                    this->SetValue(i, j, rOther.GetValue(i, j));
+                }
     }
 
     /// Copy the data the other grid
@@ -479,18 +489,22 @@ public:
         if (pOthers.size() != this->Size(dir))
             KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
 
-        if (dir == 0)
-        {
-            for (std::size_t i = 0; i < this->Size(0); ++i)
-                for (std::size_t j = 0; j < this->Size(1); ++j)
-                    this->SetValue(i, j, pOthers[i]->GetValue(j));
-        }
-        else if (dir == 1)
-        {
-            for (std::size_t i = 0; i < this->Size(0); ++i)
-                for (std::size_t j = 0; j < this->Size(1); ++j)
-                    this->SetValue(i, j, pOthers[j]->GetValue(i));
-        }
+            if (dir == 0)
+            {
+                for (std::size_t i = 0; i < this->Size(0); ++i)
+                    for (std::size_t j = 0; j < this->Size(1); ++j)
+                    {
+                        this->SetValue(i, j, pOthers[i]->GetValue(j));
+                    }
+            }
+            else if (dir == 1)
+            {
+                for (std::size_t i = 0; i < this->Size(0); ++i)
+                    for (std::size_t j = 0; j < this->Size(1); ++j)
+                    {
+                        this->SetValue(i, j, pOthers[j]->GetValue(i));
+                    }
+            }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
@@ -502,7 +516,9 @@ public:
         }
         for (std::size_t i = 0; i < this->Size(0); ++i)
             for (std::size_t j = 0; j < this->Size(1); ++j)
+            {
                 this->SetValue(i, j, rOther.GetValue(i, j));
+            }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
@@ -550,7 +566,7 @@ public:
 
             for (std::size_t i = 0; i < this->Size(1); ++i)
             {
-                pControlGrid->SetValue(i, this->GetValue(0+level, i));
+                pControlGrid->SetValue(i, this->GetValue(0 + level, i));
             }
         }
         else if (side == _BRIGHT_)
@@ -559,7 +575,7 @@ public:
 
             for (std::size_t i = 0; i < this->Size(1); ++i)
             {
-                pControlGrid->SetValue(i, this->GetValue(this->Size(0)-1-level, i));
+                pControlGrid->SetValue(i, this->GetValue(this->Size(0) - 1 - level, i));
             }
         }
         else if (side == _BTOP_)
@@ -568,7 +584,7 @@ public:
 
             for (std::size_t i = 0; i < this->Size(0); ++i)
             {
-                pControlGrid->SetValue(i, this->GetValue(i, this->Size(1)-1-level));
+                pControlGrid->SetValue(i, this->GetValue(i, this->Size(1) - 1 - level));
             }
         }
         else if (side == _BBOTTOM_)
@@ -577,31 +593,31 @@ public:
 
             for (std::size_t i = 0; i < this->Size(0); ++i)
             {
-                pControlGrid->SetValue(i, this->GetValue(i, 0+level));
+                pControlGrid->SetValue(i, this->GetValue(i, 0 + level));
             }
         }
         else
             KRATOS_THROW_ERROR(std::logic_error, "Invalid side", side)
 
-        return pControlGrid;
+            return pControlGrid;
     }
 
     /// Create a connectivity for the structured control grid
     void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const override
     {
         connectivities.clear();
-        connectivities.resize((this->Size(0)-1) * (this->Size(1)-1));
+        connectivities.resize((this->Size(0) - 1) * (this->Size(1) - 1));
 
         std::size_t cnt = 0;
-        for (std::size_t i = 0; i < this->Size(0)-1; ++i)
+        for (std::size_t i = 0; i < this->Size(0) - 1; ++i)
         {
-            for (std::size_t j = 0; j < this->Size(1)-1; ++j)
+            for (std::size_t j = 0; j < this->Size(1) - 1; ++j)
             {
                 connectivities[cnt].resize(4);
-                connectivities[cnt][0] = i + j*this->Size(0) + offset;
-                connectivities[cnt][1] = i + 1 + j*this->Size(0) + offset;
-                connectivities[cnt][2] = i + 1 + (j+1)*this->Size(0) + offset;
-                connectivities[cnt][3] = i + (j+1)*this->Size(0) + offset;
+                connectivities[cnt][0] = i + j * this->Size(0) + offset;
+                connectivities[cnt][1] = i + 1 + j * this->Size(0) + offset;
+                connectivities[cnt][2] = i + 1 + (j + 1) * this->Size(0) + offset;
+                connectivities[cnt][3] = i + (j + 1) * this->Size(0) + offset;
                 ++cnt;
             }
         }
@@ -639,7 +655,9 @@ public:
             rOStream << "  (";
             {
                 for (std::size_t i = 0; i < mSize[0]; ++i)
-                rOStream << " " << GetValue(i, j);
+                {
+                    rOStream << " " << GetValue(i, j);
+                }
             }
             rOStream << ")" << std::endl;
         }
@@ -656,9 +674,9 @@ class StructuredControlGrid<3, TDataType> : public BaseStructuredControlGrid<TDa
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const StructuredControlGrid> ConstPointer;
-    #endif
+#endif
 
     // type definitions
     typedef BaseStructuredControlGrid<TDataType> BaseType;
@@ -675,7 +693,7 @@ public:
     /// Constructor with size
     StructuredControlGrid(std::size_t m, std::size_t n, std::size_t p) : mSize{m, n, p}
     {
-        BaseType::Data().resize(m*n*p);
+        BaseType::Data().resize(m * n * p);
         std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
     }
 
@@ -700,7 +718,7 @@ public:
         mSize[0] = new_size1;
         mSize[1] = new_size2;
         mSize[2] = new_size3;
-        BaseType::Data().resize(new_size1*new_size2*new_size3);
+        BaseType::Data().resize(new_size1 * new_size2 * new_size3);
     }
 
     /// Get the size of underlying data
@@ -712,37 +730,37 @@ public:
     /// Get the global index of the grid value providing the index vector
     std::size_t GetIndex(const std::vector<std::size_t>& index) const override
     {
-        return (index[2]*mSize[1] + index[1])*mSize[0] + index[0];
+        return (index[2] * mSize[1] + index[1]) * mSize[0] + index[0];
     }
 
     /// Get the value at specific grid point
     TDataType& GetValue(std::size_t i, std::size_t j, std::size_t k)
     {
-        return BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i];
+        return BaseType::Data()[(k * mSize[1] + j) * mSize[0] + i];
     }
 
     /// Get the value at specific grid point
     const TDataType& GetValue(std::size_t i, std::size_t j, std::size_t k) const
     {
-        return BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i];
+        return BaseType::Data()[(k * mSize[1] + j) * mSize[0] + i];
     }
 
     /// Set the value at specific grid point
     void SetValue(std::size_t i, std::size_t j, std::size_t k, const TDataType& value)
     {
-        BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i] = value;
+        BaseType::Data()[(k * mSize[1] + j)*mSize[0] + i] = value;
     }
 
     // overload operator ()
     TDataType& operator() (std::size_t i, std::size_t j, std::size_t k)
     {
-        return BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i];
+        return BaseType::Data()[(k * mSize[1] + j) * mSize[0] + i];
     }
 
     // overload operator ()
     const TDataType& operator() (std::size_t i, std::size_t j, std::size_t k) const
     {
-        return BaseType::Data()[(k*mSize[1] + j)*mSize[0] + i];
+        return BaseType::Data()[(k * mSize[1] + j) * mSize[0] + i];
     }
 
     /// Copy the data the other grid. The size of two grids must be equal.
@@ -761,13 +779,15 @@ public:
     virtual void CopyFrom(const StructuredControlGrid<3, TDataType>& rOther)
     {
         if ( ( rOther.Size(0) != this->Size(0) )
-          || ( rOther.Size(1) != this->Size(1) )
-          || ( rOther.Size(2) != this->Size(2) ) )
+                || ( rOther.Size(1) != this->Size(1) )
+                || ( rOther.Size(2) != this->Size(2) ) )
             KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
-        for (std::size_t i = 0; i < this->Size(0); ++i)
-            for (std::size_t j = 0; j < this->Size(1); ++j)
-                for (std::size_t k = 0; k < this->Size(2); ++k)
-                    this->SetValue(i, j, k, rOther.GetValue(i, j, k));
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                    {
+                        this->SetValue(i, j, k, rOther.GetValue(i, j, k));
+                    }
     }
 
     /// Copy the data the other grid
@@ -785,40 +805,50 @@ public:
         if (pOthers.size() != this->Size(dir))
             KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
 
-        if (dir == 0)
-        {
-            for (std::size_t i = 0; i < this->Size(0); ++i)
-                for (std::size_t j = 0; j < this->Size(1); ++j)
-                    for (std::size_t k = 0; k < this->Size(2); ++k)
-                        this->SetValue(i, j, k, pOthers[i]->GetValue(j, k));
-        }
-        else if (dir == 1)
-        {
-            for (std::size_t i = 0; i < this->Size(0); ++i)
-                for (std::size_t j = 0; j < this->Size(1); ++j)
-                    for (std::size_t k = 0; k < this->Size(2); ++k)
-                        this->SetValue(i, j, k, pOthers[j]->GetValue(i, k));
-        }
-        else if (dir == 2)
-        {
-            for (std::size_t i = 0; i < this->Size(0); ++i)
-                for (std::size_t j = 0; j < this->Size(1); ++j)
-                    for (std::size_t k = 0; k < this->Size(2); ++k)
-                        this->SetValue(i, j, k, pOthers[k]->GetValue(i, j));
-        }
+            if (dir == 0)
+            {
+                for (std::size_t i = 0; i < this->Size(0); ++i)
+                    for (std::size_t j = 0; j < this->Size(1); ++j)
+                        for (std::size_t k = 0; k < this->Size(2); ++k)
+                        {
+                            this->SetValue(i, j, k, pOthers[i]->GetValue(j, k));
+                        }
+            }
+            else if (dir == 1)
+            {
+                for (std::size_t i = 0; i < this->Size(0); ++i)
+                    for (std::size_t j = 0; j < this->Size(1); ++j)
+                        for (std::size_t k = 0; k < this->Size(2); ++k)
+                        {
+                            this->SetValue(i, j, k, pOthers[j]->GetValue(i, k));
+                        }
+            }
+            else if (dir == 2)
+            {
+                for (std::size_t i = 0; i < this->Size(0); ++i)
+                    for (std::size_t j = 0; j < this->Size(1); ++j)
+                        for (std::size_t k = 0; k < this->Size(2); ++k)
+                        {
+                            this->SetValue(i, j, k, pOthers[k]->GetValue(i, j));
+                        }
+            }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(const StructuredControlGrid<3, TDataType>& rOther)
     {
         if ( ( rOther.Size(0) != this->Size(1) )
-          || ( rOther.Size(1) != this->Size(1) )
-          || ( rOther.Size(2) != this->Size(2) ) )
+                || ( rOther.Size(1) != this->Size(1) )
+                || ( rOther.Size(2) != this->Size(2) ) )
+        {
             BaseType::Data().resize(rOther.Size(0)*rOther.Size(1)*rOther.Size(2));
+        }
         for (std::size_t i = 0; i < this->Size(0); ++i)
             for (std::size_t j = 0; j < this->Size(1); ++j)
                 for (std::size_t k = 0; k < this->Size(2); ++k)
+                {
                     this->SetValue(i, j, k, rOther.GetValue(i, j, k));
+                }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
@@ -908,24 +938,24 @@ public:
     void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const override
     {
         connectivities.clear();
-        connectivities.resize((this->Size(0)-1) * (this->Size(1)-1) * (this->Size(2)-1));
+        connectivities.resize((this->Size(0) - 1) * (this->Size(1) - 1) * (this->Size(2) - 1));
 
         std::size_t cnt = 0;
-        for (std::size_t i = 0; i < this->Size(0)-1; ++i)
+        for (std::size_t i = 0; i < this->Size(0) - 1; ++i)
         {
-            for (std::size_t j = 0; j < this->Size(1)-1; ++j)
+            for (std::size_t j = 0; j < this->Size(1) - 1; ++j)
             {
-                for (std::size_t k = 0; k < this->Size(2)-1; ++k)
+                for (std::size_t k = 0; k < this->Size(2) - 1; ++k)
                 {
                     connectivities[cnt].resize(8);
-                    connectivities[cnt][0] = i + j*this->Size(0) + k*this->Size(0)*this->Size(1) + offset;
-                    connectivities[cnt][1] = i + 1 + j*this->Size(0) + k*this->Size(0)*this->Size(1) + offset;
-                    connectivities[cnt][2] = i + 1 + (j+1)*this->Size(0) + k*this->Size(0)*this->Size(1) + offset;
-                    connectivities[cnt][3] = i + (j+1)*this->Size(0) + k*this->Size(0)*this->Size(1) + offset;
-                    connectivities[cnt][4] = connectivities[cnt][0] + this->Size(0)*this->Size(1) + offset;
-                    connectivities[cnt][5] = connectivities[cnt][1] + this->Size(0)*this->Size(1) + offset;
-                    connectivities[cnt][6] = connectivities[cnt][2] + this->Size(0)*this->Size(1) + offset;
-                    connectivities[cnt][7] = connectivities[cnt][3] + this->Size(0)*this->Size(1) + offset;
+                    connectivities[cnt][0] = i + j * this->Size(0) + k * this->Size(0) * this->Size(1) + offset;
+                    connectivities[cnt][1] = i + 1 + j * this->Size(0) + k * this->Size(0) * this->Size(1) + offset;
+                    connectivities[cnt][2] = i + 1 + (j + 1) * this->Size(0) + k * this->Size(0) * this->Size(1) + offset;
+                    connectivities[cnt][3] = i + (j + 1) * this->Size(0) + k * this->Size(0) * this->Size(1) + offset;
+                    connectivities[cnt][4] = connectivities[cnt][0] + this->Size(0) * this->Size(1) + offset;
+                    connectivities[cnt][5] = connectivities[cnt][1] + this->Size(0) * this->Size(1) + offset;
+                    connectivities[cnt][6] = connectivities[cnt][2] + this->Size(0) * this->Size(1) + offset;
+                    connectivities[cnt][7] = connectivities[cnt][3] + this->Size(0) * this->Size(1) + offset;
                     ++cnt;
                 }
             }

@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -29,7 +28,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/iga_define_python.h"
 #include "custom_python/add_import_export_to_python.h"
 #include "custom_python/add_patches_to_python.h"
-
 
 namespace Kratos
 {
@@ -95,22 +93,27 @@ typename GridFunction<TDim, typename TVariableType::Type>::Pointer Patch_GridFun
     return rDummy.template pGetGridFunction<TVariableType>(rVariable);
 }
 
-
 template<class TPatchType>
 pybind11::list Patch_Predict(TPatchType& rDummy, pybind11::list& P, pybind11::list& list_nsampling,
-    pybind11::list& list_xi_min, pybind11::list& list_xi_max)
+                             pybind11::list& list_xi_min, pybind11::list& list_xi_max)
 {
     std::vector<double> xi_min_vec;
     for (auto v : list_xi_min)
+    {
         xi_min_vec.push_back(v.cast<double>());
+    }
 
     std::vector<double> xi_max_vec;
     for (auto v : list_xi_max)
+    {
         xi_max_vec.push_back(v.cast<double>());
+    }
 
     std::vector<double> P_vec;
     for (auto v : P)
+    {
         P_vec.push_back(v.cast<double>());
+    }
 
     array_1d<double, 3> point, xi, xi_min, xi_max;
     noalias(point) = ZeroVector(3);
@@ -119,17 +122,25 @@ pybind11::list Patch_Predict(TPatchType& rDummy, pybind11::list& P, pybind11::li
     noalias(xi_max) = ZeroVector(3);
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+    {
         point[i] = P_vec[i];
+    }
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi_min_vec.size()); ++i)
+    {
         xi_min[i] = xi_min_vec[i];
+    }
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi_max_vec.size()); ++i)
+    {
         xi_max[i] = xi_max_vec[i];
+    }
 
     std::vector<int> nsampling;
     for (auto v : list_nsampling)
+    {
         nsampling.push_back(v.cast<int>());
+    }
 
     rDummy.Predict(point, xi, nsampling, xi_min, xi_max);
 
@@ -146,21 +157,29 @@ pybind11::list Patch_LocalCoordinates(TPatchType& rDummy, pybind11::list& P, pyb
 {
     std::vector<double> xi0_vec;
     for (auto v : xi0)
+    {
         xi0_vec.push_back(v.cast<double>());
+    }
 
     std::vector<double> P_vec;
     for (auto v : P)
+    {
         P_vec.push_back(v.cast<double>());
+    }
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
     noalias(xi) = ZeroVector(3);
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+    {
         point[i] = P_vec[i];
+    }
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi0_vec.size()); ++i)
+    {
         xi[i] = xi0_vec[i];
+    }
 
     int stat = rDummy.LocalCoordinates(point, xi);
 
@@ -180,21 +199,29 @@ bool Patch_IsInside(TPatchType& rDummy, pybind11::list& P, pybind11::list& xi0)
 {
     std::vector<double> xi0_vec;
     for (auto v : xi0)
+    {
         xi0_vec.push_back(v.cast<double>());
+    }
 
     std::vector<double> P_vec;
     for (auto v : P)
+    {
         P_vec.push_back(v.cast<double>());
+    }
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
     noalias(xi) = ZeroVector(3);
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+    {
         point[i] = P_vec[i];
+    }
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi0_vec.size()); ++i)
+    {
         xi[i] = xi0_vec[i];
+    }
 
     return rDummy.IsInside(point, xi);
 }
@@ -206,7 +233,7 @@ typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, s
 }
 
 template<int TDim>
-typename Patch<TDim-1>::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, std::size_t iside)
+typename Patch < TDim - 1 >::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, std::size_t iside)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.ConstructBoundaryPatch(side);
@@ -238,7 +265,9 @@ pybind11::list MultiPatch_GetPatchIndices(TMultiPatchType& rDummy)
     pybind11::list ids;
     for (typename TMultiPatchType::patch_const_iterator it = rDummy.Patches().begin();
             it != rDummy.Patches().end(); ++it)
+    {
         ids.append(it->Id());
+    }
     return ids;
 }
 
@@ -375,13 +404,13 @@ void IsogeometricApplication_AddPatchesToPython_Helper(pybind11::module& m)
     (m, ss.str().c_str())
     .def(init<>())
     // .def("ResetId", &MultiPatch<TDim>::ResetId) // this function is not really useful. One shall keep control over the id of the patch.
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     .def("AddPatch", &MultiPatch_AddPatch<TDim>)
     .def("RemovePatch", &MultiPatch_RemovePatch<TDim>)
-    #else
+#else
     .def("AddPatch", &MultiPatch<TDim>::AddPatch)
     .def("RemovePatch", &MultiPatch<TDim>::RemovePatch)
-    #endif
+#endif
     .def("Patches", &MultiPatch_GetPatches<MultiPatch<TDim> >)
     .def("PatchIndices", &MultiPatch_GetPatchIndices<MultiPatch<TDim> >)
     .def("__getitem__", &MultiPatch_GetItem<Patch<TDim>, MultiPatch<TDim> >)
@@ -544,4 +573,3 @@ void IsogeometricApplication_AddPatchesToPython(pybind11::module& m)
 }  // namespace Python.
 
 } // Namespace Kratos
-

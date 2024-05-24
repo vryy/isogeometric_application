@@ -23,7 +23,6 @@
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/nurbs/bsplines_fespace.h"
 
-
 namespace Kratos
 {
 ///@{
@@ -105,16 +104,16 @@ public:
      * and then compares it with the values computed from the patch
      */
     static void ProbeAndTestValuesOnPatch(typename Patch<1>::Pointer pPatch, ConditionsContainerType& rConditions,
-        const IntegrationMethod& ThisIntegrationMethod, double tol)
+                                          const IntegrationMethod& ThisIntegrationMethod, double tol)
     {
         // get the FESpace
         typename BSplinesFESpace<1>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<1> >(pPatch->pFESpace());
         if (pFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace<1> is failed.", "")
 
-        // extract the control point grid function
-        // auto& rControlGridFunction = pPatch->ControlPointGridFunction();
-        auto pControlGridFunction = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+            // extract the control point grid function
+            // auto& rControlGridFunction = pPatch->ControlPointGridFunction();
+            auto pControlGridFunction = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
         Vector shape_values;
         Matrix shape_local_gradients;
@@ -146,7 +145,9 @@ public:
                 // compute the point
                 noalias(C) = ZeroVector(3);
                 for (std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i)
+                {
                     noalias(C) += shape_values[i] * (*it)->GetGeometry()[i].GetInitialPosition();
+                }
                 KRATOS_WATCH(C)
 
                 // compute the shape function local gradients from the condition
@@ -157,7 +158,9 @@ public:
                 // compute the tangent
                 noalias(T) = ZeroVector(3);
                 for (std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i)
+                {
                     noalias(T) += shape_local_gradients(i, 0) * (*it)->GetGeometry()[i].GetInitialPosition();
+                }
                 KRATOS_WATCH(T)
 
                 // compute the shape function second derivatives from the condition
@@ -167,13 +170,15 @@ public:
                 // compute the derivatives of tangent
                 noalias(dT) = ZeroVector(3);
                 for (std::size_t i = 0; i < (*it)->GetGeometry().size(); ++i)
+                {
                     noalias(dT) += shape_second_derivatives[i](0, 0) * (*it)->GetGeometry()[i].GetInitialPosition();
+                }
                 KRATOS_WATCH(dT)
 
                 //////////////////////////////
 
                 // compute the knot on the parameter space
-                xi[0] = (1.0 - point->X())*kleft + point->X()*kright;
+                xi[0] = (1.0 - point->X()) * kleft + point->X() * kright;
                 KRATOS_WATCH(xi[0])
 
                 // compute the point from the grid function
@@ -183,7 +188,9 @@ public:
                 pFESpace->GetValues(shape_values_vec, xi);
                 std::cout << "shape_values_vec:";
                 for (std::size_t i = 0; i < shape_values_vec.size(); ++i)
+                {
                     std::cout << " " << shape_values_vec[i];
+                }
                 std::cout << std::endl;
 
                 // compute the tangent from the grid function
@@ -199,7 +206,9 @@ public:
                 {
                     std::cout << " (";
                     for (std::size_t j = 0; j < shape_local_gradients_vec[i].size(); ++j)
+                    {
                         std::cout << " " << shape_local_gradients_vec[i][j];
+                    }
                     std::cout << ")";
                 }
                 std::cout << std::endl;
@@ -210,11 +219,11 @@ public:
                 if (Cdiff > tol)
                     KRATOS_THROW_ERROR(std::logic_error, "Error computing the point", "")
 
-                // double Tdiff = std::abs(T[0] - Tref[0]);
-                // if (Tdiff > tol)
-                //     KRATOS_THROW_ERROR(std::logic_error, "Error computing the tangent", "")
+                    // double Tdiff = std::abs(T[0] - Tref[0]);
+                    // if (Tdiff > tol)
+                    //     KRATOS_THROW_ERROR(std::logic_error, "Error computing the tangent", "")
 
-                std::cout << "--------------" << std::endl;
+                    std::cout << "--------------" << std::endl;
             }
 
             std::cout << "------------------------------" << std::endl;

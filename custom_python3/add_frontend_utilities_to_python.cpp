@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -27,7 +26,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/multipatch_refinement_utility.h"
 #include "custom_utilities/bending_strip_utility.h"
 #include "custom_utilities/trim/isogeometric_intersection_utility.h"
-
 
 namespace Kratos
 {
@@ -55,7 +53,7 @@ typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUti
 
 template<int TDim>
 void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
+                                     typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
 {
     rDummy.MakeInterface<TDim>(pPatch1, side1, pPatch2, side2);
 }
@@ -118,8 +116,8 @@ void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassTy
 
 template<int TDim>
 void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy,
-       iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer>& patch_wrapper,
-       const pybind11::list& ins_knots)
+        iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer>& patch_wrapper,
+        const pybind11::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
     std::size_t dim = 0;
@@ -128,23 +126,27 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
     {
         std::vector<double> knots;
         for (auto knot : ins_knots_x.cast<pybind11::list>())
+        {
             knots.push_back(knot.cast<double>());
+        }
 
         ins_knots_array[dim++] = knots;
         if (dim == TDim)
+        {
             break;
+        }
     }
 
     if (dim != TDim)
         KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
 
-    rDummy.InsertKnots<TDim>(patch_wrapper.GetPointer(), ins_knots_array);
+        rDummy.InsertKnots<TDim>(patch_wrapper.GetPointer(), ins_knots_array);
 }
 
 template<int TDim>
 pybind11::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinementUtility& rDummy,
-       iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer>& patch_wrapper,
-       const pybind11::list& ins_knots)
+        iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer>& patch_wrapper,
+        const pybind11::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
     std::size_t dim = 0;
@@ -153,53 +155,61 @@ pybind11::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinementUtil
     {
         std::vector<double> knots;
         for (auto knot : ins_knots_x.cast<pybind11::list>())
+        {
             knots.push_back(knot.cast<double>());
+        }
 
         ins_knots_array[dim++] = knots;
         if (dim == TDim)
+        {
             break;
+        }
     }
 
     if (dim != TDim)
         KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
 
-    std::map<std::size_t, Matrix> trans_mats;
+        std::map<std::size_t, Matrix> trans_mats;
     rDummy.InsertKnots<TDim>(patch_wrapper.GetPointer(), ins_knots_array, trans_mats);
     // KRATOS_WATCH(trans_mats.size())
 
     pybind11::dict res;
     for (std::map<std::size_t, Matrix>::iterator it = trans_mats.begin(); it != trans_mats.end(); ++it)
+    {
         res[std::to_string(it->first).c_str()] = it->second;
+    }
 
     return res;
 }
 
 template<int TDim>
 void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDummy,
-       iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer>& patch_wrapper,
-       const pybind11::list& order_increment)
+        iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer>& patch_wrapper,
+        const pybind11::list& order_increment)
 {
     std::vector<std::size_t> order_incr_array(TDim);
     std::size_t dim = 0;
 
     for (auto t : order_increment)
     {
-       order_incr_array[dim++] = t.cast<std::size_t>();
-       if (dim == TDim)
+        order_incr_array[dim++] = t.cast<std::size_t>();
+        if (dim == TDim)
+        {
             break;
+        }
     }
 
     if (dim != TDim)
         KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
 
-    rDummy.DegreeElevate<TDim>(patch_wrapper.GetPointer(), order_incr_array);
+        rDummy.DegreeElevate<TDim>(patch_wrapper.GetPointer(), order_incr_array);
 }
 
 //////////////////////////////////////////////////
 
 template<int TDim>
 typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatch(BSplinesPatchUtility& dummy,
-        typename Patch<TDim-1>::Pointer pPatch1, typename Patch<TDim-1>::Pointer pPatch2)
+        typename Patch < TDim - 1 >::Pointer pPatch1, typename Patch < TDim - 1 >::Pointer pPatch2)
 {
     return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatch1, pPatch2);
 }
@@ -208,10 +218,12 @@ template<int TDim>
 typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSplinesPatchUtility& dummy,
         const pybind11::list& patch_list, int order)
 {
-    std::vector<typename Patch<TDim-1>::Pointer> pPatches;
+    std::vector < typename Patch < TDim - 1 >::Pointer > pPatches;
 
     for (auto pp : patch_list)
-        pPatches.push_back(pp.cast<typename Patch<TDim-1>::Pointer>());
+    {
+        pPatches.push_back(pp.cast < typename Patch < TDim - 1 >::Pointer > ());
+    }
     KRATOS_WATCH(pPatches.size())
 
     return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatches, order);
@@ -223,18 +235,22 @@ pybind11::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility& dum
     int Dim = BSplinesPatchUtility::GetDimensionOfGeo(filename);
     pybind11::list patches;
     if (Dim == 2)
+    {
         patches.append(BSplinesPatchUtility::CreatePatchFromGeo<2>(filename));
+    }
     else if (Dim == 3)
+    {
         patches.append(BSplinesPatchUtility::CreatePatchFromGeo<3>(filename));
+    }
     else
         KRATOS_THROW_ERROR(std::logic_error, "The dimension of the patch is invalid", "")
-    return patches;
+        return patches;
 }
 
 void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
-    typename Patch<2>::Pointer pPatch1, int iside1,
-    typename Patch<2>::Pointer pPatch2, int iside2,
-    const BoundaryDirection& direction)
+        typename Patch<2>::Pointer pPatch1, int iside1,
+        typename Patch<2>::Pointer pPatch2, int iside2,
+        const BoundaryDirection& direction)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
     BoundarySide side2 = static_cast<BoundarySide>(iside2);
@@ -242,10 +258,10 @@ void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
 }
 
 void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
-    typename Patch<3>::Pointer pPatch1, int iside1,
-    typename Patch<3>::Pointer pPatch2, int iside2,
-    const bool& uv_or_vu,
-    const BoundaryDirection& direction1, const BoundaryDirection& direction2)
+        typename Patch<3>::Pointer pPatch1, int iside1,
+        typename Patch<3>::Pointer pPatch2, int iside2,
+        const bool& uv_or_vu,
+        const BoundaryDirection& direction1, const BoundaryDirection& direction2)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
     BoundarySide side2 = static_cast<BoundarySide>(iside2);
@@ -254,7 +270,7 @@ void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
 
 template<int TDim>
 void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
-    typename Patch<TDim>::Pointer pPatch, std::size_t idir)
+                                  typename Patch<TDim>::Pointer pPatch, std::size_t idir)
 {
     rDummy.Reverse<TDim>(pPatch, idir);
 }
@@ -263,22 +279,22 @@ void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
 
 template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch1(
-        BendingStripUtility& rDummy,
-        std::size_t Id,
-        typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-        typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
-        int Order)
+    BendingStripUtility& rDummy,
+    std::size_t Id,
+    typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
+    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
+    int Order)
 {
     return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Order);
 }
 
 template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
-        BendingStripUtility& rDummy,
-        std::size_t Id,
-        typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-        typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
-        const pybind11::list& order_list)
+    BendingStripUtility& rDummy,
+    std::size_t Id,
+    typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
+    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
+    const pybind11::list& order_list)
 {
     std::vector<int> Orders(TDim);
 
@@ -288,7 +304,9 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
     {
         Orders[dim++] = t.cast<int>();
         if (dim == TDim)
+        {
             break;
+        }
     }
 
     return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Orders);
@@ -297,19 +315,19 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
 //////////////////////////////////////////////////
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Two_Curves(IsogeometricIntersectionUtility& rDummy,
-    double starting_point_1,
-    double starting_point_2,
-    Patch<1>::Pointer pPatch1,
-    Patch<1>::Pointer pPatch2,
-    int max_iters,
-    double TOL,
-    int option_space)
+        double starting_point_1,
+        double starting_point_2,
+        Patch<1>::Pointer pPatch1,
+        Patch<1>::Pointer pPatch2,
+        int max_iters,
+        double TOL,
+        int option_space)
 {
     double intersection_point_1, intersection_point_2;
 
     int stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_point_1, starting_point_2,
-        intersection_point_1, intersection_point_2,
-        pPatch1, pPatch2, max_iters, TOL, option_space);
+               intersection_point_1, intersection_point_2,
+               pPatch1, pPatch2, max_iters, TOL, option_space);
 
     pybind11::list point;
     point.append(intersection_point_1);
@@ -322,11 +340,11 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 }
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Curve_Plane(IsogeometricIntersectionUtility& rDummy,
-    double starting_point,
-    Patch<1>::Pointer pPatch,
-    double A, double B, double C, double D,
-    int max_iters,
-    double TOL)
+        double starting_point,
+        Patch<1>::Pointer pPatch,
+        double A, double B, double C, double D,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -344,22 +362,24 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 }
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch2_Plane(IsogeometricIntersectionUtility& rDummy,
-    const pybind11::list& list_starting_points,
-    Patch<2>::Pointer pPatch,
-    double A, double B, double C, double D,
-    int max_iters,
-    double TOL)
+        const pybind11::list& list_starting_points,
+        Patch<2>::Pointer pPatch,
+        double A, double B, double C, double D,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
     std::vector<double> starting_points;
     for (auto v : list_starting_points)
+    {
         starting_points.push_back(v.cast<double>());
+    }
 
     std::vector<std::vector<double> > intersection_points;
 
     std::vector<int> stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_points, intersection_points,
-        pPatch, A, B, C, D, max_iters, TOL);
+                            pPatch, A, B, C, D, max_iters, TOL);
 
     pybind11::list list_points;
     for (std::size_t i = 0; i < intersection_points.size(); ++i)
@@ -372,7 +392,9 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 
     pybind11::list list_stat;
     for (std::size_t i = 0; i < stat.size(); ++i)
+    {
         list_stat.append(stat[i]);
+    }
 
     pybind11::list output;
     output.append(list_stat);
@@ -381,22 +403,24 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 }
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
-    const pybind11::list& list_starting_points,
-    Patch<3>::Pointer pPatch,
-    double A, double B, double C, double D,
-    int max_iters,
-    double TOL)
+        const pybind11::list& list_starting_points,
+        Patch<3>::Pointer pPatch,
+        double A, double B, double C, double D,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
     std::vector<double> starting_points;
     for (auto v : list_starting_points)
+    {
         starting_points.push_back(v.cast<double>());
+    }
 
     std::vector<std::vector<double> > intersection_points;
 
     std::vector<int> stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_points, intersection_points,
-        pPatch, A, B, C, D, max_iters, TOL);
+                            pPatch, A, B, C, D, max_iters, TOL);
 
     pybind11::list list_points;
     for (std::size_t i = 0; i < intersection_points.size(); ++i)
@@ -410,7 +434,9 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 
     pybind11::list list_stat;
     for (std::size_t i = 0; i < stat.size(); ++i)
+    {
         list_stat.append(stat[i]);
+    }
 
     pybind11::list output;
     output.append(list_stat);
@@ -419,10 +445,10 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphso
 }
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByBisection_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
-    Patch<3>::Pointer pPatch,
-    double A, double B, double C, double D,
-    int max_iters,
-    double TOL)
+        Patch<3>::Pointer pPatch,
+        double A, double B, double C, double D,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -432,11 +458,15 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByBisection_Pa
 
     pybind11::list list_points;
     for (std::size_t i = 0; i < intersection_points.size(); ++i)
+    {
         list_points.append(intersection_points[i]);
+    }
 
     pybind11::list list_stat;
     for (std::size_t i = 0; i < stat.size(); ++i)
+    {
         list_stat.append(stat[i]);
+    }
 
     pybind11::list output;
     output.append(list_stat);
@@ -445,13 +475,13 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersectionByBisection_Pa
 }
 
 pybind11::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Surface(IsogeometricIntersectionUtility& rDummy,
-    double starting_point_1,
-    double starting_point_2_1,
-    double starting_point_2_2,
-    Patch<1>::Pointer pPatch1,
-    Patch<2>::Pointer pPatch2,
-    int max_iters,
-    double TOL)
+        double starting_point_1,
+        double starting_point_2_1,
+        double starting_point_2_2,
+        Patch<1>::Pointer pPatch1,
+        Patch<2>::Pointer pPatch2,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -462,8 +492,8 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Surface
     starting_point_2[1] = starting_point_2_2;
 
     int stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_point_1, starting_point_2,
-        intersection_point_1, intersection_point_2,
-        pPatch1, pPatch2, max_iters, TOL);
+               intersection_point_1, intersection_point_2,
+               pPatch1, pPatch2, max_iters, TOL);
 
     pybind11::list point;
     point.append(intersection_point_2[0]);
@@ -478,15 +508,17 @@ pybind11::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Surface
 
 template<int TDim>
 pybind11::list IsogeometricIntersectionUtility_CheckIntersection(IsogeometricIntersectionUtility& rDummy,
-    typename Patch<TDim>::Pointer pPatch,
-    double A, double B, double C, double D)
+        typename Patch<TDim>::Pointer pPatch,
+        double A, double B, double C, double D)
 {
     std::pair<int, std::vector<int> > result = rDummy.CheckIntersection<TDim, 0>(pPatch, A, B, C, D);
     pybind11::list output;
     output.append(result.first);
     pybind11::list tmp;
     for (std::size_t i = 0; i < result.second.size(); ++i)
+    {
         tmp.append(result.second[i]);
+    }
     output.append(tmp);
     return output;
 }
@@ -580,4 +612,3 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython(pybind11::module& m)
 }  // namespace Python.
 
 } // Namespace Kratos
-

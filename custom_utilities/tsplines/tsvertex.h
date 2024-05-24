@@ -56,11 +56,11 @@ public:
 
     /// Default constructor
     TsVertex(std::size_t Id, knot_t pXi, knot_t pEta)
-    : mId(Id), mpXi(pXi), mpEta(pEta), mpZeta(knot_t(new Knot<double>(0.0))), mType(UNDEFINED_JOINT)
+        : mId(Id), mpXi(pXi), mpEta(pEta), mpZeta(knot_t(new Knot<double>(0.0))), mType(UNDEFINED_JOINT)
     {}
 
     TsVertex(std::size_t Id, knot_t pXi, knot_t pEta, knot_t pZeta)
-    : mId(Id), mpXi(pXi), mpEta(pEta), mpZeta(pZeta), mType(UNDEFINED_JOINT)
+        : mId(Id), mpXi(pXi), mpEta(pEta), mpZeta(pZeta), mType(UNDEFINED_JOINT)
     {}
 
     /// Get and Set for edge identification
@@ -91,9 +91,9 @@ public:
     bool IsTJoint() const
     {
         return (mType == T_JOINT_LEFT)
-            || (mType == T_JOINT_RIGHT)
-            || (mType == T_JOINT_UP)
-            || (mType == T_JOINT_DOWN);
+               || (mType == T_JOINT_RIGHT)
+               || (mType == T_JOINT_UP)
+               || (mType == T_JOINT_DOWN);
     }
 
     /// Information
@@ -121,4 +121,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TsVertex& rThis)
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TS_VERTEX_H_INCLUDED
-

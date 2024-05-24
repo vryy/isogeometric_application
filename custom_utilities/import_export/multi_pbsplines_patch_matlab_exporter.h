@@ -67,59 +67,69 @@ public:
         rOStream << "% Degree" << std::endl;
         rOStream << "P" << patch_id << "_params.p1 = " << pFESpace->Order(0) << ";\n";
         if (TFESpaceType::Dim() > 1)
+        {
             rOStream << "P" << patch_id << "_params.p2 = " << pFESpace->Order(1) << ";\n";
+        }
         if (TFESpaceType::Dim() > 2)
+        {
             rOStream << "P" << patch_id << "_params.p3 = " << pFESpace->Order(2) << ";\n";
+        }
         rOStream << "\n";
 
         for (typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
         {
             (*it_bf)->LocalKnots(0, local_knots[0]);
-            if (TFESpaceType::Dim() > 1) (*it_bf)->LocalKnots(1, local_knots[1]);
-            if (TFESpaceType::Dim() > 2) (*it_bf)->LocalKnots(2, local_knots[2]);
+            if (TFESpaceType::Dim() > 1) { (*it_bf)->LocalKnots(1, local_knots[1]); }
+            if (TFESpaceType::Dim() > 2) { (*it_bf)->LocalKnots(2, local_knots[2]); }
 
             double min_xi_bf = *std::min_element(local_knots[0].begin(), local_knots[0].end());
             double max_xi_bf = *std::max_element(local_knots[0].begin(), local_knots[0].end());
-            if (min_xi_bf < min_xi) min_xi = min_xi_bf;
-            if (max_xi_bf > max_xi) max_xi = max_xi_bf;
+            if (min_xi_bf < min_xi) { min_xi = min_xi_bf; }
+            if (max_xi_bf > max_xi) { max_xi = max_xi_bf; }
 
             if (TFESpaceType::Dim() > 1)
             {
                 double min_eta_bf = *std::min_element(local_knots[1].begin(), local_knots[1].end());
                 double max_eta_bf = *std::max_element(local_knots[1].begin(), local_knots[1].end());
-                if (min_eta_bf < min_eta) min_eta = min_eta_bf;
-                if (max_eta_bf > max_eta) max_eta = max_eta_bf;
+                if (min_eta_bf < min_eta) { min_eta = min_eta_bf; }
+                if (max_eta_bf > max_eta) { max_eta = max_eta_bf; }
             }
 
-            if(TFESpaceType::Dim() > 2)
+            if (TFESpaceType::Dim() > 2)
             {
                 double min_zeta_bf = *std::min_element(local_knots[2].begin(), local_knots[2].end());
                 double max_zeta_bf = *std::max_element(local_knots[2].begin(), local_knots[2].end());
-                if (min_zeta_bf < min_zeta) min_zeta = min_zeta_bf;
-                if (max_zeta_bf > max_zeta) max_zeta = max_zeta_bf;
+                if (min_zeta_bf < min_zeta) { min_zeta = min_zeta_bf; }
+                if (max_zeta_bf > max_zeta) { max_zeta = max_zeta_bf; }
             }
 
             ++cnt;
 
             rOStream << "% basis function " << (*it_bf)->Id() << std::endl;
             rOStream << "P" << patch_id << "_Xi{" << cnt << "} = [";
-            for(std::size_t i = 0; i < local_knots[0].size(); ++i)
+            for (std::size_t i = 0; i < local_knots[0].size(); ++i)
+            {
                 rOStream << " " << local_knots[0][i];
+            }
             rOStream << "];\n";
 
             if (TFESpaceType::Dim() > 1)
             {
                 rOStream << "P" << patch_id << "_Eta{" << cnt << "} = [";
-                for(std::size_t i = 0; i < local_knots[1].size(); ++i)
+                for (std::size_t i = 0; i < local_knots[1].size(); ++i)
+                {
                     rOStream << " " << local_knots[1][i];
+                }
                 rOStream << "];\n";
             }
 
-            if(TFESpaceType::Dim() > 2)
+            if (TFESpaceType::Dim() > 2)
             {
                 rOStream << "P" << patch_id << "_Zeta{" << cnt << "} = [";
-                for(std::size_t i = 0; i < local_knots[2].size(); ++i)
+                for (std::size_t i = 0; i < local_knots[2].size(); ++i)
+                {
                     rOStream << " " << local_knots[2][i];
+                }
                 rOStream << "];\n";
             }
 
@@ -136,7 +146,7 @@ public:
         pFESpace->UpdateCells();
 
         cnt = 0;
-        for(typename cell_container_t::iterator it_cell = pFESpace->pCellManager()->begin(); it_cell != pFESpace->pCellManager()->end(); ++it_cell)
+        for (typename cell_container_t::iterator it_cell = pFESpace->pCellManager()->begin(); it_cell != pFESpace->pCellManager()->end(); ++it_cell)
         {
             ++cnt;
 
@@ -144,18 +154,20 @@ public:
             rOStream << "% cell " << cnt << " information" << std::endl;
             rOStream << "P" << patch_id << "_CId{" << cnt << "} = " << (*it_cell)->Id() << ";\n";
             rOStream << "P" << patch_id << "_S{" << cnt << "} = [" << (*it_cell)->XiMinValue() << " " << (*it_cell)->XiMaxValue();
-            if (TFESpaceType::Dim() > 1) rOStream << "; " << (*it_cell)->EtaMinValue() << " " << (*it_cell)->EtaMaxValue();
-            if (TFESpaceType::Dim() > 2) rOStream << "; " << (*it_cell)->ZetaMinValue() << " " << (*it_cell)->ZetaMaxValue();
+            if (TFESpaceType::Dim() > 1) { rOStream << "; " << (*it_cell)->EtaMinValue() << " " << (*it_cell)->EtaMaxValue(); }
+            if (TFESpaceType::Dim() > 2) { rOStream << "; " << (*it_cell)->ZetaMinValue() << " " << (*it_cell)->ZetaMaxValue(); }
             rOStream << "];\n";
 
             // write the extraction operator
             Matrix C = (*it_cell)->GetExtractionOperator();
 
             rOStream << "P" << patch_id << "_C{" << cnt << "} = [";
-            for(std::size_t i = 0; i < C.size1(); ++i)
+            for (std::size_t i = 0; i < C.size1(); ++i)
             {
-                for(std::size_t j = 0;  j < C.size2(); ++ j)
+                for (std::size_t j = 0;  j < C.size2(); ++ j)
+                {
                     rOStream << " " << C(i, j);
+                }
                 rOStream << ";";
             }
             rOStream << "];\n";
@@ -163,32 +175,34 @@ public:
             // write the supported basis functions
             const std::vector<std::size_t>& bfs = (*it_cell)->GetSupportedAnchors();
             rOStream << "P" << patch_id << "_N{" << cnt << "} = [";
-            for(std::size_t i = 0; i < bfs.size(); ++i)
+            for (std::size_t i = 0; i < bfs.size(); ++i)
+            {
                 rOStream << " " << bfs[i];
+            }
             rOStream << "];\n" << std::endl;
         }
 
         /* visualization */
         rOStream << "% visualize the geometry\n";
         rOStream << "P" << patch_id << "_params.min_xi = " << min_xi << ";\n";
-        rOStream << "P" << patch_id << "_params.max_xi = " << 0.999999*max_xi << ";\n";
+        rOStream << "P" << patch_id << "_params.max_xi = " << 0.999999 * max_xi << ";\n";
         rOStream << "P" << patch_id << "_params.num_points1 = 100;\n";
         if (TFESpaceType::Dim() > 1)
         {
             rOStream << "P" << patch_id << "_params.min_eta = " << min_eta << ";\n";
-            rOStream << "P" << patch_id << "_params.max_eta = " << 0.999999*max_eta << ";\n";
+            rOStream << "P" << patch_id << "_params.max_eta = " << 0.999999 * max_eta << ";\n";
             rOStream << "P" << patch_id << "_params.num_points2 = 100;\n";
         }
         if (TFESpaceType::Dim() > 2)
         {
             rOStream << "P" << patch_id << "_params.min_zeta = " << min_zeta << ";\n";
-            rOStream << "P" << patch_id << "_params.max_zeta = " << 0.999999*max_zeta << ";\n";
+            rOStream << "P" << patch_id << "_params.max_zeta = " << 0.999999 * max_zeta << ";\n";
             rOStream << "P" << patch_id << "_params.num_points3 = 100;\n";
         }
         rOStream << "plot_geom_hbsplines_" << TFESpaceType::Dim() << "d_cdb(";
         rOStream << "P" << patch_id << "_Xi";
-        if (TFESpaceType::Dim() > 1) rOStream << ",P" << patch_id << "_Eta";
-        if (TFESpaceType::Dim() > 2) rOStream << ",P" << patch_id << "_Zeta";
+        if (TFESpaceType::Dim() > 1) { rOStream << ",P" << patch_id << "_Eta"; }
+        if (TFESpaceType::Dim() > 2) { rOStream << ",P" << patch_id << "_Zeta"; }
         rOStream << ",P" << patch_id << "_P";
         rOStream << ",P" << patch_id << "_W";
         rOStream << ",P" << patch_id << "_params);\n";
@@ -262,9 +276,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiPBSplinesPat
     return rOStream;
 }
 
-
-
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_PBSPLINES_PATCH_MATLAB_EXPORTER_H_INCLUDED defined
-

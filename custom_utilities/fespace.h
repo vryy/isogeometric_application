@@ -22,7 +22,6 @@
 // #include "custom_utilities/nurbs/cell_manager.h"
 #include "custom_utilities/cell_container.h"
 
-
 namespace Kratos
 {
 
@@ -35,9 +34,9 @@ class FESpace
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const FESpace> ConstPointer;
-    #endif
+#endif
 
     /// Type definition
     typedef CellContainer cell_container_t;
@@ -48,9 +47,9 @@ public:
     /// Destructor
     virtual ~FESpace()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         this->PrintInfo(std::cout); std::cout << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Helper to create new BSplinesFESpace pointer
@@ -231,8 +230,10 @@ public:
         {
             KRATOS_WATCH(TDim)
             std::cout << "mGlobalToLocal:";
-            for(std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalToLocal.begin(); it2 != mGlobalToLocal.end(); ++it2)
+            for (std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalToLocal.begin(); it2 != mGlobalToLocal.end(); ++it2)
+            {
                 std::cout << " " << it2->first << "->" << it2->second;
+            }
             std::cout << std::endl;
             KRATOS_ERROR << "The global id " << global_id << " does not exist in mGlobalToLocal map";
         }
@@ -245,16 +246,18 @@ public:
     {
         std::vector<std::size_t> local_ids(global_ids.size());
         for (std::size_t i = 0; i < global_ids.size(); ++i)
+        {
             local_ids[i] = this->LocalId(global_ids[i]);
+        }
         return local_ids;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
     virtual bool CheckBoundaryCompatibility(const FESpace<TDim>& rFESpace1, const BoundarySide& side1,
-            const FESpace<TDim>& rFESpace2, const BoundarySide& side2) const
+                                            const FESpace<TDim>& rFESpace2, const BoundarySide& side2) const
     {
-        typename FESpace<TDim-1>::Pointer pBFESpace1 = rFESpace1.ConstructBoundaryFESpace(side1);
-        typename FESpace<TDim-1>::Pointer pBFESpace2 = rFESpace1.ConstructBoundaryFESpace(side2);
+        typename FESpace < TDim - 1 >::Pointer pBFESpace1 = rFESpace1.ConstructBoundaryFESpace(side1);
+        typename FESpace < TDim - 1 >::Pointer pBFESpace2 = rFESpace1.ConstructBoundaryFESpace(side2);
 
         return (*pBFESpace1) == (*pBFESpace2);
     }
@@ -304,20 +307,20 @@ public:
     }
 
     /// Construct the boundary FESpace based on side
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    virtual typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
     {
         KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
     }
 
     /// Construct the boundary FESpace based on side and local relative configuration between two patches
-    virtual typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
-        const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
+    virtual typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+            const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
         KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
     }
 
     /// Construct the sliced FESpace
-    virtual typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir, double xi) const
+    virtual typename FESpace < TDim - 1 >::Pointer ConstructSlicedFESpace(int idir, double xi) const
     {
         KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
     }
@@ -341,15 +344,15 @@ public:
     /// Fast function to get the opposite boundary side
     static BoundarySide OppositeBoundarySide(const BoundarySide& side)
     {
-        if (side == _BLEFT_) return _BRIGHT_;
-        else if (side == _BRIGHT_) return _BLEFT_;
-        else if (side == _BTOP_) return _BBOTTOM_;
-        else if (side == _BBOTTOM_) return _BTOP_;
-        else if (side == _BFRONT_) return _BBACK_;
-        else if (side == _BBACK_) return _BFRONT_;
+        if (side == _BLEFT_) { return _BRIGHT_; }
+        else if (side == _BRIGHT_) { return _BLEFT_; }
+        else if (side == _BTOP_) { return _BBOTTOM_; }
+        else if (side == _BBOTTOM_) { return _BTOP_; }
+        else if (side == _BFRONT_) { return _BBACK_; }
+        else if (side == _BBACK_) { return _BFRONT_; }
         else
             KRATOS_THROW_ERROR(std::logic_error, "Invalid boundary side", side)
-    }
+        }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -389,11 +392,15 @@ public:
         rOStream << " Function Indices:";
         std::vector<std::size_t> func_indices = this->FunctionIndices();
         for (std::size_t i = 0; i < func_indices.size(); ++i)
+        {
             rOStream << " " << func_indices[i];
+        }
         rOStream << std::endl;
         rOStream << " GlobalToLocal:";
-        for(std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalToLocal.begin(); it2 != mGlobalToLocal.end(); ++it2)
+        for (std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalToLocal.begin(); it2 != mGlobalToLocal.end(); ++it2)
+        {
             rOStream << " " << it2->first << "->" << it2->second;
+        }
     }
 
 protected:
@@ -416,8 +423,6 @@ private:
     }
 };
 
-
-
 /**
  * Template specific instantiation for null-D FESpace to terminate the compilation
  */
@@ -427,9 +432,9 @@ class FESpace<0>
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const FESpace> ConstPointer;
-    #endif
+#endif
 
     /// Type definition
     typedef CellContainer cell_container_t;
@@ -502,11 +507,11 @@ public:
     }
 
     /// Get the vector of function indices
-    virtual std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t>{mFunctionId};}
+    virtual std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t> {mFunctionId};}
 
     /// Check the compatibility between boundaries of two FESpacees
     virtual bool CheckBoundaryCompatibility(const FESpace<0>& rFESpace1, const BoundarySide& side1,
-            const FESpace<0>& rFESpace2, const BoundarySide& side2) const
+                                            const FESpace<0>& rFESpace2, const BoundarySide& side2) const
     {
         return true;
     }
@@ -557,19 +562,18 @@ private:
     }
 };
 
-
 /**
  * Template specific instantiation for -1-D FESpace to terminate the compilation
  */
 template<>
-class FESpace<-1>
+class FESpace < -1 >
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const FESpace> ConstPointer;
-    #endif
+#endif
 
     /// Default constructor
     FESpace() {}
@@ -602,14 +606,14 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const FESpace<-1>& rOther) const
+    virtual bool operator==(const FESpace < -1 > & rOther) const
     {
         return true;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpace<-1>& rFESpace1, const BoundarySide& side1,
-            const FESpace<-1>& rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpace < -1 > & rFESpace1, const BoundarySide& side1,
+                                            const FESpace < -1 > & rFESpace2, const BoundarySide& side2) const
     {
         return true;
     }
@@ -637,19 +641,18 @@ public:
     }
 };
 
-
 /**
  * Template specific instantiation for -2-D FESpace to terminate the compilation
  */
 template<>
-class FESpace<-2>
+class FESpace < -2 >
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(FESpace);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const FESpace> ConstPointer;
-    #endif
+#endif
 
     /// Default constructor
     FESpace() {}
@@ -682,14 +685,14 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const FESpace<-2>& rOther) const
+    virtual bool operator==(const FESpace < -2 > & rOther) const
     {
         return true;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpace<-2>& rFESpace1, const BoundarySide& side1,
-            const FESpace<-2>& rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpace < -2 > & rFESpace1, const BoundarySide& side1,
+                                            const FESpace < -2 > & rFESpace2, const BoundarySide& side2) const
     {
         return true;
     }
@@ -717,7 +720,6 @@ public:
     }
 };
 
-
 /// output stream function
 template<int TDim>
 inline std::ostream& operator <<(std::ostream& rOStream, const FESpace<TDim>& rThis)
@@ -734,4 +736,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const FESpace<TDim>& rT
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_FESPACE_H_INCLUDED defined
-

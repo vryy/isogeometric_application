@@ -10,14 +10,10 @@ see isogeometric_application/LICENSE.txt
 //
 //
 
-
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ADD_STRATEGIES_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_ADD_STRATEGIES_TO_PYTHON_H_INCLUDED
 
-
-
 // System includes
-
 
 // External includes
 #include <boost/python.hpp>

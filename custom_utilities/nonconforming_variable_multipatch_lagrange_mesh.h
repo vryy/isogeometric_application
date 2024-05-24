@@ -47,7 +47,7 @@ public:
 
     /// Default constructor
     NonConformingVariableMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch, ModelPart& r_model_part)
-    : mpMultiPatch(pMultiPatch), mr_model_part(r_model_part)
+        : mpMultiPatch(pMultiPatch), mr_model_part(r_model_part)
     {}
 
     /// Destructor
@@ -61,7 +61,9 @@ public:
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             for (std::size_t dim = 0; dim < TDim; ++dim)
+            {
                 mNumDivision[it->Id()][dim] = num_division;
+            }
         }
 
     }
@@ -98,13 +100,17 @@ public:
         // get the sample element
         std::string element_name = mBaseElementName;
         if (TDim == 2)
+        {
             element_name = element_name + "2D4N";
+        }
         else if (TDim == 3)
+        {
             element_name = element_name + "3D8N";
+        }
 
         std::string NodeKey = std::string("Node");
 
-        if(!KratosComponents<Element>::Has(element_name))
+        if (!KratosComponents<Element>::Has(element_name))
         {
             std::stringstream buffer;
             buffer << "Element " << element_name << " is not registered in Kratos.";
@@ -134,12 +140,12 @@ public:
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
-                std::size_t NumDivision1 = it_num->second[0];
+                    std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
-                #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
-                #endif
+#endif
 
                 for (std::size_t i = 0; i <= NumDivision1; ++i)
                 {
@@ -148,9 +154,9 @@ public:
                     {
                         p_ref[1] = ((double) j) / NumDivision2;
 
-                        #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                         std::cout << "p_ref: " << p_ref[0] << " " << p_ref[1] << std::endl;
-                        #endif
+#endif
 
                         this->CreateNode(p_ref, *it, NodeCounter);
                         ++NodeCounter;
@@ -177,12 +183,14 @@ public:
 
                         Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
                         mr_model_part.AddElement(pNewElement);
-                        #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                         std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
                         for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
+                        {
                             std::cout << " " << pNewElement->GetGeometry()[n].Id();
+                        }
                         std::cout << std::endl;
-                        #endif
+#endif
                     }
                 }
 
@@ -202,14 +210,14 @@ public:
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
-                std::size_t NumDivision1 = it_num->second[0];
+                    std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
                 std::size_t NumDivision3 = it_num->second[2];
-                #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
                 KRATOS_WATCH(NumDivision3)
-                #endif
+#endif
 
                 for (std::size_t i = 0; i <= NumDivision1; ++i)
                 {
@@ -257,12 +265,14 @@ public:
 
                             Element::Pointer pNewElement = rCloneElement.Create(ElementCounter++, temp_element_nodes, pNewProperties);
                             mr_model_part.AddElement(pNewElement);
-                            #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                             std::cout << "Element " << pNewElement->Id() << " is created with connectivity:";
                             for (std::size_t n = 0; n < pNewElement->GetGeometry().size(); ++n)
+                            {
                                 std::cout << " " << pNewElement->GetGeometry()[n].Id();
+                            }
                             std::cout << std::endl;
-                            #endif
+#endif
                         }
                     }
                 }
@@ -279,14 +289,12 @@ public:
         }
     }
 
-
 //    /// Transfer the variable to the model_part
 //    template<typename TVariableType>
 //    void TransferVariables(const TVariableType& rVariable, ModelPart::Pointer mr_model_part) const
 //    {
 //        this->TransferVariables(rVariable, mpMultiPatch, mr_model_part);
 //    }
-
 
     /// Transfer the variable from the multipatch to the model_part
     /// This function allows to input a different multipatch than the one used to generate the model_part. User must keep track with the compatibility.
@@ -317,12 +325,12 @@ public:
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
-                std::size_t NumDivision1 = it_num->second[0];
+                    std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
-                #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
-                #endif
+#endif
 
                 for (std::size_t i = 0; i <= NumDivision1; ++i)
                 {
@@ -331,9 +339,9 @@ public:
                     {
                         p_ref[1] = ((double) j) / NumDivision2;
 
-                        #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                         std::cout << "p_ref: " << p_ref[0] << " " << p_ref[1] << std::endl;
-                        #endif
+#endif
 
                         NodeType::Pointer pNode = mr_model_part.pGetNode(NodeCounter);
                         typename TVariableType::Type value = pGridFunction->GetValue(p_ref);
@@ -349,14 +357,14 @@ public:
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
-                std::size_t NumDivision1 = it_num->second[0];
+                    std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
                 std::size_t NumDivision3 = it_num->second[2];
-                #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
                 KRATOS_WATCH(NumDivision3)
-                #endif
+#endif
 
                 for (std::size_t i = 0; i <= NumDivision1; ++i)
                 {
@@ -378,7 +386,6 @@ public:
             }
         }
     }
-
 
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
@@ -405,15 +412,15 @@ private:
 
     /// Helper function to create new node from patch and add to the model_part. The control values will be carried.
     void CreateNode(const std::vector<double>& p_ref,
-        const Patch<TDim>& rPatch,
-        std::size_t NodeCounter) const
+                    const Patch<TDim>& rPatch,
+                    std::size_t NodeCounter) const
     {
         typename Patch<TDim>::ControlPointType p = rPatch.pControlPointGridFunction()->GetValue(p_ref);
 
         typename NodeType::Pointer pNewNode = mr_model_part.CreateNewNode(NodeCounter, p.X(), p.Y(), p.Z());
-        #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
         std::cout << "Node " << pNewNode->Id() << " (" << pNewNode->X() << " " << pNewNode->Y() << " " << pNewNode->Z() << ") is created" << std::endl;
-        #endif
+#endif
     }
 
 };
@@ -435,4 +442,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const NonConformingVari
 #endif
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_NONCONFORMING_VARIABLE_MULTIPATCH_LAGRANGE_MESH_H_INCLUDED defined
-

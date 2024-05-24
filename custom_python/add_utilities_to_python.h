@@ -10,10 +10,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ADD_CUSTOM_UTILITIES_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_ADD_CUSTOM_UTILITIES_TO_PYTHON_H_INCLUDED
-
 
 namespace Kratos
 {
@@ -29,4 +27,3 @@ void  IsogeometricApplication_AddFrontendUtilitiesToPython();
 }  // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_ADD_CUSTOM_UTILITIES_TO_PYTHON_H_INCLUDED  defined
-

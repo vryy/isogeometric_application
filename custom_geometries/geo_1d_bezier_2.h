@@ -22,7 +22,6 @@ see isogeometric_application/LICENSE.txt
 #include "includes/define.h"
 #include "custom_geometries/geo_1d_bezier.h"
 
-
 namespace Kratos
 {
 
@@ -182,7 +181,7 @@ public:
     {}
 
     Geo1dBezier2(const PointsArrayType& ThisPoints)
-    : BaseType( ThisPoints )
+        : BaseType( ThisPoints )
     {}
 
     /**
@@ -195,7 +194,7 @@ public:
      * source geometry's points too.
      */
     Geo1dBezier2( Geo1dBezier2 const& rOther )
-    : BaseType( rOther )
+        : BaseType( rOther )
     {}
 
     /**
@@ -210,7 +209,7 @@ public:
      * source geometry's points too.
      */
     template<class TOtherPointType> Geo1dBezier2( Geo1dBezier2<TOtherPointType> const& rOther )
-    : BaseType( rOther )
+        : BaseType( rOther )
     {}
 
     /**
@@ -268,8 +267,8 @@ public:
         if (BaseType::mpBezierGeometryData != NULL)
         {
             pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
-                BaseType::mCtrlWeights, BaseType::mExtractionOperator, BaseType::mOrder, 0, 0,
-                static_cast<int>(BaseType::mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
+                                         BaseType::mCtrlWeights, BaseType::mExtractionOperator, BaseType::mOrder, 0, 0,
+                                         static_cast<int>(BaseType::mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
         }
         return pNewGeom;
     }
@@ -303,11 +302,11 @@ public:
 
     GeometryData::KratosGeometryType GetGeometryType() const final
     {
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
         return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::KratosIsogeometricGeometryType::Kratos_Bezier1D2);
-        #else
+#else
         return GeometryData::KratosGeometryType::Kratos_Bezier1D2;
-        #endif
+#endif
     }
 
     /**
@@ -329,7 +328,7 @@ public:
      * @see InverseOfJacobian
      */
     JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod ) const final
+                             IntegrationMethod ThisMethod ) const final
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
@@ -382,8 +381,8 @@ public:
      * @see InverseOfJacobian
      */
     JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod,
-            const MatrixType& DeltaPosition ) const final
+                             IntegrationMethod ThisMethod,
+                             const MatrixType& DeltaPosition ) const final
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
@@ -408,8 +407,8 @@ public:
 
             for ( unsigned int i = 0; i < this->PointsNumber(); ++i )
             {
-                jacobian( 0, 0 ) += ( this->GetPoint( i ).X() + DeltaPosition(i,0) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-                jacobian( 1, 0 ) += ( this->GetPoint( i ).Y() + DeltaPosition(i,1) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
+                jacobian( 0, 0 ) += ( this->GetPoint( i ).X() + DeltaPosition(i, 0) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
+                jacobian( 1, 0 ) += ( this->GetPoint( i ).Y() + DeltaPosition(i, 1) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
             }
 
             rResult[pnt] = jacobian;
@@ -434,8 +433,8 @@ public:
      * @see InverseOfJacobian
      */
     MatrixType& Jacobian( MatrixType& rResult,
-            IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const final
+                          IndexType IntegrationPointIndex,
+                          IntegrationMethod ThisMethod ) const final
     {
         //setting up size of jacobian matrix
         rResult.resize( 2, 1 );
@@ -448,7 +447,7 @@ public:
         //values of shape functions in integration points
         VectorType ShapeFunctionValuesInIntegrationPoint = ZeroVector( 3 );
         ShapeFunctionValuesInIntegrationPoint = row( BaseType::CalculateShapeFunctionsIntegrationPointsValues( ThisMethod ),
-                IntegrationPointIndex );
+                                                IntegrationPointIndex );
 
         //Elements of jacobian matrix (e.g. J(1,1) = dX1/dXi1)
         double j0 = 0.0;
@@ -517,7 +516,7 @@ public:
      * @see InverseOfJacobian
      */
     VectorType& DeterminantOfJacobian( VectorType& rResult,
-            IntegrationMethod ThisMethod ) const final
+                                       IntegrationMethod ThisMethod ) const final
     {
         KRATOS_ERROR << "Jacobian is not square";
         return rResult;
@@ -543,7 +542,7 @@ public:
      * @see InverseOfJacobian
      */
     double DeterminantOfJacobian( IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const final
+                                  IntegrationMethod ThisMethod ) const final
     {
         KRATOS_ERROR << "Jacobian is not square";
         return 0.0;
@@ -588,7 +587,7 @@ public:
      * KLUDGE: works only with explicitly generated MatrixType object
      */
     JacobiansType& InverseOfJacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod ) const final
+                                      IntegrationMethod ThisMethod ) const final
     {
         KRATOS_ERROR << "Jacobian is not square";
         return rResult;
@@ -616,8 +615,8 @@ public:
      * KLUDGE: works only with explicitly generated MatrixType object
      */
     MatrixType& InverseOfJacobian( MatrixType& rResult,
-            IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const final
+                                   IndexType IntegrationPointIndex,
+                                   IntegrationMethod ThisMethod ) const final
     {
         KRATOS_ERROR << "Jacobian is not square";
         return rResult;
@@ -678,23 +677,29 @@ public:
         BaseType::mExtractionOperator = ExtractionOperator;
 
         // size checking
-        if(BaseType::mExtractionOperator.size1() != this->PointsNumber())
+        if (BaseType::mExtractionOperator.size1() != this->PointsNumber())
+        {
             KRATOS_ERROR << "The number of row of extraction operator must be equal to number of nodes";
-        if(BaseType::mExtractionOperator.size2() != BaseType::mNumber)
+        }
+        if (BaseType::mExtractionOperator.size2() != BaseType::mNumber)
+        {
             KRATOS_ERROR << "The number of column of extraction operator must be equal to (p_u+1)";
-        if(BaseType::mCtrlWeights.size() != this->PointsNumber())
+        }
+        if (BaseType::mCtrlWeights.size() != this->PointsNumber())
+        {
             KRATOS_ERROR << "The number of weights must be equal to number of nodes";
+        }
 
         // find the existing integration rule or create new one if not existed
         BezierUtils::RegisterIntegrationRule<1, 2, 1>(NumberOfIntegrationMethod, Degree1);
 
         // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
         BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<1, 2, 1>(NumberOfIntegrationMethod, Degree1);
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
         BaseType::SetGeometryData(&(*BaseType::mpBezierGeometryData));
-        #else
+#else
         BaseType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
-        #endif
+#endif
     }
 
 private:
@@ -743,13 +748,13 @@ private:
  * input stream function
  */
 template<class TPointType> inline std::istream& operator >>(
-        std::istream& rIStream, Geo1dBezier2<TPointType>& rThis);
+    std::istream& rIStream, Geo1dBezier2<TPointType>& rThis);
 
 /**
  * output stream function
  */
 template<class TPointType> inline std::ostream& operator <<(
-        std::ostream& rOStream, const Geo1dBezier2<TPointType>& rThis)
+    std::ostream& rOStream, const Geo1dBezier2<TPointType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

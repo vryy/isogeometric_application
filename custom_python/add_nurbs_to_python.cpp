@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -35,7 +34,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/iga_python_utils.h"
 #include "custom_python/add_nurbs_to_python.h"
 
-
 namespace Kratos
 {
 
@@ -56,7 +54,9 @@ boost::python::list BSplinesFESpace_GetKnotVector(BSplinesFESpace<TDim>& rDummy)
         const typename BSplinesFESpace<TDim>::knot_container_t& knot_vector = rDummy.KnotVector(TWhichDim);
 
         for (std::size_t i = 0; i < knot_vector.size(); ++i)
+        {
             knot_list.append(knot_vector[i]);
+        }
     }
 
     return knot_list;
@@ -101,7 +101,7 @@ BSplinesFESpace<3>::Pointer BSplinesFESpaceLibrary_CreatePrimitiveFESpace3(BSpli
 }
 
 BSplinesFESpace<1>::Pointer BSplinesFESpaceLibrary_CreateUniformFESpace1(BSplinesFESpaceLibrary& rDummy,
-    std::size_t number_u, std::size_t order_u)
+        std::size_t number_u, std::size_t order_u)
 {
     std::vector<std::size_t> numbers(1);
     numbers[0] = number_u;
@@ -111,8 +111,8 @@ BSplinesFESpace<1>::Pointer BSplinesFESpaceLibrary_CreateUniformFESpace1(BSpline
 }
 
 BSplinesFESpace<2>::Pointer BSplinesFESpaceLibrary_CreateUniformFESpace2(BSplinesFESpaceLibrary& rDummy,
-    std::size_t number_u, std::size_t order_u,
-    std::size_t number_v, std::size_t order_v)
+        std::size_t number_u, std::size_t order_u,
+        std::size_t number_v, std::size_t order_v)
 {
     std::vector<std::size_t> numbers(2);
     numbers[0] = number_u;
@@ -124,9 +124,9 @@ BSplinesFESpace<2>::Pointer BSplinesFESpaceLibrary_CreateUniformFESpace2(BSpline
 }
 
 BSplinesFESpace<3>::Pointer BSplinesFESpaceLibrary_CreateUniformFESpace3(BSplinesFESpaceLibrary& rDummy,
-    std::size_t number_u, std::size_t order_u,
-    std::size_t number_v, std::size_t order_v,
-    std::size_t number_w, std::size_t order_w)
+        std::size_t number_u, std::size_t order_u,
+        std::size_t number_v, std::size_t order_v,
+        std::size_t number_w, std::size_t order_w)
 {
     std::vector<std::size_t> numbers(3);
     numbers[0] = number_u;
@@ -167,7 +167,7 @@ bool DomainManager2D_IsInside(DomainManager2D& rDummy, double x1, double x2, dou
 
 template<int TDim>
 void NURBSTestUtils_ProbeAndTestValuesOnPatch(NURBSTestUtils<TDim>& dummy, typename Patch<TDim>::Pointer pPatch,
-    ModelPart::ConditionsContainerType& rConditions, int integration_order, double tol)
+        ModelPart::ConditionsContainerType& rConditions, int integration_order, double tol)
 {
     GeometryData::IntegrationMethod integration_method = IsogeometricUtility::GetIntegrationMethod(integration_order);
     dummy.ProbeAndTestValuesOnPatch(pPatch, rConditions, integration_method, tol);
@@ -557,4 +557,3 @@ void IsogeometricApplication_AddNURBSToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

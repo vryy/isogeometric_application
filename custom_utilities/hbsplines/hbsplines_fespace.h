@@ -70,9 +70,9 @@ public:
     /// Destructor
     virtual ~HBSplinesFESpace()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Helper to create new HBSplinesFESpace pointer
@@ -86,9 +86,11 @@ public:
     bf_t CreateBf(std::size_t Id, std::size_t Level, const std::vector<std::vector<knot_t> >& rpKnots)
     {
         // search in the current list of basis functions, the one that has the same local knot vector with provided ones
-        for(bf_iterator it = BaseType::bf_begin(); it != BaseType::bf_end(); ++it)
-            if((*it)->Contain(rpKnots))
+        for (bf_iterator it = BaseType::bf_begin(); it != BaseType::bf_end(); ++it)
+            if ((*it)->Contain(rpKnots))
+            {
                 return *it;
+            }
 
         // create the new bf and add the knot
         bf_t p_bf = bf_t(new BasisFunctionType(Id, Level));
@@ -110,9 +112,9 @@ public:
 
         // for each cell compute the extraction operator and add to the anchor
         Vector Crow;
-        for(typename cell_container_t::iterator it_cell = BaseType::mpCellManager->begin(); it_cell != BaseType::mpCellManager->end(); ++it_cell)
+        for (typename cell_container_t::iterator it_cell = BaseType::mpCellManager->begin(); it_cell != BaseType::mpCellManager->end(); ++it_cell)
         {
-            for(typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
+            for (typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
                 BasisFunctionType& bf = *(it_bf->lock());
                 bf.ComputeExtractionOperator(Crow, *it_cell);
@@ -178,9 +180,13 @@ public:
         for (std::size_t i = 0; i < TDim; ++i)
         {
             if (!(this->Order(i)) == rOtherHBSplinesFESpace.Order(i))
+            {
                 return false;
+            }
             if (!(this->KnotVector(i) == rOtherHBSplinesFESpace.KnotVector(i)))
+            {
                 return false;
+            }
         }
 
         return true;
@@ -202,24 +208,30 @@ public:
     domain_t GetSupportDomain(std::size_t Level)
     {
         domain_container_t::iterator it = mSupportDomains.find(Level);
-        if(it != mSupportDomains.end())
+        if (it != mSupportDomains.end())
+        {
             return it->second;
+        }
         else
         {
             domain_t p_domain;
-            if(TDim == 2)
+            if (TDim == 2)
+            {
                 p_domain = domain_t(new DomainManager2D(Level));
-            else if(TDim == 3)
+            }
+            else if (TDim == 3)
+            {
                 p_domain = domain_t(new DomainManager3D(Level));
+            }
             mSupportDomains[Level] = p_domain;
             return p_domain;
         }
     }
 
     /// Construct the boundary FESpace based on side
-    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
+    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
     {
-        typedef HBSplinesFESpace<TDim-1> BoundaryFESpaceType;
+        typedef HBSplinesFESpace < TDim - 1 > BoundaryFESpaceType;
         typename BoundaryFESpaceType::Pointer pBFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
 
         std::map<std::size_t, std::size_t> ident_indices_map;
@@ -233,18 +245,28 @@ public:
                 if (TDim == 2)
                 {
                     if ((side == _BLEFT_) || (side == _BRIGHT_))
+                    {
                         pNewSubBf = (*it)->Project(1);
+                    }
                     if ((side == _BTOP_) || (side == _BBOTTOM_))
+                    {
                         pNewSubBf = (*it)->Project(0);
+                    }
                 }
                 else if (TDim == 3)
                 {
                     if ((side == _BFRONT_) || (side == _BBACK_))
+                    {
                         pNewSubBf = (*it)->Project(0);
+                    }
                     if ((side == _BLEFT_) || (side == _BRIGHT_))
+                    {
                         pNewSubBf = (*it)->Project(1);
+                    }
                     if ((side == _BTOP_) || (side == _BBOTTOM_))
+                    {
                         pNewSubBf = (*it)->Project(2);
+                    }
                 }
 
                 pBFESpace->AddBf(pNewSubBf);
@@ -300,20 +322,20 @@ public:
         typename BoundaryFESpaceType::cell_container_t::Pointer pnew_cells;
         double cell_tol = pBFESpace->pCellManager()->GetTolerance();
 
-        pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new BCellManager<TDim-1, typename BoundaryFESpaceType::CellType>());
+        pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new BCellManager < TDim - 1, typename BoundaryFESpaceType::CellType > ());
 
         if (TDim == 2)
         {
             for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
-                for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
+                for (std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
                 {
                     knot_t pXiMin = (*it)->LocalKnots(0)[i1];
                     knot_t pXiMax = (*it)->LocalKnots(0)[i1 + 1];
 
                     // check if the cell domain length is nonzero
                     double length = (pXiMax->Value() - pXiMin->Value());
-                    if(fabs(length) > cell_tol)
+                    if (fabs(length) > cell_tol)
                     {
                         std::vector<knot_t> pKnots = {pXiMin, pXiMax};
                         typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
@@ -329,19 +351,19 @@ public:
         {
             for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
-                for(std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
+                for (std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
                 {
                     knot_t pXiMin = (*it)->LocalKnots(0)[i1];
                     knot_t pXiMax = (*it)->LocalKnots(0)[i1 + 1];
 
-                    for(std::size_t j1 = 0; j1 < pBFESpace->Order(1) + 1; ++j1)
+                    for (std::size_t j1 = 0; j1 < pBFESpace->Order(1) + 1; ++j1)
                     {
                         knot_t pEtaMin = (*it)->LocalKnots(1)[j1];
                         knot_t pEtaMax = (*it)->LocalKnots(1)[j1 + 1];
 
                         // check if the cell domain area is nonzero
                         double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value());
-                        if(sqrt(fabs(area)) > cell_tol)
+                        if (sqrt(fabs(area)) > cell_tol)
                         {
                             std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax};
                             typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
@@ -362,9 +384,9 @@ public:
         pBFESpace->UpdateCells();
 
         // re-add the supporting cells
-        for(typename BoundaryFESpaceType::cell_container_t::iterator it_cell = pBFESpace->pCellManager()->begin(); it_cell != pBFESpace->pCellManager()->end(); ++it_cell)
+        for (typename BoundaryFESpaceType::cell_container_t::iterator it_cell = pBFESpace->pCellManager()->begin(); it_cell != pBFESpace->pCellManager()->end(); ++it_cell)
         {
-            for(typename BoundaryFESpaceType::CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
+            for (typename BoundaryFESpaceType::CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
                 (*it_bf).lock()->AddCell(*it_cell);
             }
@@ -374,9 +396,9 @@ public:
     }
 
     /// Construct the boundary FESpace based on side and rotation
-    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
-        const std::map<std::size_t, std::size_t>& local_parameter_map,
-        const std::vector<BoundaryDirection>& directions) const override
+    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+            const std::map<std::size_t, std::size_t>& local_parameter_map,
+            const std::vector<BoundaryDirection>& directions) const override
     {
         return this->ConstructBoundaryFESpace(side);
     }
@@ -407,9 +429,11 @@ public:
         rOStream << "###############Begin knot vectors################" << std::endl;
         for (int dim = 0; dim < TDim; ++dim)
         {
-            rOStream << "knot vector " << dim+1 << ":";
+            rOStream << "knot vector " << dim + 1 << ":";
             for (std::size_t i = 0; i < this->KnotVector(dim).size(); ++i)
+            {
                 rOStream << " " << this->KnotVector(dim)[i];
+            }
             rOStream << std::endl;
         }
         rOStream << "###############End knot vectors##################" << std::endl;
@@ -422,13 +446,15 @@ public:
         rOStream << "###################" << std::endl;
 
         // print the cells in each level
-        for (std::size_t level = 1; level < mLastLevel+1; ++level)
+        for (std::size_t level = 1; level < mLastLevel + 1; ++level)
         {
             rOStream << "###############Begin cells at level " << level << "################" << std::endl;
             std::size_t n = 0;
-            for(typename cell_container_t::iterator it = BaseType::mpCellManager->begin(); it != BaseType::mpCellManager->end(); ++it)
-                if((*it)->Level() == level)
+            for (typename cell_container_t::iterator it = BaseType::mpCellManager->begin(); it != BaseType::mpCellManager->end(); ++it)
+                if ((*it)->Level() == level)
+                {
                     rOStream << "(" << ++n << ") " << *(*it) << std::endl;
+                }
             rOStream << "###############End cells at level " << level << "################" << std::endl;
         }
     }

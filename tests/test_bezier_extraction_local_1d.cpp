@@ -31,9 +31,8 @@ int main(int argc, char** argv)
 
     KRATOS_WATCH(Ubar)
     KRATOS_WATCH(nb)
-    for(int i = 0; i < Crows.size(); ++i)
+    for (int i = 0; i < Crows.size(); ++i)
         KRATOS_WATCH(Crows[i])
 
-    return 0;
+        return 0;
 }
-

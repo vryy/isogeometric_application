@@ -84,7 +84,7 @@ public:
     /// Get the basis function based on equation id
     template<int TDim>
     static typename HBSplinesFESpace<TDim>::bf_t GetBfByEquationId(typename MultiPatch<TDim>::Pointer pMultiPatch,
-        std::size_t EquationId)
+            std::size_t EquationId)
     {
         typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
@@ -96,8 +96,10 @@ public:
             if (pFESpace == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
-            if (pFESpace->HasBfByEquationId(EquationId))
-                return pFESpace->pGetBfByEquationId(EquationId);
+                if (pFESpace->HasBfByEquationId(EquationId))
+                {
+                    return pFESpace->pGetBfByEquationId(EquationId);
+                }
         }
 
         std::stringstream ss;
@@ -127,10 +129,10 @@ public:
             if (pFESpace == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
 
-            for (bf_iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
-            {
-                dofs_map[(*it_bf)->EquationId()].push_back(std::make_pair(it->Id(), (*it_bf)->Id()));
-            }
+                for (bf_iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
+                {
+                    dofs_map[(*it_bf)->EquationId()].push_back(std::make_pair(it->Id(), (*it_bf)->Id()));
+                }
         }
 
         for (map_t::iterator it = dofs_map.begin(); it != dofs_map.end(); ++it)
@@ -170,7 +172,7 @@ public:
                         double err = std::sqrt(std::pow(p_bf->GetValue(CONTROL_POINT).X() - x, 2) + std::pow(p_bf->GetValue(CONTROL_POINT).Y() - y, 2) + std::pow(p_bf->GetValue(CONTROL_POINT).Z() - z, 2));
                         if (err > tol)
                             KRATOS_THROW_ERROR(std::logic_error, "The CONTROL_POINT is not consistent at dof", it->first)
-                    }
+                        }
                 }
             }
         }
@@ -206,12 +208,12 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<2>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, "The input patch is not B-Splines patch", "")
 
-    typename BSplinesFESpace<2>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<2> >(pPatch->pFESpace());
+        typename BSplinesFESpace<2>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<2> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
-    // create the hierarchical B-Splines FESpace
-    typename HBSplinesFESpace<2>::Pointer pNewFESpace = HBSplinesFESpace<2>::Create();
+        // create the hierarchical B-Splines FESpace
+        typename HBSplinesFESpace<2>::Pointer pNewFESpace = HBSplinesFESpace<2>::Create();
 
     for (int dim = 0; dim < 2; ++dim)
     {
@@ -235,19 +237,23 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
     std::vector<std::size_t> func_indices = pFESpace->FunctionIndices();
 
     std::size_t id = 0;
-    for(std::size_t j = 0; j < number_2; ++j)
+    for (std::size_t j = 0; j < number_2; ++j)
     {
         // create and fill the local knot vector
         std::vector<knot_t> pLocalKnots2;
-        for(std::size_t k = 0; k < pFESpace->Order(1) + 2; ++k)
+        for (std::size_t k = 0; k < pFESpace->Order(1) + 2; ++k)
+        {
             pLocalKnots2.push_back(pFESpace->KnotVector(1).pKnotAt(j + k));
+        }
 
-        for(std::size_t i = 0; i < number_1; ++i)
+        for (std::size_t i = 0; i < number_1; ++i)
         {
             // create and fill the local knot vector
             std::vector<knot_t> pLocalKnots1;
-            for(std::size_t k = 0; k < pFESpace->Order(0) + 2; ++k)
+            for (std::size_t k = 0; k < pFESpace->Order(0) + 2; ++k)
+            {
                 pLocalKnots1.push_back(pFESpace->KnotVector(0).pKnotAt(i + k));
+            }
 
             // create the basis function object
             std::size_t i_func = j * number_1 + i;
@@ -258,26 +264,26 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             p_bf->SetEquationId(func_id);
 
             // set the boundary information
-            if (i == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
-            else if (i == number_1-1) p_bf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+            if (i == 0) { p_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
+            else if (i == number_1 - 1) { p_bf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
 
-            if (j == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
-            else if (j == number_2-1) p_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
+            if (j == 0) { p_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
+            else if (j == number_2 - 1) { p_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
 
             // create the cells for the basis function
-            for(std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
+            for (std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
             {
                 knot_t pLeft = pFESpace->KnotVector(0).pKnotAt(i + i1);
                 knot_t pRight = pFESpace->KnotVector(0).pKnotAt(i + i1 + 1);
 
-                for(std::size_t j1 = 0; j1 < pFESpace->Order(1) + 1; ++j1)
+                for (std::size_t j1 = 0; j1 < pFESpace->Order(1) + 1; ++j1)
                 {
                     knot_t pDown = pFESpace->KnotVector(1).pKnotAt(j + j1);
                     knot_t pUp = pFESpace->KnotVector(1).pKnotAt(j + j1 + 1);
 
                     // check if the cell domain area is nonzero
                     double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value());
-                    if(fabs(area) > area_tol)
+                    if (fabs(area) > area_tol)
                     {
                         std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp};
                         cell_t p_cell = pNewFESpace->pCellManager()->CreateCell(pKnots);
@@ -355,15 +361,17 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<3>::StaticType())
         KRATOS_THROW_ERROR(std::logic_error, "The input patch is not B-Splines patch", "")
 
-    typename BSplinesFESpace<3>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<3> >(pPatch->pFESpace());
+        typename BSplinesFESpace<3>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<3> >(pPatch->pFESpace());
     if (pFESpace == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
-    // create the hierarchical B-Splines FESpace
-    typename HBSplinesFESpace<3>::Pointer pNewFESpace = HBSplinesFESpace<3>::Create();
+        // create the hierarchical B-Splines FESpace
+        typename HBSplinesFESpace<3>::Pointer pNewFESpace = HBSplinesFESpace<3>::Create();
 
     for (int dim = 0; dim < 3; ++dim)
+    {
         pNewFESpace->SetInfo(dim, pPatch->pFESpace()->Order(dim));
+    }
 
     typedef typename BSplinesFESpace<3>::knot_t knot_t;
     typedef typename HBSplinesFESpace<3>::cell_t cell_t;
@@ -382,26 +390,32 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
     std::vector<std::size_t> func_indices = pFESpace->FunctionIndices();
 
     std::size_t id = 0;
-    for(std::size_t l = 0; l < number_3; ++l)
+    for (std::size_t l = 0; l < number_3; ++l)
     {
         // create and fill the local knot vector
         std::vector<knot_t> pLocalKnots3;
-        for(std::size_t k = 0; k < pFESpace->KnotVector(2).size() + 2; ++k)
+        for (std::size_t k = 0; k < pFESpace->KnotVector(2).size() + 2; ++k)
+        {
             pLocalKnots3.push_back(pFESpace->KnotVector(2).pKnotAt(l + k));
+        }
 
-        for(std::size_t j = 0; j < number_2; ++j)
+        for (std::size_t j = 0; j < number_2; ++j)
         {
             // create and fill the local knot vector
             std::vector<knot_t> pLocalKnots2;
-            for(std::size_t k = 0; k < pFESpace->KnotVector(1).size() + 2; ++k)
+            for (std::size_t k = 0; k < pFESpace->KnotVector(1).size() + 2; ++k)
+            {
                 pLocalKnots2.push_back(pFESpace->KnotVector(1).pKnotAt(j + k));
+            }
 
-            for(std::size_t i = 0; i < number_1; ++i)
+            for (std::size_t i = 0; i < number_1; ++i)
             {
                 // create and fill the local knot vector
                 std::vector<knot_t> pLocalKnots1;
-                for(std::size_t k = 0; k < pFESpace->KnotVector(0).size() + 2; ++k)
+                for (std::size_t k = 0; k < pFESpace->KnotVector(0).size() + 2; ++k)
+                {
                     pLocalKnots1.push_back(pFESpace->KnotVector(0).pKnotAt(i + k));
+                }
 
                 // create the basis function object
                 std::size_t i_func = (l * number_2 + j) * number_1 + i;
@@ -412,34 +426,34 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
                 p_bf->SetEquationId(func_id);
 
                 // set the boundary information
-                if (i == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
-                else if (i == number_1-1) p_bf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+                if (i == 0) { p_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
+                else if (i == number_1 - 1) { p_bf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
 
-                if (j == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_BFRONT_));
-                else if (j == number_2-1) p_bf->AddBoundary(BOUNDARY_FLAG(_BBACK_));
+                if (j == 0) { p_bf->AddBoundary(BOUNDARY_FLAG(_BFRONT_)); }
+                else if (j == number_2 - 1) { p_bf->AddBoundary(BOUNDARY_FLAG(_BBACK_)); }
 
-                if (l == 0) p_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
-                else if (l == number_3-1) p_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
+                if (l == 0) { p_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
+                else if (l == number_3 - 1) { p_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
 
                 // create the cells for the basis function
-                for(std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
+                for (std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
                 {
                     knot_t pLeft = pFESpace->KnotVector(0).pKnotAt(i + i1);
                     knot_t pRight = pFESpace->KnotVector(0).pKnotAt(i + i1 + 1);
 
-                    for(std::size_t j1 = 0; j1 < pFESpace->Order(1) + 1; ++j1)
+                    for (std::size_t j1 = 0; j1 < pFESpace->Order(1) + 1; ++j1)
                     {
                         knot_t pDown = pFESpace->KnotVector(1).pKnotAt(j + j1);
                         knot_t pUp = pFESpace->KnotVector(1).pKnotAt(j + j1 + 1);
 
-                        for(std::size_t l1 = 0; l1 < pFESpace->Order(2) + 1; ++l1)
+                        for (std::size_t l1 = 0; l1 < pFESpace->Order(2) + 1; ++l1)
                         {
                             knot_t pBelow = pFESpace->KnotVector(2).pKnotAt(l + l1);
                             knot_t pAbove = pFESpace->KnotVector(2).pKnotAt(l + l1 + 1);
 
                             // check if the cell domain area is nonzero
                             double area = (pRight->Value() - pLeft->Value()) * (pUp->Value() - pDown->Value()) * (pAbove->Value() - pBelow->Value());
-                            if(fabs(area) > area_tol)
+                            if (fabs(area) > area_tol)
                             {
                                 std::vector<knot_t> pKnots = {pLeft, pRight, pDown, pUp, pBelow, pAbove};
                                 cell_t p_cell = pNewFESpace->pCellManager()->CreateCell(pKnots);
@@ -489,4 +503,3 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_PATCH_UTILITY_H_INCLUDED defined
-

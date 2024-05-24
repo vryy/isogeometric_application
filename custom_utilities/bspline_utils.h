@@ -133,23 +133,23 @@ public:
     // note: this only works with open knot vector (i.e. 0  and 1 are repeated p + 1 times)
     template<class ValuesContainerType>
     static int FindSpan(
-            int rN,
-            int rP,
-            double rXi,
-            const ValuesContainerType& rU
+        int rN,
+        int rP,
+        double rXi,
+        const ValuesContainerType& rU
     )
     {
-        if(rXi < rU[0]) return 0;
-        if(rXi == rU[rN]) return rN - 1;
-        if(rXi > rU[rN]) return rN + rP; // this is a dummy value to flag that the knot fall outside the support domain
+        if (rXi < rU[0]) { return 0; }
+        if (rXi == rU[rN]) { return rN - 1; }
+        if (rXi > rU[rN]) { return rN + rP; } // this is a dummy value to flag that the knot fall outside the support domain
 
         int low = rP;
         int high = rN;
         int mid = (low + high) / 2;
 
-        while( rXi < rU[mid] || rXi >= rU[mid+1] )
+        while ( rXi < rU[mid] || rXi >= rU[mid + 1] )
         {
-            if(rXi < rU[mid])
+            if (rXi < rU[mid])
             {
                 high = mid;
             }
@@ -167,10 +167,10 @@ public:
     // Note: this implementation has linear, rather than log complexity
     template<class ValuesContainerType>
     static int FindSpan2(
-            int rN,
-            int rP,
-            double rXi,
-            const ValuesContainerType& rU
+        int rN,
+        int rP,
+        double rXi,
+        const ValuesContainerType& rU
     )
     {
         int ret = 0;
@@ -179,7 +179,7 @@ public:
         {
 //            KRATOS_WATCH(ret)
         }
-        if(ret == rN+1) --ret;
+        if (ret == rN + 1) { --ret; }
 //        std::cout << "--------" << std::endl;
         return (ret - 1);
     }
@@ -209,17 +209,23 @@ public:
 //
 //        return mid + 1;
 
-        if(!U.empty())
+        if (!U.empty())
         {
-            if(Xi < U[0])
+            if (Xi < U[0])
+            {
                 return 0;
+            }
 
-            if(Xi > U[U.size()-1])
+            if (Xi > U[U.size() - 1])
+            {
                 return U.size();
+            }
 
-            for(std::size_t i = 0; i < U.size()-1; ++i)
-                if(Xi >= U[i] && Xi < U[i + 1])
+            for (std::size_t i = 0; i < U.size() - 1; ++i)
+                if (Xi >= U[i] && Xi < U[i + 1])
+                {
                     return i + 1;
+                }
         }
 
         return 0;
@@ -303,7 +309,9 @@ public:
         void InitZero(Matrix& S, int m, int n) const
         {
             if (S.size1() != m || S.size2() != n)
+            {
                 S.resize(m, n, false);
+            }
             noalias(S) = ZeroMatrix(m, n);
         }
 
@@ -320,11 +328,11 @@ public:
 
         void InitZero(Matrix& S, int m, int n) const
         {
-            if (S.size() != m) S.resize(m);
+            if (S.size() != m) { S.resize(m); }
             for (int i = 0; i < m; ++i)
             {
-                if (S[i].size() != n) S[i].resize(n);
-                for (int j = 0; j < n; ++j) S[i][j] = 0.0;
+                if (S[i].size() != n) { S[i].resize(n); }
+                for (int j = 0; j < n; ++j) { S[i][j] = 0.0; }
             }
         }
 
@@ -416,14 +424,14 @@ public:
                 d = 0.0;
                 rk = r - k;
                 pk = rP - k;
-                if(r >= k)
+                if (r >= k)
                 {
 //                    a(s2+1 , 1) = a(s1+1,1)/ndu(pk+2,rk+1);
                     a(s2, 0) = a(s1, 0) / ndu(pk + 1, rk);
 //                    d = a(s2+1,1)*ndu(rk+1,pk+1);
                     d = a(s2, 0) * ndu(rk, pk);
                 }
-                if(rk >= -1)
+                if (rk >= -1)
                 {
                     j1 = 1;
                 }
@@ -431,7 +439,7 @@ public:
                 {
                     j1 = -rk;
                 }
-                if((r-1) <= pk)
+                if ((r - 1) <= pk)
                 {
                     j2 = k - 1;
                 }
@@ -451,7 +459,7 @@ public:
                 if (r <= pk)
                 {
 //                    a(s2+1,k+1) = -a(s1+1,k)/ndu(pk+2,r+1);
-                    a(s2, k) = -a(s1, k - 1) / ndu(pk+1, r);
+                    a(s2, k) = -a(s1, k - 1) / ndu(pk + 1, r);
 //                    d = d + a(s2+1,k+1)*ndu(r+1,pk+1);
                     d = d + a(s2, k) * ndu(r, pk);
 //                end
@@ -498,10 +506,14 @@ public:
 
         if (p == 0)
         {
-            if (u >= knots[i] && u < knots[i+1])
+            if (u >= knots[i] && u < knots[i + 1])
+            {
                 y = 1.0;
+            }
             else
+            {
                 y = 0.0;
+            }
 
             // if (i+2 <= knots.size()-1)
             // {
@@ -512,11 +524,15 @@ public:
             return y;
         }
 
-        if (knots[i+p] > knots[i])
-            y = y + (u - knots[i]) / (knots[i+p] - knots[i]) * CoxDeBoor(u, i, p-1, knots);
+        if (knots[i + p] > knots[i])
+        {
+            y = y + (u - knots[i]) / (knots[i + p] - knots[i]) * CoxDeBoor(u, i, p - 1, knots);
+        }
 
-        if (knots[i+p+1] > knots[i+1])
-            y = y + (knots[i+p+1] - u) / (knots[i+p+1] - knots[i+1]) * CoxDeBoor(u, i+1, p-1, knots);
+        if (knots[i + p + 1] > knots[i + 1])
+        {
+            y = y + (knots[i + p + 1] - u) / (knots[i + p + 1] - knots[i + 1]) * CoxDeBoor(u, i + 1, p - 1, knots);
+        }
 
         return y;
     }
@@ -536,19 +552,27 @@ public:
 
         if (p == 0)
         {
-            if ((u >= knots[i]) && (u < knots[i+1]+TOL))
+            if ((u >= knots[i]) && (u < knots[i + 1] + TOL))
+            {
                 y = 1.0;
+            }
             else
+            {
                 y = 0.0;
+            }
 
             return y;
         }
 
-        if (fabs(knots[i+p] - knots[i]) > TOL)
-            y = y + (u - knots[i]) / (knots[i+p] - knots[i]) * CoxDeBoor2(u, i, p-1, knots);
+        if (fabs(knots[i + p] - knots[i]) > TOL)
+        {
+            y = y + (u - knots[i]) / (knots[i + p] - knots[i]) * CoxDeBoor2(u, i, p - 1, knots);
+        }
 
-        if (fabs(knots[i+p+1] - knots[i+1]) > TOL)
-            y = y + (knots[i+p+1] - u) / (knots[i+p+1] - knots[i+1]) * CoxDeBoor2(u, i+1, p-1, knots);
+        if (fabs(knots[i + p + 1] - knots[i + 1]) > TOL)
+        {
+            y = y + (knots[i + p + 1] - u) / (knots[i + p + 1] - knots[i + 1]) * CoxDeBoor2(u, i + 1, p - 1, knots);
+        }
 
         return y;
     }
@@ -564,10 +588,12 @@ public:
     template<class ValuesContainerType>
     static double CoxDeBoor3(double u, int i, int p, const ValuesContainerType& knots)
     {
-        double last_knot = *(knots.end()-1);
+        double last_knot = *(knots.end() - 1);
         double first_knot = *(knots.begin());
         if ((u > last_knot) || (u < first_knot))
+        {
             return 0.0;
+        }
 
         // compute the extended knot vector
         ValuesContainerType ubar;
@@ -575,23 +601,23 @@ public:
         IsogeometricMathUtils::compute_extended_knot_vector(ubar, nt, knots, p);
 
         // find span
-        int s = BSplineUtils::FindSpan(ubar.size()-p-1, p, u, ubar);
+        int s = BSplineUtils::FindSpan(ubar.size() - p - 1, p, u, ubar);
 
         // evaluate the basis functions
-        ValuesContainerType N(p+1);
+        ValuesContainerType N(p + 1);
         BSplineUtils::BasisFuns(N, s, u, p, ubar);
 
-        return N[nt-s+p];
+        return N[nt - s + p];
     }
 
     /// Compute the refinement coefficients for one knot insertion B-Splines refinement in 1D
     /// REF: Eq (5.10) the NURBS books
     template<class MatrixType, class ValuesContainerType>
     static void ComputeBsplinesKnotInsertionCoefficients1D(MatrixType& D,
-                                                           ValuesContainerType& new_knots,
-                                                           int p,
-                                                           const ValuesContainerType& knots,
-                                                           double k)
+            ValuesContainerType& new_knots,
+            int p,
+            const ValuesContainerType& knots,
+            double k)
     {
         // compute the number of basis function
         int n = knots.size() - p - 1;
@@ -606,11 +632,15 @@ public:
 
         // form the new knot vector
         new_knots.resize(knots.size() + 1);
-        for(int i = 0; i < s+1; ++i)
+        for (int i = 0; i < s + 1; ++i)
+        {
             new_knots[i] = knots[i];
-        new_knots[s+1] = k;
-        for(int i = s+2; i < knots.size() + 1; ++i)
-            new_knots[i] = knots[i-1];
+        }
+        new_knots[s + 1] = k;
+        for (int i = s + 2; i < knots.size() + 1; ++i)
+        {
+            new_knots[i] = knots[i - 1];
+        }
 
 //        std::cout << "new_knots:";
 //        for(int i = 0; i < new_knots.size(); ++i)
@@ -618,17 +648,21 @@ public:
 //        std::cout << std::endl;
 
         // initialize and compute coefficient matrix
-        D.resize(n, n+1);
-        noalias(D) = ZeroMatrix(n, n+1);
-        for(int i = 0; i < s-p; ++i)
-            D(i, i) = 1.0;
-        for(int i = s-p; i < s+1; ++i)
+        D.resize(n, n + 1);
+        noalias(D) = ZeroMatrix(n, n + 1);
+        for (int i = 0; i < s - p; ++i)
         {
-            D(i, i) = (k - new_knots[i]) / (new_knots[i+p+1] - new_knots[i]);
-            D(i, i+1) = (new_knots[i+p+2] - k) / (new_knots[i+p+2] - new_knots[i+1]);
+            D(i, i) = 1.0;
         }
-        for(int i = s+1; i < n; ++i)
-            D(i, i+1) = 1.0;
+        for (int i = s - p; i < s + 1; ++i)
+        {
+            D(i, i) = (k - new_knots[i]) / (new_knots[i + p + 1] - new_knots[i]);
+            D(i, i + 1) = (new_knots[i + p + 2] - k) / (new_knots[i + p + 2] - new_knots[i + 1]);
+        }
+        for (int i = s + 1; i < n; ++i)
+        {
+            D(i, i + 1) = 1.0;
+        }
 //        KRATOS_WATCH(D)
 //        std::cout << "-----------------" << std::endl;
     }
@@ -637,10 +671,10 @@ public:
     /// The algorithm used here is not efficient, since multiple matrix multiplication is performed. I shall use the algorithm in the NURBS book.
     template<class MatrixType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3>
     static void ComputeBsplinesKnotInsertionCoefficients1D(MatrixType& D,
-                                                           ValuesContainerType& new_knots,
-                                                           int p,
-                                                           const ValuesContainerType2& knots,
-                                                           const ValuesContainerType3& ins_knots)
+            ValuesContainerType& new_knots,
+            int p,
+            const ValuesContainerType2& knots,
+            const ValuesContainerType3& ins_knots)
     {
         // compute the number of basis function
         int n = knots.size() - p - 1;
@@ -652,7 +686,7 @@ public:
         // copy the knot vector
         new_knots.resize(knots.size());
         // std::copy(knots.begin(), knots.end(), new_knots.begin());
-        for (std::size_t i = 0; i < knots.size(); ++i) new_knots[i] = knots[i];
+        for (std::size_t i = 0; i < knots.size(); ++i) { new_knots[i] = knots[i]; }
 
         ValuesContainerType tmp_knots;
         tmp_knots.resize(new_knots.size());
@@ -660,7 +694,7 @@ public:
 
         // insert individual knots and concatenate coefficient matrix
         MatrixType Di, Dt;
-        for(std::size_t i = 0; i < ins_knots.size(); ++i)
+        for (std::size_t i = 0; i < ins_knots.size(); ++i)
         {
             ComputeBsplinesKnotInsertionCoefficients1D(Di, new_knots, p, tmp_knots, ins_knots[i]);
 
@@ -679,14 +713,14 @@ public:
     /// Compute the refinement coefficients for multiple knots insertion B-Splines refinement in 2D
     template<class MatrixType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3>
     static void ComputeBsplinesKnotInsertionCoefficients2D(MatrixType& D,
-                                                           ValuesContainerType& new_knots1,
-                                                           ValuesContainerType& new_knots2,
-                                                           int p1,
-                                                           int p2,
-                                                           const ValuesContainerType2& knots1,
-                                                           const ValuesContainerType2& knots2,
-                                                           const ValuesContainerType3& ins_knots1,
-                                                           const ValuesContainerType3& ins_knots2)
+            ValuesContainerType& new_knots1,
+            ValuesContainerType& new_knots2,
+            int p1,
+            int p2,
+            const ValuesContainerType2& knots1,
+            const ValuesContainerType2& knots2,
+            const ValuesContainerType3& ins_knots1,
+            const ValuesContainerType3& ins_knots2)
     {
         MatrixType D1, D2;
         ComputeBsplinesKnotInsertionCoefficients1D(D1, new_knots1, p1, knots1, ins_knots1);
@@ -700,18 +734,18 @@ public:
     /// Compute the refinement coefficients for multiple knots insertion B-Splines refinement in 3D
     template<class MatrixType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3>
     static void ComputeBsplinesKnotInsertionCoefficients3D(MatrixType& D,
-                                                           ValuesContainerType& new_knots1,
-                                                           ValuesContainerType& new_knots2,
-                                                           ValuesContainerType& new_knots3,
-                                                           int p1,
-                                                           int p2,
-                                                           int p3,
-                                                           const ValuesContainerType2& knots1,
-                                                           const ValuesContainerType2& knots2,
-                                                           const ValuesContainerType2& knots3,
-                                                           const ValuesContainerType3& ins_knots1,
-                                                           const ValuesContainerType3& ins_knots2,
-                                                           const ValuesContainerType3& ins_knots3)
+            ValuesContainerType& new_knots1,
+            ValuesContainerType& new_knots2,
+            ValuesContainerType& new_knots3,
+            int p1,
+            int p2,
+            int p3,
+            const ValuesContainerType2& knots1,
+            const ValuesContainerType2& knots2,
+            const ValuesContainerType2& knots3,
+            const ValuesContainerType3& ins_knots1,
+            const ValuesContainerType3& ins_knots2,
+            const ValuesContainerType3& ins_knots3)
     {
         MatrixType D1, D2, D3;
         ComputeBsplinesKnotInsertionCoefficients1D(D1, new_knots1, p1, knots1, ins_knots1);
@@ -726,44 +760,48 @@ public:
     /// Compute the refinement coefficients for one knot insertion NURBS refinement in 1D
     template<class MatrixType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3, class ValuesContainerType4>
     static void ComputeNURBSKnotInsertionCoefficients1D(MatrixType& D,
-                                                        ValuesContainerType& new_knots,
-                                                        ValuesContainerType& new_weights,
-                                                        int p,
-                                                        const ValuesContainerType2& knots,
-                                                        const ValuesContainerType3& ins_knots,
-                                                        const ValuesContainerType4& weights)
+            ValuesContainerType& new_knots,
+            ValuesContainerType& new_weights,
+            int p,
+            const ValuesContainerType2& knots,
+            const ValuesContainerType3& ins_knots,
+            const ValuesContainerType4& weights)
     {
         // firstly compute refinement matrix for B-splines refinement
         ComputeBsplinesKnotInsertionCoefficients1D(D, new_knots, p, knots, ins_knots);
 
         // secondly compute new weights
         new_weights.resize(D.size2());
-        for(int j = 0; j < D.size2(); ++j)
+        for (int j = 0; j < D.size2(); ++j)
         {
             new_weights[j] = 0.0;
-            for(int i = 0; i < D.size1(); ++i)
+            for (int i = 0; i < D.size1(); ++i)
+            {
                 new_weights[j] += D(i, j) * weights[i];
+            }
         }
 
         // thirdly update the coefficient matrix
-        for(int i = 0; i < D.size1(); ++i)
-            for(int j = 0; j < D.size2(); ++j)
-                D(i, j) *= weights[i]/new_weights[j];
+        for (int i = 0; i < D.size1(); ++i)
+            for (int j = 0; j < D.size2(); ++j)
+            {
+                D(i, j) *= weights[i] / new_weights[j];
+            }
     }
 
     /// Compute the refinement coefficients for multiple knots insertion NURBS refinement in 2D
     template<class MatrixType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3, class ValuesContainerType4>
     static void ComputeNURBSKnotInsertionCoefficients2D(MatrixType& D,
-                                                        ValuesContainerType& new_knots1,
-                                                        ValuesContainerType& new_knots2,
-                                                        ValuesContainerType& new_weights,
-                                                        int p1,
-                                                        int p2,
-                                                        const ValuesContainerType2& knots1,
-                                                        const ValuesContainerType2& knots2,
-                                                        const ValuesContainerType3& ins_knots1,
-                                                        const ValuesContainerType3& ins_knots2,
-                                                        const ValuesContainerType4& weights)
+            ValuesContainerType& new_knots1,
+            ValuesContainerType& new_knots2,
+            ValuesContainerType& new_weights,
+            int p1,
+            int p2,
+            const ValuesContainerType2& knots1,
+            const ValuesContainerType2& knots2,
+            const ValuesContainerType3& ins_knots1,
+            const ValuesContainerType3& ins_knots2,
+            const ValuesContainerType4& weights)
     {
         // firstly compute refinement matrix for B-splines refinement
         ComputeBsplinesKnotInsertionCoefficients2D(D, new_knots1, new_knots2, p1, p2, knots1, knots2, ins_knots1, ins_knots2);
@@ -771,11 +809,13 @@ public:
 
         // secondly compute new weights
         new_weights.resize(D.size2());
-        for(int j = 0; j < D.size2(); ++j)
+        for (int j = 0; j < D.size2(); ++j)
         {
             new_weights[j] = 0.0;
-            for(int i = 0; i < D.size1(); ++i)
+            for (int i = 0; i < D.size1(); ++i)
+            {
                 new_weights[j] += D(i, j) * weights[i];
+            }
         }
 //        std::cout << "new_weights:";
 //        for(int i = 0; i < new_weights.size(); ++i)
@@ -783,46 +823,52 @@ public:
 //        std::cout << std::endl;
 
         // thirdly update the coefficient matrix
-        for(int i = 0; i < D.size1(); ++i)
-            for(int j = 0; j < D.size2(); ++j)
-                D(i, j) *= weights[i]/new_weights[j];
+        for (int i = 0; i < D.size1(); ++i)
+            for (int j = 0; j < D.size2(); ++j)
+            {
+                D(i, j) *= weights[i] / new_weights[j];
+            }
 //        KRATOS_WATCH(D)
     }
 
     /// Compute the refinement coefficients for multiple knots insertion NURBS refinement in 3D
     template<class MatrixType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3, class ValuesContainerType4>
     static void ComputeNURBSKnotInsertionCoefficients3D(MatrixType& D,
-                                                        ValuesContainerType& new_knots1,
-                                                        ValuesContainerType& new_knots2,
-                                                        ValuesContainerType& new_knots3,
-                                                        ValuesContainerType& new_weights,
-                                                        int p1,
-                                                        int p2,
-                                                        int p3,
-                                                        const ValuesContainerType2& knots1,
-                                                        const ValuesContainerType2& knots2,
-                                                        const ValuesContainerType2& knots3,
-                                                        const ValuesContainerType3& ins_knots1,
-                                                        const ValuesContainerType3& ins_knots2,
-                                                        const ValuesContainerType3& ins_knots3,
-                                                        const ValuesContainerType4& weights)
+            ValuesContainerType& new_knots1,
+            ValuesContainerType& new_knots2,
+            ValuesContainerType& new_knots3,
+            ValuesContainerType& new_weights,
+            int p1,
+            int p2,
+            int p3,
+            const ValuesContainerType2& knots1,
+            const ValuesContainerType2& knots2,
+            const ValuesContainerType2& knots3,
+            const ValuesContainerType3& ins_knots1,
+            const ValuesContainerType3& ins_knots2,
+            const ValuesContainerType3& ins_knots3,
+            const ValuesContainerType4& weights)
     {
         // firstly compute refinement matrix for B-splines refinement
         ComputeBsplinesKnotInsertionCoefficients3D(D, new_knots1, new_knots2, new_knots3, p1, p2, p3, knots1, knots2, knots3, ins_knots1, ins_knots2, ins_knots3);
 
         // secondly compute new weights
         new_weights.resize(D.size2());
-        for(int j = 0; j < D.size2(); ++j)
+        for (int j = 0; j < D.size2(); ++j)
         {
             new_weights[j] = 0.0;
-            for(int i = 0; i < D.size1(); ++i)
+            for (int i = 0; i < D.size1(); ++i)
+            {
                 new_weights[j] += D(i, j) * weights[i];
+            }
         }
 
         // thirdly update the coefficient matrix
-        for(int i = 0; i < D.size1(); ++i)
-            for(int j = 0; j < D.size2(); ++j)
-                D(i, j) *= weights[i]/new_weights[j];
+        for (int i = 0; i < D.size1(); ++i)
+            for (int j = 0; j < D.size2(); ++j)
+            {
+                D(i, j) *= weights[i] / new_weights[j];
+            }
     }
 
     /**
@@ -831,10 +877,10 @@ public:
      */
     template<class VectorType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3>
     static void ComputeBsplinesKnotInsertionCoefficients1DLocal(VectorType& D,
-                                                                ValuesContainerType& new_knots,
-                                                                int p,
-                                                                const ValuesContainerType2& local_knots,
-                                                                const ValuesContainerType3& ins_knots)
+            ValuesContainerType& new_knots,
+            int p,
+            const ValuesContainerType2& local_knots,
+            const ValuesContainerType3& ins_knots)
     {
         // compute the extended knot vector
         ValuesContainerType Ubar;
@@ -849,35 +895,39 @@ public:
 
         // extract the correct row from the refinement matrix
         int num_basis = ins_knots.size() + 1;
-        if(D.size() != num_basis)
+        if (D.size() != num_basis)
+        {
             D.resize(num_basis);
-        for(unsigned int i = 0; i < num_basis; ++i)
+        }
+        for (unsigned int i = 0; i < num_basis; ++i)
+        {
             D[i] = M(nt, nt + i);
+        }
 
-        #ifdef FUNCTIONALITY_CHECK
-        for(unsigned int i = 0; i < nt; ++i)
-            if(M(nt, i) != 0.0)
+#ifdef FUNCTIONALITY_CHECK
+        for (unsigned int i = 0; i < nt; ++i)
+            if (M(nt, i) != 0.0)
                 KRATOS_THROW_ERROR(std::runtime_error, "M(nt,..) is nonzero at", i)
-        for(unsigned int i = 0; i < num_basis; ++i)
-            if(D(i) == 0.0)
-                KRATOS_THROW_ERROR(std::runtime_error, "D(..) is zero at", i)
-        for(unsigned int i = nt + num_basis; i < M.size2(); ++i)
-            if(M(nt, i) != 0.0)
-                KRATOS_THROW_ERROR(std::runtime_error, "M(nt,..) is nonzero at", i)
-        #endif
-    }
+                for (unsigned int i = 0; i < num_basis; ++i)
+                    if (D(i) == 0.0)
+                        KRATOS_THROW_ERROR(std::runtime_error, "D(..) is zero at", i)
+                        for (unsigned int i = nt + num_basis; i < M.size2(); ++i)
+                            if (M(nt, i) != 0.0)
+                                KRATOS_THROW_ERROR(std::runtime_error, "M(nt,..) is nonzero at", i)
+#endif
+                            }
 
     /// Compute the refinement coefficients for multiple knot insertion local refinement in 2D
     template<class VectorType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3>
     static void ComputeBsplinesKnotInsertionCoefficients2DLocal(VectorType& D,
-                                                                ValuesContainerType& new_knots1,
-                                                                ValuesContainerType& new_knots2,
-                                                                int p1,
-                                                                int p2,
-                                                                const ValuesContainerType2& local_knots1,
-                                                                const ValuesContainerType2& local_knots2,
-                                                                const ValuesContainerType3& ins_knots1,
-                                                                const ValuesContainerType3& ins_knots2)
+            ValuesContainerType& new_knots1,
+            ValuesContainerType& new_knots2,
+            int p1,
+            int p2,
+            const ValuesContainerType2& local_knots1,
+            const ValuesContainerType2& local_knots2,
+            const ValuesContainerType3& ins_knots1,
+            const ValuesContainerType3& ins_knots2)
     {
         VectorType D1, D2;
         ComputeBsplinesKnotInsertionCoefficients1DLocal(D1, new_knots1, p1, local_knots1, ins_knots1);
@@ -888,18 +938,18 @@ public:
     /// Compute the refinement coefficients for multiple knot insertion local refinement in 3D
     template<class VectorType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3>
     static void ComputeBsplinesKnotInsertionCoefficients3DLocal(VectorType& D,
-                                                                ValuesContainerType& new_knots1,
-                                                                ValuesContainerType& new_knots2,
-                                                                ValuesContainerType& new_knots3,
-                                                                int p1,
-                                                                int p2,
-                                                                int p3,
-                                                                const ValuesContainerType2& local_knots1,
-                                                                const ValuesContainerType2& local_knots2,
-                                                                const ValuesContainerType2& local_knots3,
-                                                                const ValuesContainerType3& ins_knots1,
-                                                                const ValuesContainerType3& ins_knots2,
-                                                                const ValuesContainerType3& ins_knots3)
+            ValuesContainerType& new_knots1,
+            ValuesContainerType& new_knots2,
+            ValuesContainerType& new_knots3,
+            int p1,
+            int p2,
+            int p3,
+            const ValuesContainerType2& local_knots1,
+            const ValuesContainerType2& local_knots2,
+            const ValuesContainerType2& local_knots3,
+            const ValuesContainerType3& ins_knots1,
+            const ValuesContainerType3& ins_knots2,
+            const ValuesContainerType3& ins_knots3)
     {
         VectorType D1, D2, D3;
         ComputeBsplinesKnotInsertionCoefficients1DLocal(D1, new_knots1, p1, local_knots1, ins_knots1);
@@ -934,224 +984,258 @@ public:
             ValuesContainerType2& ik, // new knot vector
             const TDataType& zero) // a sample zero control value to avoid explicit declaring TDataType
     {
-      int nc = ctrl.size();
-      int nk = k.size();
-      int row, col;
+        int nc = ctrl.size();
+        int nk = k.size();
+        int row, col;
 
-      int ierr = 0;
-      int i, j, q, s, m, ph, ph2, mpi, mh, nh, r, a, b, cind, oldr, mul;
-      int n, lbz, rbz, save, tr, kj, first, kind, last, bet, ii;
-      int nic, nik;
-      double inv, ua, ub, numer, den, alf, gam;
-      double **bezalfs, *alfs;
+        int ierr = 0;
+        int i, j, q, s, m, ph, ph2, mpi, mh, nh, r, a, b, cind, oldr, mul;
+        int n, lbz, rbz, save, tr, kj, first, kind, last, bet, ii;
+        int nic, nik;
+        double inv, ua, ub, numer, den, alf, gam;
+        double **bezalfs, *alfs;
 
-      /* allocate work space t times larger than original number */
-      /* of control points and knots */
-      ik.resize(nk*(t+1));
-      ictrl.resize(nc*(t+1));
+        /* allocate work space t times larger than original number */
+        /* of control points and knots */
+        ik.resize(nk * (t + 1));
+        ictrl.resize(nc * (t + 1));
 
-      n = nc - 1;
+        n = nc - 1;
 
-      // bezalfs = matrix(d+1,d+t+1);
-      // bezalfs = (double**) calloc(d+1, sizeof(double*));
-      // for (int i = 0; i < d+1; ++i)
-      //   bezalfs[i] = (double*) calloc(d+t+1, sizeof(double));
-      bezalfs = (double**) calloc(d+t+1, sizeof(double*));
-      for (int i = 0; i < d+t+1; ++i)
-        bezalfs[i] = (double*) calloc(d+1, sizeof(double));
-
-      ValuesContainerType bpts(d+1);
-      ValuesContainerType ebpts(d+t+1);
-      ValuesContainerType Nextbpts(d+1);
-      alfs = (double *) calloc(d, sizeof(double));
-
-      m = n + d + 1;
-      ph = d + t;
-      ph2 = ph / 2;
-
-      /* compute bezier degree elevation coefficients   */
-      bezalfs[0][0] = bezalfs[ph][d] = 1.0;
-
-      for (i = 1; i <= ph2; i++)
-      {
-        inv = 1.0 / bincoeff(ph,i);
-        mpi = std::min(d,i);
-
-        for (j = std::max(0,i-t); j <= mpi; j++)
-          bezalfs[i][j] = inv * bincoeff(d,j) * bincoeff(t,i-j);
-      }
-
-      for (i = ph2+1; i <= ph-1; i++)
-      {
-        mpi = std::min(d, i);
-        for (j = std::max(0,i-t); j <= mpi; j++)
-          bezalfs[i][j] = bezalfs[ph-i][d-j];
-      }
-
-      mh = ph;
-      kind = ph+1;
-      r = -1;
-      a = d;
-      b = d+1;
-      cind = 1;
-      ua = k[0];
-
-      ictrl[0] = ctrl[0];
-
-      for (i = 0; i <= ph; i++)
-        ik[i] = ua;
-
-      /* initialise first bezier seg */
-      for (i = 0; i <= d; i++)
-          bpts[i] = ctrl[i];
-
-      /* big loop thru knot vector */
-      while (b < m)
-      {
-        i = b;
-        while (b < m && k[b] == k[b+1])
-          b++;
-
-        mul = b - i + 1;
-        mh += mul + t;
-        ub = k[b];
-        oldr = r;
-        r = d - mul;
-
-        /* insert knot u(b) r times */
-        if (oldr > 0)
-          lbz = (oldr+2) / 2;
-        else
-          lbz = 1;
-
-        if (r > 0)
-          rbz = ph - (r+1)/2;
-        else
-          rbz = ph;
-
-        if (r > 0)
+        // bezalfs = matrix(d+1,d+t+1);
+        // bezalfs = (double**) calloc(d+1, sizeof(double*));
+        // for (int i = 0; i < d+1; ++i)
+        //   bezalfs[i] = (double*) calloc(d+t+1, sizeof(double));
+        bezalfs = (double**) calloc(d + t + 1, sizeof(double*));
+        for (int i = 0; i < d + t + 1; ++i)
         {
-          /* insert knot to get bezier segment */
-          numer = ub - ua;
-          for (q = d; q > mul; q--)
-            alfs[q-mul-1] = numer / (k[a+q]-ua);
-          for (j = 1; j <= r; j++)
-          {
-            save = r - j;
-            s = mul + j;
-
-            for (q = d; q >= s; q--)
-                bpts[q] = alfs[q-s]*bpts[q]+(1.0-alfs[q-s])*bpts[q-1];
-
-            Nextbpts[save] = bpts[d];
-          }
+            bezalfs[i] = (double*) calloc(d + 1, sizeof(double));
         }
-        /* end of insert knot */
 
-        /* degree elevate bezier */
-        for (i = lbz; i <= ph; i++)
+        ValuesContainerType bpts(d + 1);
+        ValuesContainerType ebpts(d + t + 1);
+        ValuesContainerType Nextbpts(d + 1);
+        alfs = (double *) calloc(d, sizeof(double));
+
+        m = n + d + 1;
+        ph = d + t;
+        ph2 = ph / 2;
+
+        /* compute bezier degree elevation coefficients   */
+        bezalfs[0][0] = bezalfs[ph][d] = 1.0;
+
+        for (i = 1; i <= ph2; i++)
         {
-          ebpts[i] = zero;
-          mpi = std::min(d, i);
-          for (j = std::max(0,i-t); j <= mpi; j++)
-            ebpts[i] = ebpts[i] + bezalfs[i][j]*bpts[j];
-        }
-        /* end of degree elevating bezier */
+            inv = 1.0 / bincoeff(ph, i);
+            mpi = std::min(d, i);
 
-        if (oldr > 1)
-        {
-          /* must remove knot u=k[a] oldr times */
-          first = kind - 2;
-          last = kind;
-          den = ub - ua;
-          bet = (ub-ik[kind-1]) / den;
-
-          /* knot removal loop */
-          for (tr = 1; tr < oldr; tr++)
-          {
-            i = first;
-            j = last;
-            kj = j - kind + 1;
-            while (j - i > tr)
+            for (j = std::max(0, i - t); j <= mpi; j++)
             {
-              /* loop and compute the new control points */
-             /* for one removal step    */
-              if (i < cind)
-              {
-                alf = (ub-ik[i])/(ua-ik[i]);
-                ictrl[i] = alf * ictrl[i] + (1.0-alf) * ictrl[i-1];
-              }
-              if (j >= lbz)
-              {
-                if (j-tr <= kind-ph+oldr)
-                {
-                  gam = (ub-ik[j-tr]) / den;
-                  ebpts[kj] = gam*ebpts[kj] + (1.0-gam)*ebpts[kj+1];
-                }
-                else
-                {
-                  ebpts[kj] = bet*ebpts[kj] + (1.0-bet)*ebpts[kj+1];
-                }
-              }
-              i++;
-              j--;
-              kj--;
+                bezalfs[i][j] = inv * bincoeff(d, j) * bincoeff(t, i - j);
+            }
+        }
+
+        for (i = ph2 + 1; i <= ph - 1; i++)
+        {
+            mpi = std::min(d, i);
+            for (j = std::max(0, i - t); j <= mpi; j++)
+            {
+                bezalfs[i][j] = bezalfs[ph - i][d - j];
+            }
+        }
+
+        mh = ph;
+        kind = ph + 1;
+        r = -1;
+        a = d;
+        b = d + 1;
+        cind = 1;
+        ua = k[0];
+
+        ictrl[0] = ctrl[0];
+
+        for (i = 0; i <= ph; i++)
+        {
+            ik[i] = ua;
+        }
+
+        /* initialise first bezier seg */
+        for (i = 0; i <= d; i++)
+        {
+            bpts[i] = ctrl[i];
+        }
+
+        /* big loop thru knot vector */
+        while (b < m)
+        {
+            i = b;
+            while (b < m && k[b] == k[b + 1])
+            {
+                b++;
             }
 
-            first--;
-            last++;
-          }
+            mul = b - i + 1;
+            mh += mul + t;
+            ub = k[b];
+            oldr = r;
+            r = d - mul;
+
+            /* insert knot u(b) r times */
+            if (oldr > 0)
+            {
+                lbz = (oldr + 2) / 2;
+            }
+            else
+            {
+                lbz = 1;
+            }
+
+            if (r > 0)
+            {
+                rbz = ph - (r + 1) / 2;
+            }
+            else
+            {
+                rbz = ph;
+            }
+
+            if (r > 0)
+            {
+                /* insert knot to get bezier segment */
+                numer = ub - ua;
+                for (q = d; q > mul; q--)
+                {
+                    alfs[q - mul - 1] = numer / (k[a + q] - ua);
+                }
+                for (j = 1; j <= r; j++)
+                {
+                    save = r - j;
+                    s = mul + j;
+
+                    for (q = d; q >= s; q--)
+                    {
+                        bpts[q] = alfs[q - s] * bpts[q] + (1.0 - alfs[q - s]) * bpts[q - 1];
+                    }
+
+                    Nextbpts[save] = bpts[d];
+                }
+            }
+            /* end of insert knot */
+
+            /* degree elevate bezier */
+            for (i = lbz; i <= ph; i++)
+            {
+                ebpts[i] = zero;
+                mpi = std::min(d, i);
+                for (j = std::max(0, i - t); j <= mpi; j++)
+                {
+                    ebpts[i] = ebpts[i] + bezalfs[i][j] * bpts[j];
+                }
+            }
+            /* end of degree elevating bezier */
+
+            if (oldr > 1)
+            {
+                /* must remove knot u=k[a] oldr times */
+                first = kind - 2;
+                last = kind;
+                den = ub - ua;
+                bet = (ub - ik[kind - 1]) / den;
+
+                /* knot removal loop */
+                for (tr = 1; tr < oldr; tr++)
+                {
+                    i = first;
+                    j = last;
+                    kj = j - kind + 1;
+                    while (j - i > tr)
+                    {
+                        /* loop and compute the new control points */
+                        /* for one removal step    */
+                        if (i < cind)
+                        {
+                            alf = (ub - ik[i]) / (ua - ik[i]);
+                            ictrl[i] = alf * ictrl[i] + (1.0 - alf) * ictrl[i - 1];
+                        }
+                        if (j >= lbz)
+                        {
+                            if (j - tr <= kind - ph + oldr)
+                            {
+                                gam = (ub - ik[j - tr]) / den;
+                                ebpts[kj] = gam * ebpts[kj] + (1.0 - gam) * ebpts[kj + 1];
+                            }
+                            else
+                            {
+                                ebpts[kj] = bet * ebpts[kj] + (1.0 - bet) * ebpts[kj + 1];
+                            }
+                        }
+                        i++;
+                        j--;
+                        kj--;
+                    }
+
+                    first--;
+                    last++;
+                }
+            }
+            /* end of removing knot n=k[a] */
+
+            /* load the knot ua  */
+            if (a != d)
+                for (i = 0; i < ph - oldr; i++)
+                {
+                    ik[kind] = ua;
+                    kind++;
+                }
+
+            /* load ctrl pts into ic  */
+            for (j = lbz; j <= rbz; j++)
+            {
+                ictrl[cind] = ebpts[j];
+                cind++;
+            }
+
+            if (b < m)
+            {
+                /* setup for next pass thru loop  */
+                for (j = 0; j < r; j++)
+                {
+                    bpts[j] = Nextbpts[j];
+                }
+                for (j = r; j <= d; j++)
+                {
+                    bpts[j] = ctrl[b - d + j];
+                }
+                a = b;
+                b++;
+                ua = ub;
+            }
+            else
+                /* end knot  */
+                for (i = 0; i <= ph; i++)
+                {
+                    ik[kind + i] = ub;
+                }
         }
-        /* end of removing knot n=k[a] */
+        /* end while loop  */
 
-        /* load the knot ua  */
-        if (a != d)
-          for (i = 0; i < ph-oldr; i++)
-          {
-            ik[kind] = ua;
-            kind++;
-          }
+        nh = mh - ph - 1;
+        nic = nh + 1;
+        nik = nic + d + t + 1;
 
-        /* load ctrl pts into ic  */
-        for (j = lbz; j <= rbz; j++)
+        // resize to the new size
+        ictrl.resize(nic);
+        ik.resize(nik);
+
+        free(alfs);
+        // for (int i = 0; i < d+1; ++i)
+        for (int i = 0; i < d + t + 1; ++i)
         {
-          ictrl[cind] = ebpts[j];
-          cind++;
+            free(bezalfs[i]);
         }
+        free(bezalfs);
 
-        if (b < m)
-        {
-          /* setup for next pass thru loop  */
-          for (j = 0; j < r; j++)
-            bpts[j] = Nextbpts[j];
-          for (j = r; j <= d; j++)
-            bpts[j] = ctrl[b-d+j];
-          a = b;
-          b++;
-          ua = ub;
-        }
-        else
-          /* end knot  */
-          for (i = 0; i <= ph; i++)
-            ik[kind+i] = ub;
-      }
-      /* end while loop  */
-
-      nh = mh - ph - 1;
-      nic = nh + 1;
-      nik = nic + d + t + 1;
-
-      // resize to the new size
-      ictrl.resize(nic);
-      ik.resize(nik);
-
-      free(alfs);
-      // for (int i = 0; i < d+1; ++i)
-      for (int i = 0; i < d+t+1; ++i)
-        free(bezalfs[i]);
-      free(bezalfs);
-
-      return(ierr);
+        return (ierr);
     }
 
     /// Degree elevation for B-Splines surface
@@ -1184,7 +1268,9 @@ public:
             std::vector<typename ValuesContainerType::DataType> ictrl_v(n2); // n2 is just temporary size
 
             for (int j = 0; j < n2; ++j)
+            {
                 ctrl_v[j] = ctrl(i, j);
+            }
 
             ComputeBsplinesDegreeElevation1D(d2, ctrl_v, k2, t2, ictrl_v, ik2, zero);
             // here it's assumed that newly ik2 is the same for each iteration
@@ -1196,7 +1282,9 @@ public:
             }
 
             for (int j = 0; j < new_n2; ++j)
+            {
                 temp_ictrl(i, j) = ictrl_v[j];
+            }
         }
 
         // the degree in the second dimension can be elevated in the same way
@@ -1206,7 +1294,9 @@ public:
             std::vector<typename ValuesContainerType::DataType> ictrl_u(n1); // n1 is just temporary size
 
             for (int i = 0; i < n1; ++i)
+            {
                 ctrl_u[i] = temp_ictrl(i, j);
+            }
 
             ComputeBsplinesDegreeElevation1D(d1, ctrl_u, k1, t1, ictrl_u, ik1, zero);
             // here it's assumed that newly ik1 is the same for each iteration
@@ -1218,7 +1308,9 @@ public:
             }
 
             for (int i = 0; i < new_n1; ++i)
+            {
                 ictrl(i, j) = ictrl_u[i];
+            }
         }
 
         return 0;
@@ -1260,7 +1352,9 @@ public:
                 std::vector<typename ValuesContainerType::DataType> ictrl_w(n3); // n3 is just temporary size
 
                 for (int k = 0; k < n3; ++k)
+                {
                     ctrl_w[k] = ctrl(i, j, k);
+                }
 
                 ComputeBsplinesDegreeElevation1D(d3, ctrl_w, k3, t3, ictrl_w, ik3, zero);
                 // here it's assumed that newly ik3 is the same for each iteration
@@ -1272,7 +1366,9 @@ public:
                 }
 
                 for (int k = 0; k < new_n3; ++k)
+                {
                     temp_ictrl(i, j, k) = ictrl_w[k];
+                }
             }
         }
 
@@ -1287,7 +1383,9 @@ public:
                 std::vector<typename ValuesContainerType::DataType> ictrl_v(n2); // n2 is just temporary size
 
                 for (int j = 0; j < n2; ++j)
+                {
                     ctrl_v[j] = temp_ictrl(i, j, k);
+                }
 
                 ComputeBsplinesDegreeElevation1D(d2, ctrl_v, k2, t2, ictrl_v, ik2, zero);
                 // here it's assumed that newly ik2 is the same for each iteration
@@ -1299,7 +1397,9 @@ public:
                 }
 
                 for (int j = 0; j < new_n2; ++j)
+                {
                     temp_ictrl2(i, j, k) = ictrl_v[j];
+                }
             }
         }
 
@@ -1312,7 +1412,9 @@ public:
                 std::vector<typename ValuesContainerType::DataType> ictrl_u(n1); // n1 is just temporary size
 
                 for (int i = 0; i < n1; ++i)
+                {
                     ctrl_u[i] = temp_ictrl2(i, j, k);
+                }
 
                 ComputeBsplinesDegreeElevation1D(d1, ctrl_u, k1, t1, ictrl_u, ik1, zero);
                 // here it's assumed that newly ik1 is the same for each iteration
@@ -1324,7 +1426,9 @@ public:
                 }
 
                 for (int i = 0; i < new_n1; ++i)
+                {
                     ictrl(i, j, k) = ictrl_u[i];
+                }
             }
         }
 
@@ -1420,7 +1524,7 @@ private:
     /* Algorithm from 'Numerical Recipes in C, 2nd Edition' pg215. */
     static double bincoeff(int n, int k)
     {
-        return floor(0.5+exp(factln(n)-factln(k)-factln(n-k)));
+        return floor(0.5 + exp(factln(n) - factln(k) - factln(n - k)));
     }
 
     /* computes ln(n!) */
@@ -1431,11 +1535,11 @@ private:
         static int ntop = 0;
         static double a[101];
 
-        if (n <= 1) return 0.0;
+        if (n <= 1) { return 0.0; }
         while (n > ntop)
         {
             ++ntop;
-            a[ntop] = gammaln(ntop+1.0);
+            a[ntop] = gammaln(ntop + 1.0);
         }
         return a[n];
     }
@@ -1444,17 +1548,18 @@ private:
     /* Algorithm from 'Numerical Recipes in C, 2nd Edition' pg214. */
     static double gammaln(double xx)
     {
-        double x,y,tmp,ser;
-        static double cof[6] = {76.18009172947146,-86.50532032291677,
-                                24.01409824083091,-1.231739572450155,
-                                0.12086650973866179e-2, -0.5395239384953e-5};
+        double x, y, tmp, ser;
+        static double cof[6] = {76.18009172947146, -86.50532032291677,
+                                24.01409824083091, -1.231739572450155,
+                                0.12086650973866179e-2, -0.5395239384953e-5
+                               };
         int j;
         y = x = xx;
         tmp = x + 5.5;
-        tmp -= (x+0.5) * log(tmp);
+        tmp -= (x + 0.5) * log(tmp);
         ser = 1.000000000190015;
-        for (j=0; j<=5; j++) ser += cof[j]/++y;
-        return -tmp+log(2.5066282746310005*ser/x);
+        for (j = 0; j <= 5; j++) { ser += cof[j] / ++y; }
+        return -tmp + log(2.5066282746310005 * ser / x);
     }
 
     ///@}
@@ -1501,7 +1606,7 @@ inline std::istream& operator >>(std::istream& rIStream, BSplineUtils& rThis)
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const BSplineUtils& rThis)
+                                 const BSplineUtils& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

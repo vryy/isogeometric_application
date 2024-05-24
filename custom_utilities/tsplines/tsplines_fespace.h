@@ -61,9 +61,9 @@ public:
     /// Destructor
     virtual ~TSplinesFESpace()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Helper to create new TSplinesFESpace pointer
@@ -116,7 +116,9 @@ public:
         for (std::size_t i = 0; i < TDim; ++i)
         {
             if (!(this->Order(i)) == rOtherTSplinesFESpace.Order(i))
+            {
                 return false;
+            }
         }
 
         return true;
@@ -145,7 +147,9 @@ public:
         rOStream << Type() << ", Addr = " << this << ", n = " << this->TotalNumber();
         rOStream << ", p = (";
         for (std::size_t dim = 0; dim < TDim; ++dim)
+        {
             rOStream << " " << this->Order(dim);
+        }
         rOStream << ")";
     }
 
@@ -158,12 +162,16 @@ public:
         // print the basis functions
         rOStream << "Basis functions:" << std::endl;
         for (bf_const_iterator it = BaseType::bf_begin(); it != BaseType::bf_end(); ++it)
+        {
             rOStream << " >> " << *(*it) << std::endl;
+        }
 
         // print the cells
         rOStream << "Cells:" << std::endl;
-        for(typename cell_container_t::iterator it = BaseType::mpCellManager->begin(); it != BaseType::mpCellManager->end(); ++it)
+        for (typename cell_container_t::iterator it = BaseType::mpCellManager->begin(); it != BaseType::mpCellManager->end(); ++it)
+        {
             rOStream << " >> " << *(*it) << std::endl;
+        }
     }
 
 protected:

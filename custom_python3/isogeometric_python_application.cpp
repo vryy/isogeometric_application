@@ -43,12 +43,10 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "isogeometric_application.h"
 #include "isogeometric_application_variables.h"
 
-
 // Important: we don't want pybind to try to deference a `std::unique_ptr<Patch>`:
 PYBIND11_MAKE_OPAQUE(typename Kratos::Patch<1>::UniquePointer);
 PYBIND11_MAKE_OPAQUE(typename Kratos::Patch<2>::UniquePointer);
 PYBIND11_MAKE_OPAQUE(typename Kratos::Patch<3>::UniquePointer);
-
 
 namespace Kratos
 {
@@ -62,10 +60,10 @@ PYBIND11_MODULE(KratosIsogeometricApplication, m)
     namespace py = pybind11;
 
     py::class_<KratosIsogeometricApplication,
-           KratosIsogeometricApplication::Pointer,
-           KratosApplication >(m, "KratosIsogeometricApplication")
-           .def(py::init<>())
-           ;
+    KratosIsogeometricApplication::Pointer,
+    KratosApplication >(m, "KratosIsogeometricApplication")
+    .def(py::init<>())
+    ;
 
     IsogeometricApplication_AddBackendUtilitiesToPython(m);
     IsogeometricApplication_AddFrontendUtilitiesToPython(m);
@@ -109,7 +107,6 @@ PYBIND11_MODULE(KratosIsogeometricApplication, m)
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( m, CELL_INDEX )
 
 }
-
 
 } // namespace Python.
 

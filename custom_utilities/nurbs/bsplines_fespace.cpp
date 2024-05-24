@@ -24,7 +24,9 @@ void BSplinesFESpace_Helper<1>::GetValues(const BSplinesFESpace<1>& rFESpace,
 {
     // initialize the shape functions
     if (values.size() != rFESpace.TotalNumber())
+    {
         values.resize(rFESpace.TotalNumber());
+    }
     std::fill(values.begin(), values.end(), 0.0);
 
     // locate the knot span
@@ -32,7 +34,9 @@ void BSplinesFESpace_Helper<1>::GetValues(const BSplinesFESpace<1>& rFESpace,
     Span = BSplineUtils::FindSpan(rFESpace.Number(0), rFESpace.Order(0), xi[0], rFESpace.KnotVector(0));
 
     if ((Span >= rFESpace.Number(0) + rFESpace.Order(0)) || (Span == 0))
+    {
         return;
+    }
 
     // compute the non-zero shape function values
     std::vector<double> ShapeFunctionValues(rFESpace.Order(0) + 1);
@@ -45,9 +49,9 @@ void BSplinesFESpace_Helper<1>::GetValues(const BSplinesFESpace<1>& rFESpace,
     double N;
 
     unsigned int i, Index;
-    for(i = Start; i <= Span; ++i)
+    for (i = Start; i <= Span; ++i)
     {
-        Index = BSplinesIndexingUtility_Helper::Index1D(i+1, rFESpace.Number(0));
+        Index = BSplinesIndexingUtility_Helper::Index1D(i + 1, rFESpace.Number(0));
 
         N = ShapeFunctionValues[i - Start];
 
@@ -57,15 +61,19 @@ void BSplinesFESpace_Helper<1>::GetValues(const BSplinesFESpace<1>& rFESpace,
 
 template<>
 void BSplinesFESpace_Helper<1>::GetValuesAndDerivatives(const BSplinesFESpace<1>& rFESpace,
-    std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi)
+        std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi)
 {
     // initialize the shape functions and derivatives
     if (values.size() != rFESpace.TotalNumber())
+    {
         values.resize(rFESpace.TotalNumber());
+    }
     std::fill(values.begin(), values.end(), 0.0);
 
     if (derivatives.size() != rFESpace.TotalNumber())
+    {
         derivatives.resize(rFESpace.TotalNumber());
+    }
     for (unsigned int i = 0; i < derivatives.size(); ++i)
     {
         if (derivatives[i].size() != 1)
@@ -80,7 +88,9 @@ void BSplinesFESpace_Helper<1>::GetValuesAndDerivatives(const BSplinesFESpace<1>
     Span = BSplineUtils::FindSpan(rFESpace.Number(0), rFESpace.Order(0), xi[0], rFESpace.KnotVector(0));
 
     if ((Span >= rFESpace.Number(0) + rFESpace.Order(0)) || (Span == 0))
+    {
         return;
+    }
 
     // compute the non-zero shape function values and derivatives
     const int NumberOfDerivatives = 1;
@@ -104,9 +114,9 @@ void BSplinesFESpace_Helper<1>::GetValuesAndDerivatives(const BSplinesFESpace<1>
     double N, dN;
 
     unsigned int i, Index;
-    for(i = Start; i <= Span; ++i)
+    for (i = Start; i <= Span; ++i)
     {
-        Index = BSplinesIndexingUtility_Helper::Index1D(i+1, rFESpace.Number(0));
+        Index = BSplinesIndexingUtility_Helper::Index1D(i + 1, rFESpace.Number(0));
 
         N = ShapeFunctionsValuesAndDerivatives[0][i - Start];
         dN = ShapeFunctionsValuesAndDerivatives[1][i - Start];
@@ -118,11 +128,13 @@ void BSplinesFESpace_Helper<1>::GetValuesAndDerivatives(const BSplinesFESpace<1>
 
 template<>
 void BSplinesFESpace_Helper<2>::GetValues(const BSplinesFESpace<2>& rFESpace,
-    std::vector<double>& values, const std::vector<double>& xi)
+        std::vector<double>& values, const std::vector<double>& xi)
 {
     // inititialize the shape functions
     if (values.size() != rFESpace.TotalNumber())
+    {
         values.resize(rFESpace.TotalNumber());
+    }
     std::fill(values.begin(), values.end(), 0.0);
 
     // locate the knot span
@@ -131,8 +143,10 @@ void BSplinesFESpace_Helper<2>::GetValues(const BSplinesFESpace<2>& rFESpace,
     Span[1] = BSplineUtils::FindSpan(rFESpace.Number(1), rFESpace.Order(1), xi[1], rFESpace.KnotVector(1));
 
     if ((Span[0] >= rFESpace.Number(0) + rFESpace.Order(0)) || (Span[0] == 0)
-     || (Span[1] >= rFESpace.Number(1) + rFESpace.Order(1)) || (Span[1] == 0))
+            || (Span[1] >= rFESpace.Number(1) + rFESpace.Order(1)) || (Span[1] == 0))
+    {
         return;
+    }
 
     // compute the non-zero shape function values
     std::vector<double> ShapeFunctionValues1(rFESpace.Order(0) + 1);
@@ -148,11 +162,11 @@ void BSplinesFESpace_Helper<2>::GetValues(const BSplinesFESpace<2>& rFESpace,
     double N1, N2;
 
     unsigned int i, j, Index;
-    for(i = Start[0]; i <= Span[0]; ++i)
+    for (i = Start[0]; i <= Span[0]; ++i)
     {
-        for(j = Start[1]; j <= Span[1]; ++j)
+        for (j = Start[1]; j <= Span[1]; ++j)
         {
-            Index = BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, rFESpace.Number(0), rFESpace.Number(1));
+            Index = BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, rFESpace.Number(0), rFESpace.Number(1));
 
             N1 = ShapeFunctionValues1[i - Start[0]];
             N2 = ShapeFunctionValues2[j - Start[1]];
@@ -164,15 +178,19 @@ void BSplinesFESpace_Helper<2>::GetValues(const BSplinesFESpace<2>& rFESpace,
 
 template<>
 void BSplinesFESpace_Helper<2>::GetValuesAndDerivatives(const BSplinesFESpace<2>& rFESpace,
-    std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi)
+        std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi)
 {
     // initialize the shape functions and derivatives
     if (values.size() != rFESpace.TotalNumber())
+    {
         values.resize(rFESpace.TotalNumber());
+    }
     std::fill(values.begin(), values.end(), 0.0);
 
     if (derivatives.size() != rFESpace.TotalNumber())
+    {
         derivatives.resize(rFESpace.TotalNumber());
+    }
     for (unsigned int i = 0; i < rFESpace.TotalNumber(); ++i)
     {
         if (derivatives[i].size() != 2)
@@ -189,8 +207,10 @@ void BSplinesFESpace_Helper<2>::GetValuesAndDerivatives(const BSplinesFESpace<2>
     Span[1] = BSplineUtils::FindSpan(rFESpace.Number(1), rFESpace.Order(1), xi[1], rFESpace.KnotVector(1));
 
     if ((Span[0] >= rFESpace.Number(0) + rFESpace.Order(0)) || (Span[0] == 0)
-     || (Span[1] >= rFESpace.Number(1) + rFESpace.Order(1)) || (Span[1] == 0))
+            || (Span[1] >= rFESpace.Number(1) + rFESpace.Order(1)) || (Span[1] == 0))
+    {
         return;
+    }
 
     // compute the non-zero shape function values and derivatives
     const int NumberOfDerivatives = 1;
@@ -209,11 +229,11 @@ void BSplinesFESpace_Helper<2>::GetValuesAndDerivatives(const BSplinesFESpace<2>
     double N1, N2, dN1, dN2;
 
     unsigned int i, j, Index;
-    for(i = Start[0]; i <= Span[0]; ++i)
+    for (i = Start[0]; i <= Span[0]; ++i)
     {
-        for(j = Start[1]; j <= Span[1]; ++j)
+        for (j = Start[1]; j <= Span[1]; ++j)
         {
-            Index = BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, rFESpace.Number(0), rFESpace.Number(1));
+            Index = BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, rFESpace.Number(0), rFESpace.Number(1));
 
             N1 = ShapeFunctionsValuesAndDerivatives1[0][i - Start[0]];
             dN1 = ShapeFunctionsValuesAndDerivatives1[1][i - Start[0]];
@@ -229,11 +249,13 @@ void BSplinesFESpace_Helper<2>::GetValuesAndDerivatives(const BSplinesFESpace<2>
 
 template<>
 void BSplinesFESpace_Helper<3>::GetValues(const BSplinesFESpace<3>& rFESpace,
-    std::vector<double>& values, const std::vector<double>& xi)
+        std::vector<double>& values, const std::vector<double>& xi)
 {
     // initialize the shape functions
     if (values.size() != rFESpace.TotalNumber())
+    {
         values.resize(rFESpace.TotalNumber());
+    }
     std::fill(values.begin(), values.end(), 0.0);
 
     // locate the knot span
@@ -243,9 +265,11 @@ void BSplinesFESpace_Helper<3>::GetValues(const BSplinesFESpace<3>& rFESpace,
     Span[2] = BSplineUtils::FindSpan(rFESpace.Number(2), rFESpace.Order(2), xi[2], rFESpace.KnotVector(2));
 
     if ((Span[0] >= rFESpace.Number(0) + rFESpace.Order(0)) || (Span[0] == 0)
-     || (Span[1] >= rFESpace.Number(1) + rFESpace.Order(1)) || (Span[1] == 0)
-     || (Span[2] >= rFESpace.Number(2) + rFESpace.Order(2)) || (Span[2] == 0))
+            || (Span[1] >= rFESpace.Number(1) + rFESpace.Order(1)) || (Span[1] == 0)
+            || (Span[2] >= rFESpace.Number(2) + rFESpace.Order(2)) || (Span[2] == 0))
+    {
         return;
+    }
 
     // compute the non-zero shape function values
     std::vector<double> ShapeFunctionValues1(rFESpace.Order(0) + 1);
@@ -264,13 +288,13 @@ void BSplinesFESpace_Helper<3>::GetValues(const BSplinesFESpace<3>& rFESpace,
     double N1, N2, N3;
 
     unsigned int i, j, k, Index;
-    for(i = Start[0]; i <= Span[0]; ++i)
+    for (i = Start[0]; i <= Span[0]; ++i)
     {
-        for(j = Start[1]; j <= Span[1]; ++j)
+        for (j = Start[1]; j <= Span[1]; ++j)
         {
-            for(k = Start[2]; k <= Span[2]; ++k)
+            for (k = Start[2]; k <= Span[2]; ++k)
             {
-                Index = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, rFESpace.Number(0), rFESpace.Number(1), rFESpace.Number(2));
+                Index = BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, k + 1, rFESpace.Number(0), rFESpace.Number(1), rFESpace.Number(2));
 
                 N1 = ShapeFunctionValues1[i - Start[0]];
                 N2 = ShapeFunctionValues2[j - Start[1]];
@@ -284,15 +308,19 @@ void BSplinesFESpace_Helper<3>::GetValues(const BSplinesFESpace<3>& rFESpace,
 
 template<>
 void BSplinesFESpace_Helper<3>::GetValuesAndDerivatives(const BSplinesFESpace<3>& rFESpace,
-    std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi)
+        std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi)
 {
     // initialize the shape functions and derivatives
     if (values.size() != rFESpace.TotalNumber())
+    {
         values.resize(rFESpace.TotalNumber());
+    }
     std::fill(values.begin(), values.end(), 0.0);
 
     if (derivatives.size() != rFESpace.TotalNumber())
+    {
         derivatives.resize(rFESpace.TotalNumber());
+    }
     for (unsigned int i = 0; i < derivatives.size(); ++i)
     {
         if (derivatives[i].size() != 3)
@@ -311,9 +339,11 @@ void BSplinesFESpace_Helper<3>::GetValuesAndDerivatives(const BSplinesFESpace<3>
     Span[2] = BSplineUtils::FindSpan(rFESpace.Number(2), rFESpace.Order(2), xi[2], rFESpace.KnotVector(2));
 
     if ((Span[0] >= rFESpace.Number(0) + rFESpace.Order(0)) || (Span[0] == 0)
-     || (Span[1] >= rFESpace.Number(1) + rFESpace.Order(1)) || (Span[1] == 0)
-     || (Span[2] >= rFESpace.Number(2) + rFESpace.Order(2)) || (Span[2] == 0))
+            || (Span[1] >= rFESpace.Number(1) + rFESpace.Order(1)) || (Span[1] == 0)
+            || (Span[2] >= rFESpace.Number(2) + rFESpace.Order(2)) || (Span[2] == 0))
+    {
         return;
+    }
 
     // compute the non-zero shape function values and derivatives
     const int NumberOfDerivatives = 1;
@@ -335,13 +365,13 @@ void BSplinesFESpace_Helper<3>::GetValuesAndDerivatives(const BSplinesFESpace<3>
     double N1, N2, N3, dN1, dN2, dN3;
 
     unsigned int i, j, k, Index;
-    for(i = Start[0]; i <= Span[0]; ++i)
+    for (i = Start[0]; i <= Span[0]; ++i)
     {
-        for(j = Start[1]; j <= Span[1]; ++j)
+        for (j = Start[1]; j <= Span[1]; ++j)
         {
-            for(k = Start[2]; k <= Span[2]; ++k)
+            for (k = Start[2]; k <= Span[2]; ++k)
             {
-                Index = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, rFESpace.Number(0), rFESpace.Number(1), rFESpace.Number(2));
+                Index = BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, k + 1, rFESpace.Number(0), rFESpace.Number(1), rFESpace.Number(2));
 
                 N1 = ShapeFunctionsValuesAndDerivatives1[0][i - Start[0]];
                 dN1 = ShapeFunctionsValuesAndDerivatives1[1][i - Start[0]];
@@ -360,4 +390,3 @@ void BSplinesFESpace_Helper<3>::GetValuesAndDerivatives(const BSplinesFESpace<3>
 }
 
 } // namespace Kratos.
-

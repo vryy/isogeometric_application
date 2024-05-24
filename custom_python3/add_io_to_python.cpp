@@ -10,11 +10,9 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -48,4 +46,3 @@ void  IsogeometricApplication_AddIOToPython(pybind11::module& m)
 }  // namespace Python.
 
 } // Namespace Kratos
-

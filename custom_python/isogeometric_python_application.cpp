@@ -41,13 +41,11 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "isogeometric_application.h"
 #include "isogeometric_application_variables.h"
 
-
 namespace Kratos
 {
 
 namespace Python
 {
-
 
 BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
 {
@@ -101,7 +99,6 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( CELL_INDEX )
 
 }
-
 
 } // namespace Python.
 

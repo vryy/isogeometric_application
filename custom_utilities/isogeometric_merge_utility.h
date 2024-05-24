@@ -30,7 +30,6 @@
 #include "utilities/openmp_utils.h"
 #include "isogeometric_application_variables.h"
 
-
 //#define DEBUG_LEVEL1
 //#define DEBUG_LEVEL2
 //#define DEBUG_MULTISOLVE
@@ -69,18 +68,30 @@ public:
     ~LoosePointType() {}
     bool operator<(const LoosePointType& rOther) const
     {
-        if(mrP.X0() < rOther.mrP.X0() - 1.0e-6)
+        if (mrP.X0() < rOther.mrP.X0() - 1.0e-6)
+        {
             return true;
-        if(mrP.X0() > rOther.mrP.X0() + 1.0e-6)
+        }
+        if (mrP.X0() > rOther.mrP.X0() + 1.0e-6)
+        {
             return false;
-        if(mrP.Y0() < rOther.mrP.Y0() - 1.0e-6)
+        }
+        if (mrP.Y0() < rOther.mrP.Y0() - 1.0e-6)
+        {
             return true;
-        if(mrP.Y0() > rOther.mrP.Y0() + 1.0e-6)
+        }
+        if (mrP.Y0() > rOther.mrP.Y0() + 1.0e-6)
+        {
             return false;
-        if(mrP.Z0() < rOther.mrP.Z0() - 1.0e-6)
+        }
+        if (mrP.Z0() < rOther.mrP.Z0() - 1.0e-6)
+        {
             return true;
-        if(mrP.Z0() > rOther.mrP.Z0() + 1.0e-6)
+        }
+        if (mrP.Z0() > rOther.mrP.Z0() + 1.0e-6)
+        {
             return false;
+        }
         return false;
     }
     PointType& GetPoint() const {return mrP;}
@@ -88,7 +99,6 @@ public:
 private:
     PointType& mrP;
 };
-
 
 /// Short class definition.
 /**
@@ -131,7 +141,6 @@ public:
     typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType> LinearSolverType;
 
     typedef std::size_t IndexType;
-
 
     /// Pointer definition of IsogeometricMergeUtility
     KRATOS_CLASS_POINTER_DEFINITION(IsogeometricMergeUtility);
@@ -184,10 +193,10 @@ public:
 //        }
 //        KRATOS_WATCH(PointSetDummy.size())
 
-        for(int i = 0; i < mpModelPartContainer.size(); ++i)
+        for (int i = 0; i < mpModelPartContainer.size(); ++i)
         {
             NodesContainerType ThisNodes = mpModelPartContainer[i]->Nodes();
-            for(NodesContainerType::iterator it = ThisNodes.begin(); it != ThisNodes.end(); ++it)
+            for (NodesContainerType::iterator it = ThisNodes.begin(); it != ThisNodes.end(); ++it)
             {
                 LoosePointType<PointType> P(*it);
                 std::pair<SetType::iterator, bool> iP = PointSet.insert(P);
@@ -199,24 +208,30 @@ public:
 
         // create a unified variables_list
         VariablesList ThisVariablesList;
-        for(int i = 0; i < mpModelPartContainer.size(); ++i)
+        for (int i = 0; i < mpModelPartContainer.size(); ++i)
         {
             VariablesList& tmp = mpModelPartContainer[i]->GetNodalSolutionStepVariablesList();
-            for(VariablesList::ptr_const_iterator it = tmp.ptr_begin(); it != tmp.ptr_end(); ++it)
+            for (VariablesList::ptr_const_iterator it = tmp.ptr_begin(); it != tmp.ptr_end(); ++it)
+            {
                 ThisVariablesList.Add(*(*it));
+            }
         }
         // add the unified variables_list to the new model_part
-        for(VariablesList::ptr_const_iterator it = ThisVariablesList.ptr_begin(); it != ThisVariablesList.ptr_end(); ++it)
+        for (VariablesList::ptr_const_iterator it = ThisVariablesList.ptr_begin(); it != ThisVariablesList.ptr_end(); ++it)
+        {
             pModelPart->GetNodalSolutionStepVariablesList().Add(*(*it));
+        }
         KRATOS_WATCH(pModelPart->GetNodalSolutionStepVariablesList())
 
         // create a maximum buffer
         int buffer_size = 0;
-        for(int i = 0; i < mpModelPartContainer.size(); ++i)
+        for (int i = 0; i < mpModelPartContainer.size(); ++i)
         {
             int tmp_buff_size = mpModelPartContainer[i]->GetBufferSize();
-            if(tmp_buff_size > buffer_size)
+            if (tmp_buff_size > buffer_size)
+            {
                 buffer_size = tmp_buff_size;
+            }
         }
         pModelPart->SetBufferSize(buffer_size);
         KRATOS_WATCH(pModelPart->GetBufferSize())
@@ -224,7 +239,7 @@ public:
         // add nodes to the new model part
         int lastNode = 0;
         std::map<LoosePointType<PointType>, int> NodeIds; // map from reduced node set to new node set id
-        for(SetType::iterator it = PointSet.begin(); it != PointSet.end(); ++it)
+        for (SetType::iterator it = PointSet.begin(); it != PointSet.end(); ++it)
         {
             NodeType::Pointer NewNode( new Node<3>( 0, it->GetPoint() ) );;
             NewNode->SetId(++lastNode);
@@ -232,11 +247,11 @@ public:
             NewNode->SetSolutionStepVariablesList(&(pModelPart->GetNodalSolutionStepVariablesList())); // to make sure it synchronized with model_part variables list
             NewNode->SetBufferSize(pModelPart->GetBufferSize());
 //            pModelPart->AddNode(NewNode); // for some reason it created segmentation fault error
-            #if defined(KRATOS_SD_REF_NUMBER_2)
+#if defined(KRATOS_SD_REF_NUMBER_2)
             pModelPart->Nodes().push_back(*NewNode);
-            #elif defined(KRATOS_SD_REF_NUMBER_3)
+#elif defined(KRATOS_SD_REF_NUMBER_3)
             pModelPart->Nodes().push_back(NewNode);
-            #endif
+#endif
 //            // TODO: transfer nodal data
 
 //            NodeType temp_node;
@@ -259,21 +274,23 @@ public:
         typedef typename KratosComponents<Element>::ComponentsContainerType ElementComponentsContainerType;
         ElementsContainerType NewElements;
         ElementComponentsContainerType ElementComponents = KratosComponents<Element>::GetComponents();
-        for(int i = 0; i < mpModelPartContainer.size(); ++i)
+        for (int i = 0; i < mpModelPartContainer.size(); ++i)
         {
             ElementsContainerType pElements = mpModelPartContainer[i]->Elements();
-            for(ElementsContainerType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
+            for (ElementsContainerType::ptr_iterator it = pElements.ptr_begin(); it != pElements.ptr_end(); ++it)
             {
                 std::string element_name;
-                for(ElementComponentsContainerType::iterator cit = ElementComponents.begin(); cit != ElementComponents.end(); ++cit)
-                    if(typeid(*(cit->second)).name() == typeid(*(*it)).name())
-                        if(typeid(cit->second->GetGeometry()).name() == typeid((*it)->GetGeometry()).name())
+                for (ElementComponentsContainerType::iterator cit = ElementComponents.begin(); cit != ElementComponents.end(); ++cit)
+                    if (typeid(*(cit->second)).name() == typeid(*(*it)).name())
+                        if (typeid(cit->second->GetGeometry()).name() == typeid((*it)->GetGeometry()).name())
+                        {
                             element_name = cit->first;
+                        }
 //                KRATOS_WATCH(element_name)
                 Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
                 Properties::Pointer p_temp_properties = (*it)->pGetProperties();
                 Element::NodesArrayType temp_element_nodes;
-                for(int j = 0; j < (*it)->GetGeometry().size(); ++j)
+                for (int j = 0; j < (*it)->GetGeometry().size(); ++j)
                 {
                     KeyType K(i, (*it)->GetGeometry()[j].Id());
                     SetType::iterator iP = PointMap[K];
@@ -285,8 +302,10 @@ public:
             }
         }
         // add new elements
-        for( ElementsContainerType::ptr_iterator it = NewElements.ptr_begin(); it != NewElements.ptr_end(); ++it )
+        for ( ElementsContainerType::ptr_iterator it = NewElements.ptr_begin(); it != NewElements.ptr_end(); ++it )
+        {
             pModelPart->Elements().push_back( *it );
+        }
         NewElements.clear();
 
         // add conditions to the new model part
@@ -294,21 +313,23 @@ public:
         typedef typename KratosComponents<Condition>::ComponentsContainerType ConditionComponentsContainerType;
         ConditionsContainerType NewConditions;
         ConditionComponentsContainerType ConditionComponents = KratosComponents<Condition>::GetComponents();
-        for(int i = 0; i < mpModelPartContainer.size(); ++i)
+        for (int i = 0; i < mpModelPartContainer.size(); ++i)
         {
             ConditionsContainerType pConditions = mpModelPartContainer[i]->Conditions();
-            for(ConditionsContainerType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
+            for (ConditionsContainerType::ptr_iterator it = pConditions.ptr_begin(); it != pConditions.ptr_end(); ++it)
             {
                 std::string condition_name;
-                for(ConditionComponentsContainerType::iterator cit = ConditionComponents.begin(); cit != ConditionComponents.end(); ++cit)
-                    if(typeid(*(cit->second)).name() == typeid(*(*it)).name())
-                        if(typeid(cit->second->GetGeometry()).name() == typeid((*it)->GetGeometry()).name())
+                for (ConditionComponentsContainerType::iterator cit = ConditionComponents.begin(); cit != ConditionComponents.end(); ++cit)
+                    if (typeid(*(cit->second)).name() == typeid(*(*it)).name())
+                        if (typeid(cit->second->GetGeometry()).name() == typeid((*it)->GetGeometry()).name())
+                        {
                             condition_name = cit->first;
+                        }
 //                KRATOS_WATCH(condition_name)
                 Condition const& r_clone_condition = KratosComponents<Condition>::Get(condition_name);
                 Properties::Pointer p_temp_properties = (*it)->pGetProperties();
                 Condition::NodesArrayType temp_condition_nodes;
-                for(int j = 0; j < (*it)->GetGeometry().size(); ++j)
+                for (int j = 0; j < (*it)->GetGeometry().size(); ++j)
                 {
                     KeyType K(i, (*it)->GetGeometry()[j].Id());
                     SetType::iterator iP = PointMap[K];
@@ -320,15 +341,17 @@ public:
             }
         }
         // add new conditions
-        for( ConditionsContainerType::ptr_iterator it = NewConditions.ptr_begin(); it != NewConditions.ptr_end(); ++it )
+        for ( ConditionsContainerType::ptr_iterator it = NewConditions.ptr_begin(); it != NewConditions.ptr_end(); ++it )
+        {
             pModelPart->Conditions().push_back( *it );
+        }
         NewConditions.clear();
 
         // add properties to the model_part
         int lastProperties = 0;
-        for(int i = 0; i < mpModelPartContainer.size(); ++i)
+        for (int i = 0; i < mpModelPartContainer.size(); ++i)
         {
-            for(ModelPart::PropertiesIterator it = mpModelPartContainer[i]->PropertiesBegin(); it != mpModelPartContainer[i]->PropertiesEnd(); ++it)
+            for (ModelPart::PropertiesIterator it = mpModelPartContainer[i]->PropertiesBegin(); it != mpModelPartContainer[i]->PropertiesEnd(); ++it)
             {
                 Properties::Pointer tmp = mpModelPartContainer[i]->pGetProperties(it->Id());
                 tmp->SetId(++lastProperties);
@@ -337,7 +360,6 @@ public:
         }
     }
 
-
     ///@}
     ///@name Access
     ///@{
@@ -345,14 +367,13 @@ public:
     void DumpNodalVariablesList(ModelPart::Pointer pModelPart)
     {
         ModelPart::NodesContainerType pNodes = pModelPart->Nodes();
-        for(ModelPart::NodesContainerType::ptr_iterator it = pNodes.ptr_begin(); it != pNodes.ptr_end(); ++it)
+        for (ModelPart::NodesContainerType::ptr_iterator it = pNodes.ptr_begin(); it != pNodes.ptr_end(); ++it)
         {
             KRATOS_WATCH((*it)->SolutionStepsDataHas(DISPLACEMENT))
             KRATOS_WATCH((*it)->SolutionStepsDataHas(DISPLACEMENT_X))
             KRATOS_WATCH((*it)->GetSolutionStepValue(DISPLACEMENT_X))
         }
     }
-
 
     ///@}
     ///@name Inquiry
@@ -433,14 +454,13 @@ private:
     ///@name Private Operations
     ///@{
 
-
     //**********AUXILIARY FUNCTION**************************************************************
     //******************************************************************************************
     template<class TContainerType, class TKeyType>
     typename TContainerType::iterator FindKey(TContainerType& ThisContainer, TKeyType& ThisKey, std::string& ComponentName)
     {
         typename TContainerType::iterator i_result;
-        if((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
+        if ((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
         {
             std::stringstream buffer;
             buffer << ComponentName << " #" << ThisKey << " is not found.";
@@ -449,7 +469,6 @@ private:
 
         return i_result;
     }
-
 
     ///@}
     ///@name Private  Access
@@ -516,4 +535,3 @@ private:
 #undef ENABLE_PROFILING
 
 #endif // ISOGEOMETRIC_MERGE_UTILITY
-

@@ -15,7 +15,6 @@
 #include "custom_utilities/level_set/multipatch_z_level_set.h"
 #include "custom_utilities/multipatch.h"
 
-
 namespace Kratos
 {
 

@@ -10,16 +10,13 @@ see isogeometric_application/LICENSE.txt
 *
 * ***********************************************************/
 
-
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ROW_CONSTRAINT_BUILDER_AND_SOLVER_H_INCLUDED)
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_ROW_CONSTRAINT_BUILDER_AND_SOLVER_H_INCLUDED
-
 
 /* System includes */
 #include <set>
 
 /* External includes */
-
 
 /* Project includes */
 #include "includes/define.h"
@@ -31,24 +28,18 @@ namespace Kratos
 /**@name Kratos Globals */
 /*@{ */
 
-
 /*@} */
 /**@name Type Definitions */
 /*@{ */
 
-
 /*@} */
-
 
 /**@name  Enum's */
 /*@{ */
 
-
 /*@} */
 /**@name  Functions */
 /*@{ */
-
-
 
 /*@} */
 /**@name Kratos Classes */
@@ -106,7 +97,7 @@ public:
 
     typedef std::size_t KeyType; // For Dof->GetVariable().Key()
 
-/*    typedef typename TSparseSpaceType::CommType CommType;*/
+    /*    typedef typename TSparseSpaceType::CommType CommType;*/
 
     /*@} */
     /**@name Life Cycle
@@ -115,7 +106,7 @@ public:
 
     /// Default Constructor.
     RowConstraintBuilderAndSolver(typename TLinearSolverType::Pointer pNewLinearSystemSolver)
-    : BaseType(pNewLinearSystemSolver)
+        : BaseType(pNewLinearSystemSolver)
     {
     }
 
@@ -124,12 +115,10 @@ public:
     {
     }
 
-
     /*@} */
     /**@name Operators
     */
     /*@{ */
-
 
     /*@} */
     /**@name Operations */
@@ -173,11 +162,9 @@ public:
     /**@name Inquiry */
     /*@{ */
 
-
     /*@} */
     /**@name Friends */
     /*@{ */
-
 
     /*@} */
 
@@ -185,7 +172,6 @@ protected:
 
     /**@name Protected static Member Variables */
     /*@{ */
-
 
     /*@} */
     /**@name Protected member Variables */
@@ -195,26 +181,21 @@ protected:
     /**@name Protected Operators*/
     /*@{ */
 
-
     /*@} */
     /**@name Protected Operations*/
     /*@{ */
-
 
     /*@} */
     /**@name Protected  Access */
     /*@{ */
 
-
     /*@} */
     /**@name Protected Inquiry */
     /*@{ */
 
-
     /*@} */
     /**@name Protected LifeCycle */
     /*@{ */
-
 
     /*@} */
 
@@ -233,26 +214,21 @@ private:
     /**@name Private Operators*/
     /*@{ */
 
-
     /*@} */
     /**@name Private Operations*/
     /*@{ */
-
 
     /*@} */
     /**@name Private  Access */
     /*@{ */
 
-
     /*@} */
     /**@name Private Inquiry */
     /*@{ */
 
-
     /*@} */
     /**@name Un accessible methods */
     /*@{ */
-
 
     /*@} */
 
@@ -263,10 +239,8 @@ private:
 /**@name Type Definitions */
 /*@{ */
 
-
 /*@} */
 
 }  /* namespace Kratos.*/
 
 #endif /* KRATOS_ISOGEOMETRIC_APPLICATION_ROW_CONSTRAINT_BUILDER_AND_SOLVER_H_INCLUDED defined */
-

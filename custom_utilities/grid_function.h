@@ -34,7 +34,7 @@ struct GridFunction_Helper
     typedef ControlGrid<TDataType> ControlGridType;
 
     static void GetValue(TDataType& v, const TCoordinatesType& xi,
-        const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
+                         const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
     {
         // firstly get the values of all the basis functions
         std::vector<double> f_values;
@@ -45,11 +45,13 @@ struct GridFunction_Helper
         // then interpolate the value at local coordinates using the control values
         v = f_values[0] * r_control_grid.GetData(0);
         for (std::size_t i = 1; i < r_control_grid.size(); ++i)
+        {
             v += f_values[i] * r_control_grid.GetData(i);
+        }
     }
 
     static void GetDerivative(std::vector<TDataType>& dv, const TCoordinatesType& xi,
-        const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
+                              const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
     {
         std::vector<double> xin(xi.size());
         std::copy(xi.begin(), xi.end(), xin.begin());
@@ -70,15 +72,21 @@ struct GridFunction_Helper
 
         // then interpolate the derivative at local coordinates using the control values
         if (dv.size() != TDim)
+        {
             dv.resize(TDim);
+        }
 
         for (int dim = 0; dim < TDim; ++dim)
+        {
             dv[dim] = f_derivatives[0][dim] * r_control_grid.GetData(0);
+        }
 
         for (std::size_t i = 1; i < r_control_grid.size(); ++i)
         {
             for (int dim = 0; dim < TDim; ++dim)
+            {
                 dv[dim] += f_derivatives[i][dim] * r_control_grid.GetData(i);
+            }
         }
     }
 };
@@ -90,7 +98,7 @@ struct GridFunction_Helper<TDim, TDataType, std::vector<double> >
     typedef ControlGrid<TDataType> ControlGridType;
 
     static void GetValue(TDataType& v, const std::vector<double>& xi,
-        const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
+                         const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
     {
         // firstly get the values of all the basis functions
         std::vector<double> f_values;
@@ -99,11 +107,13 @@ struct GridFunction_Helper<TDim, TDataType, std::vector<double> >
         // then interpolate the value at local coordinates using the control values
         v = f_values[0] * r_control_grid.GetData(0);
         for (std::size_t i = 1; i < r_control_grid.size(); ++i)
+        {
             v += f_values[i] * r_control_grid.GetData(i);
+        }
     }
 
     static void GetDerivative(std::vector<TDataType>& dv, const std::vector<double>& xi,
-        const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
+                              const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
     {
         // firstly get the values and derivatives of all the basis functions
         std::vector<std::vector<double> > f_derivatives;
@@ -121,15 +131,21 @@ struct GridFunction_Helper<TDim, TDataType, std::vector<double> >
 
         // then interpolate the derivative at local coordinates using the control values
         if (dv.size() != TDim)
+        {
             dv.resize(TDim);
+        }
 
         for (int dim = 0; dim < TDim; ++dim)
+        {
             dv[dim] = f_derivatives[0][dim] * r_control_grid.GetData(0);
+        }
 
         for (std::size_t i = 1; i < r_control_grid.size(); ++i)
         {
             for (int dim = 0; dim < TDim; ++dim)
+            {
                 dv[dim] += f_derivatives[i][dim] * r_control_grid.GetData(i);
+            }
         }
     }
 };
@@ -139,7 +155,7 @@ struct GridFunction_Predict_Helper
 {
     template<class TGridFunctionType>
     static void Execute(TGridFunctionType& rGridFunc,
-        const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling)
+                        const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented", __FUNCTION__)
     }
@@ -150,16 +166,16 @@ struct GridFunction_Predict_Helper<1, array_1d<double, 3>, array_1d<double, 3> >
 {
     template<class TGridFunctionType>
     static void Execute(TGridFunctionType& rGridFunc,
-        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
+                        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         if (nsampling.size() < 1)
             KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 1", "")
 
-        array_1d<double, 3> xi0, p;
+            array_1d<double, 3> xi0, p;
         xi0[1] = 0.0;
         xi0[2] = 0.0;
         double dist, min_dist = 1.0e99;
-        for (int i = 0; i < nsampling[0]+1; ++i)
+        for (int i = 0; i < nsampling[0] + 1; ++i)
         {
             xi0[0] = ((double) i) / nsampling[0];
             noalias(p) = rGridFunc.GetValue(xi0);
@@ -178,18 +194,18 @@ struct GridFunction_Predict_Helper<2, array_1d<double, 3>, array_1d<double, 3> >
 {
     template<class TGridFunctionType>
     static void Execute(TGridFunctionType& rGridFunc,
-        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
+                        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         if (nsampling.size() < 2)
             KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 2", "")
 
-        array_1d<double, 3> xi0, p;
+            array_1d<double, 3> xi0, p;
         xi0[2] = 0.0;
         double dist, min_dist = 1.0e99;
-        for (int i = 0; i < nsampling[0]+1; ++i)
+        for (int i = 0; i < nsampling[0] + 1; ++i)
         {
             xi0[0] = ((double) i) / nsampling[0];
-            for (int j = 0; j < nsampling[1]+1; ++j)
+            for (int j = 0; j < nsampling[1] + 1; ++j)
             {
                 xi0[1] = ((double) j) / nsampling[1];
                 noalias(p) = rGridFunc.GetValue(xi0);
@@ -209,20 +225,20 @@ struct GridFunction_Predict_Helper<3, array_1d<double, 3>, array_1d<double, 3> >
 {
     template<class TGridFunctionType>
     static void Execute(TGridFunctionType& rGridFunc,
-        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
+                        const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         if (nsampling.size() < 3)
             KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 3", "")
 
-        array_1d<double, 3> xi0, p;
+            array_1d<double, 3> xi0, p;
         double dist, min_dist = 1.0e99;
-        for (int i = 0; i < nsampling[0]+1; ++i)
+        for (int i = 0; i < nsampling[0] + 1; ++i)
         {
             xi0[0] = ((double) i) / nsampling[0];
-            for (int j = 0; j < nsampling[1]+1; ++j)
+            for (int j = 0; j < nsampling[1] + 1; ++j)
             {
                 xi0[1] = ((double) j) / nsampling[1];
-                for (int k = 0; k < nsampling[2]+1; ++k)
+                for (int k = 0; k < nsampling[2] + 1; ++k)
                 {
                     xi0[2] = ((double) k) / nsampling[2];
                     noalias(p) = rGridFunc.GetValue(xi0);
@@ -247,9 +263,9 @@ class GridFunction
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(GridFunction);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const GridFunction> ConstPointer;
-    #endif
+#endif
 
     /// Type definition
     typedef TDataType DataType;
@@ -259,7 +275,7 @@ public:
 
     /// Default constructor
     GridFunction(typename FESpaceType::Pointer pFESpace, typename ControlGridType::Pointer pControlGrid)
-    : mpFESpace(pFESpace), mpControlGrid(pControlGrid) {}
+        : mpFESpace(pFESpace), mpControlGrid(pControlGrid) {}
 
     /// Destructor
     virtual ~GridFunction() {}
@@ -334,7 +350,7 @@ public:
     /// the inversion, it requires a good initial starting point
     template<typename TCoordinatesType>
     void Predict(const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling,
-        const TCoordinatesType& xi_min, const TCoordinatesType& xi_max) const
+                 const TCoordinatesType& xi_min, const TCoordinatesType& xi_max) const
     {
         std::cout << "WARNING!!!Predict on range {xi_min, xi_max} is not yet implemented. {0, 1} is used for now." << std::endl;
         GridFunction_Predict_Helper<TDim, TDataType, TCoordinatesType>::Execute(*this, v, xi, nsampling);
@@ -376,21 +392,28 @@ public:
             this->GetValue(val, xi);
             noalias(res) = v - val;
             if (norm_2(res) < TOL)
+            {
                 break;
+            }
 
             this->GetDerivative(ders, xi);
 
             for (std::size_t i = 0; i < TDim; ++i)
                 for (std::size_t j = 0; j < TDim; ++j)
+                {
                     J(i, j) = ders[j][i];
+                }
 
             MathUtils<double>::InvertMatrix(J, InvJ, DetJ);
             noalias(dxi) = prod(InvJ, res);
             xi += dxi;
-        } while (++it < max_iters);
+        }
+        while (++it < max_iters);
 
         if ((it >= max_iters) && !converged)
+        {
             return 1;
+        }
 
         return 0;
     }
@@ -448,7 +471,6 @@ private:
     typename ControlGridType::Pointer mpControlGrid;
 
 };
-
 
 /// output stream function
 template<int TDim, typename TDataType>

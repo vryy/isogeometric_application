@@ -10,12 +10,10 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 
 // External includes
 #include <boost/python.hpp>
-
 
 // Project includes
 #include "includes/define.h"
@@ -39,7 +37,7 @@ void  IsogeometricApplication_AddIOToPython()
     ;
 
     class_<BezierModelPartIO, BezierModelPartIO::Pointer, bases<ModelPartIO>,  boost::noncopyable>(
-        "BezierModelPartIO",init<std::string const&>())
+        "BezierModelPartIO", init<std::string const&>())
 //        .def(init<std::string const&, const Flags>())
     ;
 }
@@ -47,4 +45,3 @@ void  IsogeometricApplication_AddIOToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

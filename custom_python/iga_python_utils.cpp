@@ -16,14 +16,14 @@ namespace Python
 
 template<typename TDataType>
 void IsogeometricPythonUtils::Unpack(const boost::python::dict& rPatchNodalValues,
-        std::map<std::size_t, std::map<std::size_t, TDataType> >& patch_nodal_values)
+                                     std::map<std::size_t, std::map<std::size_t, TDataType> >& patch_nodal_values)
 {
     boost::python::list keys = rPatchNodalValues.keys();
 
     typedef boost::python::stl_input_iterator<int> iterator_type;
-    BOOST_FOREACH(const iterator_type::value_type& id,
+    BOOST_FOREACH(const iterator_type::value_type & id,
                   std::make_pair(iterator_type(keys), // begin
-                    iterator_type() ) ) // end
+                                 iterator_type() ) ) // end
     {
         boost::python::object o = rPatchNodalValues.get(id);
 
@@ -33,9 +33,9 @@ void IsogeometricPythonUtils::Unpack(const boost::python::dict& rPatchNodalValue
         boost::python::list keys2 = values.keys();
 
         std::map<std::size_t, TDataType> nodal_values;
-        BOOST_FOREACH(const typename iterator_type::value_type& id2,
+        BOOST_FOREACH(const typename iterator_type::value_type & id2,
                       std::make_pair(iterator_type(keys2), // begin
-                        iterator_type() ) ) // end
+                                     iterator_type() ) ) // end
         {
             boost::python::object o2 = values.get(id2);
             TDataType v = boost::python::extract<TDataType>(o2);

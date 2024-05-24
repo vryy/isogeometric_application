@@ -40,12 +40,12 @@ struct BSplinesFESpace_Helper
 {
     /// Get the values of the basis functions at point xi
     static void GetValues(const BSplinesFESpace<TDim>& rFESpace,
-        std::vector<double>& values, const std::vector<double>& xi);
+                          std::vector<double>& values, const std::vector<double>& xi);
 
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
     static void GetValuesAndDerivatives(const BSplinesFESpace<TDim>& rFESpace,
-        std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi);
+                                        std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi);
 };
 
 /**
@@ -70,9 +70,9 @@ public:
     /// Destructor
     virtual ~BSplinesFESpace()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << this->Type() << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Helper to create new BSplinesFESpace pointer
@@ -84,8 +84,8 @@ public:
     /// Get the order of the BSplines patch in specific direction
     std::size_t Order(std::size_t idir) const final
     {
-        if (idir >= TDim) return 0;
-        else return mOrders[idir];
+        if (idir >= TDim) { return 0; }
+        else { return mOrders[idir]; }
     }
 
     /// Get the number of control points of the BSplines in all direction
@@ -93,7 +93,9 @@ public:
     {
         std::vector<std::size_t> numbers(TDim);
         for (std::size_t dim = 0; dim < TDim; ++dim)
+        {
             numbers[dim] = mNumbers[dim];
+        }
         return numbers;
     }
 
@@ -101,12 +103,14 @@ public:
     /// This function is useful to extract the number of shape functions in each direction of a sliced patch
     std::vector<std::size_t> Numbers(std::size_t idir) const
     {
-        std::vector<std::size_t> numbers(TDim-1);
+        std::vector<std::size_t> numbers(TDim - 1);
         std::size_t cnt = 0;
         for (std::size_t dim = 0; dim < TDim; ++dim)
         {
             if (dim != idir)
+            {
                 numbers[cnt++] = mNumbers[dim];
+            }
         }
         return numbers;
     }
@@ -119,7 +123,9 @@ public:
     {
         std::size_t Number = 1;
         for (std::size_t i = 0; i < TDim; ++i)
+        {
             Number *= mNumbers[i];
+        }
         return Number;
     }
 
@@ -128,7 +134,7 @@ public:
     {
         std::vector<double> bound(2);
         bound[0] = (*(mKnotVectors[idir].begin()))->Value();
-        bound[1] = (*(mKnotVectors[idir].end()-1))->Value();
+        bound[1] = (*(mKnotVectors[idir].end() - 1))->Value();
         return bound;
     }
 
@@ -163,7 +169,9 @@ public:
         {
             mKnotVectors[idir].clear();
             for (std::size_t j = 0; j < values.size(); ++j)
+            {
                 mKnotVectors[idir].pCreateKnot(values[j]);
+            }
         }
     }
 
@@ -254,7 +262,7 @@ public:
         for (std::size_t i = 0; i < TDim; ++i)
         {
             is_inside = is_inside && mKnotVectors[i].IsInside(xi[i]);
-            if (!is_inside) break;
+            if (!is_inside) { break; }
         }
         return is_inside;
     }
@@ -276,11 +284,17 @@ public:
         for (std::size_t i = 0; i < TDim; ++i)
         {
             if (!(this->Number(i)) == rOtherBSplinesFESpace.Number(i))
+            {
                 return false;
+            }
             if (!(this->Order(i)) == rOtherBSplinesFESpace.Order(i))
+            {
                 return false;
+            }
             if (!(this->KnotVector(i) == rOtherBSplinesFESpace.KnotVector(i)))
+            {
                 return false;
+            }
         }
 
         return true;
@@ -291,7 +305,9 @@ public:
     {
         BaseType::mGlobalToLocal.clear();
         if (mFunctionsIds.size() != this->TotalNumber())
+        {
             mFunctionsIds.resize(this->TotalNumber());
+        }
         std::fill(mFunctionsIds.begin(), mFunctionsIds.end(), -1);
     }
 
@@ -304,12 +320,16 @@ public:
             KRATOS_WATCH(this->TotalNumber())
             std::cout << "func_indices:";
             for (std::size_t i = 0; i < func_indices.size(); ++i)
+            {
                 std::cout << " " << func_indices[i];
+            }
             std::cout << std::endl;
             KRATOS_THROW_ERROR(std::logic_error, "The func_indices vector does not have the same size as total number of basis functions", "")
         }
         if (mFunctionsIds.size() != this->TotalNumber())
+        {
             mFunctionsIds.resize(this->TotalNumber());
+        }
         // std::copy(func_indices.begin(), func_indices.end(), mFunctionsIds.begin());
         for (std::size_t i = 0; i < func_indices.size(); ++i)
         {
@@ -325,7 +345,7 @@ public:
         BaseType::mGlobalToLocal.clear();
         for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
         {
-            if (mFunctionsIds[i] == -1) mFunctionsIds[i] = start++;
+            if (mFunctionsIds[i] == -1) { mFunctionsIds[i] = start++; }
             BaseType::mGlobalToLocal[mFunctionsIds[i]] = i;
         }
 
@@ -375,10 +395,13 @@ public:
             else
             {
                 if (i == 0)
+                {
                     first_id = mFunctionsIds[i];
-                else
-                    if (mFunctionsIds[i] < first_id)
-                        first_id = mFunctionsIds[i];
+                }
+                else if (mFunctionsIds[i] < first_id)
+                {
+                    first_id = mFunctionsIds[i];
+                }
             }
         }
 
@@ -403,7 +426,9 @@ public:
                 else
                 {
                     if (mFunctionsIds[i] > last_id)
+                    {
                         last_id = mFunctionsIds[i];
+                    }
                 }
             }
         }
@@ -478,32 +503,32 @@ public:
                 size_info[0] = this->Number(1);
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
-                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
-                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1, j+1, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j + 1, this->Number(1))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1, j + 1, this->Number(0), this->Number(1))];
             }
             else if (side == _BRIGHT_)
             {
                 size_info[0] = this->Number(1);
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
-                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
-                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j + 1, this->Number(1))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0), j + 1, this->Number(0), this->Number(1))];
             }
             else if (side == _BBOTTOM_)
             {
                 size_info[0] = this->Number(0);
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, 1, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i + 1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i + 1, 1, this->Number(0), this->Number(1))];
             }
             else if (side == _BTOP_)
             {
                 size_info[0] = this->Number(0);
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i + 1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i + 1, this->Number(1), this->Number(0), this->Number(1))];
             }
         }
         else if (TDim == 3)
@@ -516,8 +541,8 @@ public:
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j + 1, k + 1, this->Number(1), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1, j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2))];
             }
             else if (side == _BRIGHT_)
             {
@@ -526,8 +551,8 @@ public:
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j + 1, k + 1, this->Number(1), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0), j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2))];
             }
             else if (side == _BBOTTOM_)
             {
@@ -536,8 +561,8 @@ public:
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, this->Number(0), this->Number(1))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, 1, this->Number(0), this->Number(1), this->Number(2))];
             }
             else if (side == _BTOP_)
             {
@@ -546,8 +571,8 @@ public:
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, this->Number(0), this->Number(1))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))];
             }
             else if (side == _BFRONT_)
             {
@@ -556,8 +581,8 @@ public:
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, k + 1, this->Number(0), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, 1, k + 1, this->Number(0), this->Number(1), this->Number(2))];
             }
             else if (side == _BBACK_)
             {
@@ -566,8 +591,8 @@ public:
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, k + 1, this->Number(0), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, this->Number(1), k + 1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
 
@@ -584,22 +609,22 @@ public:
             if (TDim == 1)
             {
                 func_indices.resize(1);
-                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(1+level, this->Number(0))];
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(1 + level, this->Number(0))];
             }
             else if (TDim == 2)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
-                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
-                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1+level, j+1, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j + 1, this->Number(1))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1 + level, j + 1, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1+level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j + 1, k + 1, this->Number(1), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1 + level, j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BRIGHT_)
@@ -607,22 +632,22 @@ public:
             if (TDim == 1)
             {
                 func_indices.resize(1);
-                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(this->Number(0)-level, this->Number(0))];
+                func_indices[0] = mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(this->Number(0) - level, this->Number(0))];
             }
             else if (TDim == 2)
             {
                 func_indices.resize(this->Number(1));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
-                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))]
-                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0)-level, j+1, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(j + 1, this->Number(1))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0) - level, j + 1, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
                 func_indices.resize(this->Number(1)*this->Number(2));
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0)-level, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(j + 1, k + 1, this->Number(1), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0) - level, j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BBOTTOM_)
@@ -631,16 +656,16 @@ public:
             {
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, 1+level, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i + 1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i + 1, 1 + level, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, 1+level, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, this->Number(0), this->Number(1))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, 1 + level, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BTOP_)
@@ -649,16 +674,16 @@ public:
             {
                 func_indices.resize(this->Number(0));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
-                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))]
-                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, this->Number(1)-level, this->Number(0), this->Number(1))];
+                    func_indices[BSplinesIndexingUtility_Helper::Index1D(i + 1, this->Number(0))]
+                        = mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i + 1, this->Number(1) - level, this->Number(0), this->Number(1))];
             }
             else if (TDim == 3)
             {
                 func_indices.resize(this->Number(0)*this->Number(1));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t j = 0; j < this->Number(1); ++j)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, this->Number(2)-level, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, this->Number(0), this->Number(1))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, this->Number(2) - level, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BFRONT_)
@@ -668,8 +693,8 @@ public:
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, 1+level, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, k + 1, this->Number(0), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, 1 + level, k + 1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
         else if (side == _BBACK_)
@@ -679,8 +704,8 @@ public:
                 func_indices.resize(this->Number(0)*this->Number(2));
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                     for (std::size_t k = 0; k < this->Number(2); ++k)
-                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))]
-                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, this->Number(1)-level, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, k + 1, this->Number(0), this->Number(2))]
+                            = mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, this->Number(1) - level, k + 1, this->Number(0), this->Number(1), this->Number(2))];
             }
         }
 
@@ -695,15 +720,19 @@ public:
             if (TDim == 1)
             {
                 if (func_indices[0] != -1)
+                {
                     mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(1, this->Number(0))] = func_indices[0];
+                }
             }
             else if (TDim == 2)
             {
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                 {
-                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))];
+                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j + 1, this->Number(1))];
                     if (aux != -1)
-                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1, j+1, this->Number(0), this->Number(1))] = aux;
+                    {
+                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1, j + 1, this->Number(0), this->Number(1))] = aux;
+                    }
                 }
             }
             else if (TDim == 3)
@@ -712,9 +741,11 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j + 1, k + 1, this->Number(1), this->Number(2))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        {
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1, j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        }
                     }
                 }
             }
@@ -724,15 +755,19 @@ public:
             if (TDim == 1)
             {
                 if (func_indices[0] != -1)
+                {
                     mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(this->Number(0), this->Number(0))] = func_indices[0];
+                }
             }
             else if (TDim == 2)
             {
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                 {
-                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j+1, this->Number(1))];
+                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j + 1, this->Number(1))];
                     if (aux != -1)
-                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0), j+1, this->Number(0), this->Number(1))] = aux;
+                    {
+                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0), j + 1, this->Number(0), this->Number(1))] = aux;
+                    }
                 }
             }
             else if (TDim == 3)
@@ -741,9 +776,11 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j+1, k+1, this->Number(1), this->Number(2))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j + 1, k + 1, this->Number(1), this->Number(2))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0), j+1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        {
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0), j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        }
                     }
                 }
             }
@@ -754,9 +791,11 @@ public:
             {
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                 {
-                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))];
+                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i + 1, this->Number(0))];
                     if (aux != -1)
-                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, 1, this->Number(0), this->Number(1))] = aux;
+                    {
+                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i + 1, 1, this->Number(0), this->Number(1))] = aux;
+                    }
                 }
             }
             else if (TDim == 3)
@@ -765,9 +804,11 @@ public:
                 {
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                     {
-                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, this->Number(0), this->Number(1))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        {
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        }
                     }
                 }
             }
@@ -778,9 +819,11 @@ public:
             {
                 for (std::size_t i = 0; i < this->Number(0); ++i)
                 {
-                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i+1, this->Number(0))];
+                    std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i + 1, this->Number(0))];
                     if (aux != -1)
-                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, this->Number(1), this->Number(0), this->Number(1))] = aux;
+                    {
+                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i + 1, this->Number(1), this->Number(0), this->Number(1))] = aux;
+                    }
                 }
             }
             else if (TDim == 3)
@@ -789,9 +832,11 @@ public:
                 {
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                     {
-                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, this->Number(0), this->Number(1))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        {
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        }
                     }
                 }
             }
@@ -804,9 +849,11 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, k + 1, this->Number(0), this->Number(2))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, 1, k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        {
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, 1, k + 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        }
                     }
                 }
             }
@@ -819,9 +866,11 @@ public:
                 {
                     for (std::size_t k = 0; k < this->Number(2); ++k)
                     {
-                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, k+1, this->Number(0), this->Number(2))];
+                        std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, k + 1, this->Number(0), this->Number(2))];
                         if (aux != -1)
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, this->Number(1), k+1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        {
+                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, this->Number(1), k + 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                        }
                     }
                 }
             }
@@ -829,9 +878,9 @@ public:
     }
 
     /// Construct the boundary patch based on side
-    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const final
+    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const final
     {
-        typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1>::Pointer(new BSplinesFESpace<TDim-1>());
+        typename BSplinesFESpace < TDim - 1 >::Pointer pBFESpace = typename BSplinesFESpace < TDim - 1 >::Pointer(new BSplinesFESpace < TDim - 1 > ());
 
         // assign the knot vectors
         if (TDim == 2)
@@ -880,10 +929,10 @@ public:
     }
 
     /// Construct the boundary patch based on side and direction
-    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
-        const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const final
+    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+            const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const final
     {
-        typename BSplinesFESpace<TDim-1>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1>::Pointer(new BSplinesFESpace<TDim-1>());
+        typename BSplinesFESpace < TDim - 1 >::Pointer pBFESpace = typename BSplinesFESpace < TDim - 1 >::Pointer(new BSplinesFESpace < TDim - 1 > ());
         std::vector<int> param_dirs = ParameterDirection<TDim>::Get(side);
 
         // assign the knot vectors
@@ -913,15 +962,15 @@ public:
     }
 
     /// Construct the sliced FESpace
-    typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir, double xi) const final
+    typename FESpace < TDim - 1 >::Pointer ConstructSlicedFESpace(int idir, double xi) const final
     {
         return this->ConstructSlicedFESpace(idir);
     }
 
     /// Construct the sliced FESpace
-    typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir) const
+    typename FESpace < TDim - 1 >::Pointer ConstructSlicedFESpace(int idir) const
     {
-        typename FESpace<TDim-1>::Pointer pSFESpace;
+        typename FESpace < TDim - 1 >::Pointer pSFESpace;
 
         if (idir == 0)
         {
@@ -971,31 +1020,31 @@ public:
             // BezierUtils::bezier_extraction_2d(C, ne1, ne2, this->KnotVector(0), this->KnotVector(1), this->Order(0), this->Order(1));
             BezierUtils::bezier_extraction_1d(C, ne1, this->KnotVector(0), this->Order(0));
 
-            #ifdef DEBUG_GEN_CELL
+#ifdef DEBUG_GEN_CELL
             KRATOS_WATCH(ne1)
             KRATOS_WATCH(C.size())
             KRATOS_WATCH(C[0].size1())
             KRATOS_WATCH(C[0].size2())
-            #endif
+#endif
 
             // construct cells and add to the manager
             std::size_t n1 = this->Number(0);
             std::size_t p1 = this->Order(0);
-            std::size_t i, j, k, l, b1 = p1+1, tmp, mul1, sum_mul1 = 0, id1, id;
+            std::size_t i, j, k, l, b1 = p1 + 1, tmp, mul1, sum_mul1 = 0, id1, id;
             std::size_t cnt = 0; // cell counter
 
             for (i = 0; i < ne1; ++i)
             {
                 // check the multiplicity
                 tmp = b1;
-                while (b1 <= (n1 + p1 + 1) && this->KnotVector(0)[b1] == this->KnotVector(0)[b1-1]) ++b1;
+                while (b1 <= (n1 + p1 + 1) && this->KnotVector(0)[b1] == this->KnotVector(0)[b1 - 1]) { ++b1; }
                 mul1 = b1 - tmp + 1;
                 b1 = b1 + 1;
                 sum_mul1 = sum_mul1 + (mul1 - 1);
 
                 std::vector<std::size_t> anchors;
-                anchors.reserve(p1+1);
-                for (k = 0; k < p1+1; ++k)
+                anchors.reserve(p1 + 1);
+                for (k = 0; k < p1 + 1; ++k)
                 {
                     id1 = i + k + sum_mul1;
                     id = id1; // this is the local id
@@ -1003,11 +1052,13 @@ public:
                 }
 
                 // add the cell
-                std::tuple<knot_t, knot_t> span1 = this->KnotVector(0).span(i+1);
+                std::tuple<knot_t, knot_t> span1 = this->KnotVector(0).span(i + 1);
                 BCell::Pointer p_cell = BCell::Pointer(new BCell(cnt, std::get<0>(span1), std::get<1>(span1)));
                 double W = 1.0; // here we set to one because B-Splines space does not have weight
-                for (std::size_t r = 0; r < (p1+1); ++r)
+                for (std::size_t r = 0; r < (p1 + 1); ++r)
+                {
                     p_cell->AddAnchor(func_indices[anchors[r]], W, row(C[cnt], r));
+                }
                 pCellManager->insert(p_cell);
                 ++cnt;
             }
@@ -1020,27 +1071,27 @@ public:
             // BezierUtils::bezier_extraction_2d(C, ne1, ne2, this->KnotVector(0), this->KnotVector(1), this->Order(0), this->Order(1));
             BezierUtils::bezier_extraction_2d(C, ne2, ne1, this->KnotVector(1), this->KnotVector(0), this->Order(1), this->Order(0)); // we rotate the order of input
 
-            #ifdef DEBUG_GEN_CELL
+#ifdef DEBUG_GEN_CELL
             KRATOS_WATCH(ne1)
             KRATOS_WATCH(ne2)
             KRATOS_WATCH(C.size())
             KRATOS_WATCH(C[0].size1())
             KRATOS_WATCH(C[0].size2())
-            #endif
+#endif
 
             // construct cells and add to the manager
             std::size_t n1 = this->Number(0);
             std::size_t n2 = this->Number(1);
             std::size_t p1 = this->Order(0);
             std::size_t p2 = this->Order(1);
-            std::size_t i, j, k, l, b1 = p1+1, b2, tmp, mul1, mul2, sum_mul1 = 0, sum_mul2 = 0, id1, id2, id;
+            std::size_t i, j, k, l, b1 = p1 + 1, b2, tmp, mul1, mul2, sum_mul1 = 0, sum_mul2 = 0, id1, id2, id;
             std::size_t cnt = 0; // cell counter
 
             for (i = 0; i < ne1; ++i)
             {
                 // check the multiplicity
                 tmp = b1;
-                while (b1 <= (n1 + p1 + 1) && this->KnotVector(0)[b1] == this->KnotVector(0)[b1-1]) ++b1;
+                while (b1 <= (n1 + p1 + 1) && this->KnotVector(0)[b1] == this->KnotVector(0)[b1 - 1]) { ++b1; }
                 mul1 = b1 - tmp + 1;
                 b1 = b1 + 1;
                 sum_mul1 = sum_mul1 + (mul1 - 1);
@@ -1051,37 +1102,39 @@ public:
                 {
                     // check the multiplicity
                     tmp = b2;
-                    while (b2 <= (n2 + p2 + 1) && this->KnotVector(1)[b2] == this->KnotVector(1)[b2-1]) ++b2;
+                    while (b2 <= (n2 + p2 + 1) && this->KnotVector(1)[b2] == this->KnotVector(1)[b2 - 1]) { ++b2; }
                     mul2 = b2 - tmp + 1;
                     b2 = b2 + 1;
                     sum_mul2 = sum_mul2 + (mul2 - 1);
 
                     std::vector<std::size_t> anchors;
-                    anchors.reserve((p1+1)*(p2+1));
-                    for (k = 0; k < p1+1; ++k)
+                    anchors.reserve((p1 + 1) * (p2 + 1));
+                    for (k = 0; k < p1 + 1; ++k)
                     {
-                        for (l = 0; l < p2+1; ++l)
+                        for (l = 0; l < p2 + 1; ++l)
                         {
                             id1 = i + k + sum_mul1;
                             id2 = j + l + sum_mul2;
-                            id = id1 + id2*n1; // this is the local id
+                            id = id1 + id2 * n1; // this is the local id
                             anchors.push_back(id);
                         }
                     }
 
                     // add the cell
-                    std::tuple<knot_t, knot_t> span1 = this->KnotVector(0).span(i+1);
-                    std::tuple<knot_t, knot_t> span2 = this->KnotVector(1).span(j+1);
+                    std::tuple<knot_t, knot_t> span1 = this->KnotVector(0).span(i + 1);
+                    std::tuple<knot_t, knot_t> span2 = this->KnotVector(1).span(j + 1);
                     BCell::Pointer p_cell = BCell::Pointer(new BCell(cnt, std::get<0>(span1), std::get<1>(span1), std::get<0>(span2), std::get<1>(span2)));
                     double W = 1.0; // here we set to one because B-Splines space does not have weight
-                    for (std::size_t r = 0; r < (p1+1)*(p2+1); ++r)
+                    for (std::size_t r = 0; r < (p1 + 1) * (p2 + 1); ++r)
+                    {
                         p_cell->AddAnchor(func_indices[anchors[r]], W, row(C[cnt], r));
+                    }
                     pCellManager->insert(p_cell);
                     ++cnt;
                 }
             }
         }
-        else if(TDim == 3)
+        else if (TDim == 3)
         {
             // firstly compute the Bezier extraction operator on the patch
             std::vector<Matrix> C;
@@ -1090,8 +1143,8 @@ public:
             //     this->KnotVector(0), this->KnotVector(1), this->KnotVector(2),
             //     this->Order(0), this->Order(1), this->Order(2));
             BezierUtils::bezier_extraction_3d(C, ne3, ne2, ne1,
-                this->KnotVector(2), this->KnotVector(1), this->KnotVector(0),
-                this->Order(2), this->Order(1), this->Order(0)); // we rotate the order of input
+                                              this->KnotVector(2), this->KnotVector(1), this->KnotVector(0),
+                                              this->Order(2), this->Order(1), this->Order(0)); // we rotate the order of input
 
             // construct cells and add to the manager
             std::size_t n1 = this->Number(0);
@@ -1100,7 +1153,7 @@ public:
             std::size_t p1 = this->Order(0);
             std::size_t p2 = this->Order(1);
             std::size_t p3 = this->Order(2);
-            std::size_t i, j, k, l, u, v, w, b1 = p1+1, b2, b3, tmp, mul1, mul2, mul3;
+            std::size_t i, j, k, l, u, v, w, b1 = p1 + 1, b2, b3, tmp, mul1, mul2, mul3;
             std::size_t sum_mul1 = 0, sum_mul2 = 0, sum_mul3 = 0, id1, id2, id3, id;
             std::size_t cnt = 0; // cell counter
 
@@ -1108,7 +1161,7 @@ public:
             {
                 // check the multiplicity
                 tmp = b1;
-                while (b1 <= (n1 + p1 + 1) && this->KnotVector(0)[b1] == this->KnotVector(0)[b1-1]) ++b1;
+                while (b1 <= (n1 + p1 + 1) && this->KnotVector(0)[b1] == this->KnotVector(0)[b1 - 1]) { ++b1; }
                 mul1 = b1 - tmp + 1;
                 b1 = b1 + 1;
                 sum_mul1 = sum_mul1 + (mul1 - 1);
@@ -1119,7 +1172,7 @@ public:
                 {
                     // check the multiplicity
                     tmp = b2;
-                    while (b2 <= (n2 + p2 + 1) && this->KnotVector(1)[b2] == this->KnotVector(1)[b2-1]) ++b2;
+                    while (b2 <= (n2 + p2 + 1) && this->KnotVector(1)[b2] == this->KnotVector(1)[b2 - 1]) { ++b2; }
                     mul2 = b2 - tmp + 1;
                     b2 = b2 + 1;
                     sum_mul2 = sum_mul2 + (mul2 - 1);
@@ -1130,20 +1183,20 @@ public:
                     {
                         // check the multiplicity
                         tmp = b3;
-                        while (b3 <= (n3 + p3 + 1) && this->KnotVector(2)[b3] == this->KnotVector(2)[b3-1]) ++b3;
+                        while (b3 <= (n3 + p3 + 1) && this->KnotVector(2)[b3] == this->KnotVector(2)[b3 - 1]) { ++b3; }
                         mul3 = b3 - tmp + 1;
                         b3 = b3 + 1;
                         sum_mul3 = sum_mul3 + (mul3 - 1);
 
                         std::vector<std::size_t> anchors;
-                        anchors.reserve((p1+1)*(p2+1)*(p3+1));
-                        for (u = 0; u < p1+1; ++u)
+                        anchors.reserve((p1 + 1) * (p2 + 1) * (p3 + 1));
+                        for (u = 0; u < p1 + 1; ++u)
                         {
-                            for (v = 0; v < p2+1; ++v)
+                            for (v = 0; v < p2 + 1; ++v)
                             {
-                                for (v = 0; v < p2+1; ++v)
+                                for (v = 0; v < p2 + 1; ++v)
                                 {
-                                    for (w = 0; w < p3+1; ++w)
+                                    for (w = 0; w < p3 + 1; ++w)
                                     {
                                         id1 = i + u + sum_mul1;
                                         id2 = j + v + sum_mul2;
@@ -1156,14 +1209,16 @@ public:
                         }
 
                         // add the cell
-                        std::tuple<knot_t, knot_t> span1 = this->KnotVector(0).span(i+1);
-                        std::tuple<knot_t, knot_t> span2 = this->KnotVector(1).span(j+1);
-                        std::tuple<knot_t, knot_t> span3 = this->KnotVector(2).span(k+1);
+                        std::tuple<knot_t, knot_t> span1 = this->KnotVector(0).span(i + 1);
+                        std::tuple<knot_t, knot_t> span2 = this->KnotVector(1).span(j + 1);
+                        std::tuple<knot_t, knot_t> span3 = this->KnotVector(2).span(k + 1);
                         BCell::Pointer p_cell = BCell::Pointer(new BCell(cnt, std::get<0>(span1), std::get<1>(span1),
-                                std::get<0>(span2), std::get<1>(span2), std::get<0>(span3), std::get<1>(span3)));
+                                                               std::get<0>(span2), std::get<1>(span2), std::get<0>(span3), std::get<1>(span3)));
                         double W = 1.0; // here we set to one because B-Splines space does not have weight
-                        for (std::size_t r = 0; r < (p1+1)*(p2+1)*(p3+1); ++r)
+                        for (std::size_t r = 0; r < (p1 + 1) * (p2 + 1) * (p3 + 1); ++r)
+                        {
                             p_cell->AddAnchor(func_indices[anchors[r]], W, row(C[cnt], r));
+                        }
                         pCellManager->insert(p_cell);
                         ++cnt;
                     }
@@ -1200,10 +1255,14 @@ public:
     {
         rOStream << Type() << ", Addr = " << this << ", n = (";
         for (std::size_t i = 0; i < TDim; ++i)
+        {
             rOStream << " " << this->Number(i);
+        }
         rOStream << "), p = (";
         for (std::size_t i = 0; i < TDim; ++i)
+        {
             rOStream << " " << this->Order(i);
+        }
         rOStream << ")";
     }
 
@@ -1213,7 +1272,9 @@ public:
         {
             rOStream << " knot vector " << i << ":";
             for (std::size_t j = 0; j < mKnotVectors[i].size(); ++j)
+            {
                 rOStream << " " << mKnotVectors[i].pKnotAt(j)->Value();
+            }
             rOStream << std::endl;
         }
         if (mFunctionsIds.size() == this->TotalNumber())
@@ -1222,14 +1283,18 @@ public:
             if (TDim == 1)
             {
                 for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
+                {
                     rOStream << " " << mFunctionsIds[i];
+                }
             }
             else if (TDim == 2)
             {
                 for (std::size_t j = 0; j < this->Number(1); ++j)
                 {
                     for (std::size_t i = 0; i < this->Number(0); ++i)
-                        rOStream << " " << mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, this->Number(0), this->Number(1))];
+                    {
+                        rOStream << " " << mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, this->Number(0), this->Number(1))];
+                    }
                     rOStream << std::endl;
                 }
             }
@@ -1240,7 +1305,9 @@ public:
                     for (std::size_t j = 0; j < this->Number(1); ++j)
                     {
                         for (std::size_t i = 0; i < this->Number(0); ++i)
-                            rOStream << " " << mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, this->Number(0), this->Number(1), this->Number(2))];
+                        {
+                            rOStream << " " << mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2))];
+                        }
                         rOStream << std::endl;
                     }
                     rOStream << std::endl;

@@ -26,42 +26,42 @@ struct BSplinesIndexingUtility_Helper
     /// Compute the BSplines index in 1D.
     static inline std::size_t Index1D(std::size_t i, std::size_t n1)
     {
-        return i-1;
+        return i - 1;
     }
 
     /// Compute the BSplines index in 2D
     static inline std::size_t Index2D(std::size_t i, std::size_t j,
-        std::size_t n1, std::size_t n2)
+                                      std::size_t n1, std::size_t n2)
     {
-        return (j-1)*n1 + (i-1);
+        return (j - 1) * n1 + (i - 1);
     }
 
     /// Compute the BSplines index in 3D
     static inline std::size_t Index3D(std::size_t i, std::size_t j, std::size_t k,
-        std::size_t n1, std::size_t n2, std::size_t n3)
+                                      std::size_t n1, std::size_t n2, std::size_t n3)
     {
-        return ((k-1)*n2 + (j-1))*n1 + (i-1);
+        return ((k - 1) * n2 + (j - 1)) * n1 + (i - 1);
     }
 
     /// Compute the BSplines index array in 1D
     static inline std::vector<std::size_t> IndexArray1D(std::size_t i,
-        std::size_t n1)
+            std::size_t n1)
     {
-        return std::vector<std::size_t>{(i-1) % n1 + 1};
+        return std::vector<std::size_t> {(i - 1) % n1 + 1};
     }
 
     /// Compute the BSplines index array in 2D
     static inline std::vector<std::size_t> IndexArray2D(std::size_t i,
-        std::size_t n1, std::size_t n2)
+            std::size_t n1, std::size_t n2)
     {
-        return std::vector<std::size_t>{(i-1) % n1 + 1, (i-1) / n1 + 1};
+        return std::vector<std::size_t> {(i - 1) % n1 + 1, (i - 1) / n1 + 1};
     }
 
     /// Compute the BSplines index array in 3D
     static inline std::vector<std::size_t> IndexArray3D(std::size_t i,
-        std::size_t n1, std::size_t n2, std::size_t n3)
+            std::size_t n1, std::size_t n2, std::size_t n3)
     {
-        return std::vector<std::size_t>{(i-1) % n1 + 1, ((i-1) / n1) % n2 + 1, ((std::size_t)((i-1) / n1)) / n2 + 1};
+        return std::vector<std::size_t> {(i - 1) % n1 + 1, ((i - 1) / n1) % n2 + 1, ((std::size_t)((i - 1) / n1)) / n2 + 1};
     }
 };
 
@@ -103,7 +103,7 @@ public:
     template<int TDim>
     static std::vector<std::size_t> IndexArray(std::size_t I, const std::vector<std::size_t>& N)
     {
-        return std::vector<std::size_t>{};
+        return std::vector<std::size_t> {};
     }
 
     /// Reverse an array in specific direction
@@ -140,7 +140,9 @@ struct BSplinesIndexingUtility_Reverse_Helper<1, TContainerType, TIndexContainer
     static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         if (idir == 0)
+        {
             std::reverse(values.begin(), values.end());
+        }
     }
 };
 
@@ -153,7 +155,7 @@ struct BSplinesIndexingUtility_Reverse_Helper<2, TContainerType, TIndexContainer
         {
             for (std::size_t j = 0; j < sizes[1]; ++j)
             {
-                std::reverse(values.begin() + j*sizes[0], values.begin() + (j+1)*sizes[0]);
+                std::reverse(values.begin() + j * sizes[0], values.begin() + (j + 1)*sizes[0]);
             }
         }
         else if (idir == 1)
@@ -166,15 +168,15 @@ struct BSplinesIndexingUtility_Reverse_Helper<2, TContainerType, TIndexContainer
                 TContainerType Temp(sizes[1]);
                 for (std::size_t j = 0; j < sizes[1]; ++j)
                 {
-                    loc = BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, sizes[0], sizes[1]);
+                    loc = BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, sizes[0], sizes[1]);
                     Temp[j] = values[loc];
                 }
 
                 // assign the reverse value
                 for (std::size_t j = 0; j < sizes[1]; ++j)
                 {
-                    loc = BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, sizes[0], sizes[1]);
-                    values[loc] = Temp[sizes[1]-1-j];
+                    loc = BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, sizes[0], sizes[1]);
+                    values[loc] = Temp[sizes[1] - 1 - j];
                 }
             }
         }
@@ -190,7 +192,9 @@ struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainer
         {
             for (std::size_t j = 0; j < sizes[1]; ++j)
                 for (std::size_t k = 0; k < sizes[2]; ++k)
-                    std::reverse(values.begin() + (k*sizes[1] + j)*sizes[0], values.begin() + (k*sizes[1] + j + 1)*sizes[0]);
+                {
+                    std::reverse(values.begin() + (k * sizes[1] + j)*sizes[0], values.begin() + (k * sizes[1] + j + 1)*sizes[0]);
+                }
 
             // std::size_t loc;
 
@@ -232,15 +236,15 @@ struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainer
                     TContainerType Temp(sizes[1]);
                     for (std::size_t j = 0; j < sizes[1]; ++j)
                     {
-                        loc = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, sizes[0], sizes[1], sizes[2]);
+                        loc = BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, k + 1, sizes[0], sizes[1], sizes[2]);
                         Temp[j] = values[loc];
                     }
 
                     // assign the reverse value
                     for (std::size_t j = 0; j < sizes[1]; ++j)
                     {
-                        loc = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, sizes[0], sizes[1], sizes[2]);
-                        values[loc] = Temp[sizes[1]-1-j];
+                        loc = BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, k + 1, sizes[0], sizes[1], sizes[2]);
+                        values[loc] = Temp[sizes[1] - 1 - j];
                     }
                 }
             }
@@ -257,15 +261,15 @@ struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainer
                     TContainerType Temp(sizes[2]);
                     for (std::size_t k = 0; k < sizes[2]; ++k)
                     {
-                        loc = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, sizes[0], sizes[1], sizes[2]);
+                        loc = BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, k + 1, sizes[0], sizes[1], sizes[2]);
                         Temp[k] = values[loc];
                     }
 
                     // assign the reverse value
                     for (std::size_t k = 0; k < sizes[2]; ++k)
                     {
-                        loc = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, sizes[0], sizes[1], sizes[2]);
-                        values[loc] = Temp[sizes[2]-1-k];
+                        loc = BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, k + 1, sizes[0], sizes[1], sizes[2]);
+                        values[loc] = Temp[sizes[2] - 1 - k];
                     }
                 }
             }

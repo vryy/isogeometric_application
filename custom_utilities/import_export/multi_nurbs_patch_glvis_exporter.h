@@ -44,7 +44,9 @@ struct MultiNURBSPatchGLVisExporterWriter_Helper<TDim, Variable<double> >
         {
             typename ControlGrid<double>::Pointer pControlGrid = it->pGetGridFunction(rVariable)->pControlGrid();
             for (std::size_t i = 0; i < pControlGrid->size(); ++i)
+            {
                 rOStream << (*pControlGrid)[i] << std::endl;
+            }
         }
     }
 };
@@ -92,7 +94,9 @@ struct MultiNURBSPatchGLVisExporterWriter_Helper<TDim, Variable<Vector> >
             {
                 const Vector& v = (*pControlGrid)[i];
                 for (std::size_t i = 0; i < ncomponents; ++i)
+                {
                     rOStream << " " << v[i];
+                }
                 rOStream << std::endl;
             }
         }
@@ -181,14 +185,20 @@ public:
         {
             rOStream << "1";
             if (elements[i].size() == 4)
+            {
                 rOStream << " 3";
+            }
             else if (elements[i].size() == 8)
+            {
                 rOStream << " 5";
+            }
             else
                 KRATOS_THROW_ERROR(std::logic_error, "Invalid number of nodes for an element:", elements[i].size())
 
-            for (std::size_t j = 0; j < elements[i].size(); ++j)
-                rOStream << " " << elements[i][j];
+                for (std::size_t j = 0; j < elements[i].size(); ++j)
+                {
+                    rOStream << " " << elements[i][j];
+                }
             rOStream << "\n";
         }
         rOStream << "\n";
@@ -196,12 +206,16 @@ public:
         std::size_t nboundary = 0;
         for (std::size_t i = 0; i < edges.size(); ++i)
             if (std::get<3>(edges[i]) != 0)
+            {
                 ++nboundary;
+            }
         rOStream << "boundary\n" << nboundary << "\n";
         for (std::size_t i = 0; i < edges.size(); ++i)
         {
             if (std::get<3>(edges[i]) != 0)
+            {
                 rOStream << "1 1 " << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]) << "\n";
+            }
         }
         rOStream << "\n\n";
 
@@ -209,7 +223,7 @@ public:
         for (std::size_t i = 0; i < edges.size(); ++i)
         {
             rOStream << std::get<2>(edges[i]) << " "
-                    << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]) << "\n";
+                     << std::get<0>(edges[i]) << " " << std::get<1>(edges[i]) << "\n";
         }
         rOStream << "\n\n";
 
@@ -225,16 +239,18 @@ public:
             if (it->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
                 KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
 
-            typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
+                typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
-            for (std::size_t dim = 0; dim < TDim; ++dim)
-            {
-                rOStream << pFESpace->Order(dim) << " " << pFESpace->Number(dim);
-                for (std::size_t i = 0; i < pFESpace->KnotVector(dim).size(); ++i)
-                    rOStream << " " << pFESpace->KnotVector(dim)[i];
-                rOStream << "\n";
-            }
+                for (std::size_t dim = 0; dim < TDim; ++dim)
+                {
+                    rOStream << pFESpace->Order(dim) << " " << pFESpace->Number(dim);
+                    for (std::size_t i = 0; i < pFESpace->KnotVector(dim).size(); ++i)
+                    {
+                        rOStream << " " << pFESpace->KnotVector(dim)[i];
+                    }
+                    rOStream << "\n";
+                }
             rOStream << "\n";
 
             rOStream << "dimension\n" << TDim << "\n\n";
@@ -244,7 +260,9 @@ public:
             for (std::size_t i = 0; i < pControlGrid->size(); ++i)
             {
                 for (std::size_t dim = 0; dim < TDim; ++dim)
+                {
                     rOStream << " " << (*pControlGrid)[i][dim];
+                }
                 rOStream << " " << (*pControlGrid)[i][3] << "\n";
             }
             rOStream << "\n";
@@ -272,11 +290,11 @@ private:
     /// Generate the multipatch topology that can be read in GLVis
     /// It is noted that only the BSplines patch is supported. If the patch is hierarchical BSplines or TSplines, this will generate error
     void GenerateCornerTopology(const MultiPatch<TDim>& r_multipatch,
-        std::size_t& nvertices,
-        std::vector<std::vector<std::size_t> >& elements,
-        std::vector<std::vector<std::size_t> >& boundary,
-        std::vector<std::tuple<std::size_t, std::size_t, std::size_t, int> >& edges,
-        std::map<std::size_t, std::vector<double> >& knotvecs) const
+                                std::size_t& nvertices,
+                                std::vector<std::vector<std::size_t> >& elements,
+                                std::vector<std::vector<std::size_t> >& boundary,
+                                std::vector<std::tuple<std::size_t, std::size_t, std::size_t, int> >& edges,
+                                std::map<std::size_t, std::vector<double> >& knotvecs) const
     {
         typedef typename Patch<TDim>::vertex_t vertex_t;
         typedef typename Patch<TDim>::edge_t edge_t;
@@ -303,15 +321,17 @@ private:
             if (pFESpace == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
-            // collect the knot vector in respective dimension
-            for (std::size_t i = 0; i < TDim; ++i)
-            {
-                for (std::size_t j = 0; j < pFESpace->KnotVector(i).size(); ++j)
-                    all_knotvec[patch_knotv[id][i]].push_back(pFESpace->KnotVector(i)[j]);
-            }
+                // collect the knot vector in respective dimension
+                for (std::size_t i = 0; i < TDim; ++i)
+                {
+                    for (std::size_t j = 0; j < pFESpace->KnotVector(i).size(); ++j)
+                    {
+                        all_knotvec[patch_knotv[id][i]].push_back(pFESpace->KnotVector(i)[j]);
+                    }
+                }
         }
 
-        #ifdef DEBUG_GLVIS_EXPORT
+#ifdef DEBUG_GLVIS_EXPORT
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             std::size_t id = it->Id();
@@ -326,7 +346,7 @@ private:
                           << std::endl;
             }
         }
-        #endif
+#endif
 
         // for all patch, account for the corners and then renumbering the vertex and edge
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
@@ -440,7 +460,7 @@ private:
             }
         }
 
-        #ifdef DEBUG_GLVIS_EXPORT
+#ifdef DEBUG_GLVIS_EXPORT
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             std::size_t id = it->Id();
@@ -455,7 +475,7 @@ private:
                           << std::endl;
             }
         }
-        #endif
+#endif
 
         // collect all the vertices in the multipatch
         std::set<vertex_t> all_vertices;
@@ -469,7 +489,9 @@ private:
         std::map<vertex_t, vertex_t> old_to_new;
         start_vertex_id = 0;
         for (typename std::set<vertex_t>::iterator it = all_vertices.begin(); it != all_vertices.end(); ++it)
+        {
             old_to_new[*it] = start_vertex_id++;
+        }
 
         // finally reassign the new id for all patches
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
@@ -514,28 +536,36 @@ private:
         {
             std::size_t id = it->Id();
             for (std::size_t i = 0; i < TDim; ++i)
+            {
                 all_knotvs.insert(patch_knotv[id][i]);
+            }
         }
 
-        #ifdef DEBUG_GLVIS_EXPORT
+#ifdef DEBUG_GLVIS_EXPORT
         std::cout << "all_knotvs:";
         for (std::set<std::size_t>::iterator it = all_knotvs.begin(); it != all_knotvs.end(); ++it)
+        {
             std::cout << " " << *it;
+        }
         std::cout << std::endl;
-        #endif
+#endif
 
         // reassign each knot vector a new index
         std::map<std::size_t, std::size_t> old_to_new_knotv;
         start_knotv_id = 0;
         for (std::set<std::size_t>::iterator it = all_knotvs.begin(); it != all_knotvs.end(); ++it)
+        {
             old_to_new_knotv[*it] = start_knotv_id++;
+        }
 
         // finally reassign the new id for all patches
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             std::size_t id = it->Id();
             for (std::size_t i = 0; i < TDim; ++i)
+            {
                 patch_knotv[id][i] = old_to_new_knotv[patch_knotv[id][i]];
+            }
         }
 
         // reassign the knot vector index in each edge
@@ -553,7 +583,9 @@ private:
         {
             std::size_t id = it->Id();
             for (std::size_t i = 0; i < TDim; ++i)
+            {
                 knotvecs[ old_to_new_knotv[patch_knotv[id][i]] ] = all_knotvec[ patch_knotv[id][i] ];
+            }
         }
 
         // collect all the edges in all the patches
@@ -598,26 +630,28 @@ private:
     /// Synchronize from 1->2
     template<typename vertex_t, typename edge_t, typename face_t, typename volume_t>
     void SynchronizeVertices( int Dim,
-        const BoundarySide& side1,
-        std::vector<vertex_t>& vertices1,
-        const BoundarySide& side2,
-        std::vector<vertex_t>& vertices2,
-        std::vector<edge_t>& edges2,
-        std::vector<face_t>& faces2,
-        std::vector<volume_t>& volumes2 ) const
+                              const BoundarySide& side1,
+                              std::vector<vertex_t>& vertices1,
+                              const BoundarySide& side2,
+                              std::vector<vertex_t>& vertices2,
+                              std::vector<edge_t>& edges2,
+                              std::vector<face_t>& faces2,
+                              std::vector<volume_t>& volumes2 ) const
     {
         if (vertices1.size() != vertices2.size())
             KRATOS_THROW_ERROR(std::logic_error, "The number of vertices is not compatible", "")
 
-        std::vector<int> map = GetJointMapping(Dim, side1, side2);
+            std::vector<int> map = GetJointMapping(Dim, side1, side2);
 
         std::map<std::size_t, std::size_t> old_to_new;
         for (std::size_t i = 0; i < vertices2.size(); ++i)
-            old_to_new[vertices2[i]] = vertices2[i];
-        for (std::size_t i = 0; i < map.size()/2; ++i)
         {
-            old_to_new[vertices2[map[i*2+1]]] = vertices1[map[i*2]];
-            vertices2[map[i*2+1]] = vertices1[map[i*2]];
+            old_to_new[vertices2[i]] = vertices2[i];
+        }
+        for (std::size_t i = 0; i < map.size() / 2; ++i)
+        {
+            old_to_new[vertices2[map[i * 2 + 1]]] = vertices1[map[i * 2]];
+            vertices2[map[i * 2 + 1]] = vertices1[map[i * 2]];
         }
 
         for (std::size_t i = 0; i < edges2.size(); ++i)
@@ -656,35 +690,35 @@ private:
             if (side1 == _BLEFT_)
             {
                 if (side2 == _BRIGHT_)
-                    return std::vector<int>{ 0, 1, /**/ 2, 3 };
+                    return std::vector<int> { 0, 1, /**/ 2, 3 };
                 else
                     //TODO
                     KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
-            }
+                }
             else if (side1 == _BRIGHT_)
             {
                 if (side2 == _BLEFT_)
-                    return std::vector<int>{ 1, 0, /**/ 3, 2 };
+                    return std::vector<int> { 1, 0, /**/ 3, 2 };
                 else
                     //TODO
                     KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
-            }
+                }
             else if (side1 == _BTOP_)
             {
                 if (side2 == _BBOTTOM_)
-                    return std::vector<int>{ 2, 0, /**/ 3, 1 };
+                    return std::vector<int> { 2, 0, /**/ 3, 1 };
                 else
                     // TODO
                     KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
-            }
+                }
             else if (side1 == _BBOTTOM_)
             {
                 if (side2 == _BTOP_)
-                    return std::vector<int>{ 0, 2, /**/ 1, 3 };
+                    return std::vector<int> { 0, 2, /**/ 1, 3 };
                 else
                     // TODO
                     KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
-            }
+                }
         }
         else if (dim == 3)
         {
@@ -694,8 +728,6 @@ private:
     }
 
 }; // end class MultiNURBSPatchGLVisExporterWriter
-
-
 
 class MultiNURBSPatchGLVisExporter
 {
@@ -713,7 +745,7 @@ public:
         dummy.Export(pPatch, outfile);
 
         outfile.close();
-        std::cout <<" Patch " << pPatch->Id() << " is exported to " << filename << " successfully" << std::endl;
+        std::cout << " Patch " << pPatch->Id() << " is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Write the results from single patch to the results file
@@ -727,7 +759,7 @@ public:
         dummy.Export(pPatch, rVariable, outfile);
 
         outfile.close();
-        std::cout <<" Patch " << pPatch->Id() << " results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
+        std::cout << " Patch " << pPatch->Id() << " results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Write the results from single patch to the results file
@@ -741,7 +773,7 @@ public:
         dummy.Export(pPatch, rVariable, outfile, ncomponents);
 
         outfile.close();
-        std::cout <<" Patch " << pPatch->Id() << " results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
+        std::cout << " Patch " << pPatch->Id() << " results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Write a multipatch to the mesh file
@@ -755,7 +787,7 @@ public:
         dummy.Export(pMultiPatch, outfile);
 
         outfile.close();
-        std::cout <<" MultiPatch is exported to " << filename << " successfully" << std::endl;
+        std::cout << " MultiPatch is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Write the results from multipatch to the results file
@@ -769,7 +801,7 @@ public:
         dummy.Export(pMultiPatch, rVariable, outfile);
 
         outfile.close();
-        std::cout <<" MultiPatch results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
+        std::cout << " MultiPatch results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Write the results from multipatch to the results file
@@ -783,7 +815,7 @@ public:
         dummy.Export(pMultiPatch, rVariable, outfile, ncomponents);
 
         outfile.close();
-        std::cout <<" MultiPatch results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
+        std::cout << " MultiPatch results " << rVariable.Name() << " is exported to " << filename << " successfully" << std::endl;
     }
 
     /// Information
@@ -796,7 +828,6 @@ public:
     {
     }
 };
-
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream, const MultiNURBSPatchGLVisExporter& rThis)
@@ -812,4 +843,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiNURBSPatchGL
 #undef DEBUG_GLVIS_EXPORT
 
 #endif // KRATOS_ISOGLVisMETRIC_APPLICATION_MULTI_NURBS_PATCH_GLVIS_EXPORTER_H_INCLUDED defined
-

@@ -27,7 +27,7 @@ public:
 
     template<typename TIndexType>
     void ComputeDelaunayTriangulation(std::vector<double>& XYlist,
-        std::vector<std::vector<TIndexType> >& Connectivities)
+                                      std::vector<std::vector<TIndexType> >& Connectivities)
     {
         // generate the triangulation
         int node_num = XYlist.size() / 2;
@@ -35,26 +35,26 @@ public:
         int* triangle_neighbor;
         int triangle_num;
 
-        triangle_node = (int*) calloc(2*node_num*3, sizeof(int));
-        triangle_neighbor = (int*) calloc(2*node_num*3, sizeof(int));
+        triangle_node = (int*) calloc(2 * node_num * 3, sizeof(int));
+        triangle_neighbor = (int*) calloc(2 * node_num * 3, sizeof(int));
 
         int error = r8tris2(node_num, &XYlist[0], &triangle_num, triangle_node, triangle_neighbor);
 
-        if(error != 0)
+        if (error != 0)
             KRATOS_THROW_ERROR(std::logic_error, "Error calling r8tris2, error code =", error)
 
-        // report the triangulation quality
-        // TODO
+            // report the triangulation quality
+            // TODO
 
-        // write the output data
-        for(int i = 0; i < triangle_num; ++i)
-        {
-            std::vector<TIndexType> tri(3);
-            tri[0] = static_cast<TIndexType>(triangle_node[3*i]);
-            tri[1] = static_cast<TIndexType>(triangle_node[3*i + 1]);
-            tri[2] = static_cast<TIndexType>(triangle_node[3*i + 2]);
-            Connectivities.push_back(tri);
-        }
+            // write the output data
+            for (int i = 0; i < triangle_num; ++i)
+            {
+                std::vector<TIndexType> tri(3);
+                tri[0] = static_cast<TIndexType>(triangle_node[3 * i]);
+                tri[1] = static_cast<TIndexType>(triangle_node[3 * i + 1]);
+                tri[2] = static_cast<TIndexType>(triangle_node[3 * i + 2]);
+                Connectivities.push_back(tri);
+            }
 
         // free up the memory
         free(triangle_node);
@@ -66,9 +66,9 @@ private:
 
 //****************************************************************************80
 
-void alpha_measure ( int n, double z[], int triangle_order, int triangle_num,
-  int triangle_node[], double *alpha_min, double *alpha_ave,
-  double *alpha_area )
+    void alpha_measure ( int n, double z[], int triangle_order, int triangle_num,
+                         int triangle_node[], double *alpha_min, double *alpha_ave,
+                         double *alpha_area )
 
 //****************************************************************************80
 //
@@ -124,122 +124,122 @@ void alpha_measure ( int n, double z[], int triangle_order, int triangle_num,
 //    Output, double *ALPHA_AREA, the value of ALPHA averaged over
 //    all triangles and weighted by area.
 //
-{
-  double a_angle;
-  int a_index;
-  double a_x;
-  double a_y;
-  double ab_len;
-  double alpha;
-  double area;
-  double area_total;
-  double b_angle;
-  int b_index;
-  double b_x;
-  double b_y;
-  double bc_len;
-  double c_angle;
-  int c_index;
-  double c_x;
-  double c_y;
-  double ca_len;
-  double pi = 3.141592653589793;
-  int triangle;
-  double value;
+    {
+        double a_angle;
+        int a_index;
+        double a_x;
+        double a_y;
+        double ab_len;
+        double alpha;
+        double area;
+        double area_total;
+        double b_angle;
+        int b_index;
+        double b_x;
+        double b_y;
+        double bc_len;
+        double c_angle;
+        int c_index;
+        double c_x;
+        double c_y;
+        double ca_len;
+        double pi = 3.141592653589793;
+        int triangle;
+        double value;
 
-  *alpha_min = r8_huge ( );
-  *alpha_ave = 0.0;
-  *alpha_area = 0.0;
-  area_total = 0.0;
+        *alpha_min = r8_huge ( );
+        *alpha_ave = 0.0;
+        *alpha_area = 0.0;
+        area_total = 0.0;
 
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    a_index = triangle_node[0+triangle*triangle_order];
-    b_index = triangle_node[1+triangle*triangle_order];
-    c_index = triangle_node[2+triangle*triangle_order];
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            a_index = triangle_node[0 + triangle * triangle_order];
+            b_index = triangle_node[1 + triangle * triangle_order];
+            c_index = triangle_node[2 + triangle * triangle_order];
 
-    a_x = z[0+(a_index-1)*2];
-    a_y = z[1+(a_index-1)*2];
-    b_x = z[0+(b_index-1)*2];
-    b_y = z[1+(b_index-1)*2];
-    c_x = z[0+(c_index-1)*2];
-    c_y = z[1+(c_index-1)*2];
+            a_x = z[0 + (a_index - 1) * 2];
+            a_y = z[1 + (a_index - 1) * 2];
+            b_x = z[0 + (b_index - 1) * 2];
+            b_y = z[1 + (b_index - 1) * 2];
+            c_x = z[0 + (c_index - 1) * 2];
+            c_y = z[1 + (c_index - 1) * 2];
 
-    area = 0.5 * r8_abs ( a_x * ( b_y - c_y )
-                        + b_x * ( c_y - a_y )
-                        + c_x * ( a_y - b_y ) );
+            area = 0.5 * r8_abs ( a_x * ( b_y - c_y )
+                                  + b_x * ( c_y - a_y )
+                                  + c_x * ( a_y - b_y ) );
 
-    ab_len = sqrt ( pow ( a_x - b_x, 2 ) + pow ( a_y - b_y, 2 ) );
-    bc_len = sqrt ( pow ( b_x - c_x, 2 ) + pow ( b_y - c_y, 2 ) );
-    ca_len = sqrt ( pow ( c_x - a_x, 2 ) + pow ( c_y - a_y, 2 ) );
+            ab_len = sqrt ( pow ( a_x - b_x, 2 ) + pow ( a_y - b_y, 2 ) );
+            bc_len = sqrt ( pow ( b_x - c_x, 2 ) + pow ( b_y - c_y, 2 ) );
+            ca_len = sqrt ( pow ( c_x - a_x, 2 ) + pow ( c_y - a_y, 2 ) );
 //
 //  Take care of a ridiculous special case.
 //
-    if ( ab_len == 0.0 && bc_len == 0.0 && ca_len == 0.0 )
-    {
-      a_angle = 2.0 * pi / 3.0;
-      b_angle = 2.0 * pi / 3.0;
-      c_angle = 2.0 * pi / 3.0;
-    }
-    else
-    {
-      if ( ca_len == 0.0 || ab_len == 0.0 )
-      {
-        a_angle = pi;
-      }
-      else
-      {
-        a_angle = arc_cosine (
-          ( ca_len * ca_len + ab_len * ab_len - bc_len * bc_len )
-          / ( 2.0 * ca_len * ab_len ) );
-      }
+            if ( ab_len == 0.0 && bc_len == 0.0 && ca_len == 0.0 )
+            {
+                a_angle = 2.0 * pi / 3.0;
+                b_angle = 2.0 * pi / 3.0;
+                c_angle = 2.0 * pi / 3.0;
+            }
+            else
+            {
+                if ( ca_len == 0.0 || ab_len == 0.0 )
+                {
+                    a_angle = pi;
+                }
+                else
+                {
+                    a_angle = arc_cosine (
+                                  ( ca_len * ca_len + ab_len * ab_len - bc_len * bc_len )
+                                  / ( 2.0 * ca_len * ab_len ) );
+                }
 
-      if ( ab_len == 0.0 || bc_len == 0.0 )
-      {
-        b_angle = pi;
-      }
-      else
-      {
-        b_angle = arc_cosine (
-          ( ab_len * ab_len + bc_len * bc_len - ca_len * ca_len )
-          / ( 2.0 * ab_len * bc_len ) );
-      }
+                if ( ab_len == 0.0 || bc_len == 0.0 )
+                {
+                    b_angle = pi;
+                }
+                else
+                {
+                    b_angle = arc_cosine (
+                                  ( ab_len * ab_len + bc_len * bc_len - ca_len * ca_len )
+                                  / ( 2.0 * ab_len * bc_len ) );
+                }
 
-      if ( bc_len == 0.0 || ca_len == 0.0 )
-      {
-        c_angle = pi;
-      }
-      else
-      {
-        c_angle = arc_cosine (
-          ( bc_len * bc_len + ca_len * ca_len - ab_len * ab_len )
-          / ( 2.0 * bc_len * ca_len ) );
-      }
-    }
-    *alpha_min = r8_min ( *alpha_min, a_angle );
-    *alpha_min = r8_min ( *alpha_min, b_angle );
-    *alpha_min = r8_min ( *alpha_min, c_angle );
+                if ( bc_len == 0.0 || ca_len == 0.0 )
+                {
+                    c_angle = pi;
+                }
+                else
+                {
+                    c_angle = arc_cosine (
+                                  ( bc_len * bc_len + ca_len * ca_len - ab_len * ab_len )
+                                  / ( 2.0 * bc_len * ca_len ) );
+                }
+            }
+            *alpha_min = r8_min ( *alpha_min, a_angle );
+            *alpha_min = r8_min ( *alpha_min, b_angle );
+            *alpha_min = r8_min ( *alpha_min, c_angle );
 
-    *alpha_ave = *alpha_ave + *alpha_min;
+            *alpha_ave = *alpha_ave + *alpha_min;
 
-    *alpha_area = *alpha_area + area * *alpha_min;
+            *alpha_area = *alpha_area + area * *alpha_min;
 
-    area_total = area_total + area;
-  }
-  *alpha_ave = *alpha_ave / ( double ) ( triangle_num );
-  *alpha_area = *alpha_area / area_total;
+            area_total = area_total + area;
+        }
+        *alpha_ave = *alpha_ave / ( double ) ( triangle_num );
+        *alpha_area = *alpha_area / area_total;
 //
 //  Normalize angles from [0,pi/3] radians into qualities in [0,1].
 //
-  *alpha_min = *alpha_min * 3.0 / pi;
-  *alpha_ave = *alpha_ave * 3.0 / pi;
-  *alpha_area = *alpha_area * 3.0 / pi;
+        *alpha_min = *alpha_min * 3.0 / pi;
+        *alpha_ave = *alpha_ave * 3.0 / pi;
+        *alpha_area = *alpha_area * 3.0 / pi;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-double angle_rad_2d ( double p1[2], double p2[2], double p3[2] )
+    double angle_rad_2d ( double p1[2], double p2[2], double p3[2] )
 
 //****************************************************************************80
 //
@@ -275,39 +275,38 @@ double angle_rad_2d ( double p1[2], double p2[2], double p3[2] )
 //    in radians.  This value will always be between 0 and 2*PI.  If either ray has
 //    zero length, then the angle is returned as zero.
 //
-{
+    {
 # define DIM_NUM 2
 
-  double p[DIM_NUM];
-  double pi = 3.141592653589793;
-  double value;
+        double p[DIM_NUM];
+        double pi = 3.141592653589793;
+        double value;
 
-  p[0] = ( p3[0] - p2[0] ) * ( p1[0] - p2[0] )
-       + ( p3[1] - p2[1] ) * ( p1[1] - p2[1] );
+        p[0] = ( p3[0] - p2[0] ) * ( p1[0] - p2[0] )
+               + ( p3[1] - p2[1] ) * ( p1[1] - p2[1] );
 
+        p[1] = ( p3[0] - p2[0] ) * ( p1[1] - p2[1] )
+               - ( p3[1] - p2[1] ) * ( p1[0] - p2[0] );
 
-  p[1] = ( p3[0] - p2[0] ) * ( p1[1] - p2[1] )
-       - ( p3[1] - p2[1] ) * ( p1[0] - p2[0] );
+        if ( p[0] == 0.0 && p[1] == 0.0 )
+        {
+            value = 0.0;
+            return value;
+        }
 
-  if ( p[0] == 0.0 && p[1] == 0.0 )
-  {
-    value = 0.0;
-    return value;
-  }
+        value = atan2 ( p[1], p[0] );
 
-  value = atan2 ( p[1], p[0] );
+        if ( value < 0.0 )
+        {
+            value = value + 2.0 * pi;
+        }
 
-  if ( value < 0.0 )
-  {
-    value = value + 2.0 * pi;
-  }
-
-  return value;
+        return value;
 # undef DIM_NUM
-}
+    }
 //****************************************************************************80
 
-double arc_cosine ( double c )
+    double arc_cosine ( double c )
 
 //****************************************************************************80
 //
@@ -339,31 +338,31 @@ double arc_cosine ( double c )
 //
 //    Output, double ARC_COSINE, an angle whose cosine is C.
 //
-{
+    {
 # define PI 3.141592653589793
 
-  double value;
+        double value;
 
-  if ( c <= -1.0 )
-  {
-    value = PI;
-  }
-  else if ( 1.0 <= c )
-  {
-    value = 0.0;
-  }
-  else
-  {
-    value = acos ( c );
-  }
-  return value;
+        if ( c <= -1.0 )
+        {
+            value = PI;
+        }
+        else if ( 1.0 <= c )
+        {
+            value = 0.0;
+        }
+        else
+        {
+            value = acos ( c );
+        }
+        return value;
 # undef PI
-}
+    }
 //****************************************************************************80
 
-void area_measure ( int n, double z[], int triangle_order, int triangle_num,
-  int triangle_node[], double *area_min, double *area_max, double *area_ratio,
-  double *area_ave, double *area_std )
+    void area_measure ( int n, double z[], int triangle_order, int triangle_num,
+                        int triangle_node[], double *area_min, double *area_max, double *area_ratio,
+                        double *area_ave, double *area_std )
 
 //****************************************************************************80
 //
@@ -417,73 +416,73 @@ void area_measure ( int n, double z[], int triangle_order, int triangle_num,
 //
 //    Output, double *AREA_STD, the standard deviation of the areas.
 //
-{
-  double area;
-  int triangle;
-  double value;
-  double x1;
-  double x2;
-  double x3;
-  double y1;
-  double y2;
-  double y3;
+    {
+        double area;
+        int triangle;
+        double value;
+        double x1;
+        double x2;
+        double x3;
+        double y1;
+        double y2;
+        double y3;
 
-  *area_max = 0.0;
-  *area_min = r8_huge ( );
-  *area_ave = 0.0;
+        *area_max = 0.0;
+        *area_min = r8_huge ( );
+        *area_ave = 0.0;
 
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    x1 = z[0+(triangle_node[0+triangle*triangle_order]-1)*2];
-    y1 = z[1+(triangle_node[0+triangle*triangle_order]-1)*2];
-    x2 = z[0+(triangle_node[1+triangle*triangle_order]-1)*2];
-    y2 = z[1+(triangle_node[1+triangle*triangle_order]-1)*2];
-    x3 = z[0+(triangle_node[2+triangle*triangle_order]-1)*2];
-    y3 = z[1+(triangle_node[2+triangle*triangle_order]-1)*2];
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            x1 = z[0 + (triangle_node[0 + triangle * triangle_order] - 1) * 2];
+            y1 = z[1 + (triangle_node[0 + triangle * triangle_order] - 1) * 2];
+            x2 = z[0 + (triangle_node[1 + triangle * triangle_order] - 1) * 2];
+            y2 = z[1 + (triangle_node[1 + triangle * triangle_order] - 1) * 2];
+            x3 = z[0 + (triangle_node[2 + triangle * triangle_order] - 1) * 2];
+            y3 = z[1 + (triangle_node[2 + triangle * triangle_order] - 1) * 2];
 
-    area = 0.5 * r8_abs ( x1 * ( y2 - y3 )
-                        + x2 * ( y3 - y1 )
-                        + x3 * ( y1 - y2 ) );
+            area = 0.5 * r8_abs ( x1 * ( y2 - y3 )
+                                  + x2 * ( y3 - y1 )
+                                  + x3 * ( y1 - y2 ) );
 
-    *area_min = r8_min ( *area_min, area );
-    *area_max = r8_max ( *area_max, area );
-    *area_ave = *area_ave + area;
-  }
+            *area_min = r8_min ( *area_min, area );
+            *area_max = r8_max ( *area_max, area );
+            *area_ave = *area_ave + area;
+        }
 
-  *area_ave = *area_ave / ( double ) ( triangle_num );
-  *area_std = 0.0;
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    x1 = z[0+(triangle_node[0+triangle*triangle_order]-1)*2];
-    y1 = z[1+(triangle_node[0+triangle*triangle_order]-1)*2];
-    x2 = z[0+(triangle_node[1+triangle*triangle_order]-1)*2];
-    y2 = z[1+(triangle_node[1+triangle*triangle_order]-1)*2];
-    x3 = z[0+(triangle_node[2+triangle*triangle_order]-1)*2];
-    y3 = z[1+(triangle_node[2+triangle*triangle_order]-1)*2];
+        *area_ave = *area_ave / ( double ) ( triangle_num );
+        *area_std = 0.0;
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            x1 = z[0 + (triangle_node[0 + triangle * triangle_order] - 1) * 2];
+            y1 = z[1 + (triangle_node[0 + triangle * triangle_order] - 1) * 2];
+            x2 = z[0 + (triangle_node[1 + triangle * triangle_order] - 1) * 2];
+            y2 = z[1 + (triangle_node[1 + triangle * triangle_order] - 1) * 2];
+            x3 = z[0 + (triangle_node[2 + triangle * triangle_order] - 1) * 2];
+            y3 = z[1 + (triangle_node[2 + triangle * triangle_order] - 1) * 2];
 
-    area = 0.5 * r8_abs ( x1 * ( y2 - y3 )
-                        + x2 * ( y3 - y1 )
-                        + x3 * ( y1 - y2 ) );
+            area = 0.5 * r8_abs ( x1 * ( y2 - y3 )
+                                  + x2 * ( y3 - y1 )
+                                  + x3 * ( y1 - y2 ) );
 
-    *area_std = *area_std + pow ( area - *area_ave, 2 );
-  }
-  *area_std = sqrt ( *area_std / ( double ) ( triangle_num ) );
+            *area_std = *area_std + pow ( area - *area_ave, 2 );
+        }
+        *area_std = sqrt ( *area_std / ( double ) ( triangle_num ) );
 
-  if ( 0.0 < *area_max )
-  {
-    *area_ratio = *area_min / *area_max;
-  }
-  else
-  {
-    *area_ratio = 0.0;
-  }
+        if ( 0.0 < *area_max )
+        {
+            *area_ratio = *area_min / *area_max;
+        }
+        else
+        {
+            *area_ratio = 0.0;
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void bandwidth ( int element_order, int element_num, int element_node[],
-  int *ml, int *mu, int *m )
+    void bandwidth ( int element_order, int element_num, int element_node[],
+                     int *ml, int *mu, int *m )
 
 //****************************************************************************80
 //
@@ -541,39 +540,39 @@ void bandwidth ( int element_order, int element_num, int element_node[],
 //
 //    Output, int *M, the bandwidth of the matrix.
 //
-{
-  int element;
-  int global_i;
-  int global_j;
-  int local_i;
-  int local_j;
-
-  *ml = 0;
-  *mu = 0;
-
-  for ( element = 0; element < element_num; element++ )
-  {
-    for ( local_i = 0; local_i < element_order; local_i++ )
     {
-      global_i = element_node[local_i+element*element_order];
+        int element;
+        int global_i;
+        int global_j;
+        int local_i;
+        int local_j;
 
-      for ( local_j = 0; local_j < element_order; local_j++ )
-      {
-        global_j = element_node[local_j+element*element_order];
+        *ml = 0;
+        *mu = 0;
 
-        *mu = i4_max ( *mu, global_j - global_i );
-        *ml = i4_max ( *ml, global_i - global_j );
-      }
+        for ( element = 0; element < element_num; element++ )
+        {
+            for ( local_i = 0; local_i < element_order; local_i++ )
+            {
+                global_i = element_node[local_i + element * element_order];
+
+                for ( local_j = 0; local_j < element_order; local_j++ )
+                {
+                    global_j = element_node[local_j + element * element_order];
+
+                    *mu = i4_max ( *mu, global_j - global_i );
+                    *ml = i4_max ( *ml, global_i - global_j );
+                }
+            }
+        }
+
+        *m = *ml + 1 + *mu;
+
+        return;
     }
-  }
-
-  *m = *ml + 1 + *mu;
-
-  return;
-}
 //****************************************************************************80
 
-bool delaunay_swap_test ( double xy[] )
+    bool delaunay_swap_test ( double xy[] )
 
 //****************************************************************************80
 //
@@ -620,35 +619,35 @@ bool delaunay_swap_test ( double xy[] )
 //    Output, bool SWAP, is TRUE if the triangles [0+2,4) and [1+3,4)
 //    are to replace triangles [0+2,3) and [0+3,4).
 //
-{
-  double a;
-  double b;
-  double c;
-  double d;
-  bool swap;
-  double x13;
-  double x14;
-  double x23;
-  double x24;
-  double y13;
-  double y14;
-  double y23;
-  double y24;
+    {
+        double a;
+        double b;
+        double c;
+        double d;
+        bool swap;
+        double x13;
+        double x14;
+        double x23;
+        double x24;
+        double y13;
+        double y14;
+        double y23;
+        double y24;
 
-  x13 = xy[0+0*2] - xy[0+2*2];
-  x14 = xy[0+0*2] - xy[0+3*2];
-  x23 = xy[0+1*2] - xy[0+2*2];
-  x24 = xy[0+1*2] - xy[0+3*2];
+        x13 = xy[0 + 0 * 2] - xy[0 + 2 * 2];
+        x14 = xy[0 + 0 * 2] - xy[0 + 3 * 2];
+        x23 = xy[0 + 1 * 2] - xy[0 + 2 * 2];
+        x24 = xy[0 + 1 * 2] - xy[0 + 3 * 2];
 
-  y13 = xy[1+0*2] - xy[1+2*2];
-  y14 = xy[1+0*2] - xy[1+3*2];
-  y23 = xy[1+1*2] - xy[1+2*2];
-  y24 = xy[1+1*2] - xy[1+3*2];
+        y13 = xy[1 + 0 * 2] - xy[1 + 2 * 2];
+        y14 = xy[1 + 0 * 2] - xy[1 + 3 * 2];
+        y23 = xy[1 + 1 * 2] - xy[1 + 2 * 2];
+        y24 = xy[1 + 1 * 2] - xy[1 + 3 * 2];
 
-  a = x13 * x23 + y13 * y23;
-  b = x24 * y14 - x14 * y24;
-  c = x23 * y13 - x13 * y23;
-  d = x24 * x14 + y14 * y24;
+        a = x13 * x23 + y13 * y23;
+        b = x24 * y14 - x14 * y24;
+        c = x23 * y13 - x13 * y23;
+        d = x24 * x14 + y14 * y24;
 //
 //  The reference gives two initial tests before the
 //  main one.  However, there seems to be an error
@@ -667,21 +666,21 @@ bool delaunay_swap_test ( double xy[] )
 //  }
 //  else if ...
 
-  if ( a * b < c * d )
-  {
-    swap = true;
-  }
-  else
-  {
-    swap = false;
-  }
+        if ( a * b < c * d )
+        {
+            swap = true;
+        }
+        else
+        {
+            swap = false;
+        }
 
-  return swap;
-}
+        return swap;
+    }
 //****************************************************************************80
 
-int diaedg ( double x0, double y0, double x1, double y1, double x2, double y2,
-  double x3, double y3 )
+    int diaedg ( double x0, double y0, double x1, double y1, double x2, double y2,
+                 double x3, double y3 )
 
 //****************************************************************************80
 //
@@ -727,79 +726,79 @@ int diaedg ( double x0, double y0, double x1, double y1, double x2, double y2,
 //    -1, if diagonal edge 13 is chosen;
 //     0, if the four vertices are cocircular.
 //
-{
-  double ca;
-  double cb;
-  double dx10;
-  double dx12;
-  double dx30;
-  double dx32;
-  double dy10;
-  double dy12;
-  double dy30;
-  double dy32;
-  double s;
-  double tol;
-  double tola;
-  double tolb;
-  int value;
-
-  tol = 100.0 * r8_epsilon ( );
-
-  dx10 = x1 - x0;
-  dy10 = y1 - y0;
-  dx12 = x1 - x2;
-  dy12 = y1 - y2;
-  dx30 = x3 - x0;
-  dy30 = y3 - y0;
-  dx32 = x3 - x2;
-  dy32 = y3 - y2;
-
-  tola = tol * r8_max ( fabs ( dx10 ),
-               r8_max ( fabs ( dy10 ),
-               r8_max ( fabs ( dx30 ), fabs ( dy30 ) ) ) );
-
-  tolb = tol * r8_max ( fabs ( dx12 ),
-               r8_max ( fabs ( dy12 ),
-               r8_max ( fabs ( dx32 ), fabs ( dy32 ) ) ) );
-
-  ca = dx10 * dx30 + dy10 * dy30;
-  cb = dx12 * dx32 + dy12 * dy32;
-
-  if ( tola < ca && tolb < cb )
-  {
-    value = -1;
-  }
-  else if ( ca < -tola && cb < -tolb )
-  {
-    value = 1;
-  }
-  else
-  {
-    tola = r8_max ( tola, tolb );
-    s = ( dx10 * dy30 - dx30 * dy10 ) * cb
-      + ( dx32 * dy12 - dx12 * dy32 ) * ca;
-
-    if ( tola < s )
     {
-      value = -1;
-    }
-    else if ( s < -tola )
-    {
-      value = 1;
-    }
-    else
-    {
-      value = 0;
-    }
+        double ca;
+        double cb;
+        double dx10;
+        double dx12;
+        double dx30;
+        double dx32;
+        double dy10;
+        double dy12;
+        double dy30;
+        double dy32;
+        double s;
+        double tol;
+        double tola;
+        double tolb;
+        int value;
 
-  }
+        tol = 100.0 * r8_epsilon ( );
 
-  return value;
-}
+        dx10 = x1 - x0;
+        dy10 = y1 - y0;
+        dx12 = x1 - x2;
+        dy12 = y1 - y2;
+        dx30 = x3 - x0;
+        dy30 = y3 - y0;
+        dx32 = x3 - x2;
+        dy32 = y3 - y2;
+
+        tola = tol * r8_max ( fabs ( dx10 ),
+                              r8_max ( fabs ( dy10 ),
+                                       r8_max ( fabs ( dx30 ), fabs ( dy30 ) ) ) );
+
+        tolb = tol * r8_max ( fabs ( dx12 ),
+                              r8_max ( fabs ( dy12 ),
+                                       r8_max ( fabs ( dx32 ), fabs ( dy32 ) ) ) );
+
+        ca = dx10 * dx30 + dy10 * dy30;
+        cb = dx12 * dx32 + dy12 * dy32;
+
+        if ( tola < ca && tolb < cb )
+        {
+            value = -1;
+        }
+        else if ( ca < -tola && cb < -tolb )
+        {
+            value = 1;
+        }
+        else
+        {
+            tola = r8_max ( tola, tolb );
+            s = ( dx10 * dy30 - dx30 * dy10 ) * cb
+                + ( dx32 * dy12 - dx12 * dy32 ) * ca;
+
+            if ( tola < s )
+            {
+                value = -1;
+            }
+            else if ( s < -tola )
+            {
+                value = 1;
+            }
+            else
+            {
+                value = 0;
+            }
+
+        }
+
+        return value;
+    }
 //****************************************************************************80
 
-unsigned long get_seed ( )
+    unsigned long get_seed ( )
 
 //****************************************************************************80
 //
@@ -823,71 +822,71 @@ unsigned long get_seed ( )
 //
 //    Output, unsigned long GET_SEED, a random seed value.
 //
-{
+    {
 # define UNSIGNED_LONG_MAX 4294967295UL
 
-  time_t clock;
-  int i;
-  int hours;
-  int minutes;
-  int seconds;
-  struct tm *lt;
-  static unsigned long seed = 0;
-  time_t tloc;
+        time_t clock;
+        int i;
+        int hours;
+        int minutes;
+        int seconds;
+        struct tm *lt;
+        static unsigned long seed = 0;
+        time_t tloc;
 //
 //  If the internal seed is 0, generate a value based on the time.
 //
-  if ( seed == 0 )
-  {
-    clock = time ( &tloc );
-    lt = localtime ( &clock );
+        if ( seed == 0 )
+        {
+            clock = time ( &tloc );
+            lt = localtime ( &clock );
 //
 //  Extract HOURS.
 //
-    hours = lt->tm_hour;
+            hours = lt->tm_hour;
 //
 //  In case of 24 hour clocks, shift so that HOURS is between 1 and 12.
 //
-    if ( 12 < hours )
-    {
-      hours = hours - 12;
-    }
+            if ( 12 < hours )
+            {
+                hours = hours - 12;
+            }
 //
 //  Move HOURS to 0, 1, ..., 11
 //
-    hours = hours - 1;
+            hours = hours - 1;
 
-    minutes = lt->tm_min;
+            minutes = lt->tm_min;
 
-    seconds = lt->tm_sec;
+            seconds = lt->tm_sec;
 
-    seed = seconds + 60 * ( minutes + 60 * hours );
+            seed = seconds + 60 * ( minutes + 60 * hours );
 //
 //  We want values in [1,43200], not [0,43199].
 //
-    seed = seed + 1;
+            seed = seed + 1;
 //
 //  Remap SEED from [1,43200] to [1,UNSIGNED_LONG_MAX].
 //
-    seed = ( unsigned long )
-      ( ( ( double ) seed )
-      * ( ( double ) UNSIGNED_LONG_MAX ) / ( 60.0 * 60.0 * 12.0 ) );
-  }
+            seed = ( unsigned long )
+                   ( ( ( double ) seed )
+                     * ( ( double ) UNSIGNED_LONG_MAX ) / ( 60.0 * 60.0 * 12.0 ) );
+        }
 //
 //  Never use a seed of 0.
 //
-  if ( seed == 0 )
-  {
-    seed = 1;
-  }
+        if ( seed == 0 )
+        {
+            seed = 1;
+        }
 
-  return seed;
+        return seed;
 
 # undef UNSIGNED_LONG_MAX
-}
+    }
 //****************************************************************************80
 
-int i4_max ( int i1, int i2 )
+    int i4_max ( int i1, int i2 )
 
 //****************************************************************************80
 //
@@ -913,20 +912,20 @@ int i4_max ( int i1, int i2 )
 //
 //    Output, int I4_MAX, the larger of I1 and I2.
 //
-{
-  if ( i2 < i1 )
-  {
-    return i1;
-  }
-  else
-  {
-    return i2;
-  }
+    {
+        if ( i2 < i1 )
+        {
+            return i1;
+        }
+        else
+        {
+            return i2;
+        }
 
-}
+    }
 //****************************************************************************80
 
-int i4_min ( int i1, int i2 )
+    int i4_min ( int i1, int i2 )
 
 //****************************************************************************80
 //
@@ -952,20 +951,20 @@ int i4_min ( int i1, int i2 )
 //
 //    Output, int I4_MIN, the smaller of I1 and I2.
 //
-{
-  if ( i1 < i2 )
-  {
-    return i1;
-  }
-  else
-  {
-    return i2;
-  }
+    {
+        if ( i1 < i2 )
+        {
+            return i1;
+        }
+        else
+        {
+            return i2;
+        }
 
-}
+    }
 //****************************************************************************80
 
-int i4_modp ( int i, int j )
+    int i4_modp ( int i, int j )
 
 //****************************************************************************80
 //
@@ -1020,29 +1019,29 @@ int i4_modp ( int i, int j )
 //    Output, int I4_MODP, the nonnegative remainder when I is
 //    divided by J.
 //
-{
-  int value;
+    {
+        int value;
 
-  if ( j == 0 )
-  {
-    std::cout << "\n";
-    std::cout << "I4_MODP - Fatal error!\n";
-    std::cout << "  I4_MODP ( I, J ) called with J = " << j << "\n";
-    exit ( 1 );
-  }
+        if ( j == 0 )
+        {
+            std::cout << "\n";
+            std::cout << "I4_MODP - Fatal error!\n";
+            std::cout << "  I4_MODP ( I, J ) called with J = " << j << "\n";
+            exit ( 1 );
+        }
 
-  value = i % j;
+        value = i % j;
 
-  if ( value < 0 )
-  {
-    value = value + abs ( j );
-  }
+        if ( value < 0 )
+        {
+            value = value + abs ( j );
+        }
 
-  return value;
-}
+        return value;
+    }
 //****************************************************************************80
 
-int i4_power ( int i, int j )
+    int i4_power ( int i, int j )
 
 //****************************************************************************80
 //
@@ -1068,59 +1067,59 @@ int i4_power ( int i, int j )
 //
 //    Output, int I4_POWER, the value of I^J.
 //
-{
-  int k;
-  int value;
+    {
+        int k;
+        int value;
 
-  if ( j < 0 )
-  {
-    if ( i == 1 )
-    {
-      value = 1;
+        if ( j < 0 )
+        {
+            if ( i == 1 )
+            {
+                value = 1;
+            }
+            else if ( i == 0 )
+            {
+                std::cout << "\n";
+                std::cout << "I4_POWER - Fatal error!\n";
+                std::cout << "  I^J requested, with I = 0 and J negative.\n";
+                exit ( 1 );
+            }
+            else
+            {
+                value = 0;
+            }
+        }
+        else if ( j == 0 )
+        {
+            if ( i == 0 )
+            {
+                std::cout << "\n";
+                std::cout << "I4_POWER - Fatal error!\n";
+                std::cout << "  I^J requested, with I = 0 and J = 0.\n";
+                exit ( 1 );
+            }
+            else
+            {
+                value = 1;
+            }
+        }
+        else if ( j == 1 )
+        {
+            value = i;
+        }
+        else
+        {
+            value = 1;
+            for ( k = 1; k <= j; k++ )
+            {
+                value = value * i;
+            }
+        }
+        return value;
     }
-    else if ( i == 0 )
-    {
-      std::cout << "\n";
-      std::cout << "I4_POWER - Fatal error!\n";
-      std::cout << "  I^J requested, with I = 0 and J negative.\n";
-      exit ( 1 );
-    }
-    else
-    {
-      value = 0;
-    }
-  }
-  else if ( j == 0 )
-  {
-    if ( i == 0 )
-    {
-      std::cout << "\n";
-      std::cout << "I4_POWER - Fatal error!\n";
-      std::cout << "  I^J requested, with I = 0 and J = 0.\n";
-      exit ( 1 );
-    }
-    else
-    {
-      value = 1;
-    }
-  }
-  else if ( j == 1 )
-  {
-    value = i;
-  }
-  else
-  {
-    value = 1;
-    for ( k = 1; k <= j; k++ )
-    {
-      value = value * i;
-    }
-  }
-  return value;
-}
 //****************************************************************************80
 
-int i4_sign ( int i )
+    int i4_sign ( int i )
 
 //****************************************************************************80
 //
@@ -1150,20 +1149,20 @@ int i4_sign ( int i )
 //    Input, int I, the integer whose sign is desired.
 //
 //    Output, int I4_SIGN, the sign of I.
-{
-  if ( i < 0 )
-  {
-    return (-1);
-  }
-  else
-  {
-    return 1;
-  }
+    {
+        if ( i < 0 )
+        {
+            return (-1);
+        }
+        else
+        {
+            return 1;
+        }
 
-}
+    }
 //****************************************************************************80
 
-void i4_swap ( int *i, int *j )
+    void i4_swap ( int *i, int *j )
 
 //****************************************************************************80
 //
@@ -1188,18 +1187,18 @@ void i4_swap ( int *i, int *j )
 //    Input/output, int *I, *J.  On output, the values of I and
 //    J have been interchanged.
 //
-{
-  int k;
+    {
+        int k;
 
-  k = *i;
-  *i = *j;
-  *j = k;
+        k = *i;
+        *i = *j;
+        *j = k;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-int i4_uniform ( int a, int b, int *seed )
+    int i4_uniform ( int a, int b, int *seed )
 
 //****************************************************************************80
 //
@@ -1257,47 +1256,47 @@ int i4_uniform ( int a, int b, int *seed )
 //
 //    Output, int I4_UNIFORM, a number between A and B.
 //
-{
-  int k;
-  float r;
-  int value;
+    {
+        int k;
+        float r;
+        int value;
 
-  if ( *seed == 0 )
-  {
-    std::cerr << "\n";
-    std::cerr << "I4_UNIFORM - Fatal error!\n";
-    std::cerr << "  Input value of SEED = 0.\n";
-    exit ( 1 );
-  }
+        if ( *seed == 0 )
+        {
+            std::cerr << "\n";
+            std::cerr << "I4_UNIFORM - Fatal error!\n";
+            std::cerr << "  Input value of SEED = 0.\n";
+            exit ( 1 );
+        }
 
-  k = *seed / 127773;
+        k = *seed / 127773;
 
-  *seed = 16807 * ( *seed - k * 127773 ) - k * 2836;
+        *seed = 16807 * ( *seed - k * 127773 ) - k * 2836;
 
-  if ( *seed < 0 )
-  {
-    *seed = *seed + 2147483647;
-  }
+        if ( *seed < 0 )
+        {
+            *seed = *seed + 2147483647;
+        }
 
-  r = ( float ) ( *seed ) * 4.656612875E-10;
+        r = ( float ) ( *seed ) * 4.656612875E-10;
 //
 //  Scale R to lie between A-0.5 and B+0.5.
 //
-  r = ( 1.0 - r ) * ( ( float ) ( i4_min ( a, b ) ) - 0.5 )
-    +         r   * ( ( float ) ( i4_max ( a, b ) ) + 0.5 );
+        r = ( 1.0 - r ) * ( ( float ) ( i4_min ( a, b ) ) - 0.5 )
+            +         r   * ( ( float ) ( i4_max ( a, b ) ) + 0.5 );
 //
 //  Use rounding to convert R to an integer between A and B.
 //
-  value = r4_nint ( r );
+        value = r4_nint ( r );
 
-  value = i4_max ( value, i4_min ( a, b ) );
-  value = i4_min ( value, i4_max ( a, b ) );
+        value = i4_max ( value, i4_min ( a, b ) );
+        value = i4_min ( value, i4_max ( a, b ) );
 
-  return value;
-}
+        return value;
+    }
 //****************************************************************************80
 
-int i4_wrap ( int ival, int ilo, int ihi )
+    int i4_wrap ( int ival, int ilo, int ihi )
 
 //****************************************************************************80
 //
@@ -1349,31 +1348,31 @@ int i4_wrap ( int ival, int ilo, int ihi )
 //
 //    Output, int I4_WRAP, a "wrapped" version of IVAL.
 //
-{
-  int jhi;
-  int jlo;
-  int value;
-  int wide;
+    {
+        int jhi;
+        int jlo;
+        int value;
+        int wide;
 
-  jlo = i4_min ( ilo, ihi );
-  jhi = i4_max ( ilo, ihi );
+        jlo = i4_min ( ilo, ihi );
+        jhi = i4_max ( ilo, ihi );
 
-  wide = jhi + 1 - jlo;
+        wide = jhi + 1 - jlo;
 
-  if ( wide == 1 )
-  {
-    value = jlo;
-  }
-  else
-  {
-    value = jlo + i4_modp ( ival - jlo, wide );
-  }
+        if ( wide == 1 )
+        {
+            value = jlo;
+        }
+        else
+        {
+            value = jlo + i4_modp ( ival - jlo, wide );
+        }
 
-  return value;
-}
+        return value;
+    }
 //****************************************************************************80
 
-int i4col_compare ( int m, int n, int a[], int i, int j )
+    int i4col_compare ( int m, int n, int a[], int i, int j )
 
 //****************************************************************************80
 //
@@ -1422,68 +1421,68 @@ int i4col_compare ( int m, int n, int a[], int i, int j )
 //     0, column I = column J,
 //    +1, column J < column I.
 //
-{
-  int k;
+    {
+        int k;
 //
 //  Check.
 //
-  if ( i < 1 )
-  {
-    std::cout << "\n";
-    std::cout << "I4COL_COMPARE - Fatal error!\n";
-    std::cout << "  Column index I = " << i << " is less than 1.\n";
-    exit ( 1 );
-  }
+        if ( i < 1 )
+        {
+            std::cout << "\n";
+            std::cout << "I4COL_COMPARE - Fatal error!\n";
+            std::cout << "  Column index I = " << i << " is less than 1.\n";
+            exit ( 1 );
+        }
 
-  if ( n < i )
-  {
-    std::cout << "\n";
-    std::cout << "I4COL_COMPARE - Fatal error!\n";
-    std::cout << "  N = " << n << " is less than column index I = " << i << ".\n";
-    exit ( 1 );
-  }
+        if ( n < i )
+        {
+            std::cout << "\n";
+            std::cout << "I4COL_COMPARE - Fatal error!\n";
+            std::cout << "  N = " << n << " is less than column index I = " << i << ".\n";
+            exit ( 1 );
+        }
 
-  if ( j < 1 )
-  {
-    std::cout << "\n";
-    std::cout << "I4COL_COMPARE - Fatal error!\n";
-    std::cout << "  Column index J = " << j << " is less than 1.\n";
-    exit ( 1 );
-  }
+        if ( j < 1 )
+        {
+            std::cout << "\n";
+            std::cout << "I4COL_COMPARE - Fatal error!\n";
+            std::cout << "  Column index J = " << j << " is less than 1.\n";
+            exit ( 1 );
+        }
 
-  if ( n < j )
-  {
-    std::cout << "\n";
-    std::cout << "I4COL_COMPARE - Fatal error!\n";
-    std::cout << "  N = " << n << " is less than column index J = " << j << ".\n";
-    exit ( 1 );
-  }
+        if ( n < j )
+        {
+            std::cout << "\n";
+            std::cout << "I4COL_COMPARE - Fatal error!\n";
+            std::cout << "  N = " << n << " is less than column index J = " << j << ".\n";
+            exit ( 1 );
+        }
 
-  if ( i == j )
-  {
-    return 0;
-  }
+        if ( i == j )
+        {
+            return 0;
+        }
 
-  k = 1;
+        k = 1;
 
-  while ( k <= m )
-  {
-    if ( a[k-1+(i-1)*m] < a[k-1+(j-1)*m] )
-    {
-      return (-1);
+        while ( k <= m )
+        {
+            if ( a[k - 1 + (i - 1)*m] < a[k - 1 + (j - 1)*m] )
+            {
+                return (-1);
+            }
+            else if ( a[k - 1 + (j - 1)*m] < a[k - 1 + (i - 1)*m] )
+            {
+                return 1;
+            }
+            k = k + 1;
+        }
+
+        return 0;
     }
-    else if ( a[k-1+(j-1)*m] < a[k-1+(i-1)*m] )
-    {
-      return 1;
-    }
-    k = k + 1;
-  }
-
-  return 0;
-}
 //****************************************************************************80
 
-void i4col_sort_a ( int m, int n, int a[] )
+    void i4col_sort_a ( int m, int n, int a[] )
 
 //****************************************************************************80
 //
@@ -1527,50 +1526,50 @@ void i4col_sort_a ( int m, int n, int a[] )
 //    On output, the columns of A have been sorted in ascending
 //    lexicographic order.
 //
-{
-  int i;
-  int indx;
-  int isgn;
-  int j;
+    {
+        int i;
+        int indx;
+        int isgn;
+        int j;
 //
 //  Initialize.
 //
-  i = 0;
-  indx = 0;
-  isgn = 0;
-  j = 0;
+        i = 0;
+        indx = 0;
+        isgn = 0;
+        j = 0;
 //
 //  Call the external heap sorter.
 //
-  for ( ; ; )
-  {
-    sort_heap_external ( n, &indx, &i, &j, isgn );
+        for ( ; ; )
+        {
+            sort_heap_external ( n, &indx, &i, &j, isgn );
 //
 //  Interchange the I and J objects.
 //
-    if ( 0 < indx )
-    {
-      i4col_swap ( m, n, a, i, j );
-    }
+            if ( 0 < indx )
+            {
+                i4col_swap ( m, n, a, i, j );
+            }
 //
 //  Compare the I and J objects.
 //
-    else if ( indx < 0 )
-    {
-      isgn = i4col_compare ( m, n, a, i, j );
-    }
-    else if ( indx == 0 )
-    {
-      break;
-    }
+            else if ( indx < 0 )
+            {
+                isgn = i4col_compare ( m, n, a, i, j );
+            }
+            else if ( indx == 0 )
+            {
+                break;
+            }
 
-  }
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-int i4col_sorted_unique_count ( int m, int n, int a[] )
+    int i4col_sorted_unique_count ( int m, int n, int a[] )
 
 //****************************************************************************80
 //
@@ -1603,39 +1602,39 @@ int i4col_sorted_unique_count ( int m, int n, int a[] )
 //
 //    Output, int I4COL_SORTED_UNIQUE_COUNT, the number of unique columns.
 //
-{
-  int i;
-  int j1;
-  int j2;
-  int unique_num;
-
-  if ( n <= 0 )
-  {
-    unique_num = 0;
-    return unique_num;
-  }
-
-  unique_num = 1;
-  j1 = 0;
-
-  for ( j2 = 1; j2 < n; j2++ )
-  {
-    for ( i = 0; i < m; i++ )
     {
-      if ( a[i+j1*m] != a[i+j2*m] )
-      {
-        unique_num = unique_num + 1;
-        j1 = j2;
-        break;
-      }
-    }
-  }
+        int i;
+        int j1;
+        int j2;
+        int unique_num;
 
-  return unique_num;
-}
+        if ( n <= 0 )
+        {
+            unique_num = 0;
+            return unique_num;
+        }
+
+        unique_num = 1;
+        j1 = 0;
+
+        for ( j2 = 1; j2 < n; j2++ )
+        {
+            for ( i = 0; i < m; i++ )
+            {
+                if ( a[i + j1 * m] != a[i + j2 * m] )
+                {
+                    unique_num = unique_num + 1;
+                    j1 = j2;
+                    break;
+                }
+            }
+        }
+
+        return unique_num;
+    }
 //****************************************************************************80
 
-void i4col_swap ( int m, int n, int a[], int icol1, int icol2 )
+    void i4col_swap ( int m, int n, int a[], int icol1, int icol2 )
 
 //****************************************************************************80
 //
@@ -1673,47 +1672,47 @@ void i4col_swap ( int m, int n, int a[], int icol1, int icol2 )
 //    Input, int ICOL1, ICOL2, the two columns to swap.
 //    These indices should be between 1 and N.
 //
-{
+    {
 # define OFFSET 1
 
-  int i;
-  int t;
+        int i;
+        int t;
 //
 //  Check.
 //
-  if ( icol1 - OFFSET < 0 || n-1 < icol1 - OFFSET )
-  {
-    std::cout << "\n";
-    std::cout << "I4COL_SWAP - Fatal error!\n";
-    std::cout << "  ICOL1 is out of range.\n";
-    exit ( 1 );
-  }
+        if ( icol1 - OFFSET < 0 || n - 1 < icol1 - OFFSET )
+        {
+            std::cout << "\n";
+            std::cout << "I4COL_SWAP - Fatal error!\n";
+            std::cout << "  ICOL1 is out of range.\n";
+            exit ( 1 );
+        }
 
-  if ( icol2 - OFFSET < 0 || n-1 < icol2 - OFFSET )
-  {
-    std::cout << "\n";
-    std::cout << "I4COL_SWAP - Fatal error!\n";
-    std::cout << "  ICOL2 is out of range.\n";
-    exit ( 1 );
-  }
+        if ( icol2 - OFFSET < 0 || n - 1 < icol2 - OFFSET )
+        {
+            std::cout << "\n";
+            std::cout << "I4COL_SWAP - Fatal error!\n";
+            std::cout << "  ICOL2 is out of range.\n";
+            exit ( 1 );
+        }
 
-  if ( icol1 == icol2 )
-  {
-    return;
-  }
-  for ( i = 0; i < m; i++ )
-  {
-    t                     = a[i+(icol1-OFFSET)*m];
-    a[i+(icol1-OFFSET)*m] = a[i+(icol2-OFFSET)*m];
-    a[i+(icol2-OFFSET)*m] = t;
-  }
+        if ( icol1 == icol2 )
+        {
+            return;
+        }
+        for ( i = 0; i < m; i++ )
+        {
+            t                     = a[i + (icol1 - OFFSET) * m];
+            a[i + (icol1 - OFFSET)*m] = a[i + (icol2 - OFFSET) * m];
+            a[i + (icol2 - OFFSET)*m] = t;
+        }
 
-  return;
+        return;
 # undef OFFSET
-}
+    }
 //****************************************************************************80
 
-void i4mat_transpose_print ( int m, int n, int a[], std::string title )
+    void i4mat_transpose_print ( int m, int n, int a[], std::string title )
 
 //****************************************************************************80
 //
@@ -1747,15 +1746,15 @@ void i4mat_transpose_print ( int m, int n, int a[], std::string title )
 //
 //    Input, string TITLE, a title.
 //
-{
-  i4mat_transpose_print_some ( m, n, a, 1, 1, m, n, title );
+    {
+        i4mat_transpose_print_some ( m, n, a, 1, 1, m, n, title );
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
-  int ihi, int jhi, std::string title )
+    void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
+                                      int ihi, int jhi, std::string title )
 
 //****************************************************************************80
 //
@@ -1794,67 +1793,67 @@ void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
 //
 //    Input, string TITLE, a title.
 //
-{
+    {
 # define INCX 10
 
-  int i;
-  int i2hi;
-  int i2lo;
-  int j;
-  int j2hi;
-  int j2lo;
+        int i;
+        int i2hi;
+        int i2lo;
+        int j;
+        int j2hi;
+        int j2lo;
 
-  std::cout << "\n";
-  std::cout << title << "\n";
+        std::cout << "\n";
+        std::cout << title << "\n";
 //
 //  Print the columns of the matrix, in strips of INCX.
 //
-  for ( i2lo = ilo; i2lo <= ihi; i2lo = i2lo + INCX )
-  {
-    i2hi = i2lo + INCX - 1;
-    i2hi = i4_min ( i2hi, m );
-    i2hi = i4_min ( i2hi, ihi );
+        for ( i2lo = ilo; i2lo <= ihi; i2lo = i2lo + INCX )
+        {
+            i2hi = i2lo + INCX - 1;
+            i2hi = i4_min ( i2hi, m );
+            i2hi = i4_min ( i2hi, ihi );
 
-    std::cout << "\n";
+            std::cout << "\n";
 //
 //  For each row I in the current range...
 //
 //  Write the header.
 //
-    std::cout << "  Row: ";
-    for ( i = i2lo; i <= i2hi; i++ )
-    {
-      std::cout << std::setw(6) << i << "  ";
-    }
-    std::cout << "\n";
-    std::cout << "  Col\n";
-    std::cout << "\n";
+            std::cout << "  Row: ";
+            for ( i = i2lo; i <= i2hi; i++ )
+            {
+                std::cout << std::setw(6) << i << "  ";
+            }
+            std::cout << "\n";
+            std::cout << "  Col\n";
+            std::cout << "\n";
 //
 //  Determine the range of the rows in this strip.
 //
-    j2lo = i4_max ( jlo, 1 );
-    j2hi = i4_min ( jhi, n );
+            j2lo = i4_max ( jlo, 1 );
+            j2hi = i4_min ( jhi, n );
 
-    for ( j = j2lo; j <= j2hi; j++ )
-    {
+            for ( j = j2lo; j <= j2hi; j++ )
+            {
 //
 //  Print out (up to INCX) entries in column J, that lie in the current strip.
 //
-      std::cout << std::setw(5) << j << "  ";
-      for ( i = i2lo; i <= i2hi; i++ )
-      {
-        std::cout << std::setw(6) << a[i-1+(j-1)*m] << "  ";
-      }
-      std::cout << "\n";
-    }
-  }
+                std::cout << std::setw(5) << j << "  ";
+                for ( i = i2lo; i <= i2hi; i++ )
+                {
+                    std::cout << std::setw(6) << a[i - 1 + (j - 1)*m] << "  ";
+                }
+                std::cout << "\n";
+            }
+        }
 
-  return;
+        return;
 # undef INCX
-}
+    }
 //****************************************************************************80
 
-void i4vec_heap_d ( int n, int a[] )
+    void i4vec_heap_d ( int n, int a[] )
 
 //****************************************************************************80
 //
@@ -1905,84 +1904,84 @@ void i4vec_heap_d ( int n, int a[] )
 //    On input, an unsorted array.
 //    On output, the array has been reordered into a heap.
 //
-{
-  int i;
-  int ifree;
-  int key;
-  int m;
+    {
+        int i;
+        int ifree;
+        int key;
+        int m;
 //
 //  Only nodes (N/2)-1 down to 0 can be "parent" nodes.
 //
-  for ( i = (n/2)-1; 0 <= i; i-- )
-  {
+        for ( i = (n / 2) - 1; 0 <= i; i-- )
+        {
 //
 //  Copy the value out of the parent node.
 //  Position IFREE is now "open".
 //
-    key = a[i];
-    ifree = i;
+            key = a[i];
+            ifree = i;
 
-    for ( ;; )
-    {
+            for ( ;; )
+            {
 //
 //  Positions 2*IFREE + 1 and 2*IFREE + 2 are the descendants of position
 //  IFREE.  (One or both may not exist because they equal or exceed N.)
 //
-      m = 2 * ifree + 1;
+                m = 2 * ifree + 1;
 //
 //  Does the first position exist?
 //
-      if ( n <= m )
-      {
-        break;
-      }
-      else
-      {
+                if ( n <= m )
+                {
+                    break;
+                }
+                else
+                {
 //
 //  Does the second position exist?
 //
-        if ( m + 1 < n )
-        {
+                    if ( m + 1 < n )
+                    {
 //
 //  If both positions exist, take the larger of the two values,
 //  and update M if necessary.
 //
-          if ( a[m] < a[m+1] )
-          {
-            m = m + 1;
-          }
-        }
+                        if ( a[m] < a[m + 1] )
+                        {
+                            m = m + 1;
+                        }
+                    }
 //
 //  If the large descendant is larger than KEY, move it up,
 //  and update IFREE, the location of the free position, and
 //  consider the descendants of THIS position.
 //
-        if ( key < a[m] )
-        {
-          a[ifree] = a[m];
-          ifree = m;
-        }
-        else
-        {
-          break;
-        }
+                    if ( key < a[m] )
+                    {
+                        a[ifree] = a[m];
+                        ifree = m;
+                    }
+                    else
+                    {
+                        break;
+                    }
 
-      }
+                }
 
-    }
+            }
 //
 //  When you have stopped shifting items up, return the item you
 //  pulled out back to the heap.
 //
-    a[ifree] = key;
+            a[ifree] = key;
 
-  }
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-int *i4vec_indicator_new ( int n )
+    int *i4vec_indicator_new ( int n )
 
 //****************************************************************************80
 //
@@ -2012,21 +2011,21 @@ int *i4vec_indicator_new ( int n )
 //
 //    Output, int I4VEC_INDICATOR_NEW[N], the array.
 //
-{
-  int *a;
-  int i;
+    {
+        int *a;
+        int i;
 
-  a = new int[n];
+        a = new int[n];
 
-  for ( i = 0; i < n; i++ )
-  {
-    a[i] = i + 1;
-  }
-  return a;
-}
+        for ( i = 0; i < n; i++ )
+        {
+            a[i] = i + 1;
+        }
+        return a;
+    }
 //****************************************************************************80
 
-int i4vec_min ( int n, int a[] )
+    int i4vec_min ( int n, int a[] )
 
 //****************************************************************************80
 //
@@ -2059,29 +2058,29 @@ int i4vec_min ( int n, int a[] )
 //    Output, int I4VEC_MIN, the value of the minimum element.  This
 //    is set to 0 if N <= 0.
 //
-{
-  int i;
-  int value;
-
-  if ( n <= 0 )
-  {
-    return 0;
-  }
-
-  value = a[0];
-
-  for ( i = 1; i < n; i++ )
-  {
-    if ( a[i] < value )
     {
-      value = a[i];
+        int i;
+        int value;
+
+        if ( n <= 0 )
+        {
+            return 0;
+        }
+
+        value = a[0];
+
+        for ( i = 1; i < n; i++ )
+        {
+            if ( a[i] < value )
+            {
+                value = a[i];
+            }
+        }
+        return value;
     }
-  }
-  return value;
-}
 //****************************************************************************80
 
-void i4vec_print ( int n, int a[], std::string title )
+    void i4vec_print ( int n, int a[], std::string title )
 
 //****************************************************************************80
 //
@@ -2113,22 +2112,22 @@ void i4vec_print ( int n, int a[], std::string title )
 //
 //    Input, string TITLE, a title.
 //
-{
-  int i;
+    {
+        int i;
 
-  std::cout << "\n";
-  std::cout << title << "\n";
-  std::cout << "\n";
-  for ( i = 0; i < n; i++ )
-  {
-    std::cout << "  " << std::setw(8) << i
-         << "  " << std::setw(8) << a[i]  << "\n";
-  }
-  return;
-}
+        std::cout << "\n";
+        std::cout << title << "\n";
+        std::cout << "\n";
+        for ( i = 0; i < n; i++ )
+        {
+            std::cout << "  " << std::setw(8) << i
+                      << "  " << std::setw(8) << a[i]  << "\n";
+        }
+        return;
+    }
 //****************************************************************************80
 
-void i4vec_reverse ( int n, int a[] )
+    void i4vec_reverse ( int n, int a[] )
 
 //****************************************************************************80
 //
@@ -2169,22 +2168,22 @@ void i4vec_reverse ( int n, int a[] )
 //
 //    Input/output, int A(N), the array to be reversed.
 //
-{
-  int i;
-  int j;
+    {
+        int i;
+        int j;
 
-  for ( i = 0; i < n / 2; i++ )
-  {
-    j        = a[i];
-    a[i]     = a[n-1-i];
-    a[n-1-i] = j;
-  }
+        for ( i = 0; i < n / 2; i++ )
+        {
+            j        = a[i];
+            a[i]     = a[n - 1 - i];
+            a[n - 1 - i] = j;
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void i4vec_sort_heap_a ( int n, int a[] )
+    void i4vec_sort_heap_a ( int n, int a[] )
 
 //****************************************************************************80
 //
@@ -2219,50 +2218,50 @@ void i4vec_sort_heap_a ( int n, int a[] )
 //    On input, the array to be sorted;
 //    On output, the array has been sorted.
 //
-{
-  int n1;
-  int temp;
+    {
+        int n1;
+        int temp;
 
-  if ( n <= 1 )
-  {
-    return;
-  }
+        if ( n <= 1 )
+        {
+            return;
+        }
 //
 //  1: Put A into descending heap form.
 //
-  i4vec_heap_d ( n, a );
+        i4vec_heap_d ( n, a );
 //
 //  2: Sort A.
 //
 //  The largest object in the heap is in A[0].
 //  Move it to position A[N-1].
 //
-  temp = a[0];
-  a[0] = a[n-1];
-  a[n-1] = temp;
+        temp = a[0];
+        a[0] = a[n - 1];
+        a[n - 1] = temp;
 //
 //  Consider the diminished heap of size N1.
 //
-  for ( n1 = n-1; 2 <= n1; n1-- )
-  {
+        for ( n1 = n - 1; 2 <= n1; n1-- )
+        {
 //
 //  Restore the heap structure of the initial N1 entries of A.
 //
-    i4vec_heap_d ( n1, a );
+            i4vec_heap_d ( n1, a );
 //
 //  Take the largest object from A[0] and move it to A[N1-1].
 //
-    temp = a[0];
-    a[0] = a[n1-1];
-    a[n1-1] = temp;
+            temp = a[0];
+            a[0] = a[n1 - 1];
+            a[n1 - 1] = temp;
 
-  }
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-int i4vec_sorted_unique ( int n, int a[] )
+    int i4vec_sorted_unique ( int n, int a[] )
 
 //****************************************************************************80
 //
@@ -2291,33 +2290,33 @@ int i4vec_sorted_unique ( int n, int a[] )
 //
 //    Output, int I4VEC_SORTED_UNIQUE, the number of unique elements in A.
 //
-{
-  int i;
-  int unique_num;
-
-  unique_num = 0;
-
-  if ( n <= 0 )
-  {
-    return unique_num;
-  }
-
-  unique_num = 1;
-
-  for ( i = 1; i < n; i++ )
-  {
-    if ( a[i] != a[unique_num-1] )
     {
-      unique_num = unique_num + 1;
-      a[unique_num-1] = a[i];
-    }
-  }
+        int i;
+        int unique_num;
 
-  return unique_num;
-}
+        unique_num = 0;
+
+        if ( n <= 0 )
+        {
+            return unique_num;
+        }
+
+        unique_num = 1;
+
+        for ( i = 1; i < n; i++ )
+        {
+            if ( a[i] != a[unique_num - 1] )
+            {
+                unique_num = unique_num + 1;
+                a[unique_num - 1] = a[i];
+            }
+        }
+
+        return unique_num;
+    }
 //****************************************************************************80
 
-int i4vec2_compare ( int n, int a1[], int a2[], int i, int j )
+    int i4vec2_compare ( int n, int a1[], int a2[], int i, int j )
 
 //****************************************************************************80
 //
@@ -2351,40 +2350,40 @@ int i4vec2_compare ( int n, int a1[], int a2[], int i, int j )
 //     0, item I = item J,
 //    +1, item J < item I.
 //
-{
-  int isgn;
-
-  isgn = 0;
-
-       if ( a1[i-1] < a1[j-1] )
-  {
-    isgn = -1;
-  }
-  else if ( a1[i-1] == a1[j-1] )
-  {
-         if ( a2[i-1] < a2[j-1] )
     {
-      isgn = -1;
-    }
-    else if ( a2[i-1] < a2[j-1] )
-    {
-      isgn = 0;
-    }
-    else if ( a2[j-1] < a2[i-1] )
-    {
-      isgn = +1;
-    }
-  }
-  else if ( a1[j-1] < a1[i-1] )
-  {
-    isgn = +1;
-  }
+        int isgn;
 
-  return isgn;
-}
+        isgn = 0;
+
+        if ( a1[i - 1] < a1[j - 1] )
+        {
+            isgn = -1;
+        }
+        else if ( a1[i - 1] == a1[j - 1] )
+        {
+            if ( a2[i - 1] < a2[j - 1] )
+            {
+                isgn = -1;
+            }
+            else if ( a2[i - 1] < a2[j - 1] )
+            {
+                isgn = 0;
+            }
+            else if ( a2[j - 1] < a2[i - 1] )
+            {
+                isgn = +1;
+            }
+        }
+        else if ( a1[j - 1] < a1[i - 1] )
+        {
+            isgn = +1;
+        }
+
+        return isgn;
+    }
 //****************************************************************************80
 
-void i4vec2_sort_a ( int n, int a1[], int a2[] )
+    void i4vec2_sort_a ( int n, int a1[], int a2[] )
 
 //****************************************************************************80
 //
@@ -2415,57 +2414,57 @@ void i4vec2_sort_a ( int n, int a1[], int a2[] )
 //
 //    Input/output, int A1[N], A2[N], the data to be sorted..
 //
-{
-  int i;
-  int indx;
-  int isgn;
-  int j;
-  int temp;
+    {
+        int i;
+        int indx;
+        int isgn;
+        int j;
+        int temp;
 //
 //  Initialize.
 //
-  i = 0;
-  indx = 0;
-  isgn = 0;
-  j = 0;
+        i = 0;
+        indx = 0;
+        isgn = 0;
+        j = 0;
 //
 //  Call the external heap sorter.
 //
-  for ( ; ; )
-  {
-    sort_heap_external ( n, &indx, &i, &j, isgn );
+        for ( ; ; )
+        {
+            sort_heap_external ( n, &indx, &i, &j, isgn );
 //
 //  Interchange the I and J objects.
 //
-    if ( 0 < indx )
-    {
-      temp    = a1[i-1];
-      a1[i-1] = a1[j-1];
-      a1[j-1] = temp;
+            if ( 0 < indx )
+            {
+                temp    = a1[i - 1];
+                a1[i - 1] = a1[j - 1];
+                a1[j - 1] = temp;
 
-      temp    = a2[i-1];
-      a2[i-1] = a2[j-1];
-      a2[j-1] = temp;
-    }
+                temp    = a2[i - 1];
+                a2[i - 1] = a2[j - 1];
+                a2[j - 1] = temp;
+            }
 //
 //  Compare the I and J objects.
 //
-    else if ( indx < 0 )
-    {
-      isgn = i4vec2_compare ( n, a1, a2, i, j );
-    }
-    else if ( indx == 0 )
-    {
-      break;
-    }
+            else if ( indx < 0 )
+            {
+                isgn = i4vec2_compare ( n, a1, a2, i, j );
+            }
+            else if ( indx == 0 )
+            {
+                break;
+            }
 
-  }
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-int i4vec2_sorted_unique ( int n, int a1[], int a2[] )
+    int i4vec2_sorted_unique ( int n, int a1[], int a2[] )
 
 //****************************************************************************80
 //
@@ -2505,36 +2504,36 @@ int i4vec2_sorted_unique ( int n, int a1[], int a2[] )
 //
 //    Output, int I4VEC2_SORTED_UNIQUE, the number of unique items.
 //
-{
-  int itest;
-  int unique_num;
-
-  unique_num = 0;
-
-  if ( n <= 0 )
-  {
-    return unique_num;
-  }
-
-  unique_num = 1;
-
-  for ( itest = 1; itest < n; itest++ )
-  {
-    if ( a1[itest] != a1[unique_num-1] ||
-         a2[itest] != a2[unique_num-1] )
     {
-      a1[unique_num] = a1[itest];
-      a2[unique_num] = a2[itest];
-      unique_num = unique_num + 1;
-    }
-  }
+        int itest;
+        int unique_num;
 
-  return unique_num;
-}
+        unique_num = 0;
+
+        if ( n <= 0 )
+        {
+            return unique_num;
+        }
+
+        unique_num = 1;
+
+        for ( itest = 1; itest < n; itest++ )
+        {
+            if ( a1[itest] != a1[unique_num - 1] ||
+                    a2[itest] != a2[unique_num - 1] )
+            {
+                a1[unique_num] = a1[itest];
+                a2[unique_num] = a2[itest];
+                unique_num = unique_num + 1;
+            }
+        }
+
+        return unique_num;
+    }
 //****************************************************************************80
 
-int lrline ( double xu, double yu, double xv1, double yv1, double xv2,
-  double yv2, double dv )
+    int lrline ( double xu, double yu, double xv1, double yv1, double xv2,
+                 double yv2, double dv )
 
 //****************************************************************************80
 //
@@ -2581,46 +2580,46 @@ int lrline ( double xu, double yu, double xv1, double yv1, double xv2,
 //    to the right of, on, or left of the directed line.  LRLINE is 0 if
 //    the line degenerates to a point.
 //
-{
-  double dx;
-  double dxu;
-  double dy;
-  double dyu;
-  double t;
-  double tol = 0.0000001;
-  double tolabs;
-  int value;
+    {
+        double dx;
+        double dxu;
+        double dy;
+        double dyu;
+        double t;
+        double tol = 0.0000001;
+        double tolabs;
+        int value;
 
-  dx = xv2 - xv1;
-  dy = yv2 - yv1;
-  dxu = xu - xv1;
-  dyu = yu - yv1;
+        dx = xv2 - xv1;
+        dy = yv2 - yv1;
+        dxu = xu - xv1;
+        dyu = yu - yv1;
 
-  tolabs = tol * r8_max ( fabs ( dx ),
-                 r8_max ( fabs ( dy ),
-                 r8_max ( fabs ( dxu ),
-                 r8_max ( fabs ( dyu ), fabs ( dv ) ) ) ) );
+        tolabs = tol * r8_max ( fabs ( dx ),
+                                r8_max ( fabs ( dy ),
+                                         r8_max ( fabs ( dxu ),
+                                                 r8_max ( fabs ( dyu ), fabs ( dv ) ) ) ) );
 
-  t = dy * dxu - dx * dyu + dv * sqrt ( dx * dx + dy * dy );
+        t = dy * dxu - dx * dyu + dv * sqrt ( dx * dx + dy * dy );
 
-  if ( tolabs < t )
-  {
-    value = 1;
-  }
-  else if ( -tolabs <= t )
-  {
-    value = 0;
-  }
-  else if ( t < -tolabs )
-  {
-    value = -1;
-  }
+        if ( tolabs < t )
+        {
+            value = 1;
+        }
+        else if ( -tolabs <= t )
+        {
+            value = 0;
+        }
+        else if ( t < -tolabs )
+        {
+            value = -1;
+        }
 
-  return value;
-}
+        return value;
+    }
 //****************************************************************************80
 
-void lvec_print ( int n, bool a[], std::string title )
+    void lvec_print ( int n, bool a[], std::string title )
 
 //****************************************************************************80
 //
@@ -2648,24 +2647,24 @@ void lvec_print ( int n, bool a[], std::string title )
 //
 //    Input, string TITLE, a title.
 //
-{
-  int i;
+    {
+        int i;
 
-  std::cout << "\n";
-  std::cout << title << "\n";
-  std::cout << "\n";
-  for ( i = 0; i < n; i++ )
-  {
-    std::cout << "  " << std::setw(8) << i
-         << "  " << std::setw(1) << a[i]  << "\n";
-  }
+        std::cout << "\n";
+        std::cout << title << "\n";
+        std::cout << "\n";
+        for ( i = 0; i < n; i++ )
+        {
+            std::cout << "  " << std::setw(8) << i
+                      << "  " << std::setw(1) << a[i]  << "\n";
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void mesh_base_one ( int node_num, int element_order, int element_num,
-  int element_node[] )
+    void mesh_base_one ( int node_num, int element_order, int element_num,
+                         int element_node[] )
 
 //****************************************************************************80
 //
@@ -2703,68 +2702,68 @@ void mesh_base_one ( int node_num, int element_order, int element_num,
 //    Input/output, int ELEMENT_NODE[ELEMENT_ORDER*ELEMENT_NUM], the element
 //    definitions.
 //
-{
-  int element;
-  const int i4_huge = 2147483647;
-  int node;
-  int node_max;
-  int node_min;
-  int order;
+    {
+        int element;
+        const int i4_huge = 2147483647;
+        int node;
+        int node_max;
+        int node_min;
+        int order;
 
-  node_min = + i4_huge;
-  node_max = - i4_huge;
-  for ( element = 0; element < element_num; element++ )
-  {
-    for ( order = 0; order < element_order; order++ )
-    {
-      node = element_node[order+element*element_order];
-      if ( node < node_min )
-      {
-        node_min = node;
-      }
-      if ( node_max < node )
-      {
-        node_max = node;
-      }
+        node_min = + i4_huge;
+        node_max = - i4_huge;
+        for ( element = 0; element < element_num; element++ )
+        {
+            for ( order = 0; order < element_order; order++ )
+            {
+                node = element_node[order + element * element_order];
+                if ( node < node_min )
+                {
+                    node_min = node;
+                }
+                if ( node_max < node )
+                {
+                    node_max = node;
+                }
+            }
+        }
+        if ( node_min == 0 && node_max == node_num - 1 )
+        {
+            std::cout << "\n";
+            std::cout << "MESH_BASE_ONE:\n";
+            std::cout << "  The element indexing appears to be 0-based!\n";
+            std::cout << "  This will be converted to 1-based.\n";
+            for ( element = 0; element < element_num; element++ )
+            {
+                for ( order = 0; order < element_order; order++ )
+                {
+                    element_node[order + element * element_order] =
+                        element_node[order + element * element_order] + 1;
+                }
+            }
+        }
+        else if ( node_min == 1 && node_max == node_num )
+        {
+            std::cout << "\n";
+            std::cout << "MESH_BASE_ONE:\n";
+            std::cout << "  The element indexing appears to be 1-based!\n";
+            std::cout << "  No conversion is necessary.\n";
+        }
+        else
+        {
+            std::cout << "\n";
+            std::cout << "MESH_BASE_ONE - Warning!\n";
+            std::cout << "  The element indexing is not of a recognized type.\n";
+            std::cout << "  NODE_MIN = " << node_min << "\n";
+            std::cout << "  NODE_MAX = " << node_max << "\n";
+            std::cout << "  NODE_NUM = " << node_num << "\n";
+        }
+        return;
     }
-  }
-  if ( node_min == 0 && node_max == node_num - 1 )
-  {
-    std::cout << "\n";
-    std::cout << "MESH_BASE_ONE:\n";
-    std::cout << "  The element indexing appears to be 0-based!\n";
-    std::cout << "  This will be converted to 1-based.\n";
-    for ( element = 0; element < element_num; element++ )
-    {
-      for ( order = 0; order < element_order; order++ )
-      {
-        element_node[order+element*element_order] =
-          element_node[order+element*element_order] + 1;
-      }
-    }
-  }
-  else if ( node_min == 1 && node_max == node_num )
-  {
-    std::cout << "\n";
-    std::cout << "MESH_BASE_ONE:\n";
-    std::cout << "  The element indexing appears to be 1-based!\n";
-    std::cout << "  No conversion is necessary.\n";
-  }
-  else
-  {
-    std::cout << "\n";
-    std::cout << "MESH_BASE_ONE - Warning!\n";
-    std::cout << "  The element indexing is not of a recognized type.\n";
-    std::cout << "  NODE_MIN = " << node_min << "\n";
-    std::cout << "  NODE_MAX = " << node_max << "\n";
-    std::cout << "  NODE_NUM = " << node_num << "\n";
-  }
-  return;
-}
 //****************************************************************************80
 
-void mesh_base_zero ( int node_num, int element_order, int element_num,
-  int element_node[] )
+    void mesh_base_zero ( int node_num, int element_order, int element_num,
+                          int element_node[] )
 
 //****************************************************************************80
 //
@@ -2805,69 +2804,69 @@ void mesh_base_zero ( int node_num, int element_order, int element_num,
 //    Input/output, int ELEMENT_NODE[ELEMENT_ORDER*ELEMENT_NUM], the element
 //    definitions.
 //
-{
-  int element;
-  const int i4_huge = 2147483647;
-  int node;
-  int node_max;
-  int node_min;
-  int order;
-
-  node_min = + i4_huge;
-  node_max = - i4_huge;
-  for ( element = 0; element < element_num; element++ )
-  {
-    for ( order = 0; order < element_order; order++ )
     {
-      node = element_node[order+element*element_order];
-      if ( node < node_min )
-      {
-        node_min = node;
-      }
-      if ( node_max < node )
-      {
-        node_max = node;
-      }
-    }
-  }
+        int element;
+        const int i4_huge = 2147483647;
+        int node;
+        int node_max;
+        int node_min;
+        int order;
 
-  if ( node_min == 0 && node_max == node_num - 1 )
-  {
-    std::cout << "\n";
-    std::cout << "MESH_BASE_ZERO:\n";
-    std::cout << "  The element indexing appears to be 0-based!\n";
-    std::cout << "  No conversion is necessary.\n";
-  }
-  else if ( node_min == 1 && node_max == node_num )
-  {
-    std::cout << "\n";
-    std::cout << "MESH_BASE_ZERO:\n";
-    std::cout << "  The element indexing appears to be 1-based!\n";
-    std::cout << "  This will be converted to 0-based.\n";
-    for ( element = 0; element < element_num; element++ )
-    {
-      for ( order = 0; order < element_order; order++ )
-      {
-        element_node[order+element*element_order] =
-          element_node[order+element*element_order] - 1;
-      }
+        node_min = + i4_huge;
+        node_max = - i4_huge;
+        for ( element = 0; element < element_num; element++ )
+        {
+            for ( order = 0; order < element_order; order++ )
+            {
+                node = element_node[order + element * element_order];
+                if ( node < node_min )
+                {
+                    node_min = node;
+                }
+                if ( node_max < node )
+                {
+                    node_max = node;
+                }
+            }
+        }
+
+        if ( node_min == 0 && node_max == node_num - 1 )
+        {
+            std::cout << "\n";
+            std::cout << "MESH_BASE_ZERO:\n";
+            std::cout << "  The element indexing appears to be 0-based!\n";
+            std::cout << "  No conversion is necessary.\n";
+        }
+        else if ( node_min == 1 && node_max == node_num )
+        {
+            std::cout << "\n";
+            std::cout << "MESH_BASE_ZERO:\n";
+            std::cout << "  The element indexing appears to be 1-based!\n";
+            std::cout << "  This will be converted to 0-based.\n";
+            for ( element = 0; element < element_num; element++ )
+            {
+                for ( order = 0; order < element_order; order++ )
+                {
+                    element_node[order + element * element_order] =
+                        element_node[order + element * element_order] - 1;
+                }
+            }
+        }
+        else
+        {
+            std::cout << "\n";
+            std::cout << "MESH_BASE_ZERO - Warning!\n";
+            std::cout << "  The element indexing is not of a recognized type.\n";
+            std::cout << "  NODE_MIN = " << node_min << "\n";
+            std::cout << "  NODE_MAX = " << node_max << "\n";
+            std::cout << "  NODE_NUM = " << node_num << "\n";
+        }
+        return;
     }
-  }
-  else
-  {
-    std::cout << "\n";
-    std::cout << "MESH_BASE_ZERO - Warning!\n";
-    std::cout << "  The element indexing is not of a recognized type.\n";
-    std::cout << "  NODE_MIN = " << node_min << "\n";
-    std::cout << "  NODE_MAX = " << node_max << "\n";
-    std::cout << "  NODE_NUM = " << node_num << "\n";
-  }
-  return;
-}
 //****************************************************************************80
 
-void node_merge ( int dim_num, int node_num, double node_xy[],
-  double tolerance, int node_rep[] )
+    void node_merge ( int dim_num, int node_num, double node_xy[],
+                      double tolerance, int node_rep[] )
 
 //****************************************************************************80
 //
@@ -2930,67 +2929,67 @@ void node_merge ( int dim_num, int node_num, double node_xy[],
 //    NODE, or for which a chain of nodes can be found, all having the
 //    same representative, and all of which are pairwise closer than TOLERANCE.
 //
-{
-  double dist;
-  int i;
-  int j;
-  int node1;
-  int node2;
-  int rep;
-  double *rep_dist;
-
-  rep_dist = new double[node_num];
-
-  for ( node1 = 0; node1 < node_num; node1++ )
-  {
-    node_rep[node1] = node1;
-  }
-
-  for ( node1 = 0; node1 < node_num; node1++ )
-  {
-    for ( j = 0; j < node_num; j++ )
     {
-      rep_dist[j] = r8_huge ( );
+        double dist;
+        int i;
+        int j;
+        int node1;
+        int node2;
+        int rep;
+        double *rep_dist;
+
+        rep_dist = new double[node_num];
+
+        for ( node1 = 0; node1 < node_num; node1++ )
+        {
+            node_rep[node1] = node1;
+        }
+
+        for ( node1 = 0; node1 < node_num; node1++ )
+        {
+            for ( j = 0; j < node_num; j++ )
+            {
+                rep_dist[j] = r8_huge ( );
+            }
+
+            for ( node2 = 0; node2 < node_num; node2++ )
+            {
+                dist = 0.0;
+                for ( i = 0; i < dim_num; i++ )
+                {
+                    dist = dist
+                           + pow ( node_xy[i + node1 * dim_num] - node_xy[i + node2 * dim_num], 2 );
+                }
+                dist = sqrt ( dist );
+
+                rep = node_rep[node2];
+
+                if ( dist < rep_dist[rep] )
+                {
+                    rep_dist[rep] = dist;
+                }
+            }
+
+            for ( node2 = 0; node2 < node_num; node2++ )
+            {
+                rep = node_rep[node2];
+                if ( rep_dist[rep] <= tolerance )
+                {
+                    node_rep[node2] = node1;
+                }
+            }
+
+        }
+
+        delete [] rep_dist;
+
+        return;
     }
-
-    for ( node2 = 0; node2 < node_num; node2++ )
-    {
-      dist = 0.0;
-      for ( i = 0; i < dim_num; i++ )
-      {
-        dist = dist
-          + pow ( node_xy[i+node1*dim_num] - node_xy[i+node2*dim_num], 2 );
-      }
-      dist = sqrt ( dist );
-
-      rep = node_rep[node2];
-
-      if ( dist < rep_dist[rep] )
-      {
-        rep_dist[rep] = dist;
-      }
-    }
-
-    for ( node2 = 0; node2 < node_num; node2++ )
-    {
-      rep = node_rep[node2];
-      if ( rep_dist[rep] <= tolerance )
-      {
-        node_rep[node2] = node1;
-      }
-    }
-
-  }
-
-  delete [] rep_dist;
-
-  return;
-}
 //****************************************************************************80
 
-int ns_adj_col_set ( int node_num, int triangle_num, int variable_num,
-  int triangle_node[], int triangle_neighbor[], int node_u_variable[],
-  int node_v_variable[], int node_p_variable[], int adj_col[] )
+    int ns_adj_col_set ( int node_num, int triangle_num, int variable_num,
+                         int triangle_node[], int triangle_neighbor[], int node_u_variable[],
+                         int node_v_variable[], int node_p_variable[], int adj_col[] )
 
 //****************************************************************************80
 //
@@ -3096,43 +3095,43 @@ int ns_adj_col_set ( int node_num, int triangle_num, int variable_num,
 //    Output, int NS_ADJ_COL_SET, the number of Navier Stokes variable
 //    adjacencies.
 //
-{
-  int adj_num;
-  int n1;
-  int n2;
-  int n3;
-  int n4;
-  int n5;
-  int n6;
-  int node;
-  int p1;
-  int p2;
-  int p3;
-  int triangle;
-  int triangle_order = 6;
-  int triangle2;
-  int u1;
-  int u2;
-  int u3;
-  int u4;
-  int u5;
-  int u6;
-  int v1;
-  int v2;
-  int v3;
-  int v4;
-  int v5;
-  int v6;
-  int variable;
+    {
+        int adj_num;
+        int n1;
+        int n2;
+        int n3;
+        int n4;
+        int n5;
+        int n6;
+        int node;
+        int p1;
+        int p2;
+        int p3;
+        int triangle;
+        int triangle_order = 6;
+        int triangle2;
+        int u1;
+        int u2;
+        int u3;
+        int u4;
+        int u5;
+        int u6;
+        int v1;
+        int v2;
+        int v3;
+        int v4;
+        int v5;
+        int v6;
+        int variable;
 
-  adj_num = 0;
+        adj_num = 0;
 //
 //  Set every variable to be adjacent to itself.
 //
-  for ( variable = 0; variable < variable_num; variable++ )
-  {
-    adj_col[variable] = 1;
-  }
+        for ( variable = 0; variable < variable_num; variable++ )
+        {
+            adj_col[variable] = 1;
+        }
 //
 //  Set every variable to be adjacent to the other variables associated with
 //  that node.
@@ -3141,54 +3140,54 @@ int ns_adj_col_set ( int node_num, int triangle_num, int variable_num,
 //  U <=> P (if there is a P variable)
 //  V <=> P (if there is a P variable)
 //
-  for ( node = 0; node < node_num; node++ )
-  {
-    u1 = node_u_variable[node] - 1;
-    v1 = node_v_variable[node] - 1;
-    p1 = node_p_variable[node] - 1;
+        for ( node = 0; node < node_num; node++ )
+        {
+            u1 = node_u_variable[node] - 1;
+            v1 = node_v_variable[node] - 1;
+            p1 = node_p_variable[node] - 1;
 
-    adj_col[u1] = adj_col[u1] + 1;
-    adj_col[v1] = adj_col[v1] + 1 ;
+            adj_col[u1] = adj_col[u1] + 1;
+            adj_col[v1] = adj_col[v1] + 1 ;
 
-    if ( 0 <= p1 )
-    {
-      adj_col[u1] = adj_col[u1] + 1;
-      adj_col[v1] = adj_col[v1] + 1;
-      adj_col[p1] = adj_col[p1] + 2;
-    }
-  }
+            if ( 0 <= p1 )
+            {
+                adj_col[u1] = adj_col[u1] + 1;
+                adj_col[v1] = adj_col[v1] + 1;
+                adj_col[p1] = adj_col[p1] + 2;
+            }
+        }
 //
 //  Examine each triangle.
 //
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    n1 = triangle_node[0+triangle*triangle_order] - 1;
-    n2 = triangle_node[1+triangle*triangle_order] - 1;
-    n3 = triangle_node[2+triangle*triangle_order] - 1;
-    n4 = triangle_node[3+triangle*triangle_order] - 1;
-    n5 = triangle_node[4+triangle*triangle_order] - 1;
-    n6 = triangle_node[5+triangle*triangle_order] - 1;
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            n1 = triangle_node[0 + triangle * triangle_order] - 1;
+            n2 = triangle_node[1 + triangle * triangle_order] - 1;
+            n3 = triangle_node[2 + triangle * triangle_order] - 1;
+            n4 = triangle_node[3 + triangle * triangle_order] - 1;
+            n5 = triangle_node[4 + triangle * triangle_order] - 1;
+            n6 = triangle_node[5 + triangle * triangle_order] - 1;
 
-    u1 = node_u_variable[n1] - 1;
-    v1 = node_v_variable[n1] - 1;
-    p1 = node_p_variable[n1] - 1;
+            u1 = node_u_variable[n1] - 1;
+            v1 = node_v_variable[n1] - 1;
+            p1 = node_p_variable[n1] - 1;
 
-    u2 = node_u_variable[n2] - 1;
-    v2 = node_v_variable[n2] - 1;
-    p2 = node_p_variable[n2] - 1;
+            u2 = node_u_variable[n2] - 1;
+            v2 = node_v_variable[n2] - 1;
+            p2 = node_p_variable[n2] - 1;
 
-    u3 = node_u_variable[n3] - 1;
-    v3 = node_v_variable[n3] - 1;
-    p3 = node_p_variable[n3] - 1;
+            u3 = node_u_variable[n3] - 1;
+            v3 = node_v_variable[n3] - 1;
+            p3 = node_p_variable[n3] - 1;
 
-    u4 = node_u_variable[n4] - 1;
-    v4 = node_v_variable[n4] - 1;
+            u4 = node_u_variable[n4] - 1;
+            v4 = node_v_variable[n4] - 1;
 
-    u5 = node_u_variable[n5] - 1;
-    v5 = node_v_variable[n5] - 1;
+            u5 = node_u_variable[n5] - 1;
+            v5 = node_v_variable[n5] - 1;
 
-    u6 = node_u_variable[n6] - 1;
-    v6 = node_v_variable[n6] - 1;
+            u6 = node_u_variable[n6] - 1;
+            v6 = node_v_variable[n6] - 1;
 //
 //  For sure, we add the new adjacencies:
 //
@@ -3199,26 +3198,26 @@ int ns_adj_col_set ( int node_num, int triangle_num, int variable_num,
 //    U6 V6 <=> U4 V4
 //    U6 V6 <=> U5 V5
 //
-    adj_col[u1] = adj_col[u1] + 2;
-    adj_col[v1] = adj_col[v1] + 2;
-    adj_col[p1] = adj_col[p1] + 2;
+            adj_col[u1] = adj_col[u1] + 2;
+            adj_col[v1] = adj_col[v1] + 2;
+            adj_col[p1] = adj_col[p1] + 2;
 
-    adj_col[u2] = adj_col[u2] + 2;
-    adj_col[v2] = adj_col[v2] + 2;
-    adj_col[p2] = adj_col[p2] + 2;
+            adj_col[u2] = adj_col[u2] + 2;
+            adj_col[v2] = adj_col[v2] + 2;
+            adj_col[p2] = adj_col[p2] + 2;
 
-    adj_col[u3] = adj_col[u3] + 2;
-    adj_col[v3] = adj_col[v3] + 2;
-    adj_col[p3] = adj_col[p3] + 2;
+            adj_col[u3] = adj_col[u3] + 2;
+            adj_col[v3] = adj_col[v3] + 2;
+            adj_col[p3] = adj_col[p3] + 2;
 
-    adj_col[u4] = adj_col[u4] + 7;
-    adj_col[v4] = adj_col[v4] + 7;
+            adj_col[u4] = adj_col[u4] + 7;
+            adj_col[v4] = adj_col[v4] + 7;
 
-    adj_col[u5] = adj_col[u5] + 7;
-    adj_col[v5] = adj_col[v5] + 7;
+            adj_col[u5] = adj_col[u5] + 7;
+            adj_col[v5] = adj_col[v5] + 7;
 
-    adj_col[u6] = adj_col[u6] + 7;
-    adj_col[v6] = adj_col[v6] + 7;
+            adj_col[u6] = adj_col[u6] + 7;
+            adj_col[v6] = adj_col[v6] + 7;
 //
 //  Add edges (1,2), (1,4), (2,4) if this is the first occurrence,
 //  that is, if the edge (1,4,2) is on a boundary (TRIANGLE2 <= 0)
@@ -3231,21 +3230,21 @@ int ns_adj_col_set ( int node_num, int triangle_num, int variable_num,
 //    U1 V1 P1 <=> U4 V4
 //    U2 V2 P2 <=> U4 V4
 //
-    triangle2 = triangle_neighbor[0+triangle*3];
+            triangle2 = triangle_neighbor[0 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_col[u1] = adj_col[u1] + 5;
-      adj_col[v1] = adj_col[v1] + 5;
-      adj_col[p1] = adj_col[p1] + 5;
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_col[u1] = adj_col[u1] + 5;
+                adj_col[v1] = adj_col[v1] + 5;
+                adj_col[p1] = adj_col[p1] + 5;
 
-      adj_col[u2] = adj_col[u2] + 5;
-      adj_col[v2] = adj_col[v2] + 5;
-      adj_col[p2] = adj_col[p2] + 5;
+                adj_col[u2] = adj_col[u2] + 5;
+                adj_col[v2] = adj_col[v2] + 5;
+                adj_col[p2] = adj_col[p2] + 5;
 
-      adj_col[u4] = adj_col[u4] + 6;
-      adj_col[v4] = adj_col[v4] + 6;
-    }
+                adj_col[u4] = adj_col[u4] + 6;
+                adj_col[v4] = adj_col[v4] + 6;
+            }
 //
 //  Maybe add
 //
@@ -3253,21 +3252,21 @@ int ns_adj_col_set ( int node_num, int triangle_num, int variable_num,
 //    U2 V2 P2 <=> U5 V5
 //    U3 V3 P3 <=> U5 V5
 //
-    triangle2 = triangle_neighbor[1+triangle*3];
+            triangle2 = triangle_neighbor[1 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_col[u2] = adj_col[u2] + 5;
-      adj_col[v2] = adj_col[v2] + 5;
-      adj_col[p2] = adj_col[p2] + 5;
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_col[u2] = adj_col[u2] + 5;
+                adj_col[v2] = adj_col[v2] + 5;
+                adj_col[p2] = adj_col[p2] + 5;
 
-      adj_col[u3] = adj_col[u3] + 5;
-      adj_col[v3] = adj_col[v3] + 5;
-      adj_col[p3] = adj_col[p3] + 5;
+                adj_col[u3] = adj_col[u3] + 5;
+                adj_col[v3] = adj_col[v3] + 5;
+                adj_col[p3] = adj_col[p3] + 5;
 
-      adj_col[u5] = adj_col[u5] + 6;
-      adj_col[v5] = adj_col[v5] + 6;
-    }
+                adj_col[u5] = adj_col[u5] + 6;
+                adj_col[v5] = adj_col[v5] + 6;
+            }
 //
 //  Maybe add
 //
@@ -3275,47 +3274,47 @@ int ns_adj_col_set ( int node_num, int triangle_num, int variable_num,
 //    U1 V1 P1 <=> U6 V6
 //    U3 V3 P3 <=> U6 V6
 //
-    triangle2 = triangle_neighbor[2+triangle*3];
+            triangle2 = triangle_neighbor[2 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_col[u1] = adj_col[u1] + 5;
-      adj_col[v1] = adj_col[v1] + 5;
-      adj_col[p1] = adj_col[p1] + 5;
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_col[u1] = adj_col[u1] + 5;
+                adj_col[v1] = adj_col[v1] + 5;
+                adj_col[p1] = adj_col[p1] + 5;
 
-      adj_col[u3] = adj_col[u3] + 5;
-      adj_col[v3] = adj_col[v3] + 5;
-      adj_col[p3] = adj_col[p3] + 5;
+                adj_col[u3] = adj_col[u3] + 5;
+                adj_col[v3] = adj_col[v3] + 5;
+                adj_col[p3] = adj_col[p3] + 5;
 
-      adj_col[u6] = adj_col[u6] + 6;
-      adj_col[v6] = adj_col[v6] + 6;
-    }
+                adj_col[u6] = adj_col[u6] + 6;
+                adj_col[v6] = adj_col[v6] + 6;
+            }
 
-  }
+        }
 //
 //  We used ADJ_COL to count the number of entries in each column.
 //  Convert it to pointers into the ADJ array.
 //
-  for ( variable = variable_num; 0 < variable; variable-- )
-  {
-    adj_col[variable] = adj_col[variable-1];
-  }
+        for ( variable = variable_num; 0 < variable; variable-- )
+        {
+            adj_col[variable] = adj_col[variable - 1];
+        }
 
-  adj_col[0] = 1;
-  for ( variable = 1; variable <= variable_num; variable++ )
-  {
-    adj_col[variable] = adj_col[variable-1] + adj_col[variable];
-  }
+        adj_col[0] = 1;
+        for ( variable = 1; variable <= variable_num; variable++ )
+        {
+            adj_col[variable] = adj_col[variable - 1] + adj_col[variable];
+        }
 
-  adj_num = adj_col[variable_num] - 1;
+        adj_num = adj_col[variable_num] - 1;
 
-  return adj_num;
-}
+        return adj_num;
+    }
 //****************************************************************************80
 
-int ns_adj_count ( int node_num, int triangle_num, int variable_num,
-  int triangle_node[], int triangle_neighbor[], int node_u_variable[],
-  int node_v_variable[], int node_p_variable[] )
+    int ns_adj_count ( int node_num, int triangle_num, int variable_num,
+                       int triangle_node[], int triangle_neighbor[], int node_u_variable[],
+                       int node_v_variable[], int node_p_variable[] )
 
 //****************************************************************************80
 //
@@ -3416,20 +3415,20 @@ int ns_adj_count ( int node_num, int triangle_num, int variable_num,
 //    Output, int NS_ADJ_COUNT, the value of ADJ_NUM, the number of
 //    Navier Stokes variable adjacencies.
 //
-{
-  int adj_num;
-  int node;
-  int p1;
-  int triangle;
-  int triangle_order = 6;
-  int triangle2;
-  int variable;
+    {
+        int adj_num;
+        int node;
+        int p1;
+        int triangle;
+        int triangle_order = 6;
+        int triangle2;
+        int variable;
 
-  adj_num = 0;
+        adj_num = 0;
 //
 //  Set every variable to be adjacent to itself.
 //
-  adj_num = variable_num;
+        adj_num = variable_num;
 //
 //  Set every variable to be adjacent to the other variables associated with
 //  that node.
@@ -3438,22 +3437,22 @@ int ns_adj_count ( int node_num, int triangle_num, int variable_num,
 //  U <=> P (if there is a P variable)
 //  V <=> P (if there is a P variable)
 //
-  for ( node = 0; node < node_num; node++ )
-  {
-    adj_num = adj_num + 2;
+        for ( node = 0; node < node_num; node++ )
+        {
+            adj_num = adj_num + 2;
 
-    p1 = node_p_variable[node] - 1;
+            p1 = node_p_variable[node] - 1;
 
-    if ( 0 <= p1 )
-    {
-      adj_num = adj_num + 4;
-    }
-  }
+            if ( 0 <= p1 )
+            {
+                adj_num = adj_num + 4;
+            }
+        }
 //
 //  Examine each triangle.
 //
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
 
 //
 //  For sure, we add the new adjacencies:
@@ -3465,7 +3464,7 @@ int ns_adj_count ( int node_num, int triangle_num, int variable_num,
 //    U6 V6 <=> U4 V4
 //    U6 V6 <=> U5 V5
 //
-    adj_num = adj_num + 60;
+            adj_num = adj_num + 60;
 //
 //  Add edges (1,2), (1,4), (2,4) if this is the first occurrence,
 //  that is, if the edge (1,4,2) is on a boundary (TRIANGLE2 <= 0)
@@ -3478,12 +3477,12 @@ int ns_adj_count ( int node_num, int triangle_num, int variable_num,
 //    U1 V1 P1 <=> U4 V4
 //    U2 V2 P2 <=> U4 V4
 //
-    triangle2 = triangle_neighbor[0+triangle*3];
+            triangle2 = triangle_neighbor[0 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_num = adj_num + 42;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_num = adj_num + 42;
+            }
 //
 //  Maybe add
 //
@@ -3491,12 +3490,12 @@ int ns_adj_count ( int node_num, int triangle_num, int variable_num,
 //    U2 V2 P2 <=> U5 V5
 //    U3 V3 P3 <=> U5 V5
 //
-    triangle2 = triangle_neighbor[1+triangle*3];
+            triangle2 = triangle_neighbor[1 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_num = adj_num + 42;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_num = adj_num + 42;
+            }
 //
 //  Maybe add
 //
@@ -3504,21 +3503,21 @@ int ns_adj_count ( int node_num, int triangle_num, int variable_num,
 //    U1 V1 P1 <=> U6 V6
 //    U3 V3 P3 <=> U6 V6
 //
-    triangle2 = triangle_neighbor[2+triangle*3];
+            triangle2 = triangle_neighbor[2 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_num = adj_num + 42;
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_num = adj_num + 42;
+            }
+
+        }
+
+        return adj_num;
     }
-
-  }
-
-  return adj_num;
-}
 //****************************************************************************80
 
-void ns_adj_insert ( int v1, int v2, int variable_num, int adj_num,
-  int adj_col_free[], int adj_row[] )
+    void ns_adj_insert ( int v1, int v2, int variable_num, int adj_num,
+                         int adj_col_free[], int adj_row[] )
 
 //****************************************************************************80
 //
@@ -3553,26 +3552,26 @@ void ns_adj_insert ( int v1, int v2, int variable_num, int adj_num,
 //    Input/output, int ADJ_ROW[ADJ_NUM], the row indices of the Navier Stokes
 //    variable adjacency matrix.  On output, two new entries have been added.
 //
-{
-  adj_row[adj_col_free[v1-1]-1] = v2;
-  adj_col_free[v1-1] = adj_col_free[v1-1] + 1;
+    {
+        adj_row[adj_col_free[v1 - 1] - 1] = v2;
+        adj_col_free[v1 - 1] = adj_col_free[v1 - 1] + 1;
 
-  if ( v1 == v2 )
-  {
-    return;
-  }
+        if ( v1 == v2 )
+        {
+            return;
+        }
 
-  adj_row[adj_col_free[v2-1]-1] = v1;
-  adj_col_free[v2-1] = adj_col_free[v2-1] + 1;
+        adj_row[adj_col_free[v2 - 1] - 1] = v1;
+        adj_col_free[v2 - 1] = adj_col_free[v2 - 1] + 1;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void ns_adj_row_set ( int node_num, int triangle_num, int variable_num,
-  int triangle_node[], int triangle_neighbor[], int node_u_variable[],
-  int node_v_variable[], int node_p_variable[], int adj_num, int adj_col[],
-  int adj_row[] )
+    void ns_adj_row_set ( int node_num, int triangle_num, int variable_num,
+                          int triangle_node[], int triangle_neighbor[], int node_u_variable[],
+                          int node_v_variable[], int node_p_variable[], int adj_num, int adj_col[],
+                          int adj_row[] )
 
 //****************************************************************************80
 //
@@ -3635,56 +3634,56 @@ void ns_adj_row_set ( int node_num, int triangle_num, int variable_num,
 //    Local, int ADJ_COL_FREE[VARIABLE_NUM], for each column,
 //    the location in ADJ_ROW which can store the next row index.
 //
-{
-  int *adj_col_free;
-  int k1;
-  int k2;
-  int n1;
-  int n2;
-  int n3;
-  int n4;
-  int n5;
-  int n6;
-  int node;
-  int p1;
-  int p2;
-  int p3;
-  int triangle;
-  int triangle_order = 6;
-  int triangle2;
-  int u1;
-  int u2;
-  int u3;
-  int u4;
-  int u5;
-  int u6;
-  int v;
-  int v1;
-  int v2;
-  int v3;
-  int v4;
-  int v5;
-  int v6;
+    {
+        int *adj_col_free;
+        int k1;
+        int k2;
+        int n1;
+        int n2;
+        int n3;
+        int n4;
+        int n5;
+        int n6;
+        int node;
+        int p1;
+        int p2;
+        int p3;
+        int triangle;
+        int triangle_order = 6;
+        int triangle2;
+        int u1;
+        int u2;
+        int u3;
+        int u4;
+        int u5;
+        int u6;
+        int v;
+        int v1;
+        int v2;
+        int v3;
+        int v4;
+        int v5;
+        int v6;
 
-  for ( v = 0; v < adj_num; v++ )
-  {
-    adj_row[v] = -1;
-  }
+        for ( v = 0; v < adj_num; v++ )
+        {
+            adj_row[v] = -1;
+        }
 
-  adj_col_free = new int[variable_num];
+        adj_col_free = new int[variable_num];
 
-  for ( v = 0; v < variable_num; v++ )
-  {
-    adj_col_free[v] = adj_col[v];
-  }
+        for ( v = 0; v < variable_num; v++ )
+        {
+            adj_col_free[v] = adj_col[v];
+        }
 //
 //  Set every variable to be adjacent to itself.
 //  Here, we have to be careful to start at index 1.
 //
-  for ( v = 1; v <= variable_num; v++ )
-  {
-    ns_adj_insert ( v, v, variable_num, adj_num, adj_col_free, adj_row );
-  }
+        for ( v = 1; v <= variable_num; v++ )
+        {
+            ns_adj_insert ( v, v, variable_num, adj_num, adj_col_free, adj_row );
+        }
 //
 //  Set every variable to be adjacent to the other variables associated with
 //  that node.
@@ -3693,52 +3692,52 @@ void ns_adj_row_set ( int node_num, int triangle_num, int variable_num,
 //  U <=> P (if there is a P variable)
 //  V <=> P (if there is a P variable)
 //
-  for ( node = 0; node < node_num; node++ )
-  {
-    u1 = node_u_variable[node];
-    v1 = node_v_variable[node];
-    p1 = node_p_variable[node];
+        for ( node = 0; node < node_num; node++ )
+        {
+            u1 = node_u_variable[node];
+            v1 = node_v_variable[node];
+            p1 = node_p_variable[node];
 
-    ns_adj_insert ( u1, v1, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u1, v1, variable_num, adj_num, adj_col_free, adj_row );
 
-    if ( 0 < p1 )
-    {
-      ns_adj_insert ( u1, p1, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, p1, variable_num, adj_num, adj_col_free, adj_row );
-    }
-  }
+            if ( 0 < p1 )
+            {
+                ns_adj_insert ( u1, p1, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, p1, variable_num, adj_num, adj_col_free, adj_row );
+            }
+        }
 //
 //  Examine each triangle.
 //
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    n1 = triangle_node[0+triangle*6];
-    n2 = triangle_node[1+triangle*6];
-    n3 = triangle_node[2+triangle*6];
-    n4 = triangle_node[3+triangle*6];
-    n5 = triangle_node[4+triangle*6];
-    n6 = triangle_node[5+triangle*6];
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            n1 = triangle_node[0 + triangle * 6];
+            n2 = triangle_node[1 + triangle * 6];
+            n3 = triangle_node[2 + triangle * 6];
+            n4 = triangle_node[3 + triangle * 6];
+            n5 = triangle_node[4 + triangle * 6];
+            n6 = triangle_node[5 + triangle * 6];
 
-    u1 = node_u_variable[n1-1];
-    v1 = node_v_variable[n1-1];
-    p1 = node_p_variable[n1-1];
+            u1 = node_u_variable[n1 - 1];
+            v1 = node_v_variable[n1 - 1];
+            p1 = node_p_variable[n1 - 1];
 
-    u2 = node_u_variable[n2-1];
-    v2 = node_v_variable[n2-1];
-    p2 = node_p_variable[n2-1];
+            u2 = node_u_variable[n2 - 1];
+            v2 = node_v_variable[n2 - 1];
+            p2 = node_p_variable[n2 - 1];
 
-    u3 = node_u_variable[n3-1];
-    v3 = node_v_variable[n3-1];
-    p3 = node_p_variable[n3-1];
+            u3 = node_u_variable[n3 - 1];
+            v3 = node_v_variable[n3 - 1];
+            p3 = node_p_variable[n3 - 1];
 
-    u4 = node_u_variable[n4-1];
-    v4 = node_v_variable[n4-1];
+            u4 = node_u_variable[n4 - 1];
+            v4 = node_v_variable[n4 - 1];
 
-    u5 = node_u_variable[n5-1];
-    v5 = node_v_variable[n5-1];
+            u5 = node_u_variable[n5 - 1];
+            v5 = node_v_variable[n5 - 1];
 
-    u6 = node_u_variable[n6-1];
-    v6 = node_v_variable[n6-1];
+            u6 = node_u_variable[n6 - 1];
+            v6 = node_v_variable[n6 - 1];
 //
 //  For sure, we add the new adjacencies:
 //
@@ -3749,41 +3748,41 @@ void ns_adj_row_set ( int node_num, int triangle_num, int variable_num,
 //    U6 V6 <=> U4 V4
 //    U6 V6 <=> U5 V5
 //
-    ns_adj_insert ( u5, u1, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( u5, v1, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( u5, p1, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v5, u1, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v5, v1, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v5, p1, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u5, u1, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u5, v1, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u5, p1, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v5, u1, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v5, v1, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v5, p1, variable_num, adj_num, adj_col_free, adj_row );
 
-    ns_adj_insert ( u6, u2, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( u6, v2, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( u6, p2, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v6, u2, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v6, v2, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v6, p2, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u6, u2, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u6, v2, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u6, p2, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v6, u2, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v6, v2, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v6, p2, variable_num, adj_num, adj_col_free, adj_row );
 
-    ns_adj_insert ( u4, u3, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( u4, v3, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( u4, p3, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v4, u3, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v4, v3, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v4, p3, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u4, u3, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u4, v3, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u4, p3, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v4, u3, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v4, v3, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v4, p3, variable_num, adj_num, adj_col_free, adj_row );
 
-    ns_adj_insert ( u5, u4, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( u5, v4, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v5, u4, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v5, v4, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u5, u4, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u5, v4, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v5, u4, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v5, v4, variable_num, adj_num, adj_col_free, adj_row );
 
-    ns_adj_insert ( u6, u4, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( u6, v4, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v6, u4, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v6, v4, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u6, u4, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u6, v4, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v6, u4, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v6, v4, variable_num, adj_num, adj_col_free, adj_row );
 
-    ns_adj_insert ( u6, u5, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( u6, v5, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v6, u5, variable_num, adj_num, adj_col_free, adj_row );
-    ns_adj_insert ( v6, v5, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u6, u5, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( u6, v5, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v6, u5, variable_num, adj_num, adj_col_free, adj_row );
+            ns_adj_insert ( v6, v5, variable_num, adj_num, adj_col_free, adj_row );
 //
 //  Add edges (1,2), (1,4), (2,4) if this is the first occurrence,
 //  that is, if the edge (1,4,2) is on a boundary (TRIANGLE2 <= 0)
@@ -3796,34 +3795,34 @@ void ns_adj_row_set ( int node_num, int triangle_num, int variable_num,
 //    U1 V1 P1 <=> U4 V4
 //    U2 V2 P2 <=> U4 V4
 //
-    triangle2 = triangle_neighbor[0+triangle*3];
+            triangle2 = triangle_neighbor[0 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      ns_adj_insert ( u1, u2, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u1, v2, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u1, p2, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, u2, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, v2, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, p2, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, u2, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, v2, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, p2, variable_num, adj_num, adj_col_free, adj_row );
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                ns_adj_insert ( u1, u2, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u1, v2, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u1, p2, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, u2, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, v2, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, p2, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, u2, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, v2, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, p2, variable_num, adj_num, adj_col_free, adj_row );
 
-      ns_adj_insert ( u1, u4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u1, v4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, u4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, v4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, u4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, v4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u1, u4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u1, v4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, u4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, v4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, u4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, v4, variable_num, adj_num, adj_col_free, adj_row );
 
-      ns_adj_insert ( u2, u4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u2, v4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v2, u4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v2, v4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p2, u4, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p2, v4, variable_num, adj_num, adj_col_free, adj_row );
-    }
+                ns_adj_insert ( u2, u4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u2, v4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v2, u4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v2, v4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p2, u4, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p2, v4, variable_num, adj_num, adj_col_free, adj_row );
+            }
 //
 //  Maybe add
 //
@@ -3831,34 +3830,34 @@ void ns_adj_row_set ( int node_num, int triangle_num, int variable_num,
 //    U2 V2 P2 <=> U5 V5
 //    U3 V3 P3 <=> U5 V5
 //
-    triangle2 = triangle_neighbor[1+triangle*3];
+            triangle2 = triangle_neighbor[1 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      ns_adj_insert ( u2, u3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u2, v3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u2, p3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v2, u3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v2, v3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v2, p3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p2, u3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p2, v3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p2, p3, variable_num, adj_num, adj_col_free, adj_row );
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                ns_adj_insert ( u2, u3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u2, v3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u2, p3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v2, u3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v2, v3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v2, p3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p2, u3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p2, v3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p2, p3, variable_num, adj_num, adj_col_free, adj_row );
 
-      ns_adj_insert ( u2, u5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u2, v5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v2, u5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v2, v5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p2, u5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p2, v5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u2, u5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u2, v5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v2, u5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v2, v5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p2, u5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p2, v5, variable_num, adj_num, adj_col_free, adj_row );
 
-      ns_adj_insert ( u3, u5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u3, v5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v3, u5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v3, v5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p3, u5, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p3, v5, variable_num, adj_num, adj_col_free, adj_row );
-    }
+                ns_adj_insert ( u3, u5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u3, v5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v3, u5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v3, v5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p3, u5, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p3, v5, variable_num, adj_num, adj_col_free, adj_row );
+            }
 //
 //  Maybe add
 //
@@ -3866,51 +3865,51 @@ void ns_adj_row_set ( int node_num, int triangle_num, int variable_num,
 //    U1 V1 P1 <=> U6 V6
 //    U3 V3 P3 <=> U6 V6
 //
-    triangle2 = triangle_neighbor[2+triangle*3];
+            triangle2 = triangle_neighbor[2 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      ns_adj_insert ( u1, u3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u1, v3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u1, p3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, u3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, v3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, p3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, u3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, v3, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, p3, variable_num, adj_num, adj_col_free, adj_row );
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                ns_adj_insert ( u1, u3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u1, v3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u1, p3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, u3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, v3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, p3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, u3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, v3, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, p3, variable_num, adj_num, adj_col_free, adj_row );
 
-      ns_adj_insert ( u1, u6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u1, v6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, u6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v1, v6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, u6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p1, v6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u1, u6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u1, v6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, u6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v1, v6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, u6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p1, v6, variable_num, adj_num, adj_col_free, adj_row );
 
-      ns_adj_insert ( u3, u6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( u3, v6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v3, u6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( v3, v6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p3, u6, variable_num, adj_num, adj_col_free, adj_row );
-      ns_adj_insert ( p3, v6, variable_num, adj_num, adj_col_free, adj_row );
-    }
-  }
+                ns_adj_insert ( u3, u6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( u3, v6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v3, u6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( v3, v6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p3, u6, variable_num, adj_num, adj_col_free, adj_row );
+                ns_adj_insert ( p3, v6, variable_num, adj_num, adj_col_free, adj_row );
+            }
+        }
 //
 //  Ascending sort the entries for each variable.
 //
-  for ( v = 0; v < variable_num; v++ )
-  {
-    k1 = adj_col[v];
-    k2 = adj_col[v+1]-1;
+        for ( v = 0; v < variable_num; v++ )
+        {
+            k1 = adj_col[v];
+            k2 = adj_col[v + 1] - 1;
 
-    i4vec_sort_heap_a ( k2+1-k1, adj_row+k1-1 );
-  }
+            i4vec_sort_heap_a ( k2 + 1 - k1, adj_row + k1 - 1 );
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-bool perm_check2 ( int n, int p[], int base )
+    bool perm_check2 ( int n, int p[], int base )
 
 //****************************************************************************80
 //
@@ -3948,36 +3947,36 @@ bool perm_check2 ( int n, int p[], int base )
 //
 //    Output, bool PERM_CHECK2, is TRUE if the permutation is OK.
 //
-{
-  bool found;
-  int i;
-  int seek;
-
-  for ( seek = base; seek < base + n; seek++ )
-  {
-    found = false;
-
-    for ( i = 0; i < n; i++ )
     {
-      if ( p[i] == seek )
-      {
-        found = true;
-        break;
-      }
+        bool found;
+        int i;
+        int seek;
+
+        for ( seek = base; seek < base + n; seek++ )
+        {
+            found = false;
+
+            for ( i = 0; i < n; i++ )
+            {
+                if ( p[i] == seek )
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if ( !found )
+            {
+                return false;
+            }
+
+        }
+
+        return true;
     }
-
-    if ( !found )
-    {
-      return false;
-    }
-
-  }
-
-  return true;
-}
 //****************************************************************************80
 
-void perm_inverse ( int n, int p[] )
+    void perm_inverse ( int n, int p[] )
 
 //****************************************************************************80
 //
@@ -4012,98 +4011,98 @@ void perm_inverse ( int n, int p[] )
 //    Input/output, int P[N], the permutation, in standard index form.
 //    On output, P describes the inverse permutation
 //
-{
-  int base;
-  int i;
-  int i0;
-  int i1;
-  int i2;
-  int is;
-  int p_min;
+    {
+        int base;
+        int i;
+        int i0;
+        int i1;
+        int i2;
+        int is;
+        int p_min;
 
-  if ( n <= 0 )
-  {
-    std::cout << "\n";
-    std::cout << "PERM_INVERSE - Fatal error!\n";
-    std::cout << "  Input value of N = " << n << "\n";
-    exit ( 1 );
-  }
+        if ( n <= 0 )
+        {
+            std::cout << "\n";
+            std::cout << "PERM_INVERSE - Fatal error!\n";
+            std::cout << "  Input value of N = " << n << "\n";
+            exit ( 1 );
+        }
 //
 //  Find the least value, and shift data so it begins at 1.
 //
-  p_min = i4vec_min ( n, p );
-  base = 1;
+        p_min = i4vec_min ( n, p );
+        base = 1;
 
-  for ( i = 0; i < n; i++ )
-  {
-    p[i] = p[i] - p_min + base;
-  }
+        for ( i = 0; i < n; i++ )
+        {
+            p[i] = p[i] - p_min + base;
+        }
 //
 //  Now we can safely check the permutation.
 //
-  if ( !perm_check2 ( n, p, base ) )
-  {
-    std::cerr << "\n";
-    std::cerr << "PERM_INVERSE - Fatal error!\n";
-    std::cerr << "  PERM_CHECK rejects this permutation.\n";
-    exit ( 1 );
-  }
+        if ( !perm_check2 ( n, p, base ) )
+        {
+            std::cerr << "\n";
+            std::cerr << "PERM_INVERSE - Fatal error!\n";
+            std::cerr << "  PERM_CHECK rejects this permutation.\n";
+            exit ( 1 );
+        }
 //
 //  Now we can invert the permutation.
 //
-  is = 1;
+        is = 1;
 
-  for ( i = 1; i <= n; i++ )
-  {
-    i1 = p[i-1];
-
-    while ( i < i1 )
-    {
-      i2 = p[i1-1];
-      p[i1-1] = -i2;
-      i1 = i2;
-    }
-
-    is = - i4_sign ( p[i-1] );
-    p[i-1] = i4_sign ( is ) * abs ( p[i-1] );
-  }
-
-  for ( i = 1; i <= n; i++ )
-  {
-    i1 = - p[i-1];
-
-    if ( 0 <= i1 )
-    {
-      i0 = i;
-
-      for ( ; ; )
-      {
-        i2 = p[i1-1];
-        p[i1-1] = i0;
-
-        if ( i2 < 0 )
+        for ( i = 1; i <= n; i++ )
         {
-          break;
+            i1 = p[i - 1];
+
+            while ( i < i1 )
+            {
+                i2 = p[i1 - 1];
+                p[i1 - 1] = -i2;
+                i1 = i2;
+            }
+
+            is = - i4_sign ( p[i - 1] );
+            p[i - 1] = i4_sign ( is ) * abs ( p[i - 1] );
         }
-        i0 = i1;
-        i1 = i2;
-      }
-    }
-  }
+
+        for ( i = 1; i <= n; i++ )
+        {
+            i1 = - p[i - 1];
+
+            if ( 0 <= i1 )
+            {
+                i0 = i;
+
+                for ( ; ; )
+                {
+                    i2 = p[i1 - 1];
+                    p[i1 - 1] = i0;
+
+                    if ( i2 < 0 )
+                    {
+                        break;
+                    }
+                    i0 = i1;
+                    i1 = i2;
+                }
+            }
+        }
 //
 //  Now we can restore the permutation.
 //
-  for ( i = 0; i < n; i++ )
-  {
-    p[i] = p[i] + p_min - base;
-  }
+        for ( i = 0; i < n; i++ )
+        {
+            p[i] = p[i] + p_min - base;
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-int *points_delaunay_naive_2d ( int node_num, double node_xy[],
-  int *triangle_num )
+    int *points_delaunay_naive_2d ( int node_num, double node_xy[],
+                                    int *triangle_num )
 
 //****************************************************************************80
 //
@@ -4157,96 +4156,96 @@ int *points_delaunay_naive_2d ( int node_num, double node_xy[],
 //    Output, int POINTS_DELAUNAY_NAIVE_2D[3*TRIANGLE_NUM], the indices of the
 //    nodes making each triangle.
 //
-{
-  int count;
-  int flag;
-  int i;
-  int j;
-  int k;
-  int m;
-  int pass;
-  int *tri;
-  double xn;
-  double yn;
-  double zn;
-  double *z;
+    {
+        int count;
+        int flag;
+        int i;
+        int j;
+        int k;
+        int m;
+        int pass;
+        int *tri;
+        double xn;
+        double yn;
+        double zn;
+        double *z;
 
-  count = 0;
+        count = 0;
 
-  z = new double [ node_num ];
+        z = new double [ node_num ];
 
-  for ( i = 0; i < node_num; i++ )
-  {
-    z[i] = node_xy[0+i*2] * node_xy[0+i*2] + node_xy[1+i*2] * node_xy[1+i*2];
-  }
+        for ( i = 0; i < node_num; i++ )
+        {
+            z[i] = node_xy[0 + i * 2] * node_xy[0 + i * 2] + node_xy[1 + i * 2] * node_xy[1 + i * 2];
+        }
 //
 //  First pass counts triangles,
 //  Second pass allocates triangles and sets them.
 //
-  for ( pass = 1; pass <= 2; pass++ )
-  {
-    if ( pass == 2 )
-    {
-      tri = new int[3*count];
-    }
-    count = 0;
+        for ( pass = 1; pass <= 2; pass++ )
+        {
+            if ( pass == 2 )
+            {
+                tri = new int[3 * count];
+            }
+            count = 0;
 //
 //  For each triple (I,J,K):
 //
-    for ( i = 0; i < node_num - 2; i++ )
-    {
-      for ( j = i+1; j < node_num; j++ )
-      {
-        for ( k = i+1; k < node_num; k++ )
-        {
-          if ( j != k )
-          {
-            xn = ( node_xy[1+j*2] - node_xy[1+i*2] ) * ( z[k] - z[i] )
-               - ( node_xy[1+k*2] - node_xy[1+i*2] ) * ( z[j] - z[i] );
-            yn = ( node_xy[0+k*2] - node_xy[0+i*2] ) * ( z[j] - z[i] )
-               - ( node_xy[0+j*2] - node_xy[0+i*2] ) * ( z[k] - z[i] );
-            zn = ( node_xy[0+j*2] - node_xy[0+i*2] )
-               * ( node_xy[1+k*2] - node_xy[1+i*2] )
-               - ( node_xy[0+k*2] - node_xy[0+i*2] )
-               * ( node_xy[1+j*2] - node_xy[1+i*2] );
-
-            flag = ( zn < 0 );
-
-            if ( flag )
+            for ( i = 0; i < node_num - 2; i++ )
             {
-              for ( m = 0; m < node_num; m++ )
-              {
-                flag = flag && ( ( node_xy[0+m*2] - node_xy[0+i*2] ) * xn
-                               + ( node_xy[1+m*2] - node_xy[1+i*2] ) * yn
-                               + ( z[m] - z[i] ) * zn <= 0 );
-              }
-            }
+                for ( j = i + 1; j < node_num; j++ )
+                {
+                    for ( k = i + 1; k < node_num; k++ )
+                    {
+                        if ( j != k )
+                        {
+                            xn = ( node_xy[1 + j * 2] - node_xy[1 + i * 2] ) * ( z[k] - z[i] )
+                                 - ( node_xy[1 + k * 2] - node_xy[1 + i * 2] ) * ( z[j] - z[i] );
+                            yn = ( node_xy[0 + k * 2] - node_xy[0 + i * 2] ) * ( z[j] - z[i] )
+                                 - ( node_xy[0 + j * 2] - node_xy[0 + i * 2] ) * ( z[k] - z[i] );
+                            zn = ( node_xy[0 + j * 2] - node_xy[0 + i * 2] )
+                                 * ( node_xy[1 + k * 2] - node_xy[1 + i * 2] )
+                                 - ( node_xy[0 + k * 2] - node_xy[0 + i * 2] )
+                                 * ( node_xy[1 + j * 2] - node_xy[1 + i * 2] );
 
-            if ( flag )
-            {
-              if ( pass == 2 )
-              {
-                tri[0+count*3] = i + 1;
-                tri[1+count*3] = j + 1;
-                tri[2+count*3] = k + 1;
-              }
-              count = count + 1;
+                            flag = ( zn < 0 );
+
+                            if ( flag )
+                            {
+                                for ( m = 0; m < node_num; m++ )
+                                {
+                                    flag = flag && ( ( node_xy[0 + m * 2] - node_xy[0 + i * 2] ) * xn
+                                                     + ( node_xy[1 + m * 2] - node_xy[1 + i * 2] ) * yn
+                                                     + ( z[m] - z[i] ) * zn <= 0 );
+                                }
+                            }
+
+                            if ( flag )
+                            {
+                                if ( pass == 2 )
+                                {
+                                    tri[0 + count * 3] = i + 1;
+                                    tri[1 + count * 3] = j + 1;
+                                    tri[2 + count * 3] = k + 1;
+                                }
+                                count = count + 1;
+                            }
+                        }
+                    }
+                }
             }
-          }
         }
-      }
+
+        *triangle_num = count;
+        delete [] z;
+
+        return tri;
     }
-  }
-
-  *triangle_num = count;
-  delete [] z;
-
-  return tri;
-}
 //****************************************************************************80
 
-void points_hull_2d ( int node_num, double node_xy[], int *hull_num,
-  int hull[] )
+    void points_hull_2d ( int node_num, double node_xy[], int *hull_num,
+                          int hull[] )
 
 //****************************************************************************80
 //
@@ -4283,163 +4282,163 @@ void points_hull_2d ( int node_num, double node_xy[], int *hull_num,
 //    the indices of the nodes that form the convex hull, in order.
 //    These indices are 1-based, not 0-based!
 //
-{
-  double angle;
-  double angle_max;
-  double di;
-  double dr;
-  int first;
-  int i;
-  double p_xy[2];
-  int q;
-  double q_xy[2];
-  int r;
-  double r_xy[2];
+    {
+        double angle;
+        double angle_max;
+        double di;
+        double dr;
+        int first;
+        int i;
+        double p_xy[2];
+        int q;
+        double q_xy[2];
+        int r;
+        double r_xy[2];
 
-  *hull_num = 0;
+        *hull_num = 0;
 
-  if ( node_num < 1 )
-  {
-    return;
-  }
+        if ( node_num < 1 )
+        {
+            return;
+        }
 //
 //  If NODE_NUM = 1, the hull is the node.
 //
-  if ( node_num == 1 )
-  {
-    hull[*hull_num] = 1;
-    *hull_num = *hull_num + 1;
-    return;
-  }
+        if ( node_num == 1 )
+        {
+            hull[*hull_num] = 1;
+            *hull_num = *hull_num + 1;
+            return;
+        }
 //
 //  If NODE_NUM = 2, then the convex hull is either the two distinct nodes,
 //  or possibly a single (repeated) node.
 //
-  if ( node_num == 2 )
-  {
-    hull[*hull_num] = 1;
-    *hull_num = *hull_num + 1;
+        if ( node_num == 2 )
+        {
+            hull[*hull_num] = 1;
+            *hull_num = *hull_num + 1;
 
-    if ( node_xy[0+0*2] != node_xy[0+1*2] || node_xy[1+0*2] != node_xy[1+1*2] )
-    {
-      hull[*hull_num] = 2;
-      *hull_num = *hull_num + 1;
-    }
+            if ( node_xy[0 + 0 * 2] != node_xy[0 + 1 * 2] || node_xy[1 + 0 * 2] != node_xy[1 + 1 * 2] )
+            {
+                hull[*hull_num] = 2;
+                *hull_num = *hull_num + 1;
+            }
 
-    return;
-  }
+            return;
+        }
 //
 //  Find the leftmost point, and take the bottom-most in a tie.
 //  Call it "Q".
 //
-  q = 1;
-  for ( i = 2; i <= node_num; i++ )
-  {
-    if ( node_xy[0+(i-1)*2] < node_xy[0+(q-1)*2] ||
-      ( node_xy[0+(i-1)*2] == node_xy[0+(q-1)*2] &&
-        node_xy[1+(i-1)*2] < node_xy[1+(q-1)*2] ) )
-    {
-      q = i;
-    }
-  }
+        q = 1;
+        for ( i = 2; i <= node_num; i++ )
+        {
+            if ( node_xy[0 + (i - 1) * 2] < node_xy[0 + (q - 1) * 2] ||
+                    ( node_xy[0 + (i - 1) * 2] == node_xy[0 + (q - 1) * 2] &&
+                      node_xy[1 + (i - 1) * 2] < node_xy[1 + (q - 1) * 2] ) )
+            {
+                q = i;
+            }
+        }
 
-  q_xy[0] = node_xy[0+(q-1)*2];
-  q_xy[1] = node_xy[1+(q-1)*2];
+        q_xy[0] = node_xy[0 + (q - 1) * 2];
+        q_xy[1] = node_xy[1 + (q - 1) * 2];
 //
 //  Remember the starting point.
 //
-  first = q;
-  hull[*hull_num] = q;
-  *hull_num = *hull_num + 1;
+        first = q;
+        hull[*hull_num] = q;
+        *hull_num = *hull_num + 1;
 //
 //  For the first point, make a dummy previous point, 1 unit south,
 //  and call it "P".
 //
-  p_xy[0] = q_xy[0];
-  p_xy[1] = q_xy[1] - 1.0;
+        p_xy[0] = q_xy[0];
+        p_xy[1] = q_xy[1] - 1.0;
 //
 //  Now, having old point P, and current point Q, find the new point R
 //  so the angle PQR is maximal.
 //
 //  Watch out for the possibility that the two nodes are identical.
 //
-  for ( ; ; )
-  {
-    r = 0;
-    angle_max = 0.0;
-
-    for ( i = 1; i <= node_num; i++ )
-    {
-      if ( i != q && ( node_xy[0+(i-1)*2] != q_xy[0] || node_xy[1+(i-1)*2] != q_xy[1] ) )
-      {
-        angle = angle_rad_2d ( p_xy, q_xy, node_xy+(i-1)*2 );
-
-        if ( r == 0 || angle_max < angle )
+        for ( ; ; )
         {
-          r = i;
-          r_xy[0] = node_xy[0+(r-1)*2];
-          r_xy[1] = node_xy[1+(r-1)*2];
-          angle_max = angle;
-        }
+            r = 0;
+            angle_max = 0.0;
+
+            for ( i = 1; i <= node_num; i++ )
+            {
+                if ( i != q && ( node_xy[0 + (i - 1) * 2] != q_xy[0] || node_xy[1 + (i - 1) * 2] != q_xy[1] ) )
+                {
+                    angle = angle_rad_2d ( p_xy, q_xy, node_xy + (i - 1) * 2 );
+
+                    if ( r == 0 || angle_max < angle )
+                    {
+                        r = i;
+                        r_xy[0] = node_xy[0 + (r - 1) * 2];
+                        r_xy[1] = node_xy[1 + (r - 1) * 2];
+                        angle_max = angle;
+                    }
 //
 //  In case of ties, choose the nearer point.
 //
-        else if ( r != 0 && angle == angle_max )
-        {
-          di = sqrt ( pow ( node_xy[0+(i-1)*2] - q_xy[0], 2 )
-                    + pow ( node_xy[1+(i-1)*2] - q_xy[1], 2 ) );
+                    else if ( r != 0 && angle == angle_max )
+                    {
+                        di = sqrt ( pow ( node_xy[0 + (i - 1) * 2] - q_xy[0], 2 )
+                                    + pow ( node_xy[1 + (i - 1) * 2] - q_xy[1], 2 ) );
 
-          dr = sqrt ( pow ( r_xy[0] - q_xy[0], 2 )
-                    + pow ( r_xy[1] - q_xy[1], 2 ) );
+                        dr = sqrt ( pow ( r_xy[0] - q_xy[0], 2 )
+                                    + pow ( r_xy[1] - q_xy[1], 2 ) );
 
-          if ( di < dr )
-          {
-            r = i;
-            r_xy[0] = node_xy[0+(r-1)*2];
-            r_xy[1] = node_xy[1+(r-1)*2];
-            angle_max = angle;
-          }
-        }
-      }
-    }
+                        if ( di < dr )
+                        {
+                            r = i;
+                            r_xy[0] = node_xy[0 + (r - 1) * 2];
+                            r_xy[1] = node_xy[1 + (r - 1) * 2];
+                            angle_max = angle;
+                        }
+                    }
+                }
+            }
 //
 //  If we've returned to our starting node, exit.
 //
-    if ( r == first )
-    {
-      break;
-    }
+            if ( r == first )
+            {
+                break;
+            }
 
-    if ( node_num < *hull_num + 1 )
-    {
-      std::cout << "\n";
-      std::cout << "POINTS_HULL_2D - Fatal error!\n";
-      std::cout << "  The algorithm failed.\n";
-      exit ( 1 );
-    }
+            if ( node_num < *hull_num + 1 )
+            {
+                std::cout << "\n";
+                std::cout << "POINTS_HULL_2D - Fatal error!\n";
+                std::cout << "  The algorithm failed.\n";
+                exit ( 1 );
+            }
 //
 //  Add point R to the convex hull.
 //
-    hull[*hull_num] = r;
-    *hull_num = *hull_num + 1;
+            hull[*hull_num] = r;
+            *hull_num = *hull_num + 1;
 //
 //  Set Q := P, P := R, and repeat.
 //
-    q = r;
+            q = r;
 
-    p_xy[0] = q_xy[0];
-    p_xy[1] = q_xy[1];
+            p_xy[0] = q_xy[0];
+            p_xy[1] = q_xy[1];
 
-    q_xy[0] = r_xy[0];
-    q_xy[1] = r_xy[1];
-  }
+            q_xy[0] = r_xy[0];
+            q_xy[1] = r_xy[1];
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-int points_point_near_naive_nd ( int dim_num, int nset, double pset[],
-  double ptest[], double *d_min )
+    int points_point_near_naive_nd ( int dim_num, int nset, double pset[],
+                                     double ptest[], double *d_min )
 
 //****************************************************************************80
 //
@@ -4480,39 +4479,39 @@ int points_point_near_naive_nd ( int dim_num, int nset, double pset[],
 //    Output, int POINTS_POINT_NEAR_NAIVE_ND, I_MIN, the index of the nearest
 //    point in PSET to P.
 //
-{
-  double d;
-  int i;
-  int j;
-  int p_min;
-
-  *d_min = r8_huge ( );
-  p_min = -1;
-
-  for ( j = 0; j < nset; j++ )
-  {
-    d = 0.0;
-    for ( i = 0; i < dim_num; i++ )
     {
-      d = d + ( ptest[i] - pset[i+j*dim_num] )
-            * ( ptest[i] - pset[i+j*dim_num] );
-    }
-    if ( d < *d_min )
-    {
-      *d_min = d;
-      p_min = j + 1;
-    }
-  }
+        double d;
+        int i;
+        int j;
+        int p_min;
 
-  *d_min = sqrt ( *d_min );
+        *d_min = r8_huge ( );
+        p_min = -1;
 
-  return p_min;
-}
+        for ( j = 0; j < nset; j++ )
+        {
+            d = 0.0;
+            for ( i = 0; i < dim_num; i++ )
+            {
+                d = d + ( ptest[i] - pset[i + j * dim_num] )
+                    * ( ptest[i] - pset[i + j * dim_num] );
+            }
+            if ( d < *d_min )
+            {
+                *d_min = d;
+                p_min = j + 1;
+            }
+        }
+
+        *d_min = sqrt ( *d_min );
+
+        return p_min;
+    }
 //****************************************************************************80
 
-void q_measure ( int n, double z[], int triangle_order, int triangle_num,
-  int triangle_node[], double *q_min, double *q_max, double *q_ave,
-  double *q_area )
+    void q_measure ( int n, double z[], int triangle_order, int triangle_num,
+                     int triangle_node[], double *q_min, double *q_max, double *q_ave,
+                     double *q_area )
 
 //****************************************************************************80
 //
@@ -4600,88 +4599,88 @@ void q_measure ( int n, double z[], int triangle_order, int triangle_num,
 //    Output, double *Q_AREA, the average value of Q, weighted by
 //    the area of each triangle.
 //
-{
-  int a_index;
-  double ab_length;
-  double area;
-  double area_total;
-  int b_index;
-  double bc_length;
-  int c_index;
-  double ca_length;
-  double q;
-  int triangle;
-  double x1;
-  double x2;
-  double x3;
-  double y1;
-  double y2;
-  double y3;
+    {
+        int a_index;
+        double ab_length;
+        double area;
+        double area_total;
+        int b_index;
+        double bc_length;
+        int c_index;
+        double ca_length;
+        double q;
+        int triangle;
+        double x1;
+        double x2;
+        double x3;
+        double y1;
+        double y2;
+        double y3;
 
-  *q_min = r8_huge ( );
-  *q_max = - r8_huge ( );
-  *q_ave = 0.0;
-  *q_area = 0.0;
-  area_total = 0.0;
+        *q_min = r8_huge ( );
+        *q_max = - r8_huge ( );
+        *q_ave = 0.0;
+        *q_area = 0.0;
+        area_total = 0.0;
 
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    a_index = triangle_node[0+triangle*triangle_order];
-    b_index = triangle_node[1+triangle*triangle_order];
-    c_index = triangle_node[2+triangle*triangle_order];
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            a_index = triangle_node[0 + triangle * triangle_order];
+            b_index = triangle_node[1 + triangle * triangle_order];
+            c_index = triangle_node[2 + triangle * triangle_order];
 
-    ab_length = sqrt (
-        pow ( z[0+(a_index-1)*2] - z[0+(b_index-1)*2], 2 )
-      + pow ( z[1+(a_index-1)*2] - z[1+(b_index-1)*2], 2 ) );
+            ab_length = sqrt (
+                            pow ( z[0 + (a_index - 1) * 2] - z[0 + (b_index - 1) * 2], 2 )
+                            + pow ( z[1 + (a_index - 1) * 2] - z[1 + (b_index - 1) * 2], 2 ) );
 
-    bc_length = sqrt (
-        pow ( z[0+(b_index-1)*2] - z[0+(c_index-1)*2], 2 )
-      + pow ( z[1+(b_index-1)*2] - z[1+(c_index-1)*2], 2 ) );
+            bc_length = sqrt (
+                            pow ( z[0 + (b_index - 1) * 2] - z[0 + (c_index - 1) * 2], 2 )
+                            + pow ( z[1 + (b_index - 1) * 2] - z[1 + (c_index - 1) * 2], 2 ) );
 
-    ca_length = sqrt (
-        pow ( z[0+(c_index-1)*2] - z[0+(a_index-1)*2], 2 )
-      + pow ( z[1+(c_index-1)*2] - z[1+(a_index-1)*2], 2 ) );
+            ca_length = sqrt (
+                            pow ( z[0 + (c_index - 1) * 2] - z[0 + (a_index - 1) * 2], 2 )
+                            + pow ( z[1 + (c_index - 1) * 2] - z[1 + (a_index - 1) * 2], 2 ) );
 
-    q = ( bc_length + ca_length - ab_length )
-      * ( ca_length + ab_length - bc_length )
-      * ( ab_length + bc_length - ca_length )
-      / ( ab_length * bc_length * ca_length );
+            q = ( bc_length + ca_length - ab_length )
+                * ( ca_length + ab_length - bc_length )
+                * ( ab_length + bc_length - ca_length )
+                / ( ab_length * bc_length * ca_length );
 
-    x1 = z[0+(triangle_node[0+triangle*triangle_order]-1)*2];
-    y1 = z[1+(triangle_node[0+triangle*triangle_order]-1)*2];
-    x2 = z[0+(triangle_node[1+triangle*triangle_order]-1)*2];
-    y2 = z[1+(triangle_node[1+triangle*triangle_order]-1)*2];
-    x3 = z[0+(triangle_node[2+triangle*triangle_order]-1)*2];
-    y3 = z[1+(triangle_node[2+triangle*triangle_order]-1)*2];
+            x1 = z[0 + (triangle_node[0 + triangle * triangle_order] - 1) * 2];
+            y1 = z[1 + (triangle_node[0 + triangle * triangle_order] - 1) * 2];
+            x2 = z[0 + (triangle_node[1 + triangle * triangle_order] - 1) * 2];
+            y2 = z[1 + (triangle_node[1 + triangle * triangle_order] - 1) * 2];
+            x3 = z[0 + (triangle_node[2 + triangle * triangle_order] - 1) * 2];
+            y3 = z[1 + (triangle_node[2 + triangle * triangle_order] - 1) * 2];
 
-    area = 0.5 * r8_abs ( x1 * ( y2 - y3 )
-                        + x2 * ( y3 - y1 )
-                        + x3 * ( y1 - y2 ) );
+            area = 0.5 * r8_abs ( x1 * ( y2 - y3 )
+                                  + x2 * ( y3 - y1 )
+                                  + x3 * ( y1 - y2 ) );
 
-    *q_min = r8_min ( *q_min, q );
-    *q_max = r8_max ( *q_max, q );
-    *q_ave = *q_ave + q;
-    *q_area = *q_area + q * area;
+            *q_min = r8_min ( *q_min, q );
+            *q_max = r8_max ( *q_max, q );
+            *q_ave = *q_ave + q;
+            *q_area = *q_area + q * area;
 
-    area_total = area_total + area;
-  }
+            area_total = area_total + area;
+        }
 
-  *q_ave = *q_ave / ( double ) ( triangle_num );
+        *q_ave = *q_ave / ( double ) ( triangle_num );
 
-  if ( 0.0 < area_total )
-  {
-    *q_area = *q_area / area_total;
-  }
-  else
-  {
-    *q_area = 0.0;
-  }
+        if ( 0.0 < area_total )
+        {
+            *q_area = *q_area / area_total;
+        }
+        else
+        {
+            *q_area = 0.0;
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void quad_convex_random ( int *seed, double xy[] )
+    void quad_convex_random ( int *seed, double xy[] )
 
 //****************************************************************************80
 //
@@ -4714,47 +4713,47 @@ void quad_convex_random ( int *seed, double xy[] )
 //    Output, double XY[2*NODE_NUM], the coordinates of the
 //    nodes of the quadrilateral, given in counterclockwise order.
 //
-{
-  int hull[4];
-  int hull_num;
-  int i;
-  int j;
-  double xy_random[2*4];
+    {
+        int hull[4];
+        int hull_num;
+        int i;
+        int j;
+        double xy_random[2 * 4];
 
-  for ( ; ; )
-  {
+        for ( ; ; )
+        {
 //
 //  Generate 4 random points.
 //
-    r8mat_uniform_01 ( 2, 4, seed, xy_random );
+            r8mat_uniform_01 ( 2, 4, seed, xy_random );
 //
 //  Determine the convex hull.
 //
-    points_hull_2d ( 4, xy_random, &hull_num, hull );
+            points_hull_2d ( 4, xy_random, &hull_num, hull );
 //
 //  If HULL_NUM < 4, then our convex hull is a triangle.
 //  Try again.
 //
-    if ( hull_num == 4 )
-    {
-      break;
-    }
-  }
+            if ( hull_num == 4 )
+            {
+                break;
+            }
+        }
 //
 //  Make an ordered copy of the random points.
 //
-  for ( j = 0; j < 4; j++ )
-  {
-    for ( i = 0; i < 2; i++ )
-    {
-      xy[i+j*2] = xy_random[i+(hull[j]-1)*2];
+        for ( j = 0; j < 4; j++ )
+        {
+            for ( i = 0; i < 2; i++ )
+            {
+                xy[i + j * 2] = xy_random[i + (hull[j] - 1) * 2];
+            }
+        }
+        return;
     }
-  }
-  return;
-}
 //****************************************************************************80
 
-float r4_abs ( float x )
+    float r4_abs ( float x )
 
 //****************************************************************************80
 //
@@ -4780,22 +4779,22 @@ float r4_abs ( float x )
 //
 //    Output, float R4_ABS, the absolute value of X.
 //
-{
-  float value;
+    {
+        float value;
 
-  if ( 0.0 <= x )
-  {
-    value = x;
-  }
-  else
-  {
-    value = -x;
-  }
-  return value;
-}
+        if ( 0.0 <= x )
+        {
+            value = x;
+        }
+        else
+        {
+            value = -x;
+        }
+        return value;
+    }
 //****************************************************************************80
 
-int r4_nint ( float x )
+    int r4_nint ( float x )
 
 //****************************************************************************80
 //
@@ -4834,23 +4833,23 @@ int r4_nint ( float x )
 //
 //    Output, int R4_NINT, the nearest integer to X.
 //
-{
-  int value;
+    {
+        int value;
 
-  if ( x < 0.0 )
-  {
-    value = - ( int ) ( r4_abs ( x ) + 0.5 );
-  }
-  else
-  {
-    value =   ( int ) ( r4_abs ( x ) + 0.5 );
-  }
+        if ( x < 0.0 )
+        {
+            value = - ( int ) ( r4_abs ( x ) + 0.5 );
+        }
+        else
+        {
+            value =   ( int ) ( r4_abs ( x ) + 0.5 );
+        }
 
-  return value;
-}
+        return value;
+    }
 //****************************************************************************80
 
-double r8_abs ( double x )
+    double r8_abs ( double x )
 
 //****************************************************************************80
 //
@@ -4876,22 +4875,22 @@ double r8_abs ( double x )
 //
 //    Output, double R8_ABS, the absolute value of X.
 //
-{
-  double value;
+    {
+        double value;
 
-  if ( 0.0 <= x )
-  {
-    value = x;
-  }
-  else
-  {
-    value = - x;
-  }
-  return value;
-}
+        if ( 0.0 <= x )
+        {
+            value = x;
+        }
+        else
+        {
+            value = - x;
+        }
+        return value;
+    }
 //****************************************************************************80
 
-double r8_epsilon ( )
+    double r8_epsilon ( )
 
 //****************************************************************************80
 //
@@ -4923,14 +4922,14 @@ double r8_epsilon ( )
 //
 //    Output, double R8_EPSILON, the R8 round-off unit.
 //
-{
-  const double value = 2.220446049250313E-016;
+    {
+        const double value = 2.220446049250313E-016;
 
-  return value;
-}
+        return value;
+    }
 //****************************************************************************80
 
-double r8_huge ( )
+    double r8_huge ( )
 
 //****************************************************************************80
 //
@@ -4961,16 +4960,16 @@ double r8_huge ( )
 //
 //    Output, double R8_HUGE, a "huge" R8 value.
 //
-{
-  double value;
+    {
+        double value;
 
-  value = 1.0E+30;
+        value = 1.0E+30;
 
-  return value;
-}
+        return value;
+    }
 //****************************************************************************80
 
-double r8_max ( double x, double y )
+    double r8_max ( double x, double y )
 
 //****************************************************************************80
 //
@@ -4996,22 +4995,22 @@ double r8_max ( double x, double y )
 //
 //    Output, double R8_MAX, the maximum of X and Y.
 //
-{
-  double value;
+    {
+        double value;
 
-  if ( y < x )
-  {
-    value = x;
-  }
-  else
-  {
-    value = y;
-  }
-  return value;
-}
+        if ( y < x )
+        {
+            value = x;
+        }
+        else
+        {
+            value = y;
+        }
+        return value;
+    }
 //****************************************************************************80
 
-double r8_min ( double x, double y )
+    double r8_min ( double x, double y )
 
 //****************************************************************************80
 //
@@ -5037,22 +5036,22 @@ double r8_min ( double x, double y )
 //
 //    Output, double R8_MIN, the minimum of X and Y.
 //
-{
-  double value;
+    {
+        double value;
 
-  if ( y < x )
-  {
-    value = y;
-  }
-  else
-  {
-    value = x;
-  }
-  return value;
-}
+        if ( y < x )
+        {
+            value = y;
+        }
+        else
+        {
+            value = x;
+        }
+        return value;
+    }
 //****************************************************************************80
 
-int r8_nint ( double x )
+    int r8_nint ( double x )
 
 //****************************************************************************80
 //
@@ -5091,23 +5090,23 @@ int r8_nint ( double x )
 //
 //    Output, int R8_NINT, the nearest integer to X.
 //
-{
-  int value;
+    {
+        int value;
 
-  if ( x < 0.0 )
-  {
-    value = - ( int ) ( r8_abs ( x ) + 0.5 );
-  }
-  else
-  {
-    value =   ( int ) ( r8_abs ( x ) + 0.5 );
-  }
+        if ( x < 0.0 )
+        {
+            value = - ( int ) ( r8_abs ( x ) + 0.5 );
+        }
+        else
+        {
+            value =   ( int ) ( r8_abs ( x ) + 0.5 );
+        }
 
-  return value;
-}
+        return value;
+    }
 //****************************************************************************80
 
-double r8_uniform_01 ( int *seed )
+    double r8_uniform_01 ( int *seed )
 
 //****************************************************************************80
 //
@@ -5178,37 +5177,37 @@ double r8_uniform_01 ( int *seed )
 //    Output, double R8_UNIFORM_01, a new pseudorandom variate,
 //    strictly between 0 and 1.
 //
-{
-  int k;
-  double r;
+    {
+        int k;
+        double r;
 
-  if ( *seed == 0 )
-  {
-    std::cerr << "\n";
-    std::cerr << "R8_UNIFORM_01 - Fatal error!\n";
-    std::cerr << "  Input value of SEED = 0.\n";
-    exit ( 1 );
-  }
+        if ( *seed == 0 )
+        {
+            std::cerr << "\n";
+            std::cerr << "R8_UNIFORM_01 - Fatal error!\n";
+            std::cerr << "  Input value of SEED = 0.\n";
+            exit ( 1 );
+        }
 
-  k = *seed / 127773;
+        k = *seed / 127773;
 
-  *seed = 16807 * ( *seed - k * 127773 ) - k * 2836;
+        *seed = 16807 * ( *seed - k * 127773 ) - k * 2836;
 
-  if ( *seed < 0 )
-  {
-    *seed = *seed + 2147483647;
-  }
+        if ( *seed < 0 )
+        {
+            *seed = *seed + 2147483647;
+        }
 //
 //  Although SEED can be represented exactly as a 32 bit integer,
 //  it generally cannot be represented exactly as a 32 bit real number!
 //
-  r = ( double ) ( *seed ) * 4.656612875E-10;
+        r = ( double ) ( *seed ) * 4.656612875E-10;
 
-  return r;
-}
+        return r;
+    }
 //****************************************************************************80
 
-void r82vec_permute ( int n, int p[], int base, double a[] )
+    void r82vec_permute ( int n, int p[], int base, double a[] )
 
 //****************************************************************************80
 //
@@ -5267,97 +5266,97 @@ void r82vec_permute ( int n, int p[], int base, double a[] )
 //
 //    Input/output, double A[2*N], the array to be permuted.
 //
-{
-  double a_temp[2];
-  int i;
-  int iget;
-  int iput;
-  int istart;
+    {
+        double a_temp[2];
+        int i;
+        int iget;
+        int iput;
+        int istart;
 
-  if ( !perm_check2 ( n, p, base ) )
-  {
-    std::cerr << "\n";
-    std::cerr << "R82VEC_PERMUTE - Fatal error!\n";
-    std::cerr << "  PERM_CHECK rejects this permutation.\n";
-    exit ( 1 );
-  }
+        if ( !perm_check2 ( n, p, base ) )
+        {
+            std::cerr << "\n";
+            std::cerr << "R82VEC_PERMUTE - Fatal error!\n";
+            std::cerr << "  PERM_CHECK rejects this permutation.\n";
+            exit ( 1 );
+        }
 //
 //  In order for the sign negation trick to work, we need to assume that the
 //  entries of P are strictly positive.  Presumably, the lowest number is BASE.
 //  So temporarily add 1-BASE to each entry to force positivity.
 //
-  for ( i = 0; i < n; i++ )
-  {
-    p[i] = p[i] + 1 - base;
-  }
+        for ( i = 0; i < n; i++ )
+        {
+            p[i] = p[i] + 1 - base;
+        }
 //
 //  Search for the next element of the permutation that has not been used.
 //
-  for ( istart = 1; istart <= n; istart++ )
-  {
-    if ( p[istart-1] < 0 )
-    {
-      continue;
-    }
-    else if ( p[istart-1] == istart )
-    {
-      p[istart-1] = - p[istart-1];
-      continue;
-    }
-    else
-    {
-      a_temp[0] = a[0+(istart-1)*2];
-      a_temp[1] = a[1+(istart-1)*2];
-      iget = istart;
+        for ( istart = 1; istart <= n; istart++ )
+        {
+            if ( p[istart - 1] < 0 )
+            {
+                continue;
+            }
+            else if ( p[istart - 1] == istart )
+            {
+                p[istart - 1] = - p[istart - 1];
+                continue;
+            }
+            else
+            {
+                a_temp[0] = a[0 + (istart - 1) * 2];
+                a_temp[1] = a[1 + (istart - 1) * 2];
+                iget = istart;
 //
 //  Copy the new value into the vacated entry.
 //
-      for ( ; ; )
-      {
-        iput = iget;
-        iget = p[iget-1];
+                for ( ; ; )
+                {
+                    iput = iget;
+                    iget = p[iget - 1];
 
-        p[iput-1] = - p[iput-1];
+                    p[iput - 1] = - p[iput - 1];
 
-        if ( iget < 1 || n < iget )
-        {
-          std::cout << "\n";
-          std::cout << "R82VEC_PERMUTE - Fatal error!\n";
-          std::cout << "  Entry IPUT = " << iput << " of the permutation has\n";
-          std::cout << "  an illegal value IGET = " << iget << ".\n";
-          exit ( 1 );
+                    if ( iget < 1 || n < iget )
+                    {
+                        std::cout << "\n";
+                        std::cout << "R82VEC_PERMUTE - Fatal error!\n";
+                        std::cout << "  Entry IPUT = " << iput << " of the permutation has\n";
+                        std::cout << "  an illegal value IGET = " << iget << ".\n";
+                        exit ( 1 );
+                    }
+
+                    if ( iget == istart )
+                    {
+                        a[0 + (iput - 1) * 2] = a_temp[0];
+                        a[1 + (iput - 1) * 2] = a_temp[1];
+                        break;
+                    }
+                    a[0 + (iput - 1) * 2] = a[0 + (iget - 1) * 2];
+                    a[1 + (iput - 1) * 2] = a[1 + (iget - 1) * 2];
+                }
+            }
         }
-
-        if ( iget == istart )
-        {
-          a[0+(iput-1)*2] = a_temp[0];
-          a[1+(iput-1)*2] = a_temp[1];
-          break;
-        }
-        a[0+(iput-1)*2] = a[0+(iget-1)*2];
-        a[1+(iput-1)*2] = a[1+(iget-1)*2];
-      }
-    }
-  }
 //
 //  Restore the signs of the entries.
 //
-  for ( i = 0; i < n; i++ )
-  {
-    p[i] = - p[i];
-  }
+        for ( i = 0; i < n; i++ )
+        {
+            p[i] = - p[i];
+        }
 //
 //  Restore the base of the entries.
 //
-  for ( i = 0; i < n; i++ )
-  {
-    p[i] = p[i] - 1 + base;
-  }
-  return;
-}
+        for ( i = 0; i < n; i++ )
+        {
+            p[i] = p[i] - 1 + base;
+        }
+        return;
+    }
 //****************************************************************************80
 
-int *r82vec_sort_heap_index_a ( int n, int base, double a[] )
+    int *r82vec_sort_heap_index_a ( int n, int base, double a[] )
 
 //****************************************************************************80
 //
@@ -5412,102 +5411,102 @@ int *r82vec_sort_heap_index_a ( int n, int base, double a[] )
 //    Output, int R82VEC_SORT_HEAP_INDEX_A[N], the sort index.  The
 //    I-th element of the sorted array is A(0:1,R8VEC_SORT_HEAP_INDEX_A(I)).
 //
-{
-  double aval[2];
-  int i;
-  int *indx;
-  int indxt;
-  int ir;
-  int j;
-  int l;
-
-  if ( n < 1 )
-  {
-    return NULL;
-  }
-
-  indx = new int[n];
-
-  for ( i = 0; i < n; i++ )
-  {
-    indx[i] = i;
-  }
-
-  if ( n == 1 )
-  {
-    indx[0] = indx[0] + base;
-    return indx;
-  }
-
-  l = n / 2 + 1;
-  ir = n;
-
-  for ( ; ; )
-  {
-    if ( 1 < l )
     {
-      l = l - 1;
-      indxt = indx[l-1];
-      aval[0] = a[0+indxt*2];
-      aval[1] = a[1+indxt*2];
-    }
-    else
-    {
-      indxt = indx[ir-1];
-      aval[0] = a[0+indxt*2];
-      aval[1] = a[1+indxt*2];
-      indx[ir-1] = indx[0];
-      ir = ir - 1;
+        double aval[2];
+        int i;
+        int *indx;
+        int indxt;
+        int ir;
+        int j;
+        int l;
 
-      if ( ir == 1 )
-      {
-        indx[0] = indxt;
-        break;
-      }
-    }
-    i = l;
-    j = l + l;
-
-    while ( j <= ir )
-    {
-      if ( j < ir )
-      {
-        if (   a[0+indx[j-1]*2] <  a[0+indx[j]*2] ||
-             ( a[0+indx[j-1]*2] == a[0+indx[j]*2] &&
-               a[1+indx[j-1]*2] <  a[1+indx[j]*2] ) )
+        if ( n < 1 )
         {
-          j = j + 1;
+            return NULL;
         }
-      }
 
-      if (   aval[0] <  a[0+indx[j-1]*2] ||
-           ( aval[0] == a[0+indx[j-1]*2] &&
-             aval[1] <  a[1+indx[j-1]*2] ) )
-      {
-        indx[i-1] = indx[j-1];
-        i = j;
-        j = j + j;
-      }
-      else
-      {
-        j = ir + 1;
-      }
-    }
-    indx[i-1] = indxt;
-  }
+        indx = new int[n];
+
+        for ( i = 0; i < n; i++ )
+        {
+            indx[i] = i;
+        }
+
+        if ( n == 1 )
+        {
+            indx[0] = indx[0] + base;
+            return indx;
+        }
+
+        l = n / 2 + 1;
+        ir = n;
+
+        for ( ; ; )
+        {
+            if ( 1 < l )
+            {
+                l = l - 1;
+                indxt = indx[l - 1];
+                aval[0] = a[0 + indxt * 2];
+                aval[1] = a[1 + indxt * 2];
+            }
+            else
+            {
+                indxt = indx[ir - 1];
+                aval[0] = a[0 + indxt * 2];
+                aval[1] = a[1 + indxt * 2];
+                indx[ir - 1] = indx[0];
+                ir = ir - 1;
+
+                if ( ir == 1 )
+                {
+                    indx[0] = indxt;
+                    break;
+                }
+            }
+            i = l;
+            j = l + l;
+
+            while ( j <= ir )
+            {
+                if ( j < ir )
+                {
+                    if (   a[0 + indx[j - 1] * 2] <  a[0 + indx[j] * 2] ||
+                            ( a[0 + indx[j - 1] * 2] == a[0 + indx[j] * 2] &&
+                              a[1 + indx[j - 1] * 2] <  a[1 + indx[j] * 2] ) )
+                    {
+                        j = j + 1;
+                    }
+                }
+
+                if (   aval[0] <  a[0 + indx[j - 1] * 2] ||
+                        ( aval[0] == a[0 + indx[j - 1] * 2] &&
+                          aval[1] <  a[1 + indx[j - 1] * 2] ) )
+                {
+                    indx[i - 1] = indx[j - 1];
+                    i = j;
+                    j = j + j;
+                }
+                else
+                {
+                    j = ir + 1;
+                }
+            }
+            indx[i - 1] = indxt;
+        }
 //
 //  Take care of the base.
 //
-  for ( i = 0; i < n; i++ )
-  {
-    indx[i] = indx[i] + base;
-  }
+        for ( i = 0; i < n; i++ )
+        {
+            indx[i] = indx[i] + base;
+        }
 
-  return indx;
-}
+        return indx;
+    }
 //****************************************************************************80
 
-void r8mat_print ( int m, int n, double a[], std::string title )
+    void r8mat_print ( int m, int n, double a[], std::string title )
 
 //****************************************************************************80
 //
@@ -5544,15 +5543,15 @@ void r8mat_print ( int m, int n, double a[], std::string title )
 //
 //    Input, string TITLE, a title.
 //
-{
-  r8mat_print_some ( m, n, a, 1, 1, m, n, title );
+    {
+        r8mat_print_some ( m, n, a, 1, 1, m, n, title );
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
-  int jhi, std::string title )
+    void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
+                            int jhi, std::string title )
 
 //****************************************************************************80
 //
@@ -5592,67 +5591,67 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
 //
 //    Input, string TITLE, a title.
 //
-{
+    {
 # define INCX 5
 
-  int i;
-  int i2hi;
-  int i2lo;
-  int j;
-  int j2hi;
-  int j2lo;
+        int i;
+        int i2hi;
+        int i2lo;
+        int j;
+        int j2hi;
+        int j2lo;
 
-  std::cout << "\n";
-  std::cout << title << "\n";
+        std::cout << "\n";
+        std::cout << title << "\n";
 //
 //  Print the columns of the matrix, in strips of 5.
 //
-  for ( j2lo = jlo; j2lo <= jhi; j2lo = j2lo + INCX )
-  {
-    j2hi = j2lo + INCX - 1;
-    j2hi = i4_min ( j2hi, n );
-    j2hi = i4_min ( j2hi, jhi );
+        for ( j2lo = jlo; j2lo <= jhi; j2lo = j2lo + INCX )
+        {
+            j2hi = j2lo + INCX - 1;
+            j2hi = i4_min ( j2hi, n );
+            j2hi = i4_min ( j2hi, jhi );
 
-    std::cout << "\n";
+            std::cout << "\n";
 //
 //  For each column J in the current range...
 //
 //  Write the header.
 //
-    std::cout << "  Col:    ";
-    for ( j = j2lo; j <= j2hi; j++ )
-    {
-      std::cout << std::setw(7) << j << "       ";
-    }
-    std::cout << "\n";
-    std::cout << "  Row\n";
-    std::cout << "\n";
+            std::cout << "  Col:    ";
+            for ( j = j2lo; j <= j2hi; j++ )
+            {
+                std::cout << std::setw(7) << j << "       ";
+            }
+            std::cout << "\n";
+            std::cout << "  Row\n";
+            std::cout << "\n";
 //
 //  Determine the range of the rows in this strip.
 //
-    i2lo = i4_max ( ilo, 1 );
-    i2hi = i4_min ( ihi, m );
+            i2lo = i4_max ( ilo, 1 );
+            i2hi = i4_min ( ihi, m );
 
-    for ( i = i2lo; i <= i2hi; i++ )
-    {
+            for ( i = i2lo; i <= i2hi; i++ )
+            {
 //
 //  Print out (up to) 5 entries in row I, that lie in the current strip.
 //
-      std::cout << std::setw(5) << i << "  ";
-      for ( j = j2lo; j <= j2hi; j++ )
-      {
-        std::cout << std::setw(12) << a[i-1+(j-1)*m] << "  ";
-      }
-      std::cout << "\n";
-    }
-  }
+                std::cout << std::setw(5) << i << "  ";
+                for ( j = j2lo; j <= j2hi; j++ )
+                {
+                    std::cout << std::setw(12) << a[i - 1 + (j - 1)*m] << "  ";
+                }
+                std::cout << "\n";
+            }
+        }
 
-  return;
+        return;
 # undef INCX
-}
+    }
 //****************************************************************************80
 
-void r8mat_transpose_print ( int m, int n, double a[], std::string title )
+    void r8mat_transpose_print ( int m, int n, double a[], std::string title )
 
 //****************************************************************************80
 //
@@ -5685,15 +5684,15 @@ void r8mat_transpose_print ( int m, int n, double a[], std::string title )
 //
 //    Input, string TITLE, a title.
 //
-{
-  r8mat_transpose_print_some ( m, n, a, 1, 1, m, n, title );
+    {
+        r8mat_transpose_print_some ( m, n, a, 1, 1, m, n, title );
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void r8mat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
-  int ihi, int jhi, std::string title )
+    void r8mat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
+                                      int ihi, int jhi, std::string title )
 
 //****************************************************************************80
 //
@@ -5730,60 +5729,60 @@ void r8mat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
 //
 //    Input, string TITLE, a title.
 //
-{
+    {
 # define INCX 5
 
-  int i;
-  int i2;
-  int i2hi;
-  int i2lo;
-  int inc;
-  int j;
-  int j2hi;
-  int j2lo;
+        int i;
+        int i2;
+        int i2hi;
+        int i2lo;
+        int inc;
+        int j;
+        int j2hi;
+        int j2lo;
 
-  std::cout << "\n";
-  std::cout << title << "\n";
+        std::cout << "\n";
+        std::cout << title << "\n";
 
-  for ( i2lo = i4_max ( ilo, 1 ); i2lo <= i4_min ( ihi, m ); i2lo = i2lo + INCX )
-  {
-    i2hi = i2lo + INCX - 1;
-    i2hi = i4_min ( i2hi, m );
-    i2hi = i4_min ( i2hi, ihi );
+        for ( i2lo = i4_max ( ilo, 1 ); i2lo <= i4_min ( ihi, m ); i2lo = i2lo + INCX )
+        {
+            i2hi = i2lo + INCX - 1;
+            i2hi = i4_min ( i2hi, m );
+            i2hi = i4_min ( i2hi, ihi );
 
-    inc = i2hi + 1 - i2lo;
+            inc = i2hi + 1 - i2lo;
 
-    std::cout << "\n";
-    std::cout << "  Row: ";
-    for ( i = i2lo; i <= i2hi; i++ )
-    {
-      std::cout << std::setw(7) << i << "       ";
-    }
-    std::cout << "\n";
-    std::cout << "  Col\n";
-    std::cout << "\n";
+            std::cout << "\n";
+            std::cout << "  Row: ";
+            for ( i = i2lo; i <= i2hi; i++ )
+            {
+                std::cout << std::setw(7) << i << "       ";
+            }
+            std::cout << "\n";
+            std::cout << "  Col\n";
+            std::cout << "\n";
 
-    j2lo = i4_max ( jlo, 1 );
-    j2hi = i4_min ( jhi, n );
+            j2lo = i4_max ( jlo, 1 );
+            j2hi = i4_min ( jhi, n );
 
-    for ( j = j2lo; j <= j2hi; j++ )
-    {
-      std::cout << std::setw(5) << j << " ";
-      for ( i2 = 1; i2 <= inc; i2++ )
-      {
-        i = i2lo - 1 + i2;
-        std::cout << std::setw(14) << a[(i-1)+(j-1)*m];
-      }
-      std::cout << "\n";
-    }
-  }
+            for ( j = j2lo; j <= j2hi; j++ )
+            {
+                std::cout << std::setw(5) << j << " ";
+                for ( i2 = 1; i2 <= inc; i2++ )
+                {
+                    i = i2lo - 1 + i2;
+                    std::cout << std::setw(14) << a[(i - 1) + (j - 1)*m];
+                }
+                std::cout << "\n";
+            }
+        }
 
-  return;
+        return;
 # undef INCX
-}
+    }
 //****************************************************************************80
 
-void r8mat_uniform_01 ( int m, int n, int *seed, double r[] )
+    void r8mat_uniform_01 ( int m, int n, int *seed, double r[] )
 
 //****************************************************************************80
 //
@@ -5852,43 +5851,43 @@ void r8mat_uniform_01 ( int m, int n, int *seed, double r[] )
 //
 //    Output, double R[M*N], a matrix of pseudorandom values.
 //
-{
-  int i;
-  int i4_huge = 2147483647;
-  int j;
-  int k;
-
-  if ( *seed == 0 )
-  {
-    std::cerr << "\n";
-    std::cerr << "R8MAT_UNIFORM_01 - Fatal error!\n";
-    std::cerr << "  Input value of SEED = 0.\n";
-    exit ( 1 );
-  }
-
-  for ( j = 0; j < n; j++ )
-  {
-    for ( i = 0; i < m; i++ )
     {
-      k = *seed / 127773;
+        int i;
+        int i4_huge = 2147483647;
+        int j;
+        int k;
 
-      *seed = 16807 * ( *seed - k * 127773 ) - k * 2836;
+        if ( *seed == 0 )
+        {
+            std::cerr << "\n";
+            std::cerr << "R8MAT_UNIFORM_01 - Fatal error!\n";
+            std::cerr << "  Input value of SEED = 0.\n";
+            exit ( 1 );
+        }
 
-      if ( *seed < 0 )
-      {
-        *seed = *seed + i4_huge;
-      }
+        for ( j = 0; j < n; j++ )
+        {
+            for ( i = 0; i < m; i++ )
+            {
+                k = *seed / 127773;
 
-      r[i+j*m] = ( double ) ( *seed ) * 4.656612875E-10;
+                *seed = 16807 * ( *seed - k * 127773 ) - k * 2836;
+
+                if ( *seed < 0 )
+                {
+                    *seed = *seed + i4_huge;
+                }
+
+                r[i + j * m] = ( double ) ( *seed ) * 4.656612875E-10;
+            }
+        }
+
+        return;
     }
-  }
-
-  return;
-}
 //****************************************************************************80
 
-int r8tris2 ( int node_num, double node_xy[], int *triangle_num,
-  int triangle_node[], int triangle_neighbor[] )
+    int r8tris2 ( int node_num, double node_xy[], int *triangle_num,
+                  int triangle_node[], int triangle_neighbor[] )
 
 //****************************************************************************80
 //
@@ -5946,302 +5945,302 @@ int r8tris2 ( int node_num, double node_xy[], int *triangle_num,
 //    the neighbor along edge from vertex J to J+1 (mod 3).
 //
 //    Output, int R8TRIS2, is 0 for no error.
-{
-  int base;
-  double cmax;
-  int e;
-  int error;
-  int i;
-  int *indx;
-  int j;
-  int k;
-  int l;
-  int ledg;
-  int lr;
-  int ltri;
-  int m;
-  int m1;
-  int m2;
-  int n;
-  int redg;
-  int rtri;
-  int *stack;
-  int t;
-  double tol;
-  int top;
+    {
+        int base;
+        double cmax;
+        int e;
+        int error;
+        int i;
+        int *indx;
+        int j;
+        int k;
+        int l;
+        int ledg;
+        int lr;
+        int ltri;
+        int m;
+        int m1;
+        int m2;
+        int n;
+        int redg;
+        int rtri;
+        int *stack;
+        int t;
+        double tol;
+        int top;
 
-  stack = new int[node_num];
+        stack = new int[node_num];
 
-  tol = 100.0 * r8_epsilon ( );
+        tol = 100.0 * r8_epsilon ( );
 //
 //  Sort the vertices by increasing (x,y).
 //
-  base = 0;
+        base = 0;
 
-  indx = r82vec_sort_heap_index_a ( node_num, base, node_xy );
+        indx = r82vec_sort_heap_index_a ( node_num, base, node_xy );
 
-  r82vec_permute ( node_num, indx, base, node_xy );
+        r82vec_permute ( node_num, indx, base, node_xy );
 //
 //  Make sure that the nodes are "reasonably" distinct.
 //
-  m1 = 1;
+        m1 = 1;
 
-  for ( i = 2; i <= node_num; i++ )
-  {
-    m = m1;
-    m1 = i;
+        for ( i = 2; i <= node_num; i++ )
+        {
+            m = m1;
+            m1 = i;
 
-    k = -1;
+            k = -1;
 
-    for ( j = 0; j <= 1; j++ )
-    {
-      cmax = r8_max ( fabs ( node_xy[2*(m-1)+j] ),
-                     fabs ( node_xy[2*(m1-1)+j] ) );
+            for ( j = 0; j <= 1; j++ )
+            {
+                cmax = r8_max ( fabs ( node_xy[2 * (m - 1) + j] ),
+                                fabs ( node_xy[2 * (m1 - 1) + j] ) );
 
-      if ( tol * ( cmax + 1.0 )
-           < fabs ( node_xy[2*(m-1)+j] - node_xy[2*(m1-1)+j] ) )
-      {
-        k = j;
-        break;
-      }
+                if ( tol * ( cmax + 1.0 )
+                        < fabs ( node_xy[2 * (m - 1) + j] - node_xy[2 * (m1 - 1) + j] ) )
+                {
+                    k = j;
+                    break;
+                }
 
-    }
+            }
 
-    if ( k == -1 )
-    {
-      std::cout << "\n";
-      std::cout << "R8TRIS2 - Fatal error!\n";
-      std::cout << "  Fails for point number I = " << i << "\n";
-      std::cout << "  M =  " << m  << "\n";
-      std::cout << "  M1 = " << m1 << "\n";
-      std::cout << "  X,Y(M)  = " << node_xy[2*(m-1)+0] << "  "
-                             << node_xy[2*(m-1)+1] << "\n";
-      std::cout << "  X,Y(M1) = " << node_xy[2*(m1-1)+0] << "  "
-                             << node_xy[2*(m1-1)+1] << "\n";
-      exit ( 1 );
-    }
+            if ( k == -1 )
+            {
+                std::cout << "\n";
+                std::cout << "R8TRIS2 - Fatal error!\n";
+                std::cout << "  Fails for point number I = " << i << "\n";
+                std::cout << "  M =  " << m  << "\n";
+                std::cout << "  M1 = " << m1 << "\n";
+                std::cout << "  X,Y(M)  = " << node_xy[2 * (m - 1) + 0] << "  "
+                          << node_xy[2 * (m - 1) + 1] << "\n";
+                std::cout << "  X,Y(M1) = " << node_xy[2 * (m1 - 1) + 0] << "  "
+                          << node_xy[2 * (m1 - 1) + 1] << "\n";
+                exit ( 1 );
+            }
 
-  }
+        }
 //
 //  Starting from nodes M1 and M2, search for a third point M that
 //  makes a "healthy" triangle (M1,M2,M)
 //
-  m1 = 1;
-  m2 = 2;
-  j = 3;
+        m1 = 1;
+        m2 = 2;
+        j = 3;
 
-  for ( ; ; )
-  {
-    if ( node_num < j )
-    {
-      std::cout << "\n";
-      std::cout << "R8TRIS2 - Fatal error!\n";
-      delete [] stack;
-      return 225;
-    }
+        for ( ; ; )
+        {
+            if ( node_num < j )
+            {
+                std::cout << "\n";
+                std::cout << "R8TRIS2 - Fatal error!\n";
+                delete [] stack;
+                return 225;
+            }
 
-    m = j;
+            m = j;
 
-    lr = lrline ( node_xy[2*(m-1)+0], node_xy[2*(m-1)+1],
-      node_xy[2*(m1-1)+0], node_xy[2*(m1-1)+1],
-      node_xy[2*(m2-1)+0], node_xy[2*(m2-1)+1], 0.0 );
+            lr = lrline ( node_xy[2 * (m - 1) + 0], node_xy[2 * (m - 1) + 1],
+                          node_xy[2 * (m1 - 1) + 0], node_xy[2 * (m1 - 1) + 1],
+                          node_xy[2 * (m2 - 1) + 0], node_xy[2 * (m2 - 1) + 1], 0.0 );
 
-    if ( lr != 0 )
-    {
-      break;
-    }
+            if ( lr != 0 )
+            {
+                break;
+            }
 
-    j = j + 1;
+            j = j + 1;
 
-  }
+        }
 //
 //  Set up the triangle information for (M1,M2,M), and for any other
 //  triangles you created because nodes were collinear with M1, M2.
 //
-  *triangle_num = j - 2;
+        *triangle_num = j - 2;
 
-  if ( lr == -1 )
-  {
-    triangle_node[3*0+0] = m1;
-    triangle_node[3*0+1] = m2;
-    triangle_node[3*0+2] = m;
-    triangle_neighbor[3*0+2] = -3;
+        if ( lr == -1 )
+        {
+            triangle_node[3 * 0 + 0] = m1;
+            triangle_node[3 * 0 + 1] = m2;
+            triangle_node[3 * 0 + 2] = m;
+            triangle_neighbor[3 * 0 + 2] = -3;
 
-    for ( i = 2; i <= *triangle_num; i++ )
-    {
-      m1 = m2;
-      m2 = i+1;
-      triangle_node[3*(i-1)+0] = m1;
-      triangle_node[3*(i-1)+1] = m2;
-      triangle_node[3*(i-1)+2] = m;
-      triangle_neighbor[3*(i-1)+0] = -3 * i;
-      triangle_neighbor[3*(i-1)+1] = i;
-      triangle_neighbor[3*(i-1)+2] = i - 1;
+            for ( i = 2; i <= *triangle_num; i++ )
+            {
+                m1 = m2;
+                m2 = i + 1;
+                triangle_node[3 * (i - 1) + 0] = m1;
+                triangle_node[3 * (i - 1) + 1] = m2;
+                triangle_node[3 * (i - 1) + 2] = m;
+                triangle_neighbor[3 * (i - 1) + 0] = -3 * i;
+                triangle_neighbor[3 * (i - 1) + 1] = i;
+                triangle_neighbor[3 * (i - 1) + 2] = i - 1;
 
-    }
+            }
 
-    triangle_neighbor[3*(*triangle_num-1)+0] = -3 * (*triangle_num) - 1;
-    triangle_neighbor[3*(*triangle_num-1)+1] = -5;
-    ledg = 2;
-    ltri = *triangle_num;
-  }
-  else
-  {
-    triangle_node[3*0+0] = m2;
-    triangle_node[3*0+1] = m1;
-    triangle_node[3*0+2] = m;
-    triangle_neighbor[3*0+0] = -4;
+            triangle_neighbor[3 * (*triangle_num - 1) + 0] = -3 * (*triangle_num) - 1;
+            triangle_neighbor[3 * (*triangle_num - 1) + 1] = -5;
+            ledg = 2;
+            ltri = *triangle_num;
+        }
+        else
+        {
+            triangle_node[3 * 0 + 0] = m2;
+            triangle_node[3 * 0 + 1] = m1;
+            triangle_node[3 * 0 + 2] = m;
+            triangle_neighbor[3 * 0 + 0] = -4;
 
-    for ( i = 2; i <= *triangle_num; i++ )
-    {
-      m1 = m2;
-      m2 = i+1;
-      triangle_node[3*(i-1)+0] = m2;
-      triangle_node[3*(i-1)+1] = m1;
-      triangle_node[3*(i-1)+2] = m;
-      triangle_neighbor[3*(i-2)+2] = i;
-      triangle_neighbor[3*(i-1)+0] = -3 * i - 3;
-      triangle_neighbor[3*(i-1)+1] = i - 1;
-    }
+            for ( i = 2; i <= *triangle_num; i++ )
+            {
+                m1 = m2;
+                m2 = i + 1;
+                triangle_node[3 * (i - 1) + 0] = m2;
+                triangle_node[3 * (i - 1) + 1] = m1;
+                triangle_node[3 * (i - 1) + 2] = m;
+                triangle_neighbor[3 * (i - 2) + 2] = i;
+                triangle_neighbor[3 * (i - 1) + 0] = -3 * i - 3;
+                triangle_neighbor[3 * (i - 1) + 1] = i - 1;
+            }
 
-    triangle_neighbor[3*(*triangle_num-1)+2] = -3 * (*triangle_num);
-    triangle_neighbor[3*0+1] = -3 * (*triangle_num) - 2;
-    ledg = 2;
-    ltri = 1;
+            triangle_neighbor[3 * (*triangle_num - 1) + 2] = -3 * (*triangle_num);
+            triangle_neighbor[3 * 0 + 1] = -3 * (*triangle_num) - 2;
+            ledg = 2;
+            ltri = 1;
 
-  }
+        }
 //
 //  Insert the vertices one at a time from outside the convex hull,
 //  determine visible boundary edges, and apply diagonal edge swaps until
 //  Delaunay triangulation of vertices (so far) is obtained.
 //
-  top = 0;
+        top = 0;
 
-  for ( i = j+1; i <= node_num; i++ )
-  {
-    m = i;
-    m1 = triangle_node[3*(ltri-1)+ledg-1];
+        for ( i = j + 1; i <= node_num; i++ )
+        {
+            m = i;
+            m1 = triangle_node[3 * (ltri - 1) + ledg - 1];
 
-    if ( ledg <= 2 )
-    {
-      m2 = triangle_node[3*(ltri-1)+ledg];
-    }
-    else
-    {
-      m2 = triangle_node[3*(ltri-1)+0];
-    }
+            if ( ledg <= 2 )
+            {
+                m2 = triangle_node[3 * (ltri - 1) + ledg];
+            }
+            else
+            {
+                m2 = triangle_node[3 * (ltri - 1) + 0];
+            }
 
-    lr = lrline ( node_xy[2*(m-1)+0], node_xy[2*(m-1)+1],
-      node_xy[2*(m1-1)+0], node_xy[2*(m1-1)+1],
-      node_xy[2*(m2-1)+0], node_xy[2*(m2-1)+1], 0.0 );
+            lr = lrline ( node_xy[2 * (m - 1) + 0], node_xy[2 * (m - 1) + 1],
+                          node_xy[2 * (m1 - 1) + 0], node_xy[2 * (m1 - 1) + 1],
+                          node_xy[2 * (m2 - 1) + 0], node_xy[2 * (m2 - 1) + 1], 0.0 );
 
-    if ( 0 < lr )
-    {
-      rtri = ltri;
-      redg = ledg;
-      ltri = 0;
-    }
-    else
-    {
-      l = -triangle_neighbor[3*(ltri-1)+ledg-1];
-      rtri = l / 3;
-      redg = (l % 3) + 1;
-    }
+            if ( 0 < lr )
+            {
+                rtri = ltri;
+                redg = ledg;
+                ltri = 0;
+            }
+            else
+            {
+                l = -triangle_neighbor[3 * (ltri - 1) + ledg - 1];
+                rtri = l / 3;
+                redg = (l % 3) + 1;
+            }
 
-    vbedg ( node_xy[2*(m-1)+0], node_xy[2*(m-1)+1], node_num,
-      node_xy, *triangle_num, triangle_node, triangle_neighbor,
-      &ltri, &ledg, &rtri, &redg );
+            vbedg ( node_xy[2 * (m - 1) + 0], node_xy[2 * (m - 1) + 1], node_num,
+                    node_xy, *triangle_num, triangle_node, triangle_neighbor,
+                    &ltri, &ledg, &rtri, &redg );
 
-    n = *triangle_num + 1;
-    l = -triangle_neighbor[3*(ltri-1)+ledg-1];
+            n = *triangle_num + 1;
+            l = -triangle_neighbor[3 * (ltri - 1) + ledg - 1];
 
-    for ( ; ; )
-    {
-      t = l / 3;
-      e = ( l % 3 ) + 1;
-      l = -triangle_neighbor[3*(t-1)+e-1];
-      m2 = triangle_node[3*(t-1)+e-1];
+            for ( ; ; )
+            {
+                t = l / 3;
+                e = ( l % 3 ) + 1;
+                l = -triangle_neighbor[3 * (t - 1) + e - 1];
+                m2 = triangle_node[3 * (t - 1) + e - 1];
 
-      if ( e <= 2 )
-      {
-        m1 = triangle_node[3*(t-1)+e];
-      }
-      else
-      {
-        m1 = triangle_node[3*(t-1)+0];
-      }
+                if ( e <= 2 )
+                {
+                    m1 = triangle_node[3 * (t - 1) + e];
+                }
+                else
+                {
+                    m1 = triangle_node[3 * (t - 1) + 0];
+                }
 
-      *triangle_num = *triangle_num + 1;
-      triangle_neighbor[3*(t-1)+e-1] = *triangle_num;
-      triangle_node[3*(*triangle_num-1)+0] = m1;
-      triangle_node[3*(*triangle_num-1)+1] = m2;
-      triangle_node[3*(*triangle_num-1)+2] = m;
-      triangle_neighbor[3*(*triangle_num-1)+0] = t;
-      triangle_neighbor[3*(*triangle_num-1)+1] = *triangle_num - 1;
-      triangle_neighbor[3*(*triangle_num-1)+2] = *triangle_num + 1;
-      top = top + 1;
+                *triangle_num = *triangle_num + 1;
+                triangle_neighbor[3 * (t - 1) + e - 1] = *triangle_num;
+                triangle_node[3 * (*triangle_num - 1) + 0] = m1;
+                triangle_node[3 * (*triangle_num - 1) + 1] = m2;
+                triangle_node[3 * (*triangle_num - 1) + 2] = m;
+                triangle_neighbor[3 * (*triangle_num - 1) + 0] = t;
+                triangle_neighbor[3 * (*triangle_num - 1) + 1] = *triangle_num - 1;
+                triangle_neighbor[3 * (*triangle_num - 1) + 2] = *triangle_num + 1;
+                top = top + 1;
 
-      if ( node_num < top )
-      {
-        std::cout << "\n";
-        std::cout << "R8TRIS2 - Fatal error!\n";
-        std::cout << "  Stack overflow.\n";
-        delete [] stack;
-        return 8;
-      }
+                if ( node_num < top )
+                {
+                    std::cout << "\n";
+                    std::cout << "R8TRIS2 - Fatal error!\n";
+                    std::cout << "  Stack overflow.\n";
+                    delete [] stack;
+                    return 8;
+                }
 
-      stack[top-1] = *triangle_num;
+                stack[top - 1] = *triangle_num;
 
-      if ( t == rtri && e == redg )
-      {
-        break;
-      }
+                if ( t == rtri && e == redg )
+                {
+                    break;
+                }
 
-    }
+            }
 
-    triangle_neighbor[3*(ltri-1)+ledg-1] = -3 * n - 1;
-    triangle_neighbor[3*(n-1)+1] = -3 * (*triangle_num) - 2;
-    triangle_neighbor[3*(*triangle_num-1)+2] = -l;
-    ltri = n;
-    ledg = 2;
+            triangle_neighbor[3 * (ltri - 1) + ledg - 1] = -3 * n - 1;
+            triangle_neighbor[3 * (n - 1) + 1] = -3 * (*triangle_num) - 2;
+            triangle_neighbor[3 * (*triangle_num - 1) + 2] = -l;
+            ltri = n;
+            ledg = 2;
 
-    error = swapec ( m, &top, &ltri, &ledg, node_num, node_xy, *triangle_num,
-      triangle_node, triangle_neighbor, stack );
+            error = swapec ( m, &top, &ltri, &ledg, node_num, node_xy, *triangle_num,
+                             triangle_node, triangle_neighbor, stack );
 
-    if ( error != 0 )
-    {
-      std::cout << "\n";
-      std::cout << "R8TRIS2 - Fatal error!\n";
-      std::cout << "  Error return from SWAPEC.\n";
-      delete [] stack;
-      return error;
-    }
+            if ( error != 0 )
+            {
+                std::cout << "\n";
+                std::cout << "R8TRIS2 - Fatal error!\n";
+                std::cout << "  Error return from SWAPEC.\n";
+                delete [] stack;
+                return error;
+            }
 
-  }
+        }
 //
 //  Now account for the sorting that we did.
 //
-  for ( i = 0; i < 3; i++ )
-  {
-    for ( j = 0; j < *triangle_num; j++ )
-    {
-      triangle_node[i+j*3] = indx [ triangle_node[i+j*3] - 1 ];
+        for ( i = 0; i < 3; i++ )
+        {
+            for ( j = 0; j < *triangle_num; j++ )
+            {
+                triangle_node[i + j * 3] = indx [ triangle_node[i + j * 3] - 1 ];
+            }
+        }
+
+        perm_inverse ( node_num, indx );
+
+        r82vec_permute ( node_num, indx, base, node_xy );
+
+        delete [] indx;
+        delete [] stack;
+
+        return 0;
     }
-  }
-
-  perm_inverse ( node_num, indx );
-
-  r82vec_permute ( node_num, indx, base, node_xy );
-
-  delete [] indx;
-  delete [] stack;
-
-  return 0;
-}
 //****************************************************************************80
 
-void r8vec_bracket ( int n, double x[], double xval, int *left,
-  int *right )
+    void r8vec_bracket ( int n, double x[], double xval, int *left,
+                         int *right )
 
 //****************************************************************************80
 //
@@ -6290,28 +6289,28 @@ void r8vec_bracket ( int n, double x[], double xval, int *left,
 //
 //    Output, int *LEFT, *RIGHT, the results of the search.
 //
-{
-  int i;
-
-  for ( i = 2; i <= n - 1; i++ )
-  {
-    if ( xval < x[i-1] )
     {
-      *left = i - 1;
-      *right = i;
-      return;
+        int i;
+
+        for ( i = 2; i <= n - 1; i++ )
+        {
+            if ( xval < x[i - 1] )
+            {
+                *left = i - 1;
+                *right = i;
+                return;
+            }
+
+        }
+
+        *left = n - 1;
+        *right = n;
+
+        return;
     }
-
-   }
-
-  *left = n - 1;
-  *right = n;
-
-  return;
-}
 //****************************************************************************80
 
-double r8vec_max ( int n, double r8vec[] )
+    double r8vec_max ( int n, double r8vec[] )
 
 //****************************************************************************80
 //
@@ -6344,29 +6343,29 @@ double r8vec_max ( int n, double r8vec[] )
 //    Output, double R8VEC_MAX, the value of the maximum element.  This
 //    is set to 0.0 if N <= 0.
 //
-{
-  int i;
-  double value;
-
-  value = - r8_huge ( );
-
-  if ( n <= 0 )
-  {
-    return value;
-  }
-
-  for ( i = 0; i < n; i++ )
-  {
-    if ( value < r8vec[i] )
     {
-      value = r8vec[i];
+        int i;
+        double value;
+
+        value = - r8_huge ( );
+
+        if ( n <= 0 )
+        {
+            return value;
+        }
+
+        for ( i = 0; i < n; i++ )
+        {
+            if ( value < r8vec[i] )
+            {
+                value = r8vec[i];
+            }
+        }
+        return value;
     }
-  }
-  return value;
-}
 //****************************************************************************80
 
-double r8vec_min ( int n, double r8vec[] )
+    double r8vec_min ( int n, double r8vec[] )
 
 //****************************************************************************80
 //
@@ -6398,29 +6397,29 @@ double r8vec_min ( int n, double r8vec[] )
 //
 //    Output, double R8VEC_MIN, the value of the minimum element.
 //
-{
-  int i;
-  double value;
-
-  value = r8_huge ( );
-
-  if ( n <= 0 )
-  {
-    return value;
-  }
-
-  for ( i = 0; i < n; i++ )
-  {
-    if ( r8vec[i] < value )
     {
-      value = r8vec[i];
+        int i;
+        double value;
+
+        value = r8_huge ( );
+
+        if ( n <= 0 )
+        {
+            return value;
+        }
+
+        for ( i = 0; i < n; i++ )
+        {
+            if ( r8vec[i] < value )
+            {
+                value = r8vec[i];
+            }
+        }
+        return value;
     }
-  }
-  return value;
-}
 //****************************************************************************80
 
-int s_len_trim ( std::string s )
+    int s_len_trim ( std::string s )
 
 //****************************************************************************80
 //
@@ -6447,25 +6446,25 @@ int s_len_trim ( std::string s )
 //    Output, int S_LEN_TRIM, the length of the string to the last nonblank.
 //    If S_LEN_TRIM is 0, then the string is entirely blank.
 //
-{
-  int n;
-
-  n = s.length ( );
-
-  while ( 0 < n )
-  {
-    if ( s[n-1] != ' ' )
     {
-      return n;
-    }
-    n = n - 1;
-  }
+        int n;
 
-  return n;
-}
+        n = s.length ( );
+
+        while ( 0 < n )
+        {
+            if ( s[n - 1] != ' ' )
+            {
+                return n;
+            }
+            n = n - 1;
+        }
+
+        return n;
+    }
 //****************************************************************************80
 
-void sort_heap_external ( int n, int *indx, int *i, int *j, int isgn )
+    void sort_heap_external ( int n, int *indx, int *i, int *j, int isgn )
 
 //****************************************************************************80
 //
@@ -6527,140 +6526,140 @@ void sort_heap_external ( int n, int *indx, int *i, int *j, int isgn )
 //    item I is to precede item J, set ISGN negative,
 //    otherwise set ISGN positive.
 //
-{
-  static int i_save = 0;
-  static int j_save = 0;
-  static int k = 0;
-  static int k1 = 0;
-  static int n1 = 0;
+    {
+        static int i_save = 0;
+        static int j_save = 0;
+        static int k = 0;
+        static int k1 = 0;
+        static int n1 = 0;
 //
 //  INDX = 0: This is the first call.
 //
-  if ( *indx == 0 )
-  {
+        if ( *indx == 0 )
+        {
 
-    i_save = 0;
-    j_save = 0;
-    k = n / 2;
-    k1 = k;
-    n1 = n;
-  }
+            i_save = 0;
+            j_save = 0;
+            k = n / 2;
+            k1 = k;
+            n1 = n;
+        }
 //
 //  INDX < 0: The user is returning the results of a comparison.
 //
-  else if ( *indx < 0 )
-  {
-    if ( *indx == -2 )
-    {
-      if ( isgn < 0 )
-      {
-        i_save = i_save + 1;
-      }
-      j_save = k1;
-      k1 = i_save;
-      *indx = -1;
-      *i = i_save;
-      *j = j_save;
-      return;
-    }
+        else if ( *indx < 0 )
+        {
+            if ( *indx == -2 )
+            {
+                if ( isgn < 0 )
+                {
+                    i_save = i_save + 1;
+                }
+                j_save = k1;
+                k1 = i_save;
+                *indx = -1;
+                *i = i_save;
+                *j = j_save;
+                return;
+            }
 
-    if ( 0 < isgn )
-    {
-      *indx = 2;
-      *i = i_save;
-      *j = j_save;
-      return;
-    }
+            if ( 0 < isgn )
+            {
+                *indx = 2;
+                *i = i_save;
+                *j = j_save;
+                return;
+            }
 
-    if ( k <= 1 )
-    {
-      if ( n1 == 1 )
-      {
-        i_save = 0;
-        j_save = 0;
-        *indx = 0;
-      }
-      else
-      {
-        i_save = n1;
-        j_save = 1;
-        n1 = n1 - 1;
-        *indx = 1;
-      }
-      *i = i_save;
-      *j = j_save;
-      return;
-    }
+            if ( k <= 1 )
+            {
+                if ( n1 == 1 )
+                {
+                    i_save = 0;
+                    j_save = 0;
+                    *indx = 0;
+                }
+                else
+                {
+                    i_save = n1;
+                    j_save = 1;
+                    n1 = n1 - 1;
+                    *indx = 1;
+                }
+                *i = i_save;
+                *j = j_save;
+                return;
+            }
 
-    k = k - 1;
-    k1 = k;
+            k = k - 1;
+            k1 = k;
 
-  }
+        }
 //
 //  0 < INDX: the user was asked to make an interchange.
 //
-  else if ( *indx == 1 )
-  {
-    k1 = k;
-  }
+        else if ( *indx == 1 )
+        {
+            k1 = k;
+        }
 
-  for ( ;; )
-  {
+        for ( ;; )
+        {
 
-    i_save = 2 * k1;
+            i_save = 2 * k1;
 
-    if ( i_save == n1 )
-    {
-      j_save = k1;
-      k1 = i_save;
-      *indx = -1;
-      *i = i_save;
-      *j = j_save;
-      return;
+            if ( i_save == n1 )
+            {
+                j_save = k1;
+                k1 = i_save;
+                *indx = -1;
+                *i = i_save;
+                *j = j_save;
+                return;
+            }
+            else if ( i_save <= n1 )
+            {
+                j_save = i_save + 1;
+                *indx = -2;
+                *i = i_save;
+                *j = j_save;
+                return;
+            }
+
+            if ( k <= 1 )
+            {
+                break;
+            }
+
+            k = k - 1;
+            k1 = k;
+        }
+
+        if ( n1 == 1 )
+        {
+            i_save = 0;
+            j_save = 0;
+            *indx = 0;
+            *i = i_save;
+            *j = j_save;
+        }
+        else
+        {
+            i_save = n1;
+            j_save = 1;
+            n1 = n1 - 1;
+            *indx = 1;
+            *i = i_save;
+            *j = j_save;
+        }
+
+        return;
     }
-    else if ( i_save <= n1 )
-    {
-      j_save = i_save + 1;
-      *indx = -2;
-      *i = i_save;
-      *j = j_save;
-      return;
-    }
-
-    if ( k <= 1 )
-    {
-      break;
-    }
-
-    k = k - 1;
-    k1 = k;
-  }
-
-  if ( n1 == 1 )
-  {
-    i_save = 0;
-    j_save = 0;
-    *indx = 0;
-    *i = i_save;
-    *j = j_save;
-  }
-  else
-  {
-    i_save = n1;
-    j_save = 1;
-    n1 = n1 - 1;
-    *indx = 1;
-    *i = i_save;
-    *j = j_save;
-  }
-
-  return;
-}
 //****************************************************************************80
 
-int swapec ( int i, int *top, int *btri, int *bedg, int node_num,
-  double node_xy[], int triangle_num, int triangle_node[],
-  int triangle_neighbor[], int stack[] )
+    int swapec ( int i, int *top, int *btri, int *bedg, int node_num,
+                 double node_xy[], int triangle_num, int triangle_node[],
+                 int triangle_neighbor[], int stack[] )
 
 //****************************************************************************80
 //
@@ -6728,223 +6727,223 @@ int swapec ( int i, int *top, int *btri, int *bedg, int node_num,
 //
 //    Output, int SWAPEC, is set to 8 for abnormal return.
 //
-{
-  int a;
-  int b;
-  int c;
-  int e;
-  int ee;
-  int em1;
-  int ep1;
-  int f;
-  int fm1;
-  int fp1;
-  int l;
-  int r;
-  int s;
-  int swap;
-  int t;
-  int tt;
-  int u;
-  double x;
-  double y;
+    {
+        int a;
+        int b;
+        int c;
+        int e;
+        int ee;
+        int em1;
+        int ep1;
+        int f;
+        int fm1;
+        int fp1;
+        int l;
+        int r;
+        int s;
+        int swap;
+        int t;
+        int tt;
+        int u;
+        double x;
+        double y;
 //
 //  Determine whether triangles in stack are Delaunay, and swap
 //  diagonal edge of convex quadrilateral if not.
 //
-  x = node_xy[2*(i-1)+0];
-  y = node_xy[2*(i-1)+1];
+        x = node_xy[2 * (i - 1) + 0];
+        y = node_xy[2 * (i - 1) + 1];
 
-  for ( ; ; )
-  {
-    if ( *top <= 0 )
-    {
-      break;
+        for ( ; ; )
+        {
+            if ( *top <= 0 )
+            {
+                break;
+            }
+
+            t = stack[(*top) - 1];
+            *top = *top - 1;
+
+            if ( triangle_node[3 * (t - 1) + 0] == i )
+            {
+                e = 2;
+                b = triangle_node[3 * (t - 1) + 2];
+            }
+            else if ( triangle_node[3 * (t - 1) + 1] == i )
+            {
+                e = 3;
+                b = triangle_node[3 * (t - 1) + 0];
+            }
+            else
+            {
+                e = 1;
+                b = triangle_node[3 * (t - 1) + 1];
+            }
+
+            a = triangle_node[3 * (t - 1) + e - 1];
+            u = triangle_neighbor[3 * (t - 1) + e - 1];
+
+            if ( triangle_neighbor[3 * (u - 1) + 0] == t )
+            {
+                f = 1;
+                c = triangle_node[3 * (u - 1) + 2];
+            }
+            else if ( triangle_neighbor[3 * (u - 1) + 1] == t )
+            {
+                f = 2;
+                c = triangle_node[3 * (u - 1) + 0];
+            }
+            else
+            {
+                f = 3;
+                c = triangle_node[3 * (u - 1) + 1];
+            }
+
+            swap = diaedg ( x, y,
+                            node_xy[2 * (a - 1) + 0], node_xy[2 * (a - 1) + 1],
+                            node_xy[2 * (c - 1) + 0], node_xy[2 * (c - 1) + 1],
+                            node_xy[2 * (b - 1) + 0], node_xy[2 * (b - 1) + 1] );
+
+            if ( swap == 1 )
+            {
+                em1 = i4_wrap ( e - 1, 1, 3 );
+                ep1 = i4_wrap ( e + 1, 1, 3 );
+                fm1 = i4_wrap ( f - 1, 1, 3 );
+                fp1 = i4_wrap ( f + 1, 1, 3 );
+
+                triangle_node[3 * (t - 1) + ep1 - 1] = c;
+                triangle_node[3 * (u - 1) + fp1 - 1] = i;
+                r = triangle_neighbor[3 * (t - 1) + ep1 - 1];
+                s = triangle_neighbor[3 * (u - 1) + fp1 - 1];
+                triangle_neighbor[3 * (t - 1) + ep1 - 1] = u;
+                triangle_neighbor[3 * (u - 1) + fp1 - 1] = t;
+                triangle_neighbor[3 * (t - 1) + e - 1] = s;
+                triangle_neighbor[3 * (u - 1) + f - 1] = r;
+
+                if ( 0 < triangle_neighbor[3 * (u - 1) + fm1 - 1] )
+                {
+                    *top = *top + 1;
+                    stack[(*top) - 1] = u;
+                }
+
+                if ( 0 < s )
+                {
+                    if ( triangle_neighbor[3 * (s - 1) + 0] == u )
+                    {
+                        triangle_neighbor[3 * (s - 1) + 0] = t;
+                    }
+                    else if ( triangle_neighbor[3 * (s - 1) + 1] == u )
+                    {
+                        triangle_neighbor[3 * (s - 1) + 1] = t;
+                    }
+                    else
+                    {
+                        triangle_neighbor[3 * (s - 1) + 2] = t;
+                    }
+
+                    *top = *top + 1;
+
+                    if ( node_num < *top )
+                    {
+                        return 8;
+                    }
+
+                    stack[(*top) - 1] = t;
+                }
+                else
+                {
+                    if ( u == *btri && fp1 == *bedg )
+                    {
+                        *btri = t;
+                        *bedg = e;
+                    }
+
+                    l = - ( 3 * t + e - 1 );
+                    tt = t;
+                    ee = em1;
+
+                    while ( 0 < triangle_neighbor[3 * (tt - 1) + ee - 1] )
+                    {
+                        tt = triangle_neighbor[3 * (tt - 1) + ee - 1];
+
+                        if ( triangle_node[3 * (tt - 1) + 0] == a )
+                        {
+                            ee = 3;
+                        }
+                        else if ( triangle_node[3 * (tt - 1) + 1] == a )
+                        {
+                            ee = 1;
+                        }
+                        else
+                        {
+                            ee = 2;
+                        }
+
+                    }
+
+                    triangle_neighbor[3 * (tt - 1) + ee - 1] = l;
+
+                }
+
+                if ( 0 < r )
+                {
+                    if ( triangle_neighbor[3 * (r - 1) + 0] == t )
+                    {
+                        triangle_neighbor[3 * (r - 1) + 0] = u;
+                    }
+                    else if ( triangle_neighbor[3 * (r - 1) + 1] == t )
+                    {
+                        triangle_neighbor[3 * (r - 1) + 1] = u;
+                    }
+                    else
+                    {
+                        triangle_neighbor[3 * (r - 1) + 2] = u;
+                    }
+                }
+                else
+                {
+                    if ( t == *btri && ep1 == *bedg )
+                    {
+                        *btri = u;
+                        *bedg = f;
+                    }
+
+                    l = - ( 3 * u + f - 1 );
+                    tt = u;
+                    ee = fm1;
+
+                    while ( 0 < triangle_neighbor[3 * (tt - 1) + ee - 1] )
+                    {
+                        tt = triangle_neighbor[3 * (tt - 1) + ee - 1];
+
+                        if ( triangle_node[3 * (tt - 1) + 0] == b )
+                        {
+                            ee = 3;
+                        }
+                        else if ( triangle_node[3 * (tt - 1) + 1] == b )
+                        {
+                            ee = 1;
+                        }
+                        else
+                        {
+                            ee = 2;
+                        }
+
+                    }
+
+                    triangle_neighbor[3 * (tt - 1) + ee - 1] = l;
+
+                }
+
+            }
+
+        }
+
+        return 0;
     }
-
-    t = stack[(*top)-1];
-    *top = *top - 1;
-
-    if ( triangle_node[3*(t-1)+0] == i )
-    {
-      e = 2;
-      b = triangle_node[3*(t-1)+2];
-    }
-    else if ( triangle_node[3*(t-1)+1] == i )
-    {
-      e = 3;
-      b = triangle_node[3*(t-1)+0];
-    }
-    else
-    {
-      e = 1;
-      b = triangle_node[3*(t-1)+1];
-    }
-
-    a = triangle_node[3*(t-1)+e-1];
-    u = triangle_neighbor[3*(t-1)+e-1];
-
-    if ( triangle_neighbor[3*(u-1)+0] == t )
-    {
-      f = 1;
-      c = triangle_node[3*(u-1)+2];
-    }
-    else if ( triangle_neighbor[3*(u-1)+1] == t )
-    {
-      f = 2;
-      c = triangle_node[3*(u-1)+0];
-    }
-    else
-    {
-      f = 3;
-      c = triangle_node[3*(u-1)+1];
-    }
-
-    swap = diaedg ( x, y,
-      node_xy[2*(a-1)+0], node_xy[2*(a-1)+1],
-      node_xy[2*(c-1)+0], node_xy[2*(c-1)+1],
-      node_xy[2*(b-1)+0], node_xy[2*(b-1)+1] );
-
-    if ( swap == 1 )
-    {
-      em1 = i4_wrap ( e - 1, 1, 3 );
-      ep1 = i4_wrap ( e + 1, 1, 3 );
-      fm1 = i4_wrap ( f - 1, 1, 3 );
-      fp1 = i4_wrap ( f + 1, 1, 3 );
-
-      triangle_node[3*(t-1)+ep1-1] = c;
-      triangle_node[3*(u-1)+fp1-1] = i;
-      r = triangle_neighbor[3*(t-1)+ep1-1];
-      s = triangle_neighbor[3*(u-1)+fp1-1];
-      triangle_neighbor[3*(t-1)+ep1-1] = u;
-      triangle_neighbor[3*(u-1)+fp1-1] = t;
-      triangle_neighbor[3*(t-1)+e-1] = s;
-      triangle_neighbor[3*(u-1)+f-1] = r;
-
-      if ( 0 < triangle_neighbor[3*(u-1)+fm1-1] )
-      {
-        *top = *top + 1;
-        stack[(*top)-1] = u;
-      }
-
-      if ( 0 < s )
-      {
-        if ( triangle_neighbor[3*(s-1)+0] == u )
-        {
-          triangle_neighbor[3*(s-1)+0] = t;
-        }
-        else if ( triangle_neighbor[3*(s-1)+1] == u )
-        {
-          triangle_neighbor[3*(s-1)+1] = t;
-        }
-        else
-        {
-          triangle_neighbor[3*(s-1)+2] = t;
-        }
-
-        *top = *top + 1;
-
-        if ( node_num < *top )
-        {
-          return 8;
-        }
-
-        stack[(*top)-1] = t;
-      }
-      else
-      {
-        if ( u == *btri && fp1 == *bedg )
-        {
-          *btri = t;
-          *bedg = e;
-        }
-
-        l = - ( 3 * t + e - 1 );
-        tt = t;
-        ee = em1;
-
-        while ( 0 < triangle_neighbor[3*(tt-1)+ee-1] )
-        {
-          tt = triangle_neighbor[3*(tt-1)+ee-1];
-
-          if ( triangle_node[3*(tt-1)+0] == a )
-          {
-            ee = 3;
-          }
-          else if ( triangle_node[3*(tt-1)+1] == a )
-          {
-            ee = 1;
-          }
-          else
-          {
-            ee = 2;
-          }
-
-        }
-
-        triangle_neighbor[3*(tt-1)+ee-1] = l;
-
-      }
-
-      if ( 0 < r )
-      {
-        if ( triangle_neighbor[3*(r-1)+0] == t )
-        {
-          triangle_neighbor[3*(r-1)+0] = u;
-        }
-        else if ( triangle_neighbor[3*(r-1)+1] == t )
-        {
-          triangle_neighbor[3*(r-1)+1] = u;
-        }
-        else
-        {
-          triangle_neighbor[3*(r-1)+2] = u;
-        }
-      }
-      else
-      {
-        if ( t == *btri && ep1 == *bedg )
-        {
-          *btri = u;
-          *bedg = f;
-        }
-
-        l = - ( 3 * u + f - 1 );
-        tt = u;
-        ee = fm1;
-
-        while ( 0 < triangle_neighbor[3*(tt-1)+ee-1] )
-        {
-          tt = triangle_neighbor[3*(tt-1)+ee-1];
-
-          if ( triangle_node[3*(tt-1)+0] == b )
-          {
-            ee = 3;
-          }
-          else if ( triangle_node[3*(tt-1)+1] == b )
-          {
-            ee = 1;
-          }
-          else
-          {
-            ee = 2;
-          }
-
-        }
-
-        triangle_neighbor[3*(tt-1)+ee-1] = l;
-
-      }
-
-    }
-
-  }
-
-  return 0;
-}
 //****************************************************************************80
 
-void timestamp ( )
+    void timestamp ( )
 
 //****************************************************************************80
 //
@@ -6972,27 +6971,27 @@ void timestamp ( )
 //
 //    None
 //
-{
+    {
 # define TIME_SIZE 40
 
-  static char time_buffer[TIME_SIZE];
-  const struct std::tm *tm_ptr;
-  size_t len;
-  std::time_t now;
+        static char time_buffer[TIME_SIZE];
+        const struct std::tm *tm_ptr;
+        size_t len;
+        std::time_t now;
 
-  now = std::time ( NULL );
-  tm_ptr = std::localtime ( &now );
+        now = std::time ( NULL );
+        tm_ptr = std::localtime ( &now );
 
-  len = std::strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr );
+        len = std::strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr );
 
-  std::cout << time_buffer << "\n";
+        std::cout << time_buffer << "\n";
 
-  return;
+        return;
 # undef TIME_SIZE
-}
+    }
 //****************************************************************************80
 
-double *triangle_angles_2d_new ( double t[2*3] )
+    double *triangle_angles_2d_new ( double t[2 * 3] )
 
 //****************************************************************************80
 //
@@ -7027,66 +7026,66 @@ double *triangle_angles_2d_new ( double t[2*3] )
 //    Output, double ANGLE[3], the angles opposite
 //    sides P1-P2, P2-P3 and P3-P1, in radians.
 //
-{
-  double *angle;
-  double a;
-  double b;
-  double c;
-  double pi = 3.141592653589793;
+    {
+        double *angle;
+        double a;
+        double b;
+        double c;
+        double pi = 3.141592653589793;
 
-  angle = new double[3];
+        angle = new double[3];
 
-  a = sqrt ( pow ( t[0+1*2] - t[0+0*2], 2 )
-           + pow ( t[1+1*2] - t[1+0*2], 2 ) );
+        a = sqrt ( pow ( t[0 + 1 * 2] - t[0 + 0 * 2], 2 )
+                   + pow ( t[1 + 1 * 2] - t[1 + 0 * 2], 2 ) );
 
-  b = sqrt ( pow ( t[0+2*2] - t[0+1*2], 2 )
-           + pow ( t[1+2*2] - t[1+1*2], 2 ) );
+        b = sqrt ( pow ( t[0 + 2 * 2] - t[0 + 1 * 2], 2 )
+                   + pow ( t[1 + 2 * 2] - t[1 + 1 * 2], 2 ) );
 
-  c = sqrt ( pow ( t[0+0*2] - t[0+2*2], 2 )
-           + pow ( t[1+0*2] - t[1+2*2], 2 ) );
+        c = sqrt ( pow ( t[0 + 0 * 2] - t[0 + 2 * 2], 2 )
+                   + pow ( t[1 + 0 * 2] - t[1 + 2 * 2], 2 ) );
 //
 //  Take care of a ridiculous special case.
 //
-  if ( a == 0.0 && b == 0.0 && c == 0.0 )
-  {
-    angle[0] = 2.0 * pi / 3.0;
-    angle[1] = 2.0 * pi / 3.0;
-    angle[2] = 2.0 * pi / 3.0;
-    return angle;
-  }
+        if ( a == 0.0 && b == 0.0 && c == 0.0 )
+        {
+            angle[0] = 2.0 * pi / 3.0;
+            angle[1] = 2.0 * pi / 3.0;
+            angle[2] = 2.0 * pi / 3.0;
+            return angle;
+        }
 
-  if ( c == 0.0 || a == 0.0 )
-  {
-    angle[0] = pi;
-  }
-  else
-  {
-    angle[0] = arc_cosine ( ( c * c + a * a - b * b ) / ( 2.0 * c * a ) );
-  }
+        if ( c == 0.0 || a == 0.0 )
+        {
+            angle[0] = pi;
+        }
+        else
+        {
+            angle[0] = arc_cosine ( ( c * c + a * a - b * b ) / ( 2.0 * c * a ) );
+        }
 
-  if ( a == 0.0 || b == 0.0 )
-  {
-    angle[1] = pi;
-  }
-  else
-  {
-    angle[1] = arc_cosine ( ( a * a + b * b - c * c ) / ( 2.0 * a * b ) );
-  }
+        if ( a == 0.0 || b == 0.0 )
+        {
+            angle[1] = pi;
+        }
+        else
+        {
+            angle[1] = arc_cosine ( ( a * a + b * b - c * c ) / ( 2.0 * a * b ) );
+        }
 
-  if ( b == 0.0 || c == 0.0 )
-  {
-    angle[2] = pi;
-  }
-  else
-  {
-    angle[2] = arc_cosine ( ( b * b + c * c - a * a ) / ( 2.0 * b * c ) );
-  }
+        if ( b == 0.0 || c == 0.0 )
+        {
+            angle[2] = pi;
+        }
+        else
+        {
+            angle[2] = arc_cosine ( ( b * b + c * c - a * a ) / ( 2.0 * b * c ) );
+        }
 
-  return angle;
-}
+        return angle;
+    }
 //****************************************************************************80
 
-double triangle_area_2d ( double t[2*3] )
+    double triangle_area_2d ( double t[2 * 3] )
 
 //****************************************************************************80
 //
@@ -7125,19 +7124,19 @@ double triangle_area_2d ( double t[2*3] )
 //
 //    Output, double TRIANGLE_AREA_2D, the area of the triangle.
 //
-{
-  double area;
+    {
+        double area;
 
-  area = 0.5 * (
-    t[0+0*2] * ( t[1+1*2] - t[1+2*2] ) +
-    t[0+1*2] * ( t[1+2*2] - t[1+0*2] ) +
-    t[0+2*2] * ( t[1+0*2] - t[1+1*2] ) );
+        area = 0.5 * (
+                   t[0 + 0 * 2] * ( t[1 + 1 * 2] - t[1 + 2 * 2] ) +
+                   t[0 + 1 * 2] * ( t[1 + 2 * 2] - t[1 + 0 * 2] ) +
+                   t[0 + 2 * 2] * ( t[1 + 0 * 2] - t[1 + 1 * 2] ) );
 
-  return area;
-}
+        return area;
+    }
 //****************************************************************************80
 
-double *triangle_circumcenter_2d ( double t[] )
+    double *triangle_circumcenter_2d ( double t[] )
 
 //****************************************************************************80
 //
@@ -7181,41 +7180,41 @@ double *triangle_circumcenter_2d ( double t[] )
 //    Output, double *TRIANGLE_CIRCUMCENTER_2D[2], the circumcenter of
 //    the triangle.
 //
-{
+    {
 # define DIM_NUM 2
 
-  double asq;
-  double bot;
-  double *center;
-  double csq;
-  double top1;
-  double top2;
+        double asq;
+        double bot;
+        double *center;
+        double csq;
+        double top1;
+        double top2;
 
-  center = new double[DIM_NUM];
+        center = new double[DIM_NUM];
 
-  asq = ( t[0+1*2] - t[0+0*2] ) * ( t[0+1*2] - t[0+0*2] )
-      + ( t[1+1*2] - t[1+0*2] ) * ( t[1+1*2] - t[1+0*2] );
+        asq = ( t[0 + 1 * 2] - t[0 + 0 * 2] ) * ( t[0 + 1 * 2] - t[0 + 0 * 2] )
+              + ( t[1 + 1 * 2] - t[1 + 0 * 2] ) * ( t[1 + 1 * 2] - t[1 + 0 * 2] );
 
-  csq = ( t[0+2*2] - t[0+0*2] ) * ( t[0+2*2] - t[0+0*2] )
-      + ( t[1+2*2] - t[1+0*2] ) * ( t[1+2*2] - t[1+0*2] );
+        csq = ( t[0 + 2 * 2] - t[0 + 0 * 2] ) * ( t[0 + 2 * 2] - t[0 + 0 * 2] )
+              + ( t[1 + 2 * 2] - t[1 + 0 * 2] ) * ( t[1 + 2 * 2] - t[1 + 0 * 2] );
 
-  top1 =   ( t[1+1*2] - t[1+0*2] ) * csq - ( t[1+2*2] - t[1+0*2] ) * asq;
-  top2 = - ( t[0+1*2] - t[0+0*2] ) * csq + ( t[0+2*2] - t[0+0*2] ) * asq;
+        top1 =   ( t[1 + 1 * 2] - t[1 + 0 * 2] ) * csq - ( t[1 + 2 * 2] - t[1 + 0 * 2] ) * asq;
+        top2 = - ( t[0 + 1 * 2] - t[0 + 0 * 2] ) * csq + ( t[0 + 2 * 2] - t[0 + 0 * 2] ) * asq;
 
-  bot  =  ( t[1+1*2] - t[1+0*2] ) * ( t[0+2*2] - t[0+0*2] )
-        - ( t[1+2*2] - t[1+0*2] ) * ( t[0+1*2] - t[0+0*2] );
+        bot  =  ( t[1 + 1 * 2] - t[1 + 0 * 2] ) * ( t[0 + 2 * 2] - t[0 + 0 * 2] )
+                - ( t[1 + 2 * 2] - t[1 + 0 * 2] ) * ( t[0 + 1 * 2] - t[0 + 0 * 2] );
 
-  center[0] = t[0+0*2] + 0.5 * top1 / bot;
-  center[1] = t[1+0*2] + 0.5 * top2 / bot;
+        center[0] = t[0 + 0 * 2] + 0.5 * top1 / bot;
+        center[1] = t[1 + 0 * 2] + 0.5 * top2 / bot;
 
-  return center;
+        return center;
 
 # undef DIM_NUM
-}
+    }
 //****************************************************************************80
 
-void triangle_order3_physical_to_reference ( double t[], int n,
-  double phy[], double ref[] )
+    void triangle_order3_physical_to_reference ( double t[], int n,
+            double phy[], double ref[] )
 
 //****************************************************************************80
 //
@@ -7275,28 +7274,28 @@ void triangle_order3_physical_to_reference ( double t[], int n,
 //    Output, double REF[2*N], the coordinates of the corresponding
 //    points in the reference space.
 //
-{
-  int j;
+    {
+        int j;
 
-  for ( j = 0; j < n; j++ )
-  {
+        for ( j = 0; j < n; j++ )
+        {
 
-    ref[0+j*2] = ( ( t[1+2*2] - t[1+0*2] ) * ( phy[0+j*2] - t[0+0*2] )
-                 - ( t[0+2*2] - t[0+0*2] ) * ( phy[1+j*2] - t[1+0*2] ) )
-               / ( ( t[1+2*2] - t[1+0*2] ) * ( t[0+1*2]   - t[0+0*2] )
-                 - ( t[0+2*2] - t[0+0*2] ) * ( t[1+1*2]   - t[1+0*2] ) );
+            ref[0 + j * 2] = ( ( t[1 + 2 * 2] - t[1 + 0 * 2] ) * ( phy[0 + j * 2] - t[0 + 0 * 2] )
+                               - ( t[0 + 2 * 2] - t[0 + 0 * 2] ) * ( phy[1 + j * 2] - t[1 + 0 * 2] ) )
+                             / ( ( t[1 + 2 * 2] - t[1 + 0 * 2] ) * ( t[0 + 1 * 2]   - t[0 + 0 * 2] )
+                                 - ( t[0 + 2 * 2] - t[0 + 0 * 2] ) * ( t[1 + 1 * 2]   - t[1 + 0 * 2] ) );
 
-    ref[1+j*2] = ( ( t[0+1*2] - t[0+0*2] ) * ( phy[1+j*2] - t[1+0*2] )
-                 - ( t[1+1*2] - t[1+0*2] ) * ( phy[0+j*2] - t[0+0*2] ) )
-               / ( ( t[1+2*2] - t[1+0*2] ) * ( t[0+1*2]   - t[0+0*2] )
-                 - ( t[0+2*2] - t[0+0*2] ) * ( t[1+1*2]   - t[1+0*2] ) );
-  }
-  return;
-}
+            ref[1 + j * 2] = ( ( t[0 + 1 * 2] - t[0 + 0 * 2] ) * ( phy[1 + j * 2] - t[1 + 0 * 2] )
+                               - ( t[1 + 1 * 2] - t[1 + 0 * 2] ) * ( phy[0 + j * 2] - t[0 + 0 * 2] ) )
+                             / ( ( t[1 + 2 * 2] - t[1 + 0 * 2] ) * ( t[0 + 1 * 2]   - t[0 + 0 * 2] )
+                                 - ( t[0 + 2 * 2] - t[0 + 0 * 2] ) * ( t[1 + 1 * 2]   - t[1 + 0 * 2] ) );
+        }
+        return;
+    }
 //****************************************************************************80
 
-void triangle_order3_reference_to_physical ( double t[], int n,
-  double ref[], double phy[] )
+    void triangle_order3_reference_to_physical ( double t[], int n,
+            double ref[], double phy[] )
 
 //****************************************************************************80
 //
@@ -7355,26 +7354,26 @@ void triangle_order3_reference_to_physical ( double t[], int n,
 //    Output, double PHY[2*N], corresponding points in the
 //    physical triangle.
 //
-{
-  int i;
-  int j;
-
-  for ( i = 0; i < 2; i++ )
-  {
-    for ( j = 0; j < n; j++ )
     {
-      phy[i+j*2] = t[i+0*2] * ( 1.0 - ref[0+j*2] - ref[1+j*2] )
-                 + t[i+1*2] *       + ref[0+j*2]
-                 + t[i+2*2] *                    + ref[1+j*2];
-    }
-  }
+        int i;
+        int j;
 
-  return;
-}
+        for ( i = 0; i < 2; i++ )
+        {
+            for ( j = 0; j < n; j++ )
+            {
+                phy[i + j * 2] = t[i + 0 * 2] * ( 1.0 - ref[0 + j * 2] - ref[1 + j * 2] )
+                                 + t[i + 1 * 2] *       + ref[0 + j * 2]
+                                 + t[i + 2 * 2] *                    + ref[1 + j * 2];
+            }
+        }
+
+        return;
+    }
 //****************************************************************************80
 
-void triangle_order6_physical_to_reference ( double t[2*6], int n,
-  double phy[], double ref[] )
+    void triangle_order6_physical_to_reference ( double t[2 * 6], int n,
+            double phy[], double ref[] )
 
 //****************************************************************************80
 //
@@ -7435,94 +7434,94 @@ void triangle_order6_physical_to_reference ( double t[2*6], int n,
 //    Output, double REF(2,N), the coordinates of the corresponding
 //    points in the reference space.
 //
-{
-  double a[2];
-  double b[2];
-  double c[2];
-  double d[2];
-  double det;
-  double dx[2];
-  double e[2];
-  double f[2];
-  double fun[2];
-  double fun_norm;
-  int i;
-  int it;
-  int j;
-  double jac[2*2];
-  int it_max = 10;
-  double it_tol = 0.000001;
+    {
+        double a[2];
+        double b[2];
+        double c[2];
+        double d[2];
+        double det;
+        double dx[2];
+        double e[2];
+        double f[2];
+        double fun[2];
+        double fun_norm;
+        int i;
+        int it;
+        int j;
+        double jac[2 * 2];
+        int it_max = 10;
+        double it_tol = 0.000001;
 //
 //  Set iteration parameters.
 //
-  for ( i = 0; i < 2; i++ )
-  {
-    a[i] =   2.0 * t[i+0*2] + 2.0 * t[i+1*2] - 4.0 * t[i+3*2];
-    b[i] =   4.0 * t[i+0*2] - 4.0 * t[i+3*2] + 4.0 * t[i+4*2] - 4.0 * t[i+5*2];
-    c[i] =   2.0 * t[i+0*2] + 2.0 * t[i+2*2] - 4.0 * t[i+5*2];
+        for ( i = 0; i < 2; i++ )
+        {
+            a[i] =   2.0 * t[i + 0 * 2] + 2.0 * t[i + 1 * 2] - 4.0 * t[i + 3 * 2];
+            b[i] =   4.0 * t[i + 0 * 2] - 4.0 * t[i + 3 * 2] + 4.0 * t[i + 4 * 2] - 4.0 * t[i + 5 * 2];
+            c[i] =   2.0 * t[i + 0 * 2] + 2.0 * t[i + 2 * 2] - 4.0 * t[i + 5 * 2];
 
-    d[i] = - 3.0 * t[i+0*2] - t[i+1*2] + 4.0 * t[i+3*2];
-    e[i] = - 3.0 * t[i+0*2] - t[i+2*2] + 4.0 * t[i+5*2];
+            d[i] = - 3.0 * t[i + 0 * 2] - t[i + 1 * 2] + 4.0 * t[i + 3 * 2];
+            e[i] = - 3.0 * t[i + 0 * 2] - t[i + 2 * 2] + 4.0 * t[i + 5 * 2];
 
-    f[i] =   t[i+0*2];
-  }
+            f[i] =   t[i + 0 * 2];
+        }
 //
 //  Initialize the points by inverting the linear map.
 //
-  triangle_order3_physical_to_reference ( t, n, phy, ref );
+        triangle_order3_physical_to_reference ( t, n, phy, ref );
 //
 //  Carry out the Newton iteration.
 //
-  for ( j = 0; j < n; j++ )
-  {
-    for ( it = 0; it < it_max; it++ )
-    {
-      for ( i = 0; i < 2; i++ )
-      {
-        fun[i] = a[i] * ref[0+j*2] * ref[0+j*2]
-               + b[i] * ref[0+j*2] * ref[1+j*2]
-               + c[i] * ref[1+j*2] * ref[1+j*2]
-               + d[i] * ref[0+j*2]
-               + e[i] * ref[1+j*2]
-               + f[i]
-               - phy[i+j*2];
-      }
+        for ( j = 0; j < n; j++ )
+        {
+            for ( it = 0; it < it_max; it++ )
+            {
+                for ( i = 0; i < 2; i++ )
+                {
+                    fun[i] = a[i] * ref[0 + j * 2] * ref[0 + j * 2]
+                             + b[i] * ref[0 + j * 2] * ref[1 + j * 2]
+                             + c[i] * ref[1 + j * 2] * ref[1 + j * 2]
+                             + d[i] * ref[0 + j * 2]
+                             + e[i] * ref[1 + j * 2]
+                             + f[i]
+                             - phy[i + j * 2];
+                }
 
-      fun_norm = sqrt ( pow ( fun[0], 2 ) + pow ( fun[1], 2 ) );
+                fun_norm = sqrt ( pow ( fun[0], 2 ) + pow ( fun[1], 2 ) );
 
-      if ( fun_norm <= it_tol )
-      {
-        break;
-      }
+                if ( fun_norm <= it_tol )
+                {
+                    break;
+                }
 
-      jac[0+0*2] = 2.0 * a[0] * ref[0+j*2] + b[0] * ref[1+j*2] + d[0];
-      jac[1+0*2] = 2.0 * a[1] * ref[0+j*2] + b[1] * ref[1+j*2] + d[1];
-      jac[0+1*2] = b[0] * ref[0+j*2] + 2.0 * c[0] * ref[1+j*2] + e[0];
-      jac[1+1*2] = b[1] * ref[0+j*2] + 2.0 * c[1] * ref[1+j*2] + e[1];
+                jac[0 + 0 * 2] = 2.0 * a[0] * ref[0 + j * 2] + b[0] * ref[1 + j * 2] + d[0];
+                jac[1 + 0 * 2] = 2.0 * a[1] * ref[0 + j * 2] + b[1] * ref[1 + j * 2] + d[1];
+                jac[0 + 1 * 2] = b[0] * ref[0 + j * 2] + 2.0 * c[0] * ref[1 + j * 2] + e[0];
+                jac[1 + 1 * 2] = b[1] * ref[0 + j * 2] + 2.0 * c[1] * ref[1 + j * 2] + e[1];
 
-      det = jac[0+0*2] * jac[1+1*2] - jac[0+1*2] * jac[1+0*2];
+                det = jac[0 + 0 * 2] * jac[1 + 1 * 2] - jac[0 + 1 * 2] * jac[1 + 0 * 2];
 
-      if ( det == 0.0 )
-      {
-        std::cout << "\n";
-        std::cout << "TRIANGLE_ORDER6_PHYSICAL_TO_REFERENCE - Fatal error!\n";
-        std::cout << "  The jacobian of the mapping is singular.\n";
-      }
+                if ( det == 0.0 )
+                {
+                    std::cout << "\n";
+                    std::cout << "TRIANGLE_ORDER6_PHYSICAL_TO_REFERENCE - Fatal error!\n";
+                    std::cout << "  The jacobian of the mapping is singular.\n";
+                }
 
-      dx[0] = (  jac[1+1*2] * fun[0] - jac[0+1*2] * fun[1] ) / det;
-      dx[1] = ( -jac[1+0*2] * fun[0] + jac[0+0*2] * fun[1] ) / det;
+                dx[0] = (  jac[1 + 1 * 2] * fun[0] - jac[0 + 1 * 2] * fun[1] ) / det;
+                dx[1] = ( -jac[1 + 0 * 2] * fun[0] + jac[0 + 0 * 2] * fun[1] ) / det;
 
-      ref[0+j*2] = ref[0+j*2] - dx[0];
-      ref[1+j*2] = ref[1+j*2] - dx[1];
+                ref[0 + j * 2] = ref[0 + j * 2] - dx[0];
+                ref[1 + j * 2] = ref[1 + j * 2] - dx[1];
+            }
+        }
+
+        return;
     }
-  }
-
-  return;
-}
 //****************************************************************************80
 
-void triangle_order6_reference_to_physical ( double t[], int n,
-  double ref[], double phy[] )
+    void triangle_order6_reference_to_physical ( double t[], int n,
+            double ref[], double phy[] )
 
 //****************************************************************************80
 //
@@ -7582,54 +7581,54 @@ void triangle_order6_reference_to_physical ( double t[], int n,
 //    Output, double PHY[2*N], corresponding points in the
 //    physical triangle.
 //
-{
-  double a[2];
-  double b[2];
-  double c[2];
-  double d[2];
-  double e[2];
-  double f[2];
-  int i;
-  int j;
-
-  for ( i = 0; i < 2; i++ )
-  {
-    a[i] =   2.0 * t[i+0*2] + 2.0 * t[i+1*2]
-           - 4.0 * t[i+3*2];
-
-    b[i] =   4.0 * t[i+0*2]
-           - 4.0 * t[i+3*2] + 4.0 * t[i+4*2] - 4.0 * t[i+5*2];
-
-    c[i] =   2.0 * t[i+0*2]                  + 2.0 * t[i+2*2]
-                                             - 4.0 * t[i+5*2];
-
-    d[i] = - 3.0 * t[i+0*2] -       t[i+1*2]
-           + 4.0 * t[i+3*2];
-
-    e[i] = - 3.0 * t[i+0*2]                  -       t[i+2*2]
-                                             + 4.0 * t[i+5*2];
-    f[i] =         t[i+0*2];
-
-  }
-
-  for ( i = 0; i < 2; i++ )
-  {
-    for ( j = 0; j < n; j++ )
     {
-      phy[i+j*2] = a[i] * ref[0+j*2] * ref[0+j*2]
-                 + b[i] * ref[0+j*2] * ref[1+j*2]
-                 + c[i] * ref[1+j*2] * ref[1+j*2]
-                 + d[i] * ref[0+j*2]
-                 + e[i] * ref[1+j*2]
-                 + f[i];
-    }
-  }
+        double a[2];
+        double b[2];
+        double c[2];
+        double d[2];
+        double e[2];
+        double f[2];
+        int i;
+        int j;
 
-  return;
-}
+        for ( i = 0; i < 2; i++ )
+        {
+            a[i] =   2.0 * t[i + 0 * 2] + 2.0 * t[i + 1 * 2]
+                     - 4.0 * t[i + 3 * 2];
+
+            b[i] =   4.0 * t[i + 0 * 2]
+                     - 4.0 * t[i + 3 * 2] + 4.0 * t[i + 4 * 2] - 4.0 * t[i + 5 * 2];
+
+            c[i] =   2.0 * t[i + 0 * 2]                  + 2.0 * t[i + 2 * 2]
+                     - 4.0 * t[i + 5 * 2];
+
+            d[i] = - 3.0 * t[i + 0 * 2] -       t[i + 1 * 2]
+                   + 4.0 * t[i + 3 * 2];
+
+            e[i] = - 3.0 * t[i + 0 * 2]                  -       t[i + 2 * 2]
+                   + 4.0 * t[i + 5 * 2];
+            f[i] =         t[i + 0 * 2];
+
+        }
+
+        for ( i = 0; i < 2; i++ )
+        {
+            for ( j = 0; j < n; j++ )
+            {
+                phy[i + j * 2] = a[i] * ref[0 + j * 2] * ref[0 + j * 2]
+                                 + b[i] * ref[0 + j * 2] * ref[1 + j * 2]
+                                 + c[i] * ref[1 + j * 2] * ref[1 + j * 2]
+                                 + d[i] * ref[0 + j * 2]
+                                 + e[i] * ref[1 + j * 2]
+                                 + f[i];
+            }
+        }
+
+        return;
+    }
 //****************************************************************************80
 
-void triangle_reference_sample ( int n, int *seed, double p[] )
+    void triangle_reference_sample ( int n, int *seed, double p[] )
 
 //****************************************************************************80
 //
@@ -7671,17 +7670,17 @@ void triangle_reference_sample ( int n, int *seed, double p[] )
 //
 //    Output, double P[2*N], a random point in the triangle.
 //
-{
+    {
 # define DIM_NUM 2
 
-  double alpha;
-  double beta;
-  int j;
-  double r;
+        double alpha;
+        double beta;
+        int j;
+        double r;
 
-  for ( j = 0; j < n; j++ )
-  {
-    r = r8_uniform_01 ( seed );
+        for ( j = 0; j < n; j++ )
+        {
+            r = r8_uniform_01 ( seed );
 //
 //  Interpret R as a percentage of the triangle's area.
 //
@@ -7691,22 +7690,22 @@ void triangle_reference_sample ( int n, int *seed, double p[] )
 //  The line L will intersect sides 2 and 3 at a fraction
 //  ALPHA = SQRT ( R ) of the distance from vertex 1 to vertices 2 and 3.
 //
-    alpha = sqrt ( r );
+            alpha = sqrt ( r );
 //
 //  Now choose, uniformly at random, a point on the line L.
 //
-    beta = r8_uniform_01 ( seed );
+            beta = r8_uniform_01 ( seed );
 
-    p[0+j*2] = ( 1.0 - beta ) * alpha;
-    p[1+j*2] =         beta   * alpha;
-  }
+            p[0 + j * 2] = ( 1.0 - beta ) * alpha;
+            p[1 + j * 2] =         beta   * alpha;
+        }
 
-  return;
+        return;
 # undef DIM_NUM
-}
+    }
 //****************************************************************************80
 
-void triangle_sample ( double t[2*3], int n, int *seed, double p[] )
+    void triangle_sample ( double t[2 * 3], int n, int *seed, double p[] )
 
 //****************************************************************************80
 //
@@ -7736,19 +7735,19 @@ void triangle_sample ( double t[2*3], int n, int *seed, double p[] )
 //
 //    Output, double P[2*N], a random point in the triangle.
 //
-{
+    {
 # define DIM_NUM 2
 
-  double alpha;
-  double beta;
-  int j;
-  double r;
-  double p12[DIM_NUM];
-  double p13[DIM_NUM];
+        double alpha;
+        double beta;
+        int j;
+        double r;
+        double p12[DIM_NUM];
+        double p13[DIM_NUM];
 
-  for ( j = 0; j < n; j++ )
-  {
-    r = r8_uniform_01 ( seed );
+        for ( j = 0; j < n; j++ )
+        {
+            r = r8_uniform_01 ( seed );
 //
 //  Interpret R as a percentage of the triangle's area.
 //
@@ -7758,32 +7757,32 @@ void triangle_sample ( double t[2*3], int n, int *seed, double p[] )
 //  The line L will intersect sides 2 and 3 at a fraction
 //  ALPHA = SQRT ( R ) of the distance from vertex 1 to vertices 2 and 3.
 //
-    alpha = sqrt ( r );
+            alpha = sqrt ( r );
 //
 //  Determine the coordinates of the points on sides 2 and 3 intersected
 //  by line L.
 //
-    p12[0] = ( 1.0 - alpha ) * t[0+0*2] + alpha * t[0+1*2];
-    p12[1] = ( 1.0 - alpha ) * t[1+0*2] + alpha * t[1+1*2];
+            p12[0] = ( 1.0 - alpha ) * t[0 + 0 * 2] + alpha * t[0 + 1 * 2];
+            p12[1] = ( 1.0 - alpha ) * t[1 + 0 * 2] + alpha * t[1 + 1 * 2];
 
-    p13[0] = ( 1.0 - alpha ) * t[0+0*2] + alpha * t[0+2*2];;
-    p13[1] = ( 1.0 - alpha ) * t[1+0*2] + alpha * t[1+2*2];;
+            p13[0] = ( 1.0 - alpha ) * t[0 + 0 * 2] + alpha * t[0 + 2 * 2];;
+            p13[1] = ( 1.0 - alpha ) * t[1 + 0 * 2] + alpha * t[1 + 2 * 2];;
 //
 //  Now choose, uniformly at random, a point on the line L.
 //
-    beta = r8_uniform_01 ( seed );
+            beta = r8_uniform_01 ( seed );
 
-    p[0+j*2] = ( 1.0 - beta ) * p12[0] + beta * p13[0];
-    p[1+j*2] = ( 1.0 - beta ) * p12[1] + beta * p13[1];
-  }
+            p[0 + j * 2] = ( 1.0 - beta ) * p12[0] + beta * p13[0];
+            p[1 + j * 2] = ( 1.0 - beta ) * p12[1] + beta * p13[1];
+        }
 
-  return;
+        return;
 # undef DIM_NUM
-}
+    }
 //****************************************************************************80
 
-double triangulation_area ( int node_num, double node_xy[], int element_order,
-  int element_num, int element_node[] )
+    double triangulation_area ( int node_num, double node_xy[], int element_order,
+                                int element_num, int element_node[] )
 
 //****************************************************************************80
 //
@@ -7818,38 +7817,38 @@ double triangulation_area ( int node_num, double node_xy[], int element_order,
 //
 //    Output, double TRIANGULATION_AREA, the area.
 //
-{
-  int element;
-  double element_area;
-  double element_xy[2*3];
-  int j;
-  int nj;
-  double value;
-
-  value = 0.0;
-
-  for ( element = 0; element < element_num; element++ )
-  {
-    for ( j = 0; j < 3; j++ )
     {
-      nj = element_node[j+element*element_order];
-      element_xy[0+j*2] = node_xy[0+nj*2];
-      element_xy[1+j*2] = node_xy[1+nj*2];
+        int element;
+        double element_area;
+        double element_xy[2 * 3];
+        int j;
+        int nj;
+        double value;
+
+        value = 0.0;
+
+        for ( element = 0; element < element_num; element++ )
+        {
+            for ( j = 0; j < 3; j++ )
+            {
+                nj = element_node[j + element * element_order];
+                element_xy[0 + j * 2] = node_xy[0 + nj * 2];
+                element_xy[1 + j * 2] = node_xy[1 + nj * 2];
+            }
+
+            element_area = 0.5 * (
+                               element_xy[0 + 0 * 2] * ( element_xy[1 + 1 * 2] - element_xy[1 + 2 * 2] ) +
+                               element_xy[0 + 1 * 2] * ( element_xy[1 + 2 * 2] - element_xy[1 + 0 * 2] ) +
+                               element_xy[0 + 2 * 2] * ( element_xy[1 + 0 * 2] - element_xy[1 + 1 * 2] ) );
+
+            value = value + element_area;
+        }
+        return value;
     }
-
-    element_area = 0.5 * (
-      element_xy[0+0*2] * ( element_xy[1+1*2] - element_xy[1+2*2] ) +
-      element_xy[0+1*2] * ( element_xy[1+2*2] - element_xy[1+0*2] ) +
-      element_xy[0+2*2] * ( element_xy[1+0*2] - element_xy[1+1*2] ) );
-
-    value = value + element_area;
-  }
-  return value;
-}
 //****************************************************************************80
 
-double triangulation_areas ( int node_num, double node_xy[], int triangle_order,
-  int triangle_num, int triangle_node[], double triangle_area[] )
+    double triangulation_areas ( int node_num, double node_xy[], int triangle_order,
+                                 int triangle_num, int triangle_node[], double triangle_area[] )
 
 //****************************************************************************80
 //
@@ -7890,40 +7889,40 @@ double triangulation_areas ( int node_num, double node_xy[], int triangle_order,
 //
 //    Output, double TRIANGULATION_AREAS, the area of the triangulation.
 //
-{
-  int j;
-  int nj;
-  double t_xy[2*3];
-  int triangle;
-  double triangulation_area;
-
-  triangulation_area = 0.0;
-
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    for ( j = 0; j < 3; j++ )
     {
-      nj = triangle_node[j+triangle*triangle_order];
-      t_xy[0+j*2] = node_xy[0+nj*2];
-      t_xy[1+j*2] = node_xy[1+nj*2];
+        int j;
+        int nj;
+        double t_xy[2 * 3];
+        int triangle;
+        double triangulation_area;
+
+        triangulation_area = 0.0;
+
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            for ( j = 0; j < 3; j++ )
+            {
+                nj = triangle_node[j + triangle * triangle_order];
+                t_xy[0 + j * 2] = node_xy[0 + nj * 2];
+                t_xy[1 + j * 2] = node_xy[1 + nj * 2];
+            }
+
+            triangle_area[triangle] = 0.5 * (
+                                          t_xy[0 + 0 * 2] * ( t_xy[1 + 1 * 2] - t_xy[1 + 2 * 2] ) +
+                                          t_xy[0 + 1 * 2] * ( t_xy[1 + 2 * 2] - t_xy[1 + 0 * 2] ) +
+                                          t_xy[0 + 2 * 2] * ( t_xy[1 + 0 * 2] - t_xy[1 + 1 * 2] ) );
+
+            triangulation_area = triangulation_area + triangle_area[triangle];
+        }
+
+        return triangulation_area;
     }
-
-    triangle_area[triangle] = 0.5 * (
-      t_xy[0+0*2] * ( t_xy[1+1*2] - t_xy[1+2*2] ) +
-      t_xy[0+1*2] * ( t_xy[1+2*2] - t_xy[1+0*2] ) +
-      t_xy[0+2*2] * ( t_xy[1+0*2] - t_xy[1+1*2] ) );
-
-    triangulation_area = triangulation_area + triangle_area[triangle];
-  }
-
-  return triangulation_area;
-}
 //****************************************************************************80
 
-double triangulation_delaunay_discrepancy_compute ( int node_num,
-  double node_xy[], int triangle_order, int triangle_num, int triangle_node[],
-  int triangle_neighbor[], double *angle_min, int *angle_min_triangle,
-  double *angle_max, int *angle_max_triangle )
+    double triangulation_delaunay_discrepancy_compute ( int node_num,
+            double node_xy[], int triangle_order, int triangle_num, int triangle_node[],
+            int triangle_neighbor[], double *angle_min, int *angle_min_triangle,
+            double *angle_max, int *angle_max_triangle )
 
 //****************************************************************************80
 //
@@ -8039,58 +8038,58 @@ double triangulation_delaunay_discrepancy_compute ( int node_num,
 //    VERY NEAR ZERO is a numerically ambiguous case.
 //    NEGATIVE indicates the triangulation is not Delaunay.
 //
-{
-  double angle_min1;
-  double angle_min2;
-  double *angles1;
-  double *angles2;
-  int i;
-  int i1;
-  int i2;
-  int i3;
-  int i4;
-  int n1;
-  int n2;
-  int n3;
-  int n4;
-  int neighbor;
-  double pi = 3.141592653589793;
-  double t[2*3];
-  int triangle_index;
-  int triangle1;
-  int triangle2;
-  double value;
+    {
+        double angle_min1;
+        double angle_min2;
+        double *angles1;
+        double *angles2;
+        int i;
+        int i1;
+        int i2;
+        int i3;
+        int i4;
+        int n1;
+        int n2;
+        int n3;
+        int n4;
+        int neighbor;
+        double pi = 3.141592653589793;
+        double t[2 * 3];
+        int triangle_index;
+        int triangle1;
+        int triangle2;
+        double value;
 
-  *angle_max = 0.0;
-  *angle_max_triangle = - 1;
-  *angle_min = pi;
-  *angle_min_triangle = -1;
-  value = 0.0;
+        *angle_max = 0.0;
+        *angle_max_triangle = - 1;
+        *angle_min = pi;
+        *angle_min_triangle = -1;
+        value = 0.0;
 //
 //  Consider triangle TRIANGLE1
 //
-  for ( triangle1 = 0; triangle1 < triangle_num; triangle1++ )
-  {
+        for ( triangle1 = 0; triangle1 < triangle_num; triangle1++ )
+        {
 //
 //  Consider the side opposite vertex NEIGHBOR.
 //
-    for ( neighbor = 0; neighbor < 3; neighbor++ )
-    {
-      triangle2 = triangle_neighbor[neighbor+triangle1*3];
+            for ( neighbor = 0; neighbor < 3; neighbor++ )
+            {
+                triangle2 = triangle_neighbor[neighbor + triangle1 * 3];
 //
 //  There might be no neighbor on side NEIGHBOR.
 //
-      if ( triangle2 < 0 )
-      {
-        continue;
-      }
+                if ( triangle2 < 0 )
+                {
+                    continue;
+                }
 //
 //  We only need to check a pair of triangles once.
 //
-      if ( triangle2 < triangle1 )
-      {
-        continue;
-      }
+                if ( triangle2 < triangle1 )
+                {
+                    continue;
+                }
 //
 //  List the vertices of the quadrilateral in such a way
 //  that the nodes of triangle 1 come first.
@@ -8098,157 +8097,157 @@ double triangulation_delaunay_discrepancy_compute ( int node_num,
 //  We rely on a property of the TRIANGLE_NEIGHBOR array, namely, that
 //  neighbor #1 is on the side opposite to vertex #1, and so on.
 //
-      i1 = i4_wrap ( neighbor + 2, 0, 2 );
-      i2 = i4_wrap ( neighbor,     0, 2 );
-      i3 = i4_wrap ( neighbor + 1, 0, 2 );
+                i1 = i4_wrap ( neighbor + 2, 0, 2 );
+                i2 = i4_wrap ( neighbor,     0, 2 );
+                i3 = i4_wrap ( neighbor + 1, 0, 2 );
 
-      n1 = triangle_node[i1+triangle1*triangle_order];
-      n2 = triangle_node[i2+triangle1*triangle_order];
-      n3 = triangle_node[i3+triangle1*triangle_order];
+                n1 = triangle_node[i1 + triangle1 * triangle_order];
+                n2 = triangle_node[i2 + triangle1 * triangle_order];
+                n3 = triangle_node[i3 + triangle1 * triangle_order];
 //
 //  The "odd" or "opposing" node of the neighboring triangle
 //  is the one which follows common node I3.
 //
-      n4 = -1;
-      for ( i = 0; i < 3; i++ )
-      {
-        if ( triangle_node[i+triangle2*triangle_order] == n3 )
-        {
-          i4 = i + 1;
-          i4 = i4_wrap ( i4, 0, 2 );
-          n4 = triangle_node[i4+triangle2*triangle_order];
-          break;
-        }
-      }
+                n4 = -1;
+                for ( i = 0; i < 3; i++ )
+                {
+                    if ( triangle_node[i + triangle2 * triangle_order] == n3 )
+                    {
+                        i4 = i + 1;
+                        i4 = i4_wrap ( i4, 0, 2 );
+                        n4 = triangle_node[i4 + triangle2 * triangle_order];
+                        break;
+                    }
+                }
 
-      if ( n4 == -1 )
-      {
-        std::cout << "\n";
-        std::cout << "TRIANGULATION_DELAUNAY_DISCREPANCY_COMPUTE - Fatal error/!\n";
-        std::cout << "  Could not identify the fourth node.\n";
-        std::cout << "\n";
-        std::cout << "  Triangle1 = " << triangle1 << "\n";
-        std::cout << "  Nodes =     ";
-        for ( i = 0; i < 3; i++ )
-        {
-          std::cout << "  " << triangle_node[i+triangle1*triangle_order];
-        }
-        std::cout << "\n";
-        std::cout << "  Neighbors =     ";
-        for ( i = 0; i < 3; i++ )
-        {
-          std::cout << "  " << triangle_neighbor[i+triangle1*3];
-        }
-        std::cout << "\n";
-        std::cout << "\n";
-        std::cout << "  Neighbor index = " << neighbor << "\n";
-        std::cout << "\n";
-        std::cout << "  Triangle2 = " << triangle2 << "\n";
-        std::cout << "  Nodes =     ";
-        for ( i = 0; i < 3; i++ )
-        {
-          std::cout << "  " << triangle_node[i+triangle2*triangle_order];
-        }
-        std::cout << "\n";
-        std::cout << "  Neighbors =     ";
-        for ( i = 0; i < 3; i++ )
-        {
-          std::cout << "  " << triangle_neighbor[i+triangle2*3];
-        }
-        std::cout << "\n";
-        exit ( 1 );
-      }
+                if ( n4 == -1 )
+                {
+                    std::cout << "\n";
+                    std::cout << "TRIANGULATION_DELAUNAY_DISCREPANCY_COMPUTE - Fatal error/!\n";
+                    std::cout << "  Could not identify the fourth node.\n";
+                    std::cout << "\n";
+                    std::cout << "  Triangle1 = " << triangle1 << "\n";
+                    std::cout << "  Nodes =     ";
+                    for ( i = 0; i < 3; i++ )
+                    {
+                        std::cout << "  " << triangle_node[i + triangle1 * triangle_order];
+                    }
+                    std::cout << "\n";
+                    std::cout << "  Neighbors =     ";
+                    for ( i = 0; i < 3; i++ )
+                    {
+                        std::cout << "  " << triangle_neighbor[i + triangle1 * 3];
+                    }
+                    std::cout << "\n";
+                    std::cout << "\n";
+                    std::cout << "  Neighbor index = " << neighbor << "\n";
+                    std::cout << "\n";
+                    std::cout << "  Triangle2 = " << triangle2 << "\n";
+                    std::cout << "  Nodes =     ";
+                    for ( i = 0; i < 3; i++ )
+                    {
+                        std::cout << "  " << triangle_node[i + triangle2 * triangle_order];
+                    }
+                    std::cout << "\n";
+                    std::cout << "  Neighbors =     ";
+                    for ( i = 0; i < 3; i++ )
+                    {
+                        std::cout << "  " << triangle_neighbor[i + triangle2 * 3];
+                    }
+                    std::cout << "\n";
+                    exit ( 1 );
+                }
 //
 //  Compute the minimum angle for (I1,I2,I3) and (I1,I3,I4).
 //
-      t[0+0*2] = node_xy[0+n1*2];
-      t[1+0*2] = node_xy[1+n1*2];
-      t[0+1*2] = node_xy[0+n2*2];
-      t[1+1*2] = node_xy[1+n2*2];
-      t[0+2*2] = node_xy[0+n3*2];
-      t[1+2*2] = node_xy[1+n3*2];
-      angles1 = triangle_angles_2d_new ( t );
+                t[0 + 0 * 2] = node_xy[0 + n1 * 2];
+                t[1 + 0 * 2] = node_xy[1 + n1 * 2];
+                t[0 + 1 * 2] = node_xy[0 + n2 * 2];
+                t[1 + 1 * 2] = node_xy[1 + n2 * 2];
+                t[0 + 2 * 2] = node_xy[0 + n3 * 2];
+                t[1 + 2 * 2] = node_xy[1 + n3 * 2];
+                angles1 = triangle_angles_2d_new ( t );
 
-      t[0+0*2] = node_xy[0+n1*2];
-      t[1+0*2] = node_xy[1+n1*2];
-      t[0+1*2] = node_xy[0+n3*2];
-      t[1+1*2] = node_xy[1+n3*2];
-      t[0+2*2] = node_xy[0+n4*2];
-      t[1+2*2] = node_xy[1+n4*2];
-      angles2 = triangle_angles_2d_new ( t );
+                t[0 + 0 * 2] = node_xy[0 + n1 * 2];
+                t[1 + 0 * 2] = node_xy[1 + n1 * 2];
+                t[0 + 1 * 2] = node_xy[0 + n3 * 2];
+                t[1 + 1 * 2] = node_xy[1 + n3 * 2];
+                t[0 + 2 * 2] = node_xy[0 + n4 * 2];
+                t[1 + 2 * 2] = node_xy[1 + n4 * 2];
+                angles2 = triangle_angles_2d_new ( t );
 
-      angle_min1 =
-        r8_min ( r8vec_min ( 3, angles1 ), r8vec_min ( 3, angles2 ) );
+                angle_min1 =
+                    r8_min ( r8vec_min ( 3, angles1 ), r8vec_min ( 3, angles2 ) );
 
-      if ( *angle_max < r8vec_max ( 3, angles1 ) )
-      {
-        *angle_max = r8vec_max ( 3, angles1 );
-        *angle_max_triangle = triangle1;
-      }
+                if ( *angle_max < r8vec_max ( 3, angles1 ) )
+                {
+                    *angle_max = r8vec_max ( 3, angles1 );
+                    *angle_max_triangle = triangle1;
+                }
 
-      if ( *angle_max < r8vec_max ( 3, angles2 ) )
-      {
-        *angle_max = r8vec_max ( 3, angles2 );
-        *angle_max_triangle = triangle2;
-      }
+                if ( *angle_max < r8vec_max ( 3, angles2 ) )
+                {
+                    *angle_max = r8vec_max ( 3, angles2 );
+                    *angle_max_triangle = triangle2;
+                }
 
-      if ( r8vec_min ( 3, angles1 ) < *angle_min )
-      {
-        *angle_min = r8vec_min ( 3, angles1 );
-        *angle_min_triangle = triangle1;
-      }
+                if ( r8vec_min ( 3, angles1 ) < *angle_min )
+                {
+                    *angle_min = r8vec_min ( 3, angles1 );
+                    *angle_min_triangle = triangle1;
+                }
 
-      if ( r8vec_min ( 3, angles2 ) < *angle_min )
-      {
-        *angle_min = r8vec_min ( 3, angles2 );
-        *angle_min_triangle = triangle2;
-      }
+                if ( r8vec_min ( 3, angles2 ) < *angle_min )
+                {
+                    *angle_min = r8vec_min ( 3, angles2 );
+                    *angle_min_triangle = triangle2;
+                }
 
-     delete [] angles1;
-     delete [] angles2;
+                delete [] angles1;
+                delete [] angles2;
 //
 //  Compute the minimum angle for (I1,I2,I4) and (I2,I3,I4).
 //
-      t[0+0*2] = node_xy[0+n1*2];
-      t[1+0*2] = node_xy[1+n1*2];
-      t[0+1*2] = node_xy[0+n2*2];
-      t[1+1*2] = node_xy[1+n2*2];
-      t[0+2*2] = node_xy[0+n4*2];
-      t[1+2*2] = node_xy[1+n4*2];
-      angles1 = triangle_angles_2d_new ( t );
+                t[0 + 0 * 2] = node_xy[0 + n1 * 2];
+                t[1 + 0 * 2] = node_xy[1 + n1 * 2];
+                t[0 + 1 * 2] = node_xy[0 + n2 * 2];
+                t[1 + 1 * 2] = node_xy[1 + n2 * 2];
+                t[0 + 2 * 2] = node_xy[0 + n4 * 2];
+                t[1 + 2 * 2] = node_xy[1 + n4 * 2];
+                angles1 = triangle_angles_2d_new ( t );
 
-      t[0+0*2] = node_xy[0+n3*2];
-      t[1+0*2] = node_xy[1+n3*2];
-      t[0+1*2] = node_xy[0+n3*2];
-      t[1+1*2] = node_xy[1+n3*2];
-      t[0+2*2] = node_xy[0+n4*2];
-      t[1+2*2] = node_xy[1+n4*2];
-      angles2 = triangle_angles_2d_new ( t );
+                t[0 + 0 * 2] = node_xy[0 + n3 * 2];
+                t[1 + 0 * 2] = node_xy[1 + n3 * 2];
+                t[0 + 1 * 2] = node_xy[0 + n3 * 2];
+                t[1 + 1 * 2] = node_xy[1 + n3 * 2];
+                t[0 + 2 * 2] = node_xy[0 + n4 * 2];
+                t[1 + 2 * 2] = node_xy[1 + n4 * 2];
+                angles2 = triangle_angles_2d_new ( t );
 
-      angle_min2 =
-        r8_min ( r8vec_min ( 3, angles1 ), r8vec_min ( 3, angles2 ) );
+                angle_min2 =
+                    r8_min ( r8vec_min ( 3, angles1 ), r8vec_min ( 3, angles2 ) );
 
-     delete [] angles1;
-     delete [] angles2;
+                delete [] angles1;
+                delete [] angles2;
 //
 //  Compare this value to the current minimum.
 //
-      value = r8_min ( value, angle_min1 - angle_min2 );
-    }
-  }
+                value = r8_min ( value, angle_min1 - angle_min2 );
+            }
+        }
 //
 //  Scale the results to degrees.
 //
-  value = value * 180.0 / pi;
-  *angle_max = *angle_max * 180.0 / pi;
-  *angle_min = *angle_min * 180.0 / pi;
+        value = value * 180.0 / pi;
+        *angle_max = *angle_max * 180.0 / pi;
+        *angle_min = *angle_min * 180.0 / pi;
 
-  return value;
-}
+        return value;
+    }
 //****************************************************************************80
 
-int *triangulation_neighbor_elements ( int triangle_order, int triangle_num,
-  int triangle_node[] )
+    int *triangulation_neighbor_elements ( int triangle_order, int triangle_num,
+                                           int triangle_node[] )
 
 //****************************************************************************80
 //
@@ -8345,21 +8344,21 @@ int *triangulation_neighbor_elements ( int triangle_order, int triangle_num,
 //    neighbor on that side.  In this case, that side of the triangle lies
 //    on the boundary of the triangulation.
 //
-{
-  int *col;
-  int i;
-  int icol;
-  int j;
-  int k;
-  int side1;
-  int side2;
-  int tri;
-  int tri1;
-  int tri2;
-  int *triangle_neighbor;
+    {
+        int *col;
+        int i;
+        int icol;
+        int j;
+        int k;
+        int side1;
+        int side2;
+        int tri;
+        int tri1;
+        int tri2;
+        int *triangle_neighbor;
 
-  triangle_neighbor = new int[3*triangle_num];
-  col = new int[4*(3*triangle_num)];
+        triangle_neighbor = new int[3 * triangle_num];
+        col = new int[4 * (3 * triangle_num)];
 //
 //  Step 1.
 //  From the list of nodes for triangle T, of the form: (I,J,K)
@@ -8371,57 +8370,57 @@ int *triangulation_neighbor_elements ( int triangle_order, int triangle_num,
 //
 //  where we choose (I,J,3,T) if I < J, or else (J,I,3,T)
 //
-  for ( tri = 0; tri < triangle_num; tri++ )
-  {
-    i = triangle_node[0+tri*triangle_order];
-    j = triangle_node[1+tri*triangle_order];
-    k = triangle_node[2+tri*triangle_order];
+        for ( tri = 0; tri < triangle_num; tri++ )
+        {
+            i = triangle_node[0 + tri * triangle_order];
+            j = triangle_node[1 + tri * triangle_order];
+            k = triangle_node[2 + tri * triangle_order];
 
-    if ( i < j )
-    {
-      col[0+(3*tri+0)*4] = i;
-      col[1+(3*tri+0)*4] = j;
-      col[2+(3*tri+0)*4] = 3;
-      col[3+(3*tri+0)*4] = tri + 1;
-    }
-    else
-    {
-      col[0+(3*tri+0)*4] = j;
-      col[1+(3*tri+0)*4] = i;
-      col[2+(3*tri+0)*4] = 3;
-      col[3+(3*tri+0)*4] = tri + 1;
-    }
+            if ( i < j )
+            {
+                col[0 + (3 * tri + 0) * 4] = i;
+                col[1 + (3 * tri + 0) * 4] = j;
+                col[2 + (3 * tri + 0) * 4] = 3;
+                col[3 + (3 * tri + 0) * 4] = tri + 1;
+            }
+            else
+            {
+                col[0 + (3 * tri + 0) * 4] = j;
+                col[1 + (3 * tri + 0) * 4] = i;
+                col[2 + (3 * tri + 0) * 4] = 3;
+                col[3 + (3 * tri + 0) * 4] = tri + 1;
+            }
 
-    if ( j < k )
-    {
-      col[0+(3*tri+1)*4] = j;
-      col[1+(3*tri+1)*4] = k;
-      col[2+(3*tri+1)*4] = 1;
-      col[3+(3*tri+1)*4] = tri + 1;
-    }
-    else
-    {
-      col[0+(3*tri+1)*4] = k;
-      col[1+(3*tri+1)*4] = j;
-      col[2+(3*tri+1)*4] = 1;
-      col[3+(3*tri+1)*4] = tri + 1;
-    }
+            if ( j < k )
+            {
+                col[0 + (3 * tri + 1) * 4] = j;
+                col[1 + (3 * tri + 1) * 4] = k;
+                col[2 + (3 * tri + 1) * 4] = 1;
+                col[3 + (3 * tri + 1) * 4] = tri + 1;
+            }
+            else
+            {
+                col[0 + (3 * tri + 1) * 4] = k;
+                col[1 + (3 * tri + 1) * 4] = j;
+                col[2 + (3 * tri + 1) * 4] = 1;
+                col[3 + (3 * tri + 1) * 4] = tri + 1;
+            }
 
-    if ( k < i )
-    {
-      col[0+(3*tri+2)*4] = k;
-      col[1+(3*tri+2)*4] = i;
-      col[2+(3*tri+2)*4] = 2;
-      col[3+(3*tri+2)*4] = tri + 1;
-    }
-    else
-    {
-      col[0+(3*tri+2)*4] = i;
-      col[1+(3*tri+2)*4] = k;
-      col[2+(3*tri+2)*4] = 2;
-      col[3+(3*tri+2)*4] = tri + 1;
-    }
-  }
+            if ( k < i )
+            {
+                col[0 + (3 * tri + 2) * 4] = k;
+                col[1 + (3 * tri + 2) * 4] = i;
+                col[2 + (3 * tri + 2) * 4] = 2;
+                col[3 + (3 * tri + 2) * 4] = tri + 1;
+            }
+            else
+            {
+                col[0 + (3 * tri + 2) * 4] = i;
+                col[1 + (3 * tri + 2) * 4] = k;
+                col[2 + (3 * tri + 2) * 4] = 2;
+                col[3 + (3 * tri + 2) * 4] = tri + 1;
+            }
+        }
 //
 //  Step 2. Perform an ascending dictionary sort on the neighbor relations.
 //  We only intend to sort on rows 1 and 2; the routine we call here
@@ -8433,55 +8432,55 @@ int *triangulation_neighbor_elements ( int triangle_order, int triangle_num,
 //  we make sure that these two columns occur consecutively.  That will
 //  make it easy to notice that the triangles are neighbors.
 //
-  i4col_sort_a ( 4, 3*triangle_num, col );
+        i4col_sort_a ( 4, 3 * triangle_num, col );
 //
 //  Step 3. Neighboring triangles show up as consecutive columns with
 //  identical first two entries.  Whenever you spot this happening,
 //  make the appropriate entries in TRIANGLE_NEIGHBOR.
 //
-  for ( j = 0; j < triangle_num; j++ )
-  {
-    for ( i = 0; i < 3; i++ )
-    {
-      triangle_neighbor[i+j*3] = -1;
+        for ( j = 0; j < triangle_num; j++ )
+        {
+            for ( i = 0; i < 3; i++ )
+            {
+                triangle_neighbor[i + j * 3] = -1;
+            }
+        }
+
+        icol = 1;
+
+        for ( ; ; )
+        {
+            if ( 3 * triangle_num <= icol )
+            {
+                break;
+            }
+
+            if ( col[0 + (icol - 1) * 4] != col[0 + icol * 4] ||
+                    col[1 + (icol - 1) * 4] != col[1 + icol * 4] )
+            {
+                icol = icol + 1;
+                continue;
+            }
+
+            side1 = col[2 + (icol - 1) * 4];
+            tri1 =  col[3 + (icol - 1) * 4];
+            side2 = col[2 + icol   * 4];
+            tri2 =  col[3 + icol   * 4];
+
+            triangle_neighbor[side1 - 1 + (tri1 - 1) * 3] = tri2;
+            triangle_neighbor[side2 - 1 + (tri2 - 1) * 3] = tri1;
+
+            icol = icol + 2;
+        }
+
+        delete [] col;
+
+        return triangle_neighbor;
     }
-  }
-
-  icol = 1;
-
-  for ( ; ; )
-  {
-    if ( 3 * triangle_num <= icol )
-    {
-      break;
-    }
-
-    if ( col[0+(icol-1)*4] != col[0+icol*4] ||
-         col[1+(icol-1)*4] != col[1+icol*4] )
-    {
-      icol = icol + 1;
-      continue;
-    }
-
-    side1 = col[2+(icol-1)*4];
-    tri1 =  col[3+(icol-1)*4];
-    side2 = col[2+ icol   *4];
-    tri2 =  col[3+ icol   *4];
-
-    triangle_neighbor[side1-1+(tri1-1)*3] = tri2;
-    triangle_neighbor[side2-1+(tri2-1)*3] = tri1;
-
-    icol = icol + 2;
-  }
-
-  delete [] col;
-
-  return triangle_neighbor;
-}
 //****************************************************************************80
 
-int *triangulation_node_order ( int triangle_order, int triangle_num,
-  int triangle_node[], int node_num )
+    int *triangulation_node_order ( int triangle_order, int triangle_num,
+                                    int triangle_node[], int node_num )
 
 //****************************************************************************80
 //
@@ -8520,46 +8519,46 @@ int *triangulation_node_order ( int triangle_order, int triangle_num,
 //    Output, integer TRIANGULATION_NODE_ORDER[NODE_NUM], the order of
 //    each node.
 //
-{
-  int i;
-  int node;
-  int *node_order;
-  int triangle;
-
-  node_order = new int[node_num];
-
-  for ( node = 0; node < node_num; node++ )
-  {
-    node_order[node] = 0;
-  }
-
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    for ( i = 0; i < triangle_order; i++ )
     {
-      node = triangle_node[i+triangle*triangle_order];
+        int i;
+        int node;
+        int *node_order;
+        int triangle;
 
-      if ( node < 1 || node_num < node )
-      {
-        std::cout << "\n";
-        std::cout << "TRIANGULATION_NODE_ORDER - Fatal error!\n";
-        std::cout << "  Illegal entry in TRIANGLE_NODE.\n";
-        node_order = NULL;
-        exit ( 1 );
-      }
-      else
-      {
-        node_order[node-1] = node_order[node-1] + 1;
-      }
+        node_order = new int[node_num];
+
+        for ( node = 0; node < node_num; node++ )
+        {
+            node_order[node] = 0;
+        }
+
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            for ( i = 0; i < triangle_order; i++ )
+            {
+                node = triangle_node[i + triangle * triangle_order];
+
+                if ( node < 1 || node_num < node )
+                {
+                    std::cout << "\n";
+                    std::cout << "TRIANGULATION_NODE_ORDER - Fatal error!\n";
+                    std::cout << "  Illegal entry in TRIANGLE_NODE.\n";
+                    node_order = NULL;
+                    exit ( 1 );
+                }
+                else
+                {
+                    node_order[node - 1] = node_order[node - 1] + 1;
+                }
+            }
+        }
+
+        return node_order;
     }
-  }
-
-  return node_order;
-}
 //****************************************************************************80
 
-int triangulation_order3_adj_count ( int node_num, int triangle_num,
-  int triangle_node[], int triangle_neighbor[], int adj_col[] )
+    int triangulation_order3_adj_count ( int node_num, int triangle_num,
+                                         int triangle_node[], int triangle_neighbor[], int adj_col[] )
 
 //****************************************************************************80
 //
@@ -8682,89 +8681,89 @@ int triangulation_order3_adj_count ( int node_num, int triangle_num,
 //    Output, int ADJ_COL[NODE_NUM+1].  Information about column J is stored
 //    in entries ADJ_COL(J) through ADJ_COL(J+1)-1 of ADJ.
 //
-{
-  int adj_num;
-  int i;
-  int n1;
-  int n2;
-  int n3;
-  int node;
-  int triangle;
-  int triangle_order = 3;
-  int triangle2;
+    {
+        int adj_num;
+        int i;
+        int n1;
+        int n2;
+        int n3;
+        int node;
+        int triangle;
+        int triangle_order = 3;
+        int triangle2;
 
-  adj_num = 0;
+        adj_num = 0;
 //
 //  Set every node to be adjacent to itself.
 //
-  for ( node = 0; node < node_num; node++ )
-  {
-    adj_col[node] = 1;
-  }
+        for ( node = 0; node < node_num; node++ )
+        {
+            adj_col[node] = 1;
+        }
 //
 //  Examine each triangle.
 //
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    n1 = triangle_node[0+triangle*triangle_order];
-    n2 = triangle_node[1+triangle*triangle_order];
-    n3 = triangle_node[2+triangle*triangle_order];
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            n1 = triangle_node[0 + triangle * triangle_order];
+            n2 = triangle_node[1 + triangle * triangle_order];
+            n3 = triangle_node[2 + triangle * triangle_order];
 //
 //  Add edge (1,2) if this is the first occurrence,
 //  that is, if the edge (1,2) is on a boundary (TRIANGLE2 <= 0)
 //  or if this triangle is the first of the pair in which the edge
 //  occurs (TRIANGLE < TRIANGLE2).
 //
-    triangle2 = triangle_neighbor[0+triangle*3];
+            triangle2 = triangle_neighbor[0 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_col[n1-1] = adj_col[n1-1] + 1;
-      adj_col[n2-1] = adj_col[n2-1] + 1;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_col[n1 - 1] = adj_col[n1 - 1] + 1;
+                adj_col[n2 - 1] = adj_col[n2 - 1] + 1;
+            }
 //
 //  Add edge (2,3).
 //
-    triangle2 = triangle_neighbor[1+triangle*3];
+            triangle2 = triangle_neighbor[1 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_col[n2-1] = adj_col[n2-1] + 1;
-      adj_col[n3-1] = adj_col[n3-1] + 1;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_col[n2 - 1] = adj_col[n2 - 1] + 1;
+                adj_col[n3 - 1] = adj_col[n3 - 1] + 1;
+            }
 //
 //  Add edge (3,1).
 //
-    triangle2 = triangle_neighbor[2+triangle*3];
+            triangle2 = triangle_neighbor[2 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_col[n1-1] = adj_col[n1-1] + 1;
-      adj_col[n3-1] = adj_col[n3-1] + 1;
-    }
-  }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_col[n1 - 1] = adj_col[n1 - 1] + 1;
+                adj_col[n3 - 1] = adj_col[n3 - 1] + 1;
+            }
+        }
 //
 //  We used ADJ_COL to count the number of entries in each column.
 //  Convert it to pointers into the ADJ array.
 //
-  for ( node = node_num; 1 <= node; node-- )
-  {
-    adj_col[node] = adj_col[node-1];
-  }
-  adj_col[0] = 1;
-  for ( i = 1; i <= node_num; i++ )
-  {
-    adj_col[i]= adj_col[i-1] + adj_col[i];
-  }
+        for ( node = node_num; 1 <= node; node-- )
+        {
+            adj_col[node] = adj_col[node - 1];
+        }
+        adj_col[0] = 1;
+        for ( i = 1; i <= node_num; i++ )
+        {
+            adj_col[i] = adj_col[i - 1] + adj_col[i];
+        }
 
-  adj_num = adj_col[node_num] - 1;
+        adj_num = adj_col[node_num] - 1;
 
-  return adj_num;
-}
+        return adj_num;
+    }
 //****************************************************************************80
 
-int *triangulation_order3_adj_set ( int node_num, int triangle_num,
-  int triangle_node[], int triangle_neighbor[], int adj_num, int adj_col[] )
+    int *triangulation_order3_adj_set ( int node_num, int triangle_num,
+                                        int triangle_node[], int triangle_neighbor[], int adj_num, int adj_col[] )
 
 //****************************************************************************80
 //
@@ -8893,106 +8892,106 @@ int *triangulation_order3_adj_set ( int node_num, int triangle_num,
 //    Output, int TRIANGULATION_ORDER3_ADJ_SET[ADJ_NUM], the adjacency
 //    information.
 //
-{
-  int *adj;
-  int *adj_copy;
-  int k;
-  int k1;
-  int k2;
-  int n1;
-  int n2;
-  int n3;
-  int node;
-  int triangle;
-  int triangle2;
-  int triangle_order = 3;
+    {
+        int *adj;
+        int *adj_copy;
+        int k;
+        int k1;
+        int k2;
+        int n1;
+        int n2;
+        int n3;
+        int node;
+        int triangle;
+        int triangle2;
+        int triangle_order = 3;
 
-  adj = new int[adj_num];
-  for ( k = 0; k < adj_num; k++ )
-  {
-    adj[k] = -1;
-  }
+        adj = new int[adj_num];
+        for ( k = 0; k < adj_num; k++ )
+        {
+            adj[k] = -1;
+        }
 
-  adj_copy = new int[node_num];
-  for ( node = 0; node < node_num; node++ )
-  {
-    adj_copy[node] = adj_col[node];
-  }
+        adj_copy = new int[node_num];
+        for ( node = 0; node < node_num; node++ )
+        {
+            adj_copy[node] = adj_col[node];
+        }
 //
 //  Set every node to be adjacent to itself.
 //
-  for ( node = 1; node <= node_num; node++ )
-  {
-    adj[adj_copy[node-1]-1] = node;
-    adj_copy[node-1] = adj_copy[node-1] + 1;
-  }
+        for ( node = 1; node <= node_num; node++ )
+        {
+            adj[adj_copy[node - 1] - 1] = node;
+            adj_copy[node - 1] = adj_copy[node - 1] + 1;
+        }
 //
 //  Examine each triangle.
 //
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    n1 = triangle_node[0+triangle*triangle_order];
-    n2 = triangle_node[1+triangle*triangle_order];
-    n3 = triangle_node[2+triangle*triangle_order];
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            n1 = triangle_node[0 + triangle * triangle_order];
+            n2 = triangle_node[1 + triangle * triangle_order];
+            n3 = triangle_node[2 + triangle * triangle_order];
 //
 //  Add edge (1,2) if this is the first occurrence,
 //  that is, if the edge (1,2) is on a boundary (TRIANGLE2 <= 0)
 //  or if this triangle is the first of the pair in which the edge
 //  occurs (TRIANGLE < TRIANGLE2).
 //
-    triangle2 = triangle_neighbor[0+triangle*3];
+            triangle2 = triangle_neighbor[0 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj[adj_copy[n1-1]-1] = n2;
-      adj_copy[n1-1] = adj_copy[n1-1] + 1;
-      adj[adj_copy[n2-1]-1] = n1;
-      adj_copy[n2-1] = adj_copy[n2-1] + 1;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj[adj_copy[n1 - 1] - 1] = n2;
+                adj_copy[n1 - 1] = adj_copy[n1 - 1] + 1;
+                adj[adj_copy[n2 - 1] - 1] = n1;
+                adj_copy[n2 - 1] = adj_copy[n2 - 1] + 1;
+            }
 //
 //  Add edge (2,3).
 //
-    triangle2 = triangle_neighbor[1+triangle*3];
+            triangle2 = triangle_neighbor[1 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj[adj_copy[n2-1]-1] = n3;
-      adj_copy[n2-1] = adj_copy[n2-1] + 1;
-      adj[adj_copy[n3-1]-1] = n2;
-      adj_copy[n3-1] = adj_copy[n3-1] + 1;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj[adj_copy[n2 - 1] - 1] = n3;
+                adj_copy[n2 - 1] = adj_copy[n2 - 1] + 1;
+                adj[adj_copy[n3 - 1] - 1] = n2;
+                adj_copy[n3 - 1] = adj_copy[n3 - 1] + 1;
+            }
 //
 //  Add edge (3,1).
 //
-    triangle2 = triangle_neighbor[2+triangle*3];
+            triangle2 = triangle_neighbor[2 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj[adj_copy[n1-1]-1] = n3;
-      adj_copy[n1-1] = adj_copy[n1-1] + 1;
-      adj[adj_copy[n3-1]-1] = n1;
-      adj_copy[n3-1] = adj_copy[n3-1] + 1;
-    }
-  }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj[adj_copy[n1 - 1] - 1] = n3;
+                adj_copy[n1 - 1] = adj_copy[n1 - 1] + 1;
+                adj[adj_copy[n3 - 1] - 1] = n1;
+                adj_copy[n3 - 1] = adj_copy[n3 - 1] + 1;
+            }
+        }
 //
 //  Ascending sort the entries for each node.
 //
-  for ( node = 1; node <= node_num; node++ )
-  {
-    k1 = adj_col[node-1];
-    k2 = adj_col[node]-1;
-    i4vec_sort_heap_a ( k2+1-k1, adj+k1-1 );
-  }
+        for ( node = 1; node <= node_num; node++ )
+        {
+            k1 = adj_col[node - 1];
+            k2 = adj_col[node] - 1;
+            i4vec_sort_heap_a ( k2 + 1 - k1, adj + k1 - 1 );
+        }
 
-  delete [] adj_copy;
+        delete [] adj_copy;
 
-  return adj;
-}
+        return adj;
+    }
 //****************************************************************************80
 
-void triangulation_order3_adj_set2 ( int node_num, int triangle_num,
-  int triangle_node[], int triangle_neighbor[], int adj_num, int adj_col[],
-  int ia[], int ja[] )
+    void triangulation_order3_adj_set2 ( int node_num, int triangle_num,
+                                         int triangle_node[], int triangle_neighbor[], int adj_num, int adj_col[],
+                                         int ia[], int ja[] )
 
 //****************************************************************************80
 //
@@ -9130,114 +9129,114 @@ void triangulation_order3_adj_set2 ( int node_num, int triangle_num,
 //
 //    Output, int IA[ADJ_NUM], JA[ADJ_NUM], the adjacency information.
 //
-{
-  int adj;
-  int *adj_copy;
-  int k;
-  int k1;
-  int k2;
-  int n1;
-  int n2;
-  int n3;
-  int node;
-  int triangle;
-  int triangle2;
-  int triangle_order = 3;
+    {
+        int adj;
+        int *adj_copy;
+        int k;
+        int k1;
+        int k2;
+        int n1;
+        int n2;
+        int n3;
+        int node;
+        int triangle;
+        int triangle2;
+        int triangle_order = 3;
 
-  for ( adj = 0; adj < adj_num; adj++ )
-  {
-    ia[adj] = -1;
-  }
+        for ( adj = 0; adj < adj_num; adj++ )
+        {
+            ia[adj] = -1;
+        }
 
-  for ( adj = 0; adj < adj_num; adj++ )
-  {
-    ja[adj] = -1;
-  }
+        for ( adj = 0; adj < adj_num; adj++ )
+        {
+            ja[adj] = -1;
+        }
 
-  adj_copy = new int[node_num];
-  for ( node = 0; node < node_num; node++ )
-  {
-    adj_copy[node] = adj_col[node];
-  }
+        adj_copy = new int[node_num];
+        for ( node = 0; node < node_num; node++ )
+        {
+            adj_copy[node] = adj_col[node];
+        }
 //
 //  Set every node to be adjacent to itself.
 //
-  for ( node = 1; node <= node_num; node++ )
-  {
-    ia[adj_copy[node-1]-1] = node;
-    ja[adj_copy[node-1]-1] = node;
-    adj_copy[node-1] = adj_copy[node-1] + 1;
-  }
+        for ( node = 1; node <= node_num; node++ )
+        {
+            ia[adj_copy[node - 1] - 1] = node;
+            ja[adj_copy[node - 1] - 1] = node;
+            adj_copy[node - 1] = adj_copy[node - 1] + 1;
+        }
 //
 //  Examine each triangle.
 //
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    n1 = triangle_node[0+triangle*triangle_order];
-    n2 = triangle_node[1+triangle*triangle_order];
-    n3 = triangle_node[2+triangle*triangle_order];
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            n1 = triangle_node[0 + triangle * triangle_order];
+            n2 = triangle_node[1 + triangle * triangle_order];
+            n3 = triangle_node[2 + triangle * triangle_order];
 //
 //  Add edge (1,2) if this is the first occurrence,
 //  that is, if the edge (1,2) is on a boundary (TRIANGLE2 <= 0)
 //  or if this triangle is the first of the pair in which the edge
 //  occurs (TRIANGLE < TRIANGLE2).
 //
-    triangle2 = triangle_neighbor[0+triangle*3];
+            triangle2 = triangle_neighbor[0 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      ia[adj_copy[n1-1]-1] = n1;
-      ja[adj_copy[n1-1]-1] = n2;
-      adj_copy[n1-1] = adj_copy[n1-1] + 1;
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                ia[adj_copy[n1 - 1] - 1] = n1;
+                ja[adj_copy[n1 - 1] - 1] = n2;
+                adj_copy[n1 - 1] = adj_copy[n1 - 1] + 1;
 
-      ia[adj_copy[n2-1]-1] = n2;
-      ja[adj_copy[n2-1]-1] = n1;
-      adj_copy[n2-1] = adj_copy[n2-1] + 1;
-    }
+                ia[adj_copy[n2 - 1] - 1] = n2;
+                ja[adj_copy[n2 - 1] - 1] = n1;
+                adj_copy[n2 - 1] = adj_copy[n2 - 1] + 1;
+            }
 //
 //  Add edge (2,3).
 //
-    triangle2 = triangle_neighbor[1+triangle*3];
+            triangle2 = triangle_neighbor[1 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      ia[adj_copy[n2-1]-1] = n2;
-      ja[adj_copy[n2-1]-1] = n3;
-      adj_copy[n2-1] = adj_copy[n2-1] + 1;
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                ia[adj_copy[n2 - 1] - 1] = n2;
+                ja[adj_copy[n2 - 1] - 1] = n3;
+                adj_copy[n2 - 1] = adj_copy[n2 - 1] + 1;
 
-      ia[adj_copy[n3-1]-1] = n3;
-      ja[adj_copy[n3-1]-1] = n2;
-      adj_copy[n3-1] = adj_copy[n3-1] + 1;
-    }
+                ia[adj_copy[n3 - 1] - 1] = n3;
+                ja[adj_copy[n3 - 1] - 1] = n2;
+                adj_copy[n3 - 1] = adj_copy[n3 - 1] + 1;
+            }
 //
 //  Add edge (3,1).
 //
-    triangle2 = triangle_neighbor[2+triangle*3];
+            triangle2 = triangle_neighbor[2 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      ia[adj_copy[n1-1]-1] = n1;
-      ja[adj_copy[n1-1]-1] = n3;
-      adj_copy[n1-1] = adj_copy[n1-1] + 1;
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                ia[adj_copy[n1 - 1] - 1] = n1;
+                ja[adj_copy[n1 - 1] - 1] = n3;
+                adj_copy[n1 - 1] = adj_copy[n1 - 1] + 1;
 
-      ia[adj_copy[n3-1]-1] = n3;
-      ja[adj_copy[n3-1]-1] = n1;
-      adj_copy[n3-1] = adj_copy[n3-1] + 1;
-    }
-  }
+                ia[adj_copy[n3 - 1] - 1] = n3;
+                ja[adj_copy[n3 - 1] - 1] = n1;
+                adj_copy[n3 - 1] = adj_copy[n3 - 1] + 1;
+            }
+        }
 //
 //  Lexically sort the IA, JA values.
 //
-  i4vec2_sort_a ( adj_num, ia, ja );
+        i4vec2_sort_a ( adj_num, ia, ja );
 
-  delete [] adj_copy;
+        delete [] adj_copy;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-int *triangulation_order3_adjacency ( int node_num, int element_num,
-  int element_node[] )
+    int *triangulation_order3_adjacency ( int node_num, int element_num,
+                                          int element_node[] )
 
 //****************************************************************************80
 //
@@ -9272,43 +9271,43 @@ int *triangulation_order3_adjacency ( int node_num, int element_num,
 //    matrix.  ADJ(I,J) is 1 if nodes I and J are adjacent, that is,
 //    they are immediate neighbors on an edge of the triangulation.
 //
-{
-  int *adj;
-  int element;
-  int i;
-  int j;
-  int k;
-
-  adj = new int[node_num*node_num];
-
-  for ( j = 0; j < node_num; j++ )
-  {
-    for ( i = 0; i < node_num; i++ )
     {
-      adj[i+j*node_num] = 0;
+        int *adj;
+        int element;
+        int i;
+        int j;
+        int k;
+
+        adj = new int[node_num * node_num];
+
+        for ( j = 0; j < node_num; j++ )
+        {
+            for ( i = 0; i < node_num; i++ )
+            {
+                adj[i + j * node_num] = 0;
+            }
+        }
+
+        for ( element = 0; element < element_num; element++ )
+        {
+            i = element_node[0 + element * 3];
+            j = element_node[1 + element * 3];
+            k = element_node[2 + element * 3];
+
+            adj[i + j * node_num] = 1;
+            adj[i + k * node_num] = 1;
+            adj[j + i * node_num] = 1;
+            adj[j + k * node_num] = 1;
+            adj[k + i * node_num] = 1;
+            adj[k + j * node_num] = 1;
+        }
+
+        return adj;
     }
-  }
-
-  for ( element = 0; element < element_num; element++ )
-  {
-    i = element_node[0+element*3];
-    j = element_node[1+element*3];
-    k = element_node[2+element*3];
-
-    adj[i+j*node_num] = 1;
-    adj[i+k*node_num] = 1;
-    adj[j+i*node_num] = 1;
-    adj[j+k*node_num] = 1;
-    adj[k+i*node_num] = 1;
-    adj[k+j*node_num] = 1;
-  }
-
-  return adj;
-}
 //****************************************************************************80
 
-int triangulation_order3_boundary_edge_count ( int triangle_num,
-  int triangle_node[] )
+    int triangulation_order3_boundary_edge_count ( int triangle_num,
+            int triangle_node[] )
 
 //****************************************************************************80
 //
@@ -9353,65 +9352,65 @@ int triangulation_order3_boundary_edge_count ( int triangle_num,
 //    Output, integer TRIANGULATION_ORDER3_BOUNDARY_EDGE_COUNT, the number
 //    of boundary edges.
 //
-{
-  int boundary_edge_num;
-  int e1;
-  int e2;
-  int *edge;
-  int i;
-  int interior_edge_num;
-  int j;
-  int m;
-  int n;
-  int unique_num;
+    {
+        int boundary_edge_num;
+        int e1;
+        int e2;
+        int *edge;
+        int i;
+        int interior_edge_num;
+        int j;
+        int m;
+        int n;
+        int unique_num;
 
-  m = 2;
-  n = 3 * triangle_num;
+        m = 2;
+        n = 3 * triangle_num;
 //
 //  Set up the edge array.
 //
-  edge = new int[m*n];
+        edge = new int[m * n];
 
-  for ( j = 0; j < triangle_num; j++ )
-  {
-    edge[0+(j               )*m] = triangle_node[0+j*3];
-    edge[1+(j               )*m] = triangle_node[1+j*3];
-    edge[0+(j+  triangle_num)*m] = triangle_node[1+j*3];
-    edge[1+(j+  triangle_num)*m] = triangle_node[2+j*3];
-    edge[0+(j+2*triangle_num)*m] = triangle_node[2+j*3];
-    edge[1+(j+2*triangle_num)*m] = triangle_node[0+j*3];
-  }
+        for ( j = 0; j < triangle_num; j++ )
+        {
+            edge[0 + (j               )*m] = triangle_node[0 + j * 3];
+            edge[1 + (j               )*m] = triangle_node[1 + j * 3];
+            edge[0 + (j +  triangle_num)*m] = triangle_node[1 + j * 3];
+            edge[1 + (j +  triangle_num)*m] = triangle_node[2 + j * 3];
+            edge[0 + (j + 2 * triangle_num)*m] = triangle_node[2 + j * 3];
+            edge[1 + (j + 2 * triangle_num)*m] = triangle_node[0 + j * 3];
+        }
 //
 //  In each column, force the smaller entry to appear first.
 //
-  for ( j = 0; j < n; j++ )
-  {
-    e1 = i4_min ( edge[0+j*m], edge[1+j*m] );
-    e2 = i4_max ( edge[0+j*m], edge[1+j*m] );
-    edge[0+j*m] = e1;
-    edge[1+j*m] = e2;
-  }
+        for ( j = 0; j < n; j++ )
+        {
+            e1 = i4_min ( edge[0 + j * m], edge[1 + j * m] );
+            e2 = i4_max ( edge[0 + j * m], edge[1 + j * m] );
+            edge[0 + j * m] = e1;
+            edge[1 + j * m] = e2;
+        }
 //
 //  Ascending sort the column array.
 //
-  i4col_sort_a ( m, n, edge );
+        i4col_sort_a ( m, n, edge );
 //
 //  Get the number of unique columns in EDGE.
 //
-  unique_num = i4col_sorted_unique_count ( m, n, edge );
+        unique_num = i4col_sorted_unique_count ( m, n, edge );
 
-  interior_edge_num = 3 * triangle_num - unique_num;
+        interior_edge_num = 3 * triangle_num - unique_num;
 
-  boundary_edge_num = 3 * triangle_num - 2 * interior_edge_num;
+        boundary_edge_num = 3 * triangle_num - 2 * interior_edge_num;
 
-  delete [] edge;
+        delete [] edge;
 
-  return boundary_edge_num;
-}
+        return boundary_edge_num;
+    }
 //****************************************************************************80
 
-int triangulation_order3_boundary_edge_count_euler ( int node_num,
-  int triangle_num, int hole_num )
+    int triangulation_order3_boundary_edge_count_euler ( int node_num,
+            int triangle_num, int hole_num )
 
 //****************************************************************************80
 //
@@ -9483,13 +9482,13 @@ int triangulation_order3_boundary_edge_count_euler ( int node_num,
 //    Output, int TRIANGULATION_BOUNDARY_COUNT, the number of edges that
 //    lie on the convex hull of the triangulation.
 //
-{
-  return ( 2 * node_num + 2 * hole_num - triangle_num - 2 );
-}
+    {
+        return ( 2 * node_num + 2 * hole_num - triangle_num - 2 );
+    }
 //****************************************************************************80
 
-bool *triangulation_order3_boundary_node ( int node_num, int triangle_num,
-  int triangle_node[] )
+    bool *triangulation_order3_boundary_node ( int node_num, int triangle_num,
+            int triangle_node[] )
 
 //****************************************************************************80
 //
@@ -9536,104 +9535,104 @@ bool *triangulation_order3_boundary_node ( int node_num, int triangle_num,
 //    Output, bool TRIANGULATION_ORDER3_BOUNDARY_NODE[NODE_NUM],
 //    is TRUE if the node is on a boundary edge.
 //
-{
-  int e1;
-  int e2;
-  int *edge;
-  bool equal;
-  int i;
-  int j;
-  int m;
-  int n;
-  bool *node_boundary;
+    {
+        int e1;
+        int e2;
+        int *edge;
+        bool equal;
+        int i;
+        int j;
+        int m;
+        int n;
+        bool *node_boundary;
 
-  m = 2;
-  n = 3 * triangle_num;
+        m = 2;
+        n = 3 * triangle_num;
 //
 //  Set up the edge array.
 //
-  edge = new int[m*n];
+        edge = new int[m * n];
 
-  for ( j = 0; j < triangle_num; j++ )
-  {
-    edge[0+(j               )*m] = triangle_node[0+j*3];
-    edge[1+(j               )*m] = triangle_node[1+j*3];
-    edge[0+(j+  triangle_num)*m] = triangle_node[1+j*3];
-    edge[1+(j+  triangle_num)*m] = triangle_node[2+j*3];
-    edge[0+(j+2*triangle_num)*m] = triangle_node[2+j*3];
-    edge[1+(j+2*triangle_num)*m] = triangle_node[0+j*3];
-  }
+        for ( j = 0; j < triangle_num; j++ )
+        {
+            edge[0 + (j               )*m] = triangle_node[0 + j * 3];
+            edge[1 + (j               )*m] = triangle_node[1 + j * 3];
+            edge[0 + (j +  triangle_num)*m] = triangle_node[1 + j * 3];
+            edge[1 + (j +  triangle_num)*m] = triangle_node[2 + j * 3];
+            edge[0 + (j + 2 * triangle_num)*m] = triangle_node[2 + j * 3];
+            edge[1 + (j + 2 * triangle_num)*m] = triangle_node[0 + j * 3];
+        }
 //
 //  In each column, force the smaller entry to appear first.
 //
-  for ( j = 0; j < n; j++ )
-  {
-    e1 = i4_min ( edge[0+j*m], edge[1+j*m] );
-    e2 = i4_max ( edge[0+j*m], edge[1+j*m] );
-    edge[0+j*m] = e1;
-    edge[1+j*m] = e2;
-  }
+        for ( j = 0; j < n; j++ )
+        {
+            e1 = i4_min ( edge[0 + j * m], edge[1 + j * m] );
+            e2 = i4_max ( edge[0 + j * m], edge[1 + j * m] );
+            edge[0 + j * m] = e1;
+            edge[1 + j * m] = e2;
+        }
 //
 //  Ascending sort the column array.
 //
-  i4col_sort_a ( m, n, edge );
+        i4col_sort_a ( m, n, edge );
 //
 //  Records which appear twice are internal edges and can be ignored.
 //
-  node_boundary = new bool[node_num];
+        node_boundary = new bool[node_num];
 
-  for ( i = 0; i < node_num; i++ )
-  {
-    node_boundary[i] = false;
-  }
+        for ( i = 0; i < node_num; i++ )
+        {
+            node_boundary[i] = false;
+        }
 
-  j = 0;
+        j = 0;
 
-  while ( j < 3 * triangle_num )
-  {
-    j = j + 1;
+        while ( j < 3 * triangle_num )
+        {
+            j = j + 1;
 
-    if ( j == 3 * triangle_num )
-    {
-      for ( i = 0; i < m; i++ )
-      {
-        node_boundary[edge[i+(j-1)*m]-1] = true;
-      }
-      break;
+            if ( j == 3 * triangle_num )
+            {
+                for ( i = 0; i < m; i++ )
+                {
+                    node_boundary[edge[i + (j - 1)*m] - 1] = true;
+                }
+                break;
+            }
+
+            equal = true;
+
+            for ( i = 0; i < m; i++ )
+            {
+                if ( edge[i + (j - 1)*m] != edge[i + j * m] )
+                {
+                    equal = false;
+                }
+            }
+
+            if ( equal )
+            {
+                j = j + 1;
+            }
+            else
+            {
+                for ( i = 0; i < m; i++ )
+                {
+                    node_boundary[edge[i + (j - 1)*m] - 1] = true;
+                }
+            }
+
+        }
+
+        delete [] edge;
+
+        return node_boundary;
     }
-
-    equal = true;
-
-    for ( i = 0; i < m; i++ )
-    {
-      if ( edge[i+(j-1)*m] != edge[i+j*m] )
-      {
-        equal = false;
-      }
-    }
-
-    if ( equal )
-    {
-      j = j + 1;
-    }
-    else
-    {
-      for ( i = 0; i < m; i++ )
-      {
-        node_boundary[edge[i+(j-1)*m]-1] = true;
-      }
-    }
-
-  }
-
-  delete [] edge;
-
-  return node_boundary;
-}
 //****************************************************************************80
 
-int triangulation_order3_check ( int node_num, int triangle_num,
-  int triangle_node[] )
+    int triangulation_order3_check ( int node_num, int triangle_num,
+                                     int triangle_node[] )
 
 //****************************************************************************80
 //
@@ -9672,149 +9671,149 @@ int triangulation_order3_check ( int node_num, int triangle_num,
 //    0, no error occurred.
 //    nonzero, an error occurred, the triangulation is not valid.
 //
-{
-  int boundary_num;
-  int error;
-  int euler;
-  int i;
-  int j;
-  int *used;
+    {
+        int boundary_num;
+        int error;
+        int euler;
+        int i;
+        int j;
+        int *used;
 //
 //  Checks 1 and 2:
 //  node_num must be at least 3.
 //  TRIANGLE_NUM must be at least 1.
 //
-  if ( node_num < 3 )
-  {
-    std::cout << "\n";
-    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-    std::cout << "  The number of nodes is less than 3!\n";
-    return 1;
-  }
+        if ( node_num < 3 )
+        {
+            std::cout << "\n";
+            std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+            std::cout << "  The number of nodes is less than 3!\n";
+            return 1;
+        }
 
-  if ( triangle_num < 1 )
-  {
-    std::cout << "\n";
-    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-    std::cout << "  The number of triangles is less than 1!\n";
-    return 2;
-  }
+        if ( triangle_num < 1 )
+        {
+            std::cout << "\n";
+            std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+            std::cout << "  The number of triangles is less than 1!\n";
+            return 2;
+        }
 //
 //  Checks 3 and 4:
 //  Verify that all node values are greater than or equal to 1
 //  and less than or equal to node_num.
 //
-  for ( j = 0; j < triangle_num; j++ )
-  {
-    for ( i = 0; i < 3; i++ )
-    {
-      if ( triangle_node[i+j*3] < 1 )
-      {
-        std::cout << "\n";
-        std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-        std::cout << "  Some vertices are less than 1!\n";
-        return 3;
-      }
-    }
-  }
+        for ( j = 0; j < triangle_num; j++ )
+        {
+            for ( i = 0; i < 3; i++ )
+            {
+                if ( triangle_node[i + j * 3] < 1 )
+                {
+                    std::cout << "\n";
+                    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+                    std::cout << "  Some vertices are less than 1!\n";
+                    return 3;
+                }
+            }
+        }
 
-  for ( j = 0; j < triangle_num; j++ )
-  {
-    for ( i = 0; i < 3; i++ )
-    {
-      if ( node_num < triangle_node[i+j*3] )
-      {
-        std::cout << "\n";
-        std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-        std::cout << "  Some vertices are greater than node_num!\n";
-        return 4;
-      }
-    }
-  }
+        for ( j = 0; j < triangle_num; j++ )
+        {
+            for ( i = 0; i < 3; i++ )
+            {
+                if ( node_num < triangle_node[i + j * 3] )
+                {
+                    std::cout << "\n";
+                    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+                    std::cout << "  Some vertices are greater than node_num!\n";
+                    return 4;
+                }
+            }
+        }
 //
 //  Check 5:
 //  Verify that every node is used at least once.
 //
-  used = new int[node_num];
+        used = new int[node_num];
 
-  for ( i = 0; i < node_num; i++ )
-  {
-    used[i] = 0;
-  }
+        for ( i = 0; i < node_num; i++ )
+        {
+            used[i] = 0;
+        }
 
-  for ( j = 0; j < triangle_num; j++ )
-  {
-    for ( i = 0; i < 3; i++ )
-    {
-      used[triangle_node[i+j*3]-1] = used[triangle_node[i+j*3]-1] + 1;
-    }
-  }
+        for ( j = 0; j < triangle_num; j++ )
+        {
+            for ( i = 0; i < 3; i++ )
+            {
+                used[triangle_node[i + j * 3] - 1] = used[triangle_node[i + j * 3] - 1] + 1;
+            }
+        }
 
-  for ( i = 0; i < node_num; i++ )
-  {
-    if ( used[i] == 0 )
-    {
-      std::cout << "\n";
-      std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-      std::cout << "  Some nodes are never used as triangle vertices!\n";
-      std::cout << "  First example is node " << i+1 << "\n";
-      delete [] used;
-      return 5;
-    }
-  }
-  delete [] used;
+        for ( i = 0; i < node_num; i++ )
+        {
+            if ( used[i] == 0 )
+            {
+                std::cout << "\n";
+                std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+                std::cout << "  Some nodes are never used as triangle vertices!\n";
+                std::cout << "  First example is node " << i + 1 << "\n";
+                delete [] used;
+                return 5;
+            }
+        }
+        delete [] used;
 //
 //  Check 6:
 //  Verify that no node is repeated in a triangle.
 //
-  for ( j = 0; j < triangle_num; j++ )
-  {
-    if ( triangle_node[0+j*3] == triangle_node[1+j*3] ||
-         triangle_node[1+j*3] == triangle_node[2+j*3] ||
-         triangle_node[2+j*3] == triangle_node[0+j*3] )
-    {
-      std::cout << "\n";
-      std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-      std::cout << "  A triangle contains a null edge!\n";
-      return 6;
-    }
-  }
+        for ( j = 0; j < triangle_num; j++ )
+        {
+            if ( triangle_node[0 + j * 3] == triangle_node[1 + j * 3] ||
+                    triangle_node[1 + j * 3] == triangle_node[2 + j * 3] ||
+                    triangle_node[2 + j * 3] == triangle_node[0 + j * 3] )
+            {
+                std::cout << "\n";
+                std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+                std::cout << "  A triangle contains a null edge!\n";
+                return 6;
+            }
+        }
 //
 //  Check 7:
 //  Verify that no edge is repeated, and that repeated edges occur in
 //  negated pairs.
 //
-  boundary_num = triangulation_order3_edge_check ( triangle_num,
-    triangle_node );
+        boundary_num = triangulation_order3_edge_check ( triangle_num,
+                       triangle_node );
 
-  if ( boundary_num < 0 )
-  {
-    std::cout << "\n";
-    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-    std::cout << "  Some edges are repeated or given in the wrong direction!\n";
-    return 7;
-  }
+        if ( boundary_num < 0 )
+        {
+            std::cout << "\n";
+            std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+            std::cout << "  Some edges are repeated or given in the wrong direction!\n";
+            return 7;
+        }
 //
 //  Check 8:
 //  Does the triangulation satisfy Euler's criterion?
 //  If not, then the triangulation is not proper.  (For instance, there
 //  might be a hole in the interior.)
 //
-  euler = boundary_num + triangle_num + 2 - 2 * node_num;
+        euler = boundary_num + triangle_num + 2 - 2 * node_num;
 
-  if ( euler != 0 )
-  {
-    std::cout << "\n";
-    std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
-    std::cout << "  The triangulation does not satisfy Euler's criterion!\n";
-    return 8;
-  }
+        if ( euler != 0 )
+        {
+            std::cout << "\n";
+            std::cout << "TRIANGULATION_ORDER3_CHECK - Fatal error!\n";
+            std::cout << "  The triangulation does not satisfy Euler's criterion!\n";
+            return 8;
+        }
 
-  return 0;
-}
+        return 0;
+    }
 //****************************************************************************80
 
-int triangulation_order3_edge_check ( int triangle_num, int triangle_node[] )
+    int triangulation_order3_edge_check ( int triangle_num, int triangle_node[] )
 
 //****************************************************************************80
 //
@@ -9848,14 +9847,14 @@ int triangulation_order3_edge_check ( int triangle_num, int triangle_node[] )
 //    Output, int TRIANGULATION_EDGE_CHECK is negative if an error was
 //    detected; otherwise, it is the number of edges that lie on the boundary.
 //
-{
-  int boundary_num;
-  int i;
-  int j;
-  int k;
-  int *col;
-  int tri;
-  int triangle_order = 3;
+    {
+        int boundary_num;
+        int i;
+        int j;
+        int k;
+        int *col;
+        int tri;
+        int triangle_order = 3;
 //
 //  Step 1.
 //  From the list of nodes for triangle T, of the form: (I,J,K)
@@ -9867,108 +9866,108 @@ int triangulation_order3_edge_check ( int triangle_num, int triangle_node[] )
 //
 //  where we choose (I,J,+1) if I < J, or else (J,I,-1) and so on.
 //
-  col = new int[3*(3*triangle_num)];
+        col = new int[3 * (3 * triangle_num)];
 
-  for ( tri = 0; tri < triangle_num; tri++ )
-  {
-    i = triangle_node[0+tri*triangle_order];
-    j = triangle_node[1+tri*triangle_order];
-    k = triangle_node[2+tri*triangle_order];
+        for ( tri = 0; tri < triangle_num; tri++ )
+        {
+            i = triangle_node[0 + tri * triangle_order];
+            j = triangle_node[1 + tri * triangle_order];
+            k = triangle_node[2 + tri * triangle_order];
 
-    if ( i < j )
-    {
-      col[0+(3*tri+0)*3] =  i;
-      col[1+(3*tri+0)*3] =  j;
-      col[2+(3*tri+0)*3] = +1;
-    }
-    else
-    {
-      col[0+(3*tri+0)*3] =  j;
-      col[1+(3*tri+0)*3] =  i;
-      col[2+(3*tri+0)*3] = -1;
-    }
+            if ( i < j )
+            {
+                col[0 + (3 * tri + 0) * 3] =  i;
+                col[1 + (3 * tri + 0) * 3] =  j;
+                col[2 + (3 * tri + 0) * 3] = +1;
+            }
+            else
+            {
+                col[0 + (3 * tri + 0) * 3] =  j;
+                col[1 + (3 * tri + 0) * 3] =  i;
+                col[2 + (3 * tri + 0) * 3] = -1;
+            }
 
-    if ( j < k )
-    {
-      col[0+(3*tri+1)*3] =  j;
-      col[1+(3*tri+1)*3] =  k;
-      col[2+(3*tri+1)*3] = +1;
-    }
-    else
-    {
-      col[0+(3*tri+1)*3] =  k;
-      col[1+(3*tri+1)*3] =  j;
-      col[2+(3*tri+1)*3] = -1;
-    }
+            if ( j < k )
+            {
+                col[0 + (3 * tri + 1) * 3] =  j;
+                col[1 + (3 * tri + 1) * 3] =  k;
+                col[2 + (3 * tri + 1) * 3] = +1;
+            }
+            else
+            {
+                col[0 + (3 * tri + 1) * 3] =  k;
+                col[1 + (3 * tri + 1) * 3] =  j;
+                col[2 + (3 * tri + 1) * 3] = -1;
+            }
 
-    if ( k < i )
-    {
-      col[0+(3*tri+2)*3] =  k;
-      col[1+(3*tri+2)*3] =  i;
-      col[2+(3*tri+2)*3] = +1;
-    }
-    else
-    {
-      col[0+(3*tri+2)*3] =  i;
-      col[1+(3*tri+2)*3] =  k;
-      col[2+(3*tri+2)*3] = -1;
-    }
-  }
+            if ( k < i )
+            {
+                col[0 + (3 * tri + 2) * 3] =  k;
+                col[1 + (3 * tri + 2) * 3] =  i;
+                col[2 + (3 * tri + 2) * 3] = +1;
+            }
+            else
+            {
+                col[0 + (3 * tri + 2) * 3] =  i;
+                col[1 + (3 * tri + 2) * 3] =  k;
+                col[2 + (3 * tri + 2) * 3] = -1;
+            }
+        }
 //
 //  Step 2. Perform an ascending dictionary sort on the neighbor relations.
 //
-  i4col_sort_a ( 3, 3*triangle_num, col );
+        i4col_sort_a ( 3, 3 * triangle_num, col );
 //
 //  Step 3.
 //
 //  If any record occurs twice, we have an error.
 //  Unpaired records lie on the convex hull.
 //
-  i = 0;
-  boundary_num = 0;
+        i = 0;
+        boundary_num = 0;
 
-  while ( i < 3 * triangle_num )
-  {
-    i = i + 1;
-
-    if ( i == 3 * triangle_num )
-    {
-      boundary_num = boundary_num + 1;
-    }
-    else
-    {
-      if ( col[0+(i-1)*3] == col[0+i*3] &&
-           col[1+(i-1)*3] == col[1+i*3] )
-      {
-        if ( col[2+(i-1)*3] == col[2+i*3] )
+        while ( i < 3 * triangle_num )
         {
-          std::cout << "\n";
-          std::cout << "TRIANGULATION_ORDER3_EDGE_CHECK - Warning!\n";
-          std::cout << "  An edge occurs twice.\n";
-          delete [] col;
-          boundary_num = -1;
-          return boundary_num;
+            i = i + 1;
+
+            if ( i == 3 * triangle_num )
+            {
+                boundary_num = boundary_num + 1;
+            }
+            else
+            {
+                if ( col[0 + (i - 1) * 3] == col[0 + i * 3] &&
+                        col[1 + (i - 1) * 3] == col[1 + i * 3] )
+                {
+                    if ( col[2 + (i - 1) * 3] == col[2 + i * 3] )
+                    {
+                        std::cout << "\n";
+                        std::cout << "TRIANGULATION_ORDER3_EDGE_CHECK - Warning!\n";
+                        std::cout << "  An edge occurs twice.\n";
+                        delete [] col;
+                        boundary_num = -1;
+                        return boundary_num;
+                    }
+                    else
+                    {
+                        i = i + 1;
+                    }
+                }
+                else
+                {
+                    boundary_num = boundary_num + 1;
+                }
+            }
         }
-        else
-        {
-          i = i + 1;
-        }
-      }
-      else
-      {
-        boundary_num = boundary_num + 1;
-      }
+
+        delete [] col;
+
+        return boundary_num;
     }
-  }
-
-  delete [] col;
-
-  return boundary_num;
-}
 //****************************************************************************80
 
-void triangulation_order3_example1 ( int node_num, int triangle_num,
-  double node_xy[], int triangle_node[], int triangle_neighbor[] )
+    void triangulation_order3_example1 ( int node_num, int triangle_num,
+                                         double node_xy[], int triangle_node[], int triangle_neighbor[] )
 
 //****************************************************************************80
 //
@@ -10009,87 +10008,93 @@ void triangulation_order3_example1 ( int node_num, int triangle_num,
 //    Output, int TRIANGLE_NEIGHBOR[3*TRIANGLE_NUM], the triangle neighbors
 //    on each side.  Negative values indicate edges that lie on the exterior.
 //
-{
+    {
 # define DIM_NUM 2
 # define NODE_NUM 13
 # define TRIANGLE_NUM 16
 # define TRIANGLE_ORDER 3
 
-  int i;
-  static int triangle_neighbor_save[3*TRIANGLE_NUM] = {
-       -4,  -13,    2,
-        1,    4,    3,
-        2,    5,    7,
-        2,  -43,    8,
-        3,    8,    6,
-        5,    9,    7,
-        3,    6,   -3,
-        5,    4,   10,
-        6,   10,   12,
-        9,    8,   11,
-       12,   10,   14,
-        9,   11,   13,
-      -23,   12,   16,
-       11,  -47,   15,
-       16,   14,  -50,
-       13,   15,  -39 };
-  static int triangle_node_save[TRIANGLE_ORDER*TRIANGLE_NUM] = {
-     3,   4,   1,
-     3,   1,   2,
-     3,   2,   8,
-     2,   1,   5,
-     8,   2,  13,
-     8,  13,   9,
-     3,   8,   9,
-    13,   2,   5,
-     9,  13,   7,
-     7,  13,   5,
-     6,   7,   5,
-     9,   7,   6,
-    10,   9,   6,
-     6,   5,  12,
-    11,   6,  12,
-    10,   6,  11 };
-  static double node_xy_save[DIM_NUM*NODE_NUM] = {
-       0.0, 0.0,
-       2.0, 2.0,
-      -1.0, 3.0,
-      -2.0, 2.0,
-       8.0, 2.0,
-       9.0, 5.0,
-       7.0, 4.0,
-       5.0, 6.0,
-       6.0, 7.0,
-       8.0, 8.0,
-      11.0, 7.0,
-      10.0, 4.0,
-       6.0, 4.0 };
+        int i;
+        static int triangle_neighbor_save[3 * TRIANGLE_NUM] =
+        {
+            -4,  -13,    2,
+            1,    4,    3,
+            2,    5,    7,
+            2,  -43,    8,
+            3,    8,    6,
+            5,    9,    7,
+            3,    6,   -3,
+            5,    4,   10,
+            6,   10,   12,
+            9,    8,   11,
+            12,   10,   14,
+            9,   11,   13,
+            -23,   12,   16,
+            11,  -47,   15,
+            16,   14,  -50,
+            13,   15,  -39
+        };
+        static int triangle_node_save[TRIANGLE_ORDER * TRIANGLE_NUM] =
+        {
+            3,   4,   1,
+            3,   1,   2,
+            3,   2,   8,
+            2,   1,   5,
+            8,   2,  13,
+            8,  13,   9,
+            3,   8,   9,
+            13,   2,   5,
+            9,  13,   7,
+            7,  13,   5,
+            6,   7,   5,
+            9,   7,   6,
+            10,   9,   6,
+            6,   5,  12,
+            11,   6,  12,
+            10,   6,  11
+        };
+        static double node_xy_save[DIM_NUM * NODE_NUM] =
+        {
+            0.0, 0.0,
+            2.0, 2.0,
+            -1.0, 3.0,
+            -2.0, 2.0,
+            8.0, 2.0,
+            9.0, 5.0,
+            7.0, 4.0,
+            5.0, 6.0,
+            6.0, 7.0,
+            8.0, 8.0,
+            11.0, 7.0,
+            10.0, 4.0,
+            6.0, 4.0
+        };
 
-  for ( i = 0; i < 3 * TRIANGLE_NUM; i++ )
-  {
-    triangle_neighbor[i] = triangle_neighbor_save[i];
-  }
+        for ( i = 0; i < 3 * TRIANGLE_NUM; i++ )
+        {
+            triangle_neighbor[i] = triangle_neighbor_save[i];
+        }
 
-  for ( i = 0; i < TRIANGLE_ORDER * TRIANGLE_NUM; i++ )
-  {
-    triangle_node[i] = triangle_node_save[i];
-  }
+        for ( i = 0; i < TRIANGLE_ORDER * TRIANGLE_NUM; i++ )
+        {
+            triangle_node[i] = triangle_node_save[i];
+        }
 
-  for ( i = 0; i < DIM_NUM * NODE_NUM; i++ )
-  {
-    node_xy[i] = node_xy_save[i];
-  }
+        for ( i = 0; i < DIM_NUM * NODE_NUM; i++ )
+        {
+            node_xy[i] = node_xy_save[i];
+        }
 
-  return;
+        return;
 # undef DIM_NUM
 # undef NODE_NUM
 # undef TRIANGLE_NUM
 # undef TRIANGLE_ORDER
-}
+    }
 //****************************************************************************80
 
-void triangulation_order3_example1_size ( int *node_num, int *triangle_num,
-  int *hole_num )
+    void triangulation_order3_example1_size ( int *node_num, int *triangle_num,
+            int *hole_num )
 
 //****************************************************************************80
 //
@@ -10117,17 +10122,17 @@ void triangulation_order3_example1_size ( int *node_num, int *triangle_num,
 //
 //    Output, int *HOLE_NUM, the number of holes.
 //
-{
-  *node_num = 13;
-  *triangle_num = 16;
-  *hole_num = 0;
+    {
+        *node_num = 13;
+        *triangle_num = 16;
+        *hole_num = 0;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void triangulation_order3_example2 ( int node_num, int triangle_num,
-  double node_xy[], int triangle_node[], int triangle_neighbor[] )
+    void triangulation_order3_example2 ( int node_num, int triangle_num,
+                                         double node_xy[], int triangle_node[], int triangle_neighbor[] )
 
 //****************************************************************************80
 //
@@ -10184,131 +10189,137 @@ void triangulation_order3_example2 ( int node_num, int triangle_num,
 //    Output, int TRIANGLE_NEIGHBOR[3*TRIANGLE_NUM], the triangle neighbors
 //    on each side.  Negative values indicate edges that lie on the exterior.
 //
-{
+    {
 # define DIM_NUM 2
 # define NODE_NUM 25
 # define TRIANGLE_NUM 32
 # define TRIANGLE_ORDER 3
 
-  int i;
-  static int triangle_neighbor_save[3*TRIANGLE_NUM] = {
-    -1,  2, -1,
-     9,  1,  3,
-    -1,  4,  2,
-    11,  3,  5,
-    -1,  6,  4,
-    13,  5,  7,
-    -1,  8,  6,
-    15,  7, -1,
-     2, 10, -1,
-    17,  9, 11,
-     4, 12, 10,
-    19, 11, 13,
-     6, 14, 12,
-    21, 13, 15,
-     8, 16, 14,
-    23, 15, -1,
-    10, 18, -1,
-    25, 17, 19,
-    12, 20, 18,
-    27, 19, 21,
-    14, 22, 20,
-    29, 21, 23,
-    16, 24, 22,
-    31, 23, -1,
-    18, 26, -1,
-    -1, 25, 27,
-    20, 28, 26,
-    -1, 27, 29,
-    22, 30, 28,
-    -1, 29, 31,
-    24, 32, 30,
-    -1, 31, -1 };
-  static int triangle_node_save[TRIANGLE_ORDER*TRIANGLE_NUM] = {
-     1,  2,  6,
-     7,  6,  2,
-     2,  3,  7,
-     8,  7,  3,
-     3,  4,  8,
-     9,  8,  4,
-     4,  5,  9,
-    10,  9,  5,
-     6,  7, 11,
-    12, 11,  7,
-     7,  8, 12,
-    13, 12,  8,
-     8,  9, 13,
-    14, 13,  9,
-     9, 10, 14,
-    15, 14, 10,
-    11, 12, 16,
-    17, 16, 12,
-    12, 13, 17,
-    18, 17, 13,
-    13, 14, 18,
-    19, 18, 14,
-    14, 15, 19,
-    20, 19, 15,
-    16, 17, 21,
-    22, 21, 17,
-    17, 18, 22,
-    23, 22, 18,
-    18, 19, 23,
-    24, 23, 19,
-    19, 20, 24,
-    25, 24, 20 };
-  static double node_xy_save[DIM_NUM*NODE_NUM] = {
-    0.0, 0.0,
-    1.0, 0.0,
-    2.0, 0.0,
-    3.0, 0.0,
-    4.0, 0.0,
-    0.0, 1.0,
-    1.0, 1.0,
-    2.0, 1.0,
-    3.0, 1.0,
-    4.0, 1.0,
-    0.0, 2.0,
-    1.0, 2.0,
-    2.0, 2.0,
-    3.0, 2.0,
-    4.0, 2.0,
-    0.0, 3.0,
-    1.0, 3.0,
-    2.0, 3.0,
-    3.0, 3.0,
-    4.0, 3.0,
-    0.0, 4.0,
-    1.0, 4.0,
-    2.0, 4.0,
-    3.0, 4.0,
-    4.0, 4.0  };
+        int i;
+        static int triangle_neighbor_save[3 * TRIANGLE_NUM] =
+        {
+            -1,  2, -1,
+            9,  1,  3,
+            -1,  4,  2,
+            11,  3,  5,
+            -1,  6,  4,
+            13,  5,  7,
+            -1,  8,  6,
+            15,  7, -1,
+            2, 10, -1,
+            17,  9, 11,
+            4, 12, 10,
+            19, 11, 13,
+            6, 14, 12,
+            21, 13, 15,
+            8, 16, 14,
+            23, 15, -1,
+            10, 18, -1,
+            25, 17, 19,
+            12, 20, 18,
+            27, 19, 21,
+            14, 22, 20,
+            29, 21, 23,
+            16, 24, 22,
+            31, 23, -1,
+            18, 26, -1,
+            -1, 25, 27,
+            20, 28, 26,
+            -1, 27, 29,
+            22, 30, 28,
+            -1, 29, 31,
+            24, 32, 30,
+            -1, 31, -1
+        };
+        static int triangle_node_save[TRIANGLE_ORDER * TRIANGLE_NUM] =
+        {
+            1,  2,  6,
+            7,  6,  2,
+            2,  3,  7,
+            8,  7,  3,
+            3,  4,  8,
+            9,  8,  4,
+            4,  5,  9,
+            10,  9,  5,
+            6,  7, 11,
+            12, 11,  7,
+            7,  8, 12,
+            13, 12,  8,
+            8,  9, 13,
+            14, 13,  9,
+            9, 10, 14,
+            15, 14, 10,
+            11, 12, 16,
+            17, 16, 12,
+            12, 13, 17,
+            18, 17, 13,
+            13, 14, 18,
+            19, 18, 14,
+            14, 15, 19,
+            20, 19, 15,
+            16, 17, 21,
+            22, 21, 17,
+            17, 18, 22,
+            23, 22, 18,
+            18, 19, 23,
+            24, 23, 19,
+            19, 20, 24,
+            25, 24, 20
+        };
+        static double node_xy_save[DIM_NUM * NODE_NUM] =
+        {
+            0.0, 0.0,
+            1.0, 0.0,
+            2.0, 0.0,
+            3.0, 0.0,
+            4.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0,
+            2.0, 1.0,
+            3.0, 1.0,
+            4.0, 1.0,
+            0.0, 2.0,
+            1.0, 2.0,
+            2.0, 2.0,
+            3.0, 2.0,
+            4.0, 2.0,
+            0.0, 3.0,
+            1.0, 3.0,
+            2.0, 3.0,
+            3.0, 3.0,
+            4.0, 3.0,
+            0.0, 4.0,
+            1.0, 4.0,
+            2.0, 4.0,
+            3.0, 4.0,
+            4.0, 4.0
+        };
 
-  for ( i = 0; i < 3 * TRIANGLE_NUM; i++ )
-  {
-    triangle_neighbor[i] = triangle_neighbor_save[i];
-  }
+        for ( i = 0; i < 3 * TRIANGLE_NUM; i++ )
+        {
+            triangle_neighbor[i] = triangle_neighbor_save[i];
+        }
 
-  for ( i = 0; i < TRIANGLE_ORDER * TRIANGLE_NUM; i++ )
-  {
-    triangle_node[i] = triangle_node_save[i];
-  }
+        for ( i = 0; i < TRIANGLE_ORDER * TRIANGLE_NUM; i++ )
+        {
+            triangle_node[i] = triangle_node_save[i];
+        }
 
-  for ( i = 0; i < DIM_NUM * NODE_NUM; i++ )
-  {
-    node_xy[i] = node_xy_save[i];
-  }
+        for ( i = 0; i < DIM_NUM * NODE_NUM; i++ )
+        {
+            node_xy[i] = node_xy_save[i];
+        }
 
-  return;
+        return;
 # undef DIM_NUM
 # undef NODE_NUM
 # undef TRIANGLE_NUM
 # undef TRIANGLE_ORDER
-}
+    }
 //****************************************************************************80
 
-void triangulation_order3_example2_size ( int *node_num, int *triangle_num,
-  int *hole_num )
+    void triangulation_order3_example2_size ( int *node_num, int *triangle_num,
+            int *hole_num )
 
 //****************************************************************************80
 //
@@ -10352,17 +10363,17 @@ void triangulation_order3_example2_size ( int *node_num, int *triangle_num,
 //
 //    Output, int *HOLE_NUM, the number of holes.
 //
-{
-  *node_num = 25;
-  *triangle_num = 32;
-  *hole_num = 0;
+    {
+        *node_num = 25;
+        *triangle_num = 32;
+        *hole_num = 0;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void triangulation_order3_neighbor ( int triangle_num, int triangle_node[],
-  int t1, int s1, int  *t2, int *s2 )
+    void triangulation_order3_neighbor ( int triangle_num, int triangle_node[],
+                                         int t1, int s1, int  *t2, int *s2 )
 
 //****************************************************************************80
 //
@@ -10416,44 +10427,44 @@ void triangulation_order3_neighbor ( int triangle_num, int triangle_node[],
 //    Output, int *S2, the index of the side of triangle T2 which
 //    is shared with triangle T1, or -1 if there is no such neighbor.
 //
-{
-  int n1;
-  int n2;
-  int s;
-  int ss;
-  int t;
-
-  n1 = triangle_node[s1-1+(t1-1)*3];
-  ss = i4_wrap ( s1+1, 1, 3 );
-  n2 = triangle_node[ss-1+(t1-1)*3];
-
-  for ( t = 0; t < triangle_num; t++ )
-  {
-    for ( s = 0; s < 3; s++ )
     {
-      if ( triangle_node[s+t*3] == n1 )
-      {
-        ss = i4_wrap ( s-1, 0, 2 );
-        if ( triangle_node[ss+t*3] == n2 )
+        int n1;
+        int n2;
+        int s;
+        int ss;
+        int t;
+
+        n1 = triangle_node[s1 - 1 + (t1 - 1) * 3];
+        ss = i4_wrap ( s1 + 1, 1, 3 );
+        n2 = triangle_node[ss - 1 + (t1 - 1) * 3];
+
+        for ( t = 0; t < triangle_num; t++ )
         {
-          *t2 = t + 1;
-          *s2 = ss + 1;
-          return;
+            for ( s = 0; s < 3; s++ )
+            {
+                if ( triangle_node[s + t * 3] == n1 )
+                {
+                    ss = i4_wrap ( s - 1, 0, 2 );
+                    if ( triangle_node[ss + t * 3] == n2 )
+                    {
+                        *t2 = t + 1;
+                        *s2 = ss + 1;
+                        return;
+                    }
+                }
+            }
         }
-      }
+
+        *t2 = -1;
+        *s2 = -1;
+
+        return;
     }
-  }
-
-  *t2 = -1;
-  *s2 = -1;
-
-  return;
-}
 //****************************************************************************80
 
-void triangulation_order3_neighbor_nodes ( int node_num, int triangle_num,
-  int triangle_node[], int nabes_first[], int nabes_num[], int nabes_max,
-  int *nabes_dim, int nabes[] )
+    void triangulation_order3_neighbor_nodes ( int node_num, int triangle_num,
+            int triangle_node[], int nabes_first[], int nabes_num[], int nabes_max,
+            int *nabes_dim, int nabes[] )
 
 //****************************************************************************80
 //
@@ -10548,90 +10559,90 @@ void triangulation_order3_neighbor_nodes ( int node_num, int triangle_num,
 //    Output, int NABES[*NABES_DIM], a list of the neighbors of all the nodes.
 //    Neighbors of node 1 are listed first, and so on.
 //
-{
-  int i;
-  int i_current;
-  int j;
-  int k;
-  int n;
-  int nabe;
-  int *nabes1;
-  int tri;
+    {
+        int i;
+        int i_current;
+        int j;
+        int k;
+        int n;
+        int nabe;
+        int *nabes1;
+        int tri;
 
-  nabes = new int[nabes_max];
+        nabes = new int[nabes_max];
 //
 //  Step 1.  From the triangle list (I,J,K)
 //  construct the neighbor relations: (I,J), (J,K), (K,I), (J,I), (K,J), (I,K).
 //
-  n = 0;
+        n = 0;
 
-  for ( tri = 0; tri < triangle_num; tri++ )
-  {
-    i = triangle_node[0+tri*3];
-    j = triangle_node[1+tri*3];
-    k = triangle_node[2+tri*3];
-    nabes1[n]   = i;
-    nabes1[n+1] = i;
-    nabes1[n+2] = j;
-    nabes1[n+3] = j;
-    nabes1[n+4] = k;
-    nabes1[n+5] = k;
-    nabes[n]    = j;
-    nabes[n+1]  = k;
-    nabes[n+2]  = i;
-    nabes[n+3]  = k;
-    nabes[n+4]  = i;
-    nabes[n+5]  = j;
+        for ( tri = 0; tri < triangle_num; tri++ )
+        {
+            i = triangle_node[0 + tri * 3];
+            j = triangle_node[1 + tri * 3];
+            k = triangle_node[2 + tri * 3];
+            nabes1[n]   = i;
+            nabes1[n + 1] = i;
+            nabes1[n + 2] = j;
+            nabes1[n + 3] = j;
+            nabes1[n + 4] = k;
+            nabes1[n + 5] = k;
+            nabes[n]    = j;
+            nabes[n + 1]  = k;
+            nabes[n + 2]  = i;
+            nabes[n + 3]  = k;
+            nabes[n + 4]  = i;
+            nabes[n + 5]  = j;
 
-    n = n + 6;
-  }
+            n = n + 6;
+        }
 //
 //  Step 2. Dictionary sort the neighbor relations.
 //
-  i4vec2_sort_a ( n, nabes1, nabes );
+        i4vec2_sort_a ( n, nabes1, nabes );
 //
 //  Step 3. Remove duplicate entries.
 //
-  n = i4vec2_sorted_unique ( n, nabes1, nabes );
+        n = i4vec2_sorted_unique ( n, nabes1, nabes );
 //
 //  Step 4. Construct the NABES_NUM and NABES_FIRST data.
 //
-  for ( i = 0; i < node_num; i++ )
-  {
-    nabes_num[i] = 0;
-  }
-  for ( i = 0; i < node_num; i++ )
-  {
-    nabes_first[i] = 0;
-  }
+        for ( i = 0; i < node_num; i++ )
+        {
+            nabes_num[i] = 0;
+        }
+        for ( i = 0; i < node_num; i++ )
+        {
+            nabes_first[i] = 0;
+        }
 
-  i_current = 0;
+        i_current = 0;
 
-  for ( nabe = 1; nabe <= n; nabe++ )
-  {
-    i = nabes1[nabe-1];
-    if ( i == i_current )
-    {
-      nabes_num[i-1] = nabes_num[i-1] + 1;
+        for ( nabe = 1; nabe <= n; nabe++ )
+        {
+            i = nabes1[nabe - 1];
+            if ( i == i_current )
+            {
+                nabes_num[i - 1] = nabes_num[i - 1] + 1;
+            }
+            else
+            {
+                i_current = i;
+                nabes_first[i - 1] = nabe;
+                nabes_num[i - 1] = 1;
+            }
+        }
+
+        *nabes_dim = n;
+
+        delete [] nabes1;
+
+        return;
     }
-    else
-    {
-      i_current = i;
-      nabes_first[i-1] = nabe;
-      nabes_num[i-1] = 1;
-    }
-  }
-
-  *nabes_dim = n;
-
-  delete [] nabes1;
-
-  return;
-}
 //****************************************************************************80
 
-void triangulation_order3_neighbor_nodes_print ( int node_num,
-  int nabes_first[], int nabes_num[], int nabes_dim, int nabes[] )
+    void triangulation_order3_neighbor_nodes_print ( int node_num,
+            int nabes_first[], int nabes_num[], int nabes_dim, int nabes[] )
 
 //****************************************************************************80
 //
@@ -10665,43 +10676,43 @@ void triangulation_order3_neighbor_nodes_print ( int node_num,
 //    Input, int NABES[NABES_DIM], a list of the neighbors of all the nodes.
 //    Neighbors of node 1 are listed first, and so on.
 //
-{
-  int i;
-  int j;
-  int k;
-
-  std::cout << "\n";
-  std::cout << "  Node Nabes Index  List\n";
-  std::cout << "\n";
-
-  for ( i = 0; i < node_num; i++ )
-  {
-    std::cout << std::setw(4) << i              << "  "
-         << std::setw(4) << nabes_num[i]   << "  "
-         << std::setw(4) << nabes_first[i] << "  ";
-
-    k = 0;
-    for ( j = nabes_first[i] - 1; j < nabes_first[i] + nabes_num[i]; j++ )
     {
-      if ( k == 10 )
-      {
-        std::cout << "\n";
-        std::cout << "                  ";
-        k = 0;
-      }
-      std::cout << std::setw(4) << nabes[j] << "  ";
-      k = k + 1;
-    }
-  }
-  std::cout << "\n";
+        int i;
+        int j;
+        int k;
 
-  return;
-}
+        std::cout << "\n";
+        std::cout << "  Node Nabes Index  List\n";
+        std::cout << "\n";
+
+        for ( i = 0; i < node_num; i++ )
+        {
+            std::cout << std::setw(4) << i              << "  "
+                      << std::setw(4) << nabes_num[i]   << "  "
+                      << std::setw(4) << nabes_first[i] << "  ";
+
+            k = 0;
+            for ( j = nabes_first[i] - 1; j < nabes_first[i] + nabes_num[i]; j++ )
+            {
+                if ( k == 10 )
+                {
+                    std::cout << "\n";
+                    std::cout << "                  ";
+                    k = 0;
+                }
+                std::cout << std::setw(4) << nabes[j] << "  ";
+                k = k + 1;
+            }
+        }
+        std::cout << "\n";
+
+        return;
+    }
 //****************************************************************************80
 
-void triangulation_order3_plot ( std::string file_name, int node_num,
-  double node_xy[], int triangle_num, int triangle_node[], int node_show,
-  int triangle_show )
+    void triangulation_order3_plot ( std::string file_name, int node_num,
+                                     double node_xy[], int triangle_num, int triangle_node[], int node_show,
+                                     int triangle_show )
 
 //****************************************************************************80
 //
@@ -10749,383 +10760,383 @@ void triangulation_order3_plot ( std::string file_name, int node_num,
 //    1, show triangles;
 //    2, show triangles and label them.
 //
-{
-  double ave_x;
-  double ave_y;
-  int circle_size;
-  int delta;
-  int e;
-  std::ofstream file_unit;
-  int i;
-  int node;
-  int triangle;
-  double x_max;
-  double x_min;
-  int x_ps;
-  int x_ps_max = 576;
-  int x_ps_max_clip = 594;
-  int x_ps_min = 36;
-  int x_ps_min_clip = 18;
-  double x_scale;
-  double y_max;
-  double y_min;
-  int y_ps;
-  int y_ps_max = 666;
-  int y_ps_max_clip = 684;
-  int y_ps_min = 126;
-  int y_ps_min_clip = 108;
-  double y_scale;
+    {
+        double ave_x;
+        double ave_y;
+        int circle_size;
+        int delta;
+        int e;
+        std::ofstream file_unit;
+        int i;
+        int node;
+        int triangle;
+        double x_max;
+        double x_min;
+        int x_ps;
+        int x_ps_max = 576;
+        int x_ps_max_clip = 594;
+        int x_ps_min = 36;
+        int x_ps_min_clip = 18;
+        double x_scale;
+        double y_max;
+        double y_min;
+        int y_ps;
+        int y_ps_max = 666;
+        int y_ps_max_clip = 684;
+        int y_ps_min = 126;
+        int y_ps_min_clip = 108;
+        double y_scale;
 //
 //  We need to do some figuring here, so that we can determine
 //  the range of the data, and hence the height and width
 //  of the piece of paper.
 //
-  x_max = -r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( x_max < node_xy[0+node*2] )
-     {
-       x_max = node_xy[0+node*2];
-     }
-  }
-  x_min = r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( node_xy[0+node*2] < x_min )
-     {
-       x_min = node_xy[0+node*2];
-     }
-  }
-  x_scale = x_max - x_min;
+        x_max = -r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( x_max < node_xy[0 + node * 2] )
+            {
+                x_max = node_xy[0 + node * 2];
+            }
+        }
+        x_min = r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( node_xy[0 + node * 2] < x_min )
+            {
+                x_min = node_xy[0 + node * 2];
+            }
+        }
+        x_scale = x_max - x_min;
 
-  x_max = x_max + 0.05 * x_scale;
-  x_min = x_min - 0.05 * x_scale;
-  x_scale = x_max - x_min;
+        x_max = x_max + 0.05 * x_scale;
+        x_min = x_min - 0.05 * x_scale;
+        x_scale = x_max - x_min;
 
-  y_max = -r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( y_max < node_xy[1+node*2] )
-     {
-       y_max = node_xy[1+node*2];
-     }
-  }
-  y_min = r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( node_xy[1+node*2] < y_min )
-     {
-       y_min = node_xy[1+node*2];
-     }
-  }
-  y_scale = y_max - y_min;
+        y_max = -r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( y_max < node_xy[1 + node * 2] )
+            {
+                y_max = node_xy[1 + node * 2];
+            }
+        }
+        y_min = r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( node_xy[1 + node * 2] < y_min )
+            {
+                y_min = node_xy[1 + node * 2];
+            }
+        }
+        y_scale = y_max - y_min;
 
-  y_max = y_max + 0.05 * y_scale;
-  y_min = y_min - 0.05 * y_scale;
-  y_scale = y_max - y_min;
+        y_max = y_max + 0.05 * y_scale;
+        y_min = y_min - 0.05 * y_scale;
+        y_scale = y_max - y_min;
 
-  if ( x_scale < y_scale )
-  {
-    delta = r8_nint ( ( double ) ( x_ps_max - x_ps_min )
-      * ( y_scale - x_scale ) / ( 2.0 * y_scale ) );
+        if ( x_scale < y_scale )
+        {
+            delta = r8_nint ( ( double ) ( x_ps_max - x_ps_min )
+                              * ( y_scale - x_scale ) / ( 2.0 * y_scale ) );
 
-    x_ps_max = x_ps_max - delta;
-    x_ps_min = x_ps_min + delta;
+            x_ps_max = x_ps_max - delta;
+            x_ps_min = x_ps_min + delta;
 
-    x_ps_max_clip = x_ps_max_clip - delta;
-    x_ps_min_clip = x_ps_min_clip + delta;
+            x_ps_max_clip = x_ps_max_clip - delta;
+            x_ps_min_clip = x_ps_min_clip + delta;
 
-    x_scale = y_scale;
-  }
-  else if ( y_scale < x_scale )
-  {
-    delta = r8_nint ( ( double ) ( y_ps_max - y_ps_min )
-      * ( x_scale - y_scale ) / ( 2.0 * x_scale ) );
+            x_scale = y_scale;
+        }
+        else if ( y_scale < x_scale )
+        {
+            delta = r8_nint ( ( double ) ( y_ps_max - y_ps_min )
+                              * ( x_scale - y_scale ) / ( 2.0 * x_scale ) );
 
-    y_ps_max = y_ps_max - delta;
-    y_ps_min = y_ps_min + delta;
+            y_ps_max = y_ps_max - delta;
+            y_ps_min = y_ps_min + delta;
 
-    y_ps_max_clip = y_ps_max_clip - delta;
-    y_ps_min_clip = y_ps_min_clip + delta;
+            y_ps_max_clip = y_ps_max_clip - delta;
+            y_ps_min_clip = y_ps_min_clip + delta;
 
-    y_scale = x_scale;
-  }
+            y_scale = x_scale;
+        }
 
-  file_unit.open ( file_name.c_str ( ) );
+        file_unit.open ( file_name.c_str ( ) );
 
-  if ( !file_unit )
-  {
-    std::cout << "\n";
-    std::cout << "TRIANGULATION_ORDER3_PLOT - Fatal error!\n";
-    std::cout << "  Could not open the output EPS file.\n";
-    exit ( 1 );
-  }
+        if ( !file_unit )
+        {
+            std::cout << "\n";
+            std::cout << "TRIANGULATION_ORDER3_PLOT - Fatal error!\n";
+            std::cout << "  Could not open the output EPS file.\n";
+            exit ( 1 );
+        }
 
-  file_unit << "%!PS-Adobe-3.0 EPSF-3.0\n";
-  file_unit << "%%Creator: triangulation_order3_plot.C\n";
-  file_unit << "%%Title: " << file_name << "\n";
+        file_unit << "%!PS-Adobe-3.0 EPSF-3.0\n";
+        file_unit << "%%Creator: triangulation_order3_plot.C\n";
+        file_unit << "%%Title: " << file_name << "\n";
 
-  file_unit << "%%Pages: 1\n";
-  file_unit << "%%BoundingBox:  "
-    << x_ps_min << "  "
-    << y_ps_min << "  "
-    << x_ps_max << "  "
-    << y_ps_max << "\n";
-  file_unit << "%%Document-Fonts: Times-Roman\n";
-  file_unit << "%%LanguageLevel: 1\n";
-  file_unit << "%%EndComments\n";
-  file_unit << "%%BeginProlog\n";
-  file_unit << "/inch {72 mul} def\n";
-  file_unit << "%%EndProlog\n";
-  file_unit << "%%Page:      1     1\n";
-  file_unit << "save\n";
-  file_unit << "%\n";
-  file_unit << "%  Increase line width from default 0.\n";
-  file_unit << "%\n";
-  file_unit << "2 setlinewidth\n";
-  file_unit << "%\n";
-  file_unit << "% Set the RGB line color to very light gray.\n";
-  file_unit << "%\n";
-  file_unit << " 0.9000 0.9000 0.9000 setrgbcolor\n";
-  file_unit << "%\n";
-  file_unit << "% Draw a gray border around the page.\n";
-  file_unit << "%\n";
-  file_unit << "newpath\n";
-  file_unit << x_ps_min << "  "
-            << y_ps_min << "  moveto\n";
-  file_unit << x_ps_max << "  "
-            << y_ps_min << "  lineto\n";
-  file_unit << x_ps_max << "  "
-            << y_ps_max << "  lineto\n";
-  file_unit << x_ps_min << "  "
-            << y_ps_max << "  lineto\n";
-  file_unit << x_ps_min << "  "
-            << y_ps_min << "  lineto\n";
-  file_unit << "stroke\n";
-  file_unit << "%\n";
-  file_unit << "% Set RGB line color to black.\n";
-  file_unit << "%\n";
-  file_unit << " 0.0000 0.0000 0.0000 setrgbcolor\n";
-  file_unit << "%\n";
-  file_unit << "%  Set the font and its size:\n";
-  file_unit << "%\n";
-  file_unit << "/Times-Roman findfont\n";
-  file_unit << "0.50 inch scalefont\n";
-  file_unit << "setfont\n";
-  file_unit << "%\n";
-  file_unit << "%  Print a title:\n";
-  file_unit << "%\n";
-  file_unit << "%  210  702 moveto\n";
-  file_unit << "%(Pointset) show\n";
-  file_unit << "%\n";
-  file_unit << "% Define a clipping polygon\n";
-  file_unit << "%\n";
-  file_unit << "newpath\n";
-  file_unit << x_ps_min_clip << "  "
-            << y_ps_min_clip << "  moveto\n";
-  file_unit << x_ps_max_clip << "  "
-            << y_ps_min_clip << "  lineto\n";
-  file_unit << x_ps_max_clip << "  "
-            << y_ps_max_clip << "  lineto\n";
-  file_unit << x_ps_min_clip << "  "
-            << y_ps_max_clip << "  lineto\n";
-  file_unit << x_ps_min_clip << "  "
-            << y_ps_min_clip << "  lineto\n";
-  file_unit << "clip newpath\n";
+        file_unit << "%%Pages: 1\n";
+        file_unit << "%%BoundingBox:  "
+                  << x_ps_min << "  "
+                  << y_ps_min << "  "
+                  << x_ps_max << "  "
+                  << y_ps_max << "\n";
+        file_unit << "%%Document-Fonts: Times-Roman\n";
+        file_unit << "%%LanguageLevel: 1\n";
+        file_unit << "%%EndComments\n";
+        file_unit << "%%BeginProlog\n";
+        file_unit << "/inch {72 mul} def\n";
+        file_unit << "%%EndProlog\n";
+        file_unit << "%%Page:      1     1\n";
+        file_unit << "save\n";
+        file_unit << "%\n";
+        file_unit << "%  Increase line width from default 0.\n";
+        file_unit << "%\n";
+        file_unit << "2 setlinewidth\n";
+        file_unit << "%\n";
+        file_unit << "% Set the RGB line color to very light gray.\n";
+        file_unit << "%\n";
+        file_unit << " 0.9000 0.9000 0.9000 setrgbcolor\n";
+        file_unit << "%\n";
+        file_unit << "% Draw a gray border around the page.\n";
+        file_unit << "%\n";
+        file_unit << "newpath\n";
+        file_unit << x_ps_min << "  "
+                  << y_ps_min << "  moveto\n";
+        file_unit << x_ps_max << "  "
+                  << y_ps_min << "  lineto\n";
+        file_unit << x_ps_max << "  "
+                  << y_ps_max << "  lineto\n";
+        file_unit << x_ps_min << "  "
+                  << y_ps_max << "  lineto\n";
+        file_unit << x_ps_min << "  "
+                  << y_ps_min << "  lineto\n";
+        file_unit << "stroke\n";
+        file_unit << "%\n";
+        file_unit << "% Set RGB line color to black.\n";
+        file_unit << "%\n";
+        file_unit << " 0.0000 0.0000 0.0000 setrgbcolor\n";
+        file_unit << "%\n";
+        file_unit << "%  Set the font and its size:\n";
+        file_unit << "%\n";
+        file_unit << "/Times-Roman findfont\n";
+        file_unit << "0.50 inch scalefont\n";
+        file_unit << "setfont\n";
+        file_unit << "%\n";
+        file_unit << "%  Print a title:\n";
+        file_unit << "%\n";
+        file_unit << "%  210  702 moveto\n";
+        file_unit << "%(Pointset) show\n";
+        file_unit << "%\n";
+        file_unit << "% Define a clipping polygon\n";
+        file_unit << "%\n";
+        file_unit << "newpath\n";
+        file_unit << x_ps_min_clip << "  "
+                  << y_ps_min_clip << "  moveto\n";
+        file_unit << x_ps_max_clip << "  "
+                  << y_ps_min_clip << "  lineto\n";
+        file_unit << x_ps_max_clip << "  "
+                  << y_ps_max_clip << "  lineto\n";
+        file_unit << x_ps_min_clip << "  "
+                  << y_ps_max_clip << "  lineto\n";
+        file_unit << x_ps_min_clip << "  "
+                  << y_ps_min_clip << "  lineto\n";
+        file_unit << "clip newpath\n";
 //
 //  Draw the nodes.
 //
-  if ( node_num <= 200 )
-  {
-    circle_size = 5;
-  }
-  else if ( node_num <= 500 )
-  {
-    circle_size = 4;
-  }
-  else if ( node_num <= 1000 )
-  {
-    circle_size = 3;
-  }
-  else if ( node_num <= 5000 )
-  {
-    circle_size = 2;
-  }
-  else
-  {
-    circle_size = 1;
-  }
-
-  if ( 1 <= node_show )
-  {
-    file_unit << "%\n";
-    file_unit << "%  Draw filled dots at each node:\n";
-    file_unit << "%\n";
-    file_unit << "%  Set the color to blue:\n";
-    file_unit << "%\n";
-    file_unit << "0.000  0.150  0.750  setrgbcolor\n";
-    file_unit << "%\n";
-
-    for ( node = 0; node < node_num; node++ )
-    {
-      x_ps = ( int ) (
-        ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-        + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max                     - x_min ) );
-
-      y_ps = ( int ) (
-        ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-        + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max                     - y_min ) );
-
-      file_unit << "newpath  "
-        << x_ps << "  "
-        << y_ps << "  "
-        << circle_size << " 0 360 arc closepath fill\n";
-    }
-  }
-//
-//  Label the nodes.
-//
-  if ( 2 <= node_show )
-  {
-    file_unit << "%\n";
-    file_unit << "%  Label the nodes:\n";
-    file_unit << "%\n";
-    file_unit << "%  Set the color to darker blue:\n";
-    file_unit << "%\n";
-    file_unit << "0.000  0.250  0.850  setrgbcolor\n";
-    file_unit << "/Times-Roman findfont\n";
-    file_unit << "0.20 inch scalefont\n";
-    file_unit << "setfont\n";
-
-    file_unit << "%\n";
-
-    for ( node = 0; node < node_num; node++ )
-    {
-      x_ps = ( int ) (
-        ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-        + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max                     - x_min ) );
-
-      y_ps = ( int ) (
-        ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-        + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max                     - y_min ) );
-
-      file_unit << "newpath  "
-        << x_ps     << "  "
-        << y_ps + 5 << "  moveto ("
-        << node+1   << ") show\n";
-    }
-  }
-//
-//  Draw the triangles.
-//
-  if ( 1 <= triangle_show )
-  {
-    file_unit << "%\n";
-    file_unit << "%  Set the RGB color to red.\n";
-    file_unit << "%\n";
-    file_unit << "0.900  0.200  0.100 setrgbcolor\n";
-    file_unit << "%\n";
-    file_unit << "%  Draw the triangles.\n";
-    file_unit << "%\n";
-
-    for ( triangle = 0; triangle < triangle_num; triangle++ )
-    {
-      file_unit << "newpath\n";
-
-      for ( i = 1; i <= 4; i++ )
-      {
-        e = i4_wrap ( i, 1, 3 );
-
-        node = triangle_node[e-1+triangle*3] - 1;
-
-        x_ps = ( int ) (
-          ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-          + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-          / ( x_max                     - x_min ) );
-
-        y_ps = ( int ) (
-          ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-          + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-          / ( y_max                     - y_min ) );
-
-        if ( i == 1 )
+        if ( node_num <= 200 )
         {
-          file_unit << x_ps << "  " << y_ps << "  moveto\n";
+            circle_size = 5;
+        }
+        else if ( node_num <= 500 )
+        {
+            circle_size = 4;
+        }
+        else if ( node_num <= 1000 )
+        {
+            circle_size = 3;
+        }
+        else if ( node_num <= 5000 )
+        {
+            circle_size = 2;
         }
         else
         {
-          file_unit << x_ps << "  " << y_ps << "  lineto\n";
+            circle_size = 1;
         }
-      }
-      file_unit << "stroke\n";
-    }
-  }
+
+        if ( 1 <= node_show )
+        {
+            file_unit << "%\n";
+            file_unit << "%  Draw filled dots at each node:\n";
+            file_unit << "%\n";
+            file_unit << "%  Set the color to blue:\n";
+            file_unit << "%\n";
+            file_unit << "0.000  0.150  0.750  setrgbcolor\n";
+            file_unit << "%\n";
+
+            for ( node = 0; node < node_num; node++ )
+            {
+                x_ps = ( int ) (
+                           ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                             + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max                     - x_min ) );
+
+                y_ps = ( int ) (
+                           ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                             + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max                     - y_min ) );
+
+                file_unit << "newpath  "
+                          << x_ps << "  "
+                          << y_ps << "  "
+                          << circle_size << " 0 360 arc closepath fill\n";
+            }
+        }
+//
+//  Label the nodes.
+//
+        if ( 2 <= node_show )
+        {
+            file_unit << "%\n";
+            file_unit << "%  Label the nodes:\n";
+            file_unit << "%\n";
+            file_unit << "%  Set the color to darker blue:\n";
+            file_unit << "%\n";
+            file_unit << "0.000  0.250  0.850  setrgbcolor\n";
+            file_unit << "/Times-Roman findfont\n";
+            file_unit << "0.20 inch scalefont\n";
+            file_unit << "setfont\n";
+
+            file_unit << "%\n";
+
+            for ( node = 0; node < node_num; node++ )
+            {
+                x_ps = ( int ) (
+                           ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                             + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max                     - x_min ) );
+
+                y_ps = ( int ) (
+                           ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                             + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max                     - y_min ) );
+
+                file_unit << "newpath  "
+                          << x_ps     << "  "
+                          << y_ps + 5 << "  moveto ("
+                          << node + 1   << ") show\n";
+            }
+        }
+//
+//  Draw the triangles.
+//
+        if ( 1 <= triangle_show )
+        {
+            file_unit << "%\n";
+            file_unit << "%  Set the RGB color to red.\n";
+            file_unit << "%\n";
+            file_unit << "0.900  0.200  0.100 setrgbcolor\n";
+            file_unit << "%\n";
+            file_unit << "%  Draw the triangles.\n";
+            file_unit << "%\n";
+
+            for ( triangle = 0; triangle < triangle_num; triangle++ )
+            {
+                file_unit << "newpath\n";
+
+                for ( i = 1; i <= 4; i++ )
+                {
+                    e = i4_wrap ( i, 1, 3 );
+
+                    node = triangle_node[e - 1 + triangle * 3] - 1;
+
+                    x_ps = ( int ) (
+                               ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                                 + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                               / ( x_max                     - x_min ) );
+
+                    y_ps = ( int ) (
+                               ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                                 + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                               / ( y_max                     - y_min ) );
+
+                    if ( i == 1 )
+                    {
+                        file_unit << x_ps << "  " << y_ps << "  moveto\n";
+                    }
+                    else
+                    {
+                        file_unit << x_ps << "  " << y_ps << "  lineto\n";
+                    }
+                }
+                file_unit << "stroke\n";
+            }
+        }
 //
 //  Label the triangles.
 //
-  if ( 2 <= triangle_show )
-  {
-    file_unit << "%\n";
-    file_unit << "%  Label the triangles.\n";
-    file_unit << "%\n";
-    file_unit << "%  Set the RGB color to darker red.\n";
-    file_unit << "%\n";
-    file_unit << "0.950  0.250  0.150 setrgbcolor\n";
-    file_unit << "/Times-Roman findfont\n";
-    file_unit << "0.20 inch scalefont\n";
-    file_unit << "setfont\n";
-    file_unit << "%\n";
+        if ( 2 <= triangle_show )
+        {
+            file_unit << "%\n";
+            file_unit << "%  Label the triangles.\n";
+            file_unit << "%\n";
+            file_unit << "%  Set the RGB color to darker red.\n";
+            file_unit << "%\n";
+            file_unit << "0.950  0.250  0.150 setrgbcolor\n";
+            file_unit << "/Times-Roman findfont\n";
+            file_unit << "0.20 inch scalefont\n";
+            file_unit << "setfont\n";
+            file_unit << "%\n";
 
-    for ( triangle = 0; triangle < triangle_num; triangle++ )
-    {
-      ave_x = 0.0;
-      ave_y = 0.0;
+            for ( triangle = 0; triangle < triangle_num; triangle++ )
+            {
+                ave_x = 0.0;
+                ave_y = 0.0;
 
-      for ( i = 1; i <= 3; i++ )
-      {
-        node = triangle_node[i-1+triangle*3] - 1;
-        ave_x = ave_x + node_xy[0+node*2];
-        ave_y = ave_y + node_xy[1+node*2];
-      }
-      ave_x = ave_x / 3.0;
-      ave_y = ave_y / 3.0;
+                for ( i = 1; i <= 3; i++ )
+                {
+                    node = triangle_node[i - 1 + triangle * 3] - 1;
+                    ave_x = ave_x + node_xy[0 + node * 2];
+                    ave_y = ave_y + node_xy[1 + node * 2];
+                }
+                ave_x = ave_x / 3.0;
+                ave_y = ave_y / 3.0;
 
-      x_ps = ( int ) (
-        ( ( x_max - ave_x         ) * ( double ) ( x_ps_min )
-        + (       + ave_x - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max         - x_min ) );
+                x_ps = ( int ) (
+                           ( ( x_max - ave_x         ) * ( double ) ( x_ps_min )
+                             + (       + ave_x - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max         - x_min ) );
 
-      y_ps = ( int ) (
-        ( ( y_max - ave_y         ) * ( double ) ( y_ps_min )
-        + (         ave_y - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max         - y_min ) );
+                y_ps = ( int ) (
+                           ( ( y_max - ave_y         ) * ( double ) ( y_ps_min )
+                             + (         ave_y - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max         - y_min ) );
 
-      file_unit << x_ps << "  "
-                << y_ps << "  moveto ("
-                << triangle+1 << ") show\n";
+                file_unit << x_ps << "  "
+                          << y_ps << "  moveto ("
+                          << triangle + 1 << ") show\n";
+            }
+        }
+
+        file_unit << "%\n";
+        file_unit << "restore  showpage\n";
+        file_unit << "%\n";
+        file_unit << "%  End of page.\n";
+        file_unit << "%\n";
+        file_unit << "%%Trailer\n";
+        file_unit << "%%EOF\n";
+
+        file_unit.close ( );
+
+        return;
     }
-  }
-
-  file_unit << "%\n";
-  file_unit << "restore  showpage\n";
-  file_unit << "%\n";
-  file_unit << "%  End of page.\n";
-  file_unit << "%\n";
-  file_unit << "%%Trailer\n";
-  file_unit << "%%EOF\n";
-
-  file_unit.close ( );
-
-  return;
-}
 //****************************************************************************80
 
-void triangulation_order3_print ( int node_num, int triangle_num,
-  double node_xy[], int triangle_node[], int triangle_neighbor[] )
+    void triangulation_order3_print ( int node_num, int triangle_num,
+                                      double node_xy[], int triangle_node[], int triangle_neighbor[] )
 
 //****************************************************************************80
 //
@@ -11174,135 +11185,135 @@ void triangulation_order3_print ( int node_num, int triangle_num,
 //    triangulation data was created by R8TRIS2, then there is more
 //    information encoded in the negative values.
 //
-{
+    {
 # define DIM_NUM 2
 
-  int boundary_num;
-  int i;
-  int j;
-  int k;
-  int n1;
-  int n2;
-  int s;
-  int s1;
-  int s2;
-  bool skip;
-  int t;
-  int *vertex_list;
-  int vertex_num;
+        int boundary_num;
+        int i;
+        int j;
+        int k;
+        int n1;
+        int n2;
+        int s;
+        int s1;
+        int s2;
+        bool skip;
+        int t;
+        int *vertex_list;
+        int vertex_num;
 
-  std::cout << "\n";
-  std::cout << "TRIANGULATION_ORDER3_PRINT\n";
-  std::cout << "  Information defining a triangulation.\n";
-  std::cout << "\n";
-  std::cout << "  The number of nodes is " << node_num << "\n";
+        std::cout << "\n";
+        std::cout << "TRIANGULATION_ORDER3_PRINT\n";
+        std::cout << "  Information defining a triangulation.\n";
+        std::cout << "\n";
+        std::cout << "  The number of nodes is " << node_num << "\n";
 
-  r8mat_transpose_print ( DIM_NUM, node_num, node_xy, "  Node coordinates" );
+        r8mat_transpose_print ( DIM_NUM, node_num, node_xy, "  Node coordinates" );
 
-  std::cout << "\n";
-  std::cout << "  The number of triangles is " << triangle_num << "\n";
-  std::cout << "\n";
-  std::cout << "  Sets of three nodes are used as vertices of\n";
-  std::cout << "  the triangles.  For each triangle, the nodes\n";
-  std::cout << "  are listed in counterclockwise order.\n";
+        std::cout << "\n";
+        std::cout << "  The number of triangles is " << triangle_num << "\n";
+        std::cout << "\n";
+        std::cout << "  Sets of three nodes are used as vertices of\n";
+        std::cout << "  the triangles.  For each triangle, the nodes\n";
+        std::cout << "  are listed in counterclockwise order.\n";
 
-  i4mat_transpose_print ( 3, triangle_num, triangle_node, "  Triangle nodes" );
+        i4mat_transpose_print ( 3, triangle_num, triangle_node, "  Triangle nodes" );
 
-  std::cout << "\n";
-  std::cout << "  On each side of a given triangle, there is either\n";
-  std::cout << "  another triangle, or a piece of the convex hull.\n";
-  std::cout << "  For each triangle, we list the indices of the three\n";
-  std::cout << "  neighbors, or (if negative) the codes of the\n";
-  std::cout << "  segments of the convex hull.\n";
+        std::cout << "\n";
+        std::cout << "  On each side of a given triangle, there is either\n";
+        std::cout << "  another triangle, or a piece of the convex hull.\n";
+        std::cout << "  For each triangle, we list the indices of the three\n";
+        std::cout << "  neighbors, or (if negative) the codes of the\n";
+        std::cout << "  segments of the convex hull.\n";
 
-  i4mat_transpose_print ( 3, triangle_num, triangle_neighbor,
-    "  Triangle neighbors" );
+        i4mat_transpose_print ( 3, triangle_num, triangle_neighbor,
+                                "  Triangle neighbors" );
 //
 //  Determine VERTEX_NUM, the number of vertices.
 //
-  vertex_list = new int[3*triangle_num];
+        vertex_list = new int[3 * triangle_num];
 
-  k = 0;
-  for ( t = 0; t < triangle_num; t++ )
-  {
-    for ( s = 0; s < 3; s++ )
-    {
-      vertex_list[k] = triangle_node[s+t*3];
-      k = k + 1;
-    }
-  }
+        k = 0;
+        for ( t = 0; t < triangle_num; t++ )
+        {
+            for ( s = 0; s < 3; s++ )
+            {
+                vertex_list[k] = triangle_node[s + t * 3];
+                k = k + 1;
+            }
+        }
 
-  i4vec_sort_heap_a ( 3*triangle_num, vertex_list );
+        i4vec_sort_heap_a ( 3 * triangle_num, vertex_list );
 
-  vertex_num = i4vec_sorted_unique ( 3*triangle_num, vertex_list );
+        vertex_num = i4vec_sorted_unique ( 3 * triangle_num, vertex_list );
 
-  delete [] vertex_list;
+        delete [] vertex_list;
 //
 //  Determine the number of boundary points.
 //
-  boundary_num = 2 * vertex_num - triangle_num - 2;
+        boundary_num = 2 * vertex_num - triangle_num - 2;
 
-  std::cout << "\n";
-  std::cout << "  The number of boundary points is " << boundary_num << "\n";
-  std::cout << "\n";
-  std::cout << "  The segments that make up the convex hull can be\n";
-  std::cout << "  determined from the negative entries of the triangle\n";
-  std::cout << "  neighbor list.\n";
-  std::cout << "\n";
-  std::cout << "     #   Tri  Side    N1    N2\n";
-  std::cout << "\n";
+        std::cout << "\n";
+        std::cout << "  The number of boundary points is " << boundary_num << "\n";
+        std::cout << "\n";
+        std::cout << "  The segments that make up the convex hull can be\n";
+        std::cout << "  determined from the negative entries of the triangle\n";
+        std::cout << "  neighbor list.\n";
+        std::cout << "\n";
+        std::cout << "     #   Tri  Side    N1    N2\n";
+        std::cout << "\n";
 
-  skip = false;
+        skip = false;
 
-  k = 0;
+        k = 0;
 
-  for ( i = 0; i < triangle_num; i++ )
-  {
-    for ( j = 0; j < 3; j++ )
-    {
-      if ( triangle_neighbor[j+i*3] < 0 )
-      {
-        s = -triangle_neighbor[j+i*3];
-        t = s / 3;
-
-        if ( t < 1 || triangle_num < t )
+        for ( i = 0; i < triangle_num; i++ )
         {
-          std::cout << "\n";
-          std::cout << "  Sorry, this data does not use the R8TRIS2\n";
-          std::cout << "  convention for convex hull segments.\n";
-          skip = true;
-          break;
+            for ( j = 0; j < 3; j++ )
+            {
+                if ( triangle_neighbor[j + i * 3] < 0 )
+                {
+                    s = -triangle_neighbor[j + i * 3];
+                    t = s / 3;
+
+                    if ( t < 1 || triangle_num < t )
+                    {
+                        std::cout << "\n";
+                        std::cout << "  Sorry, this data does not use the R8TRIS2\n";
+                        std::cout << "  convention for convex hull segments.\n";
+                        skip = true;
+                        break;
+                    }
+
+                    s1 = ( s % 3 ) + 1;
+                    s2 = i4_wrap ( s1 + 1, 1, 3 );
+                    k = k + 1;
+                    n1 = triangle_node[s1 - 1 + (t - 1) * 3];
+                    n2 = triangle_node[s2 - 1 + (t - 1) * 3];
+                    std::cout                  << "  "
+                                               << std::setw(4) << k  << "  "
+                                               << std::setw(4) << t  << "  "
+                                               << std::setw(4) << s1 << "  "
+                                               << std::setw(4) << n1 << "  "
+                                               << std::setw(4) << n2 << "\n";
+                }
+            }
+
+            if ( skip )
+            {
+                break;
+            }
         }
 
-        s1 = ( s % 3 ) + 1;
-        s2 = i4_wrap ( s1+1, 1, 3 );
-        k = k + 1;
-        n1 = triangle_node[s1-1+(t-1)*3];
-        n2 = triangle_node[s2-1+(t-1)*3];
-        std::cout                  << "  "
-             << std::setw(4) << k  << "  "
-             << std::setw(4) << t  << "  "
-             << std::setw(4) << s1 << "  "
-             << std::setw(4) << n1 << "  "
-             << std::setw(4) << n2 << "\n";
-      }
-    }
-
-    if ( skip )
-    {
-      break;
-    }
-  }
-
-  return;
+        return;
 # undef DIM_NUM
-}
+    }
 //****************************************************************************80
 
-void triangulation_order3_quad ( int node_num, double node_xy[],
-  int triangle_order, int triangle_num, int triangle_node[],
-  void quad_fun ( int n, double xy_vec[], double f_vec[] ), int quad_num,
-  double quad_xy[], double quad_w[], double *quad_value, double *region_area )
+    void triangulation_order3_quad ( int node_num, double node_xy[],
+                                     int triangle_order, int triangle_num, int triangle_node[],
+                                     void quad_fun ( int n, double xy_vec[], double f_vec[] ), int quad_num,
+                                     double quad_xy[], double quad_w[], double *quad_value, double *region_area )
 
 //****************************************************************************80
 //
@@ -11371,60 +11382,60 @@ void triangulation_order3_quad ( int node_num, double node_xy[],
 //
 //    Output, double *REGION_AREA, the area of the region.
 //
-{
-  int i;
-  int j;
-  int quad;
-  double *quad_f;
-  double *quad2_xy;
-  double temp;
-  int triangle;
-  double triangle_area;
-  double triangle_xy[2*3];
-
-  quad_f = new double[quad_num];
-  quad2_xy = new double[2*quad_num];
-
-  *quad_value = 0.0;
-  *region_area = 0.0;
-
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    for ( j = 0; j < 3; j++ )
     {
-      for ( i = 0; i < 2; i++ )
-      {
-        triangle_xy[i+j*2] = node_xy[i+(triangle_node[j+triangle*3]-1)*2];
-      }
+        int i;
+        int j;
+        int quad;
+        double *quad_f;
+        double *quad2_xy;
+        double temp;
+        int triangle;
+        double triangle_area;
+        double triangle_xy[2 * 3];
+
+        quad_f = new double[quad_num];
+        quad2_xy = new double[2 * quad_num];
+
+        *quad_value = 0.0;
+        *region_area = 0.0;
+
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            for ( j = 0; j < 3; j++ )
+            {
+                for ( i = 0; i < 2; i++ )
+                {
+                    triangle_xy[i + j * 2] = node_xy[i + (triangle_node[j + triangle * 3] - 1) * 2];
+                }
+            }
+            triangle_area = triangle_area_2d ( triangle_xy );
+
+            triangle_order3_reference_to_physical ( triangle_xy,
+                                                    quad_num, quad_xy, quad2_xy );
+
+            quad_fun ( quad_num, quad2_xy, quad_f );
+
+            temp = 0.0;
+            for ( quad = 0; quad < quad_num; quad++ )
+            {
+                temp = temp + quad_w[quad] * quad_f[quad];
+            }
+
+            *quad_value = *quad_value + triangle_area * temp;
+
+            *region_area = *region_area + triangle_area;
+        }
+
+        delete [] quad_f;
+        delete [] quad2_xy;
+
+        return;
     }
-    triangle_area = triangle_area_2d ( triangle_xy );
-
-    triangle_order3_reference_to_physical ( triangle_xy,
-      quad_num, quad_xy, quad2_xy );
-
-    quad_fun ( quad_num, quad2_xy, quad_f );
-
-    temp = 0.0;
-    for ( quad = 0; quad < quad_num; quad++ )
-    {
-      temp = temp + quad_w[quad] * quad_f[quad];
-    }
-
-    *quad_value = *quad_value + triangle_area * temp;
-
-    *region_area = *region_area + triangle_area;
-  }
-
-  delete [] quad_f;
-  delete [] quad2_xy;
-
-  return;
-}
 //****************************************************************************80
 
-void triangulation_order3_refine_compute ( int node_num1, int triangle_num1,
-  double node_xy1[], int triangle_node1[], int node_num2, int triangle_num2,
-  int edge_data[], double node_xy2[], int triangle_node2[] )
+    void triangulation_order3_refine_compute ( int node_num1, int triangle_num1,
+            double node_xy1[], int triangle_node1[], int node_num2, int triangle_num2,
+            int edge_data[], double node_xy2[], int triangle_node2[] )
 
 //****************************************************************************80
 //
@@ -11485,110 +11496,110 @@ void triangulation_order3_refine_compute ( int node_num1, int triangle_num1,
 //    Output, int TRIANGLE_NODE2[3*TRIANGLE_NUM2], the nodes that make up the
 //    triangles in the refined mesh.
 //
-{
-  int edge;
-  int i;
-  int j;
-  int n1;
-  int n1_old;
-  int n2;
-  int n2_old;
-  int node;
-  int triangle1;
-  int v1;
-  int v2;
+    {
+        int edge;
+        int i;
+        int j;
+        int n1;
+        int n1_old;
+        int n2;
+        int n2_old;
+        int node;
+        int triangle1;
+        int v1;
+        int v2;
 //
 //  Copy the old nodes.
 //
-  for ( j = 0; j < node_num1; j++ )
-  {
-    for ( i = 0; i < 2; i++ )
-    {
-      node_xy2[i+j*2] = node_xy1[i+j*2];
-    }
-  }
-  for ( j = 0; j < triangle_num2; j++ )
-  {
-    for ( i = 0; i < 3; i++ )
-    {
-      triangle_node2[i+j*3] = -1;
-    }
-  }
+        for ( j = 0; j < node_num1; j++ )
+        {
+            for ( i = 0; i < 2; i++ )
+            {
+                node_xy2[i + j * 2] = node_xy1[i + j * 2];
+            }
+        }
+        for ( j = 0; j < triangle_num2; j++ )
+        {
+            for ( i = 0; i < 3; i++ )
+            {
+                triangle_node2[i + j * 3] = -1;
+            }
+        }
 //
 //  We can assign the existing nodes to the new triangles.
 //
-  for ( triangle1 = 0; triangle1 < triangle_num1; triangle1++ )
-  {
-    triangle_node2[0+(triangle1*4+0)*3] = triangle_node1[0+triangle1*3];
-    triangle_node2[1+(triangle1*4+1)*3] = triangle_node1[1+triangle1*3];
-    triangle_node2[2+(triangle1*4+2)*3] = triangle_node1[2+triangle1*3];
-  }
+        for ( triangle1 = 0; triangle1 < triangle_num1; triangle1++ )
+        {
+            triangle_node2[0 + (triangle1 * 4 + 0) * 3] = triangle_node1[0 + triangle1 * 3];
+            triangle_node2[1 + (triangle1 * 4 + 1) * 3] = triangle_node1[1 + triangle1 * 3];
+            triangle_node2[2 + (triangle1 * 4 + 2) * 3] = triangle_node1[2 + triangle1 * 3];
+        }
 
-  node = node_num1;
+        node = node_num1;
 
-  n1_old = -1;
-  n2_old = -1;
+        n1_old = -1;
+        n2_old = -1;
 
-  for ( edge = 0; edge < 3 * triangle_num1; edge++ )
-  {
-    n1 = edge_data[0+edge*5] - 1;
-    n2 = edge_data[1+edge*5] - 1;
+        for ( edge = 0; edge < 3 * triangle_num1; edge++ )
+        {
+            n1 = edge_data[0 + edge * 5] - 1;
+            n2 = edge_data[1 + edge * 5] - 1;
 //
 //  If this edge is new, create the coordinates and index for this node.
 //
-    if ( n1 != n1_old || n2 != n2_old )
-    {
+            if ( n1 != n1_old || n2 != n2_old )
+            {
 
-      if ( node_num2 < node )
-      {
-        std::cout << "\n";
-        std::cout << "TRIANGLE_MESH_ORDER3_REFINE - Fatal error!\n";
-        std::cout << "  Node index exceeds NODE_NUM2.\n";
-        exit ( 1 );
-      }
+                if ( node_num2 < node )
+                {
+                    std::cout << "\n";
+                    std::cout << "TRIANGLE_MESH_ORDER3_REFINE - Fatal error!\n";
+                    std::cout << "  Node index exceeds NODE_NUM2.\n";
+                    exit ( 1 );
+                }
 
-      for ( i = 0; i < 2; i++ )
-      {
-        node_xy2[i+node*2] = ( node_xy2[i+n1*2] + node_xy2[i+n2*2] ) / 2.0;
-      }
+                for ( i = 0; i < 2; i++ )
+                {
+                    node_xy2[i + node * 2] = ( node_xy2[i + n1 * 2] + node_xy2[i + n2 * 2] ) / 2.0;
+                }
 
-      node = node + 1;
+                node = node + 1;
 
-      n1_old = n1;
-      n2_old = n2;
-    }
+                n1_old = n1;
+                n2_old = n2;
+            }
 //
 //  Assign the node to triangles.
 //
-    v1 = edge_data[2+edge*5];
-    v2 = edge_data[3+edge*5];
-    triangle1 = edge_data[4+edge*5];
+            v1 = edge_data[2 + edge * 5];
+            v2 = edge_data[3 + edge * 5];
+            triangle1 = edge_data[4 + edge * 5];
 
-    if ( v1 == 1 && v2 == 2 )
-    {
-      triangle_node2[0+(triangle1*4+1)*3] = node;
-      triangle_node2[1+(triangle1*4+0)*3] = node;
-      triangle_node2[2+(triangle1*4+3)*3] = node;
+            if ( v1 == 1 && v2 == 2 )
+            {
+                triangle_node2[0 + (triangle1 * 4 + 1) * 3] = node;
+                triangle_node2[1 + (triangle1 * 4 + 0) * 3] = node;
+                triangle_node2[2 + (triangle1 * 4 + 3) * 3] = node;
+            }
+            else if ( v1 == 1 && v2 == 3 )
+            {
+                triangle_node2[0 + (triangle1 * 4 + 2) * 3] = node;
+                triangle_node2[1 + (triangle1 * 4 + 3) * 3] = node;
+                triangle_node2[2 + (triangle1 * 4 + 0) * 3] = node;
+            }
+            else if ( v1 == 2 && v2 == 3 )
+            {
+                triangle_node2[0 + (triangle1 * 4 + 3) * 3] = node;
+                triangle_node2[1 + (triangle1 * 4 + 2) * 3] = node;
+                triangle_node2[2 + (triangle1 * 4 + 1) * 3] = node;
+            }
+        }
+        return;
     }
-    else if ( v1 == 1 && v2 == 3 )
-    {
-      triangle_node2[0+(triangle1*4+2)*3] = node;
-      triangle_node2[1+(triangle1*4+3)*3] = node;
-      triangle_node2[2+(triangle1*4+0)*3] = node;
-    }
-    else if ( v1 == 2 && v2 == 3 )
-    {
-      triangle_node2[0+(triangle1*4+3)*3] = node;
-      triangle_node2[1+(triangle1*4+2)*3] = node;
-      triangle_node2[2+(triangle1*4+1)*3] = node;
-    }
-  }
-  return;
-}
 //****************************************************************************80
 
-void triangulation_order3_refine_size ( int node_num1, int triangle_num1,
-  int triangle_node1[], int *node_num2, int *triangle_num2, int edge_data[] )
+    void triangulation_order3_refine_size ( int node_num1, int triangle_num1,
+                                            int triangle_node1[], int *node_num2, int *triangle_num2, int edge_data[] )
 
 //****************************************************************************80
 //
@@ -11656,18 +11667,18 @@ void triangulation_order3_refine_size ( int node_num1, int triangle_num1,
 //    Output, int EDGE_DATA[5*(3*TRIANGLE_NUM1)], edge data that will
 //    be needed by TRIANGULATION_ORDER3_REFINE_COMPUTE.
 //
-{
-  int a;
-  int b;
-  int edge;
-  int i;
-  int j;
-  int k;
-  int n1;
-  int n1_old;
-  int n2;
-  int n2_old;
-  int triangle;
+    {
+        int a;
+        int b;
+        int edge;
+        int i;
+        int j;
+        int k;
+        int n1;
+        int n1_old;
+        int n2;
+        int n2_old;
+        int triangle;
 //
 //  Step 1.
 //  From the list of nodes for triangle T, of the form: (I,J,K)
@@ -11680,39 +11691,39 @@ void triangulation_order3_refine_size ( int node_num1, int triangle_num1,
 //  In order to make matching easier, we reorder each pair of nodes
 //  into ascending order.
 //
-  for ( triangle = 0; triangle < triangle_num1; triangle++ )
-  {
-    i = triangle_node1[0+triangle*3];
-    j = triangle_node1[1+triangle*3];
-    k = triangle_node1[2+triangle*3];
+        for ( triangle = 0; triangle < triangle_num1; triangle++ )
+        {
+            i = triangle_node1[0 + triangle * 3];
+            j = triangle_node1[1 + triangle * 3];
+            k = triangle_node1[2 + triangle * 3];
 
-    a = i4_min ( i, j );
-    b = i4_max ( i, j );
+            a = i4_min ( i, j );
+            b = i4_max ( i, j );
 
-    edge_data[0+5*(3*triangle+0)] = a;
-    edge_data[1+5*(3*triangle+0)] = b;
-    edge_data[2+5*(3*triangle+0)] = 1;
-    edge_data[3+5*(3*triangle+0)] = 2;
-    edge_data[4+5*(3*triangle+0)] = triangle;
+            edge_data[0 + 5 * (3 * triangle + 0)] = a;
+            edge_data[1 + 5 * (3 * triangle + 0)] = b;
+            edge_data[2 + 5 * (3 * triangle + 0)] = 1;
+            edge_data[3 + 5 * (3 * triangle + 0)] = 2;
+            edge_data[4 + 5 * (3 * triangle + 0)] = triangle;
 
-    a = i4_min ( i, k );
-    b = i4_max ( i, k );
+            a = i4_min ( i, k );
+            b = i4_max ( i, k );
 
-    edge_data[0+5*(3*triangle+1)] = a;
-    edge_data[1+5*(3*triangle+1)] = b;
-    edge_data[2+5*(3*triangle+1)] = 1;
-    edge_data[3+5*(3*triangle+1)] = 3;
-    edge_data[4+5*(3*triangle+1)] = triangle;
+            edge_data[0 + 5 * (3 * triangle + 1)] = a;
+            edge_data[1 + 5 * (3 * triangle + 1)] = b;
+            edge_data[2 + 5 * (3 * triangle + 1)] = 1;
+            edge_data[3 + 5 * (3 * triangle + 1)] = 3;
+            edge_data[4 + 5 * (3 * triangle + 1)] = triangle;
 
-    a = i4_min ( j, k );
-    b = i4_max ( j, k );
+            a = i4_min ( j, k );
+            b = i4_max ( j, k );
 
-    edge_data[0+5*(3*triangle+2)] = a;
-    edge_data[1+5*(3*triangle+2)] = b;
-    edge_data[2+5*(3*triangle+2)] = 2;
-    edge_data[3+5*(3*triangle+2)] = 3;
-    edge_data[4+5*(3*triangle+2)] = triangle;
-  }
+            edge_data[0 + 5 * (3 * triangle + 2)] = a;
+            edge_data[1 + 5 * (3 * triangle + 2)] = b;
+            edge_data[2 + 5 * (3 * triangle + 2)] = 2;
+            edge_data[3 + 5 * (3 * triangle + 2)] = 3;
+            edge_data[4 + 5 * (3 * triangle + 2)] = triangle;
+        }
 //
 //  Step 2. Perform an ascending dictionary sort on the neighbor relations.
 //  We only intend to sort on rows 1:2; the routine we call here
@@ -11722,38 +11733,38 @@ void triangulation_order3_refine_size ( int node_num1, int triangle_num1,
 //  By sorting the columns of the EDGE_DATA array, we will put shared edges
 //  next to each other.
 //
-  i4col_sort_a ( 5, 3*triangle_num1, edge_data );
+        i4col_sort_a ( 5, 3 * triangle_num1, edge_data );
 //
 //  Step 3. All the triangles which share an edge show up as consecutive
 //  columns with identical first two entries.  Figure out how many new
 //  nodes there are, and allocate space for their coordinates.
 //
-  *node_num2 = node_num1;
+        *node_num2 = node_num1;
 
-  n1_old = -1;
-  n2_old = -1;
+        n1_old = -1;
+        n2_old = -1;
 
-  for ( edge = 0; edge < 3 * triangle_num1; edge++ )
-  {
-    n1 = edge_data[0+edge*5];
-    n2 = edge_data[1+edge*5];
-    if ( n1 != n1_old || n2 != n2_old )
-    {
-      *node_num2 = *node_num2 + 1;
-      n1_old = n1;
-      n2_old = n2;
+        for ( edge = 0; edge < 3 * triangle_num1; edge++ )
+        {
+            n1 = edge_data[0 + edge * 5];
+            n2 = edge_data[1 + edge * 5];
+            if ( n1 != n1_old || n2 != n2_old )
+            {
+                *node_num2 = *node_num2 + 1;
+                n1_old = n1;
+                n2_old = n2;
+            }
+        }
+
+        *triangle_num2 = 4 * triangle_num1;
+
+        return;
     }
-  }
-
-  *triangle_num2 = 4 * triangle_num1;
-
-  return;
-}
 //****************************************************************************80
 
-void triangulation_order3_sample ( int node_num, double node_xy[],
-  int triangle_num, int triangle_node[], int num_ran, int *seed,
-  double xd[], int td[] )
+    void triangulation_order3_sample ( int node_num, double node_xy[],
+                                       int triangle_num, int triangle_node[], int num_ran, int *seed,
+                                       double xd[], int td[] )
 
 //****************************************************************************80
 //
@@ -11800,49 +11811,49 @@ void triangulation_order3_sample ( int node_num, double node_xy[],
 //    Output, int TD[NUM_RAN], the triangle to which each sample point
 //    belongs.
 //
-{
-  double area;
-  double *area_cum;
-  double area_total;
-  int i;
-  int i1;
-  int i2;
-  int i3;
-  int left;
-  double r;
-  int right;
-  double t[2*3];
+    {
+        double area;
+        double *area_cum;
+        double area_total;
+        int i;
+        int i1;
+        int i2;
+        int i3;
+        int left;
+        double r;
+        int right;
+        double t[2 * 3];
 //
 //  Compute the areas of the triangles.
 //  Build a cumulative area vector.
 //  Convert it to a relative cumulative area vector.
 //
-  area_cum = new double[triangle_num+1];
-  area_cum[0] = 0.0;
+        area_cum = new double[triangle_num + 1];
+        area_cum[0] = 0.0;
 
-  for ( i = 0; i < triangle_num; i++ )
-  {
-    i1 = triangle_node[0+i*3];
-    t[0+0*2] = node_xy[0+i1*2];
-    t[1+0*2] = node_xy[1+i1*2];
+        for ( i = 0; i < triangle_num; i++ )
+        {
+            i1 = triangle_node[0 + i * 3];
+            t[0 + 0 * 2] = node_xy[0 + i1 * 2];
+            t[1 + 0 * 2] = node_xy[1 + i1 * 2];
 
-    i2 = triangle_node[1+i*3];
-    t[0+1*2] = node_xy[0+i2*2];
-    t[1+1*2] = node_xy[1+i2*2];
+            i2 = triangle_node[1 + i * 3];
+            t[0 + 1 * 2] = node_xy[0 + i2 * 2];
+            t[1 + 1 * 2] = node_xy[1 + i2 * 2];
 
-    i3 = triangle_node[2+i*3];
-    t[0+2*2] = node_xy[0+i3*2];
-    t[1+2*2] = node_xy[1+i3*2];
+            i3 = triangle_node[2 + i * 3];
+            t[0 + 2 * 2] = node_xy[0 + i3 * 2];
+            t[1 + 2 * 2] = node_xy[1 + i3 * 2];
 
-    area_cum[i+1] = area_cum[i] + triangle_area_2d ( t );
-  }
+            area_cum[i + 1] = area_cum[i] + triangle_area_2d ( t );
+        }
 
-  area_total = area_cum[triangle_num];
+        area_total = area_cum[triangle_num];
 
-  for ( i = 0; i <= triangle_num; i++ )
-  {
-    area_cum[i] = area_cum[i] / area_total;
-  }
+        for ( i = 0; i <= triangle_num; i++ )
+        {
+            area_cum[i] = area_cum[i] / area_total;
+        }
 //
 //  Pick random values.  A random value R indicates the corresponding triangle
 //  whose cumulative relative area contains R.
@@ -11852,38 +11863,38 @@ void triangulation_order3_sample ( int node_num, double node_xy[],
 //
 //  Pick a random point in the triangle.
 //
-  for ( i = 0; i < num_ran; i++ )
-  {
-    r = r8_uniform_01 ( seed );
+        for ( i = 0; i < num_ran; i++ )
+        {
+            r = r8_uniform_01 ( seed );
 
-    r8vec_bracket ( triangle_num+1, area_cum, r, &left, &right );
+            r8vec_bracket ( triangle_num + 1, area_cum, r, &left, &right );
 
-    td[i] = right - 1;
+            td[i] = right - 1;
 
-    i1 = triangle_node[0+(td[i]-1)*3];
-    t[0+0*2] = node_xy[0+i1*2];
-    t[1+0*2] = node_xy[1+i1*2];
+            i1 = triangle_node[0 + (td[i] - 1) * 3];
+            t[0 + 0 * 2] = node_xy[0 + i1 * 2];
+            t[1 + 0 * 2] = node_xy[1 + i1 * 2];
 
-    i2 = triangle_node[1+(td[i]-1)*3];
-    t[0+1*2] = node_xy[0+i2*2];
-    t[1+1*2] = node_xy[1+i2*2];
+            i2 = triangle_node[1 + (td[i] - 1) * 3];
+            t[0 + 1 * 2] = node_xy[0 + i2 * 2];
+            t[1 + 1 * 2] = node_xy[1 + i2 * 2];
 
-    i3 = triangle_node[2+(td[i]-1)*3];
-    t[0+2*2] = node_xy[0+i3*2];
-    t[1+2*2] = node_xy[1+i3*2];
+            i3 = triangle_node[2 + (td[i] - 1) * 3];
+            t[0 + 2 * 2] = node_xy[0 + i3 * 2];
+            t[1 + 2 * 2] = node_xy[1 + i3 * 2];
 
-    triangle_sample ( t, 1, seed, xd+i*2 );
-  }
+            triangle_sample ( t, 1, seed, xd + i * 2 );
+        }
 
-  delete [] area_cum;
+        delete [] area_cum;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void triangulation_order4_plot ( std::string plot_filename, int node_num,
-  double node_xy[], int triangle_num, int triangle_node[], int node_show,
-  int triangle_show )
+    void triangulation_order4_plot ( std::string plot_filename, int node_num,
+                                     double node_xy[], int triangle_num, int triangle_node[], int node_show,
+                                     int triangle_show )
 
 //****************************************************************************80
 //
@@ -11927,383 +11938,383 @@ void triangulation_order4_plot ( std::string plot_filename, int node_num,
 //    1, show triangles;
 //    2, show triangles and label them.
 //
-{
-  double ave_x;
-  double ave_y;
-  int circle_size;
-  int delta;
-  int e;
-  std::ofstream plot_unit;
-  int i;
-  int node;
-  int triangle;
-  double x_max;
-  double x_min;
-  int x_ps;
-  int x_ps_max = 576;
-  int x_ps_max_clip = 594;
-  int x_ps_min = 36;
-  int x_ps_min_clip = 18;
-  double x_scale;
-  double y_max;
-  double y_min;
-  int y_ps;
-  int y_ps_max = 666;
-  int y_ps_max_clip = 684;
-  int y_ps_min = 126;
-  int y_ps_min_clip = 108;
-  double y_scale;
+    {
+        double ave_x;
+        double ave_y;
+        int circle_size;
+        int delta;
+        int e;
+        std::ofstream plot_unit;
+        int i;
+        int node;
+        int triangle;
+        double x_max;
+        double x_min;
+        int x_ps;
+        int x_ps_max = 576;
+        int x_ps_max_clip = 594;
+        int x_ps_min = 36;
+        int x_ps_min_clip = 18;
+        double x_scale;
+        double y_max;
+        double y_min;
+        int y_ps;
+        int y_ps_max = 666;
+        int y_ps_max_clip = 684;
+        int y_ps_min = 126;
+        int y_ps_min_clip = 108;
+        double y_scale;
 //
 //  We need to do some figuring here, so that we can determine
 //  the range of the data, and hence the height and width
 //  of the piece of paper.
 //
-  x_max = -r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( x_max < node_xy[0+node*2] )
-     {
-       x_max = node_xy[0+node*2];
-     }
-  }
-  x_min = r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( node_xy[0+node*2] < x_min )
-     {
-       x_min = node_xy[0+node*2];
-     }
-  }
-  x_scale = x_max - x_min;
+        x_max = -r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( x_max < node_xy[0 + node * 2] )
+            {
+                x_max = node_xy[0 + node * 2];
+            }
+        }
+        x_min = r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( node_xy[0 + node * 2] < x_min )
+            {
+                x_min = node_xy[0 + node * 2];
+            }
+        }
+        x_scale = x_max - x_min;
 
-  x_max = x_max + 0.05 * x_scale;
-  x_min = x_min - 0.05 * x_scale;
-  x_scale = x_max - x_min;
+        x_max = x_max + 0.05 * x_scale;
+        x_min = x_min - 0.05 * x_scale;
+        x_scale = x_max - x_min;
 
-  y_max = -r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( y_max < node_xy[1+node*2] )
-     {
-       y_max = node_xy[1+node*2];
-     }
-  }
-  y_min = r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( node_xy[1+node*2] < y_min )
-     {
-       y_min = node_xy[1+node*2];
-     }
-  }
-  y_scale = y_max - y_min;
+        y_max = -r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( y_max < node_xy[1 + node * 2] )
+            {
+                y_max = node_xy[1 + node * 2];
+            }
+        }
+        y_min = r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( node_xy[1 + node * 2] < y_min )
+            {
+                y_min = node_xy[1 + node * 2];
+            }
+        }
+        y_scale = y_max - y_min;
 
-  y_max = y_max + 0.05 * y_scale;
-  y_min = y_min - 0.05 * y_scale;
-  y_scale = y_max - y_min;
+        y_max = y_max + 0.05 * y_scale;
+        y_min = y_min - 0.05 * y_scale;
+        y_scale = y_max - y_min;
 
-  if ( x_scale < y_scale )
-  {
-    delta = r8_nint ( ( double ) ( x_ps_max - x_ps_min )
-      * ( y_scale - x_scale ) / ( 2.0 * y_scale ) );
+        if ( x_scale < y_scale )
+        {
+            delta = r8_nint ( ( double ) ( x_ps_max - x_ps_min )
+                              * ( y_scale - x_scale ) / ( 2.0 * y_scale ) );
 
-    x_ps_max = x_ps_max - delta;
-    x_ps_min = x_ps_min + delta;
+            x_ps_max = x_ps_max - delta;
+            x_ps_min = x_ps_min + delta;
 
-    x_ps_max_clip = x_ps_max_clip - delta;
-    x_ps_min_clip = x_ps_min_clip + delta;
+            x_ps_max_clip = x_ps_max_clip - delta;
+            x_ps_min_clip = x_ps_min_clip + delta;
 
-    x_scale = y_scale;
-  }
-  else if ( y_scale < x_scale )
-  {
-    delta = r8_nint ( ( double ) ( y_ps_max - y_ps_min )
-      * ( x_scale - y_scale ) / ( 2.0 * x_scale ) );
+            x_scale = y_scale;
+        }
+        else if ( y_scale < x_scale )
+        {
+            delta = r8_nint ( ( double ) ( y_ps_max - y_ps_min )
+                              * ( x_scale - y_scale ) / ( 2.0 * x_scale ) );
 
-    y_ps_max = y_ps_max - delta;
-    y_ps_min = y_ps_min + delta;
+            y_ps_max = y_ps_max - delta;
+            y_ps_min = y_ps_min + delta;
 
-    y_ps_max_clip = y_ps_max_clip - delta;
-    y_ps_min_clip = y_ps_min_clip + delta;
+            y_ps_max_clip = y_ps_max_clip - delta;
+            y_ps_min_clip = y_ps_min_clip + delta;
 
-    y_scale = x_scale;
-  }
+            y_scale = x_scale;
+        }
 
-  plot_unit.open ( plot_filename.c_str ( ) );
+        plot_unit.open ( plot_filename.c_str ( ) );
 
-  if ( !plot_unit )
-  {
-    std::cout << "\n";
-    std::cout << "TRIANGULATION_ORDER4_PLOT - Fatal error!\n";
-    std::cout << "  Could not open the output EPS file.\n";
-    exit ( 1 );
-  }
+        if ( !plot_unit )
+        {
+            std::cout << "\n";
+            std::cout << "TRIANGULATION_ORDER4_PLOT - Fatal error!\n";
+            std::cout << "  Could not open the output EPS file.\n";
+            exit ( 1 );
+        }
 
-  plot_unit << "%!PS-Adobe-3.0 EPSF-3.0\n";
-  plot_unit << "%%Creator: triangulation_order4_plot.C\n";
-  plot_unit << "%%Title: " << plot_filename << "\n";
+        plot_unit << "%!PS-Adobe-3.0 EPSF-3.0\n";
+        plot_unit << "%%Creator: triangulation_order4_plot.C\n";
+        plot_unit << "%%Title: " << plot_filename << "\n";
 
-  plot_unit << "%%Pages: 1\n";
-  plot_unit << "%%BoundingBox:  "
-    << x_ps_min << "  "
-    << y_ps_min << "  "
-    << x_ps_max << "  "
-    << y_ps_max << "\n";
-  plot_unit << "%%Document-Fonts: Times-Roman\n";
-  plot_unit << "%%LanguageLevel: 1\n";
-  plot_unit << "%%EndComments\n";
-  plot_unit << "%%BeginProlog\n";
-  plot_unit << "/inch {72 mul} def\n";
-  plot_unit << "%%EndProlog\n";
-  plot_unit << "%%Page:      1     1\n";
-  plot_unit << "save\n";
-  plot_unit << "%\n";
-  plot_unit << "%  Increase line width from default 0.\n";
-  plot_unit << "%\n";
-  plot_unit << "2 setlinewidth\n";
-  plot_unit << "%\n";
-  plot_unit << "% Set the RGB line color to very light gray.\n";
-  plot_unit << "%\n";
-  plot_unit << " 0.9000 0.9000 0.9000 setrgbcolor\n";
-  plot_unit << "%\n";
-  plot_unit << "% Draw a gray border around the page.\n";
-  plot_unit << "%\n";
-  plot_unit << "newpath\n";
-  plot_unit << x_ps_min << "  "
-            << y_ps_min << "  moveto\n";
-  plot_unit << x_ps_max << "  "
-            << y_ps_min << "  lineto\n";
-  plot_unit << x_ps_max << "  "
-            << y_ps_max << "  lineto\n";
-  plot_unit << x_ps_min << "  "
-            << y_ps_max << "  lineto\n";
-  plot_unit << x_ps_min << "  "
-            << y_ps_min << "  lineto\n";
-  plot_unit << "stroke\n";
-  plot_unit << "%\n";
-  plot_unit << "% Set RGB line color to black.\n";
-  plot_unit << "%\n";
-  plot_unit << " 0.0000 0.0000 0.0000 setrgbcolor\n";
-  plot_unit << "%\n";
-  plot_unit << "%  Set the font and its size:\n";
-  plot_unit << "%\n";
-  plot_unit << "/Times-Roman findfont\n";
-  plot_unit << "0.50 inch scalefont\n";
-  plot_unit << "setfont\n";
-  plot_unit << "%\n";
-  plot_unit << "%  Print a title:\n";
-  plot_unit << "%\n";
-  plot_unit << "%  210  702 moveto\n";
-  plot_unit << "%(Pointset) show\n";
-  plot_unit << "%\n";
-  plot_unit << "% Define a clipping polygon\n";
-  plot_unit << "%\n";
-  plot_unit << "newpath\n";
-  plot_unit << x_ps_min_clip << "  "
-            << y_ps_min_clip << "  moveto\n";
-  plot_unit << x_ps_max_clip << "  "
-            << y_ps_min_clip << "  lineto\n";
-  plot_unit << x_ps_max_clip << "  "
-            << y_ps_max_clip << "  lineto\n";
-  plot_unit << x_ps_min_clip << "  "
-            << y_ps_max_clip << "  lineto\n";
-  plot_unit << x_ps_min_clip << "  "
-            << y_ps_min_clip << "  lineto\n";
-  plot_unit << "clip newpath\n";
+        plot_unit << "%%Pages: 1\n";
+        plot_unit << "%%BoundingBox:  "
+                  << x_ps_min << "  "
+                  << y_ps_min << "  "
+                  << x_ps_max << "  "
+                  << y_ps_max << "\n";
+        plot_unit << "%%Document-Fonts: Times-Roman\n";
+        plot_unit << "%%LanguageLevel: 1\n";
+        plot_unit << "%%EndComments\n";
+        plot_unit << "%%BeginProlog\n";
+        plot_unit << "/inch {72 mul} def\n";
+        plot_unit << "%%EndProlog\n";
+        plot_unit << "%%Page:      1     1\n";
+        plot_unit << "save\n";
+        plot_unit << "%\n";
+        plot_unit << "%  Increase line width from default 0.\n";
+        plot_unit << "%\n";
+        plot_unit << "2 setlinewidth\n";
+        plot_unit << "%\n";
+        plot_unit << "% Set the RGB line color to very light gray.\n";
+        plot_unit << "%\n";
+        plot_unit << " 0.9000 0.9000 0.9000 setrgbcolor\n";
+        plot_unit << "%\n";
+        plot_unit << "% Draw a gray border around the page.\n";
+        plot_unit << "%\n";
+        plot_unit << "newpath\n";
+        plot_unit << x_ps_min << "  "
+                  << y_ps_min << "  moveto\n";
+        plot_unit << x_ps_max << "  "
+                  << y_ps_min << "  lineto\n";
+        plot_unit << x_ps_max << "  "
+                  << y_ps_max << "  lineto\n";
+        plot_unit << x_ps_min << "  "
+                  << y_ps_max << "  lineto\n";
+        plot_unit << x_ps_min << "  "
+                  << y_ps_min << "  lineto\n";
+        plot_unit << "stroke\n";
+        plot_unit << "%\n";
+        plot_unit << "% Set RGB line color to black.\n";
+        plot_unit << "%\n";
+        plot_unit << " 0.0000 0.0000 0.0000 setrgbcolor\n";
+        plot_unit << "%\n";
+        plot_unit << "%  Set the font and its size:\n";
+        plot_unit << "%\n";
+        plot_unit << "/Times-Roman findfont\n";
+        plot_unit << "0.50 inch scalefont\n";
+        plot_unit << "setfont\n";
+        plot_unit << "%\n";
+        plot_unit << "%  Print a title:\n";
+        plot_unit << "%\n";
+        plot_unit << "%  210  702 moveto\n";
+        plot_unit << "%(Pointset) show\n";
+        plot_unit << "%\n";
+        plot_unit << "% Define a clipping polygon\n";
+        plot_unit << "%\n";
+        plot_unit << "newpath\n";
+        plot_unit << x_ps_min_clip << "  "
+                  << y_ps_min_clip << "  moveto\n";
+        plot_unit << x_ps_max_clip << "  "
+                  << y_ps_min_clip << "  lineto\n";
+        plot_unit << x_ps_max_clip << "  "
+                  << y_ps_max_clip << "  lineto\n";
+        plot_unit << x_ps_min_clip << "  "
+                  << y_ps_max_clip << "  lineto\n";
+        plot_unit << x_ps_min_clip << "  "
+                  << y_ps_min_clip << "  lineto\n";
+        plot_unit << "clip newpath\n";
 //
 //  Draw the nodes.
 //
-  if ( node_num <= 200 )
-  {
-    circle_size = 5;
-  }
-  else if ( node_num <= 500 )
-  {
-    circle_size = 4;
-  }
-  else if ( node_num <= 1000 )
-  {
-    circle_size = 3;
-  }
-  else if ( node_num <= 5000 )
-  {
-    circle_size = 2;
-  }
-  else
-  {
-    circle_size = 1;
-  }
-
-  if ( 1 <= node_show )
-  {
-    plot_unit << "%\n";
-    plot_unit << "%  Draw filled dots at each node:\n";
-    plot_unit << "%\n";
-    plot_unit << "%  Set the color to blue:\n";
-    plot_unit << "%\n";
-    plot_unit << "0.000  0.150  0.750  setrgbcolor\n";
-    plot_unit << "%\n";
-
-    for ( node = 0; node < node_num; node++ )
-    {
-      x_ps = ( int ) (
-        ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-        + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max                     - x_min ) );
-
-      y_ps = ( int ) (
-        ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-        + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max                     - y_min ) );
-
-      plot_unit << "newpath  "
-        << x_ps << "  "
-        << y_ps << "  "
-        << circle_size << " 0 360 arc closepath fill\n";
-    }
-  }
-//
-//  Label the nodes.
-//
-  if ( 2 <= node_show )
-  {
-    plot_unit << "%\n";
-    plot_unit << "%  Label the nodes:\n";
-    plot_unit << "%\n";
-    plot_unit << "%  Set the color to darker blue:\n";
-    plot_unit << "%\n";
-    plot_unit << "0.000  0.250  0.850  setrgbcolor\n";
-    plot_unit << "/Times-Roman findfont\n";
-    plot_unit << "0.20 inch scalefont\n";
-    plot_unit << "setfont\n";
-
-    plot_unit << "%\n";
-
-    for ( node = 0; node < node_num; node++ )
-    {
-      x_ps = ( int ) (
-        ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-        + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max                     - x_min ) );
-
-      y_ps = ( int ) (
-        ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-        + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max                     - y_min ) );
-
-      plot_unit << "newpath  "
-        << x_ps     << "  "
-        << y_ps + 5 << "  moveto ("
-        << node+1   << ") show\n";
-    }
-  }
-//
-//  Draw the triangles.
-//
-  if ( 1 <= triangle_show )
-  {
-    plot_unit << "%\n";
-    plot_unit << "%  Set the RGB color to red.\n";
-    plot_unit << "%\n";
-    plot_unit << "0.900  0.200  0.100 setrgbcolor\n";
-    plot_unit << "%\n";
-    plot_unit << "%  Draw the triangles.\n";
-    plot_unit << "%\n";
-
-    for ( triangle = 0; triangle < triangle_num; triangle++ )
-    {
-      plot_unit << "newpath\n";
-
-      for ( i = 1; i <= 4; i++ )
-      {
-        e = i4_wrap ( i, 1, 3 );
-
-        node = triangle_node[e-1+triangle*4] - 1;
-
-        x_ps = ( int ) (
-          ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-          + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-          / ( x_max                     - x_min ) );
-
-        y_ps = ( int ) (
-          ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-          + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-          / ( y_max                     - y_min ) );
-
-        if ( i == 1 )
+        if ( node_num <= 200 )
         {
-          plot_unit << x_ps << "  " << y_ps << "  moveto\n";
+            circle_size = 5;
+        }
+        else if ( node_num <= 500 )
+        {
+            circle_size = 4;
+        }
+        else if ( node_num <= 1000 )
+        {
+            circle_size = 3;
+        }
+        else if ( node_num <= 5000 )
+        {
+            circle_size = 2;
         }
         else
         {
-          plot_unit << x_ps << "  " << y_ps << "  lineto\n";
+            circle_size = 1;
         }
-      }
-      plot_unit << "stroke\n";
-    }
-  }
+
+        if ( 1 <= node_show )
+        {
+            plot_unit << "%\n";
+            plot_unit << "%  Draw filled dots at each node:\n";
+            plot_unit << "%\n";
+            plot_unit << "%  Set the color to blue:\n";
+            plot_unit << "%\n";
+            plot_unit << "0.000  0.150  0.750  setrgbcolor\n";
+            plot_unit << "%\n";
+
+            for ( node = 0; node < node_num; node++ )
+            {
+                x_ps = ( int ) (
+                           ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                             + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max                     - x_min ) );
+
+                y_ps = ( int ) (
+                           ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                             + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max                     - y_min ) );
+
+                plot_unit << "newpath  "
+                          << x_ps << "  "
+                          << y_ps << "  "
+                          << circle_size << " 0 360 arc closepath fill\n";
+            }
+        }
+//
+//  Label the nodes.
+//
+        if ( 2 <= node_show )
+        {
+            plot_unit << "%\n";
+            plot_unit << "%  Label the nodes:\n";
+            plot_unit << "%\n";
+            plot_unit << "%  Set the color to darker blue:\n";
+            plot_unit << "%\n";
+            plot_unit << "0.000  0.250  0.850  setrgbcolor\n";
+            plot_unit << "/Times-Roman findfont\n";
+            plot_unit << "0.20 inch scalefont\n";
+            plot_unit << "setfont\n";
+
+            plot_unit << "%\n";
+
+            for ( node = 0; node < node_num; node++ )
+            {
+                x_ps = ( int ) (
+                           ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                             + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max                     - x_min ) );
+
+                y_ps = ( int ) (
+                           ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                             + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max                     - y_min ) );
+
+                plot_unit << "newpath  "
+                          << x_ps     << "  "
+                          << y_ps + 5 << "  moveto ("
+                          << node + 1   << ") show\n";
+            }
+        }
+//
+//  Draw the triangles.
+//
+        if ( 1 <= triangle_show )
+        {
+            plot_unit << "%\n";
+            plot_unit << "%  Set the RGB color to red.\n";
+            plot_unit << "%\n";
+            plot_unit << "0.900  0.200  0.100 setrgbcolor\n";
+            plot_unit << "%\n";
+            plot_unit << "%  Draw the triangles.\n";
+            plot_unit << "%\n";
+
+            for ( triangle = 0; triangle < triangle_num; triangle++ )
+            {
+                plot_unit << "newpath\n";
+
+                for ( i = 1; i <= 4; i++ )
+                {
+                    e = i4_wrap ( i, 1, 3 );
+
+                    node = triangle_node[e - 1 + triangle * 4] - 1;
+
+                    x_ps = ( int ) (
+                               ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                                 + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                               / ( x_max                     - x_min ) );
+
+                    y_ps = ( int ) (
+                               ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                                 + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                               / ( y_max                     - y_min ) );
+
+                    if ( i == 1 )
+                    {
+                        plot_unit << x_ps << "  " << y_ps << "  moveto\n";
+                    }
+                    else
+                    {
+                        plot_unit << x_ps << "  " << y_ps << "  lineto\n";
+                    }
+                }
+                plot_unit << "stroke\n";
+            }
+        }
 //
 //  Label the triangles.
 //
-  if ( 2 <= triangle_show )
-  {
-    plot_unit << "%\n";
-    plot_unit << "%  Label the triangles.\n";
-    plot_unit << "%\n";
-    plot_unit << "%  Set the RGB color to darker red.\n";
-    plot_unit << "%\n";
-    plot_unit << "0.950  0.250  0.150 setrgbcolor\n";
-    plot_unit << "/Times-Roman findfont\n";
-    plot_unit << "0.20 inch scalefont\n";
-    plot_unit << "setfont\n";
-    plot_unit << "%\n";
+        if ( 2 <= triangle_show )
+        {
+            plot_unit << "%\n";
+            plot_unit << "%  Label the triangles.\n";
+            plot_unit << "%\n";
+            plot_unit << "%  Set the RGB color to darker red.\n";
+            plot_unit << "%\n";
+            plot_unit << "0.950  0.250  0.150 setrgbcolor\n";
+            plot_unit << "/Times-Roman findfont\n";
+            plot_unit << "0.20 inch scalefont\n";
+            plot_unit << "setfont\n";
+            plot_unit << "%\n";
 
-    for ( triangle = 0; triangle < triangle_num; triangle++ )
-    {
-      ave_x = 0.0;
-      ave_y = 0.0;
+            for ( triangle = 0; triangle < triangle_num; triangle++ )
+            {
+                ave_x = 0.0;
+                ave_y = 0.0;
 
-      for ( i = 1; i <= 3; i++ )
-      {
-        node = triangle_node[i-1+triangle*4] - 1;
-        ave_x = ave_x + node_xy[0+node*2];
-        ave_y = ave_y + node_xy[1+node*2];
-      }
-      ave_x = ave_x / 3.0;
-      ave_y = ave_y / 3.0;
+                for ( i = 1; i <= 3; i++ )
+                {
+                    node = triangle_node[i - 1 + triangle * 4] - 1;
+                    ave_x = ave_x + node_xy[0 + node * 2];
+                    ave_y = ave_y + node_xy[1 + node * 2];
+                }
+                ave_x = ave_x / 3.0;
+                ave_y = ave_y / 3.0;
 
-      x_ps = ( int ) (
-        ( ( x_max - ave_x         ) * ( double ) ( x_ps_min )
-        + (       + ave_x - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max         - x_min ) );
+                x_ps = ( int ) (
+                           ( ( x_max - ave_x         ) * ( double ) ( x_ps_min )
+                             + (       + ave_x - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max         - x_min ) );
 
-      y_ps = ( int ) (
-        ( ( y_max - ave_y         ) * ( double ) ( y_ps_min )
-        + (         ave_y - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max         - y_min ) );
+                y_ps = ( int ) (
+                           ( ( y_max - ave_y         ) * ( double ) ( y_ps_min )
+                             + (         ave_y - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max         - y_min ) );
 
-      plot_unit << x_ps << "  "
-                << y_ps << "  moveto ("
-                << triangle+1 << ") show\n";
+                plot_unit << x_ps << "  "
+                          << y_ps << "  moveto ("
+                          << triangle + 1 << ") show\n";
+            }
+        }
+
+        plot_unit << "%\n";
+        plot_unit << "restore  showpage\n";
+        plot_unit << "%\n";
+        plot_unit << "%  End of page.\n";
+        plot_unit << "%\n";
+        plot_unit << "%%Trailer\n";
+        plot_unit << "%%EOF\n";
+
+        plot_unit.close ( );
+
+        return;
     }
-  }
-
-  plot_unit << "%\n";
-  plot_unit << "restore  showpage\n";
-  plot_unit << "%\n";
-  plot_unit << "%  End of page.\n";
-  plot_unit << "%\n";
-  plot_unit << "%%Trailer\n";
-  plot_unit << "%%EOF\n";
-
-  plot_unit.close ( );
-
-  return;
-}
 //****************************************************************************80
 
-int triangulation_order6_adj_count ( int node_num, int triangle_num,
-  int triangle_node[], int triangle_neighbor[], int adj_col[] )
+    int triangulation_order6_adj_count ( int node_num, int triangle_num,
+                                         int triangle_node[], int triangle_neighbor[], int adj_col[] )
 
 //****************************************************************************80
 //
@@ -12458,39 +12469,39 @@ int triangulation_order6_adj_count ( int node_num, int triangle_num,
 //    Output, int ADJ_COL[NODE_NUM+1].  Information about column J is stored
 //    in entries ADJ_COL(J) through ADJ_COL(J+1)-1 of ADJ.
 //
-{
-  int adj_num;
-  int i;
-  int n1;
-  int n2;
-  int n3;
-  int n4;
-  int n5;
-  int n6;
-  int node;
-  int triangle;
-  int triangle_order = 6;
-  int triangle2;
+    {
+        int adj_num;
+        int i;
+        int n1;
+        int n2;
+        int n3;
+        int n4;
+        int n5;
+        int n6;
+        int node;
+        int triangle;
+        int triangle_order = 6;
+        int triangle2;
 
-  adj_num = 0;
+        adj_num = 0;
 //
 //  Set every node to be adjacent to itself.
 //
-  for ( node = 0; node < node_num; node++ )
-  {
-    adj_col[node] = 1;
-  }
+        for ( node = 0; node < node_num; node++ )
+        {
+            adj_col[node] = 1;
+        }
 //
 //  Examine each triangle.
 //
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    n1 = triangle_node[0+triangle*triangle_order];
-    n2 = triangle_node[1+triangle*triangle_order];
-    n3 = triangle_node[2+triangle*triangle_order];
-    n4 = triangle_node[3+triangle*triangle_order];
-    n5 = triangle_node[4+triangle*triangle_order];
-    n6 = triangle_node[5+triangle*triangle_order];
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            n1 = triangle_node[0 + triangle * triangle_order];
+            n2 = triangle_node[1 + triangle * triangle_order];
+            n3 = triangle_node[2 + triangle * triangle_order];
+            n4 = triangle_node[3 + triangle * triangle_order];
+            n5 = triangle_node[4 + triangle * triangle_order];
+            n6 = triangle_node[5 + triangle * triangle_order];
 //
 //  For sure, we add the adjacencies:
 //    43 / (34)
@@ -12500,18 +12511,18 @@ int triangulation_order6_adj_count ( int node_num, int triangle_num,
 //    64 / (46)
 //    65 / (56)
 //
-    adj_col[n3-1] = adj_col[n3-1] + 1;
-    adj_col[n4-1] = adj_col[n4-1] + 1;
-    adj_col[n1-1] = adj_col[n1-1] + 1;
-    adj_col[n5-1] = adj_col[n5-1] + 1;
-    adj_col[n4-1] = adj_col[n4-1] + 1;
-    adj_col[n5-1] = adj_col[n5-1] + 1;
-    adj_col[n2-1] = adj_col[n2-1] + 1;
-    adj_col[n6-1] = adj_col[n6-1] + 1;
-    adj_col[n4-1] = adj_col[n4-1] + 1;
-    adj_col[n6-1] = adj_col[n6-1] + 1;
-    adj_col[n5-1] = adj_col[n5-1] + 1;
-    adj_col[n6-1] = adj_col[n6-1] + 1;
+            adj_col[n3 - 1] = adj_col[n3 - 1] + 1;
+            adj_col[n4 - 1] = adj_col[n4 - 1] + 1;
+            adj_col[n1 - 1] = adj_col[n1 - 1] + 1;
+            adj_col[n5 - 1] = adj_col[n5 - 1] + 1;
+            adj_col[n4 - 1] = adj_col[n4 - 1] + 1;
+            adj_col[n5 - 1] = adj_col[n5 - 1] + 1;
+            adj_col[n2 - 1] = adj_col[n2 - 1] + 1;
+            adj_col[n6 - 1] = adj_col[n6 - 1] + 1;
+            adj_col[n4 - 1] = adj_col[n4 - 1] + 1;
+            adj_col[n6 - 1] = adj_col[n6 - 1] + 1;
+            adj_col[n5 - 1] = adj_col[n5 - 1] + 1;
+            adj_col[n6 - 1] = adj_col[n6 - 1] + 1;
 //
 //  Add edges (1,2), (1,4), (2,4) if this is the first occurrence,
 //  that is, if the edge (1,4,2) is on a boundary (TRIANGLE2 <= 0)
@@ -12523,74 +12534,74 @@ int triangulation_order6_adj_count ( int node_num, int triangle_num,
 //    41 / 14
 //    42 / 24
 //
-    triangle2 = triangle_neighbor[0+triangle*3];
+            triangle2 = triangle_neighbor[0 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_col[n1-1] = adj_col[n1-1] + 1;
-      adj_col[n2-1] = adj_col[n2-1] + 1;
-      adj_col[n1-1] = adj_col[n1-1] + 1;
-      adj_col[n4-1] = adj_col[n4-1] + 1;
-      adj_col[n2-1] = adj_col[n2-1] + 1;
-      adj_col[n4-1] = adj_col[n4-1] + 1;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_col[n1 - 1] = adj_col[n1 - 1] + 1;
+                adj_col[n2 - 1] = adj_col[n2 - 1] + 1;
+                adj_col[n1 - 1] = adj_col[n1 - 1] + 1;
+                adj_col[n4 - 1] = adj_col[n4 - 1] + 1;
+                adj_col[n2 - 1] = adj_col[n2 - 1] + 1;
+                adj_col[n4 - 1] = adj_col[n4 - 1] + 1;
+            }
 //
 //  Maybe add
 //    32 / 23
 //    52 / 25
 //    53 / 35
 //
-    triangle2 = triangle_neighbor[1+triangle*3];
+            triangle2 = triangle_neighbor[1 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_col[n2-1] = adj_col[n2-1] + 1;
-      adj_col[n3-1] = adj_col[n3-1] + 1;
-      adj_col[n2-1] = adj_col[n2-1] + 1;
-      adj_col[n5-1] = adj_col[n5-1] + 1;
-      adj_col[n3-1] = adj_col[n3-1] + 1;
-      adj_col[n5-1] = adj_col[n5-1] + 1;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_col[n2 - 1] = adj_col[n2 - 1] + 1;
+                adj_col[n3 - 1] = adj_col[n3 - 1] + 1;
+                adj_col[n2 - 1] = adj_col[n2 - 1] + 1;
+                adj_col[n5 - 1] = adj_col[n5 - 1] + 1;
+                adj_col[n3 - 1] = adj_col[n3 - 1] + 1;
+                adj_col[n5 - 1] = adj_col[n5 - 1] + 1;
+            }
 //
 //  Maybe add
 //    31 / 13
 //    61 / 16
 //    63 / 36
 //
-    triangle2 = triangle_neighbor[2+triangle*3];
+            triangle2 = triangle_neighbor[2 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj_col[n1-1] = adj_col[n1-1] + 1;
-      adj_col[n3-1] = adj_col[n3-1] + 1;
-      adj_col[n1-1] = adj_col[n1-1] + 1;
-      adj_col[n6-1] = adj_col[n6-1] + 1;
-      adj_col[n3-1] = adj_col[n3-1] + 1;
-      adj_col[n6-1] = adj_col[n6-1] + 1;
-    }
-  }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj_col[n1 - 1] = adj_col[n1 - 1] + 1;
+                adj_col[n3 - 1] = adj_col[n3 - 1] + 1;
+                adj_col[n1 - 1] = adj_col[n1 - 1] + 1;
+                adj_col[n6 - 1] = adj_col[n6 - 1] + 1;
+                adj_col[n3 - 1] = adj_col[n3 - 1] + 1;
+                adj_col[n6 - 1] = adj_col[n6 - 1] + 1;
+            }
+        }
 //
 //  We used ADJ_COL to count the number of entries in each column.
 //  Convert it to pointers into the ADJ array.
 //
-  for ( node = node_num; 1 <= node; node-- )
-  {
-    adj_col[node] = adj_col[node-1];
-  }
-  adj_col[0] = 1;
-  for ( i = 1; i <= node_num; i++ )
-  {
-    adj_col[i]= adj_col[i-1] + adj_col[i];
-  }
+        for ( node = node_num; 1 <= node; node-- )
+        {
+            adj_col[node] = adj_col[node - 1];
+        }
+        adj_col[0] = 1;
+        for ( i = 1; i <= node_num; i++ )
+        {
+            adj_col[i] = adj_col[i - 1] + adj_col[i];
+        }
 
-  adj_num = adj_col[node_num] - 1;
+        adj_num = adj_col[node_num] - 1;
 
-  return adj_num;
-}
+        return adj_num;
+    }
 //****************************************************************************80
 
-int *triangulation_order6_adj_set ( int node_num, int triangle_num,
-  int triangle_node[], int triangle_neighbor[], int adj_num, int adj_col[] )
+    int *triangulation_order6_adj_set ( int node_num, int triangle_num,
+                                        int triangle_node[], int triangle_neighbor[], int adj_num, int adj_col[] )
 
 //****************************************************************************80
 //
@@ -12752,53 +12763,53 @@ int *triangulation_order6_adj_set ( int node_num, int triangle_num,
 //    Output, int TRIANGULATION_ORDER6_ADJ_SET[ADJ_NUM], the adjacency
 //    information.
 //
-{
-  int *adj;
-  int *adj_copy;
-  int k;
-  int k1;
-  int k2;
-  int n1;
-  int n2;
-  int n3;
-  int n4;
-  int n5;
-  int n6;
-  int node;
-  int triangle;
-  int triangle2;
-  int triangle_order = 6;
+    {
+        int *adj;
+        int *adj_copy;
+        int k;
+        int k1;
+        int k2;
+        int n1;
+        int n2;
+        int n3;
+        int n4;
+        int n5;
+        int n6;
+        int node;
+        int triangle;
+        int triangle2;
+        int triangle_order = 6;
 
-  adj = new int[adj_num];
-  for ( k = 0; k < adj_num; k++ )
-  {
-    adj[k] = -1;
-  }
+        adj = new int[adj_num];
+        for ( k = 0; k < adj_num; k++ )
+        {
+            adj[k] = -1;
+        }
 
-  adj_copy = new int[node_num];
-  for ( node = 0; node < node_num; node++ )
-  {
-    adj_copy[node] = adj_col[node];
-  }
+        adj_copy = new int[node_num];
+        for ( node = 0; node < node_num; node++ )
+        {
+            adj_copy[node] = adj_col[node];
+        }
 //
 //  Set every node to be adjacent to itself.
 //
-  for ( node = 1; node <= node_num; node++ )
-  {
-    adj[adj_copy[node-1]-1] = node;
-    adj_copy[node-1] = adj_copy[node-1] + 1;
-  }
+        for ( node = 1; node <= node_num; node++ )
+        {
+            adj[adj_copy[node - 1] - 1] = node;
+            adj_copy[node - 1] = adj_copy[node - 1] + 1;
+        }
 //
 //  Examine each triangle.
 //
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
-    n1 = triangle_node[0+triangle*triangle_order];
-    n2 = triangle_node[1+triangle*triangle_order];
-    n3 = triangle_node[2+triangle*triangle_order];
-    n4 = triangle_node[3+triangle*triangle_order];
-    n5 = triangle_node[4+triangle*triangle_order];
-    n6 = triangle_node[5+triangle*triangle_order];
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
+            n1 = triangle_node[0 + triangle * triangle_order];
+            n2 = triangle_node[1 + triangle * triangle_order];
+            n3 = triangle_node[2 + triangle * triangle_order];
+            n4 = triangle_node[3 + triangle * triangle_order];
+            n5 = triangle_node[4 + triangle * triangle_order];
+            n6 = triangle_node[5 + triangle * triangle_order];
 //
 //  For sure, we add the adjacencies:
 //    43 / (34)
@@ -12808,35 +12819,35 @@ int *triangulation_order6_adj_set ( int node_num, int triangle_num,
 //    64 / (46)
 //    65 / (56)
 //
-    adj[adj_copy[n3-1]-1] = n4;
-    adj_copy[n3-1] = adj_copy[n3-1] + 1;
-    adj[adj_copy[n4-1]-1] = n3;
-    adj_copy[n4-1] = adj_copy[n4-1] + 1;
+            adj[adj_copy[n3 - 1] - 1] = n4;
+            adj_copy[n3 - 1] = adj_copy[n3 - 1] + 1;
+            adj[adj_copy[n4 - 1] - 1] = n3;
+            adj_copy[n4 - 1] = adj_copy[n4 - 1] + 1;
 
-    adj[adj_copy[n1-1]-1] = n5;
-    adj_copy[n1-1] = adj_copy[n1-1] + 1;
-    adj[adj_copy[n5-1]-1] = n1;
-    adj_copy[n5-1] = adj_copy[n5-1] + 1;
+            adj[adj_copy[n1 - 1] - 1] = n5;
+            adj_copy[n1 - 1] = adj_copy[n1 - 1] + 1;
+            adj[adj_copy[n5 - 1] - 1] = n1;
+            adj_copy[n5 - 1] = adj_copy[n5 - 1] + 1;
 
-    adj[adj_copy[n4-1]-1] = n5;
-    adj_copy[n4-1] = adj_copy[n4-1] + 1;
-    adj[adj_copy[n5-1]-1] = n4;
-    adj_copy[n5-1] = adj_copy[n5-1] + 1;
+            adj[adj_copy[n4 - 1] - 1] = n5;
+            adj_copy[n4 - 1] = adj_copy[n4 - 1] + 1;
+            adj[adj_copy[n5 - 1] - 1] = n4;
+            adj_copy[n5 - 1] = adj_copy[n5 - 1] + 1;
 
-    adj[adj_copy[n2-1]-1] = n6;
-    adj_copy[n2-1] = adj_copy[n2-1] + 1;
-    adj[adj_copy[n6-1]-1] = n2;
-    adj_copy[n6-1] = adj_copy[n6-1] + 1;
+            adj[adj_copy[n2 - 1] - 1] = n6;
+            adj_copy[n2 - 1] = adj_copy[n2 - 1] + 1;
+            adj[adj_copy[n6 - 1] - 1] = n2;
+            adj_copy[n6 - 1] = adj_copy[n6 - 1] + 1;
 
-    adj[adj_copy[n4-1]-1] = n6;
-    adj_copy[n4-1] = adj_copy[n4-1] + 1;
-    adj[adj_copy[n6-1]-1] = n4;
-    adj_copy[n6-1] = adj_copy[n6-1] + 1;
+            adj[adj_copy[n4 - 1] - 1] = n6;
+            adj_copy[n4 - 1] = adj_copy[n4 - 1] + 1;
+            adj[adj_copy[n6 - 1] - 1] = n4;
+            adj_copy[n6 - 1] = adj_copy[n6 - 1] + 1;
 
-    adj[adj_copy[n5-1]-1] = n6;
-    adj_copy[n5-1] = adj_copy[n5-1] + 1;
-    adj[adj_copy[n6-1]-1] = n5;
-    adj_copy[n6-1] = adj_copy[n6-1] + 1;
+            adj[adj_copy[n5 - 1] - 1] = n6;
+            adj_copy[n5 - 1] = adj_copy[n5 - 1] + 1;
+            adj[adj_copy[n6 - 1] - 1] = n5;
+            adj_copy[n6 - 1] = adj_copy[n6 - 1] + 1;
 //
 //  Add edges (1,2), (1,4), (2,4) if this is the first occurrence,
 //  that is, if the edge (1,4,2) is on a boundary (TRIANGLE2 <= 0)
@@ -12848,88 +12859,88 @@ int *triangulation_order6_adj_set ( int node_num, int triangle_num,
 //    41 / 14
 //    42 / 24
 //
-    triangle2 = triangle_neighbor[0+triangle*3];
+            triangle2 = triangle_neighbor[0 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj[adj_copy[n1-1]-1] = n2;
-      adj_copy[n1-1] = adj_copy[n1-1] + 1;
-      adj[adj_copy[n2-1]-1] = n1;
-      adj_copy[n2-1] = adj_copy[n2-1] + 1;
-      adj[adj_copy[n1-1]-1] = n4;
-      adj_copy[n1-1] = adj_copy[n1-1] + 1;
-      adj[adj_copy[n4-1]-1] = n1;
-      adj_copy[n4-1] = adj_copy[n4-1] + 1;
-      adj[adj_copy[n2-1]-1] = n4;
-      adj_copy[n2-1] = adj_copy[n2-1] + 1;
-      adj[adj_copy[n4-1]-1] = n2;
-      adj_copy[n4-1] = adj_copy[n4-1] + 1;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj[adj_copy[n1 - 1] - 1] = n2;
+                adj_copy[n1 - 1] = adj_copy[n1 - 1] + 1;
+                adj[adj_copy[n2 - 1] - 1] = n1;
+                adj_copy[n2 - 1] = adj_copy[n2 - 1] + 1;
+                adj[adj_copy[n1 - 1] - 1] = n4;
+                adj_copy[n1 - 1] = adj_copy[n1 - 1] + 1;
+                adj[adj_copy[n4 - 1] - 1] = n1;
+                adj_copy[n4 - 1] = adj_copy[n4 - 1] + 1;
+                adj[adj_copy[n2 - 1] - 1] = n4;
+                adj_copy[n2 - 1] = adj_copy[n2 - 1] + 1;
+                adj[adj_copy[n4 - 1] - 1] = n2;
+                adj_copy[n4 - 1] = adj_copy[n4 - 1] + 1;
+            }
 //
 //  Maybe add
 //    32 / 23
 //    52 / 25
 //    53 / 35
 //
-    triangle2 = triangle_neighbor[1+triangle*3];
+            triangle2 = triangle_neighbor[1 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj[adj_copy[n2-1]-1] = n3;
-      adj_copy[n2-1] = adj_copy[n2-1] + 1;
-      adj[adj_copy[n3-1]-1] = n2;
-      adj_copy[n3-1] = adj_copy[n3-1] + 1;
-      adj[adj_copy[n2-1]-1] = n5;
-      adj_copy[n2-1] = adj_copy[n2-1] + 1;
-      adj[adj_copy[n5-1]-1] = n2;
-      adj_copy[n5-1] = adj_copy[n5-1] + 1;
-      adj[adj_copy[n3-1]-1] = n5;
-      adj_copy[n3-1] = adj_copy[n3-1] + 1;
-      adj[adj_copy[n5-1]-1] = n3;
-      adj_copy[n5-1] = adj_copy[n5-1] + 1;
-    }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj[adj_copy[n2 - 1] - 1] = n3;
+                adj_copy[n2 - 1] = adj_copy[n2 - 1] + 1;
+                adj[adj_copy[n3 - 1] - 1] = n2;
+                adj_copy[n3 - 1] = adj_copy[n3 - 1] + 1;
+                adj[adj_copy[n2 - 1] - 1] = n5;
+                adj_copy[n2 - 1] = adj_copy[n2 - 1] + 1;
+                adj[adj_copy[n5 - 1] - 1] = n2;
+                adj_copy[n5 - 1] = adj_copy[n5 - 1] + 1;
+                adj[adj_copy[n3 - 1] - 1] = n5;
+                adj_copy[n3 - 1] = adj_copy[n3 - 1] + 1;
+                adj[adj_copy[n5 - 1] - 1] = n3;
+                adj_copy[n5 - 1] = adj_copy[n5 - 1] + 1;
+            }
 //
 //  Maybe add
 //    31 / 13
 //    61 / 16
 //    63 / 36
 //
-    triangle2 = triangle_neighbor[2+triangle*3];
+            triangle2 = triangle_neighbor[2 + triangle * 3];
 
-    if ( triangle2 < 0 || triangle < triangle2 )
-    {
-      adj[adj_copy[n1-1]-1] = n3;
-      adj_copy[n1-1] = adj_copy[n1-1] + 1;
-      adj[adj_copy[n3-1]-1] = n1;
-      adj_copy[n3-1] = adj_copy[n3-1] + 1;
-      adj[adj_copy[n1-1]-1] = n6;
-      adj_copy[n1-1] = adj_copy[n1-1] + 1;
-      adj[adj_copy[n6-1]-1] = n1;
-      adj_copy[n6-1] = adj_copy[n6-1] + 1;
-      adj[adj_copy[n3-1]-1] = n6;
-      adj_copy[n3-1] = adj_copy[n3-1] + 1;
-      adj[adj_copy[n6-1]-1] = n3;
-      adj_copy[n6-1] = adj_copy[n6-1] + 1;
-    }
-  }
+            if ( triangle2 < 0 || triangle < triangle2 )
+            {
+                adj[adj_copy[n1 - 1] - 1] = n3;
+                adj_copy[n1 - 1] = adj_copy[n1 - 1] + 1;
+                adj[adj_copy[n3 - 1] - 1] = n1;
+                adj_copy[n3 - 1] = adj_copy[n3 - 1] + 1;
+                adj[adj_copy[n1 - 1] - 1] = n6;
+                adj_copy[n1 - 1] = adj_copy[n1 - 1] + 1;
+                adj[adj_copy[n6 - 1] - 1] = n1;
+                adj_copy[n6 - 1] = adj_copy[n6 - 1] + 1;
+                adj[adj_copy[n3 - 1] - 1] = n6;
+                adj_copy[n3 - 1] = adj_copy[n3 - 1] + 1;
+                adj[adj_copy[n6 - 1] - 1] = n3;
+                adj_copy[n6 - 1] = adj_copy[n6 - 1] + 1;
+            }
+        }
 //
 //  Ascending sort the entries for each node.
 //
-  for ( node = 1; node <= node_num; node++ )
-  {
-    k1 = adj_col[node-1];
-    k2 = adj_col[node]-1;
-    i4vec_sort_heap_a ( k2+1-k1, adj+k1-1 );
-  }
+        for ( node = 1; node <= node_num; node++ )
+        {
+            k1 = adj_col[node - 1];
+            k2 = adj_col[node] - 1;
+            i4vec_sort_heap_a ( k2 + 1 - k1, adj + k1 - 1 );
+        }
 
-  delete [] adj_copy;
+        delete [] adj_copy;
 
-  return adj;
-}
+        return adj;
+    }
 //****************************************************************************80
 
-int triangulation_order6_boundary_edge_count ( int triangle_num,
-  int triangle_node[] )
+    int triangulation_order6_boundary_edge_count ( int triangle_num,
+            int triangle_node[] )
 
 //****************************************************************************80
 //
@@ -12978,65 +12989,65 @@ int triangulation_order6_boundary_edge_count ( int triangle_num,
 //    Output, integer TRIANGULATION_ORDER6_BOUNDARY_EDGE_COUNT, the number
 //    of boundary edges.
 //
-{
-  int boundary_edge_num;
-  int e1;
-  int e2;
-  int *edge;
-  int i;
-  int interior_edge_num;
-  int j;
-  int m;
-  int n;
-  int unique_num;
+    {
+        int boundary_edge_num;
+        int e1;
+        int e2;
+        int *edge;
+        int i;
+        int interior_edge_num;
+        int j;
+        int m;
+        int n;
+        int unique_num;
 
-  m = 2;
-  n = 3 * triangle_num;
+        m = 2;
+        n = 3 * triangle_num;
 //
 //  Set up the edge array.
 //
-  edge = new int[m*n];
+        edge = new int[m * n];
 
-  for ( j = 0; j < triangle_num; j++ )
-  {
-    edge[0+(j               )*m] = triangle_node[0+j*6];
-    edge[1+(j               )*m] = triangle_node[1+j*6];
-    edge[0+(j+  triangle_num)*m] = triangle_node[1+j*6];
-    edge[1+(j+  triangle_num)*m] = triangle_node[2+j*6];
-    edge[0+(j+2*triangle_num)*m] = triangle_node[2+j*6];
-    edge[1+(j+2*triangle_num)*m] = triangle_node[0+j*6];
-  }
+        for ( j = 0; j < triangle_num; j++ )
+        {
+            edge[0 + (j               )*m] = triangle_node[0 + j * 6];
+            edge[1 + (j               )*m] = triangle_node[1 + j * 6];
+            edge[0 + (j +  triangle_num)*m] = triangle_node[1 + j * 6];
+            edge[1 + (j +  triangle_num)*m] = triangle_node[2 + j * 6];
+            edge[0 + (j + 2 * triangle_num)*m] = triangle_node[2 + j * 6];
+            edge[1 + (j + 2 * triangle_num)*m] = triangle_node[0 + j * 6];
+        }
 //
 //  In each column, force the smaller entry to appear first.
 //
-  for ( j = 0; j < n; j++ )
-  {
-    e1 = i4_min ( edge[0+j*m], edge[1+j*m] );
-    e2 = i4_max ( edge[0+j*m], edge[1+j*m] );
-    edge[0+j*m] = e1;
-    edge[1+j*m] = e2;
-  }
+        for ( j = 0; j < n; j++ )
+        {
+            e1 = i4_min ( edge[0 + j * m], edge[1 + j * m] );
+            e2 = i4_max ( edge[0 + j * m], edge[1 + j * m] );
+            edge[0 + j * m] = e1;
+            edge[1 + j * m] = e2;
+        }
 //
 //  Ascending sort the column array.
 //
-  i4col_sort_a ( m, n, edge );
+        i4col_sort_a ( m, n, edge );
 //
 //  Get the number of unique columns in EDGE.
 //
-  unique_num = i4col_sorted_unique_count ( m, n, edge );
+        unique_num = i4col_sorted_unique_count ( m, n, edge );
 
-  interior_edge_num = 3 * triangle_num - unique_num;
+        interior_edge_num = 3 * triangle_num - unique_num;
 
-  boundary_edge_num = 3 * triangle_num - 2 * interior_edge_num;
+        boundary_edge_num = 3 * triangle_num - 2 * interior_edge_num;
 
-  delete [] edge;
+        delete [] edge;
 
-  return boundary_edge_num;
-}
+        return boundary_edge_num;
+    }
 //****************************************************************************80
 
-int triangulation_order6_boundary_edge_count_euler ( int node_num,
-  int triangle_num, int hole_num )
+    int triangulation_order6_boundary_edge_count_euler ( int node_num,
+            int triangle_num, int hole_num )
 
 //****************************************************************************80
 //
@@ -13094,17 +13105,17 @@ int triangulation_order6_boundary_edge_count_euler ( int node_num,
 //    Output, int TRIANGULATION_ORDER6_BOUNDARY_EDGE_COUNT, the number of
 //    edges that lie on the boundary of the triangulation.
 //
-{
-  int boundary_num;
+    {
+        int boundary_num;
 
-  boundary_num = ( 2 * node_num + 2 * hole_num - 4 * triangle_num - 2 ) / 2;
+        boundary_num = ( 2 * node_num + 2 * hole_num - 4 * triangle_num - 2 ) / 2;
 
-  return boundary_num;
-}
+        return boundary_num;
+    }
 //****************************************************************************80
 
-bool *triangulation_order6_boundary_node ( int node_num, int triangle_num,
-  int triangle_node[] )
+    bool *triangulation_order6_boundary_node ( int node_num, int triangle_num,
+            int triangle_node[] )
 
 //****************************************************************************80
 //
@@ -13150,109 +13161,109 @@ bool *triangulation_order6_boundary_node ( int node_num, int triangle_num,
 //    Output, bool TRIANGULATION_ORDER6_BOUNDARY_NODE[NODE_NUM],
 //    is TRUE if the node is on a boundary edge.
 //
-{
-  int e1;
-  int e2;
-  int *edge;
-  bool equal;
-  int i;
-  int j;
-  int m;
-  int n;
-  bool *node_boundary;
+    {
+        int e1;
+        int e2;
+        int *edge;
+        bool equal;
+        int i;
+        int j;
+        int m;
+        int n;
+        bool *node_boundary;
 
-  m = 3;
-  n = 3 * triangle_num;
+        m = 3;
+        n = 3 * triangle_num;
 //
 //  Set up the edge array.
 //
-  edge = new int[m*n];
+        edge = new int[m * n];
 
-  for ( j = 0; j < triangle_num; j++ )
-  {
-    edge[0+(j               )*m] = triangle_node[0+j*6];
-    edge[1+(j               )*m] = triangle_node[3+j*6];
-    edge[2+(j               )*m] = triangle_node[1+j*6];
+        for ( j = 0; j < triangle_num; j++ )
+        {
+            edge[0 + (j               )*m] = triangle_node[0 + j * 6];
+            edge[1 + (j               )*m] = triangle_node[3 + j * 6];
+            edge[2 + (j               )*m] = triangle_node[1 + j * 6];
 
-    edge[0+(j+  triangle_num)*m] = triangle_node[1+j*6];
-    edge[1+(j+  triangle_num)*m] = triangle_node[4+j*6];
-    edge[2+(j+  triangle_num)*m] = triangle_node[2+j*6];
+            edge[0 + (j +  triangle_num)*m] = triangle_node[1 + j * 6];
+            edge[1 + (j +  triangle_num)*m] = triangle_node[4 + j * 6];
+            edge[2 + (j +  triangle_num)*m] = triangle_node[2 + j * 6];
 
-    edge[0+(j+2*triangle_num)*m] = triangle_node[2+j*6];
-    edge[1+(j+2*triangle_num)*m] = triangle_node[5+j*6];
-    edge[2+(j+2*triangle_num)*m] = triangle_node[0+j*6];
-  }
+            edge[0 + (j + 2 * triangle_num)*m] = triangle_node[2 + j * 6];
+            edge[1 + (j + 2 * triangle_num)*m] = triangle_node[5 + j * 6];
+            edge[2 + (j + 2 * triangle_num)*m] = triangle_node[0 + j * 6];
+        }
 //
 //  In each column, force the smaller entry to appear first.
 //
-  for ( j = 0; j < n; j++ )
-  {
-    e1 = i4_min ( edge[0+j*m], edge[2+j*m] );
-    e2 = i4_max ( edge[0+j*m], edge[2+j*m] );
-    edge[0+j*m] = e1;
-    edge[2+j*m] = e2;
-  }
+        for ( j = 0; j < n; j++ )
+        {
+            e1 = i4_min ( edge[0 + j * m], edge[2 + j * m] );
+            e2 = i4_max ( edge[0 + j * m], edge[2 + j * m] );
+            edge[0 + j * m] = e1;
+            edge[2 + j * m] = e2;
+        }
 //
 //  Ascending sort the column array.
 //
-  i4col_sort_a ( m, n, edge );
+        i4col_sort_a ( m, n, edge );
 //
 //  Records which appear twice are internal edges and can be ignored.
 //
-  node_boundary = new bool[node_num];
+        node_boundary = new bool[node_num];
 
-  for ( i = 0; i < node_num; i++ )
-  {
-    node_boundary[i] = false;
-  }
+        for ( i = 0; i < node_num; i++ )
+        {
+            node_boundary[i] = false;
+        }
 
-  j = 0;
+        j = 0;
 
-  while ( j < 3 * triangle_num )
-  {
-    j = j + 1;
+        while ( j < 3 * triangle_num )
+        {
+            j = j + 1;
 
-    if ( j == 3 * triangle_num )
-    {
-      for ( i = 0; i < m; i++ )
-      {
-        node_boundary[edge[i+(j-1)*m]-1] = true;
-      }
-      break;
+            if ( j == 3 * triangle_num )
+            {
+                for ( i = 0; i < m; i++ )
+                {
+                    node_boundary[edge[i + (j - 1)*m] - 1] = true;
+                }
+                break;
+            }
+
+            equal = true;
+
+            for ( i = 0; i < m; i++ )
+            {
+                if ( edge[i + (j - 1)*m] != edge[i + j * m] )
+                {
+                    equal = false;
+                }
+            }
+
+            if ( equal )
+            {
+                j = j + 1;
+            }
+            else
+            {
+                for ( i = 0; i < m; i++ )
+                {
+                    node_boundary[edge[i + (j - 1)*m] - 1] = true;
+                }
+            }
+
+        }
+
+        delete [] edge;
+
+        return node_boundary;
     }
-
-    equal = true;
-
-    for ( i = 0; i < m; i++ )
-    {
-      if ( edge[i+(j-1)*m] != edge[i+j*m] )
-      {
-        equal = false;
-      }
-    }
-
-    if ( equal )
-    {
-      j = j + 1;
-    }
-    else
-    {
-      for ( i = 0; i < m; i++ )
-      {
-        node_boundary[edge[i+(j-1)*m]-1] = true;
-      }
-    }
-
-  }
-
-  delete [] edge;
-
-  return node_boundary;
-}
 //****************************************************************************80
 
-void triangulation_order6_example1 ( int node_num, int triangle_num,
-  double node_xy[], int triangle_node[], int triangle_neighbor[] )
+    void triangulation_order6_example1 ( int node_num, int triangle_num,
+                                         double node_xy[], int triangle_node[], int triangle_neighbor[] )
 
 //****************************************************************************80
 //
@@ -13293,133 +13304,139 @@ void triangulation_order6_example1 ( int node_num, int triangle_num,
 //    Output, int TRIANGLE_NEIGHBOR[3*TRIANGLE_NUM], the triangle neighbors
 //    on each side.  Negative values indicate edges that lie on the exterior.
 //
-{
+    {
 # define DIM_NUM 2
 # define NODE_NUM 48
 # define TRIANGLE_NUM 16
 # define TRIANGLE_ORDER 6
 
-  int i;
-  int j;
-  static double node_xy_save[DIM_NUM*NODE_NUM] = {
-       0.0, 0.0,
-       1.0, 0.0,
-       2.0, 0.0,
-       3.0, 0.0,
-       4.0, 0.0,
-       5.0, 0.0,
-       6.0, 0.0,
-       0.0, 1.0,
-       1.0, 1.0,
-       2.0, 1.0,
-       3.0, 1.0,
-       4.0, 1.0,
-       5.0, 1.0,
-       6.0, 1.0,
-       0.0, 2.0,
-       1.0, 2.0,
-       2.0, 2.0,
-       3.0, 2.0,
-       4.0, 2.0,
-       5.0, 2.0,
-       6.0, 2.0,
-       0.0, 3.0,
-       1.0, 3.0,
-       2.0, 3.0,
-       3.0, 3.0,
-       5.0, 3.0,
-       6.0, 3.0,
-       0.0, 4.0,
-       1.0, 4.0,
-       2.0, 4.0,
-       3.0, 4.0,
-       4.0, 4.0,
-       5.0, 4.0,
-       6.0, 4.0,
-       0.0, 5.0,
-       1.0, 5.0,
-       2.0, 5.0,
-       3.0, 5.0,
-       4.0, 5.0,
-       5.0, 5.0,
-       6.0, 5.0,
-       0.0, 6.0,
-       1.0, 6.0,
-       2.0, 6.0,
-       3.0, 6.0,
-       4.0, 6.0,
-       5.0, 6.0,
-       6.0, 6.0 };
-  static int triangle_node_save[TRIANGLE_ORDER*TRIANGLE_NUM] = {
-     1,  3, 15,  2,  9,  8,
-    17, 15,  3, 16,  9, 10,
-     5, 19,  3, 12, 11,  4,
-    17,  3, 19, 10, 11, 18,
-     7, 21,  5, 14, 13,  6,
-    19,  5, 21, 12, 13, 20,
-    17, 30, 15, 24, 23, 16,
-    28, 15, 30, 22, 23, 29,
-    30, 17, 32, 24, 25, 31,
-    21, 34, 19, 27, 26, 20,
-    30, 44, 28, 37, 36, 29,
-    42, 28, 44, 35, 36, 43,
-    32, 46, 30, 39, 38, 31,
-    44, 30, 46, 37, 38, 45,
-    32, 34, 46, 33, 40, 39,
-    48, 46, 34, 47, 40, 41 };
-  static int triangle_neighbor_save[3*TRIANGLE_NUM] = {
-    -3,   2,  -5,
-     7,   1,   4,
-     6,   4, -11,
-     2,   3, -14,
-   -15,   6, -17,
-     3,   5,  10,
-     9,   8,   2,
-   -24,   7,  11,
-     7, -28,  13,
-    27, -31,   6,
-     8,  14,  12,
-   -36,  11, -38,
-    15,  14,   9,
-    11,  13, -44,
-   -45,  16,  13,
-   -48,  15, -50 };
+        int i;
+        int j;
+        static double node_xy_save[DIM_NUM * NODE_NUM] =
+        {
+            0.0, 0.0,
+            1.0, 0.0,
+            2.0, 0.0,
+            3.0, 0.0,
+            4.0, 0.0,
+            5.0, 0.0,
+            6.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0,
+            2.0, 1.0,
+            3.0, 1.0,
+            4.0, 1.0,
+            5.0, 1.0,
+            6.0, 1.0,
+            0.0, 2.0,
+            1.0, 2.0,
+            2.0, 2.0,
+            3.0, 2.0,
+            4.0, 2.0,
+            5.0, 2.0,
+            6.0, 2.0,
+            0.0, 3.0,
+            1.0, 3.0,
+            2.0, 3.0,
+            3.0, 3.0,
+            5.0, 3.0,
+            6.0, 3.0,
+            0.0, 4.0,
+            1.0, 4.0,
+            2.0, 4.0,
+            3.0, 4.0,
+            4.0, 4.0,
+            5.0, 4.0,
+            6.0, 4.0,
+            0.0, 5.0,
+            1.0, 5.0,
+            2.0, 5.0,
+            3.0, 5.0,
+            4.0, 5.0,
+            5.0, 5.0,
+            6.0, 5.0,
+            0.0, 6.0,
+            1.0, 6.0,
+            2.0, 6.0,
+            3.0, 6.0,
+            4.0, 6.0,
+            5.0, 6.0,
+            6.0, 6.0
+        };
+        static int triangle_node_save[TRIANGLE_ORDER * TRIANGLE_NUM] =
+        {
+            1,  3, 15,  2,  9,  8,
+            17, 15,  3, 16,  9, 10,
+            5, 19,  3, 12, 11,  4,
+            17,  3, 19, 10, 11, 18,
+            7, 21,  5, 14, 13,  6,
+            19,  5, 21, 12, 13, 20,
+            17, 30, 15, 24, 23, 16,
+            28, 15, 30, 22, 23, 29,
+            30, 17, 32, 24, 25, 31,
+            21, 34, 19, 27, 26, 20,
+            30, 44, 28, 37, 36, 29,
+            42, 28, 44, 35, 36, 43,
+            32, 46, 30, 39, 38, 31,
+            44, 30, 46, 37, 38, 45,
+            32, 34, 46, 33, 40, 39,
+            48, 46, 34, 47, 40, 41
+        };
+        static int triangle_neighbor_save[3 * TRIANGLE_NUM] =
+        {
+            -3,   2,  -5,
+            7,   1,   4,
+            6,   4, -11,
+            2,   3, -14,
+            -15,   6, -17,
+            3,   5,  10,
+            9,   8,   2,
+            -24,   7,  11,
+            7, -28,  13,
+            27, -31,   6,
+            8,  14,  12,
+            -36,  11, -38,
+            15,  14,   9,
+            11,  13, -44,
+            -45,  16,  13,
+            -48,  15, -50
+        };
 
-  for ( j = 0; j < NODE_NUM; j++ )
-  {
-    for ( i = 0; i < DIM_NUM; i++ )
-    {
-      node_xy[i+j*DIM_NUM] = node_xy_save[i+j*DIM_NUM];
-    }
-  }
+        for ( j = 0; j < NODE_NUM; j++ )
+        {
+            for ( i = 0; i < DIM_NUM; i++ )
+            {
+                node_xy[i + j * DIM_NUM] = node_xy_save[i + j * DIM_NUM];
+            }
+        }
 
-  for ( j = 0; j < TRIANGLE_NUM; j++ )
-  {
-    for ( i = 0; i < TRIANGLE_ORDER; i++ )
-    {
-      triangle_node[i+j*TRIANGLE_ORDER] =
-        triangle_node_save[i+j*TRIANGLE_ORDER];
-    }
-  }
+        for ( j = 0; j < TRIANGLE_NUM; j++ )
+        {
+            for ( i = 0; i < TRIANGLE_ORDER; i++ )
+            {
+                triangle_node[i + j * TRIANGLE_ORDER] =
+                    triangle_node_save[i + j * TRIANGLE_ORDER];
+            }
+        }
 
-  for ( j = 0; j < TRIANGLE_NUM; j++ )
-  {
-    for ( i = 0; i < 3; i++ )
-    {
-      triangle_neighbor[i+j*3] = triangle_neighbor_save[i+j*3];
-    }
-  }
+        for ( j = 0; j < TRIANGLE_NUM; j++ )
+        {
+            for ( i = 0; i < 3; i++ )
+            {
+                triangle_neighbor[i + j * 3] = triangle_neighbor_save[i + j * 3];
+            }
+        }
 
-  return;
+        return;
 # undef DIM_NUM
 # undef NODE_NUM
 # undef TRIANGLE_NUM
 # undef TRIANGLE_ORDER
-}
+    }
 //****************************************************************************80
 
-void triangulation_order6_example1_size ( int *node_num, int *triangle_num,
-  int *hole_num )
+    void triangulation_order6_example1_size ( int *node_num, int *triangle_num,
+            int *hole_num )
 
 //****************************************************************************80
 //
@@ -13447,17 +13464,17 @@ void triangulation_order6_example1_size ( int *node_num, int *triangle_num,
 //
 //    Output, int *HOLE_NUM, the number of holes.
 //
-{
-  *node_num = 48;
-  *triangle_num = 16;
-  *hole_num = 1;
+    {
+        *node_num = 48;
+        *triangle_num = 16;
+        *hole_num = 1;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void triangulation_order6_example2 ( int node_num, int triangle_num,
-  double node_xy[], int triangle_node[], int triangle_neighbor[] )
+    void triangulation_order6_example2 ( int node_num, int triangle_num,
+                                         double node_xy[], int triangle_node[], int triangle_neighbor[] )
 
 //****************************************************************************80
 //
@@ -13514,94 +13531,100 @@ void triangulation_order6_example2 ( int node_num, int triangle_num,
 //    Output, int TRIANGLE_NEIGHBOR[3*TRIANGLE_NUM], the triangle neighbors
 //    on each side.  Negative values indicate edges that lie on the exterior.
 //
-{
+    {
 # define DIM_NUM 2
 # define NODE_NUM 48
 # define TRIANGLE_NUM 16
 # define TRIANGLE_ORDER 6
 
-  int i;
-  int j;
-  static double node_xy_save[DIM_NUM*NODE_NUM] = {
-    0.0, 0.0,
-    1.0, 0.0,
-    2.0, 0.0,
-    3.0, 0.0,
-    4.0, 0.0,
-    0.0, 1.0,
-    1.0, 1.0,
-    2.0, 1.0,
-    3.0, 1.0,
-    4.0, 1.0,
-    0.0, 2.0,
-    1.0, 2.0,
-    2.0, 2.0,
-    3.0, 2.0,
-    4.0, 2.0,
-    0.0, 3.0,
-    1.0, 3.0,
-    2.0, 3.0,
-    3.0, 3.0,
-    4.0, 3.0,
-    0.0, 4.0,
-    1.0, 4.0,
-    2.0, 4.0,
-    3.0, 4.0,
-    4.0, 4.0 };
-  static int triangle_node_save[TRIANGLE_ORDER*TRIANGLE_NUM] = {
-     1,  3, 11,  2,  7,  6,
-    13, 11,  3, 12,  7,  8,
-     3,  5, 13,  4,  9,  8,
-    15, 13,  5, 14,  9, 10,
-    11, 13, 21, 12, 17, 16,
-    23, 21, 13, 22, 17, 18,
-    13, 15, 23, 14, 19, 18,
-    25, 23, 15, 24, 19, 20  };
-  static int triangle_neighbor_save[3*TRIANGLE_NUM] = {
-    -1,  2, -1,
-     5,  1,  3,
-    -1,  4,  2,
-     7,  3, -1,
-     2,  6, -1,
-    -1,  5,  7,
-     4,  8,  6,
-    -1,  7, -1 };
+        int i;
+        int j;
+        static double node_xy_save[DIM_NUM * NODE_NUM] =
+        {
+            0.0, 0.0,
+            1.0, 0.0,
+            2.0, 0.0,
+            3.0, 0.0,
+            4.0, 0.0,
+            0.0, 1.0,
+            1.0, 1.0,
+            2.0, 1.0,
+            3.0, 1.0,
+            4.0, 1.0,
+            0.0, 2.0,
+            1.0, 2.0,
+            2.0, 2.0,
+            3.0, 2.0,
+            4.0, 2.0,
+            0.0, 3.0,
+            1.0, 3.0,
+            2.0, 3.0,
+            3.0, 3.0,
+            4.0, 3.0,
+            0.0, 4.0,
+            1.0, 4.0,
+            2.0, 4.0,
+            3.0, 4.0,
+            4.0, 4.0
+        };
+        static int triangle_node_save[TRIANGLE_ORDER * TRIANGLE_NUM] =
+        {
+            1,  3, 11,  2,  7,  6,
+            13, 11,  3, 12,  7,  8,
+            3,  5, 13,  4,  9,  8,
+            15, 13,  5, 14,  9, 10,
+            11, 13, 21, 12, 17, 16,
+            23, 21, 13, 22, 17, 18,
+            13, 15, 23, 14, 19, 18,
+            25, 23, 15, 24, 19, 20
+        };
+        static int triangle_neighbor_save[3 * TRIANGLE_NUM] =
+        {
+            -1,  2, -1,
+            5,  1,  3,
+            -1,  4,  2,
+            7,  3, -1,
+            2,  6, -1,
+            -1,  5,  7,
+            4,  8,  6,
+            -1,  7, -1
+        };
 
-  for ( j = 0; j < NODE_NUM; j++ )
-  {
-    for ( i = 0; i < DIM_NUM; i++ )
-    {
-      node_xy[i+j*DIM_NUM] = node_xy_save[i+j*DIM_NUM];
-    }
-  }
+        for ( j = 0; j < NODE_NUM; j++ )
+        {
+            for ( i = 0; i < DIM_NUM; i++ )
+            {
+                node_xy[i + j * DIM_NUM] = node_xy_save[i + j * DIM_NUM];
+            }
+        }
 
-  for ( j = 0; j < TRIANGLE_NUM; j++ )
-  {
-    for ( i = 0; i < TRIANGLE_ORDER; i++ )
-    {
-      triangle_node[i+j*TRIANGLE_ORDER] =
-        triangle_node_save[i+j*TRIANGLE_ORDER];
-    }
-  }
+        for ( j = 0; j < TRIANGLE_NUM; j++ )
+        {
+            for ( i = 0; i < TRIANGLE_ORDER; i++ )
+            {
+                triangle_node[i + j * TRIANGLE_ORDER] =
+                    triangle_node_save[i + j * TRIANGLE_ORDER];
+            }
+        }
 
-  for ( j = 0; j < TRIANGLE_NUM; j++ )
-  {
-    for ( i = 0; i < 3; i++ )
-    {
-      triangle_neighbor[i+j*3] = triangle_neighbor_save[i+j*3];
-    }
-  }
+        for ( j = 0; j < TRIANGLE_NUM; j++ )
+        {
+            for ( i = 0; i < 3; i++ )
+            {
+                triangle_neighbor[i + j * 3] = triangle_neighbor_save[i + j * 3];
+            }
+        }
 
-  return;
+        return;
 # undef DIM_NUM
 # undef NODE_NUM
 # undef TRIANGLE_NUM
 # undef TRIANGLE_ORDER
-}
+    }
 //****************************************************************************80
 
-void triangulation_order6_example2_size ( int *node_num, int *triangle_num,
-  int *hole_num )
+    void triangulation_order6_example2_size ( int *node_num, int *triangle_num,
+            int *hole_num )
 
 //****************************************************************************80
 //
@@ -13645,17 +13668,17 @@ void triangulation_order6_example2_size ( int *node_num, int *triangle_num,
 //
 //    Output, int *HOLE_NUM, the number of holes.
 //
-{
-  *node_num = 25;
-  *triangle_num = 8;
-  *hole_num = 0;
+    {
+        *node_num = 25;
+        *triangle_num = 8;
+        *hole_num = 0;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void triangulation_order6_neighbor ( int triangle_num, int triangle_node[],
-  int t1, int s1, int  *t2, int *s2 )
+    void triangulation_order6_neighbor ( int triangle_num, int triangle_node[],
+                                         int t1, int s1, int  *t2, int *s2 )
 
 //****************************************************************************80
 //
@@ -13711,44 +13734,44 @@ void triangulation_order6_neighbor ( int triangle_num, int triangle_node[],
 //    Output, int *S2, the index of the side of triangle T2 which
 //    is shared with triangle T1, or -1 if there is no such neighbor.
 //
-{
-  int n1;
-  int n2;
-  int s;
-  int ss;
-  int t;
-
-  n1 = triangle_node[s1-1+(t1-1)*6];
-  ss = i4_wrap ( s1+1, 1, 3 );
-  n2 = triangle_node[ss-1+(t1-1)*6];
-
-  for ( t = 0; t < triangle_num; t++ )
-  {
-    for ( s = 0; s < 3; s++ )
     {
-      if ( triangle_node[s+t*6] == n1 )
-      {
-        ss = i4_wrap ( s-1, 0, 2 );
-        if ( triangle_node[ss+t*6] == n2 )
+        int n1;
+        int n2;
+        int s;
+        int ss;
+        int t;
+
+        n1 = triangle_node[s1 - 1 + (t1 - 1) * 6];
+        ss = i4_wrap ( s1 + 1, 1, 3 );
+        n2 = triangle_node[ss - 1 + (t1 - 1) * 6];
+
+        for ( t = 0; t < triangle_num; t++ )
         {
-          *t2 = t + 1;
-          *s2 = ss + 1;
-          return;
+            for ( s = 0; s < 3; s++ )
+            {
+                if ( triangle_node[s + t * 6] == n1 )
+                {
+                    ss = i4_wrap ( s - 1, 0, 2 );
+                    if ( triangle_node[ss + t * 6] == n2 )
+                    {
+                        *t2 = t + 1;
+                        *s2 = ss + 1;
+                        return;
+                    }
+                }
+            }
         }
-      }
+
+        *t2 = -1;
+        *s2 = -1;
+
+        return;
     }
-  }
-
-  *t2 = -1;
-  *s2 = -1;
-
-  return;
-}
 //****************************************************************************80
 
-void triangulation_order6_plot ( std::string file_name, int node_num,
-  double node_xy[], int triangle_num, int triangle_node[], int node_show,
-  int triangle_show )
+    void triangulation_order6_plot ( std::string file_name, int node_num,
+                                     double node_xy[], int triangle_num, int triangle_node[], int node_show,
+                                     int triangle_show )
 
 //****************************************************************************80
 //
@@ -13802,390 +13825,390 @@ void triangulation_order6_plot ( std::string file_name, int node_num,
 //    1, show triangles;
 //    2, show triangles and label them.
 //
-{
-  double ave_x;
-  double ave_y;
-  int circle_size;
-  int delta;
-  int e;
-  std::ofstream file_unit;
-  int i;
-  int ip1;
-  int node;
-  int order[6] = { 1, 4, 2, 5, 3, 6 };
-  int triangle;
-  double x_max;
-  double x_min;
-  int x_ps;
-  int x_ps_max = 576;
-  int x_ps_max_clip = 594;
-  int x_ps_min = 36;
-  int x_ps_min_clip = 18;
-  double x_scale;
-  double y_max;
-  double y_min;
-  int y_ps;
-  int y_ps_max = 666;
-  int y_ps_max_clip = 684;
-  int y_ps_min = 126;
-  int y_ps_min_clip = 108;
-  double y_scale;
+    {
+        double ave_x;
+        double ave_y;
+        int circle_size;
+        int delta;
+        int e;
+        std::ofstream file_unit;
+        int i;
+        int ip1;
+        int node;
+        int order[6] = { 1, 4, 2, 5, 3, 6 };
+        int triangle;
+        double x_max;
+        double x_min;
+        int x_ps;
+        int x_ps_max = 576;
+        int x_ps_max_clip = 594;
+        int x_ps_min = 36;
+        int x_ps_min_clip = 18;
+        double x_scale;
+        double y_max;
+        double y_min;
+        int y_ps;
+        int y_ps_max = 666;
+        int y_ps_max_clip = 684;
+        int y_ps_min = 126;
+        int y_ps_min_clip = 108;
+        double y_scale;
 //
 //  We need to do some figuring here, so that we can determine
 //  the range of the data, and hence the height and width
 //  of the piece of paper.
 //
-  x_max = - r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( x_max < node_xy[0+node*2] )
-     {
-       x_max = node_xy[0+node*2];
-     }
-  }
-  x_min = r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( node_xy[0+node*2] < x_min )
-     {
-       x_min = node_xy[0+node*2];
-     }
-  }
-  x_scale = x_max - x_min;
+        x_max = - r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( x_max < node_xy[0 + node * 2] )
+            {
+                x_max = node_xy[0 + node * 2];
+            }
+        }
+        x_min = r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( node_xy[0 + node * 2] < x_min )
+            {
+                x_min = node_xy[0 + node * 2];
+            }
+        }
+        x_scale = x_max - x_min;
 
-  x_max = x_max + 0.05 * x_scale;
-  x_min = x_min - 0.05 * x_scale;
-  x_scale = x_max - x_min;
+        x_max = x_max + 0.05 * x_scale;
+        x_min = x_min - 0.05 * x_scale;
+        x_scale = x_max - x_min;
 
-  y_max = -r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( y_max < node_xy[1+node*2] )
-     {
-       y_max = node_xy[1+node*2];
-     }
-  }
-  y_min = r8_huge ( );
-  for ( node = 0; node < node_num; node++ )
-  {
-     if ( node_xy[1+node*2] < y_min )
-     {
-       y_min = node_xy[1+node*2];
-     }
-  }
-  y_scale = y_max - y_min;
+        y_max = -r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( y_max < node_xy[1 + node * 2] )
+            {
+                y_max = node_xy[1 + node * 2];
+            }
+        }
+        y_min = r8_huge ( );
+        for ( node = 0; node < node_num; node++ )
+        {
+            if ( node_xy[1 + node * 2] < y_min )
+            {
+                y_min = node_xy[1 + node * 2];
+            }
+        }
+        y_scale = y_max - y_min;
 
-  y_max = y_max + 0.05 * y_scale;
-  y_min = y_min - 0.05 * y_scale;
-  y_scale = y_max - y_min;
+        y_max = y_max + 0.05 * y_scale;
+        y_min = y_min - 0.05 * y_scale;
+        y_scale = y_max - y_min;
 
-  if ( x_scale < y_scale )
-  {
-    delta = r8_nint ( ( double ) ( x_ps_max - x_ps_min )
-      * ( y_scale - x_scale ) / ( 2.0 * y_scale ) );
+        if ( x_scale < y_scale )
+        {
+            delta = r8_nint ( ( double ) ( x_ps_max - x_ps_min )
+                              * ( y_scale - x_scale ) / ( 2.0 * y_scale ) );
 
-    x_ps_max = x_ps_max - delta;
-    x_ps_min = x_ps_min + delta;
+            x_ps_max = x_ps_max - delta;
+            x_ps_min = x_ps_min + delta;
 
-    x_ps_max_clip = x_ps_max_clip - delta;
-    x_ps_min_clip = x_ps_min_clip + delta;
+            x_ps_max_clip = x_ps_max_clip - delta;
+            x_ps_min_clip = x_ps_min_clip + delta;
 
-    x_scale = y_scale;
-  }
-  else if ( y_scale < x_scale )
-  {
-    delta = r8_nint ( ( double ) ( y_ps_max - y_ps_min )
-      * ( x_scale - y_scale ) / ( 2.0 * x_scale ) );
+            x_scale = y_scale;
+        }
+        else if ( y_scale < x_scale )
+        {
+            delta = r8_nint ( ( double ) ( y_ps_max - y_ps_min )
+                              * ( x_scale - y_scale ) / ( 2.0 * x_scale ) );
 
-    y_ps_max = y_ps_max - delta;
-    y_ps_min = y_ps_min + delta;
+            y_ps_max = y_ps_max - delta;
+            y_ps_min = y_ps_min + delta;
 
-    y_ps_max_clip = y_ps_max_clip - delta;
-    y_ps_min_clip = y_ps_min_clip + delta;
+            y_ps_max_clip = y_ps_max_clip - delta;
+            y_ps_min_clip = y_ps_min_clip + delta;
 
-    y_scale = x_scale;
-  }
+            y_scale = x_scale;
+        }
 
-  file_unit.open ( file_name.c_str ( ) );
+        file_unit.open ( file_name.c_str ( ) );
 
-  if ( !file_unit )
-  {
-    std::cout << "\n";
-    std::cout << "TRIANGULATION_ORDER6_PLOT - Fatal error!\n";
-    std::cout << "  Could not open the output EPS file.\n";
-    exit ( 1 );
-  }
+        if ( !file_unit )
+        {
+            std::cout << "\n";
+            std::cout << "TRIANGULATION_ORDER6_PLOT - Fatal error!\n";
+            std::cout << "  Could not open the output EPS file.\n";
+            exit ( 1 );
+        }
 
-  file_unit << "%!PS-Adobe-3.0 EPSF-3.0\n";
-  file_unit << "%%Creator: triangulation_order6_plot.C\n";
-  file_unit << "%%Title: " << file_name << "\n";
+        file_unit << "%!PS-Adobe-3.0 EPSF-3.0\n";
+        file_unit << "%%Creator: triangulation_order6_plot.C\n";
+        file_unit << "%%Title: " << file_name << "\n";
 
-  file_unit << "%%Pages: 1\n";
-  file_unit << "%%BoundingBox:  "
-    << x_ps_min << "  "
-    << y_ps_min << "  "
-    << x_ps_max << "  "
-    << y_ps_max << "\n";
-  file_unit << "%%Document-Fonts: Times-Roman\n";
-  file_unit << "%%LanguageLevel: 1\n";
-  file_unit << "%%EndComments\n";
-  file_unit << "%%BeginProlog\n";
-  file_unit << "/inch {72 mul} def\n";
-  file_unit << "%%EndProlog\n";
-  file_unit << "%%Page:      1     1\n";
-  file_unit << "save\n";
-  file_unit << "%\n";
-  file_unit << "%  Increase line width from default 0.\n";
-  file_unit << "%\n";
-  file_unit << "2 setlinewidth\n";
-  file_unit << "%\n";
-  file_unit << "% Set the RGB line color to very light gray.\n";
-  file_unit << "%\n";
-  file_unit << " 0.9000 0.9000 0.9000 setrgbcolor\n";
-  file_unit << "%\n";
-  file_unit << "% Draw a gray border around the page.\n";
-  file_unit << "%\n";
-  file_unit << "newpath\n";
-  file_unit << x_ps_min << "  "
-            << y_ps_min << "  moveto\n";
-  file_unit << x_ps_max << "  "
-            << y_ps_min << "  lineto\n";
-  file_unit << x_ps_max << "  "
-            << y_ps_max << "  lineto\n";
-  file_unit << x_ps_min << "  "
-            << y_ps_max << "  lineto\n";
-  file_unit << x_ps_min << "  "
-            << y_ps_min << "  lineto\n";
-  file_unit << "stroke\n";
-  file_unit << "%\n";
-  file_unit << "% Set RGB line color to black.\n";
-  file_unit << "%\n";
-  file_unit << " 0.0000 0.0000 0.0000 setrgbcolor\n";
-  file_unit << "%\n";
-  file_unit << "%  Set the font and its size:\n";
-  file_unit << "%\n";
-  file_unit << "/Times-Roman findfont\n";
-  file_unit << "0.50 inch scalefont\n";
-  file_unit << "setfont\n";
-  file_unit << "%\n";
-  file_unit << "%  Print a title:\n";
-  file_unit << "%\n";
-  file_unit << "%  210  702 moveto\n";
-  file_unit << "%(Pointset) show\n";
-  file_unit << "%\n";
-  file_unit << "% Define a clipping polygon\n";
-  file_unit << "%\n";
-  file_unit << "newpath\n";
-  file_unit << x_ps_min_clip << "  "
-            << y_ps_min_clip << "  moveto\n";
-  file_unit << x_ps_max_clip << "  "
-            << y_ps_min_clip << "  lineto\n";
-  file_unit << x_ps_max_clip << "  "
-            << y_ps_max_clip << "  lineto\n";
-  file_unit << x_ps_min_clip << "  "
-            << y_ps_max_clip << "  lineto\n";
-  file_unit << x_ps_min_clip << "  "
-            << y_ps_min_clip << "  lineto\n";
-  file_unit << "clip newpath\n";
+        file_unit << "%%Pages: 1\n";
+        file_unit << "%%BoundingBox:  "
+                  << x_ps_min << "  "
+                  << y_ps_min << "  "
+                  << x_ps_max << "  "
+                  << y_ps_max << "\n";
+        file_unit << "%%Document-Fonts: Times-Roman\n";
+        file_unit << "%%LanguageLevel: 1\n";
+        file_unit << "%%EndComments\n";
+        file_unit << "%%BeginProlog\n";
+        file_unit << "/inch {72 mul} def\n";
+        file_unit << "%%EndProlog\n";
+        file_unit << "%%Page:      1     1\n";
+        file_unit << "save\n";
+        file_unit << "%\n";
+        file_unit << "%  Increase line width from default 0.\n";
+        file_unit << "%\n";
+        file_unit << "2 setlinewidth\n";
+        file_unit << "%\n";
+        file_unit << "% Set the RGB line color to very light gray.\n";
+        file_unit << "%\n";
+        file_unit << " 0.9000 0.9000 0.9000 setrgbcolor\n";
+        file_unit << "%\n";
+        file_unit << "% Draw a gray border around the page.\n";
+        file_unit << "%\n";
+        file_unit << "newpath\n";
+        file_unit << x_ps_min << "  "
+                  << y_ps_min << "  moveto\n";
+        file_unit << x_ps_max << "  "
+                  << y_ps_min << "  lineto\n";
+        file_unit << x_ps_max << "  "
+                  << y_ps_max << "  lineto\n";
+        file_unit << x_ps_min << "  "
+                  << y_ps_max << "  lineto\n";
+        file_unit << x_ps_min << "  "
+                  << y_ps_min << "  lineto\n";
+        file_unit << "stroke\n";
+        file_unit << "%\n";
+        file_unit << "% Set RGB line color to black.\n";
+        file_unit << "%\n";
+        file_unit << " 0.0000 0.0000 0.0000 setrgbcolor\n";
+        file_unit << "%\n";
+        file_unit << "%  Set the font and its size:\n";
+        file_unit << "%\n";
+        file_unit << "/Times-Roman findfont\n";
+        file_unit << "0.50 inch scalefont\n";
+        file_unit << "setfont\n";
+        file_unit << "%\n";
+        file_unit << "%  Print a title:\n";
+        file_unit << "%\n";
+        file_unit << "%  210  702 moveto\n";
+        file_unit << "%(Pointset) show\n";
+        file_unit << "%\n";
+        file_unit << "% Define a clipping polygon\n";
+        file_unit << "%\n";
+        file_unit << "newpath\n";
+        file_unit << x_ps_min_clip << "  "
+                  << y_ps_min_clip << "  moveto\n";
+        file_unit << x_ps_max_clip << "  "
+                  << y_ps_min_clip << "  lineto\n";
+        file_unit << x_ps_max_clip << "  "
+                  << y_ps_max_clip << "  lineto\n";
+        file_unit << x_ps_min_clip << "  "
+                  << y_ps_max_clip << "  lineto\n";
+        file_unit << x_ps_min_clip << "  "
+                  << y_ps_min_clip << "  lineto\n";
+        file_unit << "clip newpath\n";
 //
 //  Draw the nodes.
 //
-  if ( node_num <= 200 )
-  {
-    circle_size = 5;
-  }
-  else if ( node_num <= 500 )
-  {
-    circle_size = 4;
-  }
-  else if ( node_num <= 1000 )
-  {
-    circle_size = 3;
-  }
-  else if ( node_num <= 5000 )
-  {
-    circle_size = 2;
-  }
-  else
-  {
-    circle_size = 1;
-  }
+        if ( node_num <= 200 )
+        {
+            circle_size = 5;
+        }
+        else if ( node_num <= 500 )
+        {
+            circle_size = 4;
+        }
+        else if ( node_num <= 1000 )
+        {
+            circle_size = 3;
+        }
+        else if ( node_num <= 5000 )
+        {
+            circle_size = 2;
+        }
+        else
+        {
+            circle_size = 1;
+        }
 
-  if ( 1 <= node_show )
-  {
-    file_unit << "%\n";
-    file_unit << "%  Draw filled dots at each node:\n";
-    file_unit << "%\n";
-    file_unit << "%  Set the color to blue:\n";
-    file_unit << "%\n";
-    file_unit << "0.000  0.150  0.750  setrgbcolor\n";
-    file_unit << "%\n";
+        if ( 1 <= node_show )
+        {
+            file_unit << "%\n";
+            file_unit << "%  Draw filled dots at each node:\n";
+            file_unit << "%\n";
+            file_unit << "%  Set the color to blue:\n";
+            file_unit << "%\n";
+            file_unit << "0.000  0.150  0.750  setrgbcolor\n";
+            file_unit << "%\n";
 
-    for ( node = 0; node < node_num; node++ )
-    {
-      x_ps = ( int ) (
-        ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-        + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max                     - x_min ) );
+            for ( node = 0; node < node_num; node++ )
+            {
+                x_ps = ( int ) (
+                           ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                             + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max                     - x_min ) );
 
-      y_ps = ( int ) (
-        ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-        + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max                     - y_min ) );
+                y_ps = ( int ) (
+                           ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                             + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max                     - y_min ) );
 
-      file_unit << "newpath  "
-        << x_ps << "  "
-        << y_ps << "  "
-        << circle_size << " 0 360 arc closepath fill\n";
-    }
-  }
+                file_unit << "newpath  "
+                          << x_ps << "  "
+                          << y_ps << "  "
+                          << circle_size << " 0 360 arc closepath fill\n";
+            }
+        }
 //
 //  Label the nodes.
 //
-  if ( 2 <= node_show )
-  {
-    file_unit << "%\n";
-    file_unit << "%  Label the nodes:\n";
-    file_unit << "%\n";
-    file_unit << "%  Set the color to darker blue:\n";
-    file_unit << "%\n";
-    file_unit << "0.000  0.250  0.850  setrgbcolor\n";
-    file_unit << "/Times-Roman findfont\n";
-    file_unit << "0.20 inch scalefont\n";
-    file_unit << "setfont\n";
+        if ( 2 <= node_show )
+        {
+            file_unit << "%\n";
+            file_unit << "%  Label the nodes:\n";
+            file_unit << "%\n";
+            file_unit << "%  Set the color to darker blue:\n";
+            file_unit << "%\n";
+            file_unit << "0.000  0.250  0.850  setrgbcolor\n";
+            file_unit << "/Times-Roman findfont\n";
+            file_unit << "0.20 inch scalefont\n";
+            file_unit << "setfont\n";
 
-    file_unit << "%\n";
+            file_unit << "%\n";
 
-    for ( node = 0; node < node_num; node++ )
-    {
-      x_ps = ( int ) (
-        ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-        + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max                     - x_min ) );
+            for ( node = 0; node < node_num; node++ )
+            {
+                x_ps = ( int ) (
+                           ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                             + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max                     - x_min ) );
 
-      y_ps = ( int ) (
-        ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-        + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max                     - y_min ) );
+                y_ps = ( int ) (
+                           ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                             + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max                     - y_min ) );
 
-      file_unit << "newpath  "
-        << x_ps     << "  "
-        << y_ps + 5 << "  moveto ("
-        << node+1   << ") show\n";
-    }
-  }
+                file_unit << "newpath  "
+                          << x_ps     << "  "
+                          << y_ps + 5 << "  moveto ("
+                          << node + 1   << ") show\n";
+            }
+        }
 //
 //  Draw the triangles.
 //
-  if ( 1 <= triangle_show )
-  {
-    file_unit << "%\n";
-    file_unit << "%  Set the RGB color to red.\n";
-    file_unit << "%\n";
-    file_unit << "0.900  0.200  0.100 setrgbcolor\n";
-    file_unit << "%\n";
-    file_unit << "%  Draw the triangles.\n";
-    file_unit << "%\n";
+        if ( 1 <= triangle_show )
+        {
+            file_unit << "%\n";
+            file_unit << "%  Set the RGB color to red.\n";
+            file_unit << "%\n";
+            file_unit << "0.900  0.200  0.100 setrgbcolor\n";
+            file_unit << "%\n";
+            file_unit << "%  Draw the triangles.\n";
+            file_unit << "%\n";
 
-    for ( triangle = 0; triangle < triangle_num; triangle++ )
-    {
-      node = triangle_node[order[0]-1+triangle*6] - 1;
+            for ( triangle = 0; triangle < triangle_num; triangle++ )
+            {
+                node = triangle_node[order[0] - 1 + triangle * 6] - 1;
 
-      x_ps = ( int ) (
-        ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-        + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max                     - x_min ) );
+                x_ps = ( int ) (
+                           ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                             + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max                     - x_min ) );
 
-      y_ps = ( int ) (
-        ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-        + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max                     - y_min ) );
+                y_ps = ( int ) (
+                           ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                             + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max                     - y_min ) );
 
-      file_unit << "newpath  " << x_ps << "  " << y_ps << "  moveto\n";
+                file_unit << "newpath  " << x_ps << "  " << y_ps << "  moveto\n";
 
-      for ( i = 1; i <= 6; i++ )
-      {
-        ip1 = ( i % 6 ) + 1;
-        node = triangle_node[order[ip1-1]-1+triangle*6] - 1;
+                for ( i = 1; i <= 6; i++ )
+                {
+                    ip1 = ( i % 6 ) + 1;
+                    node = triangle_node[order[ip1 - 1] - 1 + triangle * 6] - 1;
 
-        x_ps = ( int ) (
-          ( ( x_max - node_xy[0+node*2]         ) * ( double ) ( x_ps_min )
-          + (       + node_xy[0+node*2] - x_min ) * ( double ) ( x_ps_max ) )
-          / ( x_max                     - x_min ) );
+                    x_ps = ( int ) (
+                               ( ( x_max - node_xy[0 + node * 2]         ) * ( double ) ( x_ps_min )
+                                 + (       + node_xy[0 + node * 2] - x_min ) * ( double ) ( x_ps_max ) )
+                               / ( x_max                     - x_min ) );
 
-        y_ps = ( int ) (
-          ( ( y_max - node_xy[1+node*2]         ) * ( double ) ( y_ps_min )
-          + (         node_xy[1+node*2] - y_min ) * ( double ) ( y_ps_max ) )
-          / ( y_max                     - y_min ) );
+                    y_ps = ( int ) (
+                               ( ( y_max - node_xy[1 + node * 2]         ) * ( double ) ( y_ps_min )
+                                 + (         node_xy[1 + node * 2] - y_min ) * ( double ) ( y_ps_max ) )
+                               / ( y_max                     - y_min ) );
 
-        file_unit << x_ps << "  " << y_ps << "  lineto\n";
-      }
-      file_unit << "stroke\n";
-    }
-  }
+                    file_unit << x_ps << "  " << y_ps << "  lineto\n";
+                }
+                file_unit << "stroke\n";
+            }
+        }
 //
 //  Label the triangles.
 //
-  if ( 2 <= triangle_show )
-  {
-    file_unit << "%\n";
-    file_unit << "%  Label the triangles.\n";
-    file_unit << "%\n";
-    file_unit << "%  Set the RGB color to darker red.\n";
-    file_unit << "%\n";
-    file_unit << "0.950  0.250  0.150 setrgbcolor\n";
-    file_unit << "/Times-Roman findfont\n";
-    file_unit << "0.20 inch scalefont\n";
-    file_unit << "setfont\n";
-    file_unit << "%\n";
+        if ( 2 <= triangle_show )
+        {
+            file_unit << "%\n";
+            file_unit << "%  Label the triangles.\n";
+            file_unit << "%\n";
+            file_unit << "%  Set the RGB color to darker red.\n";
+            file_unit << "%\n";
+            file_unit << "0.950  0.250  0.150 setrgbcolor\n";
+            file_unit << "/Times-Roman findfont\n";
+            file_unit << "0.20 inch scalefont\n";
+            file_unit << "setfont\n";
+            file_unit << "%\n";
 
-    for ( triangle = 0; triangle < triangle_num; triangle++ )
-    {
-      ave_x = 0.0;
-      ave_y = 0.0;
+            for ( triangle = 0; triangle < triangle_num; triangle++ )
+            {
+                ave_x = 0.0;
+                ave_y = 0.0;
 
-      for ( i = 0; i < 6; i++ )
-      {
-        node = triangle_node[i+triangle*6] - 1;
-        ave_x = ave_x + node_xy[0+node*2];
-        ave_y = ave_y + node_xy[1+node*2];
-      }
+                for ( i = 0; i < 6; i++ )
+                {
+                    node = triangle_node[i + triangle * 6] - 1;
+                    ave_x = ave_x + node_xy[0 + node * 2];
+                    ave_y = ave_y + node_xy[1 + node * 2];
+                }
 
-      ave_x = ave_x / 6.0;
-      ave_y = ave_y / 6.0;
+                ave_x = ave_x / 6.0;
+                ave_y = ave_y / 6.0;
 
-      x_ps = ( int ) (
-        ( ( x_max - ave_x         ) * ( double ) ( x_ps_min )
-        + (       + ave_x - x_min ) * ( double ) ( x_ps_max ) )
-        / ( x_max         - x_min ) );
+                x_ps = ( int ) (
+                           ( ( x_max - ave_x         ) * ( double ) ( x_ps_min )
+                             + (       + ave_x - x_min ) * ( double ) ( x_ps_max ) )
+                           / ( x_max         - x_min ) );
 
-      y_ps = ( int ) (
-        ( ( y_max - ave_y         ) * ( double ) ( y_ps_min )
-        + (         ave_y - y_min ) * ( double ) ( y_ps_max ) )
-        / ( y_max         - y_min ) );
+                y_ps = ( int ) (
+                           ( ( y_max - ave_y         ) * ( double ) ( y_ps_min )
+                             + (         ave_y - y_min ) * ( double ) ( y_ps_max ) )
+                           / ( y_max         - y_min ) );
 
-      file_unit << std::setw(4) << x_ps << "  "
-                << std::setw(4) << y_ps << "  "
-                << "moveto (" << triangle+1 << ") show\n";
+                file_unit << std::setw(4) << x_ps << "  "
+                          << std::setw(4) << y_ps << "  "
+                          << "moveto (" << triangle + 1 << ") show\n";
+            }
+        }
+
+        file_unit << "%\n";
+        file_unit << "restore showpage\n";
+        file_unit << "%\n";
+        file_unit << "% End of page\n";
+        file_unit << "%\n";
+        file_unit << "%%Trailer\n";
+        file_unit << "%%EOF\n";
+
+        file_unit.close ( );
+
+        return;
     }
-  }
-
-  file_unit << "%\n";
-  file_unit << "restore showpage\n";
-  file_unit << "%\n";
-  file_unit << "% End of page\n";
-  file_unit << "%\n";
-  file_unit << "%%Trailer\n";
-  file_unit << "%%EOF\n";
-
-  file_unit.close ( );
-
-  return;
-}
 //****************************************************************************80
 
-void triangulation_order6_print ( int node_num, int triangle_num,
-  double node_xy[], int triangle_node[], int triangle_neighbor[] )
+    void triangulation_order6_print ( int node_num, int triangle_num,
+                                      double node_xy[], int triangle_node[], int triangle_neighbor[] )
 
 //****************************************************************************80
 //
@@ -14230,137 +14253,137 @@ void triangulation_order6_print ( int node_num, int triangle_num,
 //    TRIANGLE_NEIGHBOR should be negative.  If the triangulation data was created by
 //    R8TRIS2, then there is more information encoded in the negative values.
 //
-{
+    {
 # define DIM_NUM 2
 
-  int boundary_num;
-  int i;
-  int j;
-  int k;
-  int n1;
-  int n2;
-  int n3;
-  int s;
-  int s1;
-  int s2;
-  bool skip;
-  int t;
-  int *vertex_list;
-  int vertex_num;
+        int boundary_num;
+        int i;
+        int j;
+        int k;
+        int n1;
+        int n2;
+        int n3;
+        int s;
+        int s1;
+        int s2;
+        bool skip;
+        int t;
+        int *vertex_list;
+        int vertex_num;
 
-  std::cout << "\n";
-  std::cout << "TRIANGULATION_ORDER6_PRINT\n";
-  std::cout << "  Information defining a triangulation.\n";
-  std::cout << "\n";
-  std::cout << "  The number of nodes is " << node_num << "\n";
+        std::cout << "\n";
+        std::cout << "TRIANGULATION_ORDER6_PRINT\n";
+        std::cout << "  Information defining a triangulation.\n";
+        std::cout << "\n";
+        std::cout << "  The number of nodes is " << node_num << "\n";
 
-  r8mat_transpose_print ( DIM_NUM, node_num, node_xy, "  Node coordinates" );
+        r8mat_transpose_print ( DIM_NUM, node_num, node_xy, "  Node coordinates" );
 
-  std::cout << "\n";
-  std::cout << "  The number of triangles is " << triangle_num << "\n";
-  std::cout << "\n";
-  std::cout << "  Sets of six nodes are used as vertices of\n";
-  std::cout << "  the triangles.  For each triangle, the vertices are listed\n";
-  std::cout << "  in counterclockwise order, followed by the midside nodes.\n";
+        std::cout << "\n";
+        std::cout << "  The number of triangles is " << triangle_num << "\n";
+        std::cout << "\n";
+        std::cout << "  Sets of six nodes are used as vertices of\n";
+        std::cout << "  the triangles.  For each triangle, the vertices are listed\n";
+        std::cout << "  in counterclockwise order, followed by the midside nodes.\n";
 
-  i4mat_transpose_print ( 6, triangle_num, triangle_node, "  Triangle nodes" );
+        i4mat_transpose_print ( 6, triangle_num, triangle_node, "  Triangle nodes" );
 
-  std::cout << "\n";
-  std::cout << "  On each side of a given triangle, there is either\n";
-  std::cout << "  another triangle, or a piece of the convex hull.\n";
-  std::cout << "  For each triangle, we list the indices of the three\n";
-  std::cout << "  neighbors, or (if negative) the codes of the\n";
-  std::cout << "  segments of the convex hull.\n";
+        std::cout << "\n";
+        std::cout << "  On each side of a given triangle, there is either\n";
+        std::cout << "  another triangle, or a piece of the convex hull.\n";
+        std::cout << "  For each triangle, we list the indices of the three\n";
+        std::cout << "  neighbors, or (if negative) the codes of the\n";
+        std::cout << "  segments of the convex hull.\n";
 
-  i4mat_transpose_print ( 3, triangle_num, triangle_neighbor,
-    "  Triangle neighbors" );
+        i4mat_transpose_print ( 3, triangle_num, triangle_neighbor,
+                                "  Triangle neighbors" );
 //
 //  Determine VERTEX_NUM, the number of vertices.
 //
-  vertex_list = new int[3*triangle_num];
+        vertex_list = new int[3 * triangle_num];
 
-  k = 0;
-  for ( t = 0; t < triangle_num; t++ )
-  {
-    for ( s = 0; s < 3; s++ )
-    {
-      vertex_list[k] = triangle_node[s+t*6];
-      k = k + 1;
-    }
-  }
+        k = 0;
+        for ( t = 0; t < triangle_num; t++ )
+        {
+            for ( s = 0; s < 3; s++ )
+            {
+                vertex_list[k] = triangle_node[s + t * 6];
+                k = k + 1;
+            }
+        }
 
-  i4vec_sort_heap_a ( 3*triangle_num, vertex_list );
+        i4vec_sort_heap_a ( 3 * triangle_num, vertex_list );
 
-  vertex_num = i4vec_sorted_unique ( 3*triangle_num, vertex_list );
+        vertex_num = i4vec_sorted_unique ( 3 * triangle_num, vertex_list );
 
-  delete [] vertex_list;
+        delete [] vertex_list;
 //
 //  Determine the number of boundary points.
 //
-  boundary_num = 2 * vertex_num - triangle_num - 2;
+        boundary_num = 2 * vertex_num - triangle_num - 2;
 
-  std::cout << "\n";
-  std::cout << "  The number of boundary points is " << boundary_num << "\n";
-  std::cout << "\n";
-  std::cout << "  The segments that make up the convex hull can be\n";
-  std::cout << "  determined from the negative entries of the triangle\n";
-  std::cout << "  neighbor list.\n";
-  std::cout << "\n";
-  std::cout << "     #   Tri  Side    N1    N2    N3\n";
-  std::cout << "\n";
+        std::cout << "\n";
+        std::cout << "  The number of boundary points is " << boundary_num << "\n";
+        std::cout << "\n";
+        std::cout << "  The segments that make up the convex hull can be\n";
+        std::cout << "  determined from the negative entries of the triangle\n";
+        std::cout << "  neighbor list.\n";
+        std::cout << "\n";
+        std::cout << "     #   Tri  Side    N1    N2    N3\n";
+        std::cout << "\n";
 
-  skip = false;
+        skip = false;
 
-  k = 0;
+        k = 0;
 
-  for ( i = 0; i < triangle_num; i++ )
-  {
-    for ( j = 0; j < 3; j++ )
-    {
-      if ( triangle_neighbor[j+i*3] < 0 )
-      {
-        s = -triangle_neighbor[j+i*3];
-        t = s / 3;
-
-        if ( t < 1 || triangle_num < t )
+        for ( i = 0; i < triangle_num; i++ )
         {
-          std::cout << "\n";
-          std::cout << "  Sorry, this data does not use the R8TRIS2\n";
-          std::cout << "  convention for convex hull segments.\n";
-          skip = true;
-          break;
+            for ( j = 0; j < 3; j++ )
+            {
+                if ( triangle_neighbor[j + i * 3] < 0 )
+                {
+                    s = -triangle_neighbor[j + i * 3];
+                    t = s / 3;
+
+                    if ( t < 1 || triangle_num < t )
+                    {
+                        std::cout << "\n";
+                        std::cout << "  Sorry, this data does not use the R8TRIS2\n";
+                        std::cout << "  convention for convex hull segments.\n";
+                        skip = true;
+                        break;
+                    }
+
+                    s1 = ( s % 3 ) + 1;
+                    s2 = i4_wrap ( s1 + 1, 1, 3 );
+                    k = k + 1;
+                    n1 = triangle_node[s1 - 1 + (t - 1) * 6];
+                    n2 = triangle_node[s1 + 3 - 1 + (t - 1) * 6];
+                    n3 = triangle_node[s2 - 1 + (t - 1) * 6];
+                    std::cout                  << "  "
+                                               << std::setw(4) << k  << "  "
+                                               << std::setw(4) << t  << "  "
+                                               << std::setw(4) << s1 << "  "
+                                               << std::setw(4) << n1 << "  "
+                                               << std::setw(4) << n2 << "  "
+                                               << std::setw(4) << n3 << "\n";
+                }
+            }
+
+            if ( skip )
+            {
+                break;
+            }
         }
 
-        s1 = ( s % 3 ) + 1;
-        s2 = i4_wrap ( s1+1, 1, 3 );
-        k = k + 1;
-        n1 = triangle_node[s1-1+(t-1)*6];
-        n2 = triangle_node[s1+3-1+(t-1)*6];
-        n3 = triangle_node[s2-1+(t-1)*6];
-        std::cout                  << "  "
-             << std::setw(4) << k  << "  "
-             << std::setw(4) << t  << "  "
-             << std::setw(4) << s1 << "  "
-             << std::setw(4) << n1 << "  "
-             << std::setw(4) << n2 << "  "
-             << std::setw(4) << n3 << "\n";
-      }
-    }
-
-    if ( skip )
-    {
-      break;
-    }
-  }
-
-  return;
+        return;
 # undef DIM_NUM
-}
+    }
 //****************************************************************************80
 
-void triangulation_order6_refine_compute ( int node_num1, int triangle_num1,
-  double node_xy1[], int triangle_node1[], int node_num2, int triangle_num2,
-  int edge_data[], double node_xy2[], int triangle_node2[] )
+    void triangulation_order6_refine_compute ( int node_num1, int triangle_num1,
+            double node_xy1[], int triangle_node1[], int node_num2, int triangle_num2,
+            int edge_data[], double node_xy2[], int triangle_node2[] )
 
 //****************************************************************************80
 //
@@ -14428,219 +14451,219 @@ void triangulation_order6_refine_compute ( int node_num1, int triangle_num1,
 //    Output, int TRIANGLE_NODE2[6*TRIANGLE_NUM2], the nodes that make up the
 //    triangles in the refined mesh.
 //
-{
-  int edge;
-  int i;
-  int j;
-  int l1;
-  int l2;
-  int l3;
-  int n1;
-  int n1_old;
-  int n2;
-  int n2_old;
-  int node;
-  int t1;
-  int t2;
-  int t3;
-  int t4;
-  int triangle1;
-  int v1;
-  int v2;
-  int v3;
-  int v4;
-  int v5;
-  int v6;
+    {
+        int edge;
+        int i;
+        int j;
+        int l1;
+        int l2;
+        int l3;
+        int n1;
+        int n1_old;
+        int n2;
+        int n2_old;
+        int node;
+        int t1;
+        int t2;
+        int t3;
+        int t4;
+        int triangle1;
+        int v1;
+        int v2;
+        int v3;
+        int v4;
+        int v5;
+        int v6;
 //
 //  Step 1:
 //  Copy the old nodes.
 //
-  for ( j = 0; j < node_num1; j++ )
-  {
-    for ( i = 0; i < 2; i++ )
-    {
-      node_xy2[i+j*2] = node_xy1[i+j*2];
-    }
-  }
-  for ( j = 0; j < triangle_num2; j++ )
-  {
-    for ( i = 0; i < 6; i++ )
-    {
-      triangle_node2[i+j*6] = -1;
-    }
-  }
+        for ( j = 0; j < node_num1; j++ )
+        {
+            for ( i = 0; i < 2; i++ )
+            {
+                node_xy2[i + j * 2] = node_xy1[i + j * 2];
+            }
+        }
+        for ( j = 0; j < triangle_num2; j++ )
+        {
+            for ( i = 0; i < 6; i++ )
+            {
+                triangle_node2[i + j * 6] = -1;
+            }
+        }
 //
 //  We can assign the existing nodes to the new triangles.
 //
-  for ( triangle1 = 0; triangle1 < triangle_num1; triangle1++ )
-  {
-    t1 = triangle1 * 4 + 0;
-    t2 = triangle1 * 4 + 1;
-    t3 = triangle1 * 4 + 2;
-    t4 = triangle1 * 4 + 3;
+        for ( triangle1 = 0; triangle1 < triangle_num1; triangle1++ )
+        {
+            t1 = triangle1 * 4 + 0;
+            t2 = triangle1 * 4 + 1;
+            t3 = triangle1 * 4 + 2;
+            t4 = triangle1 * 4 + 3;
 
-    triangle_node2[0+t1*6] = triangle_node1[0+triangle1*6];
-    triangle_node2[1+t1*6] = triangle_node1[3+triangle1*6];
-    triangle_node2[2+t1*6] = triangle_node1[5+triangle1*6];
+            triangle_node2[0 + t1 * 6] = triangle_node1[0 + triangle1 * 6];
+            triangle_node2[1 + t1 * 6] = triangle_node1[3 + triangle1 * 6];
+            triangle_node2[2 + t1 * 6] = triangle_node1[5 + triangle1 * 6];
 
-    triangle_node2[0+t2*6] = triangle_node1[3+triangle1*6];
-    triangle_node2[1+t2*6] = triangle_node1[1+triangle1*6];
-    triangle_node2[2+t2*6] = triangle_node1[4+triangle1*6];
+            triangle_node2[0 + t2 * 6] = triangle_node1[3 + triangle1 * 6];
+            triangle_node2[1 + t2 * 6] = triangle_node1[1 + triangle1 * 6];
+            triangle_node2[2 + t2 * 6] = triangle_node1[4 + triangle1 * 6];
 
-    triangle_node2[0+t3*6] = triangle_node1[5+triangle1*6];
-    triangle_node2[1+t3*6] = triangle_node1[4+triangle1*6];
-    triangle_node2[2+t3*6] = triangle_node1[2+triangle1*6];
+            triangle_node2[0 + t3 * 6] = triangle_node1[5 + triangle1 * 6];
+            triangle_node2[1 + t3 * 6] = triangle_node1[4 + triangle1 * 6];
+            triangle_node2[2 + t3 * 6] = triangle_node1[2 + triangle1 * 6];
 
-    triangle_node2[0+t4*6] = triangle_node1[4+triangle1*6];
-    triangle_node2[1+t4*6] = triangle_node1[5+triangle1*6];
-    triangle_node2[2+t4*6] = triangle_node1[3+triangle1*6];
-  }
+            triangle_node2[0 + t4 * 6] = triangle_node1[4 + triangle1 * 6];
+            triangle_node2[1 + t4 * 6] = triangle_node1[5 + triangle1 * 6];
+            triangle_node2[2 + t4 * 6] = triangle_node1[3 + triangle1 * 6];
+        }
 //
 //  Step 2.
 //  Examine sorted edge information.  The first time an edge is encountered,
 //  generate two new nodes, then assign them (usually) to the four subtriangles
 //  of the two triangles that share that edge.
 //
-  node = node_num1;
+        node = node_num1;
 
-  n1_old = -1;
-  n2_old = -1;
+        n1_old = -1;
+        n2_old = -1;
 
-  for ( edge = 0; edge < 3 * triangle_num1; edge++ )
-  {
-    n1 = edge_data[0+edge*5] - 1;
-    n2 = edge_data[1+edge*5] - 1;
+        for ( edge = 0; edge < 3 * triangle_num1; edge++ )
+        {
+            n1 = edge_data[0 + edge * 5] - 1;
+            n2 = edge_data[1 + edge * 5] - 1;
 
-    l1 = edge_data[2+edge*5];
-    l3 = edge_data[3+edge*5];
+            l1 = edge_data[2 + edge * 5];
+            l3 = edge_data[3 + edge * 5];
 
-    if ( l1 == 1 && l3 == 2 )
-    {
-      l2 = 4;
-    }
-    else if ( l1 == 1 && l3 == 3 )
-    {
-      l2 = 6;
-    }
-    else if ( l1 == 2 && l3 == 3 )
-    {
-      l2 = 5;
-    }
-    triangle1 = edge_data[4+edge*5];
+            if ( l1 == 1 && l3 == 2 )
+            {
+                l2 = 4;
+            }
+            else if ( l1 == 1 && l3 == 3 )
+            {
+                l2 = 6;
+            }
+            else if ( l1 == 2 && l3 == 3 )
+            {
+                l2 = 5;
+            }
+            triangle1 = edge_data[4 + edge * 5];
 //
 //  If this is the first time we've encountered this edge,
 //  create the new nodes.
 //
-    if ( n1 != n1_old || n2 != n2_old )
-    {
-      n1_old = n1;
-      n2_old = n2;
+            if ( n1 != n1_old || n2 != n2_old )
+            {
+                n1_old = n1;
+                n2_old = n2;
 
-      v1 = triangle_node1[l1-1+triangle1*6];
-      v2 = triangle_node1[l2-1+triangle1*6];
-      v3 = triangle_node1[l3-1+triangle1*6];
+                v1 = triangle_node1[l1 - 1 + triangle1 * 6];
+                v2 = triangle_node1[l2 - 1 + triangle1 * 6];
+                v3 = triangle_node1[l3 - 1 + triangle1 * 6];
 
-      for ( i = 0; i < 2; i++ )
-      {
-        node_xy2[i+node*2] = ( node_xy2[i+(v1-1)*2]
-                             + node_xy2[i+(v2-1)*2] ) / 2.0;
-      }
-      node = node + 1;
-      v4 = node;
+                for ( i = 0; i < 2; i++ )
+                {
+                    node_xy2[i + node * 2] = ( node_xy2[i + (v1 - 1) * 2]
+                                               + node_xy2[i + (v2 - 1) * 2] ) / 2.0;
+                }
+                node = node + 1;
+                v4 = node;
 
-      for ( i = 0; i < 2; i++ )
-      {
-        node_xy2[i+node*2] = ( node_xy2[i+(v2-1)*2]
-                             + node_xy2[i+(v3-1)*2] ) / 2.0;
-      }
-      node = node + 1;
-      v5 = node;
-    }
-    t1 = triangle1 * 4 + 0;
-    t2 = triangle1 * 4 + 1;
-    t3 = triangle1 * 4 + 2;
+                for ( i = 0; i < 2; i++ )
+                {
+                    node_xy2[i + node * 2] = ( node_xy2[i + (v2 - 1) * 2]
+                                               + node_xy2[i + (v3 - 1) * 2] ) / 2.0;
+                }
+                node = node + 1;
+                v5 = node;
+            }
+            t1 = triangle1 * 4 + 0;
+            t2 = triangle1 * 4 + 1;
+            t3 = triangle1 * 4 + 2;
 
-    if ( l1 == 1 && l3 == 2 )
-    {
-      if ( triangle_node1[0+triangle1*6] == v1 + 1 )
-      {
-        triangle_node2[3+t1*6] = v4;
-        triangle_node2[3+t2*6] = v5;
-      }
-      else
-      {
-        triangle_node2[3+t1*6] = v5;
-        triangle_node2[3+t2*6] = v4;
-      }
-    }
-    else if ( l1 == 1 && l3 == 3 )
-    {
-      if ( triangle_node1[0+triangle1*6] == v1 + 1 )
-      {
-        triangle_node2[5+t1*6] = v4;
-        triangle_node2[5+t3*6] = v5;
-      }
-      else
-      {
-        triangle_node2[5+t1*6] = v5;
-        triangle_node2[5+t3*6] = v4;
-      }
-    }
-    else if ( l1 == 2 && l3 == 3 )
-    {
-      if ( triangle_node1[1+triangle1*6] == v1 + 1 )
-      {
-        triangle_node2[4+t3*6] = v4;
-        triangle_node2[4+t2*6] = v5;
-      }
-      else
-      {
-        triangle_node2[4+t3*6] = v5;
-        triangle_node2[4+t2*6] = v4;
-      }
-    }
-  }
+            if ( l1 == 1 && l3 == 2 )
+            {
+                if ( triangle_node1[0 + triangle1 * 6] == v1 + 1 )
+                {
+                    triangle_node2[3 + t1 * 6] = v4;
+                    triangle_node2[3 + t2 * 6] = v5;
+                }
+                else
+                {
+                    triangle_node2[3 + t1 * 6] = v5;
+                    triangle_node2[3 + t2 * 6] = v4;
+                }
+            }
+            else if ( l1 == 1 && l3 == 3 )
+            {
+                if ( triangle_node1[0 + triangle1 * 6] == v1 + 1 )
+                {
+                    triangle_node2[5 + t1 * 6] = v4;
+                    triangle_node2[5 + t3 * 6] = v5;
+                }
+                else
+                {
+                    triangle_node2[5 + t1 * 6] = v5;
+                    triangle_node2[5 + t3 * 6] = v4;
+                }
+            }
+            else if ( l1 == 2 && l3 == 3 )
+            {
+                if ( triangle_node1[1 + triangle1 * 6] == v1 + 1 )
+                {
+                    triangle_node2[4 + t3 * 6] = v4;
+                    triangle_node2[4 + t2 * 6] = v5;
+                }
+                else
+                {
+                    triangle_node2[4 + t3 * 6] = v5;
+                    triangle_node2[4 + t2 * 6] = v4;
+                }
+            }
+        }
 //
 //  Step 3.
 //  Each old triangle has a single central subtriangle, for which we now
 //  need to generate three new "interior" nodes.
 //
-  for ( triangle1 = 0; triangle1 < triangle_num1; triangle1++ )
-  {
-    v4 = triangle_node1[3+triangle1*6];
-    v5 = triangle_node1[4+triangle1*6];
-    v6 = triangle_node1[5+triangle1*6];
+        for ( triangle1 = 0; triangle1 < triangle_num1; triangle1++ )
+        {
+            v4 = triangle_node1[3 + triangle1 * 6];
+            v5 = triangle_node1[4 + triangle1 * 6];
+            v6 = triangle_node1[5 + triangle1 * 6];
 
-    t1 = triangle1 * 4 + 0;
-    t2 = triangle1 * 4 + 1;
-    t3 = triangle1 * 4 + 2;
-    t4 = triangle1 * 4 + 3;
+            t1 = triangle1 * 4 + 0;
+            t2 = triangle1 * 4 + 1;
+            t3 = triangle1 * 4 + 2;
+            t4 = triangle1 * 4 + 3;
 
-    node_xy2[0+node*2] = 0.5 * ( node_xy1[0+(v5-1)*2] + node_xy1[0+(v6-1)*2] );
-    node_xy2[1+node*2] = 0.5 * ( node_xy1[1+(v5-1)*2] + node_xy1[1+(v6-1)*2] );
-    node = node + 1;
-    triangle_node2[3+t4*6] = node;
-    triangle_node2[3+t3*6] = node;
+            node_xy2[0 + node * 2] = 0.5 * ( node_xy1[0 + (v5 - 1) * 2] + node_xy1[0 + (v6 - 1) * 2] );
+            node_xy2[1 + node * 2] = 0.5 * ( node_xy1[1 + (v5 - 1) * 2] + node_xy1[1 + (v6 - 1) * 2] );
+            node = node + 1;
+            triangle_node2[3 + t4 * 6] = node;
+            triangle_node2[3 + t3 * 6] = node;
 
-    node_xy2[0+node*2] = 0.5 * ( node_xy1[0+(v6-1)*2] + node_xy1[0+(v4-1)*2] );
-    node_xy2[1+node*2] = 0.5 * ( node_xy1[1+(v6-1)*2] + node_xy1[1+(v4-1)*2] );
-    node = node + 1;
-    triangle_node2[4+t4*6] = node;
-    triangle_node2[4+t1*6] = node;
+            node_xy2[0 + node * 2] = 0.5 * ( node_xy1[0 + (v6 - 1) * 2] + node_xy1[0 + (v4 - 1) * 2] );
+            node_xy2[1 + node * 2] = 0.5 * ( node_xy1[1 + (v6 - 1) * 2] + node_xy1[1 + (v4 - 1) * 2] );
+            node = node + 1;
+            triangle_node2[4 + t4 * 6] = node;
+            triangle_node2[4 + t1 * 6] = node;
 
-    node_xy2[0+node*2] = 0.5 * ( node_xy1[0+(v4-1)*2] + node_xy1[0+(v5-1)*2] );
-    node_xy2[1+node*2] = 0.5 * ( node_xy1[1+(v4-1)*2] + node_xy1[1+(v5-1)*2] );
-    node = node + 1;
-    triangle_node2[5+t4*6] = node;
-    triangle_node2[5+t2*6] = node;
-  }
+            node_xy2[0 + node * 2] = 0.5 * ( node_xy1[0 + (v4 - 1) * 2] + node_xy1[0 + (v5 - 1) * 2] );
+            node_xy2[1 + node * 2] = 0.5 * ( node_xy1[1 + (v4 - 1) * 2] + node_xy1[1 + (v5 - 1) * 2] );
+            node = node + 1;
+            triangle_node2[5 + t4 * 6] = node;
+            triangle_node2[5 + t2 * 6] = node;
+        }
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-void triangulation_order6_refine_size ( int node_num1, int triangle_num1,
-  int triangle_node1[], int *node_num2, int *triangle_num2, int edge_data[] )
+    void triangulation_order6_refine_size ( int node_num1, int triangle_num1,
+                                            int triangle_node1[], int *node_num2, int *triangle_num2, int edge_data[] )
 
 //****************************************************************************80
 //
@@ -14706,18 +14729,18 @@ void triangulation_order6_refine_size ( int node_num1, int triangle_num1,
 //    Output, int EDGE_DATA[5*(3*TRIANGLE_NUM1)], edge data that will
 //    be needed by TRIANGULATION_ORDER6_REFINE_COMPUTE.
 //
-{
-  int a;
-  int b;
-  int edge;
-  int i;
-  int j;
-  int k;
-  int n1;
-  int n1_old;
-  int n2;
-  int n2_old;
-  int triangle1;
+    {
+        int a;
+        int b;
+        int edge;
+        int i;
+        int j;
+        int k;
+        int n1;
+        int n1_old;
+        int n2;
+        int n2_old;
+        int triangle1;
 //
 //  Step 1.
 //  From the list of nodes for triangle T, of the form: (I,J,K)
@@ -14730,39 +14753,39 @@ void triangulation_order6_refine_size ( int node_num1, int triangle_num1,
 //  In order to make matching easier, we reorder each pair of nodes
 //  into ascending order.
 //
-  for ( triangle1 = 0; triangle1 < triangle_num1; triangle1++ )
-  {
-    i = triangle_node1[0+triangle1*6];
-    j = triangle_node1[1+triangle1*6];
-    k = triangle_node1[2+triangle1*6];
+        for ( triangle1 = 0; triangle1 < triangle_num1; triangle1++ )
+        {
+            i = triangle_node1[0 + triangle1 * 6];
+            j = triangle_node1[1 + triangle1 * 6];
+            k = triangle_node1[2 + triangle1 * 6];
 
-    a = i4_min ( i, j );
-    b = i4_max ( i, j );
+            a = i4_min ( i, j );
+            b = i4_max ( i, j );
 
-    edge_data[0+5*(3*triangle1+0)] = a;
-    edge_data[1+5*(3*triangle1+0)] = b;
-    edge_data[2+5*(3*triangle1+0)] = 1;
-    edge_data[3+5*(3*triangle1+0)] = 2;
-    edge_data[4+5*(3*triangle1+0)] = triangle1;
+            edge_data[0 + 5 * (3 * triangle1 + 0)] = a;
+            edge_data[1 + 5 * (3 * triangle1 + 0)] = b;
+            edge_data[2 + 5 * (3 * triangle1 + 0)] = 1;
+            edge_data[3 + 5 * (3 * triangle1 + 0)] = 2;
+            edge_data[4 + 5 * (3 * triangle1 + 0)] = triangle1;
 
-    a = i4_min ( i, k );
-    b = i4_max ( i, k );
+            a = i4_min ( i, k );
+            b = i4_max ( i, k );
 
-    edge_data[0+5*(3*triangle1+1)] = a;
-    edge_data[1+5*(3*triangle1+1)] = b;
-    edge_data[2+5*(3*triangle1+1)] = 1;
-    edge_data[3+5*(3*triangle1+1)] = 3;
-    edge_data[4+5*(3*triangle1+1)] = triangle1;
+            edge_data[0 + 5 * (3 * triangle1 + 1)] = a;
+            edge_data[1 + 5 * (3 * triangle1 + 1)] = b;
+            edge_data[2 + 5 * (3 * triangle1 + 1)] = 1;
+            edge_data[3 + 5 * (3 * triangle1 + 1)] = 3;
+            edge_data[4 + 5 * (3 * triangle1 + 1)] = triangle1;
 
-    a = i4_min ( j, k );
-    b = i4_max ( j, k );
+            a = i4_min ( j, k );
+            b = i4_max ( j, k );
 
-    edge_data[0+5*(3*triangle1+2)] = a;
-    edge_data[1+5*(3*triangle1+2)] = b;
-    edge_data[2+5*(3*triangle1+2)] = 2;
-    edge_data[3+5*(3*triangle1+2)] = 3;
-    edge_data[4+5*(3*triangle1+2)] = triangle1;
-  }
+            edge_data[0 + 5 * (3 * triangle1 + 2)] = a;
+            edge_data[1 + 5 * (3 * triangle1 + 2)] = b;
+            edge_data[2 + 5 * (3 * triangle1 + 2)] = 2;
+            edge_data[3 + 5 * (3 * triangle1 + 2)] = 3;
+            edge_data[4 + 5 * (3 * triangle1 + 2)] = triangle1;
+        }
 //
 //  Step 2. Perform an ascending dictionary sort on the neighbor relations.
 //  We only intend to sort on rows 1:2; the routine we call here
@@ -14772,38 +14795,38 @@ void triangulation_order6_refine_size ( int node_num1, int triangle_num1,
 //  By sorting the columns of the EDGE_DATA array, we will put shared edges
 //  next to each other.
 //
-  i4col_sort_a ( 5, 3*triangle_num1, edge_data );
+        i4col_sort_a ( 5, 3 * triangle_num1, edge_data );
 //
 //  Step 3. All the triangles which share an edge show up as consecutive
 //  columns with identical first two entries.  Figure out how many new
 //  nodes there are, and allocate space for their coordinates.
 //
-  *node_num2 = node_num1;
+        *node_num2 = node_num1;
 
-  n1_old = -1;
-  n2_old = -1;
+        n1_old = -1;
+        n2_old = -1;
 
-  for ( edge = 0; edge < 3 * triangle_num1; edge++ )
-  {
-    n1 = edge_data[0+edge*5];
-    n2 = edge_data[1+edge*5];
-    if ( n1 != n1_old || n2 != n2_old )
-    {
-      *node_num2 = *node_num2 + 2;
-      n1_old = n1;
-      n2_old = n2;
+        for ( edge = 0; edge < 3 * triangle_num1; edge++ )
+        {
+            n1 = edge_data[0 + edge * 5];
+            n2 = edge_data[1 + edge * 5];
+            if ( n1 != n1_old || n2 != n2_old )
+            {
+                *node_num2 = *node_num2 + 2;
+                n1_old = n1;
+                n2_old = n2;
+            }
+        }
+
+        *node_num2 = *node_num2 + 3 * triangle_num1;
+
+        *triangle_num2 = 4 * triangle_num1;
+
+        return;
     }
-  }
-
-  *node_num2 = *node_num2 + 3 * triangle_num1;
-
-  *triangle_num2 = 4 * triangle_num1;
-
-  return;
-}
 //****************************************************************************80
 
-int *triangulation_order6_to_order3 ( int triangle_num1, int triangle_node1[] )
+    int *triangulation_order6_to_order3 ( int triangle_num1, int triangle_node1[] )
 
 //****************************************************************************80
 //
@@ -14857,58 +14880,58 @@ int *triangulation_order6_to_order3 ( int triangle_num1, int triangle_node1[] )
 //    Output, int TRIANGULATION_ORDER6_TO_ORDER3[3*TRIANGLE_NUM2], the linear
 //    triangulation.  Here, TRIANGLE_NUM2 = 4 * TRIANGLE_NUM1.
 //
-{
-  int n1;
-  int n2;
-  int n3;
-  int n4;
-  int n5;
-  int n6;
-  int triangle_num2;
-  int tri1;
-  int tri2;
-  int *triangle_node2;
+    {
+        int n1;
+        int n2;
+        int n3;
+        int n4;
+        int n5;
+        int n6;
+        int triangle_num2;
+        int tri1;
+        int tri2;
+        int *triangle_node2;
 
-  triangle_num2 = 4 * triangle_num1;
-  triangle_node2 = new int[3*triangle_num2];
+        triangle_num2 = 4 * triangle_num1;
+        triangle_node2 = new int[3 * triangle_num2];
 
-  tri2 = 0;
+        tri2 = 0;
 
-  for ( tri1 = 0; tri1 < triangle_num1; tri1++ )
-  {
-    n1 = triangle_node1[0+tri1*6];
-    n2 = triangle_node1[1+tri1*6];
-    n3 = triangle_node1[2+tri1*6];
-    n4 = triangle_node1[3+tri1*6];
-    n5 = triangle_node1[4+tri1*6];
-    n6 = triangle_node1[5+tri1*6];
+        for ( tri1 = 0; tri1 < triangle_num1; tri1++ )
+        {
+            n1 = triangle_node1[0 + tri1 * 6];
+            n2 = triangle_node1[1 + tri1 * 6];
+            n3 = triangle_node1[2 + tri1 * 6];
+            n4 = triangle_node1[3 + tri1 * 6];
+            n5 = triangle_node1[4 + tri1 * 6];
+            n6 = triangle_node1[5 + tri1 * 6];
 
-    triangle_node2[0+tri2*3] = n1;
-    triangle_node2[1+tri2*3] = n4;
-    triangle_node2[2+tri2*3] = n6;
-    tri2 = tri2 + 1;
+            triangle_node2[0 + tri2 * 3] = n1;
+            triangle_node2[1 + tri2 * 3] = n4;
+            triangle_node2[2 + tri2 * 3] = n6;
+            tri2 = tri2 + 1;
 
-    triangle_node2[0+tri2*3] = n2;
-    triangle_node2[1+tri2*3] = n5;
-    triangle_node2[2+tri2*3] = n4;
-    tri2 = tri2 + 1;
+            triangle_node2[0 + tri2 * 3] = n2;
+            triangle_node2[1 + tri2 * 3] = n5;
+            triangle_node2[2 + tri2 * 3] = n4;
+            tri2 = tri2 + 1;
 
-    triangle_node2[0+tri2*3] = n3;
-    triangle_node2[1+tri2*3] = n6;
-    triangle_node2[2+tri2*3] = n5;
-    tri2 = tri2 + 1;
+            triangle_node2[0 + tri2 * 3] = n3;
+            triangle_node2[1 + tri2 * 3] = n6;
+            triangle_node2[2 + tri2 * 3] = n5;
+            tri2 = tri2 + 1;
 
-    triangle_node2[0+tri2*3] = n4;
-    triangle_node2[1+tri2*3] = n5;
-    triangle_node2[2+tri2*3] = n6;
-    tri2 = tri2 + 1;
-  }
+            triangle_node2[0 + tri2 * 3] = n4;
+            triangle_node2[1 + tri2 * 3] = n5;
+            triangle_node2[2 + tri2 * 3] = n6;
+            tri2 = tri2 + 1;
+        }
 
-  return triangle_node2;
-}
+        return triangle_node2;
+    }
 //****************************************************************************80
 
-int triangulation_order6_vertex_count ( int tri_num, int triangle_node[] )
+    int triangulation_order6_vertex_count ( int tri_num, int triangle_node[] )
 
 //****************************************************************************80
 //
@@ -14986,41 +15009,41 @@ int triangulation_order6_vertex_count ( int tri_num, int triangle_node[] )
 //    Output, int TRIANGULATION_ORDER6_VERTEX_COUNT, the number of nodes
 //    which are vertices.
 //
-{
-  int j;
-  int vertex_num;
-  int *vertices;
+    {
+        int j;
+        int vertex_num;
+        int *vertices;
 
-  vertices = new int[3*tri_num];
+        vertices = new int[3 * tri_num];
 
-  for ( j = 0; j < tri_num; j++ )
-  {
-    vertices[j] = triangle_node[0+j*6];
-  }
-  for ( j = 0; j < tri_num; j++ )
-  {
-    vertices[tri_num+j] = triangle_node[1+j*6];
-  }
-  for ( j = 0; j < tri_num; j++ )
-  {
-    vertices[2*tri_num+j] = triangle_node[2+j*6];
-  }
+        for ( j = 0; j < tri_num; j++ )
+        {
+            vertices[j] = triangle_node[0 + j * 6];
+        }
+        for ( j = 0; j < tri_num; j++ )
+        {
+            vertices[tri_num + j] = triangle_node[1 + j * 6];
+        }
+        for ( j = 0; j < tri_num; j++ )
+        {
+            vertices[2 * tri_num + j] = triangle_node[2 + j * 6];
+        }
 
-  i4vec_sort_heap_a ( 3*tri_num, vertices );
+        i4vec_sort_heap_a ( 3 * tri_num, vertices );
 
-  vertex_num = i4vec_sorted_unique ( 3*tri_num, vertices );
+        vertex_num = i4vec_sorted_unique ( 3 * tri_num, vertices );
 
-  delete [] vertices;
+        delete [] vertices;
 
-  return vertex_num;
-}
+        return vertex_num;
+    }
 //****************************************************************************80
 
-void triangulation_search_delaunay ( int node_num, double node_xy[],
-  int triangle_order, int triangle_num, int triangle_node[],
-  int triangle_neighbor[], double p[2], int *triangle_index,
-  double *alpha, double *beta, double *gamma, int *edge,
-  int *step_num )
+    void triangulation_search_delaunay ( int node_num, double node_xy[],
+                                         int triangle_order, int triangle_num, int triangle_node[],
+                                         int triangle_neighbor[], double p[2], int *triangle_index,
+                                         double *alpha, double *beta, double *gamma, int *edge,
+                                         int *step_num )
 
 //****************************************************************************80
 //
@@ -15105,85 +15128,85 @@ void triangulation_search_delaunay ( int node_num, double node_xy[],
 //    -3, outside the convex hull of the triangulation, past edge 3.
 //
 //    Output, int *STEP_NUM, the number of steps.
-{
-  int a;
-  int b;
-  int c;
-  double det;
-  double dxp;
-  double dxa;
-  double dxb;
-  double dyp;
-  double dya;
-  double dyb;
-  static int triangle_index_save = -1;
-
-  *step_num = - 1;
-  *edge = 0;
-
-  if ( triangle_index_save < 0 || triangle_num <= triangle_index_save )
-  {
-    *triangle_index = ( triangle_num + 1 ) / 2;
-  }
-  else
-  {
-    *triangle_index = triangle_index_save;
-  }
-
-  for ( ; ; )
-  {
-    *step_num = *step_num + 1;
-
-    if ( triangle_num < *step_num )
     {
-      std::cout << "\n";
-      std::cout << "TRIANGULATION_SEARCH_DELAUNAY - Fatal error!\n";
-      std::cout << "  The algorithm seems to be cycling.\n";
-      std::cout << "  Current triangle is " << *triangle_index << "\n";
-      *triangle_index = -1;
-      *alpha = -1.0;
-      *beta = -1.0;
-      *gamma = -1.0;
-      *edge = -1;
-      return;
-    }
+        int a;
+        int b;
+        int c;
+        double det;
+        double dxp;
+        double dxa;
+        double dxb;
+        double dyp;
+        double dya;
+        double dyb;
+        static int triangle_index_save = -1;
+
+        *step_num = - 1;
+        *edge = 0;
+
+        if ( triangle_index_save < 0 || triangle_num <= triangle_index_save )
+        {
+            *triangle_index = ( triangle_num + 1 ) / 2;
+        }
+        else
+        {
+            *triangle_index = triangle_index_save;
+        }
+
+        for ( ; ; )
+        {
+            *step_num = *step_num + 1;
+
+            if ( triangle_num < *step_num )
+            {
+                std::cout << "\n";
+                std::cout << "TRIANGULATION_SEARCH_DELAUNAY - Fatal error!\n";
+                std::cout << "  The algorithm seems to be cycling.\n";
+                std::cout << "  Current triangle is " << *triangle_index << "\n";
+                *triangle_index = -1;
+                *alpha = -1.0;
+                *beta = -1.0;
+                *gamma = -1.0;
+                *edge = -1;
+                return;
+            }
 //
 //  Get the vertices of triangle TRIANGLE.
 //
-    a = triangle_node[0+(*triangle_index-1)*triangle_order];
-    b = triangle_node[1+(*triangle_index-1)*triangle_order];
-    c = triangle_node[2+(*triangle_index-1)*triangle_order];
+            a = triangle_node[0 + (*triangle_index - 1) * triangle_order];
+            b = triangle_node[1 + (*triangle_index - 1) * triangle_order];
+            c = triangle_node[2 + (*triangle_index - 1) * triangle_order];
 //
 //  Using vertex C as a base, compute the distances to vertices A and B,
 //  and the point (X,Y).
 //
-    dxa = node_xy[0+a*2] - node_xy[0+c*2];
-    dya = node_xy[1+a*2] - node_xy[1+c*2];
+            dxa = node_xy[0 + a * 2] - node_xy[0 + c * 2];
+            dya = node_xy[1 + a * 2] - node_xy[1 + c * 2];
 
-    dxb = node_xy[0+b*2] - node_xy[0+c*2];
-    dyb = node_xy[1+b*2] - node_xy[1+c*2];
+            dxb = node_xy[0 + b * 2] - node_xy[0 + c * 2];
+            dyb = node_xy[1 + b * 2] - node_xy[1 + c * 2];
 
-    dxp = p[0]           - node_xy[0+c*2];
-    dyp = p[1]           - node_xy[1+c*2];
+            dxp = p[0]           - node_xy[0 + c * 2];
+            dyp = p[1]           - node_xy[1 + c * 2];
 
-    det = dxa * dyb - dya * dxb;
+            det = dxa * dyb - dya * dxb;
 //
 //  Compute the barycentric coordinates of the point (X,Y) with respect
 //  to this triangle.
 //
-    *alpha = ( dxp * dyb - dyp * dxb ) / det;
-    *beta =  ( dxa * dyp - dya * dxp ) / det;
-    *gamma = 1.0 - *alpha - *beta;
+            *alpha = ( dxp * dyb - dyp * dxb ) / det;
+            *beta =  ( dxa * dyp - dya * dxp ) / det;
+            *gamma = 1.0 - *alpha - *beta;
 //
 //  If the barycentric coordinates are all positive, then the point
 //  is inside the triangle and we're done.
 //
-    if ( 0.0 <= *alpha &&
-         0.0 <= *beta  &&
-         0.0 <= *gamma )
-    {
-      break;
-    }
+            if ( 0.0 <= *alpha &&
+                    0.0 <= *beta  &&
+                    0.0 <= *gamma )
+            {
+                break;
+            }
 //
 //  At least one barycentric coordinate is negative.
 //
@@ -15194,61 +15217,61 @@ void triangulation_search_delaunay ( int node_num, double node_xy[],
 //  most negative one, or the most negative one normalized by the actual
 //  distance it represents).
 //
-    if ( *alpha < 0.0 && 0 <= triangle_neighbor[1+(*triangle_index-1)*3] )
-    {
-      *triangle_index = triangle_neighbor[1+(*triangle_index-1)*3];
-      continue;
-    }
-    else if ( *beta < 0.0 && 0 <= triangle_neighbor[2+(*triangle_index-1)*3] )
-    {
-      *triangle_index = triangle_neighbor[2+(*triangle_index-1)*3];
-      continue;
-    }
-    else if ( *gamma < 0.0 && 0 <= triangle_neighbor[0+(*triangle_index-1)*3] )
-    {
-      *triangle_index = triangle_neighbor[0+(*triangle_index-1)*3];
-      continue;
-    }
+            if ( *alpha < 0.0 && 0 <= triangle_neighbor[1 + (*triangle_index - 1) * 3] )
+            {
+                *triangle_index = triangle_neighbor[1 + (*triangle_index - 1) * 3];
+                continue;
+            }
+            else if ( *beta < 0.0 && 0 <= triangle_neighbor[2 + (*triangle_index - 1) * 3] )
+            {
+                *triangle_index = triangle_neighbor[2 + (*triangle_index - 1) * 3];
+                continue;
+            }
+            else if ( *gamma < 0.0 && 0 <= triangle_neighbor[0 + (*triangle_index - 1) * 3] )
+            {
+                *triangle_index = triangle_neighbor[0 + (*triangle_index - 1) * 3];
+                continue;
+            }
 //
 //  All negative barycentric coordinates correspond to vertices opposite
 //  sides on the convex hull.
 //
 //  Note the edge and exit.
 //
-    if ( *alpha < 0.0 )
-    {
-      *edge = -2;
-      break;
-    }
-    else if ( *beta < 0.0 )
-    {
-      *edge = -3;
-      break;
-    }
-    else if ( *gamma < 0.0 )
-    {
-      *edge = -1;
-      break;
-    }
-    else
-    {
-      std::cout << "\n";
-      std::cout << "TRIANGULATION_ORDER3_SEARCH - Fatal error!\n";
-      std::cout << "  The algorithm seems to have reached a dead end\n";
-      std::cout << "  after " << *step_num << " steps.\n";
-      *triangle_index = -1;
-      *edge = -1;
-      return;
-    }
-  }
-  triangle_index_save = *triangle_index;
+            if ( *alpha < 0.0 )
+            {
+                *edge = -2;
+                break;
+            }
+            else if ( *beta < 0.0 )
+            {
+                *edge = -3;
+                break;
+            }
+            else if ( *gamma < 0.0 )
+            {
+                *edge = -1;
+                break;
+            }
+            else
+            {
+                std::cout << "\n";
+                std::cout << "TRIANGULATION_ORDER3_SEARCH - Fatal error!\n";
+                std::cout << "  The algorithm seems to have reached a dead end\n";
+                std::cout << "  after " << *step_num << " steps.\n";
+                *triangle_index = -1;
+                *edge = -1;
+                return;
+            }
+        }
+        triangle_index_save = *triangle_index;
 
-  return;
-}
+        return;
+    }
 //****************************************************************************80
 
-int triangulation_search_naive ( int node_num, double node_xy[],
-  int triangle_order, int triangle_num, int triangle_node[], double p[2] )
+    int triangulation_search_naive ( int node_num, double node_xy[],
+                                     int triangle_order, int triangle_num, int triangle_node[], double p[2] )
 
 //****************************************************************************80
 //
@@ -15293,74 +15316,74 @@ int triangulation_search_naive ( int node_num, double node_xy[],
 //    containing the point, or -1 if no triangle was found containing
 //    the point.
 //
-{
-  int a;
-  double alpha;
-  int b;
-  double beta;
-  int c;
-  double det;
-  double dxp;
-  double dxa;
-  double dxb;
-  double dyp;
-  double dya;
-  double dyb;
-  double gamma;
-  int triangle;
-  int triangle_index;
+    {
+        int a;
+        double alpha;
+        int b;
+        double beta;
+        int c;
+        double det;
+        double dxp;
+        double dxa;
+        double dxb;
+        double dyp;
+        double dya;
+        double dyb;
+        double gamma;
+        int triangle;
+        int triangle_index;
 
-  triangle_index = -1;
+        triangle_index = -1;
 
-  for ( triangle = 0; triangle < triangle_num; triangle++ )
-  {
+        for ( triangle = 0; triangle < triangle_num; triangle++ )
+        {
 //
 //  Get the vertices of triangle TRIANGLE.
 //
-    a = triangle_node[0+triangle*triangle_order];
-    b = triangle_node[1+triangle*triangle_order];
-    c = triangle_node[2+triangle*triangle_order];
+            a = triangle_node[0 + triangle * triangle_order];
+            b = triangle_node[1 + triangle * triangle_order];
+            c = triangle_node[2 + triangle * triangle_order];
 //
 //  Using vertex C as a base, compute the distances to vertices A and B,
 //  and the point (X,Y).
 //
-    dxa = node_xy[0+a*2] - node_xy[0+c*2];
-    dya = node_xy[1+a*2] - node_xy[1+c*2];
+            dxa = node_xy[0 + a * 2] - node_xy[0 + c * 2];
+            dya = node_xy[1 + a * 2] - node_xy[1 + c * 2];
 
-    dxb = node_xy[0+b*2] - node_xy[0+c*2];
-    dyb = node_xy[1+b*2] - node_xy[1+c*2];
+            dxb = node_xy[0 + b * 2] - node_xy[0 + c * 2];
+            dyb = node_xy[1 + b * 2] - node_xy[1 + c * 2];
 
-    dxp = p[0]           - node_xy[0+c*2];
-    dyp = p[1]           - node_xy[1+c*2];
+            dxp = p[0]           - node_xy[0 + c * 2];
+            dyp = p[1]           - node_xy[1 + c * 2];
 
-    det = dxa * dyb - dya * dxb;
+            det = dxa * dyb - dya * dxb;
 //
 //  Compute the barycentric coordinates of the point (X,Y) with respect
 //  to this triangle.
 //
-    alpha = ( dxp * dyb - dyp * dxb ) / det;
-    beta =  ( dxa * dyp - dya * dxp ) / det;
-    gamma = 1.0 - alpha - beta;
+            alpha = ( dxp * dyb - dyp * dxb ) / det;
+            beta =  ( dxa * dyp - dya * dxp ) / det;
+            gamma = 1.0 - alpha - beta;
 //
 //  If the barycentric coordinates are all positive, then the point
 //  is inside the triangle and we're done.
 //
-    if ( 0.0 <= alpha &&
-         0.0 <= beta  &&
-         0.0 <= gamma )
-    {
-      triangle_index = triangle + 1;
-      break;
-    }
-  }
+            if ( 0.0 <= alpha &&
+                    0.0 <= beta  &&
+                    0.0 <= gamma )
+            {
+                triangle_index = triangle + 1;
+                break;
+            }
+        }
 
-  return triangle_index;
-}
+        return triangle_index;
+    }
 //****************************************************************************80
 
-void vbedg ( double x, double y, int node_num, double node_xy[],
-  int triangle_num, int triangle_node[], int triangle_neighbor[], int *ltri,
-  int *ledg, int *rtri, int *redg )
+    void vbedg ( double x, double y, int node_num, double node_xy[],
+                 int triangle_num, int triangle_node[], int triangle_neighbor[], int *ltri,
+                 int *ledg, int *rtri, int *redg )
 
 //****************************************************************************80
 //
@@ -15426,124 +15449,124 @@ void vbedg ( double x, double y, int node_num, double node_xy[],
 //    Input/output, int *REDG, the edge of triangle RTRI that is visible
 //    from (X,Y).  1 <= REDG <= 3.
 //
-{
-  int a;
-  double ax;
-  double ay;
-  int b;
-  double bx;
-  double by;
-  bool done;
-  int e;
-  int l;
-  int lr;
-  int t;
+    {
+        int a;
+        double ax;
+        double ay;
+        int b;
+        double bx;
+        double by;
+        bool done;
+        int e;
+        int l;
+        int lr;
+        int t;
 //
 //  Find the rightmost visible boundary edge using links, then possibly
 //  leftmost visible boundary edge using triangle neighbor information.
 //
-  if ( *ltri == 0 )
-  {
-    done = false;
-    *ltri = *rtri;
-    *ledg = *redg;
-  }
-  else
-  {
-    done = true;
-  }
+        if ( *ltri == 0 )
+        {
+            done = false;
+            *ltri = *rtri;
+            *ledg = *redg;
+        }
+        else
+        {
+            done = true;
+        }
 
-  for ( ; ; )
-  {
-    l = -triangle_neighbor[3*((*rtri)-1)+(*redg)-1];
-    t = l / 3;
-    e = 1 + l % 3;
-    a = triangle_node[3*(t-1)+e-1];
+        for ( ; ; )
+        {
+            l = -triangle_neighbor[3 * ((*rtri) - 1) + (*redg) - 1];
+            t = l / 3;
+            e = 1 + l % 3;
+            a = triangle_node[3 * (t - 1) + e - 1];
 
-    if ( e <= 2 )
-    {
-      b = triangle_node[3*(t-1)+e];
+            if ( e <= 2 )
+            {
+                b = triangle_node[3 * (t - 1) + e];
+            }
+            else
+            {
+                b = triangle_node[3 * (t - 1) + 0];
+            }
+
+            ax = node_xy[2 * (a - 1) + 0];
+            ay = node_xy[2 * (a - 1) + 1];
+
+            bx = node_xy[2 * (b - 1) + 0];
+            by = node_xy[2 * (b - 1) + 1];
+
+            lr = lrline ( x, y, ax, ay, bx, by, 0.0 );
+
+            if ( lr <= 0 )
+            {
+                break;
+            }
+
+            *rtri = t;
+            *redg = e;
+
+        }
+
+        if ( done )
+        {
+            return;
+        }
+
+        t = *ltri;
+        e = *ledg;
+
+        for ( ; ; )
+        {
+            b = triangle_node[3 * (t - 1) + e - 1];
+            e = i4_wrap ( e - 1, 1, 3 );
+
+            while ( 0 < triangle_neighbor[3 * (t - 1) + e - 1] )
+            {
+                t = triangle_neighbor[3 * (t - 1) + e - 1];
+
+                if ( triangle_node[3 * (t - 1) + 0] == b )
+                {
+                    e = 3;
+                }
+                else if ( triangle_node[3 * (t - 1) + 1] == b )
+                {
+                    e = 1;
+                }
+                else
+                {
+                    e = 2;
+                }
+
+            }
+
+            a = triangle_node[3 * (t - 1) + e - 1];
+            ax = node_xy[2 * (a - 1) + 0];
+            ay = node_xy[2 * (a - 1) + 1];
+
+            bx = node_xy[2 * (b - 1) + 0];
+            by = node_xy[2 * (b - 1) + 1];
+
+            lr = lrline ( x, y, ax, ay, bx, by, 0.0 );
+
+            if ( lr <= 0 )
+            {
+                break;
+            }
+
+        }
+
+        *ltri = t;
+        *ledg = e;
+
+        return;
     }
-    else
-    {
-      b = triangle_node[3*(t-1)+0];
-    }
-
-    ax = node_xy[2*(a-1)+0];
-    ay = node_xy[2*(a-1)+1];
-
-    bx = node_xy[2*(b-1)+0];
-    by = node_xy[2*(b-1)+1];
-
-    lr = lrline ( x, y, ax, ay, bx, by, 0.0 );
-
-    if ( lr <= 0 )
-    {
-      break;
-    }
-
-    *rtri = t;
-    *redg = e;
-
-  }
-
-  if ( done )
-  {
-    return;
-  }
-
-  t = *ltri;
-  e = *ledg;
-
-  for ( ; ; )
-  {
-    b = triangle_node[3*(t-1)+e-1];
-    e = i4_wrap ( e-1, 1, 3 );
-
-    while ( 0 < triangle_neighbor[3*(t-1)+e-1] )
-    {
-      t = triangle_neighbor[3*(t-1)+e-1];
-
-      if ( triangle_node[3*(t-1)+0] == b )
-      {
-        e = 3;
-      }
-      else if ( triangle_node[3*(t-1)+1] == b )
-      {
-        e = 1;
-      }
-      else
-      {
-        e = 2;
-      }
-
-    }
-
-    a = triangle_node[3*(t-1)+e-1];
-    ax = node_xy[2*(a-1)+0];
-    ay = node_xy[2*(a-1)+1];
-
-    bx = node_xy[2*(b-1)+0];
-    by = node_xy[2*(b-1)+1];
-
-    lr = lrline ( x, y, ax, ay, bx, by, 0.0 );
-
-    if ( lr <= 0 )
-    {
-      break;
-    }
-
-  }
-
-  *ltri = t;
-  *ledg = e;
-
-  return;
-}
 //****************************************************************************80
 
-double voronoi_polygon_area ( int node, int neighbor_num,
-  int neighbor_index[], int node_num, double node_xy[] )
+    double voronoi_polygon_area ( int node, int neighbor_num,
+                                  int neighbor_index[], int node_num, double node_xy[] )
 
 //****************************************************************************80
 //
@@ -15615,83 +15638,83 @@ double voronoi_polygon_area ( int node, int neighbor_num,
 //
 //    Output, double VORONOI_POLYGON_AREA, the area of the Voronoi polygon.
 //
-{
-  double a;
-  double area;
-  double b;
-  double c;
-  int i;
-  int ip1;
-  double ui;
-  double uip1;
-  double vi;
-  double vip1;
-  double xc;
-  double xi;
-  double xip1;
-  double yc;
-  double yi;
-  double yip1;
+    {
+        double a;
+        double area;
+        double b;
+        double c;
+        int i;
+        int ip1;
+        double ui;
+        double uip1;
+        double vi;
+        double vip1;
+        double xc;
+        double xi;
+        double xip1;
+        double yc;
+        double yi;
+        double yip1;
 
-  area = 0.0;
+        area = 0.0;
 
-  if ( node < 0 || node_num <= node )
-  {
-    std::cout << "\n";
-    std::cout << "  VORONOI_POLYGON_AREA - Fatal error!\n";
-    std::cout << "  Illegal value of input parameter NODE.\n";
-    exit ( 1 );
-  }
+        if ( node < 0 || node_num <= node )
+        {
+            std::cout << "\n";
+            std::cout << "  VORONOI_POLYGON_AREA - Fatal error!\n";
+            std::cout << "  Illegal value of input parameter NODE.\n";
+            exit ( 1 );
+        }
 
-  xc = node_xy[0+node*2];
-  yc = node_xy[1+node*2];
+        xc = node_xy[0 + node * 2];
+        yc = node_xy[1 + node * 2];
 
-  i = neighbor_num - 1;
-  i = neighbor_index[i];
+        i = neighbor_num - 1;
+        i = neighbor_index[i];
 
-  xi = node_xy[0+i*2];
-  yi = node_xy[1+i*2];
+        xi = node_xy[0 + i * 2];
+        yi = node_xy[1 + i * 2];
 
-  ip1 = 0;
-  ip1 = neighbor_index[ip1];
+        ip1 = 0;
+        ip1 = neighbor_index[ip1];
 
-  xip1 = node_xy[0+ip1*2];
-  yip1 = node_xy[1+ip1*2];
-  a = ( xi   * xi   + yi   * yi   - xc * xc - yc * yc );
-  b = ( xip1 * xip1 + yip1 * yip1 - xc * xc - yc * yc );
-  c = 2.0 * ( ( xi - xc ) * ( yip1 - yc ) - ( xip1 - xc ) * ( yi - yc ) );
-  uip1 = ( a * ( yip1 - yc ) - b * ( yi - yc )  ) / c;
-  vip1 = ( a * ( xip1 - xc ) - b * ( xi - xc )  ) / c;
+        xip1 = node_xy[0 + ip1 * 2];
+        yip1 = node_xy[1 + ip1 * 2];
+        a = ( xi   * xi   + yi   * yi   - xc * xc - yc * yc );
+        b = ( xip1 * xip1 + yip1 * yip1 - xc * xc - yc * yc );
+        c = 2.0 * ( ( xi - xc ) * ( yip1 - yc ) - ( xip1 - xc ) * ( yi - yc ) );
+        uip1 = ( a * ( yip1 - yc ) - b * ( yi - yc )  ) / c;
+        vip1 = ( a * ( xip1 - xc ) - b * ( xi - xc )  ) / c;
 
-  for ( i = 0; i < neighbor_num; i++ )
-  {
-    xi = xip1;
-    yi = yip1;
-    ui = uip1;
-    vi = vip1;
+        for ( i = 0; i < neighbor_num; i++ )
+        {
+            xi = xip1;
+            yi = yip1;
+            ui = uip1;
+            vi = vip1;
 
-    ip1 = i4_wrap ( i+1, 0, neighbor_num-1 );
-    ip1 = neighbor_index[ip1];
+            ip1 = i4_wrap ( i + 1, 0, neighbor_num - 1 );
+            ip1 = neighbor_index[ip1];
 
-    xip1 = node_xy[0+ip1*2];
-    yip1 = node_xy[1+ip1*2];
-    a = ( xi   * xi   + yi   * yi   - xc * xc - yc * yc );
-    b = ( xip1 * xip1 + yip1 * yip1 - xc * xc - yc * yc );
-    c = 2.0 * ( ( xi - xc ) * ( yip1 - yc ) - ( xip1 - xc ) * ( yi - yc ) );
-    uip1 = ( a * ( yip1 - yc ) - b * ( yi - yc )  ) / c;
-    vip1 = ( a * ( xip1 - xc ) - b * ( xi - xc )  ) / c;
+            xip1 = node_xy[0 + ip1 * 2];
+            yip1 = node_xy[1 + ip1 * 2];
+            a = ( xi   * xi   + yi   * yi   - xc * xc - yc * yc );
+            b = ( xip1 * xip1 + yip1 * yip1 - xc * xc - yc * yc );
+            c = 2.0 * ( ( xi - xc ) * ( yip1 - yc ) - ( xip1 - xc ) * ( yi - yc ) );
+            uip1 = ( a * ( yip1 - yc ) - b * ( yi - yc )  ) / c;
+            vip1 = ( a * ( xip1 - xc ) - b * ( xi - xc )  ) / c;
 
-    area = area + uip1 * vi - ui * vip1;
-  }
+            area = area + uip1 * vi - ui * vip1;
+        }
 
-  area = 0.5 * area;
+        area = 0.5 * area;
 
-  return area;
-}
+        return area;
+    }
 //****************************************************************************80
 
-double *voronoi_polygon_centroid ( int node, int neighbor_num,
-  int neighbor_index[], int node_num, double node_xy[] )
+    double *voronoi_polygon_centroid ( int node, int neighbor_num,
+                                       int neighbor_index[], int node_num, double node_xy[] )
 
 //****************************************************************************80
 //
@@ -15766,94 +15789,94 @@ double *voronoi_polygon_centroid ( int node, int neighbor_num,
 //    containing the coordinates of the centroid of the Voronoi polygon
 //    of node NODE.
 //
-{
-  double a;
-  double area;
-  double b;
-  double c;
-  double *centroid;
-  int i;
-  int ip1;
-  double ui;
-  double uip1;
-  double vi;
-  double vip1;
-  double xc;
-  double xi;
-  double xip1;
-  double yc;
-  double yi;
-  double yip1;
+    {
+        double a;
+        double area;
+        double b;
+        double c;
+        double *centroid;
+        int i;
+        int ip1;
+        double ui;
+        double uip1;
+        double vi;
+        double vip1;
+        double xc;
+        double xi;
+        double xip1;
+        double yc;
+        double yi;
+        double yip1;
 
-  centroid = new double[2];
+        centroid = new double[2];
 
-  centroid[0] = 0.0;
-  centroid[1] = 0.0;
+        centroid[0] = 0.0;
+        centroid[1] = 0.0;
 
-  if ( node < 0 || node_num <= node )
-  {
-    std::cout << "\n";
-    std::cout << "VORONOI_POLYGON_CENTROID - Fatal error!\n";
-    std::cout << "  Illegal value of input parameter NODE.\n";
-    exit ( 1 );
-  }
+        if ( node < 0 || node_num <= node )
+        {
+            std::cout << "\n";
+            std::cout << "VORONOI_POLYGON_CENTROID - Fatal error!\n";
+            std::cout << "  Illegal value of input parameter NODE.\n";
+            exit ( 1 );
+        }
 
-  xc = node_xy[0+node*2];
-  yc = node_xy[1+node*2];
+        xc = node_xy[0 + node * 2];
+        yc = node_xy[1 + node * 2];
 
-  i = neighbor_num - 1;
-  i = neighbor_index[i];
+        i = neighbor_num - 1;
+        i = neighbor_index[i];
 
-  xi = node_xy[0+i*2];
-  yi = node_xy[1+i*2];
+        xi = node_xy[0 + i * 2];
+        yi = node_xy[1 + i * 2];
 
-  ip1 = 0;
-  ip1 = neighbor_index[ip1];
+        ip1 = 0;
+        ip1 = neighbor_index[ip1];
 
-  xip1 = node_xy[0+ip1*2];
-  yip1 = node_xy[1+ip1*2];
-  a = ( xi   * xi   + yi   * yi   - xc * xc - yc * yc );
-  b = ( xip1 * xip1 + yip1 * yip1 - xc * xc - yc * yc );
-  c = 2.0 * ( ( xi - xc ) * ( yip1 - yc ) - ( xip1 - xc ) * ( yi - yc ) );
-  uip1 = ( a * ( yip1 - yc ) - b * ( yi - yc )  ) / c;
-  vip1 = ( a * ( xip1 - xc ) - b * ( xi - xc )  ) / c;
+        xip1 = node_xy[0 + ip1 * 2];
+        yip1 = node_xy[1 + ip1 * 2];
+        a = ( xi   * xi   + yi   * yi   - xc * xc - yc * yc );
+        b = ( xip1 * xip1 + yip1 * yip1 - xc * xc - yc * yc );
+        c = 2.0 * ( ( xi - xc ) * ( yip1 - yc ) - ( xip1 - xc ) * ( yi - yc ) );
+        uip1 = ( a * ( yip1 - yc ) - b * ( yi - yc )  ) / c;
+        vip1 = ( a * ( xip1 - xc ) - b * ( xi - xc )  ) / c;
 
-  for ( i = 0; i < neighbor_num; i++ )
-  {
-    xi = xip1;
-    yi = yip1;
-    ui = uip1;
-    vi = vip1;
+        for ( i = 0; i < neighbor_num; i++ )
+        {
+            xi = xip1;
+            yi = yip1;
+            ui = uip1;
+            vi = vip1;
 
-    ip1 = i4_wrap ( i+1, 0, neighbor_num-1 );
-    ip1 = neighbor_index[ip1];
+            ip1 = i4_wrap ( i + 1, 0, neighbor_num - 1 );
+            ip1 = neighbor_index[ip1];
 
-    xip1 = node_xy[0+ip1*2];
-    yip1 = node_xy[1+ip1*2];
-    a = ( xi   * xi   + yi   * yi   - xc * xc - yc * yc );
-    b = ( xip1 * xip1 + yip1 * yip1 - xc * xc - yc * yc );
-    c = 2.0 * ( ( xi - xc ) * ( yip1 - yc ) - ( xip1 - xc ) * ( yi - yc ) );
-    uip1 = ( a * ( yip1 - yc ) - b * ( yi - yc )  ) / c;
-    vip1 = ( a * ( xip1 - xc ) - b * ( xi - xc )  ) / c;
+            xip1 = node_xy[0 + ip1 * 2];
+            yip1 = node_xy[1 + ip1 * 2];
+            a = ( xi   * xi   + yi   * yi   - xc * xc - yc * yc );
+            b = ( xip1 * xip1 + yip1 * yip1 - xc * xc - yc * yc );
+            c = 2.0 * ( ( xi - xc ) * ( yip1 - yc ) - ( xip1 - xc ) * ( yi - yc ) );
+            uip1 = ( a * ( yip1 - yc ) - b * ( yi - yc )  ) / c;
+            vip1 = ( a * ( xip1 - xc ) - b * ( xi - xc )  ) / c;
 
-    centroid[0] = centroid[0] + ( vi - vip1 )
-      * ( ( uip1 + ui ) * ( uip1 + ui ) - uip1 * ui );
-    centroid[1] = centroid[1] + ( ui - uip1 )
-      * ( ( vip1 + vi ) * ( vip1 + vi ) - vip1 * vi );
-  }
+            centroid[0] = centroid[0] + ( vi - vip1 )
+                          * ( ( uip1 + ui ) * ( uip1 + ui ) - uip1 * ui );
+            centroid[1] = centroid[1] + ( ui - uip1 )
+                          * ( ( vip1 + vi ) * ( vip1 + vi ) - vip1 * vi );
+        }
 
-  area = voronoi_polygon_area ( node, neighbor_num, neighbor_index,
-    node_num, node_xy );
+        area = voronoi_polygon_area ( node, neighbor_num, neighbor_index,
+                                      node_num, node_xy );
 
-  centroid[0] = centroid[0] / ( 6.0 * area );
-  centroid[1] = centroid[1] / ( 6.0 * area );
+        centroid[0] = centroid[0] / ( 6.0 * area );
+        centroid[1] = centroid[1] / ( 6.0 * area );
 
-  return centroid;
-}
+        return centroid;
+    }
 //****************************************************************************80
 
-void voronoi_polygon_vertices ( int node, int neighbor_num,
-  int neighbor_index[], int node_num, double node_xy[], double v[] )
+    void voronoi_polygon_vertices ( int node, int neighbor_num,
+                                    int neighbor_index[], int node_num, double node_xy[], double v[] )
 
 //****************************************************************************80
 //
@@ -15920,55 +15943,54 @@ void voronoi_polygon_vertices ( int node, int neighbor_num,
 //    Output, double V[2*NEIGHBOR_NUM], the vertices of the Voronoi polygon
 //    around node NODE.
 //
-{
+    {
 # define DIM_NUM 2
 
-  double *center;
-  int i;
-  int ip1;
-  double t[DIM_NUM*3];
+        double *center;
+        int i;
+        int ip1;
+        double t[DIM_NUM * 3];
 
-  if ( node < 0 || node_num <= node )
-  {
-    std::cout << "\n";
-    std::cout << "VORONOI_POLYGON_VERTICES - Fatal error!\n";
-    std::cout << "  Illegal value of input parameter NODE.\n";
-    exit ( 1 );
-  }
+        if ( node < 0 || node_num <= node )
+        {
+            std::cout << "\n";
+            std::cout << "VORONOI_POLYGON_VERTICES - Fatal error!\n";
+            std::cout << "  Illegal value of input parameter NODE.\n";
+            exit ( 1 );
+        }
 
-  t[0+0*2] = node_xy[0+node*2];
-  t[1+0*2] = node_xy[1+node*2];
+        t[0 + 0 * 2] = node_xy[0 + node * 2];
+        t[1 + 0 * 2] = node_xy[1 + node * 2];
 
-  ip1 = neighbor_index[0];
-  t[0+2*2] = node_xy[0+ip1*2];
-  t[1+2*2] = node_xy[1+ip1*2];
+        ip1 = neighbor_index[0];
+        t[0 + 2 * 2] = node_xy[0 + ip1 * 2];
+        t[1 + 2 * 2] = node_xy[1 + ip1 * 2];
 
-  for ( i = 0; i < neighbor_num; i++ )
-  {
-    t[0+1*2] = t[0+2*2];
-    t[1+1*2] = t[1+2*2];
+        for ( i = 0; i < neighbor_num; i++ )
+        {
+            t[0 + 1 * 2] = t[0 + 2 * 2];
+            t[1 + 1 * 2] = t[1 + 2 * 2];
 
-    ip1 = i4_wrap ( i+1, 0, neighbor_num-1 );
-    ip1 = neighbor_index[ip1];
+            ip1 = i4_wrap ( i + 1, 0, neighbor_num - 1 );
+            ip1 = neighbor_index[ip1];
 
-    t[0+2*2] = node_xy[0+ip1*2];
-    t[1+2*2] = node_xy[1+ip1*2];
+            t[0 + 2 * 2] = node_xy[0 + ip1 * 2];
+            t[1 + 2 * 2] = node_xy[1 + ip1 * 2];
 
-    center = triangle_circumcenter_2d ( t );
+            center = triangle_circumcenter_2d ( t );
 
-    v[0+i*2] = center[0];
-    v[1+i*2] = center[1];
+            v[0 + i * 2] = center[0];
+            v[1 + i * 2] = center[1];
 
-    delete [] center;
-  }
+            delete [] center;
+        }
 
-  return;
+        return;
 # undef DIM_NUM
-}
+    }
 
 }; // end class TriangulationUtils
 
 } // end namespace Kratos
 
 #endif
-

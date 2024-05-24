@@ -7,19 +7,14 @@
 //
 //
 
-
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ADD_BREP_AND_LEVEL_SET_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_ADD_BREP_AND_LEVEL_SET_TO_PYTHON_H_INCLUDED
 
-
 // System includes
-
 
 // External includes
 
-
 // Project includes
-
 
 namespace Kratos
 {

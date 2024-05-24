@@ -14,9 +14,7 @@
 #include <string>
 #include <iostream>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -68,15 +66,17 @@ public:
     {
         // insert to the correct location
         iterator it;
-        for(it = mpKnots.begin(); it != mpKnots.end(); ++it)
-            if(k < (*it)->Value())
+        for (it = mpKnots.begin(); it != mpKnots.end(); ++it)
+            if (k < (*it)->Value())
+            {
                 break;
+            }
         knot_t p_knot = knot_t(new KnotType(k));
         mpKnots.insert(it, p_knot);
 
         // update the index of the knot
         std::size_t index = 0;
-        for(iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        for (iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
         {
             (*it)->UpdateIndex(index);
             ++index;
@@ -89,12 +89,14 @@ public:
     void Normalize()
     {
         TDataType kmax = -1.0;
-        for(iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        for (iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
         {
             if ((*it)->Value() > kmax)
+            {
                 kmax = (*it)->Value();
+            }
         }
-        for(iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        for (iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
         {
             (*it)->Value() /= kmax;
         }
@@ -105,9 +107,9 @@ public:
     knot_t pCreateUniqueKnot(const TDataType& k, const TDataType& tol)
     {
         // insert to the correct location
-        for(iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        for (iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
         {
-            if(fabs(k - (*it)->Value()) < tol)
+            if (fabs(k - (*it)->Value()) < tol)
             {
                 return *it;
             }
@@ -122,7 +124,7 @@ public:
         std::reverse(mpKnots.begin(), mpKnots.end());
         // update the index and value of the knot
         std::size_t index = 0;
-        for(iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        for (iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
         {
             (*it)->UpdateIndex(index);
             (*it)->Value() = maxv - (*it)->Value();
@@ -138,12 +140,16 @@ public:
         if (dir == _FORWARD_)
         {
             for (std::size_t i = 0; i < mpKnots.size(); ++i)
+            {
                 kvec.pCreateKnot(mpKnots[i]->Value());
+            }
         }
         else if (dir == _REVERSED_)
         {
             for (std::size_t i = 0; i < mpKnots.size(); ++i)
-                kvec.pCreateKnot(mpKnots.back()->Value() - mpKnots[mpKnots.size()-1-i]->Value());
+            {
+                kvec.pCreateKnot(mpKnots.back()->Value() - mpKnots[mpKnots.size() - 1 - i]->Value());
+            }
         }
 
         return kvec;
@@ -152,20 +158,24 @@ public:
     /// Get the knot at index i
     const knot_t pKnotAt(std::size_t i) const
     {
-        if(i >= 0 && i < mpKnots.size())
+        if (i >= 0 && i < mpKnots.size())
+        {
             return mpKnots[i];
+        }
         else
             KRATOS_THROW_ERROR(std::runtime_error, "Index access out of range", "")
-    }
+        }
 
     /// Get the knot at index i
     knot_t pKnotAt(std::size_t i)
     {
-        if(i >= 0 && i < mpKnots.size())
+        if (i >= 0 && i < mpKnots.size())
+        {
             return mpKnots[i];
+        }
         else
             KRATOS_THROW_ERROR(std::runtime_error, "Index access out of range", "")
-    }
+        }
 
     /// Get the size of the knot vector
     std::size_t size() const {return mpKnots.size();}
@@ -199,11 +209,15 @@ public:
             {
                 ++i;
                 if (i == i_span)
+                {
                     return std::make_tuple(left, right);
+                }
                 left = right;
             }
             else
-                left = right; // move the knot
+            {
+                left = right;    // move the knot
+            }
         }
         // shall not come here
         KRATOS_THROW_ERROR(std::logic_error, "the span index exceeds the number of span of the knot vector", "")
@@ -213,10 +227,14 @@ public:
     void GetValues(std::vector<TDataType>& r_values) const
     {
         if (r_values.size() != mpKnots.size())
+        {
             r_values.resize(mpKnots.size());
+        }
 
         for (std::size_t i = 0; i < mpKnots.size(); ++i)
+        {
             r_values[i] = mpKnots[i]->Value();
+        }
     }
 
     /// Return the values of the knot vector
@@ -257,7 +275,9 @@ public:
             std::sort(sorted_vec->begin(), sorted_vec->end());
         }
         else
+        {
             sorted_vec = const_cast<std::vector<TDataType>*>(&knot_vec);
+        }
 
         std::size_t size = sorted_vec->size();
         if (size % 2 == 0)
@@ -265,24 +285,32 @@ public:
             std::size_t half_size = size / 2;
             for (std::size_t i = 0; i < half_size; ++i)
             {
-                if (fabs((*sorted_vec)[size-1-i] - (*sorted_vec)[i]) > tol)
+                if (fabs((*sorted_vec)[size - 1 - i] - (*sorted_vec)[i]) > tol)
+                {
                     return false;
+                }
             }
         }
         else
         {
-            std::size_t half_size = (size-1) / 2;
+            std::size_t half_size = (size - 1) / 2;
             if (fabs((*sorted_vec)[half_size] - 0.5) > tol)
+            {
                 return false;
+            }
             for (std::size_t i = 0; i < half_size; ++i)
             {
-                if (fabs((*sorted_vec)[size-1-i] - (*sorted_vec)[i]) > tol)
+                if (fabs((*sorted_vec)[size - 1 - i] - (*sorted_vec)[i]) > tol)
+                {
                     return false;
+                }
             }
         }
 
         if (sorted == false)
+        {
             delete sorted_vec;
+        }
 
         return true;
     }
@@ -306,7 +334,7 @@ public:
         {
             return ReverseKnots(knots);
         }
-        return std::vector<TDataType>{};
+        return std::vector<TDataType> {};
     }
 
     /// Compute the knots in the respective direction
@@ -320,7 +348,7 @@ public:
         {
             return ReverseKnotsWithPivot(pivot, knots);
         }
-        return std::vector<TDataType>{};
+        return std::vector<TDataType> {};
     }
 
     /// Compute the reversed knots, i.e. 1-k
@@ -328,7 +356,9 @@ public:
     {
         std::vector<TDataType> reversed_knots(knots.size());
         for (std::size_t i = 0; i < reversed_knots.size(); ++i)
+        {
             reversed_knots[i] = pivot - knots[i];
+        }
         return reversed_knots;
     }
 
@@ -343,8 +373,10 @@ public:
     static bool IsOnLeft(const std::vector<knot_t>& knots, std::size_t p)
     {
         for (std::size_t i = 0; i < p; ++i)
-            if (knots[i+1]->Value() != knots[i]->Value())
+            if (knots[i + 1]->Value() != knots[i]->Value())
+            {
                 return false;
+            }
         return true;
     }
 
@@ -354,8 +386,10 @@ public:
     {
         std::size_t last = knots.size() - 1;
         for (std::size_t i = 0; i < p; ++i)
-            if (knots[last-i]->Value() != knots[last-1-i]->Value())
+            if (knots[last - i]->Value() != knots[last - 1 - i]->Value())
+            {
                 return false;
+            }
         return true;
     }
 
@@ -363,7 +397,9 @@ public:
     bool operator==(const KnotArray1D<TDataType>& rOther) const
     {
         if (this->size() != rOther.size())
+        {
             return false;
+        }
 
         for (std::size_t i = 0; i < 0; ++i)
         {
@@ -387,7 +423,9 @@ public:
     bool operator==(const std::vector<knot_t>& rOther) const
     {
         if (this->size() != rOther.size())
+        {
             return false;
+        }
 
         for (std::size_t i = 0; i < 0; ++i)
         {
@@ -441,8 +479,10 @@ public:
     /// Information
     void PrintInfo(std::ostream& rOStream) const
     {
-        for(const_iterator it = begin(); it != end(); ++it)
+        for (const_iterator it = begin(); it != end(); ++it)
+        {
             rOStream << " (" << (*it)->Index() << "," << (*it)->Value() << ")";
+        }
     }
 
 private:
@@ -461,4 +501,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const KnotArray1D<TData
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_KNOT_ARRAY_1D_H_INCLUDED
-

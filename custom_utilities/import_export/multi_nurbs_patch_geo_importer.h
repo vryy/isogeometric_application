@@ -53,27 +53,29 @@ struct GeoInterface
 static int GetDimensionOfGeoHelper(const std::string& fn)
 {
     std::ifstream infile(fn.c_str());
-    if(!infile)
+    if (!infile)
         KRATOS_THROW_ERROR(std::logic_error, "Error open file", fn)
 
-    std::string line;
+        std::string line;
     std::vector<std::string> words;
     int read_mode = _READ_PATCH;
-    while(!infile.eof())
+    while (!infile.eof())
     {
         std::getline(infile, line);
         boost::trim_if(line, boost::is_any_of("\t ")); // ignore trailing spaces
         boost::split(words, line, boost::is_any_of(" \t"), boost::token_compress_on);
 
-        if(words.size() != 0)
+        if (words.size() != 0)
         {
-            if(words[0] == std::string("#") || words[0][0] == '#')
+            if (words[0] == std::string("#") || words[0][0] == '#')
+            {
                 continue;
+            }
 
-            if(read_mode == _READ_PATCH)
+            if (read_mode == _READ_PATCH)
             {
                 // bound check
-                if(words.size() < 2)
+                if (words.size() < 2)
                 {
                     std::cout << "Error at line: " << line << std::endl;
                     KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain information about dimension and number of patches, current number of information =", words.size())
@@ -123,48 +125,48 @@ public:
 private:
 
     void ReadV06Single(std::ifstream& infile,
-        std::vector<std::size_t>& orders,
-        std::vector<std::size_t>& numbers,
-        std::vector<std::vector<double> >& knots,
-        std::vector<std::vector<double> >& wcoords,
-        std::vector<double>& weights) const;
+                       std::vector<std::size_t>& orders,
+                       std::vector<std::size_t>& numbers,
+                       std::vector<std::vector<double> >& knots,
+                       std::vector<std::vector<double> >& wcoords,
+                       std::vector<double>& weights) const;
 
     void ReadV07Single(std::ifstream& infile,
-        std::vector<std::size_t>& orders,
-        std::vector<std::size_t>& numbers,
-        std::vector<std::vector<double> >& knots,
-        std::vector<std::vector<double> >& wcoords,
-        std::vector<double>& weights) const;
+                       std::vector<std::size_t>& orders,
+                       std::vector<std::size_t>& numbers,
+                       std::vector<std::vector<double> >& knots,
+                       std::vector<std::vector<double> >& wcoords,
+                       std::vector<double>& weights) const;
 
     void ReadV21Single(std::ifstream& infile,
-        std::vector<std::size_t>& orders,
-        std::vector<std::size_t>& numbers,
-        std::vector<std::vector<double> >& knots,
-        std::vector<std::vector<double> >& wcoords,
-        std::vector<double>& weights) const;
+                       std::vector<std::size_t>& orders,
+                       std::vector<std::size_t>& numbers,
+                       std::vector<std::vector<double> >& knots,
+                       std::vector<std::vector<double> >& wcoords,
+                       std::vector<double>& weights) const;
 
     void ReadV21Multi(std::ifstream& infile,
-        std::vector<std::vector<std::size_t> >& orders,
-        std::vector<std::vector<std::size_t> >& numbers,
-        std::vector<std::vector<std::vector<double> > >& knots,
-        std::vector<std::vector<std::vector<double> > >& wcoords,
-        std::vector<std::vector<double> >& weights,
-        std::vector<GeoInterface>& interfaces) const;
+                      std::vector<std::vector<std::size_t> >& orders,
+                      std::vector<std::vector<std::size_t> >& numbers,
+                      std::vector<std::vector<std::vector<double> > >& knots,
+                      std::vector<std::vector<std::vector<double> > >& wcoords,
+                      std::vector<std::vector<double> >& weights,
+                      std::vector<GeoInterface>& interfaces) const;
 
     void ReadPatchData(std::ifstream& infile,
-        int rdim,
-        std::vector<std::size_t>& orders,
-        std::vector<std::size_t>& numbers,
-        std::vector<std::vector<double> >& knots,
-        std::vector<std::vector<double> >& wcoords,
-        std::vector<double>& weights) const;
+                       int rdim,
+                       std::vector<std::size_t>& orders,
+                       std::vector<std::size_t>& numbers,
+                       std::vector<std::vector<double> >& knots,
+                       std::vector<std::vector<double> >& wcoords,
+                       std::vector<double>& weights) const;
 
     typename Patch<TDim>::Pointer CreateNewPatch(std::size_t Id,
-        const std::vector<std::size_t>& orders,
-        const std::vector<std::size_t>& numbers,
-        const std::vector<std::vector<double> >& knots,
-        const std::vector<std::vector<double> >& wcoords,
-        const std::vector<double>& weights) const;
+            const std::vector<std::size_t>& orders,
+            const std::vector<std::size_t>& numbers,
+            const std::vector<std::vector<double> >& knots,
+            const std::vector<std::vector<double> >& wcoords,
+            const std::vector<double>& weights) const;
 };
 
 template<>
@@ -172,13 +174,13 @@ struct BoundarySideHelper<2>
 {
     static BoundarySide Get(int i)
     {
-        switch(i)
+        switch (i)
         {
-            case 1: return _BLEFT_;
-            case 2: return _BRIGHT_;
-            case 3: return _BBOTTOM_;
-            case 4: return _BTOP_;
-            default: KRATOS_THROW_ERROR(std::logic_error, i, "is not a valid side");
+        case 1: return _BLEFT_;
+        case 2: return _BRIGHT_;
+        case 3: return _BBOTTOM_;
+        case 4: return _BTOP_;
+        default: KRATOS_THROW_ERROR(std::logic_error, i, "is not a valid side");
         }
         return _NUMBER_OF_BOUNDARY_SIDE;
     }
@@ -189,15 +191,15 @@ struct BoundarySideHelper<3>
 {
     static BoundarySide Get(int i)
     {
-        switch(i)
+        switch (i)
         {
-            case 1: return _BLEFT_;
-            case 2: return _BRIGHT_;
-            case 3: return _BFRONT_;
-            case 4: return _BBACK_;
-            case 5: return _BBOTTOM_;
-            case 6: return _BTOP_;
-            default: KRATOS_THROW_ERROR(std::logic_error, i, "is not a valid side");
+        case 1: return _BLEFT_;
+        case 2: return _BRIGHT_;
+        case 3: return _BFRONT_;
+        case 4: return _BBACK_;
+        case 5: return _BBOTTOM_;
+        case 6: return _BTOP_;
+        default: KRATOS_THROW_ERROR(std::logic_error, i, "is not a valid side");
         }
         return _NUMBER_OF_BOUNDARY_SIDE;
     }
@@ -216,4 +218,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiNURBSPatchGe
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_NURBS_PATCH_GEO_IMPORTER_H_INCLUDED defined
-

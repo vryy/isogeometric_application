@@ -96,9 +96,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiHBSplinesPat
     return rOStream;
 }
 
-
-
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_HBSPLINES_PATCH_MATLAB_EXPORTER_H_INCLUDED defined
-

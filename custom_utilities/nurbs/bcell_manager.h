@@ -30,7 +30,6 @@
 #include "custom_external_libraries/RTree.h"
 #endif
 
-
 namespace Kratos
 {
 
@@ -73,9 +72,9 @@ class BaseBCellManager : public CellContainer
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BaseBCellManager);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const BaseBCellManager> ConstPointer;
-    #endif
+#endif
 
     /// Type definitions
     typedef CellContainer BaseType;
@@ -98,9 +97,9 @@ public:
     /// Destructor
     virtual ~BaseBCellManager()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         this->PrintInfo(std::cout); std::cout << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Set the tolerance for the internal searching algorithm
@@ -140,16 +139,20 @@ public:
     cell_t get(std::size_t Id)
     {
         // create the index map if it's not created yet
-        if(!cell_map_is_created)
+        if (!cell_map_is_created)
+        {
             this->CreateCellsMap();
+        }
 
         // return the bf if its Id exist in the list
         typename map_t::iterator it = mCellsMap.find(Id);
-        if(it != mCellsMap.end())
+        if (it != mCellsMap.end())
+        {
             return it->second;
+        }
         else
             KRATOS_THROW_ERROR(std::runtime_error, "Access index is not found:", Id)
-    }
+        }
 
     /// Overload operator[]
     cell_t operator[](std::size_t Id)
@@ -161,7 +164,9 @@ public:
     bool operator==(const BaseBCellManager<TCellType>& rOther)
     {
         if (this->size() != rOther.size())
+        {
             return false;
+        }
 
         iterator it_this = this->begin();
         iterator it_other = rOther.begin();
@@ -169,7 +174,9 @@ public:
         while ((it_this != this->end()) && (it_other != rOther.end()))
         {
             if (!(*it_this)->IsSame(*it_other, 1.0e-10))
+            {
                 return false;
+            }
             ++it_this;
             ++it_other;
         }
@@ -202,7 +209,8 @@ public:
                 (*it_cell)->ClearTrace();
                 this->erase(*it_cell);
             }
-        } while (hit);
+        }
+        while (hit);
     }
 
     /// Reset all the Id of all the basis functions. Remarks: use it with care, you have to be responsible to the old indexing data of the basis functions before calling this function
@@ -239,8 +247,10 @@ private:
     void CreateCellsMap()
     {
         mCellsMap.clear();
-        for(iterator it = mpCells.begin(); it != mpCells.end(); ++it)
+        for (iterator it = mpCells.begin(); it != mpCells.end(); ++it)
+        {
             mCellsMap[(*it)->Id()] = *it;
+        }
         cell_map_is_created = true;
     }
 
@@ -260,13 +270,15 @@ private:
                 return true;
             }
             else
+            {
                 ++it_cell;
-        } while (it_cell != cell_end);
+            }
+        }
+        while (it_cell != cell_end);
 
         return false;
     }
 };
-
 
 /**
  * Abstract BCell Manager
@@ -277,7 +289,6 @@ class BCellManager : public BaseBCellManager<TCellType>
 public:
     KRATOS_CLASS_POINTER_DEFINITION(BCellManager);
 };
-
 
 /**
  * BCell Manager in 1D
@@ -315,11 +326,13 @@ public:
 
         // search in the list of cell if any cell has the same knot span
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future.
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
-            if( (*it)->XiMin() == pKnots[0] // left
-             && (*it)->XiMax() == pKnots[1] ) // right
+            if ( (*it)->XiMin() == pKnots[0] // left
+                    && (*it)->XiMax() == pKnots[1] ) // right
+            {
                 return *it;
+            }
         }
 
         // otherwise create new cell
@@ -328,12 +341,12 @@ public:
         SuperType::insert(&(*p_cell));
         BaseType::cell_map_is_created = false;
 
-        #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
         double cmin[] = {BCellManager_Helper::GetKnotValue(pKnots[0])};
         double cmax[] = {BCellManager_Helper::GetKnotValue(pKnots[1])};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
-        #endif
+#endif
 
         return p_cell;
     }
@@ -343,21 +356,23 @@ public:
     {
         // search in the list of cell if any cell has the same knot span
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future. TODO
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
-            if(*it == p_cell)
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+            if (*it == p_cell)
+            {
                 return it;
+            }
 
         // otherwise insert new cell
         iterator it = BaseType::mpCells.insert(p_cell).first;
         SuperType::insert(&(*p_cell));
         BaseType::cell_map_is_created = false;
 
-        #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
         double cmin[] = {p_cell->XiMinValue()};
         double cmax[] = {p_cell->XiMaxValue()};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
-        #endif
+#endif
 
         return it;
     }
@@ -365,19 +380,19 @@ public:
     /// Remove a cell by its Id from the set
     virtual void erase(cell_t p_cell)
     {
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
-            if(*it == p_cell)
+            if (*it == p_cell)
             {
                 BaseType::mpCells.erase(it);
                 SuperType::erase(&(**it));
 
-                #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
                 // update the r-tree
                 double cmin[] = {p_cell->XiMinValue()};
                 double cmax[] = {p_cell->XiMaxValue()};
                 rtree_cells.Remove(cmin, cmax, p_cell->Id());
-                #endif
+#endif
 
                 break;
             }
@@ -389,15 +404,17 @@ public:
     {
         std::vector<cell_t> p_cells;
 
-        #ifdef USE_BRUTE_FORCE_TO_SEARCH_FOR_CELLS
+#ifdef USE_BRUTE_FORCE_TO_SEARCH_FOR_CELLS
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future. TODO
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
-            if(*it != p_cell)
-                if((*it)->template IsCovered<1>(p_cell))
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+            if (*it != p_cell)
+                if ((*it)->template IsCovered<1>(p_cell))
+                {
                     p_cells.push_back(*it);
-        #endif
+                }
+#endif
 
-        #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // determine the overlapping cells; for now, this only works in 3D
         std::vector<std::size_t> OverlappingCells;
         double cmin[] = {p_cell->XiMinValue()};
@@ -406,14 +423,16 @@ public:
 //        printf("Search resulted in %d hits\n", nhits);
 
         // check within overlapping cells the one covered in p_cell
-        for(std::size_t i = 0; i < OverlappingCells.size(); ++i)
+        for (std::size_t i = 0; i < OverlappingCells.size(); ++i)
         {
             cell_t pthis_cell = this->get(OverlappingCells[i]);
-            if(pthis_cell != p_cell)
-                if(pthis_cell->template IsCovered<1>(p_cell))
+            if (pthis_cell != p_cell)
+                if (pthis_cell->template IsCovered<1>(p_cell))
+                {
                     p_cells.push_back(pthis_cell);
+                }
         }
-        #endif
+#endif
 
         return p_cells;
     }
@@ -430,11 +449,10 @@ public:
 
 private:
 
-    #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
     RTree<std::size_t, double, 1, double> rtree_cells;
-    #endif
+#endif
 };
-
 
 /**
  * BCell Manager in 2D
@@ -472,13 +490,15 @@ public:
 
         // search in the list of cell if any cell has the same knot span
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future.
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
-            if( (*it)->XiMin()  == pKnots[0] // left
-             && (*it)->XiMax()  == pKnots[1] // right
-             && (*it)->EtaMin() == pKnots[2] // down
-             && (*it)->EtaMax() == pKnots[3] ) // up
+            if ( (*it)->XiMin()  == pKnots[0] // left
+                    && (*it)->XiMax()  == pKnots[1] // right
+                    && (*it)->EtaMin() == pKnots[2] // down
+                    && (*it)->EtaMax() == pKnots[3] ) // up
+            {
                 return *it;
+            }
         }
 
         // otherwise create new cell
@@ -487,12 +507,12 @@ public:
         SuperType::insert(&(*p_cell));
         BaseType::cell_map_is_created = false;
 
-        #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
         double cmin[] = {BCellManager_Helper::GetKnotValue(pKnots[0]), BCellManager_Helper::GetKnotValue(pKnots[2])};
         double cmax[] = {BCellManager_Helper::GetKnotValue(pKnots[1]), BCellManager_Helper::GetKnotValue(pKnots[3])};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
-        #endif
+#endif
 
         return p_cell;
     }
@@ -502,21 +522,23 @@ public:
     {
         // search in the list of cell if any cell has the same knot span
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future. TODO
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
-            if(*it == p_cell)
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+            if (*it == p_cell)
+            {
                 return it;
+            }
 
         // otherwise insert new cell
         iterator it = BaseType::mpCells.insert(p_cell).first;
         SuperType::insert(&(*p_cell));
         BaseType::cell_map_is_created = false;
 
-        #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
         double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue()};
         double cmax[] = {p_cell->XiMaxValue(), p_cell->EtaMaxValue()};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
-        #endif
+#endif
 
         return it;
     }
@@ -524,19 +546,19 @@ public:
     /// Remove a cell by its Id from the set
     virtual void erase(cell_t p_cell)
     {
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
-            if(*it == p_cell)
+            if (*it == p_cell)
             {
                 BaseType::mpCells.erase(it);
                 SuperType::erase(&(**it));
 
-                #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
                 // update the r-tree
                 double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue(), p_cell->ZetaMinValue()};
                 double cmax[] = {p_cell->XiMaxValue(), p_cell->EtaMaxValue(), p_cell->ZetaMaxValue()};
                 rtree_cells.Remove(cmin, cmax, p_cell->Id());
-                #endif
+#endif
 
                 break;
             }
@@ -548,15 +570,17 @@ public:
     {
         std::vector<cell_t> p_cells;
 
-        #ifdef USE_BRUTE_FORCE_TO_SEARCH_FOR_CELLS
+#ifdef USE_BRUTE_FORCE_TO_SEARCH_FOR_CELLS
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future. TODO
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
-            if(*it != p_cell)
-                if((*it)->template IsCovered<2>(p_cell))
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+            if (*it != p_cell)
+                if ((*it)->template IsCovered<2>(p_cell))
+                {
                     p_cells.push_back(*it);
-        #endif
+                }
+#endif
 
-        #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // determine the overlapping cells; for now, this only works in 3D
         std::vector<std::size_t> OverlappingCells;
         double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue()};
@@ -565,14 +589,16 @@ public:
 //        printf("Search resulted in %d hits\n", nhits);
 
         // check within overlapping cells the one covered in p_cell
-        for(std::size_t i = 0; i < OverlappingCells.size(); ++i)
+        for (std::size_t i = 0; i < OverlappingCells.size(); ++i)
         {
             cell_t pthis_cell = this->get(OverlappingCells[i]);
-            if(pthis_cell != p_cell)
-                if(pthis_cell->template IsCovered<2>(p_cell))
+            if (pthis_cell != p_cell)
+                if (pthis_cell->template IsCovered<2>(p_cell))
+                {
                     p_cells.push_back(pthis_cell);
+                }
         }
-        #endif
+#endif
 
         return p_cells;
     }
@@ -589,11 +615,10 @@ public:
 
 private:
 
-    #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
     RTree<std::size_t, double, 2, double> rtree_cells;
-    #endif
+#endif
 };
-
 
 /**
  * BCell Manager in 3D
@@ -631,15 +656,17 @@ public:
 
         // search in the list of cell if any cell has the same knot span
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future.
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
-            if( (*it)->XiMin()  == pKnots[0] // left
-             && (*it)->XiMax()  == pKnots[1] // right
-             && (*it)->EtaMin() == pKnots[2] // down
-             && (*it)->EtaMax() == pKnots[3] // up
-             && (*it)->ZetaMin() == pKnots[4] // below
-             && (*it)->ZetaMax() == pKnots[5] ) // above
+            if ( (*it)->XiMin()  == pKnots[0] // left
+                    && (*it)->XiMax()  == pKnots[1] // right
+                    && (*it)->EtaMin() == pKnots[2] // down
+                    && (*it)->EtaMax() == pKnots[3] // up
+                    && (*it)->ZetaMin() == pKnots[4] // below
+                    && (*it)->ZetaMax() == pKnots[5] ) // above
+            {
                 return *it;
+            }
         }
 
         // otherwise create new cell
@@ -648,12 +675,12 @@ public:
         SuperType::insert(&(*p_cell));
         BaseType::cell_map_is_created = false;
 
-        #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
         double cmin[] = {BCellManager_Helper::GetKnotValue(pKnots[0]), BCellManager_Helper::GetKnotValue(pKnots[2]), BCellManager_Helper::GetKnotValue(pKnots[4])};
         double cmax[] = {BCellManager_Helper::GetKnotValue(pKnots[1]), BCellManager_Helper::GetKnotValue(pKnots[3]), BCellManager_Helper::GetKnotValue(pKnots[5])};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
-        #endif
+#endif
 
         return p_cell;
     }
@@ -663,21 +690,23 @@ public:
     {
         // search in the list of cell if any cell has the same knot span
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future. TODO
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
-            if(*it == p_cell)
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+            if (*it == p_cell)
+            {
                 return it;
+            }
 
         // otherwise insert new cell
         iterator it = BaseType::mpCells.insert(p_cell).first;
         SuperType::insert(&(*p_cell));
         BaseType::cell_map_is_created = false;
 
-        #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // update the r-tree
         double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue(), p_cell->ZetaMinValue()};
         double cmax[] = {p_cell->XiMaxValue(), p_cell->EtaMaxValue(), p_cell->ZetaMaxValue()};
         rtree_cells.Insert(cmin, cmax, p_cell->Id());
-        #endif
+#endif
 
         return it;
     }
@@ -685,19 +714,19 @@ public:
     /// Remove a cell by its Id from the set
     virtual void erase(cell_t p_cell)
     {
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
-            if(*it == p_cell)
+            if (*it == p_cell)
             {
                 BaseType::mpCells.erase(it);
                 SuperType::erase(&(**it));
 
-                #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
                 // update the r-tree
                 double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue(), p_cell->ZetaMinValue()};
                 double cmax[] = {p_cell->XiMaxValue(), p_cell->EtaMaxValue(), p_cell->ZetaMaxValue()};
                 rtree_cells.Remove(cmin, cmax, p_cell->Id());
-                #endif
+#endif
 
                 break;
             }
@@ -709,15 +738,17 @@ public:
     {
         std::vector<cell_t> p_cells;
 
-        #ifdef USE_BRUTE_FORCE_TO_SEARCH_FOR_CELLS
+#ifdef USE_BRUTE_FORCE_TO_SEARCH_FOR_CELLS
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future. TODO
-        for(iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
-            if(*it != p_cell)
-                if((*it)->template IsCovered<3>(p_cell))
+        for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
+            if (*it != p_cell)
+                if ((*it)->template IsCovered<3>(p_cell))
+                {
                     p_cells.push_back(*it);
-        #endif
+                }
+#endif
 
-        #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
         // determine the overlapping cells; for now, this's only working in 3D
         std::vector<std::size_t> OverlappingCells;
         double cmin[] = {p_cell->XiMinValue(), p_cell->EtaMinValue(), p_cell->ZetaMinValue()};
@@ -726,14 +757,16 @@ public:
 //        printf("Search resulted in %d hits\n", nhits);
 
         // check within overlapping cells the one covered in p_cell
-        for(std::size_t i = 0; i < OverlappingCells.size(); ++i)
+        for (std::size_t i = 0; i < OverlappingCells.size(); ++i)
         {
             cell_t pthis_cell = this->get(OverlappingCells[i]);
-            if(pthis_cell != p_cell)
-                if(pthis_cell->template IsCovered<3>(p_cell))
+            if (pthis_cell != p_cell)
+                if (pthis_cell->template IsCovered<3>(p_cell))
+                {
                     p_cells.push_back(pthis_cell);
+                }
         }
-        #endif
+#endif
 
         return p_cells;
     }
@@ -749,11 +782,10 @@ public:
     }
 
 private:
-    #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
+#ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
     RTree<std::size_t, double, 3, double> rtree_cells;
-    #endif
+#endif
 };
-
 
 /// output stream function
 template<int TDim, class TCellType>
@@ -767,4 +799,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BCellManager<TDim
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_MANAGER_H_INCLUDED
-

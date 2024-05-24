@@ -86,8 +86,8 @@ public:
     /// Remove the cell from the list
     void RemoveChild(bf_t p_bf)
     {
-        for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
-            if(*it == p_bf)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+            if (*it == p_bf)
             {
                 mpChilds.erase(it);
                 mRefinedCoefficients.erase(p_bf->Id());
@@ -98,18 +98,20 @@ public:
     /// Add a cell support this basis function to the list
     cell_iterator AddCell(cell_t p_cell)
     {
-        for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
-            if(*it == p_cell)
+        for (cell_iterator it = cell_begin(); it != cell_end(); ++it)
+            if (*it == p_cell)
+            {
                 return it;
+            }
         return mpCells.insert(p_cell).first;
     }
 
     /// Remove the cell from the list
     void RemoveCell(cell_t p_cell)
     {
-        for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
+        for (cell_iterator it = cell_begin(); it != cell_end(); ++it)
         {
-            if(*it == p_cell)
+            if (*it == p_cell)
             {
                 mpCells.erase(it);
                 break;
@@ -120,9 +122,9 @@ public:
     /// Remove the cell from the list
     void RemoveCell(CellType& r_cell)
     {
-        for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
+        for (cell_iterator it = cell_begin(); it != cell_end(); ++it)
         {
-            if(&(*(*it)) == &r_cell)
+            if (&(*(*it)) == &r_cell)
             {
                 mpCells.erase(it);
                 break;
@@ -133,27 +135,33 @@ public:
     /// Set the local knot vectors to this basis function
     void SetLocalKnotVectors(int Dim, const std::vector<knot_t>& rpKnots)
     {
-        if(Dim == 1)
+        if (Dim == 1)
         {
             mpLocalKnots1.clear();
-            for(std::size_t i = 0; i < rpKnots.size(); ++i)
+            for (std::size_t i = 0; i < rpKnots.size(); ++i)
+            {
                 mpLocalKnots1.push_back(rpKnots[i]);
+            }
         }
-        else if(Dim == 2)
+        else if (Dim == 2)
         {
             mpLocalKnots2.clear();
-            for(std::size_t i = 0; i < rpKnots.size(); ++i)
+            for (std::size_t i = 0; i < rpKnots.size(); ++i)
+            {
                 mpLocalKnots2.push_back(rpKnots[i]);
+            }
         }
-        else if(Dim == 3)
+        else if (Dim == 3)
         {
             mpLocalKnots3.clear();
-            for(std::size_t i = 0; i < rpKnots.size(); ++i)
+            for (std::size_t i = 0; i < rpKnots.size(); ++i)
+            {
                 mpLocalKnots3.push_back(rpKnots[i]);
+            }
         }
         else
             KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension", "")
-    }
+        }
 
     /**************************************************************************
                             ACCESS SUBROUTINES
@@ -186,30 +194,42 @@ public:
     template<class ValuesContainerType>
     void GetLocalKnots(int dim, ValuesContainerType& rKnots) const
     {
-        if(dim == 1)
+        if (dim == 1)
         {
-            if(rKnots.size() != mpLocalKnots1.size())
+            if (rKnots.size() != mpLocalKnots1.size())
+            {
                 rKnots.resize(mpLocalKnots1.size());
-            for(std::size_t i = 0; i < mpLocalKnots1.size(); ++i)
+            }
+            for (std::size_t i = 0; i < mpLocalKnots1.size(); ++i)
+            {
                 rKnots[i] = mpLocalKnots1[i]->Value();
+            }
         }
-        else if(dim == 2)
+        else if (dim == 2)
         {
-            if(rKnots.size() != mpLocalKnots2.size())
+            if (rKnots.size() != mpLocalKnots2.size())
+            {
                 rKnots.resize(mpLocalKnots2.size());
-            for(std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
+            }
+            for (std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
+            {
                 rKnots[i] = mpLocalKnots2[i]->Value();
+            }
         }
-        else if(dim == 3)
+        else if (dim == 3)
         {
-            if(rKnots.size() != mpLocalKnots3.size())
+            if (rKnots.size() != mpLocalKnots3.size())
+            {
                 rKnots.resize(mpLocalKnots3.size());
-            for(std::size_t i = 0; i < mpLocalKnots3.size(); ++i)
+            }
+            for (std::size_t i = 0; i < mpLocalKnots3.size(); ++i)
+            {
                 rKnots[i] = mpLocalKnots3[i]->Value();
+            }
         }
         else
             KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension parameters", "")
-    }
+        }
 
     /// Get the bounding box (=support domain) of this basis function
     void GetBoundingBox(double& Xmin, double& Xmax, double& Ymin, double& Ymax, double& Zmin, double& Zmax)
@@ -220,20 +240,32 @@ public:
         Ymax = -Ymin;
         Zmin = Xmin;
         Zmax = -Zmin;
-        for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
+        for (cell_iterator it = cell_begin(); it != cell_end(); ++it)
         {
-            if((*it)->XiMinValue() < Xmin)
+            if ((*it)->XiMinValue() < Xmin)
+            {
                 Xmin = (*it)->XiMinValue();
-            if((*it)->XiMaxValue() > Xmax)
+            }
+            if ((*it)->XiMaxValue() > Xmax)
+            {
                 Xmax = (*it)->XiMaxValue();
-            if((*it)->EtaMinValue() < Ymin)
+            }
+            if ((*it)->EtaMinValue() < Ymin)
+            {
                 Ymin = (*it)->EtaMinValue();
-            if((*it)->EtaMaxValue() > Ymax)
+            }
+            if ((*it)->EtaMaxValue() > Ymax)
+            {
                 Ymax = (*it)->EtaMaxValue();
-            if((*it)->ZetaMinValue() < Zmin)
+            }
+            if ((*it)->ZetaMinValue() < Zmin)
+            {
                 Zmin = (*it)->ZetaMinValue();
-            if((*it)->ZetaMaxValue() > Zmax)
+            }
+            if ((*it)->ZetaMaxValue() > Zmax)
+            {
                 Zmax = (*it)->ZetaMaxValue();
+            }
         }
     }
 
@@ -241,8 +273,10 @@ public:
     double GetRefinedCoefficient(int ChildId) const
     {
         std::map<int, double>::const_iterator it = mRefinedCoefficients.find(ChildId);
-        if(it != mRefinedCoefficients.end())
+        if (it != mRefinedCoefficients.end())
+        {
             return it->second;
+        }
         else
         {
             std::stringstream ss;
@@ -256,22 +290,30 @@ public:
                  const std::vector<knot_t>& rpKnots2,
                  const std::vector<knot_t>& rpKnots3) const
     {
-        if( mpLocalKnots1.size() != rpKnots1.size()
-         || mpLocalKnots2.size() != rpKnots2.size()
-         || mpLocalKnots3.size() != rpKnots3.size() )
+        if ( mpLocalKnots1.size() != rpKnots1.size()
+                || mpLocalKnots2.size() != rpKnots2.size()
+                || mpLocalKnots3.size() != rpKnots3.size() )
+        {
             return false;
+        }
 
-        for(std::size_t i = 0; i < mpLocalKnots1.size(); ++i)
-            if(mpLocalKnots1[i] != rpKnots1[i])
+        for (std::size_t i = 0; i < mpLocalKnots1.size(); ++i)
+            if (mpLocalKnots1[i] != rpKnots1[i])
+            {
                 return false;
+            }
 
-        for(std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
-            if(mpLocalKnots2[i] != rpKnots2[i])
+        for (std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
+            if (mpLocalKnots2[i] != rpKnots2[i])
+            {
                 return false;
+            }
 
-        for(std::size_t i = 0; i < mpLocalKnots3.size(); ++i)
-            if(mpLocalKnots3[i] != rpKnots3[i])
+        for (std::size_t i = 0; i < mpLocalKnots3.size(); ++i)
+            if (mpLocalKnots3[i] != rpKnots3[i])
+            {
                 return false;
+            }
 
         return true;
     }
@@ -279,15 +321,21 @@ public:
     /// return the internal reference of the knot vectors; use it with care
     const std::vector<knot_t>& LocalKnots(unsigned int i) const
     {
-        if(i == 1)
+        if (i == 1)
+        {
             return mpLocalKnots1;
-        else if(i == 2)
+        }
+        else if (i == 2)
+        {
             return mpLocalKnots2;
-        else if(i == 3)
+        }
+        else if (i == 3)
+        {
             return mpLocalKnots3;
+        }
         else
             KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension", "")
-    }
+        }
 
     /**************************************************************************
                             COMPUTATION SUBROUTINES
@@ -333,35 +381,47 @@ public:
         // Print the local knot vectors
         rOStream << "Local knot vectors:\n";
         std::cout << " 1:";
-        for(std::size_t i = 0; i < mpLocalKnots1.size(); ++i)
+        for (std::size_t i = 0; i < mpLocalKnots1.size(); ++i)
+        {
             std::cout << " " << mpLocalKnots1[i]->Value();
+        }
         std::cout << std::endl;
 
         std::cout << " 2:";
-        for(std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
+        for (std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
+        {
             std::cout << " " << mpLocalKnots2[i]->Value();
+        }
         std::cout << std::endl;
 
         std::cout << " 3:";
-        for(std::size_t i = 0; i < mpLocalKnots3.size(); ++i)
+        for (std::size_t i = 0; i < mpLocalKnots3.size(); ++i)
+        {
             std::cout << " " << mpLocalKnots3[i]->Value();
+        }
         std::cout << std::endl;
 
         // Print the cells
         rOStream << "Supporting cells:";
-        for(cell_const_iterator it = cell_const_begin(); it != cell_const_end(); ++it)
+        for (cell_const_iterator it = cell_const_begin(); it != cell_const_end(); ++it)
+        {
             rOStream << std::endl << *(*it);
-        if(cell_const_end() == cell_const_begin())
+        }
+        if (cell_const_end() == cell_const_begin())
+        {
             rOStream << " none";
+        }
         rOStream << std::endl;
         rOStream << "List of children:";
-        for(bf_const_iterator it = bf_const_begin(); it != bf_const_end(); ++it)
+        for (bf_const_iterator it = bf_const_begin(); it != bf_const_end(); ++it)
         {
             std::map<int, double>::const_iterator it_coeff = mRefinedCoefficients.find((*it)->Id());
             rOStream << " (" << (*it)->Id() << "," << it_coeff->second << ")";
         }
-        if(bf_const_end() == bf_const_begin())
+        if (bf_const_end() == bf_const_begin())
+        {
             rOStream << " none";
+        }
         rOStream << std::endl;
     }
 
@@ -382,17 +442,23 @@ private:
     template<class ValuesContainerType>
     int FindSpanLocal(double Xi, const ValuesContainerType& U)
     {
-        if(!U.empty())
+        if (!U.empty())
         {
-            if(Xi < U[0])
+            if (Xi < U[0])
+            {
                 return 0;
+            }
 
-            if(Xi > U[U.size()-1])
+            if (Xi > U[U.size() - 1])
+            {
                 return U.size();
+            }
 
-            for(std::size_t i = 0; i < U.size()-1; ++i)
-                if(Xi >= U[i] && Xi < U[i + 1])
+            for (std::size_t i = 0; i < U.size() - 1; ++i)
+                if (Xi >= U[i] && Xi < U[i + 1])
+                {
                     return i + 1;
+                }
         }
 
         return 0;
@@ -411,4 +477,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const DeprecatedHBBasis
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_DEPRECATED_HB_BASIS_FUNCTION_H_INCLUDED
-

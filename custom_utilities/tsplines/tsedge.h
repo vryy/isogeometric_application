@@ -16,11 +16,9 @@
 
 // External includes
 
-
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/tsplines/tsvertex.h"
-
 
 namespace Kratos
 {
@@ -44,7 +42,7 @@ public:
 
     /// Default constructor
     TsEdge(std::size_t Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)
-    : mId(Id), mpV1(pV1), mpV2(pV2)
+        : mId(Id), mpV1(pV1), mpV2(pV2)
     {}
 
     /// Get and Set for edge identification
@@ -98,4 +96,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TsEdge& rThis)
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TS_EDGE_H_INCLUDED
-

@@ -28,8 +28,8 @@ int main(int argc, char** argv)
 
     for (std::size_t i = 0; i < knot_vector.nspans(); ++i)
     {
-        std::cout << "span " << i+1 << ":" << std::endl;
-        std::tuple<knot_t, knot_t> span = knot_vector.span(i+1);
+        std::cout << "span " << i + 1 << ":" << std::endl;
+        std::tuple<knot_t, knot_t> span = knot_vector.span(i + 1);
         KRATOS_WATCH(std::get<0>(span)->Index())
         KRATOS_WATCH(std::get<0>(span)->Value())
         KRATOS_WATCH(std::get<1>(span)->Index())
@@ -39,4 +39,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-

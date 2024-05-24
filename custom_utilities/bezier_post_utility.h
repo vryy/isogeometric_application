@@ -70,7 +70,6 @@ namespace Kratos
 ///@name  Functions
 ///@{
 
-
 ///@}
 ///@name Kratos Classes
 ///@{
@@ -84,7 +83,7 @@ struct BezierPostUtility_Helper
 
     /// Interpolation on element
     static TDataType& CalculateOnPoint(const Variable<TDataType>& rVariable,
-        TDataType& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates)
+                                       TDataType& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates)
     {
         KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
     }
@@ -163,9 +162,9 @@ public:
         ModelPart& r_model_part,
         ModelPart& r_model_part_post) const
     {
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
-        #endif
+#endif
 
         NodesArrayType& pTargetNodes = r_model_part_post.Nodes();
 
@@ -175,15 +174,15 @@ public:
         CoordinatesArrayType LocalPos;
         int ElementId;
 
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
         const Variable<int>& PARENT_ELEMENT_ID_var = KratosComponents<const Variable<int> >::Get("PARENT_ELEMENT_ID");
-        #else
+#else
         const Variable<int>& PARENT_ELEMENT_ID_var = PARENT_ELEMENT_ID;
-        #endif
+#endif
 
 //        #pragma omp parallel for
         //TODO: to be parallelized.
-        for(typename NodesArrayType::ptr_iterator it = pTargetNodes.ptr_begin(); it != pTargetNodes.ptr_end(); ++it)
+        for (typename NodesArrayType::ptr_iterator it = pTargetNodes.ptr_begin(); it != pTargetNodes.ptr_end(); ++it)
         {
             ElementId = (*it)->GetSolutionStepValue(PARENT_ELEMENT_ID_var);
             noalias(LocalPos) = (*it)->GetSolutionStepValue(LOCAL_COORDINATES);
@@ -191,12 +190,12 @@ public:
             (*it)->GetSolutionStepValue(rThisVariable) = Results;
         }
 
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "Transfer nodal point results for " << rThisVariable.Name() << " completed: " << end_compute - start_compute << " s" << std::endl;
-        #else
+#else
         std::cout << "Transfer nodal point results for " << rThisVariable.Name() << " completed" << std::endl;
-        #endif
+#endif
     }
 
     // Synchronize post model_part with the reference model_part
@@ -207,12 +206,12 @@ public:
         ModelPart& r_model_part_post,
         LinearSolverType::Pointer pSolver) const
     {
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "########################################" << std::endl;
         std::cout << "Transfer integration point results for "
                   << rThisVariable.Name() << " starts" << std::endl;
-        #endif
+#endif
 
         // firstly transfer rThisVariable from integration points of reference model_part to its nodes
         TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable);
@@ -220,13 +219,13 @@ public:
         // secondly transfer new nodal variables results to the post model_part
         TransferNodalResults(rThisVariable, r_model_part, r_model_part_post);
 
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "Transfer integration point results for "
                   << rThisVariable.Name() << " completed: "
                   << end_compute - start_compute << "s" << std::endl;
         std::cout << "########################################" << std::endl;
-        #endif
+#endif
     }
 
     /// Transfer the variable to nodes for model_part
@@ -236,22 +235,22 @@ public:
         ModelPart& r_model_part,
         LinearSolverType::Pointer pSolver) const
     {
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "########################################" << std::endl;
         std::cout << "Transfer integration point results to nodes for "
                   << rThisVariable.Name() << " starts" << std::endl;
-        #endif
+#endif
 
         TransferVariablesToNodes(pSolver, r_model_part, r_model_part.Elements(), rThisVariable);
 
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "Transfer integration point results to nodes for "
                   << rThisVariable.Name() << " completed: "
                   << end_compute - start_compute << "s" << std::endl;
         std::cout << "########################################" << std::endl;
-        #endif
+#endif
     }
 
     /// Transfer the variable to nodes for model_part
@@ -262,44 +261,44 @@ public:
         const ElementsContainerType& ElementsArray,
         LinearSolverType::Pointer pSolver) const
     {
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "########################################" << std::endl;
         std::cout << "Transfer integration point results to nodes for "
                   << rThisVariable.Name() << " starts" << std::endl;
-        #endif
+#endif
 
         TransferVariablesToNodes(pSolver, r_model_part, ElementsArray, rThisVariable);
 
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "Transfer integration point results to nodes for "
                   << rThisVariable.Name() << " completed: "
                   << end_compute - start_compute << "s" << std::endl;
         std::cout << "########################################" << std::endl;
-        #endif
+#endif
     }
 
     /// Compute the nodal values from the integration values
     void TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
-        std::map<std::size_t, std::size_t>& node_row_id,
-        SerialSparseSpaceType::VectorType& rValues, LinearSolverType::Pointer pSolver,
-        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-        const Variable<double>& rThisVariable, bool check_active) const;
+                                       std::map<std::size_t, std::size_t>& node_row_id,
+                                       SerialSparseSpaceType::VectorType& rValues, LinearSolverType::Pointer pSolver,
+                                       const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+                                       const Variable<double>& rThisVariable, bool check_active) const;
 
     /// Compute the nodal values from the integration values
     void TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
-        std::map<std::size_t, std::size_t>& node_row_id,
-        SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
-        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-        const Variable<array_1d<double, 3> >& rThisVariable, bool check_active) const;
+                                       std::map<std::size_t, std::size_t>& node_row_id,
+                                       SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
+                                       const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+                                       const Variable<array_1d<double, 3> >& rThisVariable, bool check_active) const;
 
     /// Compute the nodal values from the integration values
     void TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
-        std::map<std::size_t, std::size_t>& node_row_id,
-        SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
-        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-        const Variable<Vector>& rThisVariable, std::size_t ncomponents, bool check_active) const;
+                                       std::map<std::size_t, std::size_t>& node_row_id,
+                                       SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
+                                       const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
+                                       const Variable<Vector>& rThisVariable, std::size_t ncomponents, bool check_active) const;
 
     ///@}
     ///@name Access
@@ -492,7 +491,7 @@ struct BezierPostUtility_Helper<double>
 
     /// Interpolation on element
     static double& CalculateOnPoint(const Variable<double>& rVariable,
-        double& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
+                                    double& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
 };
 
 template<>
@@ -504,7 +503,7 @@ struct BezierPostUtility_Helper<Vector>
 
     /// Interpolation on element
     static Vector& CalculateOnPoint(const Variable<Vector>& rVariable,
-        Vector& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
+                                    Vector& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
 };
 
 template<>
@@ -516,7 +515,7 @@ struct BezierPostUtility_Helper<array_1d<double, 3> >
 
     /// Interpolation on element
     static array_1d<double, 3>& CalculateOnPoint(const Variable<array_1d<double, 3> >& rVariable,
-        array_1d<double, 3>& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
+            array_1d<double, 3>& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates);
 };
 
 ///@name Type Definitions
@@ -534,7 +533,7 @@ inline std::istream& operator >>(std::istream& rIStream, BezierPostUtility& rThi
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const BezierPostUtility& rThis)
+                                 const BezierPostUtility& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

@@ -19,13 +19,11 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/add_brep_and_level_set_to_python.h"
 #include "isogeometric_brep_application.h"
 
-
 namespace Kratos
 {
 
 namespace Python
 {
-
 
 BOOST_PYTHON_MODULE(KratosIsogeometricBRepApplication)
 {
@@ -40,7 +38,6 @@ BOOST_PYTHON_MODULE(KratosIsogeometricBRepApplication)
     IsogeometricApplication_AddBRepAndLevelSetToPython();
 
 }
-
 
 } // namespace Python.
 

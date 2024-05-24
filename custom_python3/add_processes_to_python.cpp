@@ -10,11 +10,9 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
@@ -37,15 +35,14 @@ void IsogeometricApplication_AddProcessesToPython(pybind11::module& m)
 {
     using namespace pybind11;
 
-    #ifdef ISOGEOMETRIC_USE_PARMETIS
+#ifdef ISOGEOMETRIC_USE_PARMETIS
     class_<IsogeometricPartitioningProcess, Process>
     (m, "IsogeometricPartitioningProcess")
     .def(init<ModelPart&, IO&, unsigned int>())
     ;
-    #endif
+#endif
 }
 
 } // namespace Python.
 
 } // Namespace Kratos
-

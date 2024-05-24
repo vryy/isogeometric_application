@@ -22,7 +22,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "containers/array_1d.h"
 #include "custom_utilities/control_point.h"
 
-
 namespace Kratos
 {
 

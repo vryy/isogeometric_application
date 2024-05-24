@@ -53,20 +53,28 @@ Patch<2>::Pointer TSplinesPatchTSMImporter::ImportSingle(const std::string& file
         std::vector<std::vector<Real> > knot_vecs(2);
         TExtractor::extractUVKnotsFromTNodeV4(pnodev4, knot_vecs[0], knot_vecs[1]);
 
-        for(std::size_t i1 = 0; i1 < knot_vecs[0].size(); ++i1)
+        for (std::size_t i1 = 0; i1 < knot_vecs[0].size(); ++i1)
         {
             if (knot_vecs[0][i1] > max_xi_max)
+            {
                 max_xi_max = knot_vecs[0][i1];
+            }
             if (knot_vecs[0][i1] < min_xi_min)
+            {
                 min_xi_min = knot_vecs[0][i1];
+            }
         }
 
-        for(std::size_t j1 = 0; j1 < knot_vecs[1].size(); ++j1)
+        for (std::size_t j1 = 0; j1 < knot_vecs[1].size(); ++j1)
         {
             if (knot_vecs[1][j1] > max_eta_max)
+            {
                 max_eta_max = knot_vecs[1][j1];
+            }
             if (knot_vecs[1][j1] < min_eta_min)
+            {
                 min_eta_min = knot_vecs[1][j1];
+            }
         }
     }
     KRATOS_WATCH(min_xi_min)
@@ -90,41 +98,49 @@ Patch<2>::Pointer TSplinesPatchTSMImporter::ImportSingle(const std::string& file
         TExtractor::extractUVKnotsFromTNodeV4(pnodev4, knot_vecs[0], knot_vecs[1]);
 
         // scale the knot vectors
-        for(std::size_t i1 = 0; i1 < knot_vecs[0].size(); ++i1)
+        for (std::size_t i1 = 0; i1 < knot_vecs[0].size(); ++i1)
         {
             knot_vecs[0][i1] = (knot_vecs[0][i1] - min_xi_min) / (max_xi_max - min_xi_min);
             if (fabs(knot_vecs[0][i1]) < knot_tol)
+            {
                 knot_vecs[0][i1] = 0.0;
+            }
             if (fabs(knot_vecs[0][i1] - 1.0) < knot_tol)
+            {
                 knot_vecs[0][i1] = 1.0;
+            }
         }
 
-        for(std::size_t j1 = 0; j1 < knot_vecs[1].size(); ++j1)
+        for (std::size_t j1 = 0; j1 < knot_vecs[1].size(); ++j1)
         {
             knot_vecs[1][j1] = (knot_vecs[1][j1] - min_eta_min) / (max_eta_max - min_eta_min);
             if (fabs(knot_vecs[1][j1]) < knot_tol)
+            {
                 knot_vecs[1][j1] = 0.0;
+            }
             if (fabs(knot_vecs[1][j1] - 1.0) < knot_tol)
+            {
                 knot_vecs[1][j1] = 1.0;
+            }
         }
 
         // create new basis function
         typename PBBSplinesBasisFunctionType::Pointer pnew_bf = pNewFESpace->CreateBf(id, knot_vecs);
 
         // create the cells for the basis function
-        for(std::size_t i1 = 0; i1 < knot_vecs[0].size()-1; ++i1)
+        for (std::size_t i1 = 0; i1 < knot_vecs[0].size() - 1; ++i1)
         {
             Real xi_min = knot_vecs[0][i1];
-            Real xi_max = knot_vecs[0][i1+1];
+            Real xi_max = knot_vecs[0][i1 + 1];
 
-            for(std::size_t j1 = 0; j1 < knot_vecs[1].size()-1; ++j1)
+            for (std::size_t j1 = 0; j1 < knot_vecs[1].size() - 1; ++j1)
             {
                 Real eta_min = knot_vecs[1][j1];
-                Real eta_max = knot_vecs[1][j1+1];
+                Real eta_max = knot_vecs[1][j1 + 1];
 
                 // check if the cell domain area is nonzero
                 double area = (xi_max - xi_min) * (eta_max - eta_min);
-                if(fabs(area) > area_tol)
+                if (fabs(area) > area_tol)
                 {
                     std::vector<Real> knots = {xi_min, xi_max, eta_min, eta_max};
                     cell_t p_cell = pNewFESpace->pCellManager()->CreateCell(knots);
@@ -138,7 +154,7 @@ Patch<2>::Pointer TSplinesPatchTSMImporter::ImportSingle(const std::string& file
         y = ptpoint->getY();
         z = ptpoint->getZ();
         w = ptpoint->getW();
-        ControlPointType c(w*x, w*y, w*z, w);
+        ControlPointType c(w * x, w * y, w * z, w);
         pnew_bf->SetValue(CONTROL_POINT, c);
     }
 
@@ -186,4 +202,3 @@ MultiPatch<2>::Pointer TSplinesPatchTSMImporter::Import(const std::string& filen
 }
 
 } // namespace Kratos.
-

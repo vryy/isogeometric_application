@@ -16,11 +16,9 @@
 
 // External includes
 
-
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/tsplines/tsvedge.h"
-
 
 namespace Kratos
 {
@@ -39,7 +37,7 @@ public:
 
     /// Constructor
     TsVirtualVEdge(std::size_t Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)
-    : BaseType(Id, pV1, pV2)
+        : BaseType(Id, pV1, pV2)
     {}
 
     /// Get the edge type of this specific edge

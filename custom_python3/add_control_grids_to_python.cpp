@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -29,8 +28,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
 #include "custom_python3/add_control_grids_to_python.h"
 
-
-
 namespace Kratos
 {
 
@@ -40,10 +37,10 @@ namespace Python
 using namespace pybind11;
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateLinearControlPointGrid(
-        ControlGridLibrary& rDummy,
-        double start_x, double start_y, double start_z,
-        std::size_t n_points_u,
-        double end_x, double end_y, double end_z)
+    ControlGridLibrary& rDummy,
+    double start_x, double start_y, double start_z,
+    std::size_t n_points_u,
+    double end_x, double end_y, double end_z)
 {
     std::vector<double> start(3);
     start[0] = start_x;
@@ -62,10 +59,10 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateLinearContr
 }
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangularControlPointGrid1(
-        ControlGridLibrary& rDummy,
-        double start_x, double start_y,
-        std::size_t n_points_u, std::size_t n_points_v,
-        double end_x, double end_y)
+    ControlGridLibrary& rDummy,
+    double start_x, double start_y,
+    std::size_t n_points_u, std::size_t n_points_v,
+    double end_x, double end_y)
 {
     std::vector<double> start(2);
     start[0] = start_x;
@@ -83,11 +80,11 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangular
 }
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangularControlPointGrid2(
-        ControlGridLibrary& rDummy,
-        double start_x, double start_y, double start_z,
-        std::size_t n_points_u, std::size_t n_points_v,
-        double space1_x, double space1_y, double space1_z,
-        double space2_x, double space2_y, double space2_z)
+    ControlGridLibrary& rDummy,
+    double start_x, double start_y, double start_z,
+    std::size_t n_points_u, std::size_t n_points_v,
+    double space1_x, double space1_y, double space1_z,
+    double space2_x, double space2_y, double space2_z)
 {
     std::vector<double> start(3);
     start[0] = start_x;
@@ -116,10 +113,10 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateRectangular
 }
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicControlPointGrid1(
-        ControlGridLibrary& rDummy,
-        double start_x, double start_y, double start_z,
-        std::size_t n_points_u, std::size_t n_points_v, std::size_t n_points_w,
-        double end_x, double end_y, double end_z)
+    ControlGridLibrary& rDummy,
+    double start_x, double start_y, double start_z,
+    std::size_t n_points_u, std::size_t n_points_v, std::size_t n_points_w,
+    double end_x, double end_y, double end_z)
 {
     std::vector<double> start(3);
     start[0] = start_x;
@@ -140,10 +137,10 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicContro
 }
 
 ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicControlPointGrid2(
-        ControlGridLibrary& rDummy,
-        double start_x, double start_y, double start_z,
-        std::size_t n_points_u, std::size_t n_points_v, std::size_t n_points_w,
-        const pybind11::list& spacing_vectors_data)
+    ControlGridLibrary& rDummy,
+    double start_x, double start_y, double start_z,
+    std::size_t n_points_u, std::size_t n_points_v, std::size_t n_points_w,
+    const pybind11::list& spacing_vectors_data)
 {
     std::vector<double> start(3);
     start[0] = start_x;
@@ -161,7 +158,9 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicContro
     {
         std::vector<double> space_vect;
         for (auto v : vect.cast<pybind11::list>())
+        {
             space_vect.push_back(v.cast<double>());
+        }
         spacing_vectors.push_back(space_vect);
     }
 
@@ -172,9 +171,9 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicContro
 
 template<class TVariableType>
 inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_CreateLinearZeroControlGridWithVariable(
-        ControlGridLibrary& rDummy,
-        const TVariableType& rVariable,
-        std::size_t n_points_u)
+    ControlGridLibrary& rDummy,
+    const TVariableType& rVariable,
+    std::size_t n_points_u)
 {
     std::vector<std::size_t> ngrid(1);
     ngrid[0] = n_points_u;
@@ -183,9 +182,9 @@ inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLi
 
 template<class TVariableType>
 inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_CreateRectangularZeroControlGridWithVariable(
-        ControlGridLibrary& rDummy,
-        const TVariableType& rVariable,
-        std::size_t n_points_u, std::size_t n_points_v)
+    ControlGridLibrary& rDummy,
+    const TVariableType& rVariable,
+    std::size_t n_points_u, std::size_t n_points_v)
 {
     std::vector<std::size_t> ngrid(2);
     ngrid[0] = n_points_u;
@@ -195,9 +194,9 @@ inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLi
 
 template<class TVariableType>
 inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLibrary_CreateCubicZeroControlGridWithVariable(
-        ControlGridLibrary& rDummy,
-        const TVariableType& rVariable,
-        std::size_t n_points_u, std::size_t n_points_v, std::size_t n_points_w)
+    ControlGridLibrary& rDummy,
+    const TVariableType& rVariable,
+    std::size_t n_points_u, std::size_t n_points_v, std::size_t n_points_w)
 {
     std::vector<std::size_t> ngrid(3);
     ngrid[0] = n_points_u;
@@ -208,8 +207,8 @@ inline typename ControlGrid<typename TVariableType::Type>::Pointer ControlGridLi
 
 template<typename TDataType, class TFESpaceType>
 inline typename ControlGrid<TDataType>::Pointer ControlGridUtility_CreatePointBasedControlGrid(
-        ControlGridUtility& rDummy,
-        const Variable<TDataType>& rVariable, typename TFESpaceType::Pointer pFESpace)
+    ControlGridUtility& rDummy,
+    const Variable<TDataType>& rVariable, typename TFESpaceType::Pointer pFESpace)
 {
     return rDummy.CreatePointBasedControlGrid<TDataType, TFESpaceType>(rVariable, pFESpace);
 }
@@ -340,4 +339,3 @@ void IsogeometricApplication_AddControlGridsToPython(pybind11::module& m)
 }  // namespace Python.
 
 } // Namespace Kratos
-

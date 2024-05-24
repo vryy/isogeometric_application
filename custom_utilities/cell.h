@@ -21,7 +21,6 @@
 // External includes
 #include <boost/numeric/ublas/vector_sparse.hpp>
 
-
 namespace Kratos
 {
 
@@ -73,10 +72,14 @@ public:
         inz.reserve(Crow.size());
         for (std::size_t i = 0; i < Crow.size(); ++i)
             if (Crow[i] != 0.0)
+            {
                 inz.push_back(i);
+            }
         SparseVectorType Crow_sparse(Crow.size(), inz.size());
         for (std::size_t i = 0; i < inz.size(); ++i)
+        {
             Crow_sparse[inz[i]] = Crow[inz[i]];
+        }
         mCrows.push_back(Crow_sparse);
     }
 
@@ -108,8 +111,10 @@ public:
     const std::vector<double>& GetAnchorWeights() const {return mAnchorWeights;}
     void GetAnchorWeights(Vector& rWeights) const
     {
-        if(rWeights.size() != mAnchorWeights.size())
+        if (rWeights.size() != mAnchorWeights.size())
+        {
             rWeights.resize(mAnchorWeights.size(), false);
+        }
         std::copy(mAnchorWeights.begin(), mAnchorWeights.end(), rWeights.begin());
     }
 
@@ -120,8 +125,10 @@ public:
     Matrix GetExtractionOperator() const
     {
         Matrix M(mCrows.size(), mCrows[0].size());
-        for(std::size_t i = 0; i < mCrows.size(); ++i)
+        for (std::size_t i = 0; i < mCrows.size(); ++i)
+        {
             noalias(row(M, i)) = mCrows[i];
+        }
         return M;
     }
 
@@ -130,8 +137,10 @@ public:
     {
         CompressedMatrix M(mCrows.size(), mCrows[0].size());
         // here we just naively copy the data. However we shall initialize the compressed matrix properly as in the kernel (TODO)
-        for(std::size_t i = 0; i < mCrows.size(); ++i)
+        for (std::size_t i = 0; i < mCrows.size(); ++i)
+        {
             noalias(row(M, i)) = mCrows[i];
+        }
         M.complete_index1_data();
         return M;
     }
@@ -141,11 +150,11 @@ public:
     {
         int cnt = 0;
         rowPtr.push_back(cnt);
-        for(std::size_t i = 0; i < mCrows.size(); ++i)
+        for (std::size_t i = 0; i < mCrows.size(); ++i)
         {
-            for(std::size_t j = 0; j < mCrows[i].size(); ++j)
+            for (std::size_t j = 0; j < mCrows[i].size(); ++j)
             {
-                if(mCrows[i](j) != 0)
+                if (mCrows[i](j) != 0)
                 {
                     colInd.push_back(j);
                     values.push_back(mCrows[i](j));
@@ -177,8 +186,10 @@ public:
     {
         rOStream << ", supporting anchors: ";
         rOStream << "(";
-        for(std::vector<std::size_t>::const_iterator it = mSupportedAnchors.begin(); it != mSupportedAnchors.end(); ++it)
+        for (std::vector<std::size_t>::const_iterator it = mSupportedAnchors.begin(); it != mSupportedAnchors.end(); ++it)
+        {
             rOStream << " " << (*it);
+        }
         rOStream << ")";
     }
 
@@ -202,4 +213,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Cell& rThis)
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_H_INCLUDED
-

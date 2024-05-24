@@ -176,11 +176,11 @@ public:
      */
 
     Geo2dBezier3()
-    : BaseType( PointsArrayType() )
+        : BaseType( PointsArrayType() )
     {}
 
     Geo2dBezier3( const PointsArrayType& ThisPoints )
-    : BaseType( ThisPoints )
+        : BaseType( ThisPoints )
     {
     }
 
@@ -194,7 +194,7 @@ public:
      * source geometry's points too.
      */
     Geo2dBezier3( Geo2dBezier3 const& rOther )
-    : BaseType( rOther )
+        : BaseType( rOther )
     {}
 
     /**
@@ -209,7 +209,7 @@ public:
      * source geometry's points too.
      */
     template<class TOtherPointType> Geo2dBezier3( Geo2dBezier3<TOtherPointType> const& rOther )
-    : Geo2dBezier<TOtherPointType>( rOther )
+        : Geo2dBezier<TOtherPointType>( rOther )
     {}
 
     /**
@@ -267,8 +267,8 @@ public:
         if (BaseType::mpBezierGeometryData != NULL)
         {
             pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
-                BaseType::mCtrlWeights, BaseType::mExtractionOperator, BaseType::mOrder1, BaseType::mOrder2, 0,
-                static_cast<int>(BaseType::mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
+                                         BaseType::mCtrlWeights, BaseType::mExtractionOperator, BaseType::mOrder1, BaseType::mOrder2, 0,
+                                         static_cast<int>(BaseType::mpBezierGeometryData->DefaultIntegrationMethod()) + 1);
         }
         return pNewGeom;
     }
@@ -298,11 +298,11 @@ public:
 
     GeometryData::KratosGeometryType GetGeometryType() const override
     {
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
         return static_cast<GeometryData::KratosGeometryType>(IsogeometricGeometryData::KratosIsogeometricGeometryType::Kratos_Bezier2D3);
-        #else
+#else
         return GeometryData::KratosGeometryType::Kratos_Bezier2D3;
-        #endif
+#endif
     }
 
     /**
@@ -569,26 +569,26 @@ public:
         BaseType::mExtractionOperator = ExtractionOperator;
 
         // size checking
-        if(BaseType::mExtractionOperator.size1() != this->PointsNumber())
+        if (BaseType::mExtractionOperator.size1() != this->PointsNumber())
             KRATOS_THROW_ERROR(std::logic_error, "The number of row of extraction operator must be equal to number of nodes, mExtractionOperator.size1() =", BaseType::mExtractionOperator.size1())
-        if(BaseType::mExtractionOperator.size2() != BaseType::mNumber1*BaseType::mNumber2)
-            KRATOS_THROW_ERROR(std::logic_error, "The number of column of extraction operator must be equal to (p_u+1) * (p_v+1), mExtractionOperator.size2() =", BaseType::mExtractionOperator.size2())
-        if(BaseType::mCtrlWeights.size() != this->PointsNumber())
-            KRATOS_THROW_ERROR(std::logic_error, "The number of weights must be equal to number of nodes", __FUNCTION__)
+            if (BaseType::mExtractionOperator.size2() != BaseType::mNumber1 * BaseType::mNumber2)
+                KRATOS_THROW_ERROR(std::logic_error, "The number of column of extraction operator must be equal to (p_u+1) * (p_v+1), mExtractionOperator.size2() =", BaseType::mExtractionOperator.size2())
+                if (BaseType::mCtrlWeights.size() != this->PointsNumber())
+                    KRATOS_THROW_ERROR(std::logic_error, "The number of weights must be equal to number of nodes", __FUNCTION__)
 
-        if (NumberOfIntegrationMethod > 0)
-        {
-            // find the existing integration rule or create new one if not existed
-            BezierUtils::RegisterIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
+                    if (NumberOfIntegrationMethod > 0)
+                    {
+                        // find the existing integration rule or create new one if not existed
+                        BezierUtils::RegisterIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
 
-            // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
-            BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
-            #ifdef SD_APP_FORWARD_COMPATIBILITY
-            GeometryType::SetGeometryData(&(*BaseType::mpBezierGeometryData));
-            #else
-            GeometryType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
-            #endif
-        }
+                        // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
+                        BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+                        GeometryType::SetGeometryData(&(*BaseType::mpBezierGeometryData));
+#else
+                        GeometryType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
+#endif
+                    }
     }
 
 protected:
@@ -644,13 +644,13 @@ private:
  * input stream function
  */
 template<class TPointType> inline std::istream& operator >>(
-        std::istream& rIStream, Geo2dBezier3<TPointType>& rThis);
+    std::istream& rIStream, Geo2dBezier3<TPointType>& rThis);
 
 /**
  * output stream function
  */
 template<class TPointType> inline std::ostream& operator <<(
-        std::ostream& rOStream, const Geo2dBezier3<TPointType>& rThis)
+    std::ostream& rOStream, const Geo2dBezier3<TPointType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -687,4 +687,3 @@ template<class TPointType> inline std::ostream& operator <<(
 #undef ENABLE_PROFILING
 
 #endif
-

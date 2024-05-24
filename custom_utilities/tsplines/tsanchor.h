@@ -35,17 +35,17 @@ public:
 
     /// Default constructor
     TsAnchor(std::size_t Id,
-        double Xi, double Eta,
-        double X, double Y,
-        double W)
-    : mId(Id), mXi(Xi), mEta(Eta), mZeta(0.0), mX(X), mY(Y), mZ(0.0), mW(W)
+             double Xi, double Eta,
+             double X, double Y,
+             double W)
+        : mId(Id), mXi(Xi), mEta(Eta), mZeta(0.0), mX(X), mY(Y), mZ(0.0), mW(W)
     {}
 
     TsAnchor(std::size_t Id,
-        double Xi, double Eta, double Zeta,
-        double X, double Y, double Z,
-        double W)
-    : mId(Id), mXi(Xi), mEta(Eta), mZeta(Zeta), mX(X), mY(Y), mZ(Z), mW(W)
+             double Xi, double Eta, double Zeta,
+             double X, double Y, double Z,
+             double W)
+        : mId(Id), mXi(Xi), mEta(Eta), mZeta(Zeta), mX(X), mY(Y), mZ(Z), mW(W)
     {}
 
     /// Get the topology coordinates of the anchor
@@ -92,4 +92,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TsAnchor& rThis)
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TS_ANCHOR_H_INCLUDED
-

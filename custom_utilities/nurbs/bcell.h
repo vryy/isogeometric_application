@@ -42,9 +42,9 @@ class BCell : public Cell
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BCell);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const BCell> ConstPointer;
-    #endif
+#endif
 
     /// Type definitions
     typedef Cell BaseType;
@@ -54,17 +54,17 @@ public:
 
     /// Constructor with knots
     BCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax)
-    : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(new KnotType(0.0)), mpEtaMin(new KnotType(0.0)), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
+        : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(new KnotType(0.0)), mpEtaMin(new KnotType(0.0)), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
     BCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
-    : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
+        : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
     BCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
-    : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(pZetaMax), mpZetaMin(pZetaMin)
+        : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(pZetaMax), mpZetaMin(pZetaMin)
     {}
 
     /// Destructor
@@ -105,8 +105,8 @@ public:
         TIndexType anchor_cover_xi_min  = *std::min_element(rKnotsIndex1.begin(), rKnotsIndex1.end());
         TIndexType anchor_cover_xi_max  = *std::max_element(rKnotsIndex1.begin(), rKnotsIndex1.end());
 
-        if(     XiMinIndex()  >= anchor_cover_xi_min
-            && XiMaxIndex() <= anchor_cover_xi_max  )
+        if (     XiMinIndex()  >= anchor_cover_xi_min
+                 && XiMaxIndex() <= anchor_cover_xi_max  )
         {
             return true;
         }
@@ -122,10 +122,10 @@ public:
         TIndexType anchor_cover_eta_min = *std::min_element(rKnotsIndex2.begin(), rKnotsIndex2.end());
         TIndexType anchor_cover_eta_max = *std::max_element(rKnotsIndex2.begin(), rKnotsIndex2.end());
 
-        if(     XiMinIndex()  >= anchor_cover_xi_min
-            && XiMaxIndex() <= anchor_cover_xi_max
-            && EtaMinIndex()  >= anchor_cover_eta_min
-            && EtaMaxIndex()    <= anchor_cover_eta_max )
+        if (     XiMinIndex()  >= anchor_cover_xi_min
+                 && XiMaxIndex() <= anchor_cover_xi_max
+                 && EtaMinIndex()  >= anchor_cover_eta_min
+                 && EtaMaxIndex()    <= anchor_cover_eta_max )
         {
             return true;
         }
@@ -135,7 +135,7 @@ public:
     /// Check if the cell is covered by knot spans; the comparison is based on indexing, so the knot vectors must be sorted a priori
     template<typename TIndexType>
     bool IsCovered(const std::vector<TIndexType>& rKnotsIndex1, const std::vector<TIndexType>& rKnotsIndex2,
-            const std::vector<TIndexType>& rKnotsIndex3) const
+                   const std::vector<TIndexType>& rKnotsIndex3) const
     {
         TIndexType anchor_cover_xi_min  = *std::min_element(rKnotsIndex1.begin(), rKnotsIndex1.end());
         TIndexType anchor_cover_xi_max  = *std::max_element(rKnotsIndex1.begin(), rKnotsIndex1.end());
@@ -144,12 +144,12 @@ public:
         TIndexType anchor_cover_zeta_min = *std::min_element(rKnotsIndex3.begin(), rKnotsIndex3.end());
         TIndexType anchor_cover_zeta_max = *std::max_element(rKnotsIndex3.begin(), rKnotsIndex3.end());
 
-        if(     XiMinIndex()  >= anchor_cover_xi_min
-            && XiMaxIndex() <= anchor_cover_xi_max
-            && EtaMinIndex()  >= anchor_cover_eta_min
-            && EtaMaxIndex()    <= anchor_cover_eta_max
-            && ZetaMinIndex()  >= anchor_cover_zeta_min
-            && ZetaMaxIndex()    <= anchor_cover_zeta_max )
+        if (     XiMinIndex()  >= anchor_cover_xi_min
+                 && XiMaxIndex() <= anchor_cover_xi_max
+                 && EtaMinIndex()  >= anchor_cover_eta_min
+                 && EtaMaxIndex()    <= anchor_cover_eta_max
+                 && ZetaMinIndex()  >= anchor_cover_zeta_min
+                 && ZetaMaxIndex()    <= anchor_cover_zeta_max )
         {
             return true;
         }
@@ -166,32 +166,38 @@ public:
     /// Check if this cell cover a point in knot space
     bool IsCoverage(double rXi, double rEta) const
     {
-        if(    XiMinValue()  <= rXi  && XiMaxValue()  >= rXi
-            && EtaMinValue() <= rEta && EtaMaxValue() >= rEta )
+        if (    XiMinValue()  <= rXi  && XiMaxValue()  >= rXi
+                && EtaMinValue() <= rEta && EtaMaxValue() >= rEta )
+        {
             return true;
+        }
         return false;
     }
 
     /// Check if this cell cover a point in knot space
     bool IsCoverage(double rXi, double rEta, double rZeta) const
     {
-        if(    XiMinValue()   <= rXi   && XiMaxValue()   >= rXi
-            && EtaMinValue()  <= rEta  && EtaMaxValue()  >= rEta
-            && ZetaMinValue() <= rZeta && ZetaMaxValue() >= rZeta )
+        if (    XiMinValue()   <= rXi   && XiMaxValue()   >= rXi
+                && EtaMinValue()  <= rEta  && EtaMaxValue()  >= rEta
+                && ZetaMinValue() <= rZeta && ZetaMaxValue() >= rZeta )
+        {
             return true;
+        }
         return false;
     }
 
     /// check if this cell is the same as the reference cell. Two cells are the same if it has the same bounding knot values.
     bool IsSame(BCell::ConstPointer p_cell, double tol) const
     {
-        if(    fabs( XiMinValue()   - p_cell->XiMinValue() )   < tol
-            && fabs( XiMaxValue()   - p_cell->XiMaxValue() )   < tol
-            && fabs( EtaMinValue()  - p_cell->EtaMinValue()  ) < tol
-            && fabs( EtaMaxValue()  - p_cell->EtaMaxValue()  ) < tol
-            && fabs( ZetaMinValue() - p_cell->ZetaMinValue() ) < tol
-            && fabs( ZetaMaxValue() - p_cell->ZetaMaxValue() ) < tol )
-                return true;
+        if (    fabs( XiMinValue()   - p_cell->XiMinValue() )   < tol
+                && fabs( XiMaxValue()   - p_cell->XiMaxValue() )   < tol
+                && fabs( EtaMinValue()  - p_cell->EtaMinValue()  ) < tol
+                && fabs( EtaMaxValue()  - p_cell->EtaMaxValue()  ) < tol
+                && fabs( ZetaMinValue() - p_cell->ZetaMinValue() ) < tol
+                && fabs( ZetaMaxValue() - p_cell->ZetaMaxValue() ) < tol )
+        {
+            return true;
+        }
         return false;
     }
 
@@ -226,27 +232,33 @@ private:
 template<>
 inline bool BCell_Helper<1>::IsCovered(const BCell& this_cell, const BCell& other_cell)
 {
-    if(    this_cell.XiMinValue() >= other_cell.XiMinValue() && this_cell.XiMaxValue() <= other_cell.XiMaxValue() )
+    if (    this_cell.XiMinValue() >= other_cell.XiMinValue() && this_cell.XiMaxValue() <= other_cell.XiMaxValue() )
+    {
         return true;
+    }
     return false;
 }
 
 template<>
 inline bool BCell_Helper<2>::IsCovered(const BCell& this_cell, const BCell& other_cell)
 {
-    if(    this_cell.XiMinValue()  >= other_cell.XiMinValue()  && this_cell.XiMaxValue()  <= other_cell.XiMaxValue()
-        && this_cell.EtaMinValue() >= other_cell.EtaMinValue() && this_cell.EtaMaxValue() <= other_cell.EtaMaxValue() )
+    if (    this_cell.XiMinValue()  >= other_cell.XiMinValue()  && this_cell.XiMaxValue()  <= other_cell.XiMaxValue()
+            && this_cell.EtaMinValue() >= other_cell.EtaMinValue() && this_cell.EtaMaxValue() <= other_cell.EtaMaxValue() )
+    {
         return true;
+    }
     return false;
 }
 
 template<>
 inline bool BCell_Helper<3>::IsCovered(const BCell& this_cell, const BCell& other_cell)
 {
-    if(    this_cell.XiMinValue()   >= other_cell.XiMinValue()   && this_cell.XiMaxValue()   <= other_cell.XiMaxValue()
-        && this_cell.EtaMinValue()  >= other_cell.EtaMinValue()  && this_cell.EtaMaxValue()  <= other_cell.EtaMaxValue()
-        && this_cell.ZetaMinValue() >= other_cell.ZetaMinValue() && this_cell.ZetaMaxValue() <= other_cell.ZetaMaxValue() )
+    if (    this_cell.XiMinValue()   >= other_cell.XiMinValue()   && this_cell.XiMaxValue()   <= other_cell.XiMaxValue()
+            && this_cell.EtaMinValue()  >= other_cell.EtaMinValue()  && this_cell.EtaMaxValue()  <= other_cell.EtaMaxValue()
+            && this_cell.ZetaMinValue() >= other_cell.ZetaMinValue() && this_cell.ZetaMaxValue() <= other_cell.ZetaMaxValue() )
+    {
         return true;
+    }
     return false;
 }
 
@@ -262,4 +274,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BCell& rThis)
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_H_INCLUDED
-

@@ -52,7 +52,7 @@ public:
 
     /// Default constructor
     MultipatchLagrangeControlMesh(typename MultiPatch<TDim>::Pointer pMultiPatch)
-    : mpMultiPatch(pMultiPatch), mEchoLevel(1)
+        : mpMultiPatch(pMultiPatch), mEchoLevel(1)
     {}
 
     /// Destructor
@@ -71,18 +71,24 @@ public:
     void WriteModelPart(ModelPart& r_model_part) const
     {
         if (mEchoLevel > 0)
+        {
             std::cout << "invoking MultipatchLagrangeControlMesh::" << __FUNCTION__ << std::endl;
+        }
 
         // get the sample element
         std::string element_name = mBaseElementName;
         if (TDim == 2)
+        {
             element_name = element_name + "2D4N";
+        }
         else if (TDim == 3)
+        {
             element_name = element_name + "3D8N";
+        }
 
         const std::string NodeKey = std::string("Node");
 
-        if(!KratosComponents<Element>::Has(element_name))
+        if (!KratosComponents<Element>::Has(element_name))
         {
             KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
                          << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
@@ -97,10 +103,14 @@ public:
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             if (!it->Is(ACTIVE))
+            {
                 continue;
+            }
 
             if (mEchoLevel > 1)
+            {
                 std::cout << "Elements will be created on patch " << it->Id() << std::endl;
+            }
 
             // create new properties and add to model_part
             if (it->LayerIndex() < 0)
@@ -115,7 +125,7 @@ public:
 
             // generate the connectivities
             std::vector<std::vector<IndexType> > connectivities;
-            IndexType offset = NodeCounter+1;
+            IndexType offset = NodeCounter + 1;
 
             if (it->pFESpace()->Type() == BSplinesFESpace<TDim>::StaticType())
             {
@@ -137,7 +147,7 @@ public:
 
             // create elements
             ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
-                connectivities, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
+                                                 connectivities, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
 
             for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
             {
@@ -146,7 +156,9 @@ public:
                 {
                     std::cout << "Element " << (*it2)->Id() << " is created with connectivity:";
                     for (std::size_t n = 0; n < (*it2)->GetGeometry().size(); ++n)
+                    {
                         std::cout << " " << (*it2)->GetGeometry()[n].Id();
+                    }
                     std::cout << std::endl;
                 }
             }
@@ -197,4 +209,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultipatchLagrang
 #undef DEBUG_MESH_GENERATION
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_LAGRANGE_CONTROL_MESH_H_INCLUDED defined
-

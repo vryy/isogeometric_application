@@ -21,9 +21,7 @@
 #include "custom_utilities/patch.h"
 #include "custom_utilities/multipatch_utility.h"
 
-
 // #define DEBUG_INTERSECT_CURVE_PLANE
-
 
 namespace Kratos
 {
@@ -44,7 +42,6 @@ namespace Kratos
 ///@}
 ///@name  Functions
 ///@{
-
 
 ///@}
 ///@name Kratos Classes
@@ -103,10 +100,10 @@ public:
         for (std::size_t i = 0; i < npoints; ++i)
         {
             const array_1d<double, 3>& point = (*pControlGrid)[i];
-            double f = A*point[0] + B*point[1] + C*point[2] + D;
-            if (f > 0.0) ++npos;
-            else if (f < 0.0) ++nneg;
-            else ++nzero;
+            double f = A * point[0] + B * point[1] + C * point[2] + D;
+            if (f > 0.0) { ++npos; }
+            else if (f < 0.0) { ++nneg; }
+            else { ++nzero; }
         }
 
         if (TOption != 0)
@@ -272,17 +269,23 @@ public:
         if (option_space == 0)
         {
             if (std::fabs(p1[2] - p2[2]) > TOL)
-                return 4; // the intersection point is found but the coordinate in Z direction is not the same
+            {
+                return 4;    // the intersection point is found but the coordinate in Z direction is not the same
+            }
         }
         else if (option_space == 1)
         {
             if (std::fabs(p1[0] - p2[0]) > TOL)
-                return 4; // the intersection point is found but the coordinate in X direction is not the same
+            {
+                return 4;    // the intersection point is found but the coordinate in X direction is not the same
+            }
         }
         else if (option_space == 2)
         {
             if (std::fabs(p1[1] - p2[1]) > TOL)
-                return 4; // the intersection point is found but the coordinate in Y direction is not the same
+            {
+                return 4;    // the intersection point is found but the coordinate in Y direction is not the same
+            }
         }
 
         // KRATOS_WATCH(typeid(*pPatch1->pFESpace()).name())
@@ -295,25 +298,25 @@ public:
         // KRATOS_WATCH(pb2[1])
 
         if ( ( (intersection_point_1 >= pb1[0]) && (intersection_point_1 <= pb1[1]) )
-          && ( (intersection_point_2 >= pb2[0]) && (intersection_point_2 <= pb2[1]) ) )
+                && ( (intersection_point_2 >= pb2[0]) && (intersection_point_2 <= pb2[1]) ) )
         {
             return 0;
         }
 
         if (  ( (intersection_point_1 >= pb1[0]) && (intersection_point_1 <= pb1[1]) )
-          && !( (intersection_point_2 >= pb2[0]) && (intersection_point_2 <= pb2[1]) ) )
+                && !( (intersection_point_2 >= pb2[0]) && (intersection_point_2 <= pb2[1]) ) )
         {
             return 2;
         }
 
         if ( !( (intersection_point_1 >= pb1[0]) && (intersection_point_1 <= pb1[1]) )
-          &&  ( (intersection_point_2 >= pb2[0]) && (intersection_point_2 <= pb2[1]) ) )
+                &&  ( (intersection_point_2 >= pb2[0]) && (intersection_point_2 <= pb2[1]) ) )
         {
             return 1;
         }
 
         if ( !( (intersection_point_1 >= pb1[0]) && (intersection_point_1 <= pb1[1]) )
-          && !( (intersection_point_2 >= pb2[0]) && (intersection_point_2 <= pb2[1]) ) )
+                && !( (intersection_point_2 >= pb2[0]) && (intersection_point_2 <= pb2[1]) ) )
         {
             return 3;
         }
@@ -339,18 +342,20 @@ public:
     {
         // extract the control point grid function of both curves
         typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
-        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
         KRATOS_WATCH(typeid(*pGridFunc->pFESpace()).name())
         KRATOS_WATCH(*pPatch)
-        #endif
+#endif
 
-        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
         std::vector<double> weights = pPatch->GetControlWeights();
         std::cout << "weights:";
         for (std::size_t i = 0; i < weights.size(); ++i)
+        {
             std::cout << " " << weights[i];
+        }
         std::cout << std::endl;
-        #endif
+#endif
 
         std::vector<double> xi(1);
         xi[0] = intersection_point;
@@ -363,20 +368,20 @@ public:
         int it = 0;
         while (!converged && (it++ < max_iters))
         {
-            #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
             KRATOS_WATCH(xi[0])
-            #endif
+#endif
             pGridFunc->GetValue(p, xi);
-            #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
             KRATOS_WATCH(p)
-            #endif
+#endif
             pGridFunc->GetDerivative(dp, xi);
-            #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
             KRATOS_WATCH(dp[0])
-            #endif
+#endif
 
-            res = A*p[0] + B*p[1] + C*p[2] + D;
-            J = A*dp[0][0] + B*dp[0][1] + C*dp[0][2];
+            res = A * p[0] + B * p[1] + C * p[2] + D;
+            J = A * dp[0][0] + B * dp[0][1] + C * dp[0][2];
 
             if (std::fabs(res) < TOL)
             {
@@ -384,15 +389,17 @@ public:
                 break;
             }
 
-            #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
             KRATOS_WATCH(res)
             KRATOS_WATCH(J)
-            #endif
+#endif
 
             if (std::fabs(J) < TOL)
+            {
                 return 2;
+            }
 
-            xi[0] -= res/J;
+            xi[0] -= res / J;
         }
 
         if (!converged && (it >= max_iters))
@@ -400,10 +407,10 @@ public:
             return 2;
         }
 
-        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
         KRATOS_WATCH(it)
         KRATOS_WATCH(max_iters)
-        #endif
+#endif
 
         intersection_point = xi[0];
 
@@ -413,9 +420,13 @@ public:
         // KRATOS_WATCH(pb[1])
 
         if ( ( (intersection_point >= pb[0]) && (intersection_point <= pb[1]) ) )
+        {
             return 0;
+        }
         else
+        {
             return 1;
+        }
 
         return -1; // should not come here, just to make the compiler happy
     }
@@ -439,18 +450,20 @@ public:
     {
         // extract the control point grid function of both curves
         typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
-        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
         KRATOS_WATCH(typeid(*pGridFunc->pFESpace()).name())
         KRATOS_WATCH(*pPatch)
-        #endif
+#endif
 
-        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
         std::vector<double> weights = pPatch->GetControlWeights();
         std::cout << "weights:";
         for (std::size_t i = 0; i < weights.size(); ++i)
+        {
             std::cout << " " << weights[i];
+        }
         std::cout << std::endl;
-        #endif
+#endif
 
         std::vector<double> xi(1);
         double left = 0.0, right = 1.0, mid, fleft, fright, fmid;
@@ -458,16 +471,16 @@ public:
 
         xi[0] = left;
         pGridFunc->GetValue(p, xi);
-        fleft = A*p[0] + B*p[1] + C*p[2] + D;
+        fleft = A * p[0] + B * p[1] + C * p[2] + D;
 
         xi[0] = right;
         pGridFunc->GetValue(p, xi);
-        fright = A*p[0] + B*p[1] + C*p[2] + D;
+        fright = A * p[0] + B * p[1] + C * p[2] + D;
 
-        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
         KRATOS_WATCH(fleft)
         KRATOS_WATCH(fright)
-        #endif
+#endif
 
         if (std::fabs(fleft) < TOL)
         {
@@ -481,18 +494,20 @@ public:
             return 0;
         }
 
-        if (fleft*fright > 0.0)
+        if (fleft * fright > 0.0)
+        {
             return 3;
+        }
 
         // determine the intersection point in flat plane
         bool converged = false;
         int it = 0;
         while (!converged && (it++ < max_iters))
         {
-            mid = 0.5*(left + right);
+            mid = 0.5 * (left + right);
             xi[0] = mid;
             pGridFunc->GetValue(p, xi);
-            fmid = A*p[0] + B*p[1] + C*p[2] + D;
+            fmid = A * p[0] + B * p[1] + C * p[2] + D;
 
             if (std::fabs(fmid) < TOL)
             {
@@ -500,10 +515,14 @@ public:
                 break;
             }
 
-            if (fleft*fmid > 0.0)
+            if (fleft * fmid > 0.0)
+            {
                 left = mid;
+            }
             else
+            {
                 right = mid;
+            }
         }
 
         if (!converged && (it >= max_iters))
@@ -511,10 +530,10 @@ public:
             return 2;
         }
 
-        #ifdef DEBUG_INTERSECT_CURVE_PLANE
+#ifdef DEBUG_INTERSECT_CURVE_PLANE
         KRATOS_WATCH(it)
         KRATOS_WATCH(max_iters)
-        #endif
+#endif
 
         intersection_point = xi[0];
 
@@ -524,9 +543,13 @@ public:
         // KRATOS_WATCH(pb[1])
 
         if ( ( (intersection_point >= pb[0]) && (intersection_point <= pb[1]) ) )
+        {
             return 0;
+        }
         else
+        {
             return 1;
+        }
 
         return -1; // should not come here, just to make the compiler happy
     }
@@ -546,11 +569,15 @@ public:
             double TOL)
     {
         if (intersection_points.size() != 4)
+        {
             intersection_points.resize(4);
+        }
 
         for (std::size_t i = 0; i < 4; ++i)
             if (intersection_points[i].size() != 2)
+            {
                 intersection_points[i].resize(2);
+            }
 
         std::vector<int> status(4);
 
@@ -598,11 +625,15 @@ public:
 
         std::size_t nedges = pEdgePatches.size();
         if (intersection_points.size() != nedges)
+        {
             intersection_points.resize(nedges);
+        }
 
         for (std::size_t i = 0; i < nedges; ++i)
             if (intersection_points[i].size() != 3)
+            {
                 intersection_points[i].resize(3);
+            }
 
         std::vector<int> status(nedges);
 
@@ -646,11 +677,15 @@ public:
 
         std::size_t nedges = pEdgePatches.size();
         if (intersection_points.size() != nedges)
+        {
             intersection_points.resize(nedges);
+        }
 
         for (std::size_t i = 0; i < nedges; ++i)
             if (intersection_points[i].size() != 3)
+            {
                 intersection_points[i].resize(3);
+            }
 
         std::vector<int> status(nedges);
 
@@ -754,7 +789,9 @@ public:
             MathUtils<double>::InvertMatrix(J, InvJ, DetJ);
 
             if (std::fabs(DetJ) < TOL)
+            {
                 return 3;
+            }
 
             noalias(dxi) = prod(InvJ, res);
             // KRATOS_WATCH(dxi)
@@ -774,7 +811,9 @@ public:
         intersection_point_1 = xi1[0];
 
         if (intersection_point_2.size() != 2)
+        {
             intersection_point_2.resize(2);
+        }
         intersection_point_2[0] = xi2[0];
         intersection_point_2[1] = xi2[1];
 
@@ -791,17 +830,19 @@ public:
         // KRATOS_WATCH(pb2[1])
 
         if ( ( (intersection_point_1 >= pb1[0]) && (intersection_point_1 <= pb1[1]) )
-          && ( (intersection_point_2[0] >= pb2[0]) && (intersection_point_2[0] <= pb2[1]) )
-          && ( (intersection_point_2[1] >= pb2[2]) && (intersection_point_2[1] <= pb2[3]) ) )
+                && ( (intersection_point_2[0] >= pb2[0]) && (intersection_point_2[0] <= pb2[1]) )
+                && ( (intersection_point_2[1] >= pb2[2]) && (intersection_point_2[1] <= pb2[3]) ) )
         {
             return 0;
         }
 
         if ( !( (intersection_point_1 >= pb1[0]) && (intersection_point_1 <= pb1[1]) ) )
+        {
             return 1;
+        }
 
         if ( !( ( (intersection_point_2[0] >= pb2[0]) && (intersection_point_2[0] <= pb2[1]) )
-             && ( (intersection_point_2[1] >= pb2[2]) && (intersection_point_2[1] <= pb2[3]) ) ) )
+                && ( (intersection_point_2[1] >= pb2[2]) && (intersection_point_2[1] <= pb2[3]) ) ) )
         {
             return 2;
         }
@@ -927,7 +968,7 @@ inline std::istream& operator >>(std::istream& rIStream, IsogeometricIntersectio
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const IsogeometricIntersectionUtility& rThis)
+                                 const IsogeometricIntersectionUtility& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -944,4 +985,3 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 #undef DEBUG_INTERSECT_CURVE_PLANE
 
 #endif // KRATOS_ISOGEOMETRIC_INTERSECTION_UTILITY_H_INCLUDED
-

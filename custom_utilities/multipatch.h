@@ -6,7 +6,6 @@
 //
 //
 
-
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_H_INCLUDED
 
@@ -22,17 +21,17 @@ This class represents an isogeometric multipatch in parametric coordinates. An i
 template<int TDim>
 class MultiPatch
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-: public std::enable_shared_from_this<MultiPatch<TDim> >
+    : public std::enable_shared_from_this<MultiPatch<TDim> >
 #else
-: public boost::enable_shared_from_this<MultiPatch<TDim> >
+    : public boost::enable_shared_from_this<MultiPatch<TDim> >
 #endif
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(MultiPatch);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const MultiPatch> ConstPointer;
-    #endif
+#endif
     /// Type definition
     typedef Patch<TDim> PatchType;
     typedef PointerVectorSet<PatchType, IndexedObject> PatchContainerType;
@@ -88,9 +87,13 @@ public:
         for (std::map<std::size_t, std::size_t>::iterator it = mGlobalIdToPatchId.begin(); it != mGlobalIdToPatchId.end();)
         {
             if (it->second == pPatch->Id())
+            {
                 mGlobalIdToPatchId.erase(it++);
+            }
             else
+            {
                 ++it;
+            }
         }
     }
 
@@ -124,7 +127,9 @@ public:
             KRATOS_WATCH(mEquationSystemSize)
             std::cout << "global_to_patch map:" << std::endl;
             for (std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalIdToPatchId.begin(); it2 != mGlobalIdToPatchId.end(); ++it2)
+            {
                 std::cout << " " << it2->first << ": " << it2->second << std::endl;
+            }
             KRATOS_THROW_ERROR(std::logic_error, "The global id does not exist in the global_to_patch map.", "")
         }
 
@@ -141,13 +146,17 @@ public:
         {
             bool check = it->Validate();
             if (!check)
+            {
                 return false;
+            }
 
             for (interface_const_iterator it2 = it->InterfaceBegin(); it2 != it->InterfaceEnd(); ++it2)
             {
                 bool check2 = (*it2)->Validate();
                 if (!check2)
+                {
                     return false;
+                }
             }
         }
 
@@ -158,7 +167,7 @@ public:
     typename PatchType::Pointer pGetPatch(std::size_t Id)
     {
         patch_ptr_iterator it_patch = mpPatches.find(Id).base();
-        if(it_patch == mpPatches.ptr_end())
+        if (it_patch == mpPatches.ptr_end())
         {
             std::stringstream ss;
             ss << "The patch " << Id << " does not exist in the multipatch";
@@ -171,7 +180,7 @@ public:
     typename PatchType::ConstPointer pGetPatch(std::size_t Id) const
     {
         typename PatchContainerType::ptr_const_iterator it_patch = mpPatches.find(Id).base();
-        if(it_patch == mpPatches.ptr_end())
+        if (it_patch == mpPatches.ptr_end())
         {
             std::stringstream ss;
             ss << "The patch " << Id << " does not exist in the multipatch";
@@ -218,7 +227,9 @@ public:
                 else
                 {
                     if (patch_first_id < first_id)
+                    {
                         first_id = patch_first_id;
+                    }
                 }
             }
         }
@@ -246,7 +257,9 @@ public:
                 else
                 {
                     if (patch_last_id > last_id)
+                    {
                         last_id = patch_last_id;
+                    }
                 }
             }
         }
@@ -327,7 +340,9 @@ public:
         {
             std::vector<std::size_t> global_indices = (*it)->pFESpace()->FunctionIndices();
             for (std::size_t i = 0; i < global_indices.size(); ++i)
+            {
                 mGlobalIdToPatchId[global_indices[i]] = (*it)->Id();
+            }
         }
 
         return start + mEquationSystemSize;
@@ -344,7 +359,9 @@ public:
             noalias(xi) = xi0;
             error_code = it->LocalCoordinates(point, xi);
             if (error_code == 0)
+            {
                 return it->Id();
+            }
         }
 
         return -1;
@@ -360,7 +377,9 @@ public:
     {
         rOStream << "MultiPatch details:" << std::endl;
         for (patch_const_iterator it = this->begin(); it != this->end(); ++it)
+        {
             rOStream << (*it) << std::endl;
+        }
     }
 
 private:
@@ -388,4 +407,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatch<TDim>&
 } // end namespace Kratos
 
 #endif
-

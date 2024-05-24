@@ -16,7 +16,6 @@
 // Project includes
 #include "custom_utilities/patch.h"
 
-
 namespace Kratos
 {
 
@@ -27,38 +26,38 @@ namespace Kratos
 template<int TDim>
 class PatchInterface
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-: public std::enable_shared_from_this<PatchInterface<TDim> >
+    : public std::enable_shared_from_this<PatchInterface<TDim> >
 #else
-: public boost::enable_shared_from_this<PatchInterface<TDim> >
+    : public boost::enable_shared_from_this<PatchInterface<TDim> >
 #endif
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(PatchInterface);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const PatchInterface> ConstPointer;
-    #endif
+#endif
 
     typedef Patch<TDim> PatchType;
 
     /// Empty Constructor, be careful when using
     PatchInterface()
-    : mSide1(_NUMBER_OF_BOUNDARY_SIDE), mSide2(_NUMBER_OF_BOUNDARY_SIDE)
+        : mSide1(_NUMBER_OF_BOUNDARY_SIDE), mSide2(_NUMBER_OF_BOUNDARY_SIDE)
     {}
 
     /// Full Constructor, the default local configuration is assumed and there is no reverse.
     PatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-        typename PatchType::Pointer pPatch2, const BoundarySide& side2)
-    : mpPatch1(pPatch1->shared_from_this()), mpPatch2(pPatch2->shared_from_this())
-    , mSide1(side1), mSide2(side2)
+                   typename PatchType::Pointer pPatch2, const BoundarySide& side2)
+        : mpPatch1(pPatch1->shared_from_this()), mpPatch2(pPatch2->shared_from_this())
+        , mSide1(side1), mSide2(side2)
     {}
 
     /// Destructor
     virtual ~PatchInterface()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "PatchInterface" << TDim << "D, Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Create a clone of this interface
@@ -117,10 +116,10 @@ public:
     /// Overload operator ==
     virtual bool operator==(const PatchInterface<TDim>& rOther) const
     {
-        if (this->pPatch1() != rOther.pPatch1()) return false;
-        if (this->pPatch2() != rOther.pPatch2()) return false;
-        if (this->Side1() != rOther.Side1()) return false;
-        if (this->Side2() != rOther.Side2()) return false;
+        if (this->pPatch1() != rOther.pPatch1()) { return false; }
+        if (this->pPatch2() != rOther.pPatch2()) { return false; }
+        if (this->Side1() != rOther.Side1()) { return false; }
+        if (this->Side2() != rOther.Side2()) { return false; }
         return true;
     }
 
@@ -149,20 +148,28 @@ public:
                      << ": " << BoundarySideName(this->Side2());
         }
         rOStream << ", Opposite Interface: ";
-        if (this->pOtherInterface() == NULL) rOStream << "null";
-        else rOStream << this->pOtherInterface();
+        if (this->pOtherInterface() == NULL) { rOStream << "null"; }
+        else { rOStream << this->pOtherInterface(); }
     }
 
     virtual void PrintData(std::ostream& rOStream) const
     {
         if (this->pPatch1() == NULL)
+        {
             rOStream << "patch 1 is not specified" << std::endl;
+        }
         else
+        {
             rOStream << ">> patch 1: " << *(this->pPatch1()) << std::endl;
+        }
         if (this->pPatch2() == NULL)
+        {
             rOStream << "patch 2 is not specified" << std::endl;
+        }
         else
+        {
             rOStream << ">> patch 2: " << *(this->pPatch2()) << std::endl;
+        }
         rOStream << ">> side 2: " << mSide2 << std::endl;
     }
 
@@ -193,4 +200,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const PatchInterface<TD
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PATCH_INTERFACE_H_INCLUDED defined
-

@@ -61,7 +61,9 @@ public:
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             for (std::size_t dim = 0; dim < TFESpaceType::Dim(); ++dim)
+            {
                 mNumDivision[it->Id()][dim] = num_division;
+            }
         }
 
     }
@@ -98,13 +100,17 @@ public:
         // get the sample element
         std::string element_name = mBaseElementName;
         if (TFESpaceType::Dim() == 2)
+        {
             element_name = element_name + "2D4N";
+        }
         else if (TFESpaceType::Dim() == 3)
+        {
             element_name = element_name + "3D8N";
+        }
 
         std::string NodeKey = std::string("Node");
 
-        if(!KratosComponents<Element>::Has(element_name))
+        if (!KratosComponents<Element>::Has(element_name))
         {
             std::stringstream buffer;
             buffer << "Element " << element_name << " is not registered in Kratos.";
@@ -135,12 +141,12 @@ public:
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
-                std::size_t NumDivision1 = it_num->second[0];
+                    std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
-                #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
-                #endif
+#endif
 
                 for (typename TFESpaceType::cell_iterator it_cell = pFaceManager->begin(); it_cell != pFaceManager->end(); ++it_cell)
                 {
@@ -156,7 +162,7 @@ public:
 
                     std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities
                         = IsogeometricPostUtility::GenerateQuadGrid(corners[0], corners[1], corners[2], corners[3],
-                            NodeCounter, NumDivision1, NumDivision2);
+                                NodeCounter, NumDivision1, NumDivision2);
 
                     for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
                     {
@@ -164,17 +170,19 @@ public:
                     }
 
                     ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
-                        points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
+                                                         points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
 
                     for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                     {
                         r_model_part.AddElement(*it2);
-                        #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                         std::cout << "Element " << (*it2)->Id() << " is created with connectivity:";
                         for (std::size_t n = 0; n < (*it2)->GetGeometry().size(); ++n)
+                        {
                             std::cout << " " << (*it2)->GetGeometry()[n].Id();
+                        }
                         std::cout << std::endl;
-                        #endif
+#endif
                     }
 
                     // create and add conditions on the boundary
@@ -191,14 +199,14 @@ public:
                 if (it_num == mNumDivision.end())
                     KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
 
-                std::size_t NumDivision1 = it_num->second[0];
+                    std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
                 std::size_t NumDivision3 = it_num->second[2];
-                #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
                 KRATOS_WATCH(NumDivision2)
                 KRATOS_WATCH(NumDivision3)
-                #endif
+#endif
 
                 for (typename TFESpaceType::cell_iterator it_cell = pFaceManager->begin(); it_cell != pFaceManager->end(); ++it_cell)
                 {
@@ -216,7 +224,7 @@ public:
 
                     std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities
                         = IsogeometricPostUtility::GenerateHexGrid(corners[0], corners[1], corners[2], corners[3],
-                            corners[4], corners[5], corners[6], corners[7], NodeCounter, NumDivision1, NumDivision2, NumDivision3);
+                                corners[4], corners[5], corners[6], corners[7], NodeCounter, NumDivision1, NumDivision2, NumDivision3);
 
                     for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
                     {
@@ -224,17 +232,19 @@ public:
                     }
 
                     ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
-                        points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
+                                                         points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
 
                     for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
                     {
                         r_model_part.AddElement(*it2);
-                        #ifdef DEBUG_MESH_GENERATION
+#ifdef DEBUG_MESH_GENERATION
                         std::cout << "Element " << (*it2)->Id() << " is created with connectivity:";
                         for (std::size_t n = 0; n < (*it2)->GetGeometry().size(); ++n)
+                        {
                             std::cout << " " << (*it2)->GetGeometry()[n].Id();
+                        }
                         std::cout << std::endl;
-                        #endif
+#endif
                     }
 
                     // create and add conditions on the boundary
@@ -285,4 +295,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const NonConformingTSpl
 #undef DEBUG_MESH_GENERATION
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_NONCONFORMING_MULTIPATCH_LAGRANGE_MESH_H_INCLUDED defined
-

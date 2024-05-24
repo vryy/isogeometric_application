@@ -44,24 +44,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 //
 
-
 #if !defined(KRATOS_BEZIER_MODEL_PART_IO_H_INCLUDED )
 #define  KRATOS_BEZIER_MODEL_PART_IO_H_INCLUDED
-
-
 
 // System includes
 #include <string>
 #include <fstream>
 #include <set>
 
-
 // External includes
-
 
 // Project includes
 #include "includes/model_part_io.h"
-
 
 namespace Kratos
 {
@@ -140,12 +134,12 @@ public:
 
     /// Default Constructor with  filenames.
     BezierModelPartIO(std::string const& Filename,
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
-        const Flags Options = IO::READ
-        #else
-        const Flags Options = IO::READ|IO::NOT_IGNORE_VARIABLES_ERROR
-        #endif
-        );
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+                      const Flags Options = IO::READ
+#else
+                      const Flags Options = IO::READ | IO::NOT_IGNORE_VARIABLES_ERROR
+#endif
+                     );
 
     /// Destructor.
     virtual ~BezierModelPartIO();
@@ -170,4 +164,3 @@ private:
 }
 
 #endif
-

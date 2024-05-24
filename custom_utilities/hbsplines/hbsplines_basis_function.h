@@ -39,7 +39,6 @@
 #include "custom_utilities/hbsplines/hb_cell.h"
 #include "isogeometric_application_variables.h"
 
-
 namespace Kratos
 {
 
@@ -77,20 +76,20 @@ public:
 
     /// Constructor with Id
     HBSplinesBasisFunction(std::size_t Id)
-    : BaseType(Id), mLevel(0)
+        : BaseType(Id), mLevel(0)
     {}
 
     /// Constructor with Id and Level
     HBSplinesBasisFunction(std::size_t Id, std::size_t Level)
-    : BaseType(Id), mLevel(Level)
+        : BaseType(Id), mLevel(Level)
     {}
 
     /// Destructor
     ~HBSplinesBasisFunction()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "HBSplinesBasisFunction" << TDim << "D " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     static typename HBSplinesBasisFunction::Pointer Create(std::size_t Id)
@@ -119,9 +118,9 @@ public:
     /// Remove the parent from the list
     void RemoveParent(bf_t p_bf)
     {
-        for(bf_iterator it = bf_parent_begin(); it != bf_parent_end(); ++it)
+        for (bf_iterator it = bf_parent_begin(); it != bf_parent_end(); ++it)
         {
-            if(*it == p_bf)
+            if (*it == p_bf)
             {
                 mpParents.erase(it);
                 break;
@@ -142,9 +141,9 @@ public:
     /// Remove the child from the list
     void RemoveChild(bf_t p_bf)
     {
-        for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if(*it == p_bf)
+            if (*it == p_bf)
             {
                 mpChilds.erase(it);
                 mRefinedCoefficients.erase(p_bf->Id());
@@ -177,8 +176,10 @@ public:
     double GetRefinedCoefficient(int child_id) const
     {
         std::map<int, double>::const_iterator it = mRefinedCoefficients.find(child_id);
-        if(it != mRefinedCoefficients.end())
+        if (it != mRefinedCoefficients.end())
+        {
             return it->second;
+        }
         else
         {
             std::stringstream ss;
@@ -192,14 +193,14 @@ public:
     **************************************************************************/
 
     /// Construct the hierarchical B-Splines basis function in subspace
-    typename HBSplinesBasisFunction<TDim-1>::Pointer Project(std::size_t dim) const
+    typename HBSplinesBasisFunction < TDim - 1 >::Pointer Project(std::size_t dim) const
     {
-        typename HBSplinesBasisFunction<TDim-1>::Pointer pNewSubBf;
+        typename HBSplinesBasisFunction < TDim - 1 >::Pointer pNewSubBf;
 
         if (dim >= TDim)
             KRATOS_THROW_ERROR(std::logic_error, "The dimension is invalid", "")
 
-        pNewSubBf = typename HBSplinesBasisFunction<TDim-1>::Pointer(new HBSplinesBasisFunction<TDim-1>(this->Id(), this->Level()));
+            pNewSubBf = typename HBSplinesBasisFunction < TDim - 1 >::Pointer(new HBSplinesBasisFunction < TDim - 1 > (this->Id(), this->Level()));
         pNewSubBf->SetEquationId(this->EquationId());
 
         if (TDim == 2)
@@ -209,8 +210,8 @@ public:
 
             if (dim == 0)
             {
-                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
             }
         }
         else if (TDim == 3)
@@ -221,10 +222,10 @@ public:
                 pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[2]);
                 pNewSubBf->SetInfo(0, this->mOrders[1]);
                 pNewSubBf->SetInfo(1, this->mOrders[2]);
-                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
-                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
             }
             else if (dim == 1)
             {
@@ -232,10 +233,10 @@ public:
                 pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[0]);
                 pNewSubBf->SetInfo(0, this->mOrders[2]);
                 pNewSubBf->SetInfo(1, this->mOrders[0]);
-                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
-                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
             }
             else if (dim == 2)
             {
@@ -243,10 +244,10 @@ public:
                 pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[1]);
                 pNewSubBf->SetInfo(0, this->mOrders[0]);
                 pNewSubBf->SetInfo(1, this->mOrders[1]);
-                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_));
-                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
+                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
             }
         }
 
@@ -298,15 +299,17 @@ public:
     {
         rOStream << "HBSplinesBasisFunction" << TDim << "D (id: " << this->Id() << "), eq_id: " << this->EquationId() << ", p = (";
         for (int dim = 0; dim < TDim; ++dim)
+        {
             rOStream << " " << this->Order(dim);
+        }
         rOStream << ")";
         rOStream << ", boundary info:";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BLEFT_) ) ) rOStream << " left";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BRIGHT_) ) ) rOStream << " right";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BFRONT_) ) ) rOStream << " front";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BBACK_) ) ) rOStream << " back";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BTOP_) ) ) rOStream << " top";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BBOTTOM_) ) ) rOStream << " bottom";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BLEFT_) ) ) { rOStream << " left"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BRIGHT_) ) ) { rOStream << " right"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BFRONT_) ) ) { rOStream << " front"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BBACK_) ) ) { rOStream << " back"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BTOP_) ) ) { rOStream << " top"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BBOTTOM_) ) ) { rOStream << " bottom"; }
     }
 
     /// Print data of this basis function
@@ -316,13 +319,15 @@ public:
 
         rOStream << " List of children:";
         std::size_t cnt = 0;
-        for(bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
             std::map<int, double>::const_iterator it_coeff = mRefinedCoefficients.find((*it)->Id());
             rOStream << "  " << ++cnt << ": (" << (*it)->Id() << "," << it_coeff->second << ")";
         }
-        if(bf_end() == bf_begin())
+        if (bf_end() == bf_begin())
+        {
             rOStream << " none";
+        }
         rOStream << std::endl;
     }
 
@@ -334,7 +339,6 @@ private:
     std::map<int, double> mRefinedCoefficients; // store the coefficient of refined basis functions
 
 };
-
 
 /// Template Specialization to terminate the compilation
 template<>
@@ -380,7 +384,7 @@ public:
     void SetLocalKnotVectors(int dim, const std::vector<knot_t>& rpKnots) {}
 
     /// return the internal reference of the knot vectors; use it with care
-    std::vector<knot_t> LocalKnots(int dim) const {return std::vector<knot_t>{};}
+    std::vector<knot_t> LocalKnots(int dim) const {return std::vector<knot_t> {};}
 
     /// Add a cell support this basis function to the list
     cell_iterator AddCell(cell_t p_cell) {return mpCells.end();}
@@ -413,4 +417,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesBasisFun
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_BASIS_FUNCTION_H_INCLUDED
-

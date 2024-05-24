@@ -8,8 +8,8 @@ int main(int argc, char** argv)
 {
     std::vector<Matrix> C;
     int nb1, nb2;
-    std::vector<double> U = {0    ,     0     ,    0  ,  1.0/3  ,  2.0/3  ,  1.0000  ,  1.0000  ,  1.0000};
-    std::vector<double> V = {0    ,     0     ,    0  ,  1.0/3  ,  2.0/3  ,  1.0000  ,  1.0000  ,  1.0000};
+    std::vector<double> U = {0,     0,    0,  1.0 / 3,  2.0 / 3,  1.0000,  1.0000,  1.0000};
+    std::vector<double> V = {0,     0,    0,  1.0 / 3,  2.0 / 3,  1.0000,  1.0000,  1.0000};
     int p = 2;
     int q = 2;
 
@@ -21,7 +21,5 @@ int main(int argc, char** argv)
     for (int i = 0; i < C.size(); ++i)
         KRATOS_WATCH(C[i])
 
-    return 0;
+        return 0;
 }
-
-

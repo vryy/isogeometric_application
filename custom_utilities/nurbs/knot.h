@@ -33,9 +33,9 @@ class Knot
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Knot);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const Knot> ConstPointer;
-    #endif
+#endif
 
     /// Default constructor
     Knot(const TDataType& Value) : mValue(Value), mIndex(-1), mIsActive(true)
@@ -76,4 +76,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Knot<TDataType>& 
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_KNOT_H_INCLUDED
-

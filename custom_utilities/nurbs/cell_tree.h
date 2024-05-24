@@ -105,16 +105,20 @@ public:
     cell_t get(std::size_t Id)
     {
         // create the index map if it's not created yet
-        if(!cell_map_is_created)
+        if (!cell_map_is_created)
+        {
             CreateCellsMap();
+        }
 
         // return the bf if its Id exist in the list
         typename map_t::iterator it = mCellsMap.find(Id);
-        if(it != mCellsMap.end())
+        if (it != mCellsMap.end())
+        {
             return it->second;
+        }
         else
             KRATOS_THROW_ERROR(std::runtime_error, "Access index is not found:", Id)
-    }
+        }
 
     /// Overload operator[]
     cell_t operator[](std::size_t Id)
@@ -161,8 +165,10 @@ private:
     void CreateCellsMap()
     {
         mCellsMap.clear();
-        for(iterator it = mpCells.begin(); it != mpCells.end(); ++it)
+        for (iterator it = mpCells.begin(); it != mpCells.end(); ++it)
+        {
             mCellsMap[(*it)->Id()] = *it;
+        }
         cell_map_is_created = true;
     }
 };
@@ -179,4 +185,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const CellTree<TCellTyp
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_TREE_H_INCLUDED
-

@@ -209,9 +209,9 @@ public:
     {}
 
     Geo1dNURBS(
-            const PointsArrayType& ThisPoints
+        const PointsArrayType& ThisPoints
     )
-    : BaseType( ThisPoints )
+        : BaseType( ThisPoints )
     {
     }
 
@@ -225,7 +225,7 @@ public:
      * source geometry's points too.
      */
     Geo1dNURBS( Geo1dNURBS const& rOther )
-    : BaseType( rOther )
+        : BaseType( rOther )
     {
     }
 
@@ -241,7 +241,7 @@ public:
      * source geometry's points too.
      */
     template<class TOtherPointType> Geo1dNURBS( Geo1dNURBS<TOtherPointType> const& rOther )
-    : BaseType( rOther )
+        : BaseType( rOther )
     {
     }
 
@@ -405,7 +405,9 @@ public:
         this->PointLocalCoordinates( rResult, rPoint );
 
         if ( fabs( rResult[0] ) < 1 + 1.0e-8 )
-        return true;
+        {
+            return true;
+        }
 
         return false;
     }
@@ -432,14 +434,14 @@ public:
      * @see InverseOfJacobian
      */
     virtual JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod ) const
+                                     IntegrationMethod ThisMethod ) const
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
-        CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
         //getting values of shape functions
         Matrix shape_functions_values =
-        CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
 
         if ( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
         {
@@ -489,15 +491,15 @@ public:
      * @see InverseOfJacobian
      */
     virtual JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod,
-            const Matrix& DeltaPosition ) const
+                                     IntegrationMethod ThisMethod,
+                                     const Matrix& DeltaPosition ) const
     {
         //getting derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
-        CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
         //getting values of shape functions
         Matrix shape_functions_values =
-        CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsValues( ThisMethod );
 
         if ( rResult.size() != this->IntegrationPointsNumber( ThisMethod ) )
         {
@@ -514,9 +516,9 @@ public:
 
             for ( unsigned int i = 0; i < this->PointsNumber(); ++i )
             {
-                jacobian( 0, 0 ) += ( this->GetPoint( i ).X() + DeltaPosition(i,0) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-                jacobian( 1, 0 ) += ( this->GetPoint( i ).Y() + DeltaPosition(i,1) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
-                jacobian( 2, 0 ) += ( this->GetPoint( i ).Z() + DeltaPosition(i,2) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
+                jacobian( 0, 0 ) += ( this->GetPoint( i ).X() + DeltaPosition(i, 0) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
+                jacobian( 1, 0 ) += ( this->GetPoint( i ).Y() + DeltaPosition(i, 1) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
+                jacobian( 2, 0 ) += ( this->GetPoint( i ).Z() + DeltaPosition(i, 2) ) * ( shape_functions_gradients[pnt]( i, 0 ) );
             }
 
             rResult[pnt] = jacobian;
@@ -544,20 +546,20 @@ public:
      * @see InverseOfJacobian
      */
     virtual Matrix& Jacobian( Matrix& rResult,
-            IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const
+                              IndexType IntegrationPointIndex,
+                              IntegrationMethod ThisMethod ) const
     {
         //setting up size of jacobian matrix
         rResult.resize( 3, 1 );
         //derivatives of shape functions
         ShapeFunctionsGradientsType shape_functions_gradients =
-        CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
+            CalculateShapeFunctionsIntegrationPointsLocalGradients( ThisMethod );
         Matrix ShapeFunctionsGradientInIntegrationPoint =
-        shape_functions_gradients( IntegrationPointIndex );
+            shape_functions_gradients( IntegrationPointIndex );
         //values of shape functions in integration points
         vector<double> ShapeFunctionValuesInIntegrationPoint = ZeroVector( 3 );
         ShapeFunctionValuesInIntegrationPoint = row( CalculateShapeFunctionsIntegrationPointsValues( ThisMethod ),
-                IntegrationPointIndex );
+                                                IntegrationPointIndex );
 
         //Elements of jacobian matrix (e.g. J(1,1) = dX1/dXi1)
         double j0 = 0.0;
@@ -636,9 +638,9 @@ public:
      * @see InverseOfJacobian
      */
     virtual Vector& DeterminantOfJacobian( Vector& rResult,
-            IntegrationMethod ThisMethod ) const
+                                           IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
         return rResult;
     }
 
@@ -665,9 +667,9 @@ public:
      * @see InverseOfJacobian
      */
     virtual double DeterminantOfJacobian( IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const
+                                          IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
         return 0.0;
     }
 
@@ -692,7 +694,7 @@ public:
      */
     virtual double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
         return 0.0;
     }
 
@@ -718,7 +720,7 @@ public:
     virtual JacobiansType& InverseOfJacobian( JacobiansType& rResult,
             IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
         return rResult;
     }
 
@@ -747,10 +749,10 @@ public:
      * KLUDGE: works only with explicitly generated Matrix object
      */
     virtual Matrix& InverseOfJacobian( Matrix& rResult,
-            IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const
+                                       IndexType IntegrationPointIndex,
+                                       IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
         return rResult;
     }
 
@@ -772,7 +774,7 @@ public:
      */
     virtual Matrix& InverseOfJacobian( Matrix& rResult, const CoordinatesArrayType& rPoint ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , "" );
+        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
         return rResult;
     }
 
@@ -791,13 +793,13 @@ public:
      * TODO: implemented but not yet tested
      */
     virtual double ShapeFunctionValue( IndexType ShapeFunctionIndex,
-            const CoordinatesArrayType& rPoint ) const
+                                       const CoordinatesArrayType& rPoint ) const
     {
         int span = BSplineUtils::FindSpan(mNumber, mOrder, rPoint[0], mKnots);
         int start = span - mOrder;
 
         // bound checking
-        if(ShapeFunctionIndex - start > mOrder || ShapeFunctionIndex - start < 0)
+        if (ShapeFunctionIndex - start > mOrder || ShapeFunctionIndex - start < 0)
         {
             return 0.0;
         }
@@ -807,13 +809,13 @@ public:
         BSplineUtils::BasisFuns(ShapeFunctionValues, span, rPoint[0], mOrder, mKnots);
 
         double denom = 0.0;
-        for(unsigned int i = start; i <= span; ++i)
+        for (unsigned int i = start; i <= span; ++i)
         {
             denom += mCtrlWeights[i] * ShapeFunctionValues[i - start];
         }
 
         return ShapeFunctionValues[ShapeFunctionIndex - start] *
-                ( mCtrlWeights[ShapeFunctionIndex] / denom );
+               ( mCtrlWeights[ShapeFunctionIndex] / denom );
     }
 
     /**
@@ -824,7 +826,7 @@ public:
      * value of the shape function is calculated
      */
     virtual Vector& ShapeFunctionValues( Vector& rResults,
-        const CoordinatesArrayType& rCoordinates ) const
+                                         const CoordinatesArrayType& rCoordinates ) const
     {
         rResults.resize( mNumber );
         noalias( rResults ) = ZeroVector( mNumber );
@@ -843,7 +845,7 @@ public:
         double W;
 
         unsigned int i, Index;
-        for(Index = Start; Index <= Span; ++Index)
+        for (Index = Start; Index <= Span; ++Index)
         {
             W = mCtrlWeights[Index];
             N = ShapeFunctionValues1(Index - Start);
@@ -879,7 +881,7 @@ public:
         double N, dN, W;
 
         unsigned int i;
-        for(i = start; i <= span; ++i)
+        for (i = start; i <= span; ++i)
         {
             W = mCtrlWeights[i];
             N = ShapeFunctionsValuesAndDerivatives(0, i - start);
@@ -888,7 +890,7 @@ public:
             denom_der += W * dN;
         }
 
-        for(i = start; i <= span; ++i)
+        for (i = start; i <= span; ++i)
         {
             W = mCtrlWeights[i];
             N = ShapeFunctionsValuesAndDerivatives(0, i - start);
@@ -896,7 +898,7 @@ public:
             rResult(i, 0) = W * (dN * denom - N * denom_der) / pow(denom, 2);
         }
 
-        return( rResult );
+        return ( rResult );
     }
 
     void ShapeFunctionsValuesAndLocalGradients
@@ -923,7 +925,7 @@ public:
         double N, dN, W;
 
         unsigned int i;
-        for(i = start; i <= span; ++i)
+        for (i = start; i <= span; ++i)
         {
             W = mCtrlWeights[i];
             N = ShapeFunctionsValuesAndDerivatives(0, i - start);
@@ -932,7 +934,7 @@ public:
             denom_der += W * dN;
         }
 
-        for(i = start; i <= span; ++i)
+        for (i = start; i <= span; ++i)
         {
             W = mCtrlWeights[i];
             N = ShapeFunctionsValuesAndDerivatives(0, i - start);
@@ -958,10 +960,10 @@ public:
      * :TODO: TESTING!!!
      */
     virtual ShapeFunctionsGradientsType& ShapeFunctionsIntegrationPointsGradients(
-            ShapeFunctionsGradientsType& rResult,
-            IntegrationMethod ThisMethod ) const
+        ShapeFunctionsGradientsType& rResult,
+        IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square" , __FUNCTION__);
+        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", __FUNCTION__);
 
         return rResult;
     }
@@ -1031,7 +1033,7 @@ public:
         mOrder = Degree1;
         mNumber = Knots1.size() - Degree1 - 1;
 
-        if(mNumber != this->size())
+        if (mNumber != this->size())
         {
             KRATOS_THROW_ERROR(std::logic_error, "The parametric parameters is not compatible, knots.length != n+p+1.", __FUNCTION__)
         }
@@ -1055,16 +1057,16 @@ public:
         }
 
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-            new GeometryData(
-                    3,        //ThisDimension
-                    3,//ThisWorkingSpaceDimension
-                    1,//ThisLocalSpaceDimension
-                    GeometryData::IntegrationMethod::GI_GAUSS_1,//ThisDefaultMethod
-                    all_integration_points,//ThisIntegrationPoints
-                    shape_functions_values,//ThisShapeFunctionsValues
-                    shape_functions_local_gradients//ThisShapeFunctionsLocalGradients
-            )
-        );
+                    new GeometryData(
+                        3,        //ThisDimension
+                        3,//ThisWorkingSpaceDimension
+                        1,//ThisLocalSpaceDimension
+                        GeometryData::IntegrationMethod::GI_GAUSS_1,//ThisDefaultMethod
+                        all_integration_points,//ThisIntegrationPoints
+                        shape_functions_values,//ThisShapeFunctionsValues
+                        shape_functions_local_gradients//ThisShapeFunctionsLocalGradients
+                    )
+                );
 
         //generate an empty GeometryData
 //        IntegrationPointsContainerType integration_points =
@@ -1157,9 +1159,9 @@ private:
         //loop over all integration points
 
         //TODO: this can be optimized
-        for(unsigned int pnt = 0; pnt < integration_points_number; ++pnt)
+        for (unsigned int pnt = 0; pnt < integration_points_number; ++pnt)
         {
-            for(unsigned int node = 0; node < mNumber; node++)
+            for (unsigned int node = 0; node < mNumber; node++)
             {
                 shape_function_values( pnt, node ) = ShapeFunctionValue(node, integration_points[pnt]);
             }
@@ -1219,7 +1221,7 @@ private:
                 shape_function_local_gradients[it_gp],
                 integration_points[it_gp]
             );
-            for(unsigned int node = 0; node < mNumber; ++node)
+            for (unsigned int node = 0; node < mNumber; ++node)
             {
                 shape_function_values( it_gp, node ) = temp_values(node);
             }
@@ -1233,9 +1235,9 @@ private:
         UnrepeatedKnots[0] = Knots[0];
         double knot = UnrepeatedKnots[0];
         int cnt = 1;
-        for(unsigned int i = 1; i < Knots.size(); ++i)
+        for (unsigned int i = 1; i < Knots.size(); ++i)
         {
-            if(Knots[i] > knot)
+            if (Knots[i] > knot)
             {
                 knot = Knots[i];
                 UnrepeatedKnots[cnt++] = knot;
@@ -1259,7 +1261,7 @@ private:
     virtual IntegrationPointsContainerType AllIntegrationPoints(int NumberOfIntegrationMethod) const
     {
         //check the size of relevant integration method
-        if(NumberOfIntegrationMethod > static_cast<int>(GeometryData::IntegrationMethod::NumberOfIntegrationMethods) - mOrder + 1)
+        if (NumberOfIntegrationMethod > static_cast<int>(GeometryData::IntegrationMethod::NumberOfIntegrationMethods) - mOrder + 1)
         {
             KRATOS_THROW_ERROR(std::logic_error, "Number of integration methods exceeds the allowance defined by boost.array", __FUNCTION__)
         }
@@ -1290,7 +1292,7 @@ private:
 
             IntegrationPointsArrayType TempGaussRule;
 
-            for(i = 0; i < UnrepeatedKnots.size() - 1; ++i)
+            for (i = 0; i < UnrepeatedKnots.size() - 1; ++i)
             {
                 left = UnrepeatedKnots[i];
                 right = UnrepeatedKnots[i + 1];
@@ -1298,7 +1300,7 @@ private:
                 a = (right - left) / 2;
                 b = (right + left) / 2;
 
-                for(j = 0; j < BaseRule[offset].size(); ++j)
+                for (j = 0; j < BaseRule[offset].size(); ++j)
                 {
                     IntegrationPointType temp = BaseRule[offset][j];
                     temp.X() = a * temp.X() + b;
@@ -1372,13 +1374,13 @@ private:
  * input stream function
  */
 template<class TPointType> inline std::istream& operator >>(
-        std::istream& rIStream, Geo1dNURBS<TPointType>& rThis);
+    std::istream& rIStream, Geo1dNURBS<TPointType>& rThis);
 
 /**
  * output stream function
  */
 template<class TPointType> inline std::ostream& operator <<(
-        std::ostream& rOStream, const Geo1dNURBS<TPointType>& rThis)
+    std::ostream& rOStream, const Geo1dNURBS<TPointType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -1390,4 +1392,3 @@ template<class TPointType> inline std::ostream& operator <<(
 }    // namespace Kratos.
 
 #endif
-

@@ -60,7 +60,6 @@ namespace Kratos
 ///@name  Functions
 ///@{
 
-
 ///@}
 ///@name Kratos Classes
 ///@{
@@ -123,7 +122,7 @@ public:
     /// Create a node for a model_part with a specific Id and transfer the values
     template<class TPatchType, typename TCoordinatesType, typename TIndexType>
     static typename NodeType::Pointer CreateNodeAndTransferValues(const TCoordinatesType& p_ref, const TPatchType& rPatch,
-        ModelPart& r_model_part, const TIndexType& NodeId)
+            ModelPart& r_model_part, const TIndexType& NodeId)
     {
         typename NodeType::Pointer pNewNode = CreateNode(p_ref, rPatch, r_model_part, NodeId);
         TransferValuesToNodes(*pNewNode, p_ref, rPatch);
@@ -133,7 +132,7 @@ public:
     /// Create a node for a model_part with a specific Id
     template<class TPatchType, typename TCoordinatesType, typename TIndexType>
     static typename NodeType::Pointer CreateNode(const TCoordinatesType& p_ref, const TPatchType& rPatch,
-        ModelPart& r_model_part, const TIndexType& NodeId)
+            ModelPart& r_model_part, const TIndexType& NodeId)
     {
         typename TPatchType::ControlPointType p = rPatch.pControlPointGridFunction()->GetValue(p_ref);
         typename NodeType::Pointer pNewNode = r_model_part.CreateNewNode(NodeId, p.X(), p.Y(), p.Z());
@@ -175,7 +174,9 @@ public:
                 VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
                 DataType value = (*it_gf)->GetValue(p_ref);
                 if (rNode.SolutionStepsDataHas(*pVariable))
+                {
                     rNode.GetSolutionStepValue(*pVariable) = value;
+                }
             }
         }
 
@@ -186,13 +187,15 @@ public:
             typedef array_1d<double, 3> DataType;
             typedef Variable<DataType> VariableType;
             const std::string& var_name = (*it_gf)->pControlGrid()->Name();
-            if (var_name == "CONTROL_POINT_COORDINATES") continue;
+            if (var_name == "CONTROL_POINT_COORDINATES") { continue; }
             if (KratosComponents<VariableData>::Has(var_name))
             {
                 VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
                 DataType value = (*it_gf)->GetValue(p_ref);
                 if (rNode.SolutionStepsDataHas(*pVariable))
+                {
                     rNode.GetSolutionStepValue(*pVariable) = value;
+                }
             }
         }
 
@@ -208,7 +211,9 @@ public:
                 VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
                 DataType value = (*it_gf)->GetValue(p_ref);
                 if (rNode.SolutionStepsDataHas(*pVariable))
+                {
                     rNode.GetSolutionStepValue(*pVariable) = value;
+                }
             }
         }
     }
@@ -216,7 +221,7 @@ public:
     /// Transfer the control values from patch to Gauss points
     template<class TEntityType, typename TVariableType, class TPatchType>
     static void TransferValuesToGaussPoints(TEntityType& rElement, const TVariableType& rVariable,
-        const TPatchType& rPatch, const ProcessInfo& rProcessInfo)
+                                            const TPatchType& rPatch, const ProcessInfo& rProcessInfo)
     {
         GeometryData::IntegrationMethod ThisIntegrationMethod = rElement.GetIntegrationMethod();
 
@@ -228,10 +233,10 @@ public:
         typename GridFunction<TPatchType::FESpaceType::Dim(), typename TVariableType::Type>::ConstPointer pGridFunc
             = rPatch.pGetGridFunction(rVariable);
 
-        #ifdef ENABLE_BEZIER_GEOMETRY
+#ifdef ENABLE_BEZIER_GEOMETRY
         //initialize the geometry
         rGeometry.Initialize(ThisIntegrationMethod);
-        #endif
+#endif
 
         const IntegrationPointsArrayType& integration_points = rGeometry.IntegrationPoints(ThisIntegrationMethod);
 
@@ -251,10 +256,10 @@ public:
             ValuesOnIntPoint[PointNumber] = pGridFunc->GetValue(p_ref);
         }
 
-        #ifdef ENABLE_BEZIER_GEOMETRY
+#ifdef ENABLE_BEZIER_GEOMETRY
         // clean the geometry
         rGeometry.Clean();
-        #endif
+#endif
 
         rElement.SetValuesOnIntegrationPoints( rVariable, ValuesOnIntPoint, rProcessInfo);
     }
@@ -262,7 +267,7 @@ public:
     /// Generate corner points for regular geometry
     template<int TDim, typename TCoordinatesType, typename TValueType>
     static void GenerateRegular(std::vector<TCoordinatesType>& points,
-        const std::vector<TCoordinatesType>& cmin, const std::vector<TCoordinatesType>& cmax)
+                                const std::vector<TCoordinatesType>& cmin, const std::vector<TCoordinatesType>& cmax)
     {
         if (TDim == 2)
         {
@@ -274,7 +279,7 @@ public:
         }
         else
             KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension", TDim)
-    }
+        }
 
     /// Generate a single rectangle. The 4 corner points are denoted as
     ///  4---3
@@ -282,8 +287,8 @@ public:
     ///  1---2
     template<typename TCoordinatesType, typename TValueType>
     static void GenerateRectangle(std::vector<TCoordinatesType>& points,
-        const TValueType& xmin, const TValueType& xmax,
-        const TValueType& ymin, const TValueType& ymax)
+                                  const TValueType& xmin, const TValueType& xmax,
+                                  const TValueType& ymin, const TValueType& ymax)
     {
         points[0][0] = xmin;
         points[0][1] = ymin;
@@ -307,10 +312,10 @@ public:
     template<typename TCoordinatesType, typename TVectorType, typename TIndexType>
     static std::vector<std::vector<TIndexType> >
     GenerateTriangleGrid(const std::vector<TCoordinatesType>& points,
-        const TVectorType& rCenter,
-        const TVectorType& rNormal,
-        const TVectorType& rTangent1,
-        const TVectorType& rTangent2)
+                         const TVectorType& rCenter,
+                         const TVectorType& rNormal,
+                         const TVectorType& rTangent1,
+                         const TVectorType& rTangent2)
     {
         // create the 2D coordinates for points, in order to triangulate
         std::vector<double> XY;
@@ -329,7 +334,7 @@ public:
         // compute the triangulation
         typedef std::vector<std::vector<TIndexType> > connectivity_t;
         connectivity_t Connectivities;
-        #if defined(USE_CGAL_FOR_TRIANGULATION) && defined(ISOGEOMETRIC_APPLICATION_USE_CGAL)
+#if defined(USE_CGAL_FOR_TRIANGULATION) && defined(ISOGEOMETRIC_APPLICATION_USE_CGAL)
         typedef CGAL::Exact_predicates_inexact_constructions_kernel                 Kernel;
         typedef CGAL::Triangulation_vertex_base_with_info_2<unsigned int, Kernel>   Vb;
         typedef CGAL::Triangulation_data_structure_2<Vb>                            Tds;
@@ -337,15 +342,15 @@ public:
         typedef Kernel::Point_2                                                     Point2;
 
         std::vector< std::pair<Point2, unsigned int> > clipped_points;
-        for(std::size_t i = 0; i < XY.size() / 2; ++i)
+        for (std::size_t i = 0; i < XY.size() / 2; ++i)
         {
-            clipped_points.push_back( std::make_pair( Point2(XY[2*i], XY[2*i+1]), i ) );
+            clipped_points.push_back( std::make_pair( Point2(XY[2 * i], XY[2 * i + 1]), i ) );
         }
 
         Delaunay triangulation;
         triangulation.insert(clipped_points.begin(), clipped_points.end());
 
-        for(Delaunay::Finite_faces_iterator fit = triangulation.finite_faces_begin(); fit != triangulation.finite_faces_end(); ++fit)
+        for (Delaunay::Finite_faces_iterator fit = triangulation.finite_faces_begin(); fit != triangulation.finite_faces_end(); ++fit)
         {
             Delaunay::Face_handle face = fit;
             std::vector<unsigned int> con(3);
@@ -354,13 +359,13 @@ public:
             con[2] = face->vertex(2)->info();
             Connectivities.push_back(con);
         }
-        #elif defined(USE_TRIANGULATION_UTILS_FOR_TRIANGULATION)
+#elif defined(USE_TRIANGULATION_UTILS_FOR_TRIANGULATION)
         TriangulationUtils tri_util;
         tri_util.ComputeDelaunayTriangulation(XY, Connectivities);
-        #else
+#else
         // REMARK: a tool to perform triangulation is not defined. You must define it.
         KRATOS_THROW_ERROR(std::logic_error, "A triangulation method must be specialized", "")
-        #endif
+#endif
 
         return Connectivities;
     }
@@ -371,13 +376,13 @@ public:
     template<typename TCoordinatesType, typename TVectorType, typename TIndexType>
     static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
     GenerateTriangleGrid(const std::vector<TCoordinatesType>& physical_points,
-        const TVectorType& rCenter,
-        const TVectorType& rNormal,
-        const TVectorType& rTangent1,
-        const TVectorType& rTangent2,
-        const std::vector<TCoordinatesType>& local_points,
-        const TIndexType& offset,
-        std::size_t nrefine)
+                         const TVectorType& rCenter,
+                         const TVectorType& rNormal,
+                         const TVectorType& rTangent1,
+                         const TVectorType& rTangent2,
+                         const std::vector<TCoordinatesType>& local_points,
+                         const TIndexType& offset,
+                         std::size_t nrefine)
     {
         // compute the triangulation
         typedef std::vector<std::vector<TIndexType> > connectivity_t;
@@ -386,12 +391,16 @@ public:
         // refine if needed
         std::vector<TCoordinatesType> new_points = local_points;
         for (std::size_t i = 0; i < nrefine; ++i)
+        {
             RefineTriangleGrid<TIndexType, TCoordinatesType>(new_points, Connectivities);
+        }
 
         // offset the connectivity
         for (std::size_t i = 0; i < Connectivities.size(); ++i)
             for (std::size_t j = 0; j < Connectivities[i].size(); ++j)
+            {
                 Connectivities[i][j] += offset;
+            }
 
         return std::make_pair(new_points, Connectivities);
     }
@@ -403,9 +412,9 @@ public:
     template<typename TCoordinatesType, typename TIndexType>
     static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
     GenerateQuadGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
-        const TCoordinatesType& p3, const TCoordinatesType& p4,
-        const TIndexType& starting_node_id,
-        std::size_t num_div_1, std::size_t num_div_2)
+                     const TCoordinatesType& p3, const TCoordinatesType& p4,
+                     const TIndexType& starting_node_id,
+                     std::size_t num_div_1, std::size_t num_div_2)
     {
         TCoordinatesType p, pm, pn;
 
@@ -417,13 +426,13 @@ public:
         for (i = 0; i <= num_div_1; ++i)
         {
             xi = ((double) i) / num_div_1;
-            pm = p1 + xi*(p2 - p1);
-            pn = p4 + xi*(p3 - p4);
+            pm = p1 + xi * (p2 - p1);
+            pn = p4 + xi * (p3 - p4);
 
             for (j = 0; j <= num_div_2; ++j)
             {
                 eta = ((double) j) / num_div_2;
-                p = pm + eta*(pn - pm);
+                p = pm + eta * (pn - pm);
 
                 points.push_back(p);
             }
@@ -432,14 +441,14 @@ public:
         TIndexType n1, n2, n3, n4;
         for (i = 0; i < num_div_1; ++i)
         {
-            for(j = 0; j < num_div_2; ++j)
+            for (j = 0; j < num_div_2; ++j)
             {
                 n1 = starting_node_id + i * (num_div_2 + 1) + j;
                 n2 = starting_node_id + i * (num_div_2 + 1) + j + 1;
                 n3 = starting_node_id + (i + 1) * (num_div_2 + 1) + j;
                 n4 = starting_node_id + (i + 1) * (num_div_2 + 1) + j + 1;
 
-                connectivities.push_back(std::vector<std::size_t>{n1, n2, n4, n3});
+                connectivities.push_back(std::vector<std::size_t> {n1, n2, n4, n3});
             }
         }
 
@@ -452,9 +461,9 @@ public:
     ///  1---2         5---6
     template<typename TCoordinatesType, typename TValueType>
     static void GenerateBox(std::vector<TCoordinatesType>& points,
-        const TValueType& xmin, const TValueType& xmax,
-        const TValueType& ymin, const TValueType& ymax,
-        const TValueType& zmin, const TValueType& zmax)
+                            const TValueType& xmin, const TValueType& xmax,
+                            const TValueType& ymin, const TValueType& ymax,
+                            const TValueType& zmin, const TValueType& zmax)
     {
         points[0][0] = xmin;
         points[0][1] = ymin;
@@ -496,11 +505,11 @@ public:
     template<typename TCoordinatesType, typename TIndexType>
     static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
     GenerateHexGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
-        const TCoordinatesType& p3, const TCoordinatesType& p4,
-        const TCoordinatesType& p5, const TCoordinatesType& p6,
-        const TCoordinatesType& p7, const TCoordinatesType& p8,
-        const TIndexType& starting_node_id,
-        std::size_t num_div_1, std::size_t num_div_2, std::size_t num_div_3)
+                    const TCoordinatesType& p3, const TCoordinatesType& p4,
+                    const TCoordinatesType& p5, const TCoordinatesType& p6,
+                    const TCoordinatesType& p7, const TCoordinatesType& p8,
+                    const TIndexType& starting_node_id,
+                    std::size_t num_div_1, std::size_t num_div_2, std::size_t num_div_3)
     {
         TCoordinatesType p, pm1, pn1, pm2, pn2, pq1, pq2;
 
@@ -512,21 +521,21 @@ public:
         for (i = 0; i <= num_div_1; ++i)
         {
             xi = ((double) i) / num_div_1;
-            pm1 = p1 + xi*(p2 - p1);
-            pn1 = p4 + xi*(p3 - p4);
-            pm2 = p5 + xi*(p6 - p5);
-            pn2 = p8 + xi*(p7 - p8);
+            pm1 = p1 + xi * (p2 - p1);
+            pn1 = p4 + xi * (p3 - p4);
+            pm2 = p5 + xi * (p6 - p5);
+            pn2 = p8 + xi * (p7 - p8);
 
             for (j = 0; j <= num_div_2; ++j)
             {
                 eta = ((double) j) / num_div_2;
-                pq1 = pm1 + eta*(pn1 - pm1);
-                pq2 = pm2 + eta*(pn2 - pm2);
+                pq1 = pm1 + eta * (pn1 - pm1);
+                pq2 = pm2 + eta * (pn2 - pm2);
 
                 for (k = 0; k <= num_div_3; ++k)
                 {
                     zeta = ((double) k) / num_div_3;
-                    p = pq1 + zeta*(pq2-pq1);
+                    p = pq1 + zeta * (pq2 - pq1);
 
                     points.push_back(p);
                 }
@@ -554,7 +563,7 @@ public:
                     IndexType n7 = n3 + 1;
                     IndexType n8 = n4 + 1;
 
-                    connectivities.push_back(std::vector<std::size_t>{n1, n2, n4, n3, n5, n6, n8, n7});
+                    connectivities.push_back(std::vector<std::size_t> {n1, n2, n4, n3, n5, n6, n8, n7});
                 }
             }
         }
@@ -574,14 +583,14 @@ public:
 
     /// Refine a triangle grid by sub-divide a triangle into 4 sub-triangles.
     template<typename TIndexType = std::size_t,
-        typename TCoordinatesType = std::vector<double>,
-        typename TCoordinatesListType = std::vector<TCoordinatesType>,
-        typename TConnectivityType = std::vector<TIndexType>,
-        typename TConnectivityListType = std::vector<TConnectivityType> >
+             typename TCoordinatesType = std::vector<double>,
+             typename TCoordinatesListType = std::vector<TCoordinatesType>,
+             typename TConnectivityType = std::vector<TIndexType>,
+             typename TConnectivityListType = std::vector<TConnectivityType> >
     static void RefineTriangleGrid(TCoordinatesListType& Points, TConnectivityListType& Connectivities)
     {
         std::size_t npoints = Points.size();
-        TIndexType last_id = static_cast<TIndexType>(npoints-1);
+        TIndexType last_id = static_cast<TIndexType>(npoints - 1);
 
         // generate the new middle points
         typedef std::pair<TIndexType, TIndexType> key_t;
@@ -598,7 +607,7 @@ public:
             key2 = std::make_pair(n2, n1);
             if (map_corner_to_middle.find(key1) == map_corner_to_middle.end())
             {
-                Points.push_back(0.5*(Points[n1] + Points[n2]));
+                Points.push_back(0.5 * (Points[n1] + Points[n2]));
                 map_corner_to_middle[key1] = ++last_id;
                 map_corner_to_middle[key2] = last_id;
             }
@@ -607,7 +616,7 @@ public:
             key2 = std::make_pair(n3, n2);
             if (map_corner_to_middle.find(key1) == map_corner_to_middle.end())
             {
-                Points.push_back(0.5*(Points[n2] + Points[n3]));
+                Points.push_back(0.5 * (Points[n2] + Points[n3]));
                 map_corner_to_middle[key1] = ++last_id;
                 map_corner_to_middle[key2] = last_id;
             }
@@ -616,7 +625,7 @@ public:
             key2 = std::make_pair(n1, n3);
             if (map_corner_to_middle.find(key1) == map_corner_to_middle.end())
             {
-                Points.push_back(0.5*(Points[n3] + Points[n1]));
+                Points.push_back(0.5 * (Points[n3] + Points[n1]));
                 map_corner_to_middle[key1] = ++last_id;
                 map_corner_to_middle[key2] = last_id;
             }
@@ -653,7 +662,9 @@ public:
         {
             if (typeid(*(*it)) == typeid(r_sample_entity))
                 if (typeid((*it)->GetGeometry()) == typeid(r_sample_entity.GetGeometry()))
+                {
                     pFoundEntities.push_back(*it);
+                }
         }
 
         return pFoundEntities;
@@ -678,7 +689,9 @@ public:
             temp_entity_nodes.clear();
 
             for (typename TConnectivityType::value_type::const_iterator it2 = it->begin(); it2 != it->end(); ++it2)
+            {
                 temp_entity_nodes.push_back(*(FindKey(r_model_part.Nodes(), *it2, NodeKey).base()));
+            }
 
             typename TEntityType::Pointer pNewEntity = r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pProperties);
             pNewEntities.push_back(pNewEntity);
@@ -825,25 +838,27 @@ public:
         std::vector<std::vector<std::size_t> > indices(equation_size);
 
         typename TElementType::EquationIdVectorType ids;
-        for(typename TElementsArrayType::const_iterator i_element = rElements.begin();
+        for (typename TElementsArrayType::const_iterator i_element = rElements.begin();
                 i_element != rElements.end(); ++i_element)
         {
             ids.resize((i_element)->GetGeometry().size());
-            for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
+            for (unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
             {
                 auto it = MapNodeIdToVec.find((i_element)->GetGeometry()[i].Id());
                 ids[i] = it->second;
             }
 
-            for(std::size_t i = 0 ; i < ids.size() ; ++i)
+            for (std::size_t i = 0 ; i < ids.size() ; ++i)
             {
-                if(ids[i] < equation_size)
+                if (ids[i] < equation_size)
                 {
                     std::vector<std::size_t>& row_indices = indices[ids[i]];
-                    for(std::size_t j = 0 ; j < ids.size() ; ++j)
+                    for (std::size_t j = 0 ; j < ids.size() ; ++j)
                     {
-                        if(ids[j] < equation_size)
+                        if (ids[j] < equation_size)
+                        {
                             AddUnique(row_indices, ids[j]);
+                        }
                     }
                 }
             }
@@ -851,7 +866,7 @@ public:
 
         //allocating the memory needed
         int data_size = 0;
-        for(std::size_t i = 0 ; i < indices.size() ; ++i)
+        for (std::size_t i = 0 ; i < indices.size() ; ++i)
         {
             data_size += indices[i].size();
         }
@@ -859,12 +874,12 @@ public:
 
         //filling with zero the matrix (creating the structure)
 #ifndef _OPENMP
-        for(std::size_t i = 0 ; i < indices.size() ; ++i)
+        for (std::size_t i = 0 ; i < indices.size() ; ++i)
         {
             std::vector<std::size_t>& row_indices = indices[i];
             std::sort(row_indices.begin(), row_indices.end());
 
-            for(std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end() ; ++it)
+            for (std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end() ; ++it)
             {
                 A.push_back(i, *it, 0.00);
             }
@@ -874,17 +889,17 @@ public:
         int number_of_threads = omp_get_max_threads();
         std::vector<unsigned int> matrix_partition;
         OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
-        for( int k=0; k < number_of_threads; ++k )
+        for ( int k = 0; k < number_of_threads; ++k )
         {
             #pragma omp parallel
-            if( omp_get_thread_num() == k )
+            if ( omp_get_thread_num() == k )
             {
-                for( std::size_t i = matrix_partition[k]; i < matrix_partition[k+1]; i++ )
+                for ( std::size_t i = matrix_partition[k]; i < matrix_partition[k + 1]; i++ )
                 {
                     std::vector<std::size_t>& row_indices = indices[i];
                     std::sort(row_indices.begin(), row_indices.end());
 
-                    for(std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end() ; ++it)
+                    for (std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end() ; ++it)
                     {
                         A.push_back(i, *it, 0.00);
                     }
@@ -909,22 +924,26 @@ public:
         std::vector<std::vector<std::size_t> > indices(equation_size);
 
         typename TElementType::EquationIdVectorType ids;
-        for(typename TElementsArrayType::const_iterator i_element = rElements.begin();
+        for (typename TElementsArrayType::const_iterator i_element = rElements.begin();
                 i_element != rElements.end(); ++i_element)
         {
             ids.resize((i_element)->GetGeometry().size());
-            for(unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
-                ids[i] = (i_element)->GetGeometry()[i].Id() - 1;
-
-            for(std::size_t i = 0 ; i < ids.size() ; ++i)
+            for (unsigned int i = 0; i < (i_element)->GetGeometry().size();  ++i)
             {
-                if(ids[i] < equation_size)
+                ids[i] = (i_element)->GetGeometry()[i].Id() - 1;
+            }
+
+            for (std::size_t i = 0 ; i < ids.size() ; ++i)
+            {
+                if (ids[i] < equation_size)
                 {
                     std::vector<std::size_t>& row_indices = indices[ids[i]];
-                    for(std::size_t j = 0 ; j < ids.size() ; ++j)
+                    for (std::size_t j = 0 ; j < ids.size() ; ++j)
                     {
-                        if(ids[j] < equation_size)
+                        if (ids[j] < equation_size)
+                        {
                             AddUnique(row_indices, ids[j]);
+                        }
                     }
                 }
             }
@@ -932,7 +951,7 @@ public:
 
         //allocating the memory needed
         int data_size = 0;
-        for(std::size_t i = 0 ; i < indices.size() ; ++i)
+        for (std::size_t i = 0 ; i < indices.size() ; ++i)
         {
             data_size += indices[i].size();
         }
@@ -940,12 +959,12 @@ public:
 
         //filling with zero the matrix (creating the structure)
 #ifndef _OPENMP
-        for(std::size_t i = 0 ; i < indices.size() ; i++)
+        for (std::size_t i = 0 ; i < indices.size() ; i++)
         {
             std::vector<std::size_t>& row_indices = indices[i];
             std::sort(row_indices.begin(), row_indices.end());
 
-            for(std::vector<std::size_t>::iterator it= row_indices.begin(); it != row_indices.end() ; it++)
+            for (std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end() ; it++)
             {
                 A.push_back(i, *it, 0.00);
             }
@@ -955,17 +974,17 @@ public:
         int number_of_threads = omp_get_max_threads();
         std::vector<unsigned int> matrix_partition;
         OpenMPUtils::CreatePartition(number_of_threads, indices.size(), matrix_partition);
-        for( int k=0; k < number_of_threads; ++k )
+        for ( int k = 0; k < number_of_threads; ++k )
         {
             #pragma omp parallel
-            if( omp_get_thread_num() == k )
+            if ( omp_get_thread_num() == k )
             {
-                for( std::size_t i = matrix_partition[k]; i < matrix_partition[k+1]; i++ )
+                for ( std::size_t i = matrix_partition[k]; i < matrix_partition[k + 1]; i++ )
                 {
                     std::vector<std::size_t>& row_indices = indices[i];
                     std::sort(row_indices.begin(), row_indices.end());
 
-                    for(std::vector<std::size_t>::iterator it= row_indices.begin(); it != row_indices.end() ; it++)
+                    for (std::vector<std::size_t>::iterator it = row_indices.begin(); it != row_indices.end() ; it++)
                     {
                         A.push_back(i, *it, 0.00);
                     }
@@ -987,7 +1006,7 @@ public:
         {
             ++i;
         }
-        if( i == endit )
+        if ( i == endit )
         {
             v.push_back(candidate);
         }
@@ -997,16 +1016,18 @@ public:
     //******************************************************************************************
     static inline double CoordinateScaling(double x, int Type)
     {
-        if(Type == _NURBS_)
+        if (Type == _NURBS_)
         {
             return x;
         }
-        else if(Type == _BEZIER_)
+        else if (Type == _BEZIER_)
         {
             return 2 * x - 1;
         }
         else
+        {
             return 0.0;
+        }
     }
 
     ///@}
@@ -1127,7 +1148,7 @@ inline std::istream& operator >>(std::istream& rIStream, IsogeometricPostUtility
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const IsogeometricPostUtility& rThis)
+                                 const IsogeometricPostUtility& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -1150,4 +1171,3 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 #endif
 
 #endif // KRATOS_ISOGEOMETRIC_POST_UTILITY_H_INCLUDED
-

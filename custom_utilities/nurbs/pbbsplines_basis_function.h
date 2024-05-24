@@ -26,7 +26,6 @@
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/pbsplines_basis_function.h"
 
-
 namespace Kratos
 {
 
@@ -35,7 +34,7 @@ struct PBBSplinesBasisFunction_Helper
 {
     template<typename TVectorType, typename TIArrayType, typename TKnotContainerType, class TCellType>
     static void ComputeExtractionOperator(TVectorType& Crow, const TIArrayType& orders,
-        const TKnotContainerType& local_knots, const TCellType& r_cell);
+                                          const TKnotContainerType& local_knots, const TCellType& r_cell);
 
     static bool CheckBoundingBox(const std::vector<double>& bounding_box, const std::vector<std::vector<double> >& window);
 };
@@ -73,9 +72,9 @@ public:
     /// Destructor
     ~PBBSplinesBasisFunction()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "PBBSplinesBasisFunction" << TDim << "D " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     static typename PBBSplinesBasisFunction::Pointer Create(std::size_t Id)
@@ -112,18 +111,24 @@ public:
     template<class ValuesContainerType>
     void LocalKnots(int dim, ValuesContainerType& rKnots) const
     {
-        if(rKnots.size() != mpLocalKnots[dim].size())
+        if (rKnots.size() != mpLocalKnots[dim].size())
+        {
             rKnots.resize(mpLocalKnots[dim].size());
-        for(std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
+        }
+        for (std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
+        {
             rKnots[i] = CellType::GetValue(mpLocalKnots[dim][i]);
+        }
     }
 
     /// Set the local knot vectors to this basis function
     void SetLocalKnotVectors(int dim, const std::vector<knot_t>& rpKnots)
     {
         mpLocalKnots[dim].clear();
-        for(std::size_t i = 0; i < rpKnots.size(); ++i)
+        for (std::size_t i = 0; i < rpKnots.size(); ++i)
+        {
             mpLocalKnots[dim].push_back(rpKnots[i]);
+        }
     }
 
     /// Get the bounding box (=support domain) of this basis function
@@ -135,28 +140,40 @@ public:
         double Ymax = -Ymin;
         double Zmin = Xmin;
         double Zmax = -Zmin;
-        for(cell_iterator it = BaseType::cell_begin(); it != BaseType::cell_end(); ++it)
+        for (cell_iterator it = BaseType::cell_begin(); it != BaseType::cell_end(); ++it)
         {
-            if((*it)->XiMinValue() < Xmin)
+            if ((*it)->XiMinValue() < Xmin)
+            {
                 Xmin = (*it)->XiMinValue();
-            if((*it)->XiMaxValue() > Xmax)
+            }
+            if ((*it)->XiMaxValue() > Xmax)
+            {
                 Xmax = (*it)->XiMaxValue();
-            if((*it)->EtaMinValue() < Ymin)
+            }
+            if ((*it)->EtaMinValue() < Ymin)
+            {
                 Ymin = (*it)->EtaMinValue();
-            if((*it)->EtaMaxValue() > Ymax)
+            }
+            if ((*it)->EtaMaxValue() > Ymax)
+            {
                 Ymax = (*it)->EtaMaxValue();
-            if((*it)->ZetaMinValue() < Zmin)
+            }
+            if ((*it)->ZetaMinValue() < Zmin)
+            {
                 Zmin = (*it)->ZetaMinValue();
-            if((*it)->ZetaMaxValue() > Zmax)
+            }
+            if ((*it)->ZetaMaxValue() > Zmax)
+            {
                 Zmax = (*it)->ZetaMaxValue();
+            }
         }
 
         if (TDim == 1)
-            return std::vector<double>{Xmin, Xmax};
+            return std::vector<double> {Xmin, Xmax};
         else if (TDim == 2)
-            return std::vector<double>{Xmin, Xmax, Ymin, Ymax};
+            return std::vector<double> {Xmin, Xmax, Ymin, Ymax};
         else if (TDim == 3)
-            return std::vector<double>{Xmin, Xmax, Ymin, Ymax, Zmin, Zmax};
+            return std::vector<double> {Xmin, Xmax, Ymin, Ymax, Zmin, Zmax};
     }
 
     /// check if this bf contain this local knot vectors. Two bfs are the same if they have exactly the same local knot vector. The order of the basis function is implied.
@@ -166,11 +183,15 @@ public:
         for (int dim = 0; dim < TDim; ++dim)
         {
             if (mpLocalKnots[dim].size() != rpKnots[dim].size())
+            {
                 return false;
+            }
 
-            for(std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
-                if(mpLocalKnots[dim][i] != rpKnots[dim][i])
+            for (std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
+                if (mpLocalKnots[dim][i] != rpKnots[dim][i])
+                {
                     return false;
+                }
         }
 
         return true;
@@ -272,15 +293,17 @@ public:
     {
         rOStream << "PBBSplinesBasisFunction" << TDim << "D (id: " << this->Id() << "), eq_id: " << this->EquationId() << ", p = (";
         for (int dim = 0; dim < TDim; ++dim)
+        {
             rOStream << " " << this->Order(dim);
+        }
         rOStream << ")";
         rOStream << ", boundary info:";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BLEFT_) ) ) rOStream << " left";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BRIGHT_) ) ) rOStream << " right";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BFRONT_) ) ) rOStream << " front";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BBACK_) ) ) rOStream << " back";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BTOP_) ) ) rOStream << " top";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BBOTTOM_) ) ) rOStream << " bottom";
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BLEFT_) ) ) { rOStream << " left"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BRIGHT_) ) ) { rOStream << " right"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BFRONT_) ) ) { rOStream << " front"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BBACK_) ) ) { rOStream << " back"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BTOP_) ) ) { rOStream << " top"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BBOTTOM_) ) ) { rOStream << " bottom"; }
     }
 
     /// Print data of this basis function
@@ -290,28 +313,34 @@ public:
         rOStream << " Local knot vectors:\n";
         for (int dim = 0; dim < TDim; ++dim)
         {
-            rOStream << "  " << dim+1 << ":";
-            for(std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
+            rOStream << "  " << dim + 1 << ":";
+            for (std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
                 // rOStream << " " << mpLocalKnots[dim][i]->Value();
+            {
                 rOStream << " " << CellType::GetValue(mpLocalKnots[dim][i]);
+            }
             rOStream << std::endl;
         }
 
         // Print the cells
         rOStream << " Supporting cells:";
         std::size_t cnt = 0;
-        for(cell_const_iterator it = BaseType::cell_begin(); it != BaseType::cell_end(); ++it)
+        for (cell_const_iterator it = BaseType::cell_begin(); it != BaseType::cell_end(); ++it)
+        {
             rOStream << std::endl << "  " << ++cnt << ": " << *(*it);
-        if(BaseType::cell_end() == BaseType::cell_begin())
+        }
+        if (BaseType::cell_end() == BaseType::cell_begin())
+        {
             rOStream << " none";
+        }
         rOStream << std::endl;
     }
 
 protected:
 
     std::size_t mBoundaryId; // this variable stores the boundary information associated with this basis function.
-                // By default, the new basis function is considerred inside of the patch.
-                // User can add/remove the boundary information by using AddBoundary/RemoveBoundary
+    // By default, the new basis function is considerred inside of the patch.
+    // User can add/remove the boundary information by using AddBoundary/RemoveBoundary
     boost::array<std::size_t, TDim> mOrders;
     cell_container_t mpCells; // list of cells support this basis function
     boost::array<std::vector<knot_t>, TDim> mpLocalKnots;
@@ -347,4 +376,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const PBBSplinesBasisFu
 #include "pbbsplines_basis_function.hpp"
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PBBSPLINES_BASIS_FUNCTION_H_INCLUDED
-

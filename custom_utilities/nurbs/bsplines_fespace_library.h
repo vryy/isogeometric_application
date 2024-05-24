@@ -46,10 +46,14 @@ public:
     static knot_container_t CreatePrimitiveOpenKnotVector(std::size_t order)
     {
         knot_container_t knot_vector;
-        for (std::size_t i = 0; i < order+1; ++i)
+        for (std::size_t i = 0; i < order + 1; ++i)
+        {
             knot_vector.pCreateKnot(0.0);
-        for (std::size_t i = 0; i < order+1; ++i)
+        }
+        for (std::size_t i = 0; i < order + 1; ++i)
+        {
             knot_vector.pCreateKnot(1.0);
+        }
         return knot_vector;
     }
 
@@ -58,21 +62,27 @@ public:
     static knot_container_t CreateUniformOpenKnotVector(std::size_t number, std::size_t order, const bool& throw_error = true)
     {
         knot_container_t knot_vector;
-        for (std::size_t i = 0; i < order+1; ++i)
+        for (std::size_t i = 0; i < order + 1; ++i)
+        {
             knot_vector.pCreateKnot(0.0);
-        if (number >= order+1)
+        }
+        if (number >= order + 1)
         {
             std::size_t m = number - order;
-            for (std::size_t i = 0; i < m-1; ++i)
-                knot_vector.pCreateKnot(((double)(i+1))/m);
+            for (std::size_t i = 0; i < m - 1; ++i)
+            {
+                knot_vector.pCreateKnot(((double)(i + 1)) / m);
+            }
         }
         else
         {
             if (throw_error)
                 KRATOS_THROW_ERROR(std::logic_error, "number < order+1", "")
-        }
-        for (std::size_t i = 0; i < order+1; ++i)
+            }
+        for (std::size_t i = 0; i < order + 1; ++i)
+        {
             knot_vector.pCreateKnot(1.0);
+        }
         return knot_vector;
     }
 
@@ -88,7 +98,7 @@ public:
         {
             knot_container_t knot_vector = CreatePrimitiveOpenKnotVector(Orders[dim]);
             pFESpace->SetKnotVector(dim, knot_vector);
-            pFESpace->SetInfo(dim, Orders[dim]+1, Orders[dim]);
+            pFESpace->SetInfo(dim, Orders[dim] + 1, Orders[dim]);
         }
 
         pFESpace->ResetFunctionIndices();
@@ -101,7 +111,7 @@ public:
     /// All the weights are 1.
     template<int TDim>
     static typename BSplinesFESpace<TDim>::Pointer CreateUniformFESpace(const std::vector<std::size_t>& Numbers,
-        const std::vector<std::size_t>& Orders)
+            const std::vector<std::size_t>& Orders)
     {
         typename BSplinesFESpace<TDim>::Pointer pFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
 
@@ -142,4 +152,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesFESpaceLi
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BSPLINES_FESPACE_LIBRARY_H_INCLUDED defined
-

@@ -43,8 +43,10 @@ int main(int argc, char** argv)
     BezierUtils::bezier_extraction_tsplines_1d(Crows, nb_xi, Ubar_xi, Xi, Uxi, spans_xi, p);
 
     KRATOS_WATCH(nb_xi)
-    for(std::size_t i = 0; i < Crows.size(); ++i)
+    for (std::size_t i = 0; i < Crows.size(); ++i)
+    {
         std::cout << "Crows 1d " << i << ": " << Crows[i] << std::endl;
+    }
     KRATOS_WATCH(Ubar_xi)
 
     // test the bezier extraction in 2D
@@ -69,9 +71,10 @@ int main(int argc, char** argv)
     BezierUtils::bezier_extraction_tsplines_2d(Crows, nb_xi, nb_eta, Ubar_xi, Ubar_eta, Xi, Eta, Uxi, Ueta, spans_xi, spans_eta, p, q);
     KRATOS_WATCH(nb_xi)
     KRATOS_WATCH(nb_eta)
-    for(std::size_t i = 0; i < Crows.size(); ++i)
+    for (std::size_t i = 0; i < Crows.size(); ++i)
+    {
         std::cout << "Crows 2d " << i << ": " << Crows[i] << std::endl;
+    }
     KRATOS_WATCH(Ubar_xi)
     KRATOS_WATCH(Ubar_eta)
 }
-

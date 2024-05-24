@@ -16,7 +16,6 @@
 // Project includes
 #include "custom_utilities/patch_interface.h"
 
-
 namespace Kratos
 {
 
@@ -35,7 +34,7 @@ class BSplinesPatchInterface
 template<>
 class BSplinesPatchInterface<1> : public PatchInterface<1>
 {
-    public:
+public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
 
@@ -48,8 +47,8 @@ class BSplinesPatchInterface<1> : public PatchInterface<1>
 
     /// Full Constructor, the default local configuration is assumed and there is no reverse.
     BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-        typename PatchType::Pointer pPatch2, const BoundarySide& side2)
-    : BaseType(pPatch1, side1, pPatch2, side2)
+                           typename PatchType::Pointer pPatch2, const BoundarySide& side2)
+        : BaseType(pPatch1, side1, pPatch2, side2)
     {
     }
 
@@ -94,8 +93,8 @@ public:
 
     /// Full Constructor, the default local configuration is assumed and there is no reverse.
     BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-        typename PatchType::Pointer pPatch2, const BoundarySide& side2)
-    : BaseType(pPatch1, side1, pPatch2, side2)
+                           typename PatchType::Pointer pPatch2, const BoundarySide& side2)
+        : BaseType(pPatch1, side1, pPatch2, side2)
     {
         mDirection = _FORWARD_;
     }
@@ -103,9 +102,9 @@ public:
     /// Full Constructor with the relative direction. This constructor is only valid in 2D.
     /// The direction variable is to indicate if the local parameters shall be reversed.
     BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-        typename PatchType::Pointer pPatch2, const BoundarySide& side2,
-        const BoundaryDirection& direction)
-    : BaseType(pPatch1, side1, pPatch2, side2)
+                           typename PatchType::Pointer pPatch2, const BoundarySide& side2,
+                           const BoundaryDirection& direction)
+        : BaseType(pPatch1, side1, pPatch2, side2)
     {
         mDirection = direction;
     }
@@ -113,9 +112,9 @@ public:
     /// Destructor
     virtual ~BSplinesPatchInterface()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "BSplinesPatchInterface2D, Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Create a clone of this interface
@@ -135,9 +134,13 @@ public:
     const BoundaryDirection& Direction(std::size_t dim) const
     {
         if (dim == 0)
+        {
             return mDirection;
+        }
         else
+        {
             return _UNDEFINED_DIR_;
+        }
     }
 
     /// Validate the compatibility of two patches on the interface
@@ -156,7 +159,9 @@ public:
     {
         std::vector<std::size_t> func_indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side1());
         if (mDirection == _REVERSED_)
+        {
             std::reverse(func_indices.begin(), func_indices.end());
+        }
         this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices);
     }
 
@@ -196,8 +201,8 @@ public:
 
     /// Full Constructor, the default local configuration is assumed and there is no reverse.
     BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-        typename PatchType::Pointer pPatch2, const BoundarySide& side2)
-    : BaseType(pPatch1, side1, pPatch2, side2)
+                           typename PatchType::Pointer pPatch2, const BoundarySide& side2)
+        : BaseType(pPatch1, side1, pPatch2, side2)
     {
         mLocalParameterMap[0] = 0;
         mLocalParameterMap[1] = 1;
@@ -208,9 +213,9 @@ public:
     /// Full Constructor with the relative direction. This constructor is only valid in 2D.
     /// The direction variable is to indicate if the local parameters shall be reversed.
     BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-        typename PatchType::Pointer pPatch2, const BoundarySide& side2,
-        const BoundaryDirection& direction)
-    : BaseType(pPatch1, side1, pPatch2, side2)
+                           typename PatchType::Pointer pPatch2, const BoundarySide& side2,
+                           const BoundaryDirection& direction)
+        : BaseType(pPatch1, side1, pPatch2, side2)
     {
         mLocalParameterMap[0] = 0;
         mDirections[0] = direction;
@@ -220,11 +225,11 @@ public:
     /// if uv_or_vu is true, the local configuration {(u:ub) - (v:vb)} is assumed; otherwise, it is {(u:vb) - (v:ub)}
     /// The direction indicates if the respective local parameters shall be reversed or not
     BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-        typename PatchType::Pointer pPatch2, const BoundarySide& side2,
-        const bool& uv_or_vu,
-        const BoundaryDirection& direction1,
-        const BoundaryDirection& direction2)
-    : BaseType(pPatch1, side1, pPatch2, side2)
+                           typename PatchType::Pointer pPatch2, const BoundarySide& side2,
+                           const bool& uv_or_vu,
+                           const BoundaryDirection& direction1,
+                           const BoundaryDirection& direction2)
+        : BaseType(pPatch1, side1, pPatch2, side2)
     {
         if (uv_or_vu == true)
         {
@@ -244,18 +249,22 @@ public:
     /// Destructor
     virtual ~BSplinesPatchInterface()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "BSplinesPatchInterface3D, Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Create a clone of this interface
     virtual typename BaseType::Pointer Clone() const
     {
         if (this->LocalParameterMapping(0) == 0)
+        {
             return typename BaseType::Pointer(new BSplinesPatchInterface<3>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), true, this->Direction(0), this->Direction(1)));
+        }
         else if (this->LocalParameterMapping(0) == 1)
+        {
             return typename BaseType::Pointer(new BSplinesPatchInterface<3>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), false, this->Direction(0), this->Direction(1)));
+        }
     }
 
     /// Get the local parameter space mapping
@@ -263,10 +272,12 @@ public:
     {
         std::map<std::size_t, std::size_t>::const_iterator it = mLocalParameterMap.find(dim);
         if (it != mLocalParameterMap.end())
+        {
             return it->second;
+        }
         else
             KRATOS_THROW_ERROR(std::logic_error, "The dimension is invalid", "")
-    }
+        }
 
     /// Get the relative direction between the local parameter space
     const BoundaryDirection& Direction(std::size_t dim) const {return mDirections[dim];}
@@ -294,9 +305,13 @@ public:
             {
                 std::vector<std::size_t> tmp(size_info[1]);
                 for (std::size_t j = 0; j < size_info[1]; ++j)
-                    tmp[j] = func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, size_info[1]-j, size_info[0], size_info[1])];
+                {
+                    tmp[j] = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, size_info[1] - j, size_info[0], size_info[1])];
+                }
                 for (std::size_t j = 0; j < size_info[1]; ++j)
-                    func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, size_info[0], size_info[1])] = tmp[j];
+                {
+                    func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, size_info[0], size_info[1])] = tmp[j];
+                }
             }
         }
 
@@ -306,9 +321,13 @@ public:
             {
                 std::vector<std::size_t> tmp(size_info[0]);
                 for (std::size_t i = 0; i < size_info[0]; ++i)
-                    tmp[i] = func_indices[BSplinesIndexingUtility_Helper::Index2D(size_info[0]-i, j+1, size_info[0], size_info[1])];
+                {
+                    tmp[i] = func_indices[BSplinesIndexingUtility_Helper::Index2D(size_info[0] - i, j + 1, size_info[0], size_info[1])];
+                }
                 for (std::size_t i = 0; i < size_info[0]; ++i)
-                    func_indices[BSplinesIndexingUtility_Helper::Index2D(i+1, j+1, size_info[0], size_info[1])] = tmp[i];
+                {
+                    func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, size_info[0], size_info[1])] = tmp[i];
+                }
             }
         }
 

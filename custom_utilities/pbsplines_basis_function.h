@@ -22,7 +22,6 @@
 #include "custom_utilities/control_point.h"
 #include "isogeometric_application_variables.h"
 
-
 namespace Kratos
 {
 
@@ -63,20 +62,20 @@ public:
 
     /// Empty constructor for serialization
     PBSplinesBasisFunction()
-    : mId(0), mEquationId(-1)
+        : mId(0), mEquationId(-1)
     {}
 
     /// Constructor with Id
     PBSplinesBasisFunction(std::size_t Id)
-    : mId(Id), mEquationId(-1)
+        : mId(Id), mEquationId(-1)
     {}
 
     /// Destructor
     ~PBSplinesBasisFunction()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "PBSplinesBasisFunction" << TDim << "D " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /**************************************************************************
@@ -86,18 +85,20 @@ public:
     /// Add a cell support this basis function to the list
     cell_iterator AddCell(cell_t p_cell)
     {
-        for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
-            if(*it == p_cell)
+        for (cell_iterator it = cell_begin(); it != cell_end(); ++it)
+            if (*it == p_cell)
+            {
                 return it;
+            }
         return mpCells.insert(p_cell).first;
     }
 
     /// Remove the cell from the list
     void RemoveCell(cell_t p_cell)
     {
-        for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
+        for (cell_iterator it = cell_begin(); it != cell_end(); ++it)
         {
-            if(*it == p_cell)
+            if (*it == p_cell)
             {
                 mpCells.erase(it);
                 break;
@@ -108,9 +109,9 @@ public:
     /// Remove the cell from the list
     void RemoveCell(CellType& r_cell)
     {
-        for(cell_iterator it = cell_begin(); it != cell_end(); ++it)
+        for (cell_iterator it = cell_begin(); it != cell_end(); ++it)
         {
-            if(&(*(*it)) == &r_cell)
+            if (&(*(*it)) == &r_cell)
             {
                 mpCells.erase(it);
                 break;
@@ -206,13 +207,13 @@ public:
         return mData.Has(rThisVariable);
     }
 
-    #ifndef SD_APP_FORWARD_COMPATIBILITY
+#ifndef SD_APP_FORWARD_COMPATIBILITY
     template<class TAdaptorType>
     bool Has(const VariableComponent<TAdaptorType>& rThisVariable) const
     {
         return mData.Has(rThisVariable);
     }
-    #endif
+#endif
 
     /**************************************************************************
                             COMPARISON SUBROUTINES
@@ -227,9 +228,13 @@ public:
     inline bool operator<(const PBSplinesBasisFunction& rA) const
     {
         if (this->Id() != rA.Id())
+        {
             return this->Id() < rA.Id();
+        }
         else
+        {
             return this->EquationId() < rA.EquationId();
+        }
     }
 
     /// Compare the two basis functions, in terms of the equation_id and parameter space
@@ -263,10 +268,14 @@ public:
         // Print the cells
         rOStream << " Supporting cells:";
         std::size_t cnt = 0;
-        for(cell_const_iterator it = cell_begin(); it != cell_end(); ++it)
+        for (cell_const_iterator it = cell_begin(); it != cell_end(); ++it)
+        {
             rOStream << std::endl << "  " << ++cnt << ": " << *(*it);
-        if(cell_end() == cell_begin())
+        }
+        if (cell_end() == cell_begin())
+        {
             rOStream << " none";
+        }
         rOStream << std::endl;
     }
 
@@ -299,7 +308,9 @@ struct PBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variabl
     static void Initialize(TBasisFunctionType& r_bf, const Variable<double>& rVariable)
     {
         if (!r_bf.Has(rVariable))
+        {
             r_bf.SetValue(rVariable, 0.0);
+        }
     }
 
     static void Initialize(TBasisFunctionType& r_bf, const Variable<double>& rVariable, typename TBasisFunctionType::Pointer p_ref_bf)
@@ -340,7 +351,7 @@ struct PBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variabl
         if (!r_bf.Has(rVariable))
         {
             Vector zero_v = p_ref_bf->GetValue(rVariable);
-            for (std::size_t i = 0; i < zero_v.size(); ++i) zero_v[i] = 0.0;
+            for (std::size_t i = 0; i < zero_v.size(); ++i) { zero_v[i] = 0.0; }
             r_bf.SetValue(rVariable, zero_v);
         }
     }
@@ -359,4 +370,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const PBSplinesBasisFun
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PBSPLINES_BASIS_FUNCTION_H_INCLUDED
-

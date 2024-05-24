@@ -21,7 +21,6 @@
 // Project includes
 #include "includes/define.h"
 
-
 namespace Kratos
 {
 ///@addtogroup ApplicationNameApplication
@@ -62,38 +61,40 @@ private:
     std::size_t mId;
 }; // class SpatialPoint
 
-
 /*** Detail class definition.
  * This class defines a key in space. Used for spatial binning algorithm.
  */
 class SpatialKey
 {
-    public:
-        KRATOS_CLASS_POINTER_DEFINITION(SpatialKey);
+public:
+    KRATOS_CLASS_POINTER_DEFINITION(SpatialKey);
 
-        SpatialKey(int ix, int iy, int iz) : x(ix), y(iy), z(iz) {}
-        ~SpatialKey() {}
-        bool operator<(const SpatialKey& rOther) const
+    SpatialKey(int ix, int iy, int iz) : x(ix), y(iy), z(iz) {}
+    ~SpatialKey() {}
+    bool operator<(const SpatialKey& rOther) const
+    {
+        if (x == rOther.x)
         {
-            if(x == rOther.x)
+            if (y == rOther.y)
             {
-                if(y == rOther.y)
-                {
-                    return z < rOther.z;
-                }
-                else
-                    return y < rOther.y;
+                return z < rOther.z;
             }
             else
-                return x < rOther.x;
+            {
+                return y < rOther.y;
+            }
         }
-        int kx() const {return x;}
-        int ky() const {return y;}
-        int kz() const {return z;}
-    private:
-        int x, y, z;
+        else
+        {
+            return x < rOther.x;
+        }
+    }
+    int kx() const {return x;}
+    int ky() const {return y;}
+    int kz() const {return z;}
+private:
+    int x, y, z;
 };
-
 
 /// Short class definition.
 /*** Detail class definition.
@@ -116,7 +117,7 @@ public:
 
     /// Default constructor.
     AutoCollapseSpatialBinning(double X0, double Y0, double Z0, double Dx, double Dy, double Dz, double tol)
-    : mX0(X0), mY0(Y0), mZ0(Z0), mDx(Dx), mDy(Dy), mDz(Dz), mTol(tol)
+        : mX0(X0), mY0(Y0), mZ0(Z0), mDx(Dx), mDy(Dy), mDz(Dz), mTol(tol)
     {
         mLastNode = 0;
     }
@@ -146,28 +147,28 @@ public:
 
         // check if the spatial key exist
         SpatialKey key(ix, iy, iz);
-    //    std::cout << "ix = " << ix << ", iy = " << iy << ", iz = " << iz << std::endl;
+        //    std::cout << "ix = " << ix << ", iy = " << iy << ", iz = " << iz << std::endl;
         std::map<SpatialKey, std::vector<int> >::iterator it = mBin.find(key);
-        if(it != mBin.end())
+        if (it != mBin.end())
         {
             // check if node already exist in the cell
-    //        std::cout << "check if node already exist in the cell" << std::endl;
-            for(int i = 0; i < it->second.size(); ++i)
+            //        std::cout << "check if node already exist in the cell" << std::endl;
+            for (int i = 0; i < it->second.size(); ++i)
             {
                 double xi = mPointList[it->second[i] - 1]->GetX();
                 double yi = mPointList[it->second[i] - 1]->GetY();
                 double zi = mPointList[it->second[i] - 1]->GetZ();
                 double d = sqrt(pow(X - xi, 2) + pow(Y - yi, 2) + pow(Z - zi, 2));
-                if(d < mTol)
+                if (d < mTol)
                 {
-    //                std::cout << "node exist in cell, return its id" << std::endl;
+                    //                std::cout << "node exist in cell, return its id" << std::endl;
                     return mPointList[it->second[i] - 1]->GetId();
                 }
             }
             // node does not exist in cell, insert the node into spatial bin
             mPointList.push_back(SpatialPoint::Pointer(new SpatialPoint(++mLastNode, X, Y, Z)));
             mBin[key].push_back(mLastNode);
-    //        std::cout << "node does not exist in cell, insert the node into spatial bin, mLastNode = " << mLastNode << ", mBin[key].size() = " << mBin[key].size() << std::endl;
+            //        std::cout << "node does not exist in cell, insert the node into spatial bin, mLastNode = " << mLastNode << ", mBin[key].size() = " << mBin[key].size() << std::endl;
             return mLastNode;
         }
         else
@@ -175,7 +176,7 @@ public:
             // insert the node into spatial bin
             mPointList.push_back(SpatialPoint::Pointer(new SpatialPoint(++mLastNode, X, Y, Z)));
             mBin[key].push_back(mLastNode);
-    //        std::cout << "insert the node into spatial bin, mLastNode = " << mLastNode << ", mBin[key].size() = " << mBin[key].size() << std::endl;
+            //        std::cout << "insert the node into spatial bin, mLastNode = " << mLastNode << ", mBin[key].size() = " << mBin[key].size() << std::endl;
             return mLastNode;
         }
     }
@@ -273,7 +274,6 @@ private:
     ///@name Private Operations
     ///@{
 
-
     ///@}
     ///@name Private  Access
     ///@{
@@ -333,4 +333,3 @@ private:
 }// namespace Kratos.
 
 #endif // KRATOS_AUTO_COLLAPSE_SPATIAL_BINNING_H_INCLUDED defined
-

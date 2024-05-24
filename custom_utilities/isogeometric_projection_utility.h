@@ -22,7 +22,6 @@
 #include "custom_utilities/patch.h"
 #include "custom_utilities/multipatch_utility.h"
 
-
 namespace Kratos
 {
 ///@addtogroup IsogeometricApplication
@@ -42,7 +41,6 @@ namespace Kratos
 ///@}
 ///@name  Functions
 ///@{
-
 
 ///@}
 ///@name Kratos Classes
@@ -89,9 +87,9 @@ public:
 
     /// Compute a prediction of vertical projection of a point on patch
     static int PredictVerticalProjection(const PointType& rPoint,
-        std::vector<double>& rLocalPoint,
-        typename Patch<2>::Pointer pPatch,
-        std::size_t nsampling1, std::size_t nsampling2)
+                                         std::vector<double>& rLocalPoint,
+                                         typename Patch<2>::Pointer pPatch,
+                                         std::size_t nsampling1, std::size_t nsampling2)
     {
         typedef Patch<2> PatchType;
         typedef typename PatchType::ControlPointType ControlPointType;
@@ -105,10 +103,10 @@ public:
         // KRATOS_WATCH(nsampling1)
         // KRATOS_WATCH(nsampling2)
 
-        for (std::size_t i = 0; i < nsampling1+1; ++i)
+        for (std::size_t i = 0; i < nsampling1 + 1; ++i)
         {
             xi[0] = ((double) i) / nsampling1;
-            for (std::size_t j = 0; j < nsampling2+1; ++j)
+            for (std::size_t j = 0; j < nsampling2 + 1; ++j)
             {
                 xi[1] = ((double) j) / nsampling2;
 
@@ -130,10 +128,10 @@ public:
 
     /// Compute the vertical projection of a point on patch
     static int ComputeVerticalProjection(const PointType& rPoint,
-        std::vector<double>& rLocalPoint, PointType& rGlobalPoint,
-        typename Patch<2>::Pointer pPatch,
-        double TOL, int max_iters,
-        int echo_level)
+                                         std::vector<double>& rLocalPoint, PointType& rGlobalPoint,
+                                         typename Patch<2>::Pointer pPatch,
+                                         double TOL, int max_iters,
+                                         int echo_level)
     {
         typedef Patch<2> PatchType;
         typedef typename PatchType::ControlPointType ControlPointType;
@@ -151,7 +149,7 @@ public:
             std::cout << "Global point to be projected: " << rPoint << std::endl;
         }
 
-        while(!converged && (it < max_iters))
+        while (!converged && (it < max_iters))
         {
             pControlGridFunc->GetValue(rGlobalPoint, rLocalPoint);
 
@@ -159,7 +157,7 @@ public:
 
             if (echo_level > 1)
             {
-                std::cout << "At iteration " << (it+1) << ", local point = " << rLocalPoint[0] << ", " << rLocalPoint[1]
+                std::cout << "At iteration " << (it + 1) << ", local point = " << rLocalPoint[0] << ", " << rLocalPoint[1]
                           << ", projected global point = " << rGlobalPoint
                           << ", distance = " << dist
                           << std::endl;
@@ -198,14 +196,14 @@ public:
                 a10 = dP[0][1];
                 a11 = dP[1][1];
 
-                double det = a00*a11 - a01*a10;
-                rLocalPoint[0] += ( a11*(rPoint[0] - rGlobalPoint[0]) - a01*(rPoint[1] - rGlobalPoint[1])) / det;
-                rLocalPoint[1] += (-a10*(rPoint[0] - rGlobalPoint[0]) + a00*(rPoint[1] - rGlobalPoint[1])) / det;
+                double det = a00 * a11 - a01 * a10;
+                rLocalPoint[0] += ( a11 * (rPoint[0] - rGlobalPoint[0]) - a01 * (rPoint[1] - rGlobalPoint[1])) / det;
+                rLocalPoint[1] += (-a10 * (rPoint[0] - rGlobalPoint[0]) + a00 * (rPoint[1] - rGlobalPoint[1])) / det;
 
-                if (rLocalPoint[0] < 0.0) rLocalPoint[0] = 0.0;
-                if (rLocalPoint[0] > 1.0) rLocalPoint[0] = 1.0;
-                if (rLocalPoint[1] < 0.0) rLocalPoint[1] = 0.0;
-                if (rLocalPoint[1] > 1.0) rLocalPoint[1] = 1.0;
+                if (rLocalPoint[0] < 0.0) { rLocalPoint[0] = 0.0; }
+                if (rLocalPoint[0] > 1.0) { rLocalPoint[0] = 1.0; }
+                if (rLocalPoint[1] < 0.0) { rLocalPoint[1] = 0.0; }
+                if (rLocalPoint[1] > 1.0) { rLocalPoint[1] = 1.0; }
 
                 if (echo_level > 2)
                 {
@@ -217,7 +215,9 @@ public:
         }
 
         if (it >= max_iters && !converged)
+        {
             return 1;
+        }
 
         return 0;
     }
@@ -225,10 +225,10 @@ public:
     /// Compute the vertical projection of a point on multipatch
     /// The rLocalPoint shall be initialized to a good value to find out the vertical projection
     static int ComputeVerticalProjection(const PointType& rPoint,
-        std::vector<double>& rLocalPoint, PointType& rGlobalPoint, int& patch_id,
-        typename MultiPatch<2>::Pointer pMultiPatch,
-        double TOL, int max_iters,
-        int echo_level)
+                                         std::vector<double>& rLocalPoint, PointType& rGlobalPoint, int& patch_id,
+                                         typename MultiPatch<2>::Pointer pMultiPatch,
+                                         double TOL, int max_iters,
+                                         int echo_level)
     {
         typedef MultiPatch<2> MultiPatchType;
         typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;
@@ -248,7 +248,9 @@ public:
             is_in = is_in && (rPoint[1] < bounding_box[3] + TOL);
 
             if (!is_in)
+            {
                 continue;
+            }
 
             // compute the vertical projection
             rLocalPoint = InitialLocalPoint; // reset the initial point
@@ -267,11 +269,11 @@ public:
 
     /// Compute the vertical projection of a point on multipatch
     static int ComputeVerticalProjection(const PointType& rPoint,
-        std::vector<double>& rLocalPoint, PointType& rGlobalPoint, int& patch_id,
-        typename MultiPatch<2>::Pointer pMultiPatch,
-        double TOL, int max_iters,
-        int nsampling1, int nsampling2,
-        int echo_level)
+                                         std::vector<double>& rLocalPoint, PointType& rGlobalPoint, int& patch_id,
+                                         typename MultiPatch<2>::Pointer pMultiPatch,
+                                         double TOL, int max_iters,
+                                         int nsampling1, int nsampling2,
+                                         int echo_level)
     {
         typedef MultiPatch<2> MultiPatchType;
         typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;
@@ -289,13 +291,17 @@ public:
             is_in = is_in && (rPoint[1] < bounding_box[3] + TOL);
 
             if (!is_in)
+            {
                 continue;
+            }
 
             // compute a closest prediction
             int error_code = PredictVerticalProjection(rPoint, rLocalPoint, *it, nsampling1, nsampling2);
 
             if (echo_level > 0)
+            {
                 std::cout << "Prediction local point for patch " << (*it)->Id() << ": " << rLocalPoint[0] << ", " << rLocalPoint[1] << std::endl;
+            }
 
             // compute the vertical projection
             error_code = ComputeVerticalProjection(rPoint, rLocalPoint, rGlobalPoint, *it, TOL, max_iters, echo_level);
@@ -429,7 +435,7 @@ inline std::istream& operator >>(std::istream& rIStream, IsogeometricProjectionU
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const IsogeometricProjectionUtility& rThis)
+                                 const IsogeometricProjectionUtility& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -446,4 +452,3 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 #undef DEBUG_INTERSECT_CURVE_PLANE
 
 #endif // KRATOS_ISOGEOMETRIC_PROJECTION_UTILITY_H_INCLUDED
-

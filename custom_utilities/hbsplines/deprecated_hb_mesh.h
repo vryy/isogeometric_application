@@ -25,7 +25,6 @@
 #include "boost/progress.hpp"
 #include "boost/algorithm/string.hpp"
 
-
 // Project includes
 #include "includes/define.h"
 #include "includes/variables.h"
@@ -54,56 +53,60 @@ private:
     template<class data_type>
     class unordered_pair
     {
-        public:
-            unordered_pair(data_type i, data_type j)
+    public:
+        unordered_pair(data_type i, data_type j)
+        {
+            if (i < j)
             {
-                if(i < j)
-                {
-                    mi = i;
-                    mj = j;
-                }
-                else
-                {
-                    mi = j;
-                    mj = i;
-                }
+                mi = i;
+                mj = j;
             }
-
-            ~unordered_pair() {}
-
-            bool operator<(const unordered_pair& rOther) const
+            else
             {
-                if(mi == rOther.mi)
-                    return mj < rOther.mj;
-                else
-                    return mi < rOther.mi;
+                mi = j;
+                mj = i;
             }
+        }
 
-            data_type first() const {return mi;}
-            data_type second() const {return mj;}
+        ~unordered_pair() {}
 
-        private:
-            data_type mi, mj;
+        bool operator<(const unordered_pair& rOther) const
+        {
+            if (mi == rOther.mi)
+            {
+                return mj < rOther.mj;
+            }
+            else
+            {
+                return mi < rOther.mi;
+            }
+        }
+
+        data_type first() const {return mi;}
+        data_type second() const {return mj;}
+
+    private:
+        data_type mi, mj;
     };
 
     template<class data_type>
     class unordered_tuple
     {
-        public:
-            unordered_tuple(data_type i, data_type j, data_type k, data_type l)
-            {
-                // TODO
-            }
+    public:
+        unordered_tuple(data_type i, data_type j, data_type k, data_type l)
+        {
+            // TODO
+        }
 
-            ~unordered_tuple() {}
+        ~unordered_tuple() {}
 
-            bool operator<(const unordered_tuple& rOther) const
-            {
-                // TODO
-            }
+        bool operator<(const unordered_tuple& rOther) const
+        {
+            // TODO
+        }
 
-        private:
-            data_type mi, mj, mk, ml;
+    private:
+        data_type mi, mj, mk, ml;
     };
 
 public:
@@ -163,10 +166,10 @@ public:
     /// Get the order of the patch in specific direction
     std::size_t Order(std::size_t i) const override
     {
-        if (i == 0) return mOrder1;
-        else if (i == 1) return mOrder2;
-        else if (i == 2) return mOrder3;
-        else return 0;
+        if (i == 0) { return mOrder1; }
+        else if (i == 1) { return mOrder2; }
+        else if (i == 2) { return mOrder3; }
+        else { return 0; }
     }
 
     /// Set the maximum level allowed in the hierarchical mesh
@@ -191,8 +194,8 @@ public:
 
     /// Refine on a cuboid domain
     void RefineWindow(double Xi_min, double Xi_max,
-            double Eta_min, double Eta_max,
-            double Zeta_min, double Zeta_max);
+                      double Eta_min, double Eta_max,
+                      double Zeta_min, double Zeta_max);
 
     /// Perform additional refinement to ensure linear independence
     /// In this algorithm, every bf in each level will be checked. If the support domain of a bf contained in the domain_manager of that level, this bf will be refined. According to the paper of Vuong et al, this will produce a linear independent bases.
@@ -317,15 +320,21 @@ private:
     domain_t GetSupportDomain(std::size_t Level)
     {
         domain_container_t::iterator it = mSupportDomains.find(Level);
-        if(it != mSupportDomains.end())
+        if (it != mSupportDomains.end())
+        {
             return it->second;
+        }
         else
         {
             domain_t p_domain;
-            if(TDim == 2)
+            if (TDim == 2)
+            {
                 p_domain = domain_t(new DomainManager2D(Level));
-            else if(TDim == 3)
+            }
+            else if (TDim == 3)
+            {
                 p_domain = domain_t(new DomainManager3D(Level));
+            }
             mSupportDomains[Level] = p_domain;
             return p_domain;
         }
@@ -341,7 +350,7 @@ private:
                              std::map<unsigned int, double>& zeta_list, // local eta-coordinate of the node in point_list
                              std::map<unsigned int, unsigned int>& cell_list, // cell index of the node in point_list
                              std::map<unsigned int, std::vector<std::vector<unsigned int> > >& Connectivities // element connectivities
-                             );
+                            );
 
 };
 
@@ -394,4 +403,3 @@ inline std::ostream& operator<<(std::ostream& rOStream, const DeprecatedHBMesh<T
 // #undef ENABLE_PROFILING
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HN_MESH_2D_H_INCLUDED
-

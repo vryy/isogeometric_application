@@ -34,7 +34,6 @@ public:
     }
 };
 
-
 /**
 Export NURBS patch/multipatch to Matlab to visualize with NURBS toolbox by M. Spink
  */
@@ -70,7 +69,9 @@ public:
 
         typedef typename MultiPatch<TDim>::patch_ptr_const_iterator patch_ptr_const_iterator;
         for (patch_ptr_const_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
+        {
             this->ExportMatlab(rOStream, *it, (*it)->Name());
+        }
     }
 
 private:
@@ -80,32 +81,38 @@ private:
         if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
             KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
 
-        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+            typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         if (pFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
-        if (TDim == 1)
-        {
-            rOStream << "knots = [";
-            for (std::size_t i = 0; i < pFESpace->KnotVector(0).size(); ++i)
-                rOStream << " " << pFESpace->KnotVector(0)[i];
-            rOStream << "];\n";
-        }
-        else
-        {
-            rOStream << "knots = {};\n";
-            for (std::size_t dim = 0; dim < TDim; ++dim)
+            if (TDim == 1)
             {
-                rOStream << "knots{" << dim+1 << "} = [";
-                for (std::size_t i = 0; i < pFESpace->KnotVector(dim).size(); ++i)
-                    rOStream << " " << pFESpace->KnotVector(dim)[i];
+                rOStream << "knots = [";
+                for (std::size_t i = 0; i < pFESpace->KnotVector(0).size(); ++i)
+                {
+                    rOStream << " " << pFESpace->KnotVector(0)[i];
+                }
                 rOStream << "];\n";
             }
-        }
+            else
+            {
+                rOStream << "knots = {};\n";
+                for (std::size_t dim = 0; dim < TDim; ++dim)
+                {
+                    rOStream << "knots{" << dim + 1 << "} = [";
+                    for (std::size_t i = 0; i < pFESpace->KnotVector(dim).size(); ++i)
+                    {
+                        rOStream << " " << pFESpace->KnotVector(dim)[i];
+                    }
+                    rOStream << "];\n";
+                }
+            }
 
         rOStream << "coefs = zeros(4";
         for (std::size_t dim = 0; dim < TDim; ++dim)
+        {
             rOStream << "," << pFESpace->Number(dim);
+        }
         rOStream << ");\n";
 
         MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<TDim>(rOStream, pPatch, std::string("coefs"));
@@ -118,7 +125,9 @@ private:
         rOStream << patch_name << "_number = [";
         std::vector<std::size_t> func_indices = pPatch->pFESpace()->FunctionIndices();
         for (std::size_t i = 0; i < func_indices.size(); ++i)
+        {
             rOStream << " " << CONVERT_INDEX_IGA_TO_KRATOS(func_indices[i]);
+        }
         rOStream << "];\n";
 
         rOStream << std::endl;
@@ -135,13 +144,15 @@ void MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<1>(std::ostre
     if (pControlPointGrid == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
-    for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
-    {
-        rOStream << var_name << "(:," << nu+1 << ") = [";
-        for (std::size_t dim = 0; dim < 3; ++dim)
-            rOStream << " " << pControlPointGrid->GetValue(nu)[dim];
-        rOStream << " " << pControlPointGrid->GetValue(nu)[3] << "];\n";
-    }
+        for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+        {
+            rOStream << var_name << "(:," << nu + 1 << ") = [";
+            for (std::size_t dim = 0; dim < 3; ++dim)
+            {
+                rOStream << " " << pControlPointGrid->GetValue(nu)[dim];
+            }
+            rOStream << " " << pControlPointGrid->GetValue(nu)[3] << "];\n";
+        }
 }
 
 template<>
@@ -153,16 +164,18 @@ void MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<2>(std::ostre
     if (pControlPointGrid == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
-    for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
-    {
-        for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+        for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
         {
-            rOStream << var_name << "(:," << nu+1 << "," << nv+1 << ") = [";
-            for (std::size_t dim = 0; dim < 3; ++dim)
-                rOStream << " " << pControlPointGrid->GetValue(nu, nv)[dim];
-            rOStream << " " << pControlPointGrid->GetValue(nu, nv)[3] << "];\n";
+            for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+            {
+                rOStream << var_name << "(:," << nu + 1 << "," << nv + 1 << ") = [";
+                for (std::size_t dim = 0; dim < 3; ++dim)
+                {
+                    rOStream << " " << pControlPointGrid->GetValue(nu, nv)[dim];
+                }
+                rOStream << " " << pControlPointGrid->GetValue(nu, nv)[3] << "];\n";
+            }
         }
-    }
 }
 
 template<>
@@ -174,19 +187,21 @@ void MultiNURBSPatchMatlabExporterHelper::WriteMatlabControlPoints<3>(std::ostre
     if (pControlPointGrid == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
-    for (std::size_t nw = 0; nw < pControlPointGrid->Size(2); ++nw)
-    {
-        for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
+        for (std::size_t nw = 0; nw < pControlPointGrid->Size(2); ++nw)
         {
-            for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+            for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
             {
-                rOStream << var_name << "(:," << nu+1 << "," << nv+1 << "," << nw+1 << ") = [";
-                for (std::size_t dim = 0; dim < 3; ++dim)
-                    rOStream << " " << pControlPointGrid->GetValue(nu, nv, nw)[dim];
-                rOStream << " " << pControlPointGrid->GetValue(nu, nv, nw)[3] << "];\n";
+                for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+                {
+                    rOStream << var_name << "(:," << nu + 1 << "," << nv + 1 << "," << nw + 1 << ") = [";
+                    for (std::size_t dim = 0; dim < 3; ++dim)
+                    {
+                        rOStream << " " << pControlPointGrid->GetValue(nu, nv, nw)[dim];
+                    }
+                    rOStream << " " << pControlPointGrid->GetValue(nu, nv, nw)[3] << "];\n";
+                }
             }
         }
-    }
 }
 
 class MultiNURBSPatchMatlabExporter
@@ -231,7 +246,6 @@ public:
     }
 };
 
-
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream, const MultiNURBSPatchMatlabExporter& rThis)
 {
@@ -241,9 +255,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiNURBSPatchMa
     return rOStream;
 }
 
-
-
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_NURBS_PATCH_MATLAB_EXPORTER_H_INCLUDED defined
-

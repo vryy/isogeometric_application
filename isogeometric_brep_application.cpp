@@ -6,31 +6,25 @@
 //
 //
 
-
 // System includes
 
-
 // External includes
-
 
 // Project includes
 #include "includes/define.h"
 #include "isogeometric_brep_application.h"
 
-
 namespace Kratos
 {
 
-    KratosIsogeometricBRepApplication::KratosIsogeometricBRepApplication()
-    {}
+KratosIsogeometricBRepApplication::KratosIsogeometricBRepApplication()
+{}
 
-    void KratosIsogeometricBRepApplication::Register()
-    {
-        // calling base class to register Kratos components
-        KratosApplication::Register();
-        std::cout << "Initializing KratosIsogeometricBRepApplication... " << std::endl;
-    }
+void KratosIsogeometricBRepApplication::Register()
+{
+    // calling base class to register Kratos components
+    KratosApplication::Register();
+    std::cout << "Initializing KratosIsogeometricBRepApplication... " << std::endl;
+}
 
 }  // namespace Kratos.
-
-

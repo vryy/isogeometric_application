@@ -47,11 +47,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 //
 
-
 #if !defined(KRATOS_ISOGEOMETRIC_PARTITIONING_PROCESS_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_PARTITIONING_PROCESS_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -61,7 +58,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // External includes
 #include <parmetis.h>
-
 
 // Project includes
 #include "includes/define.h"
@@ -79,8 +75,6 @@ extern "C"
                            idx_t *epart, idx_t *npart);
 };
 
-
-
 namespace Kratos
 {
 
@@ -90,7 +84,6 @@ namespace Kratos
 ///@}
 ///@name Type Definitions
 ///@{
-
 
 ///@}
 ///@name  Enum's
@@ -158,7 +151,6 @@ public:
         mLogFile.close();
     }
 
-
     ///@}
     ///@name Operators
     ///@{
@@ -167,7 +159,6 @@ public:
     {
         Execute();
     }
-
 
     ///@}
     ///@name Operations
@@ -194,10 +185,14 @@ public:
 
         // if mNumberOfPartitions is not defined we set it to the number_of_processes
         if (mNumberOfPartitions == 0)
+        {
             mNumberOfPartitions = static_cast<size_type>(number_of_processes);
+        }
 
         if (rank == 0)
+        {
             KRATOS_WATCH(mNumberOfPartitions);
+        }
 
         // Read connectivities
         IO::ConnectivitiesContainerType elements_connectivities;
@@ -234,12 +229,16 @@ public:
             coloring_send_buffer = new int[mNumberOfPartitions * colors_number];
             for (unsigned int i = 0; i < mNumberOfPartitions; ++i)
                 for (int j = 0; j < colors_number; j++)
+                {
                     coloring_send_buffer[buffer_index++] = domains_colored_graph(i, j);
+                }
 
             mLogFile << rank << " : colors_number = " << colors_number << std::endl;
             mLogFile << rank << " : coloring_send_buffer = [";
             for (size_type j = 0; j < mNumberOfPartitions * colors_number; ++j)
+            {
                 mLogFile << coloring_send_buffer[j] << " ,";
+            }
             mLogFile << "]" << std::endl;
         }
 
@@ -249,14 +248,20 @@ public:
         MPI_Bcast(epart, number_of_elements, MPI_INT, 0, MPI_COMM_WORLD);
 
         Communicator::NeighbourIndicesContainerType& neighbours_indices = mrModelPart.GetCommunicator().NeighbourIndices();
-        if(neighbours_indices.size() != static_cast<unsigned int>(colors_number))
+        if (neighbours_indices.size() != static_cast<unsigned int>(colors_number))
+        {
             neighbours_indices.resize(colors_number, false);
+        }
         for (int i = 0; i < colors_number; ++i)
+        {
             neighbours_indices[i] = 0;
+        }
 
         mLogFile << rank << " : neighbours_indices = [";
         for (unsigned int j = 0; j < neighbours_indices.size(); ++j)
+        {
             mLogFile << neighbours_indices[j] << " ,";
+        }
         mLogFile << "]" << std::endl;
 
         mLogFile << rank << " : colors_number = " << colors_number << std::endl;
@@ -266,17 +271,23 @@ public:
 
         mLogFile << rank << " : [";
         for (int j = 0; j < colors_number; j++)
+        {
             mLogFile << mrModelPart.GetCommunicator().NeighbourIndices()[j] << " ,";
+        }
         mLogFile << "]" << std::endl;
 
         // Adding local, ghost and interface meshes to ModelPart if is necessary
         int number_of_meshes = ModelPart::Kratos_Ownership_Size + colors_number; // (all + local + ghost) + (colors_number for interfaces)
         if (mrModelPart.GetMeshes().size() < static_cast<unsigned int>(number_of_meshes))
             for (int i = mrModelPart.GetMeshes().size(); i < number_of_meshes; ++i)
+            {
                 mrModelPart.GetMeshes().push_back(ModelPart::MeshType());
+            }
 
         for (ModelPart::NodeIterator i_node = temp_nodes.begin(); i_node != temp_nodes.end(); ++i_node)
+        {
             i_node->SetSolutionStepVariablesList(&(mrModelPart.GetNodalSolutionStepVariablesList()));
+        }
 
         // Adding nodes to model_part
         AddingNodes(temp_nodes, number_of_elements, elements_connectivities, npart, epart);
@@ -310,8 +321,8 @@ public:
 
     void CalculateDomainsGraph(graph_type& rDomainsGraph, size_type NumberOfElements, IO::ConnectivitiesContainerType& ElementsConnectivities, idx_t* NPart, idx_t* EPart)
     {
-        for(size_type i_element = 0; i_element < NumberOfElements; ++i_element)
-            for(std::vector<std::size_t>::iterator i_node = ElementsConnectivities[i_element].begin();
+        for (size_type i_element = 0; i_element < NumberOfElements; ++i_element)
+            for (std::vector<std::size_t>::iterator i_node = ElementsConnectivities[i_element].begin();
                     i_node != ElementsConnectivities[i_element].end(); ++i_node)
             {
                 size_type node_rank = NPart[*i_node - 1];
@@ -328,11 +339,9 @@ public:
     ///@name Access
     ///@{
 
-
     ///@}
     ///@name Inquiry
     ///@{
-
 
     ///@}
     ///@name Input and output
@@ -358,18 +367,15 @@ public:
     {
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
 protected:
     ///@name Protected static Member Variables
     ///@{
-
 
     ///@}
     ///@name Protected member Variables
@@ -385,11 +391,9 @@ protected:
 
     size_type mDimension;
 
-
     ///@}
     ///@name Protected Operators
     ///@{
-
 
     ///@}
     ///@name Protected Operations
@@ -399,9 +403,9 @@ protected:
     {
         int rank;
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-        
+
         mLogFile << rank << ": Calling Metis" << std::endl;
-        
+
         idx_t ne = NumberOfElements;
         idx_t nn = NumberOfNodes;
 
@@ -424,14 +428,16 @@ protected:
                 i_connectivities != ElementsConnectivities.end(); ++i_connectivities)
         {
             for (unsigned int j = 0; j < i_connectivities->size(); ++j)
-                eind[cnt++] = (*i_connectivities)[j] - 1; //transform to zero-based indexing
+            {
+                eind[cnt++] = (*i_connectivities)[j] - 1;    //transform to zero-based indexing
+            }
         }
 
 //        mLogFile << rank << ": eptr:";
 //        for(index_type i = 0; i < ne + 1; ++i)
 //            mLogFile << " " << eptr[i];
 //        mLogFile << std::endl;
-// 
+//
 //        mLogFile << rank << ": eind:";
 //        for(index_type i = 0; i < ne; ++i)
 //        {
@@ -446,8 +452,8 @@ protected:
         idx_t edgecut;
         idx_t ncommon = 4;
         idx_t nparts = mNumberOfPartitions;
-        status = METIS_PartMeshDual(&ne, &nn, eptr, eind, 
-                                    NULL, NULL, &ncommon, &nparts, 
+        status = METIS_PartMeshDual(&ne, &nn, eptr, eind,
+                                    NULL, NULL, &ncommon, &nparts,
                                     NULL, NULL, &edgecut, EPart, NPart);
 
         // release memory
@@ -475,7 +481,9 @@ protected:
         vector<int>& neighbours_indices = r_communicator.NeighbourIndices();
         for (size_type i = 0; i < neighbours_indices.size(); i++)
             if (size_type(neighbours_indices[i]) < interface_indices.size())
+            {
                 interface_indices[neighbours_indices[i]] = i;
+            }
 
         // now adding interface nodes which belongs to other partitions
         mLogFile << rank << " : Adding interface nodes to modelpart" << std::endl;
@@ -538,11 +546,17 @@ protected:
         r_communicator.GhostMesh().Nodes().Unique();
         r_communicator.InterfaceMesh().Nodes().Unique();
         for (size_type i = 0; i < r_communicator.LocalMeshes().size(); i++)
+        {
             r_communicator.LocalMesh(i).Nodes().Unique();
+        }
         for (size_type i = 0; i < r_communicator.GhostMeshes().size(); i++)
+        {
             r_communicator.GhostMesh(i).Nodes().Unique();
+        }
         for (size_type i = 0; i < r_communicator.InterfaceMeshes().size(); i++)
+        {
             r_communicator.InterfaceMesh(i).Nodes().Unique();
+        }
 
         mLogFile << rank << " : Nodes added to modelpart" << std::endl;
 
@@ -591,7 +605,9 @@ protected:
             for (ModelPart::ConditionType::GeometryType::iterator i_node = i_condition->GetGeometry().begin();
                     i_node != i_condition->GetGeometry().end(); ++i_node)
                 if (mrModelPart.Nodes().find(i_node->Id()) == mrModelPart.Nodes().end())
+                {
                     is_local = 0;
+                }
             if (is_local)
             {
                 mrModelPart.AddCondition(*(i_condition.base()));
@@ -601,28 +617,23 @@ protected:
         mLogFile << rank << " : Conditions added" << std::endl;
     }
 
-
     ///@}
     ///@name Protected  Access
     ///@{
-
 
     ///@}
     ///@name Protected Inquiry
     ///@{
 
-
     ///@}
     ///@name Protected LifeCycle
     ///@{
-
 
     ///@}
 
 private:
     ///@name Static Member Variables
     ///@{
-
 
     ///@}
     ///@name Member Variables
@@ -636,16 +647,13 @@ private:
     ///@name Private Operations
     ///@{
 
-
     ///@}
     ///@name Private  Access
     ///@{
 
-
     ///@}
     ///@name Private Inquiry
     ///@{
-
 
     ///@}
     ///@name Un accessible methods
@@ -657,7 +665,6 @@ private:
     /// Copy constructor.
     //IsogeometricPartitioningProcess(IsogeometricPartitioningProcess const& rOther);
 
-
     ///@}
 
 }; // Class IsogeometricPartitioningProcess
@@ -667,11 +674,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 inline std::istream & operator >>(std::istream& rIStream,
@@ -692,9 +697,6 @@ inline std::ostream & operator <<(std::ostream& rOStream,
 }
 ///@}
 
-
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_PARTITIONING_PROCESS_INCLUDED defined 
-
-

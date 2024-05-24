@@ -14,12 +14,10 @@
 
 // External includes
 
-
 // Project includes
 #include "includes/define.h"
 #include "includes/serializer.h"
 #include "custom_utilities/fespace.h"
-
 
 namespace Kratos
 {
@@ -39,7 +37,7 @@ public:
 
     /// Default constructor
     WeightedFESpace(typename BaseType::Pointer pFESpace, const std::vector<double>& weights)
-    : BaseType(), mpFESpace(pFESpace)
+        : BaseType(), mpFESpace(pFESpace)
     {
         mWeights.resize(weights.size());
         std::copy(weights.begin(), weights.end(), mWeights.begin());
@@ -48,9 +46,9 @@ public:
     /// Destructor
     virtual ~WeightedFESpace()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << this->Type() << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Helper to create new WeightedFESpace pointer
@@ -75,7 +73,9 @@ public:
     void SetWeights(const std::vector<double>& weights)
     {
         if (mWeights.size() != weights.size())
+        {
             mWeights.resize(weights.size());
+        }
         std::copy(weights.begin(), weights.end(), mWeights.begin());
     }
 
@@ -108,12 +108,18 @@ public:
 
         double sum_value = 0.0;
         for (std::size_t j = 0; j < values.size(); ++j)
+        {
             sum_value += mWeights[j] * values[j];
+        }
 
         if (sum_value == 0.0)
+        {
             v = 0.0;
+        }
         else
-            v = mWeights[i]*values[i] / sum_value;
+        {
+            v = mWeights[i] * values[i] / sum_value;
+        }
     }
 
     /// Get the values of the basis functions at point xi
@@ -123,17 +129,25 @@ public:
         mpFESpace->GetValues(values, xi);
 
         if (new_values.size() != values.size())
+        {
             new_values.resize(values.size());
+        }
 
         double sum_value = 0.0;
         for (std::size_t i = 0; i < values.size(); ++i)
+        {
             sum_value += mWeights[i] * values[i];
+        }
 
         if (sum_value == 0.0)
+        {
             std::fill(new_values.begin(), new_values.end(), 0.0);
+        }
         else
             for (std::size_t i = 0; i < new_values.size(); ++i)
-                new_values[i] = mWeights[i]*values[i] / sum_value;
+            {
+                new_values[i] = mWeights[i] * values[i] / sum_value;
+            }
     }
 
     /// Get the derivatives of the basis function i at point xi
@@ -144,7 +158,9 @@ public:
         mpFESpace->GetValuesAndDerivatives(values, dvalues, xi);
 
         if (new_dvalues.size() != TDim)
+        {
             new_dvalues.resize(TDim);
+        }
 
         double sum_value = 0.0;
         std::vector<double> dsum_value(TDim);
@@ -153,14 +169,20 @@ public:
         {
             sum_value += mWeights[j] * values[j];
             for (int dim = 0; dim < TDim; ++dim)
+            {
                 dsum_value[dim] += mWeights[j] * dvalues[j][dim];
+            }
         }
 
         if (sum_value == 0.0)
+        {
             std::fill(new_dvalues.begin(), new_dvalues.end(), 0.0);
+        }
         else
             for (int dim = 0; dim < TDim; ++dim)
-                new_dvalues[dim] = mWeights[i] * (dvalues[i][dim]/sum_value - values[i]*dsum_value[dim]/pow(sum_value, 2));
+            {
+                new_dvalues[dim] = mWeights[i] * (dvalues[i][dim] / sum_value - values[i] * dsum_value[dim] / pow(sum_value, 2));
+            }
     }
 
     /// Get the derivatives of the basis functions at point xi
@@ -172,10 +194,14 @@ public:
         mpFESpace->GetValuesAndDerivatives(values, dvalues, xi);
 
         if (new_dvalues.size() != dvalues.size())
+        {
             new_dvalues.resize(dvalues.size());
+        }
         for (std::size_t i = 0; i < new_dvalues.size(); ++i)
             if (new_dvalues[i].size() != TDim)
+            {
                 new_dvalues[i].resize(TDim);
+            }
 
         double sum_value = 0.0;
         std::vector<double> dsum_value(TDim);
@@ -184,7 +210,9 @@ public:
         {
             sum_value += mWeights[i] * values[i];
             for (int dim = 0; dim < TDim; ++dim)
+            {
                 dsum_value[dim] += mWeights[i] * dvalues[i][dim];
+            }
         }
 
         // KRATOS_WATCH(sum_value)
@@ -203,7 +231,7 @@ public:
             {
                 for (int dim = 0; dim < TDim; ++dim)
                 {
-                    new_dvalues[i][dim] = mWeights[i] * (dvalues[i][dim]/sum_value - values[i]*dsum_value[dim]/pow(sum_value, 2));
+                    new_dvalues[i][dim] = mWeights[i] * (dvalues[i][dim] / sum_value - values[i] * dsum_value[dim] / pow(sum_value, 2));
                 }
             }
         }
@@ -268,7 +296,7 @@ public:
 
     /// Check the compatibility between boundaries of two WeightedFESpacees
     bool CheckBoundaryCompatibility(const FESpace<TDim>& rFESpace1, const BoundarySide& side1,
-            const FESpace<TDim>& rFESpace2, const BoundarySide& side2) const override
+                                    const FESpace<TDim>& rFESpace2, const BoundarySide& side2) const override
     {
         return rFESpace1 == rFESpace2;
     }
@@ -299,14 +327,14 @@ public:
     }
 
     /// Construct the boundary WeightedFESpace based on side
-    typename FESpace<TDim-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
+    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
     {
-        typename FESpace<TDim-1>::Pointer pBFESpace = mpFESpace->ConstructBoundaryFESpace(side);
+        typename FESpace < TDim - 1 >::Pointer pBFESpace = mpFESpace->ConstructBoundaryFESpace(side);
         // TODO extract/compute the weights on the boundary
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not completed")
         std::vector<double> boundary_weights;
 
-        return typename WeightedFESpace<TDim-1>::Pointer(new WeightedFESpace<TDim-1>(pBFESpace, boundary_weights));
+        return typename WeightedFESpace < TDim - 1 >::Pointer(new WeightedFESpace < TDim - 1 > (pBFESpace, boundary_weights));
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -325,7 +353,9 @@ public:
             {
                 for (std::size_t i = 0; i < this->Weights().size(); ++i)
                     if (this->Weights()[i] != rOtherWeightedFESpace.Weights()[i])
+                    {
                         return false;
+                    }
                 return rOtherFESpace.IsCompatible(static_cast<const FESpace<TDim>&>(*this));
             }
         }
@@ -333,7 +363,9 @@ public:
         {
             for (std::size_t i = 0; i < this->Weights().size(); ++i)
                 if (this->Weights()[i] != 1.0)
+                {
                     return false;
+                }
             return rOtherFESpace.IsCompatible(static_cast<const FESpace<TDim>&>(*this));
         }
         return false;
@@ -377,7 +409,9 @@ public:
         BaseType::PrintData(rOStream);
         rOStream << " Weights:";
         for (std::size_t i = 0; i < mWeights.size(); ++i)
+        {
             rOStream << " " << mWeights[i];
+        }
     }
 
 private:
@@ -461,11 +495,11 @@ public:
     }
 
     /// Get the vector of function indices
-    std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t>{mFunctionId};}
+    std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t> {mFunctionId};}
 
     /// Check the compatibility between boundaries of two FESpacees
     bool CheckBoundaryCompatibility(const FESpace<0>& rFESpace1, const BoundarySide& side1,
-            const FESpace<0>& rFESpace2, const BoundarySide& side2) const override
+                                    const FESpace<0>& rFESpace2, const BoundarySide& side2) const override
     {
         return true;
     }
@@ -510,19 +544,18 @@ private:
     }
 };
 
-
 /**
  * Template specific instantiation for -1-D WeightedFESpace to terminate the compilation
  */
 template<>
-class WeightedFESpace<-1> : public FESpace<-1>
+class WeightedFESpace < -1 > : public FESpace < -1 >
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     /// Default constructor
-    WeightedFESpace(FESpace<-1>::Pointer pFESpace, const std::vector<double>& weights) {}
+    WeightedFESpace(FESpace < -1 >::Pointer pFESpace, const std::vector<double>& weights) {}
 
     /// Destructor
     virtual ~WeightedFESpace() {}
@@ -552,14 +585,14 @@ public:
     }
 
     /// Overload comparison operator
-    bool operator==(const FESpace<-1>& rOther) const override
+    bool operator==(const FESpace < -1 > & rOther) const override
     {
         return true;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    bool CheckBoundaryCompatibility(const FESpace<-1>& rFESpace1, const BoundarySide& side1,
-            const FESpace<-1>& rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpace < -1 > & rFESpace1, const BoundarySide& side1,
+                                    const FESpace < -1 > & rFESpace2, const BoundarySide& side2) const override
     {
         return true;
     }
@@ -587,19 +620,18 @@ public:
     }
 };
 
-
 /**
  * Template specific instantiation for -2-D WeightedFESpace to terminate the compilation
  */
 template<>
-class WeightedFESpace<-2> : public FESpace<-2>
+class WeightedFESpace < -2 > : public FESpace < -2 >
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     /// Default constructor
-    WeightedFESpace(FESpace<-2>::Pointer pFESpace, const std::vector<double>& weights) {}
+    WeightedFESpace(FESpace < -2 >::Pointer pFESpace, const std::vector<double>& weights) {}
 
     /// Destructor
     virtual ~WeightedFESpace() {}
@@ -629,14 +661,14 @@ public:
     }
 
     /// Overload comparison operator
-    bool operator==(const FESpace<-2>& rOther) const override
+    bool operator==(const FESpace < -2 > & rOther) const override
     {
         return true;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    bool CheckBoundaryCompatibility(const FESpace<-2>& rFESpace1, const BoundarySide& side1,
-            const FESpace<-2>& rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpace < -2 > & rFESpace1, const BoundarySide& side1,
+                                    const FESpace < -2 > & rFESpace2, const BoundarySide& side2) const override
     {
         return true;
     }
@@ -680,4 +712,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const WeightedFESpace<T
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_WEIGHTED_FESPACE_H_INCLUDED defined
-

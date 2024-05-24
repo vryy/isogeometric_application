@@ -101,13 +101,19 @@ public:
                                 return mLocalSpaceDimension < Key.mLocalSpaceDimension;
                             }
                             else
+                            {
                                 return mWorkingSpaceDimension < Key.mWorkingSpaceDimension;
+                            }
                         }
                         else
+                        {
                             return mDimension < Key.mDimension;
+                        }
                     }
                     else
+                    {
                         return mOrder3 < Key.mOrder3;
+                    }
                 }
                 else
                 {
@@ -209,7 +215,6 @@ public:
     ///@name Operations
     ///@{
 
-
     /********************************************************
             Fundamental Bezier handling functions
      ********************************************************/
@@ -221,25 +226,27 @@ public:
     static inline double bernstein(int i, int p, double x)
     {
         //bound checking
-        if(i < 0 || i > p)
+        if (i < 0 || i > p)
+        {
             return 0.0;
+        }
 
         double a = x;
         double b = 1 - x;
         double coeff;
 
-        if(p == 0)
+        if (p == 0)
         {
             return 1.0;
         }
-        else if(p == 1)
+        else if (p == 1)
         {
             coeff = 1.0;
         }
         else
         {
             int cnt;
-            for(int j = 0; j < p - 2; ++j)
+            for (int j = 0; j < p - 2; ++j)
             {
                 cnt += (j + 2) / 2;
             }
@@ -254,10 +261,12 @@ public:
      */
     static double bernstein2(int i, int p, double x)
     {
-        if(i < 0 || i > p)
+        if (i < 0 || i > p)
+        {
             return 0.0;
+        }
 
-        if(p == 0)
+        if (p == 0)
         {
             return 1.0;
         }
@@ -275,14 +284,14 @@ public:
      */
     static inline void bernstein(double& v, double& d, int i, int p, double x)
     {
-        if(i < 0 || i > p)
+        if (i < 0 || i > p)
         {
             v = 0.0;
             d = 0.0;
             return;
         }
 
-        if(p == 0)
+        if (p == 0)
         {
             v = 1.0;
             d = 0.0;
@@ -304,7 +313,7 @@ public:
      */
     static inline void bernstein(double& v, double& d, double& d2, int i, int p, double x)
     {
-        if(i < 0 || i > p)
+        if (i < 0 || i > p)
         {
             v = 0.0;
             d = 0.0;
@@ -312,7 +321,7 @@ public:
             return;
         }
 
-        if(p == 0)
+        if (p == 0)
         {
             v = 1.0;
             d = 0.0;
@@ -320,7 +329,7 @@ public:
             return;
         }
 
-        if(p == 1)
+        if (p == 1)
         {
             bernstein(v, d, i, p, x);
             d2 = 0.0;
@@ -330,15 +339,15 @@ public:
         double a = x;
         double b = 1 - x;
 
-        double tmp1 = bernstein2(i    , p - 1, x);
+        double tmp1 = bernstein2(i, p - 1, x);
         double tmp2 = bernstein2(i - 1, p - 1, x);
-        double tmp3 = bernstein2(i    , p - 2, x);
+        double tmp3 = bernstein2(i, p - 2, x);
         double tmp4 = bernstein2(i - 1, p - 2, x);
         double tmp5 = bernstein2(i - 2, p - 2, x);
 
         v = b * tmp1 + a * tmp2;
         d = p * (tmp2 - tmp1);
-        d2 = p * (p-1) * (tmp5 - 2 * tmp4 + tmp3);
+        d2 = p * (p - 1) * (tmp5 - 2 * tmp4 + tmp3);
     }
 
     /**
@@ -346,7 +355,7 @@ public:
      */
     static inline void bernstein(double& v, double& d, double& d2, double& d3, int i, int p, double x)
     {
-        if(i < 0 || i > p)
+        if (i < 0 || i > p)
         {
             v = 0.0;
             d = 0.0;
@@ -355,7 +364,7 @@ public:
             return;
         }
 
-        if(p == 0)
+        if (p == 0)
         {
             v = 1.0;
             d = 0.0;
@@ -364,7 +373,7 @@ public:
             return;
         }
 
-        if(p == 1)
+        if (p == 1)
         {
             bernstein(v, d, i, p, x);
             d2 = 0.0;
@@ -372,7 +381,7 @@ public:
             return;
         }
 
-        if(p == 2)
+        if (p == 2)
         {
             bernstein(v, d, d2, i, p, x);
             d3 = 0.0;
@@ -382,20 +391,20 @@ public:
         double a = x;
         double b = 1 - x;
 
-        double tmp1 = bernstein2(i    , p - 1, x);
+        double tmp1 = bernstein2(i, p - 1, x);
         double tmp2 = bernstein2(i - 1, p - 1, x);
-        double tmp3 = bernstein2(i    , p - 2, x);
+        double tmp3 = bernstein2(i, p - 2, x);
         double tmp4 = bernstein2(i - 1, p - 2, x);
         double tmp5 = bernstein2(i - 2, p - 2, x);
-        double tmp6 = bernstein2(i    , p - 3, x);
+        double tmp6 = bernstein2(i, p - 3, x);
         double tmp7 = bernstein2(i - 1, p - 3, x);
         double tmp8 = bernstein2(i - 2, p - 3, x);
         double tmp9 = bernstein2(i - 3, p - 3, x);
 
         v = b * tmp1 + a * tmp2;
         d = p * (tmp2 - tmp1);
-        d2 = p * (p-1) * (tmp5 - 2 * tmp4 + tmp3);
-        d3 = p * (p-1) * (p-2) * (tmp9 - 3 * tmp8 + 3 * tmp7 - tmp6);
+        d2 = p * (p - 1) * (tmp5 - 2 * tmp4 + tmp3);
+        d3 = p * (p - 1) * (p - 2) * (tmp9 - 3 * tmp8 + 3 * tmp7 - tmp6);
     }
 
     template<class ValuesContainerType>
@@ -404,12 +413,12 @@ public:
         double a = x;
         double b = 1 - x;
 
-        if(p == 0)
+        if (p == 0)
         {
             rS[0] = 1.0;
             return;
         }
-        else if(p == 1)
+        else if (p == 1)
         {
             rS[0] = b;
             rS[1] = a;
@@ -421,22 +430,22 @@ public:
             rS[p] = 1.0;
             int cnt = 0;
 
-            for(int j = 0; j < p - 2; ++j)
+            for (int j = 0; j < p - 2; ++j)
             {
                 cnt += (j + 2) / 2;
             }
 
-            for(int j = 0; j < p / 2; ++j)
+            for (int j = 0; j < p / 2; ++j)
             {
                 rS[j + 1] = msBernsteinCoefs[cnt + j];
             }
 
-            for(int j = 0; j < (p - 1) / 2; ++j)
+            for (int j = 0; j < (p - 1) / 2; ++j)
             {
                 rS[p - j - 1] = rS[j + 1];
             }
 
-            for(int j = 0; j < p + 1; ++j)
+            for (int j = 0; j < p + 1; ++j)
             {
                 rS[j] *= (pow(a, j) * pow(b, p - j));
             }
@@ -451,7 +460,7 @@ public:
                                  int p,
                                  double x)
     {
-        for(int i = 0; i < p + 1; ++i)
+        for (int i = 0; i < p + 1; ++i)
         {
             bernstein(rS[i], rD[i], i, p, x);
         }
@@ -464,7 +473,7 @@ public:
                                  int p,
                                  double x)
     {
-        for(int i = 0; i < p + 1; ++i)
+        for (int i = 0; i < p + 1; ++i)
         {
             bernstein(rS[i], rD[i], rD2[i], i, p, x);
         }
@@ -478,7 +487,7 @@ public:
                                  int p,
                                  double x)
     {
-        for(int i = 0; i < p + 1; ++i)
+        for (int i = 0; i < p + 1; ++i)
         {
             bernstein(rS[i], rD[i], rD2[i], rD3[i], i, p, x);
         }
@@ -501,8 +510,8 @@ public:
         BezierGeometryDataKey Key(NumberOfIntegrationMethod, Order, 0, 0, TDimension, TWorkingSpaceDimension, TLocalSpaceDimension);
 
         //find the key in existing map
-        if(mIntegrationMethods.find(Key) != mIntegrationMethods.end())
-        //found the key
+        if (mIntegrationMethods.find(Key) != mIntegrationMethods.end())
+            //found the key
         {
 //            std::cout << "Key " << Key << " existed and ready to be used" << std::endl;
         }
@@ -527,33 +536,33 @@ public:
             }
 
             //create the geometry_data pointer
-            #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
             GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
-                new GeometryDimension(
-                    TWorkingSpaceDimension,
-                    TLocalSpaceDimension) );
+                        new GeometryDimension(
+                            TWorkingSpaceDimension,
+                            TLocalSpaceDimension) );
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-                new GeometryData(
-                    &(*pGeometryDimension),
-                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
-                    all_integration_points,             //ThisIntegrationPoints
-                    shape_functions_values,             //ThisShapeFunctionsValues
-                    shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-                )
-            );
-            #else
+                        new GeometryData(
+                            &(*pGeometryDimension),
+                            GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
+                            all_integration_points,             //ThisIntegrationPoints
+                            shape_functions_values,             //ThisShapeFunctionsValues
+                            shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                        )
+                    );
+#else
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-                new GeometryData(
-                    TDimension,
-                    TWorkingSpaceDimension,
-                    TLocalSpaceDimension,
-                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
-                    all_integration_points,             //ThisIntegrationPoints
-                    shape_functions_values,             //ThisShapeFunctionsValues
-                    shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-                )
-            );
-            #endif
+                        new GeometryData(
+                            TDimension,
+                            TWorkingSpaceDimension,
+                            TLocalSpaceDimension,
+                            GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
+                            all_integration_points,             //ThisIntegrationPoints
+                            shape_functions_values,             //ThisShapeFunctionsValues
+                            shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                        )
+                    );
+#endif
 
             //insert value to map
             mIntegrationMethods.insert(PairType(Key, pNewGeometryData));
@@ -573,8 +582,8 @@ public:
         BezierGeometryDataKey Key(NumberOfIntegrationMethod, Order1, Order2, 0, TDimension, TWorkingSpaceDimension, TLocalSpaceDimension);
 
         //find the key in existing map
-        if(mIntegrationMethods.find(Key) != mIntegrationMethods.end())
-        //found the key
+        if (mIntegrationMethods.find(Key) != mIntegrationMethods.end())
+            //found the key
         {
 //            std::cout << "Key " << Key << " existed and ready to be used" << std::endl;
         }
@@ -597,33 +606,33 @@ public:
                 );
             }
 
-            #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
             GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
-                new GeometryDimension(
-                    TWorkingSpaceDimension,
-                    TLocalSpaceDimension) );
+                        new GeometryDimension(
+                            TWorkingSpaceDimension,
+                            TLocalSpaceDimension) );
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-                new GeometryData(
-                    &(*pGeometryDimension),
-                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
-                    all_integration_points,             //ThisIntegrationPoints
-                    shape_functions_values,             //ThisShapeFunctionsValues
-                    shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-                )
-            );
-            #else
+                        new GeometryData(
+                            &(*pGeometryDimension),
+                            GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
+                            all_integration_points,             //ThisIntegrationPoints
+                            shape_functions_values,             //ThisShapeFunctionsValues
+                            shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                        )
+                    );
+#else
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-                new GeometryData(
-                    TDimension,
-                    TWorkingSpaceDimension,
-                    TLocalSpaceDimension,
-                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
-                    all_integration_points,             //ThisIntegrationPoints
-                    shape_functions_values,             //ThisShapeFunctionsValues
-                    shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-                )
-            );
-            #endif
+                        new GeometryData(
+                            TDimension,
+                            TWorkingSpaceDimension,
+                            TLocalSpaceDimension,
+                            GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
+                            all_integration_points,             //ThisIntegrationPoints
+                            shape_functions_values,             //ThisShapeFunctionsValues
+                            shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                        )
+                    );
+#endif
 
             //insert value to map
             mIntegrationMethods.insert(PairType(Key, pNewGeometryData));
@@ -644,8 +653,8 @@ public:
         BezierGeometryDataKey Key(NumberOfIntegrationMethod, Order1, Order2, Order3, TDimension, TWorkingSpaceDimension, TLocalSpaceDimension);
 
         //find the key in existing map
-        if(mIntegrationMethods.find(Key) != mIntegrationMethods.end())
-        //found the key
+        if (mIntegrationMethods.find(Key) != mIntegrationMethods.end())
+            //found the key
         {
 //            std::cout << "Key " << Key << " existed and ready to be used" << std::endl;
             return;
@@ -670,33 +679,33 @@ public:
                 );
             }
 
-            #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
             GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
-                new GeometryDimension(
-                    TWorkingSpaceDimension,
-                    TLocalSpaceDimension) );
+                        new GeometryDimension(
+                            TWorkingSpaceDimension,
+                            TLocalSpaceDimension) );
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-                new GeometryData(
-                    &(*pGeometryDimension),
-                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
-                    all_integration_points,             //ThisIntegrationPoints
-                    shape_functions_values,             //ThisShapeFunctionsValues
-                    shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-                )
-            );
-            #else
+                        new GeometryData(
+                            &(*pGeometryDimension),
+                            GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
+                            all_integration_points,             //ThisIntegrationPoints
+                            shape_functions_values,             //ThisShapeFunctionsValues
+                            shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                        )
+                    );
+#else
             GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-                new GeometryData(
-                    TDimension,
-                    TWorkingSpaceDimension,
-                    TLocalSpaceDimension,
-                    GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
-                    all_integration_points,             //ThisIntegrationPoints
-                    shape_functions_values,             //ThisShapeFunctionsValues
-                    shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-                )
-            );
-            #endif
+                        new GeometryData(
+                            TDimension,
+                            TWorkingSpaceDimension,
+                            TLocalSpaceDimension,
+                            GeometryData::IntegrationMethod::GI_GAUSS_2,           //ThisDefaultMethod
+                            all_integration_points,             //ThisIntegrationPoints
+                            shape_functions_values,             //ThisShapeFunctionsValues
+                            shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                        )
+                    );
+#endif
 
             //insert value to map
             mIntegrationMethods.insert(PairType(Key, pNewGeometryData));
@@ -758,33 +767,33 @@ public:
             all_integration_points[static_cast<int>(ThisIntegrationMethod)]
         );
 
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
         GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
-            new GeometryDimension(
-                TWorkingSpaceDimension,
-                TLocalSpaceDimension) );
+                    new GeometryDimension(
+                        TWorkingSpaceDimension,
+                        TLocalSpaceDimension) );
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-            new GeometryData(
-                &(*pGeometryDimension),
-                ThisIntegrationMethod,              //ThisDefaultMethod
-                all_integration_points,             //ThisIntegrationPoints
-                shape_functions_values,             //ThisShapeFunctionsValues
-                shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-            )
-        );
-        #else
+                    new GeometryData(
+                        &(*pGeometryDimension),
+                        ThisIntegrationMethod,              //ThisDefaultMethod
+                        all_integration_points,             //ThisIntegrationPoints
+                        shape_functions_values,             //ThisShapeFunctionsValues
+                        shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                    )
+                );
+#else
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-            new GeometryData(
-                TDimension,
-                TWorkingSpaceDimension,
-                TLocalSpaceDimension,
-                ThisIntegrationMethod,              //ThisDefaultMethod
-                all_integration_points,             //ThisIntegrationPoints
-                shape_functions_values,             //ThisShapeFunctionsValues
-                shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-            )
-        );
-        #endif
+                    new GeometryData(
+                        TDimension,
+                        TWorkingSpaceDimension,
+                        TLocalSpaceDimension,
+                        ThisIntegrationMethod,              //ThisDefaultMethod
+                        all_integration_points,             //ThisIntegrationPoints
+                        shape_functions_values,             //ThisShapeFunctionsValues
+                        shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                    )
+                );
+#endif
 
         std::cout << "Create BezierGeometryData successfully for " << integration_points.size() << " integration points" << std::endl;
 
@@ -813,33 +822,33 @@ public:
             all_integration_points[static_cast<int>(ThisIntegrationMethod)]
         );
 
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
         GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
-            new GeometryDimension(
-                TWorkingSpaceDimension,
-                TLocalSpaceDimension) );
+                    new GeometryDimension(
+                        TWorkingSpaceDimension,
+                        TLocalSpaceDimension) );
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-            new GeometryData(
-                &(*pGeometryDimension),
-                ThisIntegrationMethod,              //ThisDefaultMethod
-                all_integration_points,             //ThisIntegrationPoints
-                shape_functions_values,             //ThisShapeFunctionsValues
-                shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-            )
-        );
-        #else
+                    new GeometryData(
+                        &(*pGeometryDimension),
+                        ThisIntegrationMethod,              //ThisDefaultMethod
+                        all_integration_points,             //ThisIntegrationPoints
+                        shape_functions_values,             //ThisShapeFunctionsValues
+                        shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                    )
+                );
+#else
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-            new GeometryData(
-                TDimension,
-                TWorkingSpaceDimension,
-                TLocalSpaceDimension,
-                ThisIntegrationMethod,              //ThisDefaultMethod
-                all_integration_points,             //ThisIntegrationPoints
-                shape_functions_values,             //ThisShapeFunctionsValues
-                shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-            )
-        );
-        #endif
+                    new GeometryData(
+                        TDimension,
+                        TWorkingSpaceDimension,
+                        TLocalSpaceDimension,
+                        ThisIntegrationMethod,              //ThisDefaultMethod
+                        all_integration_points,             //ThisIntegrationPoints
+                        shape_functions_values,             //ThisShapeFunctionsValues
+                        shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                    )
+                );
+#endif
 
         std::cout << "Create BezierGeometryData successfully for " << integration_points.size() << " integration points" << std::endl;
 
@@ -870,33 +879,33 @@ public:
             all_integration_points[static_cast<int>(ThisIntegrationMethod)]
         );
 
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
         GeometryDimension::Pointer pGeometryDimension = GeometryDimension::Pointer(
-            new GeometryDimension(
-                TWorkingSpaceDimension,
-                TLocalSpaceDimension) );
+                    new GeometryDimension(
+                        TWorkingSpaceDimension,
+                        TLocalSpaceDimension) );
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-            new GeometryData(
-                &(*pGeometryDimension),
-                ThisIntegrationMethod,              //ThisDefaultMethod
-                all_integration_points,             //ThisIntegrationPoints
-                shape_functions_values,             //ThisShapeFunctionsValues
-                shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-            )
-        );
-        #else
+                    new GeometryData(
+                        &(*pGeometryDimension),
+                        ThisIntegrationMethod,              //ThisDefaultMethod
+                        all_integration_points,             //ThisIntegrationPoints
+                        shape_functions_values,             //ThisShapeFunctionsValues
+                        shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                    )
+                );
+#else
         GeometryData::Pointer pNewGeometryData = GeometryData::Pointer(
-            new GeometryData(
-                TDimension,
-                TWorkingSpaceDimension,
-                TLocalSpaceDimension,
-                ThisIntegrationMethod,              //ThisDefaultMethod
-                all_integration_points,             //ThisIntegrationPoints
-                shape_functions_values,             //ThisShapeFunctionsValues
-                shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-            )
-        );
-        #endif
+                    new GeometryData(
+                        TDimension,
+                        TWorkingSpaceDimension,
+                        TLocalSpaceDimension,
+                        ThisIntegrationMethod,              //ThisDefaultMethod
+                        all_integration_points,             //ThisIntegrationPoints
+                        shape_functions_values,             //ThisShapeFunctionsValues
+                        shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                    )
+                );
+#endif
 
         std::cout << "Create BezierGeometryData successfully for " << integration_points.size() << " integration points" << std::endl;
 
@@ -941,7 +950,7 @@ public:
         Matrix InvJ0(dim, dim); // just a dummy variable
         double DetJ0;
         double TotalDomainInitialSize = 0.0;
-        for(unsigned int PointNumber = 0; PointNumber < integration_points.size(); ++PointNumber)
+        for (unsigned int PointNumber = 0; PointNumber < integration_points.size(); ++PointNumber)
         {
             //getting informations for integration
             double IntegrationWeight = integration_points[PointNumber].Weight();
@@ -1025,9 +1034,9 @@ public:
         std::string FileName
     )
     {
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double start_compute = OpenMPUtils::GetCurrentTime();
-        #endif
+#endif
 
         IntegrationMethod ThisMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
 
@@ -1037,9 +1046,9 @@ public:
         Out.open(FileName.c_str());
 
         Out << "{" << std::endl;
-        for(typename ElementsContainerType::ptr_iterator it = pElements.ptr_begin();
-            it != pElements.ptr_end();
-            ++it)
+        for (typename ElementsContainerType::ptr_iterator it = pElements.ptr_begin();
+                it != pElements.ptr_end();
+                ++it)
         {
             MatrixType shape_functions_values;
             ShapeFunctionsGradientsType shape_functions_local_gradients;
@@ -1055,38 +1064,41 @@ public:
             unsigned int integration_points_number = shape_functions_values.size1();
             unsigned int number_of_nodes = shape_functions_values.size2();
 
-
             Out << "{" << std::endl;
-            for(unsigned int i = 0; i < integration_points_number; ++i)
+            for (unsigned int i = 0; i < integration_points_number; ++i)
             {
                 Out << "{";
-                for(unsigned int j = 0; j < number_of_nodes - 1; ++j)
+                for (unsigned int j = 0; j < number_of_nodes - 1; ++j)
                 {
                     Out << shape_functions_values(i, j) << ", ";
                 }
-                if(i != integration_points_number - 1)
+                if (i != integration_points_number - 1)
                 {
                     Out << shape_functions_values(i, number_of_nodes - 1) << "}," << std::endl;
                 }
                 else
-                    Out << shape_functions_values(i, number_of_nodes - 1) << "}" << std::endl;;
+                {
+                    Out << shape_functions_values(i, number_of_nodes - 1) << "}" << std::endl;
+                };
             }
 
-            if(it != pElements.ptr_end() - 1)
+            if (it != pElements.ptr_end() - 1)
             {
                 Out << "}," << std::endl;
             }
             else
+            {
                 Out << "}" << std::endl;
+            }
         }
         Out << "};" << std::endl;
         Out.close();
 
-        #ifdef ENABLE_PROFILING
+#ifdef ENABLE_PROFILING
         double end_compute = OpenMPUtils::GetCurrentTime();
         std::cout << "Dumping shape functions values and local gradients completed: "
                   << (end_compute - start_compute) << " s" << std::endl;
-        #endif
+#endif
     }
 
     /********************************************************
@@ -1119,25 +1131,24 @@ public:
         {
             offset1 = k + base_offset;
 
-            if(offset1 >= BaseRule.size())
+            if (offset1 >= BaseRule.size())
                 KRATOS_THROW_ERROR(std::logic_error, "There are not enough Gauss point to support for integration", __FUNCTION__)
 
-            for(j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
-            {
-                const IntegrationPointType& temp1 = BaseRule[offset1][j1];
+                for (j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
+                {
+                    const IntegrationPointType& temp1 = BaseRule[offset1][j1];
 
-                IntegrationPointType temp;
+                    IntegrationPointType temp;
 
-                temp.X() = 0.5 * (temp1.X() + 1);
-                temp.Weight() = 0.5 * temp1.Weight();
+                    temp.X() = 0.5 * (temp1.X() + 1);
+                    temp.Weight() = 0.5 * temp1.Weight();
 
-                integration_points[k].push_back(temp);
-            }
+                    integration_points[k].push_back(temp);
+                }
         }
 
         return integration_points;
     }
-
 
     static IntegrationPointsContainerType AllIntegrationPoints(
         unsigned int NumberOfIntegrationMethod,
@@ -1155,14 +1166,14 @@ public:
         ///////////////////////////////////////////////////////////////
         // Remarks: this current implementation supports integration with order up to 9
         IndexType k, j1, j2, offset1, offset2;
-        #ifdef USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION
+#ifdef USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION
         unsigned int IntOrder = std::max(Order1, Order2);
         IndexType base_offset1 = 1 + IntOrder / 2;
         IndexType base_offset2 = 1 + IntOrder / 2;
-        #else
+#else
         IndexType base_offset1 = 1 + Order1 / 2;
         IndexType base_offset2 = 1 + Order2 / 2;
-        #endif
+#endif
 
         IntegrationPointsContainerType integration_points;
         for (k = 0; k < NumberOfIntegrationMethod; ++k)
@@ -1170,31 +1181,30 @@ public:
             offset1 = k + base_offset1;
             offset2 = k + base_offset2;
 
-            if(offset1 >= BaseRule.size() || offset2 >= BaseRule.size())
+            if (offset1 >= BaseRule.size() || offset2 >= BaseRule.size())
                 KRATOS_THROW_ERROR(std::logic_error, "There are not enough Gauss point to support for integration", __FUNCTION__)
 
-            for(j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
-            {
-                const IntegrationPointType& temp1 = BaseRule[offset1][j1];
-
-                for(j2 = 0; j2 < BaseRule[offset2].size(); ++j2)
+                for (j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
                 {
-                    const IntegrationPointType& temp2 = BaseRule[offset2][j2];
+                    const IntegrationPointType& temp1 = BaseRule[offset1][j1];
 
-                    IntegrationPointType temp;
+                    for (j2 = 0; j2 < BaseRule[offset2].size(); ++j2)
+                    {
+                        const IntegrationPointType& temp2 = BaseRule[offset2][j2];
 
-                    temp.X() = 0.5 * (temp1.X() + 1);
-                    temp.Y() = 0.5 * (temp2.X() + 1);
-                    temp.Weight() = 0.25 * temp1.Weight() * temp2.Weight();
+                        IntegrationPointType temp;
 
-                    integration_points[k].push_back(temp);
+                        temp.X() = 0.5 * (temp1.X() + 1);
+                        temp.Y() = 0.5 * (temp2.X() + 1);
+                        temp.Weight() = 0.25 * temp1.Weight() * temp2.Weight();
+
+                        integration_points[k].push_back(temp);
+                    }
                 }
-            }
         }
 
         return integration_points;
     }
-
 
     static IntegrationPointsContainerType AllIntegrationPoints(
         unsigned int NumberOfIntegrationMethod,
@@ -1213,12 +1223,12 @@ public:
         ///////////////////////////////////////////////////////////////
         // Remarks: this current implementation supports integration with order up to 9
         IndexType k, j1, j2, j3, offset1, offset2, offset3;
-        #ifdef USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION
+#ifdef USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION
         unsigned int IntOrder = std::max(std::max(Order1, Order2), Order3);
         IndexType base_offset1 = 1 + IntOrder / 2;
         IndexType base_offset2 = 1 + IntOrder / 2;
         IndexType base_offset3 = 1 + IntOrder / 2;
-        #else
+#else
 //        IndexType base_offset1 = 1 + Order1 / 2;
 //        IndexType base_offset2 = 1 + Order2 / 2;
 //        IndexType base_offset3 = 1 + Order3 / 2;
@@ -1228,7 +1238,7 @@ public:
 //        IndexType base_offset1 = (Order1 / 2 >= 1) ? (Order1 / 2 - 1) : 0;
 //        IndexType base_offset2 = (Order2 / 2 >= 1) ? (Order2 / 2 - 1) : 0;
 //        IndexType base_offset3 = (Order3 / 2 >= 1) ? (Order3 / 2 - 1) : 0;
-        #endif
+#endif
 
         IntegrationPointsContainerType integration_points;
         for (k = 0; k < NumberOfIntegrationMethod; ++k)
@@ -1237,34 +1247,34 @@ public:
             offset2 = k + base_offset2; // this allows for one more order than the order of the curve
             offset3 = k + base_offset3; // this allows for one more order than the order of the curve
 
-            if( offset1 >= BaseRule.size() ||
-                offset2 >= BaseRule.size() ||
-                offset3 >= BaseRule.size() )
+            if ( offset1 >= BaseRule.size() ||
+                    offset2 >= BaseRule.size() ||
+                    offset3 >= BaseRule.size() )
                 KRATOS_THROW_ERROR(std::logic_error, "There are not enough Gauss point to support for integration", __FUNCTION__)
 
-            for(j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
-            {
-                const IntegrationPointType& temp1 = BaseRule[offset1][j1];
-
-                for(j2 = 0; j2 < BaseRule[offset2].size(); ++j2)
+                for (j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
                 {
-                    const IntegrationPointType& temp2 = BaseRule[offset2][j2];
+                    const IntegrationPointType& temp1 = BaseRule[offset1][j1];
 
-                    for(j3 = 0; j3 < BaseRule[offset3].size(); ++j3)
+                    for (j2 = 0; j2 < BaseRule[offset2].size(); ++j2)
                     {
-                        const IntegrationPointType& temp3 = BaseRule[offset3][j3];
+                        const IntegrationPointType& temp2 = BaseRule[offset2][j2];
 
-                        IntegrationPointType temp;
+                        for (j3 = 0; j3 < BaseRule[offset3].size(); ++j3)
+                        {
+                            const IntegrationPointType& temp3 = BaseRule[offset3][j3];
 
-                        temp.X() = 0.5 * (temp1.X() + 1);
-                        temp.Y() = 0.5 * (temp2.X() + 1);
-                        temp.Z() = 0.5 * (temp3.X() + 1);
-                        temp.Weight() = 0.125 * temp1.Weight() * temp2.Weight() * temp3.Weight();
+                            IntegrationPointType temp;
 
-                        integration_points[k].push_back(temp);
+                            temp.X() = 0.5 * (temp1.X() + 1);
+                            temp.Y() = 0.5 * (temp2.X() + 1);
+                            temp.Z() = 0.5 * (temp3.X() + 1);
+                            temp.Weight() = 0.125 * temp1.Weight() * temp2.Weight() * temp3.Weight();
+
+                            integration_points[k].push_back(temp);
+                        }
                     }
                 }
-            }
 
 //            KRATOS_WATCH(base_offset1)
 //            KRATOS_WATCH(base_offset2)
@@ -1282,7 +1292,6 @@ public:
         }
         return integration_points;
     }
-
 
     /********************************************************
             END OF INTEGRATION POINT INTERFACE
@@ -1308,55 +1317,63 @@ public:
         nb = 1;
         int i, j, k, l, r, s, save, multiplicity;
         double alpha, numerator;
-        std::vector<double> alphas(p+1);
+        std::vector<double> alphas(p + 1);
 
-        C.push_back(IdentityMatrix(p+1));
+        C.push_back(IdentityMatrix(p + 1));
 
         while (b <= m)
         {
-            if (nb+1 > C.size())
-                C.push_back(IdentityMatrix(p+1));
+            if (nb + 1 > C.size())
+            {
+                C.push_back(IdentityMatrix(p + 1));
+            }
             else
-                noalias(C[nb]) = IdentityMatrix(p+1);
+            {
+                noalias(C[nb]) = IdentityMatrix(p + 1);
+            }
             i = b;
-            while (b<=m && U[b]==U[b-1]) ++b;
+            while (b <= m && U[b] == U[b - 1]) { ++b; }
 
             multiplicity = b - i + 1;
             if (multiplicity < p)
             {
-                numerator = U[b-1] - U[a-1];
-                for (j = p; j>=multiplicity+1; --j) alphas[j-multiplicity-1] = numerator/(U[a+j-1]-U[a-1]);
+                numerator = U[b - 1] - U[a - 1];
+                for (j = p; j >= multiplicity + 1; --j) { alphas[j - multiplicity - 1] = numerator / (U[a + j - 1] - U[a - 1]); }
                 r = p - multiplicity;
                 for (j = 1; j <= r; ++j)
                 {
-                    save = r-j+1;
+                    save = r - j + 1;
                     s = multiplicity + j;
-                    for (k = p+1; k >= s+1; --k)
+                    for (k = p + 1; k >= s + 1; --k)
                     {
-                        alpha = alphas[k-s-1];
-                        for (l = 1; l <= p+1; ++l)
-                            C[nb-1](l-1,k-1) = alpha*C[nb-1](l-1,k-1) + (1-alpha)*C[nb-1](l-1,k-2);
+                        alpha = alphas[k - s - 1];
+                        for (l = 1; l <= p + 1; ++l)
+                        {
+                            C[nb - 1](l - 1, k - 1) = alpha * C[nb - 1](l - 1, k - 1) + (1 - alpha) * C[nb - 1](l - 1, k - 2);
+                        }
                     }
                     if (b <= m)
                     {
                         for (l = 0; l <= j; ++l)
-                            C[nb](save+l-1, save-1) = C[nb-1](p-j+l, p);
+                        {
+                            C[nb](save + l - 1, save - 1) = C[nb - 1](p - j + l, p);
+                        }
                     }
                 }
-                nb = nb+1;
+                nb = nb + 1;
                 if (b <= m)
                 {
                     a = b;
-                    b = b+1;
+                    b = b + 1;
                 }
             }
             else if (multiplicity == p)
             {
                 if (b <= m)
                 {
-                    nb = nb+1;
+                    nb = nb + 1;
                     a = b;
-                    b = b+1;
+                    b = b + 1;
                 }
             }
         }
@@ -1382,28 +1399,28 @@ public:
         BezierUtils::bezier_extraction_1d(Cxi, nb1, U, p);
         BezierUtils::bezier_extraction_1d(Cet, nb2, V, q);
 
-        C.resize(nb1*nb2);
+        C.resize(nb1 * nb2);
 
         int eta, xi, e, row, col, ird, jrd, icd, jcd, i, j;
         for (eta = 0; eta < nb2; ++eta)
         {
             for (xi = 0; xi < nb1; ++xi)
             {
-                e = eta*nb1 + xi;
-                C[e].resize((p+1)*(q+1), (p+1)*(q+1), false);
-                for (row = 0; row < q+1; ++row)
+                e = eta * nb1 + xi;
+                C[e].resize((p + 1) * (q + 1), (p + 1) * (q + 1), false);
+                for (row = 0; row < q + 1; ++row)
                 {
-                    ird = row*(p+1);
-                    jrd = (row+1)*(p+1)-1;
-                    for (col = 0; col < q+1; ++col)
+                    ird = row * (p + 1);
+                    jrd = (row + 1) * (p + 1) - 1;
+                    for (col = 0; col < q + 1; ++col)
                     {
-                        icd = col*(p+1);
-                        jcd = (col+1)*(p+1)-1;
-                        for (i = 0; i < p+1; ++i)
+                        icd = col * (p + 1);
+                        jcd = (col + 1) * (p + 1) - 1;
+                        for (i = 0; i < p + 1; ++i)
                         {
-                            for (j = 0; j < p+1; ++j)
+                            for (j = 0; j < p + 1; ++j)
                             {
-                                C[e](ird+i, icd+j) = Cet[eta](row, col) * Cxi[xi](i, j);
+                                C[e](ird + i, icd + j) = Cet[eta](row, col) * Cxi[xi](i, j);
                             }
                         }
                     }
@@ -1435,27 +1452,27 @@ public:
         bezier_extraction_1d(Cet, nb2, V, q);
         bezier_extraction_1d(Cze, nb3, W, r);
 
-        C_et_xi.resize((p+1)*(q+1), (p+1)*(q+1), false);
-        C.resize(nb1*nb2*nb3);
+        C_et_xi.resize((p + 1) * (q + 1), (p + 1) * (q + 1), false);
+        C.resize(nb1 * nb2 * nb3);
 
-        int eta, xi,zeta, e, row, col, ird, jrd, icd, jcd, i, j;
+        int eta, xi, zeta, e, row, col, ird, jrd, icd, jcd, i, j;
         for (eta = 0; eta < nb2; ++eta)
         {
             for (xi = 0; xi < nb1; ++xi)
             {
-                for (row = 0; row < q+1; ++row)
+                for (row = 0; row < q + 1; ++row)
                 {
-                    ird = row*(p+1);
-                    jrd = (row+1)*(p+1)-1;
-                    for (col = 0; col < q+1; ++col)
+                    ird = row * (p + 1);
+                    jrd = (row + 1) * (p + 1) - 1;
+                    for (col = 0; col < q + 1; ++col)
                     {
-                        icd = col*(p+1);
-                        jcd = (col+1)*(p+1)-1;
-                        for (i = 0; i < p+1; ++i)
+                        icd = col * (p + 1);
+                        jcd = (col + 1) * (p + 1) - 1;
+                        for (i = 0; i < p + 1; ++i)
                         {
-                            for (j = 0; j < p+1; ++j)
+                            for (j = 0; j < p + 1; ++j)
                             {
-                                C_et_xi(ird+i, icd+j) = Cet[eta](row, col) * Cxi[xi](i, j);
+                                C_et_xi(ird + i, icd + j) = Cet[eta](row, col) * Cxi[xi](i, j);
                             }
                         }
                     }
@@ -1464,20 +1481,20 @@ public:
                 for (zeta = 0; zeta < nb3; ++zeta)
                 {
                     e = (zeta * nb2 + eta) * nb1 + xi;
-                    C[e].resize((p+1)*(q+1)*(r+1), (p+1)*(q+1)*(r+1));
-                    for (row = 0; row < r+1; ++row)
+                    C[e].resize((p + 1) * (q + 1) * (r + 1), (p + 1) * (q + 1) * (r + 1));
+                    for (row = 0; row < r + 1; ++row)
                     {
-                        ird = row*(p+1)*(q+1);
-                        jrd = (row+1)*(p+1)*(q+1)-1;
-                        for (col = 0; col < r+1; ++col)
+                        ird = row * (p + 1) * (q + 1);
+                        jrd = (row + 1) * (p + 1) * (q + 1) - 1;
+                        for (col = 0; col < r + 1; ++col)
                         {
-                            icd = col*(p+1)*(q+1);
-                            jcd = (col+1)*(p+1)*(q+1)-1;
-                            for (i = 0; i < (p+1)*(q+1); ++i)
+                            icd = col * (p + 1) * (q + 1);
+                            jcd = (col + 1) * (p + 1) * (q + 1) - 1;
+                            for (i = 0; i < (p + 1) * (q + 1); ++i)
                             {
-                                for (j = 0; j < (p+1)*(q+1); ++j)
+                                for (j = 0; j < (p + 1) * (q + 1); ++j)
                                 {
-                                    C[e](ird+i, icd+j) = Cze[zeta](row, col) * C_et_xi(i, j);
+                                    C[e](ird + i, icd + j) = Cze[zeta](row, col) * C_et_xi(i, j);
                                 }
                             }
                         }
@@ -1707,7 +1724,7 @@ private:
                 shape_functions_local_gradients[it_gp],
                 integration_points[it_gp]
             );
-            for(unsigned int i = 0; i < Order + 1; ++i)
+            for (unsigned int i = 0; i < Order + 1; ++i)
             {
                 shape_functions_values( it_gp, i ) = temp_values(i);
             }
@@ -1727,8 +1744,10 @@ private:
         bernstein(shape_functions_values, shape_functions_derivatives, Order, rPoint[0]);
 
         shape_functions_local_gradients.resize(1, Order + 1);
-        for(int i = 0; i < Order + 1; ++i)
+        for (int i = 0; i < Order + 1; ++i)
+        {
             shape_functions_local_gradients(0, i) = shape_functions_derivatives(i);
+        }
     }
 
     /**************************************************************************
@@ -1756,7 +1775,7 @@ private:
                 shape_functions_local_gradients[it_gp],
                 integration_points[it_gp]
             );
-            for(unsigned int i = 0; i < (Order1 + 1) * (Order2 + 1); ++i)
+            for (unsigned int i = 0; i < (Order1 + 1) * (Order2 + 1); ++i)
             {
                 shape_functions_values( it_gp, i ) = temp_values(i);
             }
@@ -1781,9 +1800,9 @@ private:
 
         //compute bivariate Bezier shape functions values
         shape_functions_values.resize((Order1 + 1) * (Order2 + 1));
-        for(IndexType i = 0; i < Order1 + 1; ++i)
+        for (IndexType i = 0; i < Order1 + 1; ++i)
         {
-            for(IndexType j = 0; j < Order2 + 1; ++j)
+            for (IndexType j = 0; j < Order2 + 1; ++j)
             {
                 IndexType index = j + i * (Order2 + 1);
 
@@ -1794,9 +1813,9 @@ private:
 
         //compute bivariate Bezier shape functions derivatives w.r.t local coordinates
         shape_functions_local_gradients.resize(2, (Order1 + 1) * (Order2 + 1));
-        for(IndexType i = 0; i < Order1 + 1; ++i)
+        for (IndexType i = 0; i < Order1 + 1; ++i)
         {
-            for(IndexType j = 0; j < Order2 + 1; ++j)
+            for (IndexType j = 0; j < Order2 + 1; ++j)
             {
                 IndexType index = j + i * (Order2 + 1);
 
@@ -1835,7 +1854,7 @@ private:
                 shape_functions_local_gradients[it_gp],
                 integration_points[it_gp]
             );
-            for(unsigned int i = 0; i < (Order1 + 1) * (Order2 + 1) * (Order3 + 1); ++i)
+            for (unsigned int i = 0; i < (Order1 + 1) * (Order2 + 1) * (Order3 + 1); ++i)
             {
                 shape_functions_values( it_gp, i ) = temp_values(i);
             }
@@ -1864,11 +1883,11 @@ private:
 
         //compute trivariate Bezier shape functions values
         shape_functions_values.resize((Order1 + 1) * (Order2 + 1) * (Order3 + 1));
-        for(IndexType i = 0; i < (Order1 + 1); ++i)
+        for (IndexType i = 0; i < (Order1 + 1); ++i)
         {
-            for(IndexType j = 0; j < (Order2 + 1); ++j)
+            for (IndexType j = 0; j < (Order2 + 1); ++j)
             {
-                for(IndexType k = 0; k < (Order3 + 1); ++k)
+                for (IndexType k = 0; k < (Order3 + 1); ++k)
                 {
                     IndexType index = k + (j + i * (Order2 + 1)) * (Order3 + 1);
 
@@ -1882,11 +1901,11 @@ private:
 
         //compute trivariate Bezier shape functions derivatives w.r.t local coordinates
         shape_functions_local_gradients.resize(3, (Order1 + 1) * (Order2 + 1) * (Order3 + 1));
-        for(IndexType i = 0; i < Order1 + 1; ++i)
+        for (IndexType i = 0; i < Order1 + 1; ++i)
         {
-            for(IndexType j = 0; j < Order2 + 1; ++j)
+            for (IndexType j = 0; j < Order2 + 1; ++j)
             {
-                for(IndexType k = 0; k < Order3 + 1; ++k)
+                for (IndexType k = 0; k < Order3 + 1; ++k)
                 {
                     IndexType index = k + (j + i * (Order2 + 1)) * (Order3 + 1);
 
@@ -1969,7 +1988,7 @@ inline std::istream& operator >>(std::istream& rIStream, BezierUtils& rThis)
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const BezierUtils& rThis)
+                                 const BezierUtils& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -1987,4 +2006,3 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 #undef USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION
 
 #endif // KRATOS_BEZIER_UTILS_H_INCLUDED  defined
-

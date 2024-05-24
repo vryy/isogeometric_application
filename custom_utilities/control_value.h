@@ -50,7 +50,7 @@ public:
     const TDataType& WV() const {return mWV;}
 
     /// Inhomogeneous value
-    TDataType V() const {return mWV/mW;}
+    TDataType V() const {return mWV / mW;}
 
     /// Weight
     TWeightType& W() {return mW;}
@@ -59,14 +59,14 @@ public:
     /// Set the coordinate. The input is the physical coordinates in 3D space.
     void Set(const TDataType& _V, const TDataType& _W)
     {
-        mWV = _W*_V;
+        mWV = _W * _V;
         mW  = _W;
     }
 
     /// Add to the coordinate. The input is the increment of physical coordinates in 3D space.
     void Add(const TDataType& _V, const TDataType& _W)
     {
-        mWV += _W*_V;
+        mWV += _W * _V;
         mW  += _W;
     }
 
@@ -164,4 +164,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const ControlValue<TDat
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CONTROL_VALUE_H_INCLUDED
-

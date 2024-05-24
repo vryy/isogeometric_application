@@ -23,7 +23,6 @@
 #include "custom_utilities/tsplines/tsmesh_2d.h"
 #include "custom_utilities/nurbs/bsplines_fespace.h"
 
-
 namespace Kratos
 {
 ///@addtogroup IsogeometricApplication
@@ -92,31 +91,39 @@ public:
         std::vector<std::pair<int, std::pair<int, int> > >HEdgeList;
         std::vector<std::pair<int, std::pair<int, int> > >VEdgeList;
 
-        for(dim = 0;  dim < 2; ++dim){
+        for (dim = 0;  dim < 2; ++dim)
+        {
             int order = rFESpace.Order(dim);
             tmesh.SetOrder(dim, order);
 
         }
 
-        for(dim = 0;  dim < 2; ++dim){
+        for (dim = 0;  dim < 2; ++dim)
+        {
             const knot_container_t& knot_vec = rFESpace.KnotVector(dim);
-            for(std::size_t i = 0; i < knot_vec.size(); ++i)
+            for (std::size_t i = 0; i < knot_vec.size(); ++i)
+            {
                 tmesh.InsertKnot(dim, knot_vec[i]);
+            }
         }
 
         // assign the index to the knot vectors
         int cnt = -1;
-        for(std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
+        for (std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
+        {
             tmesh.GetKnot(0, i)->UpdateIndex(++cnt);
+        }
         cnt = -1;
-        for(std::size_t i = 0; i < tmesh.NumberOfKnots(1); ++i)
+        for (std::size_t i = 0; i < tmesh.NumberOfKnots(1); ++i)
+        {
             tmesh.GetKnot(1, i)->UpdateIndex(++cnt);
+        }
 
         // create the vertex list
         std::set<std::pair<int, int> > VertexList;
-        for(std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
+        for (std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
         {
-            for(std::size_t j = 0; j < tmesh.NumberOfKnots(1); ++j)
+            for (std::size_t j = 0; j < tmesh.NumberOfKnots(1); ++j)
             {
                 VertexList.insert(std::pair<int, int>(i, j));
             }
@@ -124,13 +131,13 @@ public:
 
         // insert the vertices to the T-spline mesh
         std::map<std::pair<int, int>, TsVertex::Pointer> VertexMap;
-        for(std::set<std::pair<int, int> >::iterator it = VertexList.begin(); it != VertexList.end(); ++it)
+        for (std::set<std::pair<int, int> >::iterator it = VertexList.begin(); it != VertexList.end(); ++it)
         {
             TsVertex::Pointer pV = tmesh.AddVertex(tmesh.GetKnot(0, it->first), tmesh.GetKnot(1, it->second));
             VertexMap[std::pair<int, int>(it->first, it->second)] = pV;
         }
 
-        for(std::map<std::pair<int, int>, TsVertex::Pointer>::iterator it = VertexMap.begin(); it != VertexMap.end(); ++it)
+        for (std::map<std::pair<int, int>, TsVertex::Pointer>::iterator it = VertexMap.begin(); it != VertexMap.end(); ++it)
         {
             std::cout << "VertexMap[" << it->first.first << ", " << it->first.second << "]: " << *(it->second) << std::endl;
         }
@@ -145,57 +152,57 @@ public:
         std::cout << "p_v = " << p_v << std::endl ;
         std::cout << "n_v = " << n_v << std::endl ;
 
-        for(std::size_t i = 0; i < p_u; ++i)
+        for (std::size_t i = 0; i < p_u; ++i)
         {
             TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, i)];
             //KRATOS_WATCH(pV1);
             //std::cout << "n+p-i = " << n_u+p_u-i << std::endl ;
-            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u+p_u-i, i)];
+            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u + p_u - i, i)];
 
             //KRATOS_WATCH(pV2);
             tmesh.AddHEdge(pV1, pV2);
         }
 
-        for(std::size_t i = 0; i < p_u; ++i)
+        for (std::size_t i = 0; i < p_u; ++i)
         {
-            TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, n_v+p_v-i)];
-            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u+p_u-i, n_v+p_v-i)];
+            TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, n_v + p_v - i)];
+            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u + p_u - i, n_v + p_v - i)];
             tmesh.AddHEdge(pV1, pV2);
         }
 
         // insert the inner h-edges
-        for(std::size_t i = p_u; i < n_u; ++i)
+        for (std::size_t i = p_u; i < n_u; ++i)
         {
-            for(std::size_t j = p_v; j < n_v+1; ++j)
+            for (std::size_t j = p_v; j < n_v + 1; ++j)
             {
                 TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, j)];
-                TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(i+1, j)];
+                TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(i + 1, j)];
                 tmesh.AddHEdge(pV1, pV2);
             }
         }
 
         // insert outer v-edges
-        for(std::size_t i = 0; i < p_v; ++i)
+        for (std::size_t i = 0; i < p_v; ++i)
         {
             TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, i)];
-            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(i, n_v+p_v-i)];
+            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(i, n_v + p_v - i)];
             tmesh.AddVEdge(pV1, pV2);
         }
 
-        for(std::size_t i = 0; i < p_v; ++i)
+        for (std::size_t i = 0; i < p_v; ++i)
         {
-            TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(n_u+p_u-i, i)];
-            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u+p_u-i, n_v+p_v-i)];
+            TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(n_u + p_u - i, i)];
+            TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(n_u + p_u - i, n_v + p_v - i)];
             tmesh.AddVEdge(pV1, pV2);
         }
 
         // insert the inner v-edges
-        for(std::size_t i = p_u; i < n_u+1; ++i)
+        for (std::size_t i = p_u; i < n_u + 1; ++i)
         {
-            for(std::size_t j = p_v; j < n_v; ++j)
+            for (std::size_t j = p_v; j < n_v; ++j)
             {
                 TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(i, j)];
-                TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(i, j+1)];
+                TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(i, j + 1)];
                 tmesh.AddVEdge(pV1, pV2);
             }
         }
@@ -216,7 +223,7 @@ public:
         int dim = 0;
         std::vector<std::pair<int, std::pair<int, int> > > HEdgeList;
         std::vector<std::pair<int, std::pair<int, int> > > VEdgeList;
-        while(!infile.eof())
+        while (!infile.eof())
         {
             std::getline(infile, line);
             boost::split(words, line, boost::is_any_of(" \t"), boost::token_compress_on);
@@ -225,50 +232,60 @@ public:
 //                std::cout << " " << words[i];
 //            std::cout << std::endl;
 
-            if(words.size() != 0)
+            if (words.size() != 0)
             {
-                if(words[0] == std::string("Begin"))
+                if (words[0] == std::string("Begin"))
                 {
-                    if(words.size() < 2)
+                    if (words.size() < 2)
                         KRATOS_THROW_ERROR(std::logic_error, "Missing statement for Begin", "")
-                    if(words[1] == "Order")
-                        ReadMode = TsMesh2D::READ_ORDER;
-                    else if(words[1] == std::string("Knots"))
-                        ReadMode = TsMesh2D::READ_KNOTS;
-                    else if(words[1] == std::string("H-edges"))
-                        ReadMode = TsMesh2D::READ_H_EDGES;
-                    else if(words[1] == std::string("V-edges"))
-                        ReadMode = TsMesh2D::READ_V_EDGES;
+                        if (words[1] == "Order")
+                        {
+                            ReadMode = TsMesh2D::READ_ORDER;
+                        }
+                        else if (words[1] == std::string("Knots"))
+                        {
+                            ReadMode = TsMesh2D::READ_KNOTS;
+                        }
+                        else if (words[1] == std::string("H-edges"))
+                        {
+                            ReadMode = TsMesh2D::READ_H_EDGES;
+                        }
+                        else if (words[1] == std::string("V-edges"))
+                        {
+                            ReadMode = TsMesh2D::READ_V_EDGES;
+                        }
                     continue;
                 }
 
-                if(words[0] == std::string("End"))
+                if (words[0] == std::string("End"))
                 {
                     dim = 0;
                     ReadMode = TsMesh2D::NO_READ;
                     continue;
                 }
 
-                if(ReadMode == TsMesh2D::READ_ORDER)
+                if (ReadMode == TsMesh2D::READ_ORDER)
                 {
                     int order = atoi(words[0].c_str());
                     tmesh.SetOrder(dim, order);
                     ++dim;
                 }
-                else if(ReadMode == TsMesh2D::READ_KNOTS)
+                else if (ReadMode == TsMesh2D::READ_KNOTS)
                 {
-                    for(std::size_t i = 0; i < words.size(); ++i)
+                    for (std::size_t i = 0; i < words.size(); ++i)
+                    {
                         tmesh.InsertKnot(dim, atof(words[i].c_str()));
+                    }
                     ++dim;
                 }
-                else if(ReadMode == TsMesh2D::READ_H_EDGES)
+                else if (ReadMode == TsMesh2D::READ_H_EDGES)
                 {
                     int v  = atoi(words[0].c_str());
                     int u1 = atoi(words[1].c_str());
                     int u2 = atoi(words[2].c_str());
                     HEdgeList.push_back(std::pair<int, std::pair<int, int> >(v, std::pair<int, int>(u1, u2)));
                 }
-                else if(ReadMode == TsMesh2D::READ_V_EDGES)
+                else if (ReadMode == TsMesh2D::READ_V_EDGES)
                 {
                     int u  = atoi(words[0].c_str());
                     int v1 = atoi(words[1].c_str());
@@ -282,20 +299,24 @@ public:
 
         // assign the index to the knot vectors
         int cnt = -1;
-        for(std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
+        for (std::size_t i = 0; i < tmesh.NumberOfKnots(0); ++i)
+        {
             tmesh.GetKnot(0, i)->UpdateIndex(++cnt);
+        }
         cnt = -1;
-        for(std::size_t i = 0; i < tmesh.NumberOfKnots(1); ++i)
+        for (std::size_t i = 0; i < tmesh.NumberOfKnots(1); ++i)
+        {
             tmesh.GetKnot(1, i)->UpdateIndex(++cnt);
+        }
 
         // create the vertex list
         std::set<std::pair<int, int> > VertexList;
-        for(std::size_t i = 0; i < HEdgeList.size(); ++i)
+        for (std::size_t i = 0; i < HEdgeList.size(); ++i)
         {
             VertexList.insert(std::pair<int, int>(HEdgeList[i].second.first, HEdgeList[i].first));
             VertexList.insert(std::pair<int, int>(HEdgeList[i].second.second, HEdgeList[i].first));
         }
-        for(std::size_t i = 0; i < VEdgeList.size(); ++i)
+        for (std::size_t i = 0; i < VEdgeList.size(); ++i)
         {
             VertexList.insert(std::pair<int, int>(VEdgeList[i].first, VEdgeList[i].second.first));
             VertexList.insert(std::pair<int, int>(VEdgeList[i].first, VEdgeList[i].second.second));
@@ -303,20 +324,20 @@ public:
 
         // insert the vertices to the T-splines mesh
         std::map<std::pair<int, int>, TsVertex::Pointer> VertexMap;
-        for(std::set<std::pair<int, int> >::iterator it = VertexList.begin(); it != VertexList.end(); ++it)
+        for (std::set<std::pair<int, int> >::iterator it = VertexList.begin(); it != VertexList.end(); ++it)
         {
             TsVertex::Pointer pV = tmesh.AddVertex(tmesh.GetKnot(0, it->first), tmesh.GetKnot(1, it->second));
             VertexMap[std::pair<int, int>(it->first, it->second)] = pV;
         }
 
         // insert the edges to the T-splines mesh
-        for(std::size_t i = 0; i < HEdgeList.size(); ++i)
+        for (std::size_t i = 0; i < HEdgeList.size(); ++i)
         {
             TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(HEdgeList[i].second.first, HEdgeList[i].first)];
             TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(HEdgeList[i].second.second, HEdgeList[i].first)];
             tmesh.AddHEdge(pV1, pV2);
         }
-        for(std::size_t i = 0; i < VEdgeList.size(); ++i)
+        for (std::size_t i = 0; i < VEdgeList.size(); ++i)
         {
             TsVertex::Pointer pV1 = VertexMap[std::pair<int, int>(VEdgeList[i].first, VEdgeList[i].second.first)];
             TsVertex::Pointer pV2 = VertexMap[std::pair<int, int>(VEdgeList[i].first, VEdgeList[i].second.second)];
@@ -328,7 +349,7 @@ public:
 
     /// Export the topology mesh/knot coordinates mesh to matlab
     static void ExportMatlab(const TsMesh2D& tmesh,
-        const std::string& fn, const std::string& mesh_type)
+                             const std::string& fn, const std::string& mesh_type)
     {
         typedef TsMesh2D::edge_container_t edge_container_t;
         typedef TsMesh2D::cell_t cell_t;
@@ -341,11 +362,11 @@ public:
         outfile << "hold on" << std::endl << std::endl;
 
         // plot edges
-        if(mesh_type == std::string("topology"))
+        if (mesh_type == std::string("topology"))
         {
-            for(edge_container_t::const_iterator it = tmesh.Edges().begin(); it != tmesh.Edges().end(); ++it)
+            for (edge_container_t::const_iterator it = tmesh.Edges().begin(); it != tmesh.Edges().end(); ++it)
             {
-                if((*it)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE || (*it)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE)
+                if ((*it)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE || (*it)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE)
                 {
                     outfile << "line([" << (*it)->pV1()->Index1() << " " << (*it)->pV2()->Index1() << "],";
                     outfile << "[" << (*it)->pV1()->Index2() << " " << (*it)->pV2()->Index2() << "],'LineStyle',':');" << std::endl;
@@ -358,11 +379,11 @@ public:
             }
         }
 
-        else if(mesh_type == std::string("knots"))
+        else if (mesh_type == std::string("knots"))
         {
-            for(edge_container_t::const_iterator it = tmesh.Edges().begin(); it != tmesh.Edges().end(); ++it)
+            for (edge_container_t::const_iterator it = tmesh.Edges().begin(); it != tmesh.Edges().end(); ++it)
             {
-                if((*it)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE || (*it)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE)
+                if ((*it)->EdgeType() == TsEdge::VIRTUAL_HORIZONTAL_EDGE || (*it)->EdgeType() == TsEdge::VIRTUAL_VERTICAL_EDGE)
                 {
                     outfile << "line([" << (*it)->pV1()->pXi()->Value() << " " << (*it)->pV2()->pXi()->Value() << "],";
                     outfile << "[" << (*it)->pV1()->pEta()->Value() << " " << (*it)->pV2()->pEta()->Value() << "],'LineStyle',':');" << std::endl;
@@ -385,17 +406,21 @@ public:
         std::vector<double> Knots1;
         std::vector<double> Knots2;
         int cnt = 0;
-        for(std::size_t i = 0; i < Anchors.size(); ++i)
+        for (std::size_t i = 0; i < Anchors.size(); ++i)
         {
             tmesh.FindKnots<1, double>(Anchors[i].first, Anchors[i].second, Knots1, Knots2);
 
             outfile << "local_knots(" << ++cnt << ",:,:) = [";
-            for(std::size_t i = 0; i < Knots1.size(); ++i)
+            for (std::size_t i = 0; i < Knots1.size(); ++i)
+            {
                 outfile << " " << Knots1[i];
+            }
 
             outfile << std::endl;
-            for(std::size_t i = 0; i < Knots2.size(); ++i)
+            for (std::size_t i = 0; i < Knots2.size(); ++i)
+            {
                 outfile << " " << Knots2[i];
+            }
 
             outfile << "];" << std::endl;
         }
@@ -442,18 +467,22 @@ public:
 
         // write nodes
         outfile << "Begin Nodes\n";
-        for(anchor_container_t::const_iterator it = tmesh.Anchors().begin(); it != tmesh.Anchors().end(); ++it)
+        for (anchor_container_t::const_iterator it = tmesh.Anchors().begin(); it != tmesh.Anchors().end(); ++it)
+        {
             outfile << (*it)->Id() << "\t" << (*it)->X() << "\t" << (*it)->Y() << "\t" << (*it)->Z() << std::endl;
+        }
         outfile << "End Nodes\n\n";
 
         // write elements
         outfile << "Begin Elements KinematicLinearGeo2dBezier\n";
-        for(cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+        for (cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
         {
             const std::vector<std::size_t>& AnchorIds = (*it)->GetSupportedAnchors();
             outfile << (*it)->Id() << " 1";
-            for(std::vector<std::size_t>::const_iterator it2 = AnchorIds.begin(); it2 != AnchorIds.end(); ++it2)
+            for (std::vector<std::size_t>::const_iterator it2 = AnchorIds.begin(); it2 != AnchorIds.end(); ++it2)
+            {
                 outfile << " " << (*it2);
+            }
             outfile << std::endl;
         }
         outfile << "End Elements\n\n";
@@ -461,12 +490,14 @@ public:
         // write weights
         outfile << "Begin ElementalData NURBS_WEIGHTS\n";
         std::vector<double> AnchorWeights;
-        for(cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+        for (cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
         {
             AnchorWeights = (*it)->GetAnchorWeights();
             outfile << (*it)->Id() << " [" << AnchorWeights.size() << "] (";
-            for(std::size_t i = 0; i < AnchorWeights.size() - 1; ++i)
+            for (std::size_t i = 0; i < AnchorWeights.size() - 1; ++i)
+            {
                 outfile << AnchorWeights[i] << ",";
+            }
             outfile << AnchorWeights.back() << ")\n";
         }
         outfile << "End ElementalData\n\n";
@@ -479,7 +510,7 @@ public:
         std::map<int, std::vector<int> > rowPtrMap;
         std::map<int, std::vector<int> > colIndMap;
         std::map<int, std::vector<double> > valuesMap;
-        for(cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+        for (cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
         {
             rowPtr.clear();
             colInd.clear();
@@ -492,57 +523,71 @@ public:
 
         // write extraction operator
         outfile << "Begin ElementalData EXTRACTION_OPERATOR_CSR_ROWPTR\n";
-        for(std::map<int, std::vector<int> >::iterator it = rowPtrMap.begin(); it != rowPtrMap.end(); ++it)
+        for (std::map<int, std::vector<int> >::iterator it = rowPtrMap.begin(); it != rowPtrMap.end(); ++it)
         {
             outfile << (*it).first << " [" << (*it).second.size() << "] (";
-            for(std::size_t i = 0; i < (*it).second.size() - 1; ++i)
+            for (std::size_t i = 0; i < (*it).second.size() - 1; ++i)
+            {
                 outfile << (*it).second[i] << ",";
+            }
             outfile << (*it).second.back() << ")\n";
         }
         outfile << "End ElementalData\n\n";
 
         outfile << "Begin ElementalData EXTRACTION_OPERATOR_CSR_COLIND\n";
-        for(std::map<int, std::vector<int> >::iterator it = colIndMap.begin(); it != colIndMap.end(); ++it)
+        for (std::map<int, std::vector<int> >::iterator it = colIndMap.begin(); it != colIndMap.end(); ++it)
         {
             outfile << (*it).first << " [" << (*it).second.size() << "] (";
-            for(std::size_t i = 0; i < (*it).second.size() - 1; ++i)
+            for (std::size_t i = 0; i < (*it).second.size() - 1; ++i)
+            {
                 outfile << (*it).second[i] << ",";
+            }
             outfile << (*it).second.back() << ")\n";
         }
         outfile << "End ElementalData\n\n";
 
         outfile << "Begin ElementalData EXTRACTION_OPERATOR_CSR_VALUES\n";
-        for(std::map<int, std::vector<double> >::iterator it = valuesMap.begin(); it != valuesMap.end(); ++it)
+        for (std::map<int, std::vector<double> >::iterator it = valuesMap.begin(); it != valuesMap.end(); ++it)
         {
             outfile << (*it).first << " [" << (*it).second.size() << "] (";
-            for(std::size_t i = 0; i < (*it).second.size() - 1; ++i)
+            for (std::size_t i = 0; i < (*it).second.size() - 1; ++i)
+            {
                 outfile << (*it).second[i] << ",";
+            }
             outfile << (*it).second.back() << ")\n";
         }
         outfile << "End ElementalData\n\n";
 
         // write the degree
         outfile << "Begin ElementalData NURBS_DEGREE_1\n";
-        for(cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+        for (cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+        {
             outfile << (*it)->Id() << " " << tmesh.Order(0) << std::endl;
+        }
         outfile << "End ElementalData\n\n";
 
         outfile << "Begin ElementalData NURBS_DEGREE_2\n";
-        for(cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+        for (cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+        {
             outfile << (*it)->Id() << " " << tmesh.Order(1) << std::endl;
+        }
         outfile << "End ElementalData\n\n";
 
         if (division.size() != 0)
         {
             // write the division
             outfile << "Begin ElementalData NUM_DIVISION_1\n";
-            for(cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+            for (cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+            {
                 outfile << (*it)->Id() << " " << division[0] << std::endl;
+            }
             outfile << "End ElementalData\n\n";
 
             outfile << "Begin ElementalData NUM_DIVISION_2\n";
-            for(cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+            for (cell_container_t::const_iterator it = tmesh.Cells().begin(); it != tmesh.Cells().end(); ++it)
+            {
                 outfile << (*it)->Id() << " " << division[1] << std::endl;
+            }
             outfile << "End ElementalData\n\n";
         }
 
@@ -678,7 +723,7 @@ inline std::istream& operator >>(std::istream& rIStream, TSplinesUtils& rThis)
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const TSplinesUtils& rThis)
+                                 const TSplinesUtils& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

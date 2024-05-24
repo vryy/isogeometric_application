@@ -63,11 +63,11 @@ public:
         if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
             KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
 
-        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+            typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         if (pFESpace == NULL)
             KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
 
-        rOStream << "# nurbs mesh v.0.6\n";
+            rOStream << "# nurbs mesh v.0.6\n";
         rOStream << "#\n";
         rOStream << "# BSplines representation for patch " << pPatch->Name() << "\n";
         rOStream << "#\n";
@@ -76,18 +76,24 @@ public:
         rOStream << TDim << " 1\n";
         rOStream << "#p\n";
         for (std::size_t dim = 0; dim < TDim; ++dim)
+        {
             rOStream << " " << pFESpace->Order(dim);
+        }
         rOStream << "\n";
         rOStream << "#n\n";
         for (std::size_t dim = 0; dim < TDim; ++dim)
+        {
             rOStream << " " << pFESpace->Number(dim);
+        }
         rOStream << "\n";
 
         rOStream << "#knots\n";
         for (std::size_t dim = 0; dim < TDim; ++dim)
         {
             for (std::size_t i = 0; i < pFESpace->KnotVector(dim).size(); ++i)
+            {
                 rOStream << " " << pFESpace->KnotVector(dim)[i];
+            }
             rOStream << std::endl;
         }
 
@@ -104,7 +110,6 @@ public:
     }
 }; // end class MultiNURBSPatchGeoExporterWriter
 
-
 /// Function instantiation
 template<>
 void MultiNURBSPatchGeoExporterHelper::WriteGeoControlPoints<1>(std::ostream& rOStream, Patch<1>::Pointer pPatch)
@@ -115,17 +120,20 @@ void MultiNURBSPatchGeoExporterHelper::WriteGeoControlPoints<1>(std::ostream& rO
     if (pControlPointGrid == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
-    rOStream << "#u\n";
+        rOStream << "#u\n";
     for (std::size_t dim = 0; dim < 3; ++dim)
     {
         for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+        {
             rOStream << "\t" << pControlPointGrid->GetValue(nu)(dim);
+        }
         rOStream << std::endl;
     }
     for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+    {
         rOStream << "\t" << pControlPointGrid->GetValue(nu)(3);
+    }
 }
-
 
 /// Function instantiation
 template<>
@@ -137,19 +145,22 @@ void MultiNURBSPatchGeoExporterHelper::WriteGeoControlPoints<2>(std::ostream& rO
     if (pControlPointGrid == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
-    rOStream << "#u v\n";
+        rOStream << "#u v\n";
     for (std::size_t dim = 0; dim < 2; ++dim)
     {
         for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
             for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+            {
                 rOStream << "\t" << pControlPointGrid->GetValue(nu, nv)(dim);
+            }
         rOStream << std::endl;
     }
     for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
         for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+        {
             rOStream << "\t" << pControlPointGrid->GetValue(nu, nv)(3);
+        }
 }
-
 
 /// Function instantiation
 template<>
@@ -161,21 +172,24 @@ void MultiNURBSPatchGeoExporterHelper::WriteGeoControlPoints<3>(std::ostream& rO
     if (pControlPointGrid == NULL)
         KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
 
-    rOStream << "#u v w\n";
+        rOStream << "#u v w\n";
     for (std::size_t dim = 0; dim < 3; ++dim)
     {
         for (std::size_t nw = 0; nw < pControlPointGrid->Size(2); ++nw)
             for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
                 for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+                {
                     rOStream << "\t" << pControlPointGrid->GetValue(nu, nv, nw)(dim);
+                }
         rOStream << std::endl;
     }
     for (std::size_t nw = 0; nw < pControlPointGrid->Size(2); ++nw)
         for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
             for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
+            {
                 rOStream << "\t" << pControlPointGrid->GetValue(nu, nv, nw)(3);
+            }
 }
-
 
 class MultiNURBSPatchGeoExporter
 {
@@ -219,7 +233,6 @@ public:
     }
 };
 
-
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream, const MultiNURBSPatchGeoExporter& rThis)
 {
@@ -229,8 +242,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiNURBSPatchGe
     return rOStream;
 }
 
-
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_NURBS_PATCH_GEO_EXPORTER_H_INCLUDED defined
-

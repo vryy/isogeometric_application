@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -290,16 +289,18 @@ void IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives3(
 //////////////////////////////////////////////////////////
 
 ModelPart::ElementsContainerType IsogeometricPostUtility_TransferElements(IsogeometricPostUtility& rDummy, ModelPart::ElementsContainerType& pElements,
-    ModelPart& r_other_model_part, const std::string& sample_element_name, Properties::Pointer pProperties, const bool& retain_prop_id)
+        ModelPart& r_other_model_part, const std::string& sample_element_name, Properties::Pointer pProperties, const bool& retain_prop_id)
 {
     std::size_t last_element_id = IsogeometricPostUtility::GetLastElementId(r_other_model_part);
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
-    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+        Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
     ModelPart::ElementsContainerType pNewElements = IsogeometricPostUtility::CreateEntities(pElements, r_other_model_part, r_clone_element, last_element_id, pProperties, retain_prop_id);
 
-    for(ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
+    for (ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
+    {
         r_other_model_part.Elements().push_back(*it);
+    }
 
     std::cout << "Transfer mesh completed, "
               << pNewElements.size() << " elements of type " << sample_element_name
@@ -309,16 +310,18 @@ ModelPart::ElementsContainerType IsogeometricPostUtility_TransferElements(Isogeo
 }
 
 ModelPart::ConditionsContainerType IsogeometricPostUtility_TransferConditions(IsogeometricPostUtility& rDummy, ModelPart::ConditionsContainerType& pConditions,
-    ModelPart& r_other_model_part, const std::string& sample_condition_name, Properties::Pointer pProperties, const bool& retain_prop_id)
+        ModelPart& r_other_model_part, const std::string& sample_condition_name, Properties::Pointer pProperties, const bool& retain_prop_id)
 {
     std::size_t last_condition_id = IsogeometricPostUtility::GetLastConditionId(r_other_model_part);
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
     ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities(pConditions, r_other_model_part, r_clone_condition, last_condition_id, pProperties, retain_prop_id);
 
-    for(ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
+    for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
+    {
         r_other_model_part.Conditions().push_back(*it);
+    }
 
     std::cout << "Transfer mesh completed, "
               << pNewConditions.size() << " conditions of type " << sample_condition_name
@@ -328,36 +331,36 @@ ModelPart::ConditionsContainerType IsogeometricPostUtility_TransferConditions(Is
 }
 
 ModelPart::ElementsContainerType IsogeometricPostUtility_FindElements(IsogeometricPostUtility& rDummy,
-    ModelPart::ElementsContainerType& pElements, const std::string& sample_element_name)
+        ModelPart::ElementsContainerType& pElements, const std::string& sample_element_name)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
-    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+        Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
     return IsogeometricPostUtility::FindEntities(pElements, r_clone_element);
 }
 
 ModelPart::ConditionsContainerType IsogeometricPostUtility_FindConditions(IsogeometricPostUtility& rDummy,
-    ModelPart::ConditionsContainerType& pConditions, const std::string& sample_condition_name)
+        ModelPart::ConditionsContainerType& pConditions, const std::string& sample_condition_name)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
     return IsogeometricPostUtility::FindEntities(pConditions, r_clone_condition);
 }
 
 template<typename TCoordinatesType, typename TPatchType>
 boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(IsogeometricPostUtility& rDummy,
-    const boost::python::list& list_physical_points,
-    const Vector& center, const Vector& normal, const Vector& t1, const Vector& t2,
-    const boost::python::list& list_local_points, std::size_t nrefine,
-    typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
-    const std::string& sample_condition_name,
-    std::size_t last_node_id, std::size_t last_condition_id,
-    Properties::Pointer pProperties)
+        const boost::python::list& list_physical_points,
+        const Vector& center, const Vector& normal, const Vector& t1, const Vector& t2,
+        const boost::python::list& list_local_points, std::size_t nrefine,
+        typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
+        const std::string& sample_condition_name,
+        std::size_t last_node_id, std::size_t last_condition_id,
+        Properties::Pointer pProperties)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
     std::vector<TCoordinatesType> physical_points;
     IsogeometricPythonUtils::Unpack<array_1d<double, 3>, TCoordinatesType>(list_physical_points, physical_points);
@@ -392,7 +395,7 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(Isog
     std::size_t last_condition_id_new = last_condition_id;
     const std::string NodeKey = std::string("Node");
     ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
-        points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
+                points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
 
     boost::python::list output;
     output.append(new_local_points);
@@ -403,17 +406,17 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(Isog
 
 template<typename TCoordinatesType, typename TPatchType>
 boost::python::list IsogeometricPostUtility_CreateConditionsByQuadrilateralization(IsogeometricPostUtility& rDummy,
-    const TCoordinatesType& p1, const TCoordinatesType& p2,
-    const TCoordinatesType& p3, const TCoordinatesType& p4,
-    std::size_t num_div_1, std::size_t num_div_2,
-    typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
-    const std::string& sample_condition_name,
-    std::size_t last_node_id, std::size_t last_condition_id,
-    Properties::Pointer pProperties)
+        const TCoordinatesType& p1, const TCoordinatesType& p2,
+        const TCoordinatesType& p3, const TCoordinatesType& p4,
+        std::size_t num_div_1, std::size_t num_div_2,
+        typename TPatchType::Pointer pPatch, ModelPart& r_model_part,
+        const std::string& sample_condition_name,
+        std::size_t last_node_id, std::size_t last_condition_id,
+        Properties::Pointer pProperties)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
     std::size_t starting_node_id = last_node_id + 1;
     std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<std::size_t> > >
@@ -441,7 +444,7 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByQuadrilateralizati
     std::size_t last_condition_id_new = last_condition_id;
     const std::string NodeKey = std::string("Node");
     ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
-        points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
+                points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
 
     boost::python::list output;
     output.append(new_local_points);
@@ -458,7 +461,7 @@ void IsogeometricPostUtility_TransferValuesToNodes(IsogeometricPostUtility& rDum
 
 template<class TEntityType, typename TVariableType, class TPatchType>
 void IsogeometricPostUtility_TransferValuesToGaussPoints(IsogeometricPostUtility& rDummy, TEntityType& rElement,
-    const TVariableType& rVariable, const TPatchType& rPatch, const ProcessInfo& rProcessInfo)
+        const TVariableType& rVariable, const TPatchType& rPatch, const ProcessInfo& rProcessInfo)
 {
     rDummy.TransferValuesToGaussPoints(rElement, rVariable, rPatch, rProcessInfo);
 }
@@ -474,7 +477,7 @@ boost::python::list BezierClassicalPostUtility_GenerateConditions(BezierClassica
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
     std::size_t NodeCounter = starting_node_id;
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ConditionCounter = starting_condition_id;
@@ -487,8 +490,8 @@ boost::python::list BezierClassicalPostUtility_GenerateConditions(BezierClassica
 
     boost::python::list list_nodes;
     boost::python::list list_elements;
-    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
-    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    for (std::size_t i = 0; i < node_ids.size(); ++i) { list_nodes.append(node_ids[i]); }
+    for (std::size_t i = 0; i < element_ids.size(); ++i) { list_elements.append(element_ids[i]); }
     boost::python::list Output;
     Output.append(list_nodes);
     Output.append(list_elements);
@@ -504,7 +507,7 @@ boost::python::list BezierClassicalPostUtility_GenerateConditionsWithNodalVariab
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
     std::size_t NodeCounter = starting_node_id;
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ConditionCounter = starting_condition_id;
@@ -517,8 +520,8 @@ boost::python::list BezierClassicalPostUtility_GenerateConditionsWithNodalVariab
 
     boost::python::list list_nodes;
     boost::python::list list_elements;
-    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
-    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    for (std::size_t i = 0; i < node_ids.size(); ++i) { list_nodes.append(node_ids[i]); }
+    for (std::size_t i = 0; i < element_ids.size(); ++i) { list_elements.append(element_ids[i]); }
     boost::python::list Output;
     Output.append(list_nodes);
     Output.append(list_elements);
@@ -534,7 +537,7 @@ boost::python::list BezierClassicalPostUtility_GenerateElements(BezierClassicalP
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
-    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+        Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
     std::size_t NodeCounter = starting_node_id;
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ElementCounter = starting_element_id;
@@ -547,8 +550,8 @@ boost::python::list BezierClassicalPostUtility_GenerateElements(BezierClassicalP
 
     boost::python::list list_nodes;
     boost::python::list list_elements;
-    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
-    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    for (std::size_t i = 0; i < node_ids.size(); ++i) { list_nodes.append(node_ids[i]); }
+    for (std::size_t i = 0; i < element_ids.size(); ++i) { list_elements.append(element_ids[i]); }
     boost::python::list Output;
     Output.append(list_nodes);
     Output.append(list_elements);
@@ -564,7 +567,7 @@ boost::python::list BezierClassicalPostUtility_GenerateElementsWithNodalVariable
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
-    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+        Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
     std::size_t NodeCounter = starting_node_id;
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ElementCounter = starting_element_id;
@@ -577,8 +580,8 @@ boost::python::list BezierClassicalPostUtility_GenerateElementsWithNodalVariable
 
     boost::python::list list_nodes;
     boost::python::list list_elements;
-    for (std::size_t i = 0; i < node_ids.size(); ++i) list_nodes.append(node_ids[i]);
-    for (std::size_t i = 0; i < element_ids.size(); ++i) list_elements.append(element_ids[i]);
+    for (std::size_t i = 0; i < node_ids.size(); ++i) { list_nodes.append(node_ids[i]); }
+    for (std::size_t i = 0; i < element_ids.size(); ++i) { list_elements.append(element_ids[i]); }
     boost::python::list Output;
     Output.append(list_nodes);
     Output.append(list_elements);
@@ -607,26 +610,26 @@ bool IsogeometricUtility_IsNormalPointingOutward(IsogeometricUtility& rDummy, co
 
 template<typename TVariableType>
 void BezierPostUtility_TransferVariablesToNodes_ModelPart(BezierPostUtility& rDummy,
-    const TVariableType& rThisVariable,
-    ModelPart& r_model_part,
-    BezierPostUtility::LinearSolverType::Pointer pSolver)
+        const TVariableType& rThisVariable,
+        ModelPart& r_model_part,
+        BezierPostUtility::LinearSolverType::Pointer pSolver)
 {
     rDummy.TransferVariablesToNodes(rThisVariable, r_model_part, pSolver);
 }
 
 template<typename TVariableType>
 void BezierPostUtility_TransferVariablesToNodes_Elements(BezierPostUtility& rDummy,
-    const TVariableType& rThisVariable,
-    ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
-    BezierPostUtility::LinearSolverType::Pointer pSolver)
+        const TVariableType& rThisVariable,
+        ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
+        BezierPostUtility::LinearSolverType::Pointer pSolver)
 {
     rDummy.TransferVariablesToNodes(rThisVariable, r_model_part, ElementsArray, pSolver);
 }
 
 boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Double(BezierPostUtility& rDummy,
-    const Variable<double>& rThisVariable,
-    const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
-    BezierPostUtility::LinearSolverType::Pointer pSolver)
+        const Variable<double>& rThisVariable,
+        const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
+        BezierPostUtility::LinearSolverType::Pointer pSolver)
 {
     // compute the nodal values
     std::set<std::size_t> active_nodes;
@@ -635,7 +638,7 @@ boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Dou
     const bool check_active = true;
 
     rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
-            ElementsArray, rThisVariable, check_active);
+                                         ElementsArray, rThisVariable, check_active);
 
     boost::python::dict Output;
 
@@ -649,9 +652,9 @@ boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Dou
 }
 
 boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Array1D(BezierPostUtility& rDummy,
-    const Variable<array_1d<double, 3> >& rThisVariable,
-    const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
-    BezierPostUtility::LinearSolverType::Pointer pSolver)
+        const Variable<array_1d<double, 3> >& rThisVariable,
+        const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
+        BezierPostUtility::LinearSolverType::Pointer pSolver)
 {
     // compute the nodal values
     std::set<std::size_t> active_nodes;
@@ -660,7 +663,7 @@ boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Arr
     const bool check_active = true;
 
     rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
-            ElementsArray, rThisVariable, check_active);
+                                         ElementsArray, rThisVariable, check_active);
 
     boost::python::dict Output;
 
@@ -676,9 +679,9 @@ boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Arr
 }
 
 boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Vector(BezierPostUtility& rDummy,
-    const Variable<Vector>& rThisVariable,
-    const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
-    BezierPostUtility::LinearSolverType::Pointer pSolver, std::size_t ncomponents)
+        const Variable<Vector>& rThisVariable,
+        const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
+        BezierPostUtility::LinearSolverType::Pointer pSolver, std::size_t ncomponents)
 {
     // compute the nodal values
     std::set<std::size_t> active_nodes;
@@ -687,7 +690,7 @@ boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Vec
     const bool check_active = true;
 
     rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
-            ElementsArray, rThisVariable, ncomponents, check_active);
+                                         ElementsArray, rThisVariable, ncomponents, check_active);
 
     boost::python::dict Output;
 
@@ -851,14 +854,14 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     ///////////////////////GISMO/////////////////////////////////////
     /////////////////////////////////////////////////////////////////
 
-    #ifdef ISOGEOMETRIC_USE_GISMO
+#ifdef ISOGEOMETRIC_USE_GISMO
     class_<GismoMesh, GismoMesh::Pointer, boost::noncopyable>
     ("GismoMesh", init<std::string>())
     .def("SetEchoLevel", &GismoMesh::SetEchoLevel)
     .def("ReadMesh", &GismoMesh::ReadMesh)
     .def(self_ns::str(self))
     ;
-    #endif
+#endif
 
 }
 

@@ -99,7 +99,6 @@ public:
         KRATOS_WATCH(v)
     }
 
-
     ///@}
     ///@name Access
     ///@{
@@ -226,7 +225,7 @@ inline std::istream& operator >>(std::istream& rIStream, BezierTestUtils& rThis)
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const BezierTestUtils& rThis)
+                                 const BezierTestUtils& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

@@ -20,7 +20,6 @@
 #include "includes/define.h"
 #include "custom_utilities/import_export/multipatch_importer.h"
 
-
 namespace Kratos
 {
 
@@ -57,4 +56,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TSplinesPatchTSMI
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TSPLINES_PATCH_TSM_IMPORTER_H_INCLUDED defined
-

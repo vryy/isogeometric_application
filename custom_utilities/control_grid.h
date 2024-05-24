@@ -30,9 +30,9 @@ class ControlGrid
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(ControlGrid);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const ControlGrid> ConstPointer;
-    #endif
+#endif
 
     /// Type definition
     typedef TDataType DataType;
@@ -123,8 +123,10 @@ public:
     {
         if (rOther.Size() != this->Size())
             KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
-        for (std::size_t i = 0; i < this->size(); ++i)
-            this->SetData(i, rOther.GetData(i));
+            for (std::size_t i = 0; i < this->size(); ++i)
+            {
+                this->SetData(i, rOther.GetData(i));
+            }
     }
 
     /// Copy the data the other grid. The size of two grids must be equal.

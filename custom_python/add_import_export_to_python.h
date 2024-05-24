@@ -10,11 +10,8 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_ADD_IMPORT_EXPORT_TO_PYTHON_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_ADD_IMPORT_EXPORT_TO_PYTHON_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -22,9 +19,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 // External includes
 
-
 // Project includes
-
 
 namespace Kratos
 {
@@ -34,14 +29,14 @@ namespace Python
 
 template<int TDim, class TExporter, class TPatchType>
 void MultiPatchExporter_Export(TExporter& rDummy,
-        typename TPatchType::Pointer pPatch, const std::string& filename)
+                               typename TPatchType::Pointer pPatch, const std::string& filename)
 {
     rDummy.template Export<TDim>(pPatch, filename);
 }
 
 template<int TDim, class TExporter, class TPatchType, typename TVariableType>
 void MultiPatchExporter_Export_Variable(TExporter& rDummy,
-        typename TPatchType::Pointer pPatch, const TVariableType& rVariable, const std::string& filename)
+                                        typename TPatchType::Pointer pPatch, const TVariableType& rVariable, const std::string& filename)
 {
     rDummy.template Export<TDim, TVariableType>(pPatch, rVariable, filename);
 }
@@ -58,4 +53,3 @@ void MultiPatchExporter_Export_Variable_WithComponents(TExporter& rDummy,
 }  // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_ADD_IMPORT_EXPORT_TO_PYTHON_H_INCLUDED  defined
-

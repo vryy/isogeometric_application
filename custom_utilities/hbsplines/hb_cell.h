@@ -25,7 +25,6 @@
 #include "custom_utilities/nurbs/knot.h"
 #include "custom_utilities/nurbs/bcell.h"
 
-
 namespace Kratos
 {
 
@@ -38,17 +37,17 @@ class HBCell : public BCell
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(HBCell);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const HBCell> ConstPointer;
-    #endif
+#endif
 
     /// Type definitions
     typedef Knot<double>::Pointer knot_t;
 
     typedef BCell BaseType;
 
-/*    typedef typename TBasisFuncType::Pointer bf_t;*/
-/*    typedef typename TBasisFuncType::WeakPointer bf_wt;*/
+    /*    typedef typename TBasisFuncType::Pointer bf_t;*/
+    /*    typedef typename TBasisFuncType::WeakPointer bf_wt;*/
     typedef typename Isogeometric_Pointer_Helper<TBasisFuncType>::Pointer bf_t;
     typedef typename Isogeometric_Pointer_Helper<TBasisFuncType>::WeakPointer bf_wt;
     struct bf_compare { bool operator() (const bf_wt& lhs, const bf_wt& rhs) const {bf_t lptr = lhs.lock(), rptr = rhs.lock(); return lptr->Id() < rptr->Id();} };
@@ -58,25 +57,25 @@ public:
 
     /// Constructor for 1D
     HBCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax)
-    : BaseType(Id, pXiMin, pXiMax)
+        : BaseType(Id, pXiMin, pXiMax)
     {}
 
     /// Constructor for 2D
     HBCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
-    : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax)
+        : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax)
     {}
 
     /// Constructor for 3D
     HBCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
-    : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax)
+        : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax)
     {}
 
     /// Destructor
     virtual ~HBCell()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "hbcell "; this->PrintInfo(std::cout); std::cout << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Set the level for this cell
@@ -89,9 +88,11 @@ public:
     /// Typically one shall add the basis function that has support domain covering this cell.
     bf_t AddBf(bf_t p_bf)
     {
-        for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
-            if((*it).lock() == p_bf)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+            if ((*it).lock() == p_bf)
+            {
                 return p_bf;
+            }
         mpBasisFuncs.insert(p_bf);
         return p_bf;
     }
@@ -99,9 +100,9 @@ public:
     /// Remove basis function from the set
     void RemoveBf(bf_t p_bf)
     {
-        for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if((*it).lock() == p_bf)
+            if ((*it).lock() == p_bf)
             {
                 mpBasisFuncs.erase(it);
                 break;
@@ -121,10 +122,10 @@ public:
             typename HBCellType::Pointer pOtherCell = iga::dynamic_pointer_cast<HBCellType>(pOther);
             if (pOtherCell == NULL)
                 KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBCell is failed.", "")
-            for(typename HBCellType::bf_iterator it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
-            {
-                this->AddBf((*it_bf).lock());
-            }
+                for (typename HBCellType::bf_iterator it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
+                {
+                    this->AddBf((*it_bf).lock());
+                }
         }
         catch (std::exception const& e)
         {
@@ -135,7 +136,7 @@ public:
     /// Tell all the basis function to disconnect with this cell. This happens when we want to eliminate this cell.
     virtual void ClearTrace()
     {
-        for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
             (*it).lock()->RemoveCell(*this);
         }
@@ -159,8 +160,10 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         rOStream << ", supporting basis functions: (";
-        for(bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
             rOStream << " " << (*it).lock()->Id();
+        }
         rOStream << ")";
         BaseType::PrintData(rOStream);
     }
@@ -184,4 +187,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBCell<TBasisFunc
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HB_CELL_H_INCLUDED
-

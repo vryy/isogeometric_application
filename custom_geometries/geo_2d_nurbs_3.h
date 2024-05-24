@@ -210,7 +210,7 @@ public:
     {}
 
     Geo2dNURBS3( const PointsArrayType& ThisPoints )
-    : BaseType( ThisPoints )
+        : BaseType( ThisPoints )
     {
 //        KRATOS_WATCH("at Geo2dNURBS3 constructor")
     }
@@ -225,7 +225,7 @@ public:
      * source geometry's points too.
      */
     Geo2dNURBS3( Geo2dNURBS3 const& rOther )
-    : BaseType( rOther )
+        : BaseType( rOther )
     {
     }
 
@@ -241,7 +241,7 @@ public:
      * source geometry's points too.
      */
     template<class TOtherPointType> Geo2dNURBS3( Geo2dNURBS3<TOtherPointType> const& rOther )
-    : BaseType( rOther )
+        : BaseType( rOther )
     {
     }
 
@@ -352,7 +352,7 @@ public:
      * @see InverseOfJacobian
      */
     virtual JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod ) const
+                                     IntegrationMethod ThisMethod ) const
     {
 //        //getting derivatives of shape functions
 //        const ShapeFunctionsGradientsType& shape_functions_gradients = BaseType::ShapeFunctionsLocalGradients( ThisMethod );
@@ -407,8 +407,8 @@ public:
      * @see InverseOfJacobian
      */
     JacobiansType& Jacobian( JacobiansType& rResult,
-            IntegrationMethod ThisMethod,
-            const Matrix& DeltaPosition ) const override
+                             IntegrationMethod ThisMethod,
+                             const Matrix& DeltaPosition ) const override
     {
 //        //getting derivatives of shape functions
 //        const ShapeFunctionsGradientsType& shape_functions_gradients = BaseType::ShapeFunctionsLocalGradients( ThisMethod );
@@ -462,8 +462,8 @@ public:
      * @see InverseOfJacobian
      */
     virtual Matrix& Jacobian( Matrix& rResult,
-            IndexType IntegrationPointIndex,
-            IntegrationMethod ThisMethod ) const
+                              IndexType IntegrationPointIndex,
+                              IntegrationMethod ThisMethod ) const
     {
 //        //setting up size of jacobian matrix
 //        rResult.resize( 2, 2 );
@@ -635,13 +635,13 @@ private:
  * input stream function
  */
 template<class TPointType> inline std::istream& operator >>(
-        std::istream& rIStream, Geo2dNURBS3<TPointType>& rThis);
+    std::istream& rIStream, Geo2dNURBS3<TPointType>& rThis);
 
 /**
  * output stream function
  */
 template<class TPointType> inline std::ostream& operator <<(
-        std::ostream& rOStream, const Geo2dNURBS3<TPointType>& rThis)
+    std::ostream& rOStream, const Geo2dNURBS3<TPointType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -663,4 +663,3 @@ template<class TPointType> inline std::ostream& operator <<(
 #undef ENABLE_PROFILING
 
 #endif
-

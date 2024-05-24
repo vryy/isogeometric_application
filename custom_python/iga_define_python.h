@@ -81,7 +81,9 @@ list_type FESpace_ExtractBoundaryBfsByFlag(TFESpaceType& rDummy, std::size_t bou
 
     list_type Output;
     for (std::size_t i = 0; i < bf_list.size(); ++i)
+    {
         Output.append(bf_list[i]);
+    }
 
     return Output;
 }
@@ -100,4 +102,3 @@ typename TFESpaceType::bf_t FESpace_GetItem(TFESpaceType& rDummy, std::size_t i)
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_IGA_DEFINE_PYTHON_H_INCLUDED defined
-

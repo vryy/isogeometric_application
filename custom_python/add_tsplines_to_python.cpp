@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -35,38 +34,37 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/import_export/tsplines_patch_tsm_importer.h"
 #endif
 
-
 namespace Kratos
 {
 
 void TSplinesUtils_CreateFromBSplines(TSplinesUtils& rDummy, TsMesh2D& tmesh,
-    const BSplinesFESpace<2>& rFESpace)
+                                      const BSplinesFESpace<2>& rFESpace)
 {
     rDummy.CreateFromBSplines(tmesh, rFESpace);
 }
 
 void TSplinesUtils_ReadFromFile(TSplinesUtils& rDummy, TsMesh2D& tmesh,
-    const std::string& fn)
+                                const std::string& fn)
 {
     rDummy.ReadFromFile(tmesh, fn);
 }
 
 void TSplinesUtils_ExportMatlab(TSplinesUtils& rDummy, TsMesh2D& tmesh,
-    const std::string& fn, const std::string& mesh_type)
+                                const std::string& fn, const std::string& mesh_type)
 {
     rDummy.ExportMatlab(tmesh, fn, mesh_type);
 }
 
 void TSplinesUtils_ExportMDPA(TSplinesUtils& rDummy, const TsMesh2D& tmesh,
-    const std::string& fn, int division1, int division2)
+                              const std::string& fn, int division1, int division2)
 {
-    rDummy.ExportMDPA(tmesh, fn, std::vector<int>{division1, division2});
+    rDummy.ExportMDPA(tmesh, fn, std::vector<int> {division1, division2});
 }
 
 void TSplinesUtils_ExportMDPA2(TSplinesUtils& rDummy, const TsMesh2D& tmesh,
-    const std::string& fn)
+                               const std::string& fn)
 {
-    rDummy.ExportMDPA(tmesh, fn, std::vector<int>{});
+    rDummy.ExportMDPA(tmesh, fn, std::vector<int> {});
 }
 
 namespace Python
@@ -136,17 +134,16 @@ void IsogeometricApplication_AddTSplinesToPython()
     /////////////////////////IMPORT/EXPORT///////////////////////////
     /////////////////////////////////////////////////////////////////
 
-    #ifdef ISOGEOMETRIC_USE_TSPLINE
+#ifdef ISOGEOMETRIC_USE_TSPLINE
     class_<TSplinesPatchTSMImporter, TSplinesPatchTSMImporter::Pointer, boost::noncopyable>
     ("TSplinesPatchTSMImporter", init<>())
     .def("ImportSingle", &TSplinesPatchTSMImporter::ImportSingle)
     .def(self_ns::str(self))
     ;
-    #endif
+#endif
 
 }
 
 }  // namespace Python.
 
 } // Namespace Kratos
-

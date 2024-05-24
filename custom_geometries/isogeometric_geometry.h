@@ -45,11 +45,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 //
 
-
 #if !defined(KRATOS_ISOGEOMETRIC_GEOMETRY_H_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_GEOMETRY_H_INCLUDED
-
-
 
 // System includes
 #include <string>
@@ -57,10 +54,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sstream>
 #include <cstddef>
 
-
 // External includes
 #include <boost/array.hpp>
-
 
 // Project includes
 #include "includes/define.h"
@@ -72,7 +67,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "utilities/math_utils.h"
 #include "integration/quadrature.h"
 #include "integration/line_gauss_legendre_integration_points.h"
-
 
 namespace Kratos
 {
@@ -148,7 +142,6 @@ public:
     */
     typedef Geometry<TPointType> GeometryType;
 
-
     /** The bounding box */
     /*typedef BoundingBox<TPointType, IsogeometricGeometryType>  BoundingBoxType; */
 
@@ -175,7 +168,6 @@ public:
     methods which need point or integration point index.
     */
     typedef std::size_t IndexType;
-
 
     /** This typed used to return size or dimension in
     geometry. Dimension, WorkingDimension, PointsNumber and
@@ -249,12 +241,12 @@ public:
     typedef typename GeometryType::const_iterator               const_iterator;
     typedef typename GeometryType::ptr_iterator                 ptr_iterator;
     typedef typename GeometryType::ptr_const_iterator           ptr_const_iterator;
-    #ifndef SD_APP_FORWARD_COMPATIBILITY
+#ifndef SD_APP_FORWARD_COMPATIBILITY
     typedef typename GeometryType::reverse_iterator             reverse_iterator;
     typedef typename GeometryType::const_reverse_iterator       const_reverse_iterator;
     typedef typename GeometryType::ptr_reverse_iterator         ptr_reverse_iterator;
     typedef typename GeometryType::ptr_const_reverse_iterator   ptr_const_reverse_iterator;
-    #endif
+#endif
 
     /**
      * Type of Matrix
@@ -271,9 +263,9 @@ public:
     ///@{
 
     IsogeometricGeometry() : GeometryType()
-    #ifndef ENABLE_PRECOMPUTE
-    , mIsInitialized(false)
-    #endif
+#ifndef ENABLE_PRECOMPUTE
+        , mIsInitialized(false)
+#endif
     {
     }
 
@@ -292,11 +284,11 @@ public:
     TODO
     */
     IsogeometricGeometry( const PointsArrayType& ThisPoints,
-              GeometryData const* pThisGeometryData = 0 )
-    : GeometryType( ThisPoints, pThisGeometryData )
-    #ifndef ENABLE_PRECOMPUTE
-    , mIsInitialized(false)
-    #endif
+                          GeometryData const* pThisGeometryData = 0 )
+        : GeometryType( ThisPoints, pThisGeometryData )
+#ifndef ENABLE_PRECOMPUTE
+        , mIsInitialized(false)
+#endif
     {
     }
 
@@ -309,10 +301,10 @@ public:
     source geometry's points too.
     */
     IsogeometricGeometry( const IsogeometricGeometry& rOther )
-    : GeometryType( rOther )
-    #ifndef ENABLE_PRECOMPUTE
-    , mIsInitialized(false)
-    #endif
+        : GeometryType( rOther )
+#ifndef ENABLE_PRECOMPUTE
+        , mIsInitialized(false)
+#endif
     {
     }
 
@@ -328,10 +320,10 @@ public:
     source geometry's points too.
     */
     template<class TOtherPointType> IsogeometricGeometry( IsogeometricGeometry<TOtherPointType> const & rOther )
-    : GeometryType( rOther.begin(), rOther.end() )
-    #ifndef ENABLE_PRECOMPUTE
-    , mIsInitialized(false)
-    #endif
+        : GeometryType( rOther.begin(), rOther.end() )
+#ifndef ENABLE_PRECOMPUTE
+        , mIsInitialized(false)
+#endif
     {
     }
 
@@ -383,11 +375,11 @@ public:
 
     GeometryData::KratosGeometryFamily GetGeometryFamily() const override
     {
-        #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
         return static_cast<GeometryData::KratosGeometryFamily>(IsogeometricGeometryData::KratosIsogeometricGeometryFamily::Kratos_NURBS);
-        #else
+#else
         return GeometryData::KratosGeometryFamily::Kratos_NURBS;
-        #endif
+#endif
     }
 
     GeometryData::KratosGeometryType GetGeometryType() const override
@@ -495,14 +487,16 @@ public:
         KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
     }
 
-    #ifndef SD_APP_FORWARD_COMPATIBILITY
+#ifndef SD_APP_FORWARD_COMPATIBILITY
     /**
      * lumping factors for the calculation of the lumped mass matrix
      */
     VectorType& LumpingFactors( VectorType& rResult ) const override
     {
         if (rResult.size() != this->PointsNumber() )
+        {
             rResult.resize( this->PointsNumber(), false );
+        }
         noalias(rResult) = ZeroVector(this->PointsNumber());
 
         GeometryData::IntegrationMethod ThisMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
@@ -522,7 +516,7 @@ public:
 
         return rResult;
     }
-    #endif
+#endif
 
     virtual void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
         MatrixType& shape_functions_values,
@@ -531,11 +525,15 @@ public:
     ) const
     {
         if (shape_functions_values.size1() != integration_points.size()
-            || shape_functions_values.size1() != this->PointsNumber())
-        shape_functions_values.resize(integration_points.size(), this->PointsNumber(), false);
+                || shape_functions_values.size1() != this->PointsNumber())
+        {
+            shape_functions_values.resize(integration_points.size(), this->PointsNumber(), false);
+        }
 
         if (shape_functions_local_gradients.size() != integration_points.size())
+        {
             shape_functions_local_gradients.resize(integration_points.size());
+        }
 
         VectorType tmp_values(this->PointsNumber());
         MatrixType tmp_local_gradients(this->PointsNumber(), this->WorkingSpaceDimension());
@@ -589,7 +587,7 @@ public:
      */
     virtual void ExtractControlPoints(PointsArrayType& rPoints)
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
     }
 
     /**
@@ -597,7 +595,7 @@ public:
      */
     virtual void ExtractPoints(PointsArrayType& rPoints, const std::vector<int>& sampling_size)
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
     }
 
     /**
@@ -605,7 +603,7 @@ public:
      */
     virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
     }
 
     /**
@@ -613,7 +611,7 @@ public:
      */
     virtual void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
     }
 
     /**
@@ -621,7 +619,7 @@ public:
      */
     virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
     }
 
     /**
@@ -629,7 +627,7 @@ public:
      */
     virtual void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function" , __FUNCTION__ );
+        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
     }
 
     /******************************************************
@@ -637,41 +635,41 @@ public:
     *******************************************************/
     void Initialize(IntegrationMethod ThisMethod) final
     {
-        #ifndef ENABLE_PRECOMPUTE
-        if(!mIsInitialized)
+#ifndef ENABLE_PRECOMPUTE
+        if (!mIsInitialized)
         {
             this->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(mInternal_Ncontainer, mInternal_DN_De, ThisMethod);
             mIsInitialized = true;
         }
-        #endif
+#endif
     }
 
     void Initialize(const IntegrationPointsArrayType& integration_points) final
     {
-        #ifndef ENABLE_PRECOMPUTE
-        if(!mIsInitialized)
+#ifndef ENABLE_PRECOMPUTE
+        if (!mIsInitialized)
         {
             this->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(mInternal_Ncontainer, mInternal_DN_De, integration_points);
             mIsInitialized = true;
         }
-        #else
+#else
         KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not available in the PRECOMPUTE mode")
-        #endif
+#endif
     }
 
     void Clean() final
     {
-        #ifndef ENABLE_PRECOMPUTE
+#ifndef ENABLE_PRECOMPUTE
         if (mIsInitialized)
         {
             mInternal_DN_De.resize(0);
             mInternal_Ncontainer.resize(0, 0);
             mIsInitialized = false;
         }
-        #endif
+#endif
     }
 
-    #ifndef ENABLE_PRECOMPUTE
+#ifndef ENABLE_PRECOMPUTE
     const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const final
     {
         return mInternal_Ncontainer;
@@ -681,7 +679,7 @@ public:
     {
         return mInternal_DN_De;
     }
-    #else
+#else
     const Matrix& ShapeFunctionsValues( IntegrationMethod ThisMethod )  const final
     {
         return GeometryType::ShapeFunctionsValues( ThisMethod );
@@ -691,7 +689,7 @@ public:
     {
         return GeometryType::ShapeFunctionsLocalGradients( ThisMethod );
     }
-    #endif
+#endif
 
     Vector& ShapeFunctionsValues( Vector& rResults, const CoordinatesArrayType& rCoordinates ) const override
     {
@@ -708,7 +706,6 @@ public:
     /******************************************************
         END OVERRIDE FROM GEOMETRY
     *******************************************************/
-
 
     ///@}
     ///@name Input and output
@@ -757,11 +754,9 @@ public:
         GeometryType::PrintData(rOStream);
     }
 
-
     ///@}
     ///@name Friends
     ///@{
-
 
     ///@}
 
@@ -771,31 +766,25 @@ protected:
     ///@name Protected static Member Variables
     ///@{
 
-
     ///@}
     ///@name Protected member Variables
     ///@{
-
 
     ///@}
     ///@name Protected Operators
     ///@{
 
-
     ///@}
     ///@name Protected Operations
     ///@{
-
 
     ///@}
     ///@name Protected  Access
     ///@{
 
-
     ///@}
     ///@name Protected Inquiry
     ///@{
-
 
     ///@}
     ///@name Protected LifeCycle
@@ -805,25 +794,21 @@ protected:
     Avoids object to be created Except for derived classes
     */
 
-
     ///@}
-
-
 
 private:
     ///@name Static Member Variables
     ///@{
 
-
     ///@}
     ///@name Member Variables
     ///@{
 
-    #ifndef ENABLE_PRECOMPUTE
+#ifndef ENABLE_PRECOMPUTE
     bool mIsInitialized;
     ShapeFunctionsGradientsType mInternal_DN_De;
     Matrix mInternal_Ncontainer;
-    #endif
+#endif
 
     ///@}
     ///@name Serialization
@@ -843,11 +828,9 @@ private:
 //        rSerializer.load( "IsogeometricGeometry Data", const_cast<GeometryData*>( mpGeometryData ) );
     }
 
-
     ///@}
     ///@name Private Operators
     ///@{
-
 
     ///@}
     ///@name Private Operations
@@ -856,7 +839,6 @@ private:
     ///@}
     ///@name Private  Access
     ///@{
-
 
     ///@}
     ///@name Private Inquiry
@@ -881,7 +863,6 @@ private:
     ///@name Un accessible methods
     ///@{
 
-
     ///@}
 
 }; // Class IsogeometricGeometry
@@ -891,11 +872,9 @@ private:
 ///@name Type Definitions
 ///@{
 
-
 ///@}
 ///@name Input and output
 ///@{
-
 
 /// input stream function
 template<class TPointType>
@@ -919,5 +898,3 @@ inline std::ostream& operator << ( std::ostream& rOStream,
 }  // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_GEOMETRY_H_INCLUDED  defined
-
-

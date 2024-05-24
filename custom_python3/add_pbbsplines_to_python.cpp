@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -29,7 +28,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python3/add_pbbsplines_to_python.h"
 #include "custom_python3/add_point_based_control_grid_to_python.h"
 #include "custom_python3/add_import_export_to_python.h"
-
 
 namespace Kratos
 {
@@ -105,4 +103,3 @@ void IsogeometricApplication_AddPBBSplinesToPython(pybind11::module& m)
 }  // namespace Python.
 
 } // Namespace Kratos
-

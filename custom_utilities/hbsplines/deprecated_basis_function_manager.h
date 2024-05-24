@@ -60,14 +60,16 @@ public:
 
     /// Check if the bf exists in the list; otherwise create new bf and return
     typename TBasisFuncType::Pointer CreateBf(unsigned int Level,
-                                              const std::vector<knot_t>& rpKnots1,
-                                              const std::vector<knot_t>& rpKnots2,
-                                              const std::vector<knot_t>& rpKnots3)
+            const std::vector<knot_t>& rpKnots1,
+            const std::vector<knot_t>& rpKnots2,
+            const std::vector<knot_t>& rpKnots3)
     {
         // search in the current list of bfs, the one that has the same local knot vector with provided ones
-        for(iterator it = mpBasisFuncs.begin(); it != mpBasisFuncs.end(); ++it)
-            if((*it)->Contain(rpKnots1, rpKnots2, rpKnots3))
+        for (iterator it = mpBasisFuncs.begin(); it != mpBasisFuncs.end(); ++it)
+            if ((*it)->Contain(rpKnots1, rpKnots2, rpKnots3))
+            {
                 return *it;
+            }
 
         // create the new bf and add the knot
         typename TBasisFuncType::Pointer p_bf = typename TBasisFuncType::Pointer(new TBasisFuncType(++mLastId, Level));
@@ -95,8 +97,8 @@ public:
     /// Remove a basis function by its Id from the set
     void erase(bf_t p_bf)
     {
-        for(iterator it = mpBasisFuncs.begin(); it != mpBasisFuncs.end(); ++it)
-            if((*it) == p_bf)
+        for (iterator it = mpBasisFuncs.begin(); it != mpBasisFuncs.end(); ++it)
+            if ((*it) == p_bf)
             {
                 mpBasisFuncs.erase(it);
                 break;
@@ -107,16 +109,20 @@ public:
     bf_t get(std::size_t Id)
     {
         // create the index map if it's not created yet
-        if(!function_map_is_created)
+        if (!function_map_is_created)
+        {
             CreateFunctionsMap();
+        }
 
         // return the bf if its Id exist in the list
         typename map_t::iterator it = mFunctionsMap.find(Id);
-        if(it != mFunctionsMap.end())
+        if (it != mFunctionsMap.end())
+        {
             return it->second;
+        }
         else
             KRATOS_THROW_ERROR(std::runtime_error, "Access index is not found:", Id)
-    }
+        }
 
     /// Overload operator[]
     bf_t operator[](std::size_t Id)
@@ -153,8 +159,10 @@ private:
     void CreateFunctionsMap()
     {
         mFunctionsMap.clear();
-        for(iterator it = mpBasisFuncs.begin(); it != mpBasisFuncs.end(); ++it)
+        for (iterator it = mpBasisFuncs.begin(); it != mpBasisFuncs.end(); ++it)
+        {
             mFunctionsMap[(*it)->Id()] = *it;
+        }
         function_map_is_created = true;
     }
 
@@ -172,4 +180,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const DeprecatedBasisFu
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_DEPRECATED_BASIS_FUNCTION_MANAGER_H_INCLUDED
-

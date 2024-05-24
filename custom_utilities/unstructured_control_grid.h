@@ -55,7 +55,9 @@ public:
     {
         UnstructuredControlGrid::Pointer pNewControlGrid = Create(size());
         for (std::size_t i = 0; i < size(); ++i)
+        {
             pNewControlGrid->SetData(i, GetData(i));
+        }
         return pNewControlGrid;
     }
 
@@ -91,7 +93,9 @@ public:
     {
         rOStream << "Data:";
         for (std::size_t i = 0; i < mData.size(); ++i)
+        {
             rOStream << " " << mData[i];
+        }
     }
 
 private:

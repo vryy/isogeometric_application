@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -25,7 +24,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/multipatch_model_part.h"
 //#include "custom_utilities/multi_multipatch_model_part.h"
 #include "custom_python3/add_mesh_and_model_part_to_python.h"
-
 
 namespace Kratos
 {
@@ -57,16 +55,16 @@ typename T::MultiPatchType& MultiPatchModelPart_GetMultiPatch2(T& rDummy, std::s
 
 template<int TDim>
 ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions(MultiPatchModelPart<TDim>& rDummy,
-    typename Patch<TDim>::Pointer pPatch,
-    const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
+        typename Patch<TDim>::Pointer pPatch,
+        const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     return rDummy.AddConditions(pPatch, condition_name, starting_id, pProperties);
 }
 
 template<int TDim>
 ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary(MultiPatchModelPart<TDim>& rDummy,
-    typename Patch<TDim>::Pointer pPatch, int iside,
-    const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
+        typename Patch<TDim>::Pointer pPatch, int iside,
+        const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
@@ -74,8 +72,8 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary(
 
 template<int TDim>
 ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2(MultiPatchModelPart<TDim>& rDummy,
-    typename Patch<TDim-1>::Pointer pBoundaryPatch,
-    const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
+        typename Patch < TDim - 1 >::Pointer pBoundaryPatch,
+        const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
 }
@@ -127,9 +125,9 @@ ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2
 
 template<int TDim>
 pybind11::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDummy, ModelPart& r_model_part,
-    typename Patch<TDim>::Pointer pPatch, const std::string& sample_element_name, pybind11::list& list_divs,
-    std::size_t last_node_id, std::size_t last_elem_id,
-    Properties::Pointer pProperties, int echo_level)
+        typename Patch<TDim>::Pointer pPatch, const std::string& sample_element_name, pybind11::list& list_divs,
+        std::size_t last_node_id, std::size_t last_elem_id,
+        Properties::Pointer pProperties, int echo_level)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
     {
@@ -143,15 +141,17 @@ pybind11::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDummy, 
 
     std::vector<std::size_t> num_divisions;
     for (auto v : list_divs)
+    {
         num_divisions.push_back(v.cast<int>());
+    }
 
     std::size_t my_last_node_id = last_node_id;
     std::size_t my_last_elem_id = last_elem_id;
 
     rDummy.WriteEntities(r_model_part, r_model_part.Elements(),
-        pPatch, r_clone_element, num_divisions,
-        my_last_node_id, my_last_elem_id,
-        pProperties, echo_level);
+                         pPatch, r_clone_element, num_divisions,
+                         my_last_node_id, my_last_elem_id,
+                         pProperties, echo_level);
 
     pybind11::list output;
     output.append(my_last_node_id);
@@ -161,9 +161,9 @@ pybind11::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDummy, 
 
 template<int TDim>
 pybind11::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& rDummy, ModelPart& r_model_part,
-    typename Patch<TDim>::Pointer pPatch, const std::string& sample_condition_name, pybind11::list& list_divs,
-    std::size_t last_node_id, std::size_t last_cond_id,
-    Properties::Pointer pProperties, int echo_level)
+        typename Patch<TDim>::Pointer pPatch, const std::string& sample_condition_name, pybind11::list& list_divs,
+        std::size_t last_node_id, std::size_t last_cond_id,
+        Properties::Pointer pProperties, int echo_level)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
     {
@@ -177,15 +177,17 @@ pybind11::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& rDummy
 
     std::vector<std::size_t> num_divisions;
     for (auto v : list_divs)
+    {
         num_divisions.push_back(v.cast<int>());
+    }
 
     std::size_t my_last_node_id = last_node_id;
     std::size_t my_last_cond_id = last_cond_id;
 
     rDummy.WriteEntities(r_model_part, r_model_part.Conditions(),
-        pPatch, r_clone_condition, num_divisions,
-        my_last_node_id, my_last_cond_id,
-        pProperties, echo_level);
+                         pPatch, r_clone_condition, num_divisions,
+                         my_last_node_id, my_last_cond_id,
+                         pProperties, echo_level);
 
     pybind11::list output;
     output.append(my_last_node_id);
@@ -299,7 +301,6 @@ void IsogeometricApplication_AddModelPartToPython(pybind11::module& m)
     // ;
 }
 
-
 void IsogeometricApplication_AddMeshAndModelPartToPython(pybind11::module& m)
 {
 
@@ -315,4 +316,3 @@ void IsogeometricApplication_AddMeshAndModelPartToPython(pybind11::module& m)
 }  // namespace Python.
 
 } // Namespace Kratos
-

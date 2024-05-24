@@ -47,24 +47,32 @@ public:
     static GeometryData::IntegrationMethod GetIntegrationMethod(int integration_order)
     {
         if (integration_order == 1)
+        {
             return GeometryData::IntegrationMethod::GI_GAUSS_1;
+        }
         else if (integration_order == 2)
+        {
             return GeometryData::IntegrationMethod::GI_GAUSS_2;
+        }
         else if (integration_order == 3)
+        {
             return GeometryData::IntegrationMethod::GI_GAUSS_3;
+        }
         else
             KRATOS_THROW_ERROR(std::logic_error, "Invalid integration order", integration_order)
-    }
+        }
 
     /// Get the last node id of the model part
     static std::size_t GetLastNodeId(const ModelPart& r_model_part)
     {
         std::size_t lastNodeId = 0;
-        for(typename ModelPart::NodesContainerType::const_iterator it = r_model_part.Nodes().begin();
+        for (typename ModelPart::NodesContainerType::const_iterator it = r_model_part.Nodes().begin();
                 it != r_model_part.Nodes().end(); ++it)
         {
-            if(it->Id() > lastNodeId)
+            if (it->Id() > lastNodeId)
+            {
                 lastNodeId = it->Id();
+            }
         }
 
         return lastNodeId;
@@ -74,11 +82,13 @@ public:
     static std::size_t GetLastElementId(const ModelPart& r_model_part)
     {
         std::size_t lastElementId = 0;
-        for(typename ModelPart::ElementsContainerType::const_iterator it = r_model_part.Elements().begin();
+        for (typename ModelPart::ElementsContainerType::const_iterator it = r_model_part.Elements().begin();
                 it != r_model_part.Elements().end(); ++it)
         {
-            if(it->Id() > lastElementId)
+            if (it->Id() > lastElementId)
+            {
                 lastElementId = it->Id();
+            }
         }
 
         return lastElementId;
@@ -88,11 +98,13 @@ public:
     static std::size_t GetLastConditionId(const ModelPart& r_model_part)
     {
         std::size_t lastCondId = 0;
-        for(typename ModelPart::ConditionsContainerType::const_iterator it = r_model_part.Conditions().begin();
+        for (typename ModelPart::ConditionsContainerType::const_iterator it = r_model_part.Conditions().begin();
                 it != r_model_part.Conditions().end(); ++it)
         {
-            if(it->Id() > lastCondId)
+            if (it->Id() > lastCondId)
+            {
                 lastCondId = it->Id();
+            }
         }
 
         return lastCondId;
@@ -102,11 +114,13 @@ public:
     static std::size_t GetLastPropertiesId(const ModelPart& r_model_part)
     {
         std::size_t lastPropId = 0;
-        for(typename ModelPart::PropertiesConstantIterator it = r_model_part.PropertiesBegin();
+        for (typename ModelPart::PropertiesConstantIterator it = r_model_part.PropertiesBegin();
                 it != r_model_part.PropertiesEnd(); ++it)
         {
-            if(it->Id() > lastPropId)
+            if (it->Id() > lastPropId)
+            {
                 lastPropId = it->Id();
+            }
         }
 
         return lastPropId;
@@ -118,7 +132,7 @@ public:
             TKeyType ThisKey, std::string ComponentName)
     {
         typename TContainerType::const_iterator i_result;
-        if((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
+        if ((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
         {
             std::stringstream buffer;
             buffer << ComponentName << " #" << ThisKey << " is not found.";
@@ -130,7 +144,7 @@ public:
 
     /// Create a condition taking the same geometry as the parent element
     static Condition::Pointer CreateConditionFromElement(const std::string& sample_condition_name,
-        std::size_t& lastConditionId, Element::Pointer pElement, Properties::Pointer pProperties )
+            std::size_t& lastConditionId, Element::Pointer pElement, Properties::Pointer pProperties )
     {
         Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
@@ -145,20 +159,20 @@ public:
     /// List the nodes, elements, conditions of a model_part
     static void ListModelPart(ModelPart& r_model_part)
     {
-        for(typename ModelPart::NodesContainerType::iterator it = r_model_part.Nodes().begin();
+        for (typename ModelPart::NodesContainerType::iterator it = r_model_part.Nodes().begin();
                 it != r_model_part.Nodes().end(); ++it)
         {
             std::cout << "Node #" << it->Id() << ": ("
                       << it->X0() << ", " << it->Y0() << ", " << it->Z0() << ")" << std::endl;
         }
 
-        for(typename ModelPart::ElementsContainerType::ptr_iterator it = r_model_part.Elements().ptr_begin();
+        for (typename ModelPart::ElementsContainerType::ptr_iterator it = r_model_part.Elements().ptr_begin();
                 it != r_model_part.Elements().ptr_end(); ++it)
         {
             std::cout << typeid(*(*it)).name() << ": " << (*it)->Id() << std::endl;
         }
 
-        for(typename ModelPart::ConditionsContainerType::ptr_iterator it = r_model_part.Conditions().ptr_begin();
+        for (typename ModelPart::ConditionsContainerType::ptr_iterator it = r_model_part.Conditions().ptr_begin();
                 it != r_model_part.Conditions().ptr_end(); ++it)
         {
             std::cout << typeid(*(*it)).name() << ": " << (*it)->Id() << std::endl;
@@ -181,14 +195,14 @@ public:
         const auto& a = tangents[0];
         const auto& b = tangents[1];
         array_1d<double, 3> normal;
-        normal[0] = a[1]*b[2] - a[2]*b[1];
-        normal[1] = a[2]*b[0] - a[0]*b[2];
-        normal[2] = a[0]*b[1] - a[1]*b[0];
+        normal[0] = a[1] * b[2] - a[2] * b[1];
+        normal[1] = a[2] * b[0] - a[0] * b[2];
+        normal[2] = a[0] * b[1] - a[1] * b[0];
 
         if (normalize)
         {
             double norm = norm_2(normal);
-            normal *= 1.0/norm;
+            normal *= 1.0 / norm;
         }
 
         return normal;
@@ -203,10 +217,12 @@ public:
 
         const std::vector<double> xic = {0.5, 0.5, 0.5};
 
-        const std::vector<std::vector<double> > xic_boundary = {
-                {0.0, 0.5, 0.5}, {1.0, 0.5, 0.5},
-                {0.5, 0.0, 0.5}, {0.5, 1.0, 0.5},
-                {0.5, 0.5, 0.0}, {0.5, 0.5, 1.0} };
+        const std::vector<std::vector<double> > xic_boundary =
+        {
+            {0.0, 0.5, 0.5}, {1.0, 0.5, 0.5},
+            {0.5, 0.0, 0.5}, {0.5, 1.0, 0.5},
+            {0.5, 0.5, 0.0}, {0.5, 0.5, 1.0}
+        };
 
         array_1d<double, 3> face_center = pBoundaryPatch->pGetGridFunction(CONTROL_POINT_COORDINATES)->GetValue(xic);
         array_1d<double, 3> face_normal = ComputeNormal(*pBoundaryPatch, xic, true);
@@ -224,7 +240,9 @@ public:
             if (norm_2(ref_point - face_center) < 1.0e-10)
             {
                 for (int j = 0; j < 3; ++j)
+                {
                     ref_local_point[j] = xic_boundary[i][j];
+                }
                 found = true;
                 break;
             }
@@ -235,16 +253,22 @@ public:
             for (int j = 0; j < 3; ++j)
             {
                 if (std::abs(ref_local_point[j]) < 1.0e-10)
+                {
                     ref_local_point[j] += delta;
+                }
                 else if (std::abs(ref_local_point[j] - 1.0) < 1.0e-10)
+                {
                     ref_local_point[j] -= delta;
+                }
             }
         }
         else
         {
             // if we can't find it, which is not likely to happen, we take the center point of the patch as a reference point
             for (int j = 0; j < 3; ++j)
+            {
                 ref_local_point[j] = xic[j];
+            }
         }
         // KRATOS_WATCH(ref_local_point)
         noalias(ref_point) = rPatch.pGetGridFunction(CONTROL_POINT_COORDINATES)->GetValue(ref_local_point);
@@ -273,7 +297,6 @@ public:
 
 }; // end class IsogeometricUtility
 
-
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream, const IsogeometricUtility& rThis)
 {
@@ -286,4 +309,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const IsogeometricUtili
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_ISOGEOMETRIC_UTILITY_H_INCLUDED defined
-

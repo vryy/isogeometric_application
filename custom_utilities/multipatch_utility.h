@@ -46,25 +46,25 @@ public:
     virtual ~MultiPatchUtility() {}
 
     /// Create new patch from a FESpace and wrap it with pointer
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     template<int TDim>
     static iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer> CreatePatchPointer(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
     {
         return iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer>(typename Patch<TDim>::Pointer(new Patch<TDim>(Id, pFESpace)));
     }
-    #else
+#else
     template<int TDim>
     static typename Patch<TDim>::Pointer CreatePatchPointer(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
     {
         return typename Patch<TDim>::Pointer(new Patch<TDim>(Id, pFESpace));
     }
-    #endif
+#endif
 
     /// Make a simple interface between two patches
     /// For BSplines patch, one shall use BSplinesPatchUtility::MakeInterfacexD instead
     template<int TDim>
     static void MakeInterface(typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-            typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
+                              typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
     {
         typename PatchInterface<TDim>::Pointer pInterface12;
         typename PatchInterface<TDim>::Pointer pInterface21;
@@ -112,7 +112,7 @@ public:
     /// On output return the error code (0: successful)
     template<int TDim>
     static int LocalCoordinates(const Patch<TDim>& rPatch,
-            const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
+                                const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         /// find the best initial point by sampling
         rPatch.Predict(point, xi, nsampling);
@@ -126,7 +126,7 @@ public:
     /// On output return the patch_id if sucessful; -1 otherwise
     template<int TDim>
     static int LocalCoordinates(const MultiPatch<TDim>& rMultiPatch,
-            const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
+                                const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         int error_code;
 
@@ -134,7 +134,9 @@ public:
         {
             error_code = LocalCoordinates( *it, point, xi, nsampling);
             if (error_code == 0)
+            {
                 return it->Id();
+            }
         }
 
         return -1;
@@ -147,8 +149,8 @@ public:
     ///     [dv/dx dv/dy] in 2D
     template<int TDim>
     static Vector ComputeSpatialDerivatives(const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
-            const GridFunction<TDim, double>& rControlValueGridFunction,
-            const std::vector<double>& rCoordinates)
+                                            const GridFunction<TDim, double>& rControlValueGridFunction,
+                                            const std::vector<double>& rCoordinates)
     {
         // compute the Jacobian
         std::vector<array_1d<double, 3> > tmp;
@@ -196,8 +198,8 @@ public:
     ///      dvz/dx dvz/dy] in 2D
     template<int TDim>
     static Matrix ComputeSpatialDerivatives(const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
-            const GridFunction<TDim, array_1d<double, 3> >& rControlValueGridFunction,
-            const std::vector<double>& rCoordinates)
+                                            const GridFunction<TDim, array_1d<double, 3> >& rControlValueGridFunction,
+                                            const std::vector<double>& rCoordinates)
     {
         // compute the Jacobian
         std::vector<array_1d<double, 3> > tmp;
@@ -248,7 +250,6 @@ public:
 
 }; // end class MultiPatchUtility
 
-
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchUtility& rThis)
 {
@@ -261,4 +262,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchUtility
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_UTILITY_H_INCLUDED defined
-

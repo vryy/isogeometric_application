@@ -97,7 +97,7 @@ public:
         Element::Pointer pElement = (*(pElements.ptr_begin()));
 
         std::vector<CoordinatesArrayType> Points;
-        for(unsigned int i = 0; i < NumTestPoints + 1; ++i)
+        for (unsigned int i = 0; i < NumTestPoints + 1; ++i)
         {
             CoordinatesArrayType Point;
             Point(0) = (double) i / NumTestPoints;
@@ -109,16 +109,18 @@ public:
 
         std::cout << "List of test points:" << std::endl;
         for (unsigned int j = 0; j < Points.size(); j++)
+        {
             std::cout << "xi[" << j  << "] = " << Points[j] << std::endl;
+        }
 
         int NumberOfNodes = pElement->GetGeometry().size();
 
         std::cout << "Inspecting shape function values at test points" << std::endl;
         Matrix Results(NumberOfNodes, Points.size());
-        for(unsigned int i = 0; i < Points.size(); ++i)
+        for (unsigned int i = 0; i < Points.size(); ++i)
         {
             std::cout << "N(xi[" << i << "])(...) = (";
-            for(unsigned int j = 0; j < NumberOfNodes; ++j)
+            for (unsigned int j = 0; j < NumberOfNodes; ++j)
             {
                 double temp = pElement->GetGeometry().ShapeFunctionValue(j, Points[i]);
                 std::cout << temp << " ";
@@ -149,7 +151,7 @@ public:
         std::cout << "------------------------------------------" << std::endl;
 
         std::cout << "Inspecting shape function derivatives at test points" << std::endl;
-        for(unsigned int i = 0; i < Points.size(); ++i)
+        for (unsigned int i = 0; i < Points.size(); ++i)
         {
             std::cout << "dN(xi[" << i << "])(...) = ";
             Matrix temp;
@@ -159,7 +161,7 @@ public:
         std::cout << "------------------------------------------" << std::endl;
 
         std::cout << "Inspecting shape function second derivatives at test points" << std::endl;
-        for(unsigned int i = 0; i < Points.size(); ++i)
+        for (unsigned int i = 0; i < Points.size(); ++i)
         {
             std::cout << "d2N(xi[" << i << "])(...) = ";
             GeometryType::ShapeFunctionsSecondDerivativesType temp;
@@ -190,8 +192,10 @@ public:
             N = pElement->GetGeometry().ShapeFunctionsLocalGradients(temp, Points[i]);
             CoordinatesArrayType t;
             noalias(t) = ZeroVector(3);
-            for(unsigned int j = 0; j < NumberOfNodes; ++j)
-                noalias(t) += N(j, 0)*pElement->GetGeometry()[j].GetInitialPosition();
+            for (unsigned int j = 0; j < NumberOfNodes; ++j)
+            {
+                noalias(t) += N(j, 0) * pElement->GetGeometry()[j].GetInitialPosition();
+            }
 
             std::cout << "Tangent at " << Points[i] << ": " << t << std::endl;
             LogFile << t[0] << " " << t[1] << " " << t[2] << std::endl;
@@ -207,8 +211,10 @@ public:
             H = pElement->GetGeometry().ShapeFunctionsSecondDerivatives(H, Points[i]);
             CoordinatesArrayType h;
             noalias(h) = ZeroVector(3);
-            for(unsigned int j = 0; j < NumberOfNodes; ++j)
-                noalias(h) += H[j](0, 0)*pElement->GetGeometry()[j].GetInitialPosition();
+            for (unsigned int j = 0; j < NumberOfNodes; ++j)
+            {
+                noalias(h) += H[j](0, 0) * pElement->GetGeometry()[j].GetInitialPosition();
+            }
 
             std::cout << "Hessian at " << Points[i] << ": " << h << std::endl;
             LogFile << h[0] << " " << h[1] << " " << h[2] << std::endl;
@@ -235,7 +241,7 @@ public:
 
         std::cout << "Inspecting all integration points:" << std::endl;
         const GeometryType::IntegrationPointsArrayType& integration_points =
-        pElement->GetGeometry().IntegrationPoints( (GeometryData::IntegrationMethod)0 );
+            pElement->GetGeometry().IntegrationPoints( (GeometryData::IntegrationMethod)0 );
 
         for (unsigned int i = 0; i < integration_points.size(); ++i)
         {
@@ -282,9 +288,9 @@ public:
         Vector Result;
         Result = rGeometry.ShapeFunctionsValues(Result, p);
 
-        for(int i = 0; i < rGeometry.size(); ++i)
+        for (int i = 0; i < rGeometry.size(); ++i)
         {
-            std::cout << "Shape function value " << (i+1) << " at " << p << ": " << Result(i) << std::endl;
+            std::cout << "Shape function value " << (i + 1) << " at " << p << ": " << Result(i) << std::endl;
         }
     }
 
@@ -350,7 +356,7 @@ public:
         NodesArrayType& pNodes = r_model_part.Nodes();
 
         std::cout << "Dumping nodal results " << rVariable.Name() << ": " << std::endl;
-        for(NodesArrayType::ptr_iterator it = pNodes.ptr_begin(); it != pNodes.ptr_end();  ++it)
+        for (NodesArrayType::ptr_iterator it = pNodes.ptr_begin(); it != pNodes.ptr_end();  ++it)
         {
             std::cout << "Node " << (*it)->Id() << ": " << (*it)->GetSolutionStepValue(rVariable) << std::endl;
         }
@@ -482,7 +488,7 @@ inline std::istream& operator >>(std::istream& rIStream, IsogeometricTestUtils& 
 
 /// output stream function
 inline std::ostream& operator <<(std::ostream& rOStream,
-        const IsogeometricTestUtils& rThis)
+                                 const IsogeometricTestUtils& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

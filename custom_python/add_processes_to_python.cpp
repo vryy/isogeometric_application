@@ -10,12 +10,10 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 
 // External includes
 #include <boost/python.hpp>
-
 
 // Project includes
 #include "includes/define.h"
@@ -38,14 +36,13 @@ void IsogeometricApplication_AddProcessesToPython()
 {
     using namespace boost::python;
 
-    #ifdef ISOGEOMETRIC_USE_PARMETIS
+#ifdef ISOGEOMETRIC_USE_PARMETIS
     class_<IsogeometricPartitioningProcess, bases<Process> >
     ("IsogeometricPartitioningProcess", init<ModelPart&, IO&, unsigned int>())
     ;
-    #endif
+#endif
 }
 
 } // namespace Python.
 
 } // Namespace Kratos
-

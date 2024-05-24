@@ -42,7 +42,7 @@ public:
 
     /// Constructor with Variable and FESpace
     PointBasedControlGrid(const VariableType& rVariable, typename FESpaceType::Pointer pFESpace)
-    : BaseType(rVariable.Name()), mrVariable(rVariable), mpFESpace(pFESpace) {}
+        : BaseType(rVariable.Name()), mrVariable(rVariable), mpFESpace(pFESpace) {}
 
     /// Destructor
     virtual ~PointBasedControlGrid() {}
@@ -119,7 +119,9 @@ public:
         // print out the control values
         // TODO we shall use the iterator here for more efficiency, especially for hierarchical B-Splines
         for (std::size_t i = 0; i < this->size(); ++i)
+        {
             rOStream << this->GetData(i) << std::endl;
+        }
     }
 
 private:
@@ -127,7 +129,6 @@ private:
     const VariableType& mrVariable;
     typename FESpaceType::Pointer mpFESpace;
 };
-
 
 /// Partial template specialization for ControlPoint variable
 template<class TFESpaceType>
@@ -145,7 +146,7 @@ public:
 
     /// Constructor with Variable and FESpace
     PointBasedControlGrid(const VariableType& rVariable, typename FESpaceType::Pointer pFESpace)
-    : BaseType(rVariable.Name()), mrVariable(rVariable), mpFESpace(pFESpace) {}
+        : BaseType(rVariable.Name()), mrVariable(rVariable), mpFESpace(pFESpace) {}
 
     /// Destructor
     virtual ~PointBasedControlGrid() {}
@@ -212,7 +213,9 @@ public:
         // print out the control values
         // TODO we shall use the iterator here for more efficiency, especially for hierarchical B-Splines
         for (std::size_t i = 0; i < this->size(); ++i)
+        {
             rOStream << this->GetData(i) << std::endl;
+        }
     }
 
 private:

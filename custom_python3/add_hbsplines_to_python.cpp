@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -31,7 +30,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python3/add_hbsplines_to_python.h"
 #include "custom_python3/add_point_based_control_grid_to_python.h"
 #include "custom_python3/add_import_export_to_python.h"
-
 
 namespace Kratos
 {
@@ -82,7 +80,9 @@ pybind11::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<TDim>&
 
     pybind11::list Output;
     for (std::size_t i = 0; i < bf_list.size(); ++i)
+    {
         Output.append(bf_list[i]);
+    }
 
     return Output;
 }
@@ -103,28 +103,28 @@ typename HBSplinesBasisFunction<TDim>::Pointer HBSplinesFESpace_GetItem(HBSpline
 
 template<int TDim>
 void HBSplinesPatchUtility_ListBoundaryBfs(HBSplinesPatchUtility& rDummy,
-    typename HBSplinesFESpace<TDim>::Pointer pFESpace, BoundarySide side)
+        typename HBSplinesFESpace<TDim>::Pointer pFESpace, BoundarySide side)
 {
     rDummy.ListBoundaryBfs<TDim>(std::cout, pFESpace, side);
 }
 
 template<int TDim>
 typename Patch<TDim>::Pointer HBSplinesPatchUtility_CreatePatchFromBSplines(HBSplinesPatchUtility& rDummy,
-    typename Patch<TDim>::Pointer pPatch)
+        typename Patch<TDim>::Pointer pPatch)
 {
     return HBSplinesPatchUtility::CreatePatchFromBSplines<TDim>(pPatch);
 }
 
 template<int TDim>
 typename HBSplinesFESpace<TDim>::bf_t HBSplinesPatchUtility_GetBfByEquationId(HBSplinesPatchUtility& rDummy,
-    typename MultiPatch<TDim>::Pointer pMultiPatch, std::size_t EquationId)
+        typename MultiPatch<TDim>::Pointer pMultiPatch, std::size_t EquationId)
 {
     return rDummy.GetBfByEquationId<TDim>(pMultiPatch, EquationId);
 }
 
 template<int TDim>
 void HBSplinesPatchUtility_ReportDuplicatedEquationId(HBSplinesPatchUtility& rDummy,
-    typename MultiPatch<TDim>::Pointer pMultiPatch, const bool& throw_error)
+        typename MultiPatch<TDim>::Pointer pMultiPatch, const bool& throw_error)
 {
     return rDummy.ReportDuplicatedEquationId<TDim>(pMultiPatch, throw_error);
 }
@@ -133,7 +133,7 @@ void HBSplinesPatchUtility_ReportDuplicatedEquationId(HBSplinesPatchUtility& rDu
 
 template<int TDim>
 void HBSplinesRefinementUtility_Refine(HBSplinesRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer pPatch, std::size_t Id, int EchoLevel)
+                                       typename Patch<TDim>::Pointer pPatch, std::size_t Id, int EchoLevel)
 {
     rDummy.Refine<TDim>(pPatch, Id, EchoLevel);
 }
@@ -331,4 +331,3 @@ void IsogeometricApplication_AddHBSplinesToPython(pybind11::module& m)
 }  // namespace Python.
 
 } // Namespace Kratos
-

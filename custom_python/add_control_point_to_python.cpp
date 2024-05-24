@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -22,8 +21,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "containers/variable.h"
 #include "custom_utilities/control_point.h"
 #include "custom_python/add_control_point_to_python.h"
-
-
 
 namespace Kratos
 {
@@ -121,4 +118,3 @@ void IsogeometricApplication_AddControlPointToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

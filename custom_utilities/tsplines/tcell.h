@@ -20,7 +20,6 @@
 #include "includes/define.h"
 #include "custom_utilities/cell.h"
 
-
 namespace Kratos
 {
 
@@ -42,9 +41,9 @@ class TCell : public Cell
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(TCell);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const TCell> ConstPointer;
-    #endif
+#endif
 
     /// Type definitions
     typedef Cell BaseType;
@@ -53,17 +52,17 @@ public:
 
     /// Constructor with knots
     TCell(std::size_t Id, double XiMin, double XiMax)
-    : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(0.0), mEtaMin(0.0), mZetaMax(0.0), mZetaMin(0.0)
+        : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(0.0), mEtaMin(0.0), mZetaMax(0.0), mZetaMin(0.0)
     {}
 
     /// Constructor with knots
     TCell(std::size_t Id, double XiMin, double XiMax, double EtaMin, double EtaMax)
-    : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(EtaMax), mEtaMin(EtaMin), mZetaMax(0.0), mZetaMin(0.0)
+        : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(EtaMax), mEtaMin(EtaMin), mZetaMax(0.0), mZetaMin(0.0)
     {}
 
     /// Constructor with knots
     TCell(std::size_t Id, double XiMin, double XiMax, double EtaMin, double EtaMax, double ZetaMin, double ZetaMax)
-    : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(EtaMax), mEtaMin(EtaMin), mZetaMax(ZetaMax), mZetaMin(ZetaMin)
+        : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(EtaMax), mEtaMin(EtaMin), mZetaMax(ZetaMax), mZetaMin(ZetaMin)
     {}
 
     /// Destructor
@@ -104,32 +103,38 @@ public:
     /// Check if this cell cover a point in knot space
     bool IsCoverage(double rXi, double rEta) const
     {
-        if(    XiMinValue()  <= rXi  && XiMaxValue()  >= rXi
-            && EtaMinValue() <= rEta && EtaMaxValue() >= rEta )
+        if (    XiMinValue()  <= rXi  && XiMaxValue()  >= rXi
+                && EtaMinValue() <= rEta && EtaMaxValue() >= rEta )
+        {
             return true;
+        }
         return false;
     }
 
     /// Check if this cell cover a point in knot space
     bool IsCoverage(double rXi, double rEta, double rZeta) const
     {
-        if(    XiMinValue()   <= rXi   && XiMaxValue()   >= rXi
-            && EtaMinValue()  <= rEta  && EtaMaxValue()  >= rEta
-            && ZetaMinValue() <= rZeta && ZetaMaxValue() >= rZeta )
+        if (    XiMinValue()   <= rXi   && XiMaxValue()   >= rXi
+                && EtaMinValue()  <= rEta  && EtaMaxValue()  >= rEta
+                && ZetaMinValue() <= rZeta && ZetaMaxValue() >= rZeta )
+        {
             return true;
+        }
         return false;
     }
 
     /// check if this cell is the same as the reference cell. Two cells are the same if it has the same bounding knot values.
     bool IsSame(const TCell::Pointer p_cell, double tol) const
     {
-        if(    fabs( XiMinValue()   - p_cell->XiMinValue()   ) < tol
-            && fabs( XiMaxValue()   - p_cell->XiMaxValue()   ) < tol
-            && fabs( EtaMinValue()  - p_cell->EtaMinValue()  ) < tol
-            && fabs( EtaMaxValue()  - p_cell->EtaMaxValue()  ) < tol
-            && fabs( ZetaMinValue() - p_cell->ZetaMinValue() ) < tol
-            && fabs( ZetaMaxValue() - p_cell->ZetaMaxValue() ) < tol )
-                return true;
+        if (    fabs( XiMinValue()   - p_cell->XiMinValue()   ) < tol
+                && fabs( XiMaxValue()   - p_cell->XiMaxValue()   ) < tol
+                && fabs( EtaMinValue()  - p_cell->EtaMinValue()  ) < tol
+                && fabs( EtaMaxValue()  - p_cell->EtaMaxValue()  ) < tol
+                && fabs( ZetaMinValue() - p_cell->ZetaMinValue() ) < tol
+                && fabs( ZetaMaxValue() - p_cell->ZetaMaxValue() ) < tol )
+        {
+            return true;
+        }
         return false;
     }
 
@@ -163,27 +168,33 @@ private:
 template<>
 inline bool TCell_Helper<1>::IsCovered(const TCell& this_cell, const TCell& other_cell)
 {
-    if(    this_cell.XiMinValue() >= other_cell.XiMinValue() && this_cell.XiMaxValue() <= other_cell.XiMaxValue() )
+    if (    this_cell.XiMinValue() >= other_cell.XiMinValue() && this_cell.XiMaxValue() <= other_cell.XiMaxValue() )
+    {
         return true;
+    }
     return false;
 }
 
 template<>
 inline bool TCell_Helper<2>::IsCovered(const TCell& this_cell, const TCell& other_cell)
 {
-    if(    this_cell.XiMinValue()  >= other_cell.XiMinValue()  && this_cell.XiMaxValue()  <= other_cell.XiMaxValue()
-        && this_cell.EtaMinValue() >= other_cell.EtaMinValue() && this_cell.EtaMaxValue() <= other_cell.EtaMaxValue() )
+    if (    this_cell.XiMinValue()  >= other_cell.XiMinValue()  && this_cell.XiMaxValue()  <= other_cell.XiMaxValue()
+            && this_cell.EtaMinValue() >= other_cell.EtaMinValue() && this_cell.EtaMaxValue() <= other_cell.EtaMaxValue() )
+    {
         return true;
+    }
     return false;
 }
 
 template<>
 inline bool TCell_Helper<3>::IsCovered(const TCell& this_cell, const TCell& other_cell)
 {
-    if(    this_cell.XiMinValue()   >= other_cell.XiMinValue()   && this_cell.XiMaxValue()   <= other_cell.XiMaxValue()
-        && this_cell.EtaMinValue()  >= other_cell.EtaMinValue()  && this_cell.EtaMaxValue()  <= other_cell.EtaMaxValue()
-        && this_cell.ZetaMinValue() >= other_cell.ZetaMinValue() && this_cell.ZetaMaxValue() <= other_cell.ZetaMaxValue() )
+    if (    this_cell.XiMinValue()   >= other_cell.XiMinValue()   && this_cell.XiMaxValue()   <= other_cell.XiMaxValue()
+            && this_cell.EtaMinValue()  >= other_cell.EtaMinValue()  && this_cell.EtaMaxValue()  <= other_cell.EtaMaxValue()
+            && this_cell.ZetaMinValue() >= other_cell.ZetaMinValue() && this_cell.ZetaMaxValue() <= other_cell.ZetaMaxValue() )
+    {
         return true;
+    }
     return false;
 }
 
@@ -199,4 +210,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TCell& rThis)
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TCELL_H_INCLUDED
-

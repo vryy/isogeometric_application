@@ -23,7 +23,6 @@
 #include "includes/define.h"
 #include "custom_utilities/cell.h"
 
-
 namespace Kratos
 {
 
@@ -54,9 +53,9 @@ public:
     /// Destructor
     virtual ~CellContainer()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         this->PrintInfo(std::cout); std::cout << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Insert a cell to the container.
@@ -84,7 +83,9 @@ public:
     bool operator==(const CellContainer& rOther)
     {
         if (this->size() != rOther.size())
+        {
             return false;
+        }
 
         // TODO check more
 
@@ -124,4 +125,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const CellContainer& rT
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_CONTAINER_H_INCLUDED
-

@@ -25,15 +25,15 @@ DummyIsogeometricCondition::DummyIsogeometricCondition()
 }
 
 DummyIsogeometricCondition::DummyIsogeometricCondition( IndexType NewId,
-                              GeometryType::Pointer pGeometry)
-: Condition( NewId, pGeometry )
+        GeometryType::Pointer pGeometry)
+    : Condition( NewId, pGeometry )
 {
 }
 
 DummyIsogeometricCondition::DummyIsogeometricCondition( IndexType NewId,
-                              GeometryType::Pointer pGeometry,
-                              PropertiesType::Pointer pProperties)
-: Condition( NewId, pGeometry, pProperties )
+        GeometryType::Pointer pGeometry,
+        PropertiesType::Pointer pProperties)
+    : Condition( NewId, pGeometry, pProperties )
 {
 }
 
@@ -44,19 +44,18 @@ DummyIsogeometricCondition::~DummyIsogeometricCondition()
 {
 }
 
-
 //********************************************************
 //**** Operations ****************************************
 //********************************************************
 
 Condition::Pointer DummyIsogeometricCondition::Create(IndexType NewId, NodesArrayType const& ThisNodes,
-                                        PropertiesType::Pointer pProperties) const
+        PropertiesType::Pointer pProperties) const
 {
     return Condition::Pointer(new DummyIsogeometricCondition(NewId, GetGeometry().Create(ThisNodes), pProperties));
 }
 
 Condition::Pointer DummyIsogeometricCondition::Create(IndexType NewId, GeometryType::Pointer pGeom,
-                                        PropertiesType::Pointer pProperties) const
+        PropertiesType::Pointer pProperties) const
 {
     return Condition::Pointer(new DummyIsogeometricCondition(NewId, pGeom, pProperties));
 }
@@ -70,66 +69,68 @@ void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessIn
 {
     KRATOS_TRY
 
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     // borrow the variable from other application
     const Variable<int>& INTEGRATION_ORDER_var = static_cast<const Variable<int>&>(KratosComponents<VariableData>::Get("INTEGRATION_ORDER"));
-    #else
+#else
     const Variable<int>& INTEGRATION_ORDER_var = INTEGRATION_ORDER;
-    #endif
+#endif
 
     // integration rule
-    if(this->Has( INTEGRATION_ORDER_var ))
+    if (this->Has( INTEGRATION_ORDER_var ))
     {
-        if(this->GetValue(INTEGRATION_ORDER_var) == 1)
+        if (this->GetValue(INTEGRATION_ORDER_var) == 1)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
         }
-        else if(this->GetValue(INTEGRATION_ORDER_var) == 2)
+        else if (this->GetValue(INTEGRATION_ORDER_var) == 2)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_2;
         }
-        else if(this->GetValue(INTEGRATION_ORDER_var) == 3)
+        else if (this->GetValue(INTEGRATION_ORDER_var) == 3)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_3;
         }
-        else if(this->GetValue(INTEGRATION_ORDER_var) == 4)
+        else if (this->GetValue(INTEGRATION_ORDER_var) == 4)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_4;
         }
-        else if(this->GetValue(INTEGRATION_ORDER_var) == 5)
+        else if (this->GetValue(INTEGRATION_ORDER_var) == 5)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_5;
         }
         else
             KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration rule", this->GetValue(INTEGRATION_ORDER_var))
-    }
-    else if(GetProperties().Has( INTEGRATION_ORDER_var ))
+        }
+    else if (GetProperties().Has( INTEGRATION_ORDER_var ))
     {
-        if(GetProperties()[INTEGRATION_ORDER_var] == 1)
+        if (GetProperties()[INTEGRATION_ORDER_var] == 1)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_1;
         }
-        else if(GetProperties()[INTEGRATION_ORDER_var] == 2)
+        else if (GetProperties()[INTEGRATION_ORDER_var] == 2)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_2;
         }
-        else if(GetProperties()[INTEGRATION_ORDER_var] == 3)
+        else if (GetProperties()[INTEGRATION_ORDER_var] == 3)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_3;
         }
-        else if(GetProperties()[INTEGRATION_ORDER_var] == 4)
+        else if (GetProperties()[INTEGRATION_ORDER_var] == 4)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_4;
         }
-        else if(GetProperties()[INTEGRATION_ORDER_var] == 5)
+        else if (GetProperties()[INTEGRATION_ORDER_var] == 5)
         {
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_5;
         }
         else
             KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration points", GetProperties()[INTEGRATION_ORDER_var])
-    }
+        }
     else
-        mThisIntegrationMethod = GetGeometry().GetDefaultIntegrationMethod(); // default method
+    {
+        mThisIntegrationMethod = GetGeometry().GetDefaultIntegrationMethod();    // default method
+    }
 
     KRATOS_CATCH("")
 }
@@ -158,8 +159,8 @@ void DummyIsogeometricCondition::CalculateRightHandSide( VectorType& rRightHandS
  * calculates this contact element's local contributions
  */
 void DummyIsogeometricCondition::CalculateLocalSystem( MatrixType& rLeftHandSideMatrix,
-                                          VectorType& rRightHandSideVector,
-                                          const ProcessInfo& rCurrentProcessInfo)
+        VectorType& rRightHandSideVector,
+        const ProcessInfo& rCurrentProcessInfo)
 {
     //calculation flags
     bool CalculateStiffnessMatrixFlag = true;
@@ -176,10 +177,10 @@ void DummyIsogeometricCondition::CalculateLocalSystem( MatrixType& rLeftHandSide
  * All Conditions are assumed to be defined in 2D/3D space and having 2/3 DOFs per node
  */
 void DummyIsogeometricCondition::CalculateAll( MatrixType& rLeftHandSideMatrix,
-                                  VectorType& rRightHandSideVector,
-                                  const ProcessInfo& rCurrentProcessInfo,
-                                  bool CalculateStiffnessMatrixFlag,
-                                  bool CalculateResidualVectorFlag)
+        VectorType& rRightHandSideVector,
+        const ProcessInfo& rCurrentProcessInfo,
+        bool CalculateStiffnessMatrixFlag,
+        bool CalculateResidualVectorFlag)
 {
     KRATOS_TRY
 
@@ -197,7 +198,7 @@ void DummyIsogeometricCondition::CalculateAll( MatrixType& rLeftHandSideMatrix,
  * All Equation IDs are given Master first, Slave second
  */
 void DummyIsogeometricCondition::EquationIdVector( EquationIdVectorType& rResult,
-                                      const ProcessInfo& CurrentProcessInfo) const
+        const ProcessInfo& CurrentProcessInfo) const
 {
     rResult.resize(0);
 }
@@ -210,10 +211,9 @@ void DummyIsogeometricCondition::EquationIdVector( EquationIdVectorType& rResult
  * All DOF are given Master first, Slave second
  */
 void DummyIsogeometricCondition::GetDofList( DofsVectorType& ConditionalDofList,
-                                      const ProcessInfo& CurrentProcessInfo) const
+        const ProcessInfo& CurrentProcessInfo) const
 {
     ConditionalDofList.resize(0);
 }
 
 } // Namespace Kratos
-

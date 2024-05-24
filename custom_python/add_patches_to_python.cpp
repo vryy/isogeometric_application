@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -31,7 +30,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/iga_python_utils.h"
 #include "custom_python/add_import_export_to_python.h"
 #include "custom_python/add_patches_to_python.h"
-
 
 namespace Kratos
 {
@@ -97,10 +95,9 @@ typename GridFunction<TDim, typename TVariableType::Type>::Pointer Patch_GridFun
     return rDummy.template pGetGridFunction<TVariableType>(rVariable);
 }
 
-
 template<class TPatchType>
 boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& list_nsampling,
-    const boost::python::list& list_xi_min, const boost::python::list& list_xi_max)
+                                  const boost::python::list& list_xi_min, const boost::python::list& list_xi_max)
 {
     std::vector<double> xi_min_vec;
     IsogeometricPythonUtils::Unpack<double, double>(list_xi_min, xi_min_vec);
@@ -118,13 +115,19 @@ boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list&
     noalias(xi_max) = ZeroVector(3);
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+    {
         point[i] = P_vec[i];
+    }
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi_min_vec.size()); ++i)
+    {
         xi_min[i] = xi_min_vec[i];
+    }
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi_max_vec.size()); ++i)
+    {
         xi_max[i] = xi_max_vec[i];
+    }
 
     std::vector<int> nsampling;
     IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
@@ -150,7 +153,9 @@ boost::python::list Patch_Predict1(TPatchType& rDummy, const boost::python::list
     noalias(xi) = ZeroVector(3);
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+    {
         point[i] = P_vec[i];
+    }
 
     std::vector<int> nsampling;
     IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
@@ -179,10 +184,14 @@ boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, const boost::pyth
     noalias(xi) = ZeroVector(3);
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+    {
         point[i] = P_vec[i];
+    }
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi0_vec.size()); ++i)
+    {
         xi[i] = xi0_vec[i];
+    }
 
     int stat = rDummy.LocalCoordinates(point, xi);
 
@@ -211,10 +220,14 @@ bool Patch_IsInside(TPatchType& rDummy, const boost::python::list& P, const boos
     noalias(xi) = ZeroVector(3);
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+    {
         point[i] = P_vec[i];
+    }
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), xi0_vec.size()); ++i)
+    {
         xi[i] = xi0_vec[i];
+    }
 
     return rDummy.IsInside(point, xi);
 }
@@ -226,7 +239,7 @@ typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, s
 }
 
 template<int TDim>
-typename Patch<TDim-1>::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, std::size_t iside)
+typename Patch < TDim - 1 >::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, std::size_t iside)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.ConstructBoundaryPatch(side);
@@ -244,7 +257,9 @@ boost::python::list MultiPatch_GetPatchIndices(TMultiPatchType& rDummy)
     boost::python::list ids;
     for (typename TMultiPatchType::patch_const_iterator it = rDummy.Patches().begin();
             it != rDummy.Patches().end(); ++it)
+    {
         ids.append(it->Id());
+    }
     return ids;
 }
 
@@ -541,4 +556,3 @@ void IsogeometricApplication_AddPatchesToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

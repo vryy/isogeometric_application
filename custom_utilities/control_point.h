@@ -86,45 +86,45 @@ public:
     /// Set the coordinate. The input is the physical coordinates in 3D space.
     void SetCoordinates(const TDataType& _X, const TDataType& _Y, const TDataType& _Z, const TDataType& _W)
     {
-        BaseType::WV()[0] = _W*_X;
-        BaseType::WV()[1] = _W*_Y;
-        BaseType::WV()[2] = _W*_Z;
+        BaseType::WV()[0] = _W * _X;
+        BaseType::WV()[1] = _W * _Y;
+        BaseType::WV()[2] = _W * _Z;
         BaseType::W()  = _W;
     }
 
     /// Add to the coordinate. The input is the increment of physical coordinates in 3D space.
     void AddCoordinates(const TDataType& _X, const TDataType& _Y, const TDataType& _Z, const TDataType& _W)
     {
-        BaseType::WV()[0] += _W*_X;
-        BaseType::WV()[1] += _W*_Y;
-        BaseType::WV()[2] += _W*_Z;
+        BaseType::WV()[0] += _W * _X;
+        BaseType::WV()[1] += _W * _Y;
+        BaseType::WV()[2] += _W * _Z;
         BaseType::W()  += _W;
     }
 
     // overload operator []
     TDataType& operator[] (int i)
     {
-        if (i == 0) return WX();
-        else if (i == 1) return WY();
-        else if (i == 2) return WZ();
-        else if (i == 3) return BaseType::W();
+        if (i == 0) { return WX(); }
+        else if (i == 1) { return WY(); }
+        else if (i == 2) { return WZ(); }
+        else if (i == 3) { return BaseType::W(); }
     }
 
     const TDataType& operator[] (int i) const
     {
-        if (i == 0) return WX();
-        else if (i == 1) return WY();
-        else if (i == 2) return WZ();
-        else if (i == 3) return BaseType::W();
+        if (i == 0) { return WX(); }
+        else if (i == 1) { return WY(); }
+        else if (i == 2) { return WZ(); }
+        else if (i == 3) { return BaseType::W(); }
     }
 
     // overload operator ()
     TDataType operator() (int i) const
     {
-        if (i == 0) return X();
-        else if (i == 1) return Y();
-        else if (i == 2) return Z();
-        else if (i == 3) return BaseType::W();
+        if (i == 0) { return X(); }
+        else if (i == 1) { return Y(); }
+        else if (i == 2) { return Z(); }
+        else if (i == 3) { return BaseType::W(); }
     }
 
     /// Assignment operator
@@ -159,7 +159,7 @@ public:
     friend ControlPoint operator*(const TDataType& alpha, BaseType c)
     {
         ControlPoint p;
-        p = alpha*c;
+        p = alpha * c;
         return p;
     }
 
@@ -167,7 +167,7 @@ public:
     friend ControlPoint operator*(BaseType c, const TDataType& alpha)
     {
         ControlPoint p;
-        p = alpha*c;
+        p = alpha * c;
         return p;
     }
 
@@ -176,10 +176,10 @@ public:
     {
         TDataType res[4];
         for (std::size_t i = 0; i < 4; ++i)
-            res[i] = trans(i, 0)*BaseType::WV()[0]
-                   + trans(i, 1)*BaseType::WV()[1]
-                   + trans(i, 2)*BaseType::WV()[2]
-                   + trans(i, 3)*BaseType::W();
+            res[i] = trans(i, 0) * BaseType::WV()[0]
+                     + trans(i, 1) * BaseType::WV()[1]
+                     + trans(i, 2) * BaseType::WV()[2]
+                     + trans(i, 3) * BaseType::W();
         BaseType::WV()[0] = res[0];
         BaseType::WV()[1] = res[1];
         BaseType::WV()[2] = res[2];
@@ -236,4 +236,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const ControlPoint<TDat
 }// namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CONTROL_POINT_H_INCLUDED
-

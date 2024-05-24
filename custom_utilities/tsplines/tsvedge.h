@@ -16,11 +16,9 @@
 
 // External includes
 
-
 // Project includes
 #include "includes/define.h"
 #include "custom_utilities/tsplines/tsedge.h"
-
 
 namespace Kratos
 {
@@ -39,12 +37,12 @@ public:
 
     /// Constructor
     TsVEdge(std::size_t Id, TsVertex::Pointer pV1, TsVertex::Pointer pV2)
-    : BaseType(Id, pV1, pV2)
+        : BaseType(Id, pV1, pV2)
     {
         // check if the index is valid
-        if(BaseType::pV1()->Index1() != BaseType::pV2()->Index1())
+        if (BaseType::pV1()->Index1() != BaseType::pV2()->Index1())
             KRATOS_THROW_ERROR(std::logic_error, "The edge is not a vertical edge", "")
-    }
+        }
 
     /// check if the edge was cut by a horizontal ray
     bool IsCut(double anchor_eta_index) const override

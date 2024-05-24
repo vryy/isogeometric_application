@@ -43,11 +43,9 @@
 namespace Kratos
 {
 
-
 // Forward Declaration
 template<int TDim> class MultiPatch;
 template<int TDim> class PatchInterface;
-
 
 /**
 This class represents an isogeometric patch in parametric coordinates. An isogeometric patch can be a NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
@@ -55,17 +53,17 @@ This class represents an isogeometric patch in parametric coordinates. An isogeo
 template<int TDim>
 class Patch : public IndexedObject, public Flags
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-, public std::enable_shared_from_this<Patch<TDim> >
+    , public std::enable_shared_from_this<Patch<TDim> >
 #else
-, public boost::enable_shared_from_this<Patch<TDim> >
+    , public boost::enable_shared_from_this<Patch<TDim> >
 #endif
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const Patch> ConstPointer;
-    #endif
+#endif
 
     /// Type definition
     typedef ControlPoint<double> ControlPointType;
@@ -100,28 +98,28 @@ public:
 
     /// Constructor with id
     Patch(std::size_t Id)
-    : IndexedObject(Id), mpFESpace(NULL), mPrefix("Patch"), mLayerIndex(Id)
+        : IndexedObject(Id), mpFESpace(NULL), mPrefix("Patch"), mLayerIndex(Id)
     {
         this->Set(ACTIVE, true);
     }
 
     /// Constructor with id and FESpace
     Patch(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
-    : IndexedObject(Id), mpFESpace(pFESpace), mPrefix("Patch"), mLayerIndex(Id)
+        : IndexedObject(Id), mpFESpace(pFESpace), mPrefix("Patch"), mLayerIndex(Id)
     {
         this->Set(ACTIVE, true);
         if (mpFESpace == NULL)
             KRATOS_THROW_ERROR(std::logic_error, "Invalid FESpace is provided", "")
-    }
+        }
 
     /// Destructor
     virtual ~Patch()
     {
-        #ifdef ISOGEOMETRIC_DEBUG_DESTROY
+#ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Id = " << Id()
                   << ", " << mpFESpace->Type()
                   << ", Addr = " << this << " is destroyed" << std::endl;
-        #endif
+#endif
     }
 
     /// Helper function to create new patch pointer
@@ -173,8 +171,8 @@ public:
     virtual std::size_t Order(std::size_t i) const
     {
         assert(mpFESpace == NULL);
-        if (i >= TDim) return 0;
-        else return mpFESpace->Order(i);
+        if (i >= TDim) { return 0; }
+        else { return mpFESpace->Order(i); }
     }
 
     /// Return true if this patch is a primary patch
@@ -243,7 +241,9 @@ public:
         typename ControlGrid<ControlPointType>::ConstPointer pControlPointGrid = pControlPointGridFunction()->pControlGrid();
         std::vector<double> Weights(pControlPointGrid->size());
         for (std::size_t i = 0; i < pControlPointGrid->size(); ++i)
+        {
             Weights[i] = (*pControlPointGrid)[i].W();
+        }
         return Weights;
     }
 
@@ -296,7 +296,9 @@ public:
             {
                 GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
                 if (pGridFunc->pControlGrid()->Name() == rVariable.Name())
+                {
                     return pGridFunc;
+                }
             }
             catch (boost::bad_any_cast& e)
             {
@@ -320,7 +322,9 @@ public:
             {
                 GridFunctionPointerType pGridFunc = boost::any_cast<GridFunctionPointerType>(it->second);
                 if (pGridFunc->pControlGrid()->Name() == rVariable.Name())
+                {
                     return pGridFunc;
+                }
             }
             catch (boost::bad_any_cast& e)
             {
@@ -352,7 +356,9 @@ public:
         std::vector<TVariableType*> var_list = this->ExtractVariables<TVariableType>();
         for (std::size_t i = 0; i < var_list.size(); ++i)
             if (*(var_list[i]) == rVariable)
+            {
                 return true;
+            }
         return false;
     }
 
@@ -360,7 +366,7 @@ public:
 
     /// Compute a rough estimation of the local coordinates of a point by sampling technique
     void Predict(const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling,
-        const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max) const
+                 const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max) const
     {
         typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
         pGridFunc->Predict(point, xi, nsampling, xi_min, xi_max);
@@ -378,11 +384,15 @@ public:
     {
         typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
         int error_code = pGridFunc->LocalCoordinates(point, xi);
-        bool is_inside = this->pFESpace()->IsInside(std::vector<double>{xi[0], xi[1], xi[2]});
+        bool is_inside = this->pFESpace()->IsInside(std::vector<double> {xi[0], xi[1], xi[2]});
         if (!is_inside)
+        {
             return 2;
+        }
         else
+        {
             return error_code;
+        }
     }
 
     /// Check if the point is inside the patch
@@ -394,9 +404,11 @@ public:
         int stat = this->LocalCoordinates(point, xi);
 
         if (stat == 0)
-            return this->pFESpace()->IsInside(std::vector<double>{xi[0], xi[1], xi[2]});
+            return this->pFESpace()->IsInside(std::vector<double> {xi[0], xi[1], xi[2]});
         else
+        {
             return false;
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -422,7 +434,7 @@ public:
             if (pControlPointGridFunction()->pControlGrid()->Size() != this->TotalNumber())
                 KRATOS_THROW_ERROR(std::logic_error, "The control point grid is incompatible", "")
 
-        DoubleGridFunctionContainerType DoubleGridFunctions_ = this->DoubleGridFunctions();
+                DoubleGridFunctionContainerType DoubleGridFunctions_ = this->DoubleGridFunctions();
         for (typename DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
                 it != DoubleGridFunctions_.end(); ++it)
         {
@@ -461,12 +473,12 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Construct the boundary patch based on side
-    virtual typename Patch<TDim-1>::Pointer ConstructBoundaryPatch(const BoundarySide& side) const
+    virtual typename Patch < TDim - 1 >::Pointer ConstructBoundaryPatch(const BoundarySide& side) const
     {
-        typename Patch<TDim-1>::Pointer pBPatch = typename Patch<TDim-1>::Pointer(new Patch<TDim-1>(-1));
+        typename Patch < TDim - 1 >::Pointer pBPatch = typename Patch < TDim - 1 >::Pointer(new Patch < TDim - 1 > (-1));
 
         // construct the boundary FESpace
-        typename FESpace<TDim-1>::Pointer pBFESpace = this->pFESpace()->ConstructBoundaryFESpace(side);
+        typename FESpace < TDim - 1 >::Pointer pBFESpace = this->pFESpace()->ConstructBoundaryFESpace(side);
         pBPatch->SetFESpace(pBFESpace);
 
         // transfer the control values
@@ -488,7 +500,7 @@ public:
         for (typename Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
                 it != Array1DGridFunctions_.end(); ++it)
         {
-            if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
+            if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") { continue; }
             // std::cout << "Array1D function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
             typename ControlGrid<array_1d<double, 3> >::Pointer pBoundaryArray1DControlGrid = ControlGridUtility::ExtractSubGrid<TDim, array_1d<double, 3> >((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
             pBPatch->template CreateGridFunction<array_1d<double, 3> >(pBoundaryArray1DControlGrid);
@@ -507,12 +519,12 @@ public:
     }
 
     /// Construct the sliced patch on a specific direction
-    virtual typename Patch<TDim-1>::Pointer ConstructSlicedPatch(int idir, double xi) const
+    virtual typename Patch < TDim - 1 >::Pointer ConstructSlicedPatch(int idir, double xi) const
     {
-        typename Patch<TDim-1>::Pointer pSPatch = typename Patch<TDim-1>::Pointer(new Patch<TDim-1>(-1));
+        typename Patch < TDim - 1 >::Pointer pSPatch = typename Patch < TDim - 1 >::Pointer(new Patch < TDim - 1 > (-1));
 
         // construct the sliced FESpace
-        typename FESpace<TDim-1>::Pointer pSFESpace = this->pFESpace()->ConstructSlicedFESpace(idir, xi);
+        typename FESpace < TDim - 1 >::Pointer pSFESpace = this->pFESpace()->ConstructSlicedFESpace(idir, xi);
         pSPatch->SetFESpace(pSFESpace);
 
         // transfer the control values
@@ -534,7 +546,7 @@ public:
         for (typename Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
                 it != Array1DGridFunctions_.end(); ++it)
         {
-            if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
+            if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") { continue; }
             std::cout << "Array1D function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
             typename ControlGrid<array_1d<double, 3> >::Pointer pSlicedArray1DControlGrid = ControlGridUtility::ComputeSlicedGrid<TDim, array_1d<double, 3> >((*it)->pControlGrid(), *(this->pFESpace()), idir, xi);
             pSPatch->template CreateGridFunction<array_1d<double, 3> >(pSlicedArray1DControlGrid);
@@ -560,7 +572,9 @@ public:
         for (interface_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
             if ((*it)->Side1() == side)
+            {
                 return (*it)->pPatch2();
+            }
         }
         return NULL;
     }
@@ -571,7 +585,9 @@ public:
         for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
             if ((*it)->Side1() == side)
+            {
                 return (*it)->pPatch2();
+            }
         }
         return NULL;
     }
@@ -582,7 +598,9 @@ public:
         for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
             if ((*it)->pPatch2() == pPatch)
+            {
                 return (*it)->Side1();
+            }
         }
         return -1;
     }
@@ -653,9 +671,13 @@ public:
         for (interface_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
             if (cnt == i)
+            {
                 return (*it);
+            }
             else
+            {
                 ++cnt;
+            }
         }
         return NULL;
     }
@@ -666,9 +688,13 @@ public:
         for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
             if (cnt == i)
+            {
                 return (*it);
+            }
             else
+            {
                 ++cnt;
+            }
         }
         return NULL;
     }
@@ -684,12 +710,12 @@ public:
 
     /// Generate topology data to visualize with GLVis
     void GenerateTopolgyData(std::size_t& starting_vertex_id,
-            std::vector<vertex_t>& vertices,
-            std::vector<edge_t>& edges,
-            std::vector<face_t>& faces,
-            std::vector<volume_t>& volumes,
-            std::size_t& starting_knotv_id,
-            std::vector<std::size_t>& knotv ) const
+                             std::vector<vertex_t>& vertices,
+                             std::vector<edge_t>& edges,
+                             std::vector<face_t>& faces,
+                             std::vector<volume_t>& volumes,
+                             std::size_t& starting_knotv_id,
+                             std::vector<std::size_t>& knotv ) const
     {
         if (TDim == 1)
         {
@@ -789,7 +815,9 @@ public:
     void GetBoundingBox(std::vector<double>& bounding_box) const
     {
         if (bounding_box.size() != 6)
+        {
             bounding_box.resize(6);
+        }
 
         double& x_min = bounding_box[0];
         double& x_max = bounding_box[1];
@@ -798,8 +826,8 @@ public:
         double& z_min = bounding_box[4];
         double& z_max = bounding_box[5];
 
-        x_min = 1.0e99; y_min = 1.0e99; z_min = 1.0e99; 
-        x_max = -1.0e99; y_max = -1.0e99; z_max = -1.0e99; 
+        x_min = 1.0e99; y_min = 1.0e99; z_min = 1.0e99;
+        x_max = -1.0e99; y_max = -1.0e99; z_max = -1.0e99;
 
         typename ControlGrid<ControlPointType>::ConstPointer pControlPointGrid = pControlPointGridFunction()->pControlGrid();
         double x, y, z;
@@ -809,12 +837,12 @@ public:
             y = (*pControlPointGrid)[i].Y();
             z = (*pControlPointGrid)[i].Z();
 
-            if (x < x_min) x_min = x;
-            if (x > x_max) x_max = x;
-            if (y < y_min) y_min = y;
-            if (y > y_max) y_max = y;
-            if (z < z_min) z_min = z;
-            if (z > z_max) z_max = z;
+            if (x < x_min) { x_min = x; }
+            if (x > x_max) { x_max = x; }
+            if (y < y_min) { y_min = y; }
+            if (y > y_max) { y_max = y; }
+            if (z < z_min) { z_min = z; }
+            if (z > z_max) { z_max = z; }
         }
     }
 
@@ -830,7 +858,9 @@ public:
     bool IsEquivalent(const Patch<TDim>& rOtherPatch) const
     {
         if (!this->IsCompatible(rOtherPatch))
+        {
             return false;
+        }
 
         // TODO compare the control points
 
@@ -841,7 +871,9 @@ public:
     bool IsSame(const Patch<TDim>& rOtherPatch) const
     {
         if (!this->IsEquivalent(rOtherPatch))
+        {
             return false;
+        }
 
         // TODO compare the grid function values
 
@@ -865,10 +897,14 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
         if (pFESpace() != NULL)
+        {
             rOStream << *pFESpace() << std::endl;
+        }
 
         if (pControlPointGridFunction() != NULL)
+        {
             rOStream << *(pControlPointGridFunction()->pControlGrid()) << std::endl;
+        }
 
         DoubleGridFunctionContainerType DoubleGridFunctions_ = this->DoubleGridFunctions();
 
@@ -999,7 +1035,6 @@ private:
     }
 };
 
-
 /**
  * Template specific instantiation for null-D patch to terminate the compilation.
  * In fact, null-D patch is a vertex
@@ -1010,9 +1045,9 @@ class Patch<0> : public IndexedObject, public Flags
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const Patch> ConstPointer;
-    #endif
+#endif
 
     // Type definitions
     typedef ControlPoint<double> ControlPointType;
@@ -1098,7 +1133,7 @@ public:
 
     /// Check the compatibility between boundaries of two patches
     static bool CheckBoundaryCompatibility(const Patch<0>& rPatch1, const BoundarySide& side1,
-            const Patch<0>& rPatch2, const BoundarySide& side2)
+                                           const Patch<0>& rPatch2, const BoundarySide& side2)
     {
         return true;
     }
@@ -1129,14 +1164,14 @@ private:
  * Template specific instantiation for -1-D patch to terminate the compilation.
  */
 template<>
-class Patch<-1> : public IndexedObject, public Flags
+class Patch < -1 > : public IndexedObject, public Flags
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const Patch> ConstPointer;
-    #endif
+#endif
 
     /// Default constructor
     Patch() : IndexedObject(0) {}
@@ -1148,7 +1183,7 @@ public:
     virtual ~Patch() {}
 
     /// Set the FESpace for the patch
-    void SetFESpace(typename FESpace<-1>::Pointer pFESpace) {}
+    void SetFESpace(typename FESpace < -1 >::Pointer pFESpace) {}
 
     /// Get the number of basis functions defined over the patch
     virtual std::size_t TotalNumber() const
@@ -1181,14 +1216,14 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const Patch<-1>& rOther)
+    virtual bool operator==(const Patch < -1 > & rOther)
     {
         return Id() == rOther.Id();
     }
 
     /// Check the compatibility between boundaries of two patches
-    static bool CheckBoundaryCompatibility(const Patch<-1>& rPatch1, const BoundarySide& side1,
-            const Patch<-1>& rPatch2, const BoundarySide& side2)
+    static bool CheckBoundaryCompatibility(const Patch < -1 > & rPatch1, const BoundarySide& side1,
+                                           const Patch < -1 > & rPatch2, const BoundarySide& side2)
     {
         return true;
     }
@@ -1214,14 +1249,14 @@ public:
  * Template specific instantiation for -2-D patch to terminate the compilation.
  */
 template<>
-class Patch<-2> : public IndexedObject, public Flags
+class Patch < -2 > : public IndexedObject, public Flags
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(Patch);
-    #ifdef SD_APP_FORWARD_COMPATIBILITY
+#ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const Patch> ConstPointer;
-    #endif
+#endif
 
     /// Default constructor
     Patch() : IndexedObject(0) {}
@@ -1233,7 +1268,7 @@ public:
     virtual ~Patch() {}
 
     /// Set the FESpace for the patch
-    void SetFESpace(typename FESpace<-2>::Pointer pFESpace) {}
+    void SetFESpace(typename FESpace < -2 >::Pointer pFESpace) {}
 
     /// Get the number of basis functions defined over the patch
     virtual std::size_t TotalNumber() const
@@ -1266,14 +1301,14 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const Patch<-2>& rOther)
+    virtual bool operator==(const Patch < -2 > & rOther)
     {
         return Id() == rOther.Id();
     }
 
     /// Check the compatibility between boundaries of two patches
-    static bool CheckBoundaryCompatibility(const Patch<-2>& rPatch1, const BoundarySide& side1,
-            const Patch<-2>& rPatch2, const BoundarySide& side2)
+    static bool CheckBoundaryCompatibility(const Patch < -2 > & rPatch1, const BoundarySide& side1,
+                                           const Patch < -2 > & rPatch2, const BoundarySide& side2)
     {
         return true;
     }
@@ -1311,4 +1346,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Patch<TDim>& rThi
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PATCH_H_INCLUDED defined
-

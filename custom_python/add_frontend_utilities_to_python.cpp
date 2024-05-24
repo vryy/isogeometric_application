@@ -10,7 +10,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 //
 
-
 // System includes
 #include <string>
 
@@ -30,7 +29,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/iga_python_utils.h"
 #include "custom_python/add_utilities_to_python.h"
 
-
 namespace Kratos
 {
 
@@ -49,14 +47,14 @@ typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUti
 
 template<int TDim>
 void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
+                                     typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
 {
     rDummy.MakeInterface<TDim>(pPatch1, side1, pPatch2, side2);
 }
 
 template<int TDim>
 boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
-     const boost::python::list& P, const boost::python::list& list_nsampling)
+        const boost::python::list& P, const boost::python::list& list_nsampling)
 {
     std::vector<double> P_vec;
     IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
@@ -66,7 +64,9 @@ boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy
     noalias(xi) = ZeroVector(3);
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
+    {
         point[i] = P_vec[i];
+    }
 
     std::vector<int> nsampling;
     IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
@@ -86,15 +86,15 @@ boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy
 
 template<int TDim>
 Matrix MultiPatchUtility_ComputeSpatialDerivatives(MultiPatchUtility& rDummy,
-    const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
-    const GridFunction<TDim, array_1d<double, 3> >& rControlValueGridFunction,
-    const boost::python::list& xi_list)
+        const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
+        const GridFunction<TDim, array_1d<double, 3> >& rControlValueGridFunction,
+        const boost::python::list& xi_list)
 {
     std::vector<double> xi;
     IsogeometricPythonUtils::Unpack<double, double>(xi_list, xi);
 
     return rDummy.ComputeSpatialDerivatives(rControlPointGridFunction,
-            rControlValueGridFunction, xi);
+                                            rControlValueGridFunction, xi);
 }
 
 std::size_t MultiPatchUtility_GetLastNodeId(MultiPatchUtility& rDummy, ModelPart& r_model_part)
@@ -155,8 +155,8 @@ void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassTy
 
 template<int TDim>
 void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy,
-       typename Patch<TDim>::Pointer& pPatch,
-       const boost::python::list& ins_knots)
+        typename Patch<TDim>::Pointer& pPatch,
+        const boost::python::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
     std::size_t dim = IsogeometricPythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
@@ -164,13 +164,13 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
     if (dim != TDim)
         KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
 
-    rDummy.InsertKnots<TDim>(pPatch, ins_knots_array);
+        rDummy.InsertKnots<TDim>(pPatch, ins_knots_array);
 }
 
 template<int TDim>
 boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinementUtility& rDummy,
-       typename Patch<TDim>::Pointer& pPatch,
-       const boost::python::list& ins_knots)
+        typename Patch<TDim>::Pointer& pPatch,
+        const boost::python::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
     std::size_t dim = IsogeometricPythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
@@ -178,21 +178,23 @@ boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinemen
     if (dim != TDim)
         KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
 
-    std::map<std::size_t, Matrix> trans_mats;
+        std::map<std::size_t, Matrix> trans_mats;
     rDummy.InsertKnots<TDim>(pPatch, ins_knots_array, trans_mats);
     // KRATOS_WATCH(trans_mats.size())
 
     boost::python::dict res;
     for (std::map<std::size_t, Matrix>::iterator it = trans_mats.begin(); it != trans_mats.end(); ++it)
+    {
         res[it->first] = it->second;
+    }
 
     return res;
 }
 
 template<int TDim>
 void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDummy,
-       typename Patch<TDim>::Pointer& pPatch,
-       const boost::python::list& order_increment)
+        typename Patch<TDim>::Pointer& pPatch,
+        const boost::python::list& order_increment)
 {
     std::vector<std::size_t> order_incr_array(TDim);
     std::size_t dim = IsogeometricPythonUtils::Unpack<int, std::size_t>(order_increment, order_incr_array, TDim);
@@ -200,14 +202,14 @@ void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDum
     if (dim != TDim)
         KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
 
-    rDummy.DegreeElevate<TDim>(pPatch, order_incr_array);
+        rDummy.DegreeElevate<TDim>(pPatch, order_incr_array);
 }
 
 //////////////////////////////////////////////////
 
 template<int TDim>
 typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatch(BSplinesPatchUtility& dummy,
-        typename Patch<TDim-1>::Pointer pPatch1, typename Patch<TDim-1>::Pointer pPatch2)
+        typename Patch < TDim - 1 >::Pointer pPatch1, typename Patch < TDim - 1 >::Pointer pPatch2)
 {
     return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatch1, pPatch2);
 }
@@ -216,9 +218,10 @@ template<int TDim>
 typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSplinesPatchUtility& dummy,
         const boost::python::list& patch_list, int order)
 {
-    typedef typename Patch<TDim-1>::Pointer TPatchPointerType;
+    typedef typename Patch < TDim - 1 >::Pointer TPatchPointerType;
     std::vector<TPatchPointerType> pPatches;
     IsogeometricPythonUtils::Unpack<TPatchPointerType, TPatchPointerType>(patch_list, pPatches);
+    // KRATOS_WATCH(pPatches.size())
 
     return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatches, order);
 }
@@ -229,18 +232,22 @@ boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility
     int Dim = BSplinesPatchUtility::GetDimensionOfGeo(filename);
     boost::python::list patches;
     if (Dim == 2)
+    {
         patches.append(BSplinesPatchUtility::CreatePatchFromGeo<2>(filename));
+    }
     else if (Dim == 3)
+    {
         patches.append(BSplinesPatchUtility::CreatePatchFromGeo<3>(filename));
+    }
     else
         KRATOS_THROW_ERROR(std::logic_error, "The dimension of the patch is invalid", "")
-    return patches;
+        return patches;
 }
 
 void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
-    typename Patch<2>::Pointer pPatch1, int iside1,
-    typename Patch<2>::Pointer pPatch2, int iside2,
-    const BoundaryDirection& direction)
+        typename Patch<2>::Pointer pPatch1, int iside1,
+        typename Patch<2>::Pointer pPatch2, int iside2,
+        const BoundaryDirection& direction)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
     BoundarySide side2 = static_cast<BoundarySide>(iside2);
@@ -248,10 +255,10 @@ void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
 }
 
 void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
-    typename Patch<3>::Pointer pPatch1, int iside1,
-    typename Patch<3>::Pointer pPatch2, int iside2,
-    const bool uv_or_vu,
-    const BoundaryDirection& direction1, const BoundaryDirection& direction2)
+        typename Patch<3>::Pointer pPatch1, int iside1,
+        typename Patch<3>::Pointer pPatch2, int iside2,
+        const bool uv_or_vu,
+        const BoundaryDirection& direction1, const BoundaryDirection& direction2)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
     BoundarySide side2 = static_cast<BoundarySide>(iside2);
@@ -260,7 +267,7 @@ void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
 
 template<int TDim>
 void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
-    typename Patch<TDim>::Pointer pPatch, std::size_t idir)
+                                  typename Patch<TDim>::Pointer pPatch, std::size_t idir)
 {
     rDummy.Reverse<TDim>(pPatch, idir);
 }
@@ -269,22 +276,22 @@ void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
 
 template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch1(
-        BendingStripUtility& rDummy,
-        std::size_t Id,
-        typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-        typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
-        int Order)
+    BendingStripUtility& rDummy,
+    std::size_t Id,
+    typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
+    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
+    int Order)
 {
     return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Order);
 }
 
 template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
-        BendingStripUtility& rDummy,
-        std::size_t Id,
-        typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-        typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
-        const boost::python::list& order_list)
+    BendingStripUtility& rDummy,
+    std::size_t Id,
+    typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
+    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
+    const boost::python::list& order_list)
 {
     std::vector<int> Orders(TDim);
     IsogeometricPythonUtils::Unpack<int, int>(order_list, Orders, TDim);
@@ -295,19 +302,19 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
 //////////////////////////////////////////////////
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Two_Curves(IsogeometricIntersectionUtility& rDummy,
-    double starting_point_1,
-    double starting_point_2,
-    Patch<1>::Pointer pPatch1,
-    Patch<1>::Pointer pPatch2,
-    int max_iters,
-    double TOL,
-    int option_space)
+        double starting_point_1,
+        double starting_point_2,
+        Patch<1>::Pointer pPatch1,
+        Patch<1>::Pointer pPatch2,
+        int max_iters,
+        double TOL,
+        int option_space)
 {
     double intersection_point_1, intersection_point_2;
 
     int stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_point_1, starting_point_2,
-        intersection_point_1, intersection_point_2,
-        pPatch1, pPatch2, max_iters, TOL, option_space);
+               intersection_point_1, intersection_point_2,
+               pPatch1, pPatch2, max_iters, TOL, option_space);
 
     boost::python::list point;
     point.append(intersection_point_1);
@@ -320,11 +327,11 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 }
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Curve_Plane(IsogeometricIntersectionUtility& rDummy,
-    double starting_point,
-    Patch<1>::Pointer pPatch,
-    double A, double B, double C, double D,
-    int max_iters,
-    double TOL)
+        double starting_point,
+        Patch<1>::Pointer pPatch,
+        double A, double B, double C, double D,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -342,11 +349,11 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 }
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch2_Plane(IsogeometricIntersectionUtility& rDummy,
-    const boost::python::list& list_starting_points,
-    Patch<2>::Pointer pPatch,
-    double A, double B, double C, double D,
-    int max_iters,
-    double TOL)
+        const boost::python::list& list_starting_points,
+        Patch<2>::Pointer pPatch,
+        double A, double B, double C, double D,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -356,7 +363,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
     std::vector<std::vector<double> > intersection_points;
 
     std::vector<int> stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_points, intersection_points,
-        pPatch, A, B, C, D, max_iters, TOL);
+                            pPatch, A, B, C, D, max_iters, TOL);
 
     boost::python::list list_points;
     for (std::size_t i = 0; i < intersection_points.size(); ++i)
@@ -369,7 +376,9 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 
     boost::python::list list_stat;
     for (std::size_t i = 0; i < stat.size(); ++i)
+    {
         list_stat.append(stat[i]);
+    }
 
     boost::python::list output;
     output.append(list_stat);
@@ -378,11 +387,11 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 }
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonRaphson_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
-    const boost::python::list& list_starting_points,
-    Patch<3>::Pointer pPatch,
-    double A, double B, double C, double D,
-    int max_iters,
-    double TOL)
+        const boost::python::list& list_starting_points,
+        Patch<3>::Pointer pPatch,
+        double A, double B, double C, double D,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -392,7 +401,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
     std::vector<std::vector<double> > intersection_points;
 
     std::vector<int> stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_points, intersection_points,
-        pPatch, A, B, C, D, max_iters, TOL);
+                            pPatch, A, B, C, D, max_iters, TOL);
 
     boost::python::list list_points;
     for (std::size_t i = 0; i < intersection_points.size(); ++i)
@@ -406,7 +415,9 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 
     boost::python::list list_stat;
     for (std::size_t i = 0; i < stat.size(); ++i)
+    {
         list_stat.append(stat[i]);
+    }
 
     boost::python::list output;
     output.append(list_stat);
@@ -415,10 +426,10 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
 }
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByBisection_Patch3_Plane(IsogeometricIntersectionUtility& rDummy,
-    Patch<3>::Pointer pPatch,
-    double A, double B, double C, double D,
-    int max_iters,
-    double TOL)
+        Patch<3>::Pointer pPatch,
+        double A, double B, double C, double D,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -428,11 +439,15 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByBisecti
 
     boost::python::list list_points;
     for (std::size_t i = 0; i < intersection_points.size(); ++i)
+    {
         list_points.append(intersection_points[i]);
+    }
 
     boost::python::list list_stat;
     for (std::size_t i = 0; i < stat.size(); ++i)
+    {
         list_stat.append(stat[i]);
+    }
 
     boost::python::list output;
     output.append(list_stat);
@@ -441,13 +456,13 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByBisecti
 }
 
 boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Surface(IsogeometricIntersectionUtility& rDummy,
-    double starting_point_1,
-    double starting_point_2_1,
-    double starting_point_2_2,
-    Patch<1>::Pointer pPatch1,
-    Patch<2>::Pointer pPatch2,
-    int max_iters,
-    double TOL)
+        double starting_point_1,
+        double starting_point_2_1,
+        double starting_point_2_2,
+        Patch<1>::Pointer pPatch1,
+        Patch<2>::Pointer pPatch2,
+        int max_iters,
+        double TOL)
 {
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
@@ -458,8 +473,8 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Su
     starting_point_2[1] = starting_point_2_2;
 
     int stat = rDummy.ComputeIntersectionByNewtonRaphson(starting_point_1, starting_point_2,
-        intersection_point_1, intersection_point_2,
-        pPatch1, pPatch2, max_iters, TOL);
+               intersection_point_1, intersection_point_2,
+               pPatch1, pPatch2, max_iters, TOL);
 
     boost::python::list point;
     point.append(intersection_point_2[0]);
@@ -474,15 +489,17 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersection_Curve_Su
 
 template<int TDim>
 boost::python::list IsogeometricIntersectionUtility_CheckIntersection(IsogeometricIntersectionUtility& rDummy,
-    typename Patch<TDim>::Pointer pPatch,
-    double A, double B, double C, double D)
+        typename Patch<TDim>::Pointer pPatch,
+        double A, double B, double C, double D)
 {
     std::pair<int, std::vector<int> > result = rDummy.CheckIntersection<TDim, 0>(pPatch, A, B, C, D);
     boost::python::list output;
     output.append(result.first);
     boost::python::list tmp;
     for (std::size_t i = 0; i < result.second.size(); ++i)
+    {
         tmp.append(result.second[i]);
+    }
     output.append(tmp);
     return output;
 }
@@ -575,4 +592,3 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

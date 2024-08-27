@@ -193,6 +193,12 @@ public:
         return c;
     }
 
+    /// Compute distance to other control point
+    TDataType Distance(const ControlPoint& rOther) const
+    {
+        return sqrt(pow(X() - rOther.X(), 2) + pow(Y() - rOther.Y(), 2) + pow(Z() - rOther.Z(), 2));
+    }
+
     /// Information
     void PrintInfo(std::ostream& rOStream) const override
     {

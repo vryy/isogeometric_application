@@ -65,6 +65,9 @@ public:
     typedef Kratos::shared_ptr<const Patch> ConstPointer;
 #endif
 
+    /// Constants
+    static constexpr double DISTANCE_TOLERANCE = 1e-13;
+
     /// Type definition
     typedef ControlPoint<double> ControlPointType;
     typedef Transformation<double> TransformationType;
@@ -862,7 +865,27 @@ public:
             return false;
         }
 
-        // TODO compare the control points
+        // compare the control points
+
+        typename ControlGrid<ControlPointType>::ConstPointer pThisControlPointGrid = pControlPointGridFunction()->pControlGrid();
+        typename ControlGrid<ControlPointType>::ConstPointer pOtherControlPointGrid = rOtherPatch.pControlPointGridFunction()->pControlGrid();
+
+        if (pThisControlPointGrid->size() != pOtherControlPointGrid->size())
+        {
+            return false;
+        }
+
+        for (std::size_t i = 0; i < pThisControlPointGrid->size(); ++i)
+        {
+            const ControlPointType& p1 = pThisControlPointGrid->GetData(i);
+            const ControlPointType& p2 = pOtherControlPointGrid->GetData(i);
+
+            const double dist = p1.Distance(p2);
+            if (dist > DISTANCE_TOLERANCE)
+            {
+                return false;
+            }
+        }
 
         return true;
     }

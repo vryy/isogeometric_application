@@ -53,6 +53,12 @@ void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<T
 }
 
 template<int TDim>
+void MultiPatchUtility_CheckInterfaces(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch)
+{
+    rDummy.CheckInterfaces<TDim>(*pMultiPatch);
+}
+
+template<int TDim>
 boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
         const boost::python::list& P, const boost::python::list& list_nsampling)
 {
@@ -518,6 +524,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<1>)
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<2>)
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<3>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<1>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<2>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<3>)
     .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<2>)
     .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<3>)
     .def("ComputeSpatialDerivatives", &MultiPatchUtility_ComputeSpatialDerivatives<2>)

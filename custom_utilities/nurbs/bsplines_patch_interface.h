@@ -15,6 +15,7 @@
 
 // Project includes
 #include "custom_utilities/patch_interface.h"
+#include "custom_utilities/nurbs/bsplines_patch_utility.h"
 
 namespace Kratos
 {
@@ -71,6 +72,7 @@ public:
     /// Validate the compatibility of two patches on the interface
     bool Validate() const override
     {
+        // TODO
         return false;
     }
 };
@@ -147,12 +149,18 @@ public:
     /// Validate the compatibility of two patches on the interface
     bool Validate() const override
     {
-        // TODO validate the parameter direction
+        typename Patch<1>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
+        typename Patch<1>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
 
-        typename Patch<1>::Pointer BPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
-        typename Patch<1>::Pointer BPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
+        if (mDirection == _REVERSED_)
+        {
+            BSplinesPatchUtility::Reverse<1>(pBPatch2, 0);
+        }
 
-        return (*BPatch1) == (*BPatch2);
+        bool is_valid = true;
+        is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2));
+
+        return is_valid;
     }
 
     /// Enumerate on the interface, i.e. to make sure that the enumeration on the two patch interfaces are compatible
@@ -286,12 +294,22 @@ public:
     /// Validate the compatibility of two patches on the interface
     bool Validate() const override
     {
-        // TODO validate the parameter direction
+        typename Patch<2>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
+        typename Patch<2>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
 
-        typename Patch<2>::Pointer BPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
-        typename Patch<2>::Pointer BPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
+        if (mDirections[0] == _REVERSED_)
+        {
+            BSplinesPatchUtility::Reverse<2>(pBPatch2, 0);
+        }
+        if (mDirections[1] == _REVERSED_)
+        {
+            BSplinesPatchUtility::Reverse<2>(pBPatch2, 1);
+        }
 
-        return (*BPatch1) == (*BPatch2);
+        bool is_valid = true;
+        is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2));
+
+        return is_valid;
     }
 
     /// Enumerate on the interface, i.e. to make sure that the enumeration on the two patch interfaces are compatible

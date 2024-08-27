@@ -78,6 +78,31 @@ public:
         pPatch2->AddInterface(pInterface21);
     }
 
+    /// Check all the interfaces of the multipatch for compatibility issue
+    template<int TDim>
+    static void CheckInterfaces(const MultiPatch<TDim>& rMultiPatch)
+    {
+        // loop through all the patches
+        for (typename MultiPatch<TDim>::patch_const_iterator it = rMultiPatch.begin(); it != rMultiPatch.end(); ++it)
+        {
+            // loop through all interfaces of the patch
+            for (auto it_interface = it->InterfaceBegin(); it_interface != it->InterfaceEnd(); ++it_interface)
+            {
+                // validate the interface
+                const bool is_valid = (*it_interface)->Validate();
+
+                if (!is_valid)
+                {
+                    KRATOS_ERROR << "Interface between patch " << (*it_interface)->pPatch1()->Id()
+                                 << " and patch " << (*it_interface)->pPatch2()->Id()
+                                 << " is not valid.";
+                }
+            }
+        }
+
+        std::cout << "MultiPatch interfaces are all valid." << std::endl;
+    }
+
     /// Construct the 12 edge patches of a 3D patch
     static std::vector<Patch<1>::Pointer> ConstructEdgePatches(Patch<3>::ConstPointer pPatch)
     {

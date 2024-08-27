@@ -709,13 +709,13 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Generate topology data to visualize with GLVis
-    void GenerateTopolgyData(std::size_t& starting_vertex_id,
-                             std::vector<vertex_t>& vertices,
-                             std::vector<edge_t>& edges,
-                             std::vector<face_t>& faces,
-                             std::vector<volume_t>& volumes,
-                             std::size_t& starting_knotv_id,
-                             std::vector<std::size_t>& knotv ) const
+    void GenerateTopologyData(std::size_t& starting_vertex_id,
+                              std::vector<vertex_t>& vertices,
+                              std::vector<edge_t>& edges,
+                              std::vector<face_t>& faces,
+                              std::vector<volume_t>& volumes,
+                              std::size_t& starting_knotv_id,
+                              std::vector<std::size_t>& knotv ) const
     {
         if (TDim == 1)
         {

@@ -315,7 +315,7 @@ private:
         for (patch_const_iterator it = r_multipatch.begin(); it != r_multipatch.end(); ++it)
         {
             std::size_t id = it->Id();
-            it->GenerateTopolgyData(start_vertex_id, patch_vertices[id], patch_edges[id], patch_faces[id], patch_volumes[id], start_knotv_id, patch_knotv[id]);
+            it->GenerateTopologyData(start_vertex_id, patch_vertices[id], patch_edges[id], patch_faces[id], patch_volumes[id], start_knotv_id, patch_knotv[id]);
 
             typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)

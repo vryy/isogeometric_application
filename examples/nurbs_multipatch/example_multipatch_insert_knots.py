@@ -51,6 +51,8 @@ def CreateMultiPatch():
     patch1.Id = 1
     patch2.Id = 2
     bsplines_patch_util.MakeInterface(patch1, BoundarySide.Right, patch2, BoundarySide.Left, BoundaryDirection.Forward)
+    mpatch.Enumerate()
+    multipatch_util.CheckInterfaces(mpatch)
     #print(mpatch)
 
     print("############REFINEMENT###############")

@@ -101,6 +101,21 @@ public:
         BaseType::W()  += _W;
     }
 
+    /// Apply the homogeneous transformation to the control point
+    void ApplyTransformation(const Transformation<TDataType>& trans)
+    {
+        TDataType res[4];
+        for (std::size_t i = 0; i < 4; ++i)
+            res[i] = trans(i, 0) * BaseType::WV()[0]
+                     + trans(i, 1) * BaseType::WV()[1]
+                     + trans(i, 2) * BaseType::WV()[2]
+                     + trans(i, 3) * BaseType::W();
+        BaseType::WV()[0] = res[0];
+        BaseType::WV()[1] = res[1];
+        BaseType::WV()[2] = res[2];
+        BaseType::W() = res[3];
+    }
+
     // overload operator []
     TDataType& operator[] (int i)
     {
@@ -171,21 +186,6 @@ public:
         return p;
     }
 
-    /// Apply the homogeneous transformation to the control point
-    void ApplyTransformation(const Transformation<TDataType>& trans)
-    {
-        TDataType res[4];
-        for (std::size_t i = 0; i < 4; ++i)
-            res[i] = trans(i, 0) * BaseType::WV()[0]
-                     + trans(i, 1) * BaseType::WV()[1]
-                     + trans(i, 2) * BaseType::WV()[2]
-                     + trans(i, 3) * BaseType::W();
-        BaseType::WV()[0] = res[0];
-        BaseType::WV()[1] = res[1];
-        BaseType::WV()[2] = res[2];
-        BaseType::W() = res[3];
-    }
-
     /// Multiplication operator
     friend ControlPoint operator*(const Transformation<TDataType>& trans, ControlPoint c)
     {
@@ -194,12 +194,12 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "Control Point";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         // print the control point in homogeneous coordinates
         // rOStream << "(X: " << X() << ", Y: " << Y() << ", Z: " << Z() << ", W: " << BaseType::W() << ")";
@@ -212,12 +212,12 @@ private:
     /// Serializer
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType);
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType);
     }

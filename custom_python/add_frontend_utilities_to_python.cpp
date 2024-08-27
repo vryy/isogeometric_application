@@ -46,8 +46,8 @@ typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUti
 }
 
 template<int TDim>
-void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-                                     typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
+void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<TDim>::Pointer pPatch1, const BoundarySide side1,
+                                     typename Patch<TDim>::Pointer pPatch2, const BoundarySide side2)
 {
     rDummy.MakeInterface<TDim>(pPatch1, side1, pPatch2, side2);
 }
@@ -130,17 +130,17 @@ std::size_t MultiPatchUtility_GetEquationId(MultiPatchUtility& rDummy, ModelPart
     return rDummy.GetEquationId(rNode, rVariable);
 }
 
-std::size_t MultiPatchUtility_BoundaryFlag(MultiPatchUtility& rDummy, const BoundarySide& side)
+std::size_t MultiPatchUtility_BoundaryFlag(MultiPatchUtility& rDummy, const BoundarySide side)
 {
     return BOUNDARY_FLAG(side);
 }
 
-std::size_t MultiPatchUtility_BoundaryFlag2D(MultiPatchUtility& rDummy, const BoundarySide2D& side)
+std::size_t MultiPatchUtility_BoundaryFlag2D(MultiPatchUtility& rDummy, const BoundarySide2D side)
 {
     return BOUNDARY_FLAG(side);
 }
 
-std::size_t MultiPatchUtility_BoundaryFlag3D(MultiPatchUtility& rDummy, const BoundarySide3D& side)
+std::size_t MultiPatchUtility_BoundaryFlag3D(MultiPatchUtility& rDummy, const BoundarySide3D side)
 {
     return BOUNDARY_FLAG(side);
 }
@@ -278,8 +278,8 @@ template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch1(
     BendingStripUtility& rDummy,
     std::size_t Id,
-    typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
+    typename Patch<TDim>::Pointer pPatch1, const BoundarySide side1,
+    typename Patch<TDim>::Pointer pPatch2, const BoundarySide side2,
     int Order)
 {
     return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Order);
@@ -289,8 +289,8 @@ template<int TDim>
 typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
     BendingStripUtility& rDummy,
     std::size_t Id,
-    typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-    typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2,
+    typename Patch<TDim>::Pointer pPatch1, const BoundarySide side1,
+    typename Patch<TDim>::Pointer pPatch2, const BoundarySide side2,
     const boost::python::list& order_list)
 {
     std::vector<int> Orders(TDim);

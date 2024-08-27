@@ -17,7 +17,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/model_part.h"
 #include "utilities/math_utils.h"
 #include "custom_utilities/isogeometric_utility.h"
 #include "custom_utilities/grid_function.h"

@@ -19,10 +19,11 @@
 #include "includes/define.h"
 #include "containers/array_1d.h"
 #include "custom_utilities/bspline_utils.h"
-#include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/patch.h"
+#include "custom_utilities/nurbs/knot_array_1d.h"
+#include "custom_utilities/nurbs/bsplines_patch_interface.h"
 // #include "custom_utilities/hierarchical_bsplines/hb_mesh.h"
 
 namespace Kratos

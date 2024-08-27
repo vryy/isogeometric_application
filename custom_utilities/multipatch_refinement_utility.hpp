@@ -9,9 +9,6 @@
 #if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_REFINEMENT_UTILITY_HPP_INCLUDED )
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_REFINEMENT_UTILITY_HPP_INCLUDED
 
-// Project includes
-#include "custom_utilities/multipatch_refinement_utility.h"
-
 // #define DEBUG_INS_KNOTS
 
 namespace Kratos
@@ -569,4 +566,3 @@ struct ComputeBsplinesDegreeElevation_Helper<3, TDataType>
 #undef DEBUG_INS_KNOTS
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_REFINEMENT_UTILITY_HPP_INCLUDED defined
-

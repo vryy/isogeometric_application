@@ -24,7 +24,7 @@ namespace Kratos
  * The interface is designed using half-edge philosophy, in which the interface keeps a pointer to the interface of the other side.
  */
 template<int TDim>
-class BSplinesPatchInterface
+class BSplinesPatchInterface : public PatchInterface<TDim>
 {
 };
 
@@ -46,14 +46,14 @@ public:
     {}
 
     /// Full Constructor, the default local configuration is assumed and there is no reverse.
-    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-                           typename PatchType::Pointer pPatch2, const BoundarySide& side2)
+    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
+                           typename PatchType::Pointer pPatch2, const BoundarySide side2)
         : BaseType(pPatch1, side1, pPatch2, side2)
     {
     }
 
     /// Create a clone of this interface
-    virtual typename BaseType::Pointer Clone() const
+    typename BaseType::Pointer Clone() const override
     {
         return typename BaseType::Pointer(new BSplinesPatchInterface<1>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2()));
     }
@@ -65,12 +65,13 @@ public:
     }
 
     /// Get the relative direction between the local parameter space
-    const BoundaryDirection& Direction() const {return _UNDEFINED_DIR_;}
-    const BoundaryDirection& Direction(std::size_t dim) const {return _UNDEFINED_DIR_;}
+    BoundaryDirection Direction() const {return _UNDEFINED_DIR_;}
+    BoundaryDirection Direction(std::size_t dim) const {return _UNDEFINED_DIR_;}
 
     /// Validate the compatibility of two patches on the interface
-    virtual bool Validate() const
+    bool Validate() const override
     {
+        return false;
     }
 };
 
@@ -92,8 +93,8 @@ public:
     {}
 
     /// Full Constructor, the default local configuration is assumed and there is no reverse.
-    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-                           typename PatchType::Pointer pPatch2, const BoundarySide& side2)
+    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
+                           typename PatchType::Pointer pPatch2, const BoundarySide side2)
         : BaseType(pPatch1, side1, pPatch2, side2)
     {
         mDirection = _FORWARD_;
@@ -101,8 +102,8 @@ public:
 
     /// Full Constructor with the relative direction. This constructor is only valid in 2D.
     /// The direction variable is to indicate if the local parameters shall be reversed.
-    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-                           typename PatchType::Pointer pPatch2, const BoundarySide& side2,
+    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
+                           typename PatchType::Pointer pPatch2, const BoundarySide side2,
                            const BoundaryDirection& direction)
         : BaseType(pPatch1, side1, pPatch2, side2)
     {
@@ -118,7 +119,7 @@ public:
     }
 
     /// Create a clone of this interface
-    virtual typename BaseType::Pointer Clone() const
+    typename BaseType::Pointer Clone() const override
     {
         return typename BaseType::Pointer(new BSplinesPatchInterface<2>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), this->Direction()));
     }
@@ -130,8 +131,8 @@ public:
     }
 
     /// Get the relative direction between the local parameter space
-    const BoundaryDirection& Direction() const {return mDirection;}
-    const BoundaryDirection& Direction(std::size_t dim) const
+    BoundaryDirection Direction() const {return mDirection;}
+    BoundaryDirection Direction(std::size_t dim) const
     {
         if (dim == 0)
         {
@@ -144,7 +145,7 @@ public:
     }
 
     /// Validate the compatibility of two patches on the interface
-    virtual bool Validate() const
+    bool Validate() const override
     {
         // TODO validate the parameter direction
 
@@ -155,7 +156,7 @@ public:
     }
 
     /// Enumerate on the interface, i.e. to make sure that the enumeration on the two patch interfaces are compatible
-    virtual void Enumerate()
+    void Enumerate() override
     {
         std::vector<std::size_t> func_indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side1());
         if (mDirection == _REVERSED_)
@@ -166,12 +167,12 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         BaseType::PrintInfo(rOStream);
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
     }
@@ -200,8 +201,8 @@ public:
     {}
 
     /// Full Constructor, the default local configuration is assumed and there is no reverse.
-    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-                           typename PatchType::Pointer pPatch2, const BoundarySide& side2)
+    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
+                           typename PatchType::Pointer pPatch2, const BoundarySide side2)
         : BaseType(pPatch1, side1, pPatch2, side2)
     {
         mLocalParameterMap[0] = 0;
@@ -212,8 +213,8 @@ public:
 
     /// Full Constructor with the relative direction. This constructor is only valid in 2D.
     /// The direction variable is to indicate if the local parameters shall be reversed.
-    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-                           typename PatchType::Pointer pPatch2, const BoundarySide& side2,
+    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
+                           typename PatchType::Pointer pPatch2, const BoundarySide side2,
                            const BoundaryDirection& direction)
         : BaseType(pPatch1, side1, pPatch2, side2)
     {
@@ -224,8 +225,8 @@ public:
     /// Full Constructor with the relative direction. This constructor is only valid in 3D.
     /// if uv_or_vu is true, the local configuration {(u:ub) - (v:vb)} is assumed; otherwise, it is {(u:vb) - (v:ub)}
     /// The direction indicates if the respective local parameters shall be reversed or not
-    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-                           typename PatchType::Pointer pPatch2, const BoundarySide& side2,
+    BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
+                           typename PatchType::Pointer pPatch2, const BoundarySide side2,
                            const bool& uv_or_vu,
                            const BoundaryDirection& direction1,
                            const BoundaryDirection& direction2)
@@ -255,7 +256,7 @@ public:
     }
 
     /// Create a clone of this interface
-    virtual typename BaseType::Pointer Clone() const
+    typename BaseType::Pointer Clone() const override
     {
         if (this->LocalParameterMapping(0) == 0)
         {
@@ -280,10 +281,10 @@ public:
         }
 
     /// Get the relative direction between the local parameter space
-    const BoundaryDirection& Direction(std::size_t dim) const {return mDirections[dim];}
+    BoundaryDirection Direction(std::size_t dim) const {return mDirections[dim];}
 
     /// Validate the compatibility of two patches on the interface
-    virtual bool Validate() const
+    bool Validate() const override
     {
         // TODO validate the parameter direction
 
@@ -294,7 +295,7 @@ public:
     }
 
     /// Enumerate on the interface, i.e. to make sure that the enumeration on the two patch interfaces are compatible
-    virtual void Enumerate()
+    void Enumerate() override
     {
         std::vector<std::size_t> size_info;
         std::vector<std::size_t> func_indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(size_info, this->Side1());
@@ -335,12 +336,12 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         BaseType::PrintInfo(rOStream);
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
     }

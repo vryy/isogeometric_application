@@ -848,13 +848,13 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /// Compare the two patches in terms of its parametric information. The grid function data, including control points, shall not be checked.
+    /// Compare two patches in terms of its parametric information. The grid function data, including control points, are not checked.
     virtual bool IsCompatible(const Patch<TDim>& rOtherPatch) const
     {
         return *(this->pFESpace()) == *(rOtherPatch.pFESpace());
     }
 
-    /// Compare between two patches in terms of parametric information and control points.
+    /// Compare two patches in terms of parametric information and control points.
     bool IsEquivalent(const Patch<TDim>& rOtherPatch) const
     {
         if (!this->IsCompatible(rOtherPatch))
@@ -867,7 +867,7 @@ public:
         return true;
     }
 
-    /// Compare between two patches in terms of parametric information and grid function data, including the control points.
+    /// Compare two patches in terms of parametric information and grid function data, including the control points.
     bool IsSame(const Patch<TDim>& rOtherPatch) const
     {
         if (!this->IsEquivalent(rOtherPatch))

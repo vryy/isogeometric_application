@@ -46,8 +46,8 @@ public:
     {}
 
     /// Full Constructor, the default local configuration is assumed and there is no reverse.
-    PatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide& side1,
-                   typename PatchType::Pointer pPatch2, const BoundarySide& side2)
+    PatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
+                   typename PatchType::Pointer pPatch2, const BoundarySide side2)
         : mpPatch1(pPatch1->shared_from_this()), mpPatch2(pPatch2->shared_from_this())
         , mSide1(side1), mSide2(side2)
     {}
@@ -83,13 +83,13 @@ public:
     // typename PatchType::ConstPointer pPatch2() const {return mpPatch2.lock();}
 
     /// Get the side of the first patch where the strip locates
-    const BoundarySide& Side1() const {return mSide1;}
+    BoundarySide Side1() const {return mSide1;}
 
     /// Flip the boundary side 1
     void FlipSide1() {mSide1 = ReversedBoundarySide::Get(mSide1);}
 
     /// Get the side of the second patch where the strip locates
-    const BoundarySide& Side2() const {return mSide2;}
+    BoundarySide Side2() const {return mSide2;}
 
     /// Flip the boundary side 2
     void FlipSide2() {mSide2 = ReversedBoundarySide::Get(mSide2);}

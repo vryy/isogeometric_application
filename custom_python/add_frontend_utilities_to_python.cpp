@@ -227,7 +227,6 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSpli
     typedef typename Patch < TDim - 1 >::Pointer TPatchPointerType;
     std::vector<TPatchPointerType> pPatches;
     IsogeometricPythonUtils::Unpack<TPatchPointerType, TPatchPointerType>(patch_list, pPatches);
-    // KRATOS_WATCH(pPatches.size())
 
     return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatches, order);
 }

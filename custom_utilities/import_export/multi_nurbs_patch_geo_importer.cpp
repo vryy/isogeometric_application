@@ -26,9 +26,11 @@ typename Patch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::ImportSingle(con
 {
     std::ifstream infile(filename.c_str());
     if (!infile)
-        KRATOS_THROW_ERROR(std::logic_error, "Error open file", filename)
+    {
+        KRATOS_ERROR << "Error open file " << filename;
+    }
 
-        std::vector<std::size_t> orders;
+    std::vector<std::size_t> orders;
     std::vector<std::size_t> numbers;
     std::vector<std::vector<double> > knots(3);
     std::vector<std::vector<double> > wcoords(3);
@@ -54,9 +56,11 @@ typename Patch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::ImportSingle(con
         ReadV21Single(infile, orders, numbers, knots, wcoords, weights);
     }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "Unknown NURBS file format", words[3])
+    {
+        KRATOS_ERROR << "Unknown NURBS file format " << words[3];
+    }
 
-        infile.close();
+    infile.close();
 
     // create the patch
     typename Patch<TDim>::Pointer pNewPatch = this->CreateNewPatch(1, orders, numbers, knots, wcoords, weights);

@@ -60,16 +60,6 @@ struct GridFunction_Helper
         std::vector<std::vector<double> > f_derivatives;
         rFESpace.GetDerivatives(f_derivatives, xin);
 
-        // rFESpace.PrintInfo(std::cout); std::cout << std::endl;
-
-        // for (int i = 0; i < f_derivatives.size(); ++i)
-        // {
-        //     std::cout << "f_derivatives[" << i << "]:";
-        //     for (int j = 0; j < f_derivatives[i].size(); ++j)
-        //         std::cout << " " << f_derivatives[i][j];
-        //     std::cout << std::endl;
-        // }
-
         // then interpolate the derivative at local coordinates using the control values
         if (dv.size() != TDim)
         {
@@ -118,16 +108,6 @@ struct GridFunction_Helper<TDim, TDataType, std::vector<double> >
         // firstly get the values and derivatives of all the basis functions
         std::vector<std::vector<double> > f_derivatives;
         rFESpace.GetDerivatives(f_derivatives, xi);
-
-        // rFESpace.PrintInfo(std::cout); std::cout << std::endl;
-
-        // for (int i = 0; i < f_derivatives.size(); ++i)
-        // {
-        //     std::cout << "f_derivatives[" << i << "]:";
-        //     for (int j = 0; j < f_derivatives[i].size(); ++j)
-        //         std::cout << " " << f_derivatives[i][j];
-        //     std::cout << std::endl;
-        // }
 
         // then interpolate the derivative at local coordinates using the control values
         if (dv.size() != TDim)

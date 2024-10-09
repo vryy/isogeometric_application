@@ -98,14 +98,6 @@ void BSplinesFESpace_Helper<1>::GetValuesAndDerivatives(const BSplinesFESpace<1>
 
     BSplineUtils::BasisFunsDer(ShapeFunctionsValuesAndDerivatives, Span, xi[0], rFESpace.Order(0), rFESpace.KnotVector(0), NumberOfDerivatives, BSplineUtils::StdVector2DOp<double>());
 
-    // for (int i = 0; i < ShapeFunctionsValuesAndDerivatives.size(); ++i)
-    // {
-    //     std::cout << "ShapeFunctionsValuesAndDerivatives[" << i << "]:";
-    //     for (int j = 0; j < ShapeFunctionsValuesAndDerivatives[i].size(); ++j)
-    //         std::cout << " " << ShapeFunctionsValuesAndDerivatives[i][j];
-    //     std::cout << std::endl;
-    // }
-
     // distribute it into the array
 
     int Start;

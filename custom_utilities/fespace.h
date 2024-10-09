@@ -67,19 +67,19 @@ public:
     /// Get the number of basis functions defined over the FESpace
     virtual std::size_t TotalNumber() const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the order of the FESpace in specific direction
     virtual std::size_t Order(std::size_t di) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the lower and upper bound of the parametric space in a specific direction
     virtual std::vector<double> ParametricBounds(std::size_t di) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the string representing the type of the FESpace
@@ -101,7 +101,7 @@ public:
     /// Get the value of the basis function i at point xi
     virtual void GetValue(double& v, std::size_t i, const std::vector<double>& xi) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the value of the basis function i at point xi
@@ -115,7 +115,7 @@ public:
     /// Get the values of the basis functions at point xi
     virtual void GetValues(std::vector<double>& values, const std::vector<double>& xi) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the values of the basis functions at point xi
@@ -131,7 +131,7 @@ public:
     /// Get the derivative of the basis function i at point xi
     virtual void GetDerivative(std::vector<double>& values, std::size_t i, const std::vector<double>& xi) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the derivatives of the basis function i at point xi
@@ -146,7 +146,7 @@ public:
     /// the output values has the form of values[func_index][dim_index]
     virtual void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the derivatives of the basis functions at point xi
@@ -162,9 +162,12 @@ public:
 
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
-    virtual void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const
+    virtual void GetValuesAndDerivatives(std::vector<double>& values,
+            std::vector<std::vector<double> >& derivatives,
+            const std::vector<double>& xi) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
+    }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,7 +175,7 @@ public:
     /// Check if a point lies inside the parametric domain of the FESpace
     virtual bool IsInside(const std::vector<double>& xi) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,45 +183,45 @@ public:
     /// Reset all the dof numbers for each grid function to -1.
     virtual void ResetFunctionIndices()
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Reset the function indices to a given values.
     /// This is useful when assigning the id for the boundary patch.
     virtual void ResetFunctionIndices(const std::vector<std::size_t>& func_indices)
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Enumerate the dofs of each grid function. The enumeration algorithm is pretty straightforward.
     /// If the dof does not have pre-existing value, which assume it is -1, it will be assigned the incremental value.
     virtual std::size_t& Enumerate(std::size_t& start)
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Access the function indices (aka global ids)
     virtual std::vector<std::size_t> FunctionIndices() const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Update the function indices using a map. The map shall be the mapping from old index to new index.
     virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the first equation_id in this space
     virtual std::size_t GetFirstEquationId() const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the last equation_id in this space
     virtual std::size_t GetLastEquationId() const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Return the local id of a given global id
@@ -271,7 +274,7 @@ public:
     /// Reverse the evaluation in i-direction
     virtual void Reverse(std::size_t idir)
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -279,50 +282,50 @@ public:
     /// Extract the index of the functions based on the boundary flag. It allows to extract the corner one.
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(int boundary_id) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(std::vector<std::size_t>& size_info, const BoundarySide& side) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Extract the index of the functions on the boundary
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Extract the index of the functions on the boundary down to some level
     virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side, std::size_t level) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Assign the index for the functions on the boundary
     virtual void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices)
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Construct the boundary FESpace based on side
     virtual typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Construct the boundary FESpace based on side and local relative configuration between two patches
     virtual typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
             const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Construct the sliced FESpace
     virtual typename FESpace < TDim - 1 >::Pointer ConstructSlicedFESpace(int idir, double xi) const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -359,7 +362,7 @@ public:
     /// Create the cell manager for all the cells in the support domain of the FESpace
     virtual cell_container_t::Pointer ConstructCellManager() const
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -497,7 +500,7 @@ public:
     /// Update the function indices using a map. The map shall be the mapping from old index to new index.
     virtual void UpdateFunctionIndices(const std::map<std::size_t, std::size_t>& indices_map)
     {
-        KRATOS_ERROR << "Calling base class function " << __FUNCTION__;
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Create the cell manager for all the cells in the support domain of the FESpace

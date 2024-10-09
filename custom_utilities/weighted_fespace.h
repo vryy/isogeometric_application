@@ -198,10 +198,12 @@ public:
             new_dvalues.resize(dvalues.size());
         }
         for (std::size_t i = 0; i < new_dvalues.size(); ++i)
+        {
             if (new_dvalues[i].size() != TDim)
             {
                 new_dvalues[i].resize(TDim);
             }
+        }
 
         double sum_value = 0.0;
         std::vector<double> dsum_value(TDim);
@@ -214,9 +216,6 @@ public:
                 dsum_value[dim] += mWeights[i] * dvalues[i][dim];
             }
         }
-
-        // KRATOS_WATCH(sum_value)
-        // KRATOS_WATCH(dsum_value[0])
 
         if (sum_value == 0.0)
         {
@@ -236,8 +235,6 @@ public:
             }
         }
 
-        // for (std::size_t i = 0; i < new_dvalues.size(); ++i)
-        //     KRATOS_WATCH(new_dvalues[i][0])
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////

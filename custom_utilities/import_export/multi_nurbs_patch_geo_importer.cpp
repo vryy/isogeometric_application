@@ -754,7 +754,18 @@ typename Patch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::CreateNewPatch(s
     for (std::size_t i = 0; i < total_number; ++i)
     {
         ControlPointType c;
-        c.SetCoordinates(wcoords[0][i] / weights[i], wcoords[1][i] / weights[i], wcoords[2][i] / weights[i], weights[i]);
+        if constexpr (TDim == 1)
+        {
+            c.SetCoordinates(wcoords[0][i] / weights[i], 0.0, 0.0, weights[i]);
+        }
+        else if constexpr (TDim == 2)
+        {
+            c.SetCoordinates(wcoords[0][i] / weights[i], wcoords[1][i] / weights[i], 0.0, weights[i]);
+        }
+        else if constexpr (TDim == 3)
+        {
+            c.SetCoordinates(wcoords[0][i] / weights[i], wcoords[1][i] / weights[i], wcoords[2][i] / weights[i], weights[i]);
+        }
         pControlPointGrid->SetData(i, c);
     }
 

@@ -139,6 +139,12 @@ public:
         return pNewNode;
     }
 
+    template<class TPatchType, typename TCoordinatesType>
+    static typename TPatchType::ControlPointType CreatePoint(const TCoordinatesType& p_ref, const TPatchType& rPatch)
+    {
+        return std::move(rPatch.pControlPointGridFunction()->GetValue(p_ref));
+    }
+
     /// Transfer the control values from patch to node
     /// The node has to be inside the patch
     template<class TPatchType>
@@ -269,17 +275,29 @@ public:
     static void GenerateRegular(std::vector<TCoordinatesType>& points,
                                 const std::vector<TCoordinatesType>& cmin, const std::vector<TCoordinatesType>& cmax)
     {
-        if (TDim == 2)
+        if constexpr (TDim == 1)
+        {
+            GenerateLine(points, cmin[0], cmax[0]);
+        }
+        else if constexpr (TDim == 2)
         {
             GenerateRectangle(points, cmin[0], cmax[0], cmin[1], cmax[1]);
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             GenerateBox(points, cmin[0], cmax[0], cmin[1], cmax[1], cmin[2], cmax[2]);
         }
-        else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension", TDim)
-        }
+    }
+
+    /// Generate a single line. The 2 corner points are denoted as
+    ///  1---2
+    template<typename TCoordinatesType, typename TValueType>
+    static void GenerateLine(std::vector<TCoordinatesType>& points,
+                             const TValueType& xmin, const TValueType& xmax)
+    {
+        points[0][0] = xmin;
+        points[1][0] = xmax;
+    }
 
     /// Generate a single rectangle. The 4 corner points are denoted as
     ///  4---3
@@ -397,12 +415,88 @@ public:
 
         // offset the connectivity
         for (std::size_t i = 0; i < Connectivities.size(); ++i)
+        {
             for (std::size_t j = 0; j < Connectivities[i].size(); ++j)
             {
                 Connectivities[i][j] += offset;
             }
+        }
 
         return std::make_pair(new_points, Connectivities);
+    }
+
+    /// Generate the uniform linear grid. The 2 corner points are denoted as
+    ///  1---2
+    template<typename TCoordinatesType, typename TIndexType>
+    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    GenerateLineGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
+                     const TIndexType& starting_node_id,
+                     std::size_t num_div)
+    {
+        std::vector<double> div;
+
+        for (std::size_t i = 0; i <= num_div; ++i)
+            div.push_back( ((double) i) / num_div );
+
+        return GenerateLineGrid(p1, p2, starting_node_id, div);
+    }
+
+    /// Generate the linear grid. The 2 corner points are denoted as
+    ///  1---2
+    template<typename TCoordinatesType, typename TIndexType>
+    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    GenerateLineGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
+                     const TIndexType& starting_node_id,
+                     const std::vector<double>& div)
+    {
+        TCoordinatesType p;
+
+        std::vector<TCoordinatesType> points;
+        std::vector<std::vector<TIndexType> > connectivities;
+
+        double xi;
+        std::size_t i;
+        for (i = 0; i < div.size(); ++i)
+        {
+            xi = div[i];
+            p = p1 + xi * (p2 - p1);
+            points.push_back(p);
+        }
+
+        const std::size_t num_div = div.size() - 1;
+
+        TIndexType n1, n2;
+        for (i = 0; i < num_div; ++i)
+        {
+            n1 = starting_node_id + i;
+            n2 = starting_node_id + i + 1;
+
+            connectivities.push_back(std::vector<std::size_t> {n1, n2});
+        }
+
+        return std::make_pair(points, connectivities);
+    }
+
+    /// Generate the uniform quadrilateral grid. The 4 corner points are denoted as
+    ///  4---3
+    ///  |   |
+    ///  1---2
+    template<typename TCoordinatesType, typename TIndexType>
+    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    GenerateQuadGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
+                     const TCoordinatesType& p3, const TCoordinatesType& p4,
+                     const TIndexType& starting_node_id,
+                     std::size_t num_div_1, std::size_t num_div_2)
+    {
+        std::vector<double> div_1, div_2;
+
+        for (std::size_t i = 0; i <= num_div_1; ++i)
+            div_1.push_back( ((double) i) / num_div_1 );
+
+        for (std::size_t j = 0; j <= num_div_2; ++j)
+            div_2.push_back( ((double) j) / num_div_2 );
+
+        return GenerateQuadGrid(p1, p2, p3, p4, starting_node_id, div_1, div_2);
     }
 
     /// Generate the quadrilateral grid. The 4 corner points are denoted as
@@ -414,7 +508,7 @@ public:
     GenerateQuadGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
                      const TCoordinatesType& p3, const TCoordinatesType& p4,
                      const TIndexType& starting_node_id,
-                     std::size_t num_div_1, std::size_t num_div_2)
+                     const std::vector<double>& div_1, const std::vector<double>& div_2)
     {
         TCoordinatesType p, pm, pn;
 
@@ -423,20 +517,23 @@ public:
 
         double xi, eta;
         std::size_t i, j;
-        for (i = 0; i <= num_div_1; ++i)
+        for (i = 0; i < div_1.size(); ++i)
         {
-            xi = ((double) i) / num_div_1;
+            xi = div_1[i];
             pm = p1 + xi * (p2 - p1);
             pn = p4 + xi * (p3 - p4);
 
-            for (j = 0; j <= num_div_2; ++j)
+            for (j = 0; j < div_2.size(); ++j)
             {
-                eta = ((double) j) / num_div_2;
+                eta = div_2[j];
                 p = pm + eta * (pn - pm);
 
                 points.push_back(p);
             }
         }
+
+        const std::size_t num_div_1 = div_1.size() - 1;
+        const std::size_t num_div_2 = div_2.size() - 1;
 
         TIndexType n1, n2, n3, n4;
         for (i = 0; i < num_div_1; ++i)
@@ -498,7 +595,7 @@ public:
         points[7][2] = zmax;
     }
 
-    /// Generate the hexahedral grid. The 8 corner points are denoted as
+    /// Generate the uniform hexahedral grid. The 8 corner points are denoted as
     ///  4---3         8---7
     ///  |   |   -->   |   |
     ///  1---2         5---6
@@ -511,6 +608,35 @@ public:
                     const TIndexType& starting_node_id,
                     std::size_t num_div_1, std::size_t num_div_2, std::size_t num_div_3)
     {
+        std::vector<double> div_1, div_2, div_3;
+
+        for (std::size_t i = 0; i <= num_div_1; ++i)
+            div_1.push_back( ((double) i) / num_div_1 );
+
+        for (std::size_t j = 0; j <= num_div_2; ++j)
+            div_2.push_back( ((double) j) / num_div_2 );
+
+        for (std::size_t k = 0; k <= num_div_3; ++k)
+            div_3.push_back( ((double) k) / num_div_3 );
+
+        return GenerateHexGrid(p1, p2, p3, p4, p5, p6, p7, p8,
+                    starting_node_id, div_1, div_2, div_3);
+    }
+
+    /// Generate the hexahedral grid. The 8 corner points are denoted as
+    ///  4---3         8---7
+    ///  |   |   -->   |   |
+    ///  1---2         5---6
+    template<typename TCoordinatesType, typename TIndexType>
+    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    GenerateHexGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
+                    const TCoordinatesType& p3, const TCoordinatesType& p4,
+                    const TCoordinatesType& p5, const TCoordinatesType& p6,
+                    const TCoordinatesType& p7, const TCoordinatesType& p8,
+                    const TIndexType& starting_node_id,
+                    const std::vector<double>& div_1, const std::vector<double>& div_2,
+                    const std::vector<double>& div_3)
+    {
         TCoordinatesType p, pm1, pn1, pm2, pn2, pq1, pq2;
 
         std::vector<TCoordinatesType> points;
@@ -518,23 +644,23 @@ public:
 
         double xi, eta, zeta;
         std::size_t i, j, k;
-        for (i = 0; i <= num_div_1; ++i)
+        for (i = 0; i < div_1.size(); ++i)
         {
-            xi = ((double) i) / num_div_1;
+            xi = div_1[i];
             pm1 = p1 + xi * (p2 - p1);
             pn1 = p4 + xi * (p3 - p4);
             pm2 = p5 + xi * (p6 - p5);
             pn2 = p8 + xi * (p7 - p8);
 
-            for (j = 0; j <= num_div_2; ++j)
+            for (j = 0; j < div_2.size(); ++j)
             {
-                eta = ((double) j) / num_div_2;
+                eta = div_2[j];
                 pq1 = pm1 + eta * (pn1 - pm1);
                 pq2 = pm2 + eta * (pn2 - pm2);
 
-                for (k = 0; k <= num_div_3; ++k)
+                for (k = 0; k < div_3.size(); ++k)
                 {
-                    zeta = ((double) k) / num_div_3;
+                    zeta = div_3[k];
                     p = pq1 + zeta * (pq2 - pq1);
 
                     points.push_back(p);
@@ -542,10 +668,9 @@ public:
             }
         }
 
-        // std::cout << "points:" << std::endl;
-        // for (std::size_t i = 0; i < points.size(); ++i)
-        //     std::cout << "  " << points[i] << std::endl;
-        // std::cout << std::endl;
+        const std::size_t num_div_1 = div_1.size() - 1;
+        const std::size_t num_div_2 = div_2.size() - 1;
+        const std::size_t num_div_3 = div_3.size() - 1;
 
         TIndexType n1, n2, n3, n4, n5, n6, n7, n8;
         for (i = 0; i < num_div_1; ++i)
@@ -567,16 +692,6 @@ public:
                 }
             }
         }
-
-        // std::cout << "connectivities:" << std::endl;
-        // for (std::size_t i = 0; i < connectivities.size(); ++i)
-        // {
-        //     std::cout << " ";
-        //     for (std::size_t j = 0; j < connectivities[i].size(); ++j)
-        //         std::cout << " " << connectivities[i][j];
-        //     std::cout << std::endl;
-        // }
-        // std::cout << std::endl;
 
         return std::make_pair(points, connectivities);
     }
@@ -670,9 +785,32 @@ public:
         return pFoundEntities;
     }
 
+    /// Create the entity based on the connectivity
+    /// It is noted that the newly created entity are not added to the other model_part. User must do it manually.
+    template<typename TConnectivityType, typename TEntityType>
+    static typename TEntityType::Pointer CreateEntity(
+        const TConnectivityType& r_connectivity,
+        ModelPart& r_model_part,
+        TEntityType const& r_sample_entity,
+        const std::size_t entity_id,
+        Properties::Pointer pProperties,
+        const std::string& NodeKey)
+    {
+        typename TEntityType::NodesArrayType temp_entity_nodes;
+
+        for (typename TConnectivityType::const_iterator it2 = r_connectivity.begin(); it2 != r_connectivity.end(); ++it2)
+        {
+            temp_entity_nodes.push_back(*(FindKey(r_model_part.Nodes(), *it2, NodeKey).base()));
+        }
+
+        typename TEntityType::Pointer pNewEntity = r_sample_entity.Create(entity_id, temp_entity_nodes, pProperties);
+
+        return pNewEntity;
+    }
+
     /// Create the entities based on the connectivities
     /// It is noted that the newly created entities are not added to the other model_part. User must do it manually.
-    template<typename TConnectivityType, typename TEntityType, typename TEntitiesContainerType>
+    template<typename TConnectivityType, typename TEntityType, typename TEntitiesContainerType, int index_start_type = 0>
     static TEntitiesContainerType CreateEntities(
         const TConnectivityType& r_connectivities,
         ModelPart& r_model_part,
@@ -693,7 +831,11 @@ public:
                 temp_entity_nodes.push_back(*(FindKey(r_model_part.Nodes(), *it2, NodeKey).base()));
             }
 
-            typename TEntityType::Pointer pNewEntity = r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pProperties);
+            typename TEntityType::Pointer pNewEntity;
+            if constexpr (index_start_type == 0) // the prodived id is last entity id
+                pNewEntity = r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pProperties);
+            else if constexpr (index_start_type == 1) // the prodived id is starting entity id
+                pNewEntity = r_sample_entity.Create(last_entity_id++, temp_entity_nodes, pProperties);
             pNewEntities.push_back(pNewEntity);
         }
 
@@ -702,7 +844,7 @@ public:
 
     /// Create a list of entities (element/condition) from a model_part to another model_part
     /// It is noted that the newly created entities are not added to the other model_part. User must do it manually.
-    template<class TEntityType, class TEntitiesContainerType>
+    template<class TEntityType, class TEntitiesContainerType, int index_start_type = 0>
     static TEntitiesContainerType CreateEntities(
         const TEntitiesContainerType& pEntities,
         ModelPart& r_other_model_part,
@@ -748,12 +890,18 @@ public:
             }
             if (!retain_prop_id)
             {
-                pNewEntities.push_back(r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pProperties));
+                if constexpr (index_start_type == 0)
+                    pNewEntities.push_back(r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pProperties));
+                else if constexpr (index_start_type == 1)
+                    pNewEntities.push_back(r_sample_entity.Create(last_entity_id++, temp_entity_nodes, pProperties));
             }
             else
             {
                 Properties::Pointer pNewProperties = r_other_model_part.pGetProperties(it->GetProperties().Id());
-                pNewEntities.push_back(r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pNewProperties));
+                if constexpr (index_start_type == 0)
+                    pNewEntities.push_back(r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pNewProperties));
+                else if constexpr (index_start_type == 1)
+                    pNewEntities.push_back(r_sample_entity.Create(last_entity_id++, temp_entity_nodes, pNewProperties));
             }
         }
 
@@ -1043,22 +1191,10 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
-        std::stringstream buffer;
-        buffer << "IsogeometricPostUtility";
-        return buffer.str();
+        return "IsogeometricPostUtility";
     }
-
-    /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
-    {
-        rOStream << "IsogeometricPostUtility";
-    }
-
-    /// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
-    {}
 
     ///@}
     ///@name Friends

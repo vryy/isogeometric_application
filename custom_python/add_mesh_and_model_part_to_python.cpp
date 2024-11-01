@@ -24,6 +24,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/multipatch_lagrange_control_mesh.h"
 #include "custom_utilities/multipatch_model_part.h"
 #include "custom_utilities/multi_multipatch_model_part.h"
+#include "custom_utilities/conforming_multipatch_lagrange_model_part.h"
 #include "custom_python/iga_python_utils.h"
 #include "custom_python/add_mesh_and_model_part_to_python.h"
 
@@ -325,6 +326,24 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("SynchronizeBackward", &MultiMultiPatchModelPartType::template SynchronizeBackward<Variable<array_1d<double, 3> > >)
     .def("SynchronizeForward", &MultiMultiPatchModelPartType::template SynchronizeForward<Variable<Vector> >)
     .def("SynchronizeBackward", &MultiMultiPatchModelPartType::template SynchronizeBackward<Variable<Vector> >)
+    .def(self_ns::str(self))
+    ;
+
+    typedef ConformingMultipatchLagrangeModelPart<TDim> ConformingMultipatchLagrangeModelPartType;
+    ss.str(std::string());
+    ss << "ConformingMultipatchLagrangeModelPart" << TDim << "D";
+    class_<ConformingMultipatchLagrangeModelPartType, typename ConformingMultipatchLagrangeModelPartType::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
+    (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
+    .def("BeginModelPart", &MultiPatchModelPart_BeginModelPart1<ConformingMultipatchLagrangeModelPartType>)
+    .def("BeginModelPart", &MultiPatchModelPart_BeginModelPart2<ConformingMultipatchLagrangeModelPartType>)
+    .def("CreateNodes", &ConformingMultipatchLagrangeModelPartType::CreateNodes)
+    .def("AddElements", &ConformingMultipatchLagrangeModelPartType::AddElements)
+    .def("AddConditions", &MultiPatchModelPart_AddConditions_OnBoundary<ConformingMultipatchLagrangeModelPartType>)
+    .def("AddConditions", &MultiPatchModelPart_AddConditions_OnSlice<ConformingMultipatchLagrangeModelPartType>)
+    .def("EndModelPart", &ConformingMultipatchLagrangeModelPartType::EndModelPart)
+    .def("GetModelPart", &MultiPatchModelPart_GetModelPart<ConformingMultipatchLagrangeModelPartType>, return_internal_reference<>())
+    .def("GetMultiPatch", &MultiPatchModelPart_GetMultiPatch<ConformingMultipatchLagrangeModelPartType>, return_internal_reference<>())
+    .def("SetUniformSampling", &ConformingMultipatchLagrangeModelPartType::SetUniformSampling)
     .def(self_ns::str(self))
     ;
 }

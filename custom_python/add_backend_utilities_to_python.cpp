@@ -29,6 +29,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/bezier_test_utils.h"
 #include "custom_utilities/isogeometric_merge_utility.h"
 #include "custom_utilities/isogeometric_math_utils.h"
+#include "custom_utilities/isogeometric_projection_utility.h"
 #include "custom_python/iga_python_utils.h"
 #include "custom_python/add_utilities_to_python.h"
 
@@ -738,6 +739,30 @@ boost::python::list IsogeometricMathUtils_ComputeProjection2D(IsogeometricMathUt
     return std::move(output);
 }
 
+//////////////////////////////////////////////////////////
+
+template<typename TPointType, int TDim>
+boost::python::list IsogeometricProjectionUtility_ComputeRayProjection(IsogeometricProjectionUtility& rDummy,
+        const TPointType& rPoint, const TPointType& rDirection, typename MultiPatch<TDim>::Pointer pMultiPatch,
+        double TOL, int max_iters, const boost::python::list& list_nsamplings, const int echo_level)
+{
+    std::vector<double> LocalPoint(TDim);
+    TPointType GlobalPoint;
+    int patch_id;
+    std::array<int, TDim> nsamplings;
+    IsogeometricPythonUtils::Unpack<int, int, TDim>(list_nsamplings, nsamplings);
+    int error_code = rDummy.ComputeRayProjection<TPointType, TDim>(rPoint, rDirection, LocalPoint, GlobalPoint, patch_id,
+                                        pMultiPatch, TOL, max_iters, nsamplings, echo_level);
+
+    boost::python::list output;
+    output.append(error_code);
+    output.append(GlobalPoint);
+
+    return std::move(output);
+}
+
+//////////////////////////////////////////////////////////
+
 void IsogeometricApplication_AddBackendUtilitiesToPython()
 {
     enum_<PostElementType>("PostElementType")
@@ -885,6 +910,12 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
         "IsogeometricMathUtils", init<>())
     .def("ComputeIntersection2D", &IsogeometricMathUtils_ComputeIntersection2D<array_1d<double, 3> >)
     .def("ComputeProjection2D", &IsogeometricMathUtils_ComputeProjection2D<array_1d<double, 3> >)
+    ;
+
+    class_<IsogeometricProjectionUtility, IsogeometricProjectionUtility::Pointer, boost::noncopyable>(
+        "IsogeometricProjectionUtility", init<>())
+    .def("ComputeRayProjection", &IsogeometricProjectionUtility_ComputeRayProjection<array_1d<double, 3>, 1>)
+    .def("ComputeRayProjection", &IsogeometricProjectionUtility_ComputeRayProjection<Element::GeometryType::PointType::PointType, 1>)
     ;
 
     /////////////////////////////////////////////////////////////////

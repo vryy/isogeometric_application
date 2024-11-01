@@ -347,7 +347,7 @@ def GenerateLocalFrenetFrame(curve, num_sampling_points, zvec = [1.0, 0.0, 0.0])
     trans_list = []
     B = Array3()
     ctrl_pnt_grid_func = curve.GridFunction(CONTROL_POINT_COORDINATES)
-    print(ctrl_pnt_grid_func)
+    # print(ctrl_pnt_grid_func)
     for i in range(0, num_sampling_points):
         xi = float(i) / (num_sampling_points-1)
         pnt = [xi, 0.0, 0.0]

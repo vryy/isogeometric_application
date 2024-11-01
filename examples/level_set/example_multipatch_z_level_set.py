@@ -75,9 +75,11 @@ def main():
 
     P = Point3D(0.6, 0.6, 1.0)
     print("level set value: " + str(ls.GetValue(P)))
+    assert(abs(ls.GetValue(P) - 1.0) < 1e-13)
 
-    P = Point3D(1.6, 0.6, 1.0)
+    P = Point3D(1.6, 0.6, 0.8)
     print("level set value: " + str(ls.GetValue(P)))
+    assert(abs(ls.GetValue(P) - 0.8) < 1e-13)
 
 if __name__ == "__main__":
     main()

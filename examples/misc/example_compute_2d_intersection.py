@@ -19,25 +19,47 @@ from KratosMultiphysics import *
 from KratosMultiphysics.IsogeometricApplication import *
 kernel = Kernel()   #defining kernel
 
-patch_util = BSplinesPatchUtility()
-mpatch_export = MultiNURBSPatchMatlabExporter()
+def main():
 
-patches_ptr = patch_util.CreatePatchFromGeo("../../tests/geo_ring.txt")
-patch = patches_ptr[0].GetReference()
-# print(patch)
+    p1 = Vector(3)
+    p1[0] = 0.0
+    p1[1] = 0.0
+    p1[2] = 0.0
 
-grid_func = patch.GridFunction(CONTROL_POINT_COORDINATES)
-print(grid_func)
-P = Vector(3)
-P[0] = 1.0
-P[1] = 1.0
-P[2] = 0.0
-xi0 = Vector(3)
-xi0[0] = 0.5
-xi0[1] = 0.5
-xi0[2] = 0.0
-[stat, xi] = grid_func.LocalCoordinates(P, xi0)
-print("stat:", stat)
-print("xi:", str(xi))
-P1 = grid_func.GetValue([xi[0], xi[1]])
-print("P1:", str(P1))
+    p2 = Vector(3)
+    p2[0] = 1.0
+    p2[1] = 1.0
+    p2[2] = 0.0
+
+    p3 = Vector(3)
+    p3[0] = 1.0
+    p3[1] = 0.0
+    p3[2] = 0.0
+
+    p4 = Vector(3)
+    p4[0] = 0.0
+    p4[1] = 1.0
+    p4[2] = 0.0
+
+    math_utils = IsogeometricMathUtils()
+    output = math_utils.ComputeIntersection2D(p1, p2, p3, p4, 1e-13)
+    assert(output[0] == 0)
+    assert(abs(output[1][0] - 0.5) < 1e-13)
+    assert(abs(output[1][1] - 0.5) < 1e-13)
+
+    p3[0] = 2.0
+    p3[1] = 0.0
+    p3[2] = 0.0
+
+    p4[0] = 2.0
+    p4[1] = 3.0
+    p4[2] = 0.0
+
+    output = math_utils.ComputeIntersection2D(p1, p2, p3, p4, 1e-13)
+    assert(output[0] == 2)
+    assert(abs(output[1][0] - 2.0) < 1e-13)
+    assert(abs(output[1][1] - 2.0) < 1e-13)
+
+if __name__ == "__main__":
+    main()
+

@@ -13,7 +13,7 @@
 // Project includes
 #include "custom_python/add_brep_and_level_set_to_python.h"
 #include "custom_utilities/level_set/multipatch_z_level_set.h"
-#include "custom_utilities/multipatch.h"
+#include "custom_utilities/level_set/multipatch_normal_level_set.h"
 
 namespace Kratos
 {
@@ -34,7 +34,22 @@ void IsogeometricApplication_AddBRepAndLevelSetToPython()
     .def("SetPredictionSampling", &MultiPatchZLevelSet::SetPredictionSampling)
     .def("SetProjectionTolerance", &MultiPatchZLevelSet::SetProjectionTolerance)
     .def("SetMaxIterations", &MultiPatchZLevelSet::SetMaxIterations)
-    .def(self_ns::str(self))
+    ;
+
+    class_<MultiPatchNormalLevelSet<1>, MultiPatchNormalLevelSet<1>::Pointer, bases<LevelSet, IsogeometricEcho>, boost::noncopyable>
+    ( "MultiPatchNormalLevelSet1D", init<typename MultiPatch<1>::Pointer>() )
+    .def("SetPredictionSampling", &MultiPatchNormalLevelSet<1>::SetPredictionSampling)
+    .def("SetProjectionTolerance", &MultiPatchNormalLevelSet<1>::SetProjectionTolerance)
+    .def("SetMaxIterations", &MultiPatchNormalLevelSet<1>::SetMaxIterations)
+    .def("SetInnerPoint", &MultiPatchNormalLevelSet<1>::SetInnerPoint<array_1d<double, 3> >)
+    ;
+
+    class_<MultiPatchNormalLevelSet<2>, MultiPatchNormalLevelSet<2>::Pointer, bases<LevelSet, IsogeometricEcho>, boost::noncopyable>
+    ( "MultiPatchNormalLevelSet2D", init<typename MultiPatch<2>::Pointer>() )
+    .def("SetPredictionSampling", &MultiPatchNormalLevelSet<2>::SetPredictionSampling)
+    .def("SetProjectionTolerance", &MultiPatchNormalLevelSet<2>::SetProjectionTolerance)
+    .def("SetMaxIterations", &MultiPatchNormalLevelSet<2>::SetMaxIterations)
+    .def("SetCurve", &MultiPatchNormalLevelSet<2>::SetCurve)
     ;
 }
 

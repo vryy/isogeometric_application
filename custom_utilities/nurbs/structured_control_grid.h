@@ -169,6 +169,198 @@ public:
 };
 
 template<typename TDataType>
+class StructuredControlGrid<0, TDataType> : public BaseStructuredControlGrid<TDataType>
+{
+public:
+    /// Pointer definition
+    KRATOS_CLASS_POINTER_DEFINITION(StructuredControlGrid);
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+    typedef Kratos::shared_ptr<const StructuredControlGrid> ConstPointer;
+#endif
+
+    // type definitions
+    typedef BaseStructuredControlGrid<TDataType> BaseType;
+    typedef typename BaseType::DataContainerType DataContainerType;
+    typedef typename BaseType::DataType DataType;
+
+    /// Constructor with size
+    StructuredControlGrid(const std::vector<std::size_t>& sizes) : BaseType()
+    {
+        BaseType::Data().resize(1);
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+    }
+
+    /// Constructor with size
+    StructuredControlGrid(std::size_t n) : BaseType()
+    {
+        BaseType::Data().resize(1);
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+    }
+
+    /// Destructor
+    ~StructuredControlGrid() override {}
+
+    /// Create a new control grid pointer
+    static typename StructuredControlGrid<0, TDataType>::Pointer Create(const std::vector<std::size_t>& sizes)
+    {
+        return typename StructuredControlGrid<0, TDataType>::Pointer(new StructuredControlGrid<0, TDataType>(sizes));
+    }
+
+    /// resize the grid
+    void Resize(std::size_t new_size)
+    {
+        // DO NOTHING
+    }
+
+    /// resize the grid
+    void resize(std::size_t new_size)
+    {
+        // DO NOTHING
+    }
+
+    /// Get the size of underlying data
+    std::size_t Size() const {return BaseType::Data().size();}
+
+    /// Get the size of the grid is specific dimension
+    std::size_t Size(std::size_t dim) const {return 1;}
+
+    /// Get the global index of the grid value providing the index vector
+    std::size_t GetIndex(const std::vector<std::size_t>& index) const override
+    {
+        KRATOS_ERROR << "GetIndex in 0D is meaningless";
+    }
+
+    /// Get the value at specific grid point
+    TDataType& GetValue(std::size_t i)
+    {
+        if (i != 0)
+            KRATOS_ERROR << "Value is only defined at position 0";
+        return BaseType::Data()[i];
+    }
+
+    /// Get the value at specific grid point
+    const TDataType& GetValue(std::size_t i) const
+    {
+        if (i != 0)
+            KRATOS_ERROR << "Value is only defined at position 0";
+        return BaseType::Data()[i];
+    }
+
+    /// Set the value at specific grid point
+    void SetValue(std::size_t i, const TDataType& value)
+    {
+        if (i != 0)
+            KRATOS_ERROR << "Value is only defined at position 0";
+        BaseType::Data()[i] = value;
+    }
+
+    // overload operator ()
+    TDataType& operator() (std::size_t i)
+    {
+        if (i != 0)
+            KRATOS_ERROR << "Value is only defined at position 0";
+        return BaseType::Data()[i];
+    }
+
+    // overload operator ()
+    const TDataType& operator() (std::size_t i) const
+    {
+        if (i != 0)
+            KRATOS_ERROR << "Value is only defined at position 0";
+        return BaseType::Data()[i];
+    }
+
+    /// Copy the data the other grid. The size of two grids must be equal.
+    void CopyFrom(const ControlGrid<TDataType>& rOther) override
+    {
+        BaseType::CopyFrom(rOther);
+    }
+
+    /// Copy the data the other grid. The size of two grids must be equal.
+    void CopyFrom(const typename ControlGrid<TDataType>::Pointer pOther) override
+    {
+        BaseType::CopyFrom(pOther);
+    }
+
+    /// Copy the data the other grid. The size of two grids must be equal.
+    virtual void CopyFrom(const StructuredControlGrid<0, TDataType>& rOther)
+    {
+        for (std::size_t i = 0; i < this->Size(); ++i)
+        {
+            this->SetValue(i, rOther.GetValue(i));
+        }
+    }
+
+    /// Copy the data the other grid
+    virtual void CopyFrom(const typename StructuredControlGrid<1, TDataType>::Pointer pOther)
+    {
+        this->CopyFrom(*pOther);
+    }
+
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
+    virtual void ResizeAndCopyFrom(const StructuredControlGrid<0, TDataType>& rOther)
+    {
+        for (std::size_t i = 0; i < this->Size(); ++i)
+        {
+            this->SetValue(i, rOther.GetValue(i));
+        }
+    }
+
+    /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
+    virtual void ResizeAndCopyFrom(const typename StructuredControlGrid<0, TDataType>::Pointer pOther)
+    {
+        this->ResizeAndCopyFrom(*pOther);
+    }
+
+    /// Reverse the control grid in specific dimension
+    void Reverse(int idir) override
+    {
+        // DO NOTHING
+    }
+
+    /// Create a connectivity matrix for the structured control grid
+    void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const override
+    {
+        connectivities.clear();
+        connectivities.resize(1);
+        connectivities[0].resize(1);
+        connectivities[0][0] = 0;
+    }
+
+    /// Overload assignment operator
+    StructuredControlGrid<1, TDataType>& operator=(const StructuredControlGrid<1, TDataType>& rOther)
+    {
+        BaseType::operator=(rOther);
+        this->CopyFrom(rOther);
+        return *this;
+    }
+
+    /// Clone this grid
+    typename ControlGrid<TDataType>::Pointer Clone() const override
+    {
+        typename StructuredControlGrid<0, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<0, TDataType>::Pointer(new StructuredControlGrid<0, TDataType>(1));
+        *pNewControlGrid = *this;
+        return pNewControlGrid;
+    }
+
+    /// Information
+    void PrintInfo(std::ostream& rOStream) const override
+    {
+        rOStream << "StructuredGrid<0> " << BaseType::Name() << "[1]";
+    }
+
+    void PrintData(std::ostream& rOStream) const override
+    {
+        rOStream << " Data:\n (";
+        for (std::size_t i = 0; i < BaseType::Data().size(); ++i)
+        {
+            rOStream << " " << BaseType::Data()[i];
+        }
+        rOStream << ")" << std::endl;
+    }
+};
+
+template<typename TDataType>
 class StructuredControlGrid<1, TDataType> : public BaseStructuredControlGrid<TDataType>
 {
 public:

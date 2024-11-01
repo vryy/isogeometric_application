@@ -55,33 +55,53 @@ typename T::MultiPatchType& MultiPatchModelPart_GetMultiPatch2(T& rDummy, std::s
     return *(rDummy.pMultiPatch(i));
 }
 
-template<int TDim>
-ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions(MultiPatchModelPart<TDim>& rDummy,
-        typename Patch<TDim>::Pointer pPatch,
+template<class T>
+void MultiPatchModelPart_BeginModelPart1(T& rDummy)
+{
+    rDummy.BeginModelPart();
+}
+
+template<class T>
+void MultiPatchModelPart_BeginModelPart2(T& rDummy, ModelPart::Pointer pModelPart)
+{
+    rDummy.BeginModelPart(pModelPart);
+}
+
+template<class T>
+ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions(T& rDummy,
+        typename T::PatchType::Pointer pPatch,
         const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     return rDummy.AddConditions(pPatch, condition_name, starting_id, pProperties);
 }
 
-template<int TDim>
-ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary(MultiPatchModelPart<TDim>& rDummy,
-        typename Patch<TDim>::Pointer pPatch, int iside,
+template<class T>
+ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary(T& rDummy,
+        typename T::PatchType::Pointer pPatch, int iside,
         const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
 }
 
-template<int TDim>
-ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2(MultiPatchModelPart<TDim>& rDummy,
-        typename Patch < TDim - 1 >::Pointer pBoundaryPatch,
+template<class T>
+ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnBoundary2(T& rDummy,
+        typename T::BoundaryPatchType::Pointer pBoundaryPatch,
         const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
 }
 
-template<int TDim, typename TVariableType>
-void MultiPatchModelPart_SynchronizeBackward(MultiPatchModelPart<TDim>& rDummy,
+template<class T>
+ModelPart::ConditionsContainerType MultiPatchModelPart_AddConditions_OnSlice(T& rDummy,
+        typename T::PatchType::Pointer pPatch, int idir, double xi,
+        const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
+{
+    return rDummy.AddConditions(pPatch, idir, xi, condition_name, starting_id, pProperties);
+}
+
+template<class T, typename TVariableType>
+void MultiPatchModelPart_SynchronizeBackward(T& rDummy,
         const TVariableType& rVariable, const boost::python::dict& rPatchNodalValues)
 {
     std::map<std::size_t, std::map<std::size_t, typename TVariableType::Type> > patch_nodal_values;
@@ -112,18 +132,18 @@ ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions(T& rDu
     return rDummy.AddConditions(pPatches, condition_name, starting_id, pProperties);
 }
 
-template<int TDim>
-ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary(MultiMultiPatchModelPart<TDim>& rDummy,
-        typename Patch<TDim>::Pointer pPatch, int iside,
+template<class T>
+ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary(T& rDummy,
+        typename T::PatchType::Pointer pPatch, int iside,
         const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.AddConditions(pPatch, side, condition_name, starting_id, pProperties);
 }
 
-template<int TDim>
-ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary2(MultiMultiPatchModelPart<TDim>& rDummy,
-        typename Patch < TDim - 1 >::Pointer pBoundaryPatch,
+template<class T>
+ModelPart::ConditionsContainerType MultiMultiPatchModelPart_AddConditions_OnBoundary2(T& rDummy,
+        typename T::BoundaryPatchType::Pointer pBoundaryPatch,
         const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     return rDummy.AddConditions(pBoundaryPatch, condition_name, starting_id, pProperties);
@@ -139,10 +159,8 @@ boost::python::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDu
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
     {
-        std::stringstream buffer;
-        buffer << "Element " << sample_element_name << " is not registered in Kratos.";
-        buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-        KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+        KRATOS_ERROR << "Element " << sample_element_name << " is not registered in Kratos."
+                     << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
     }
 
     Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
@@ -172,10 +190,8 @@ boost::python::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& r
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
     {
-        std::stringstream buffer;
-        buffer << "Condition " << sample_condition_name << " is not registered in Kratos.";
-        buffer << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
-        KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+        KRATOS_ERROR << "Condition " << sample_condition_name << " is not registered in Kratos."
+                     << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
     }
 
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
@@ -265,12 +281,13 @@ void IsogeometricApplication_AddModelPartToPython()
     ss << "MultiPatchModelPart" << TDim << "D";
     class_<MultiPatchModelPartType, typename MultiPatchModelPartType::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
-    .def("BeginModelPart", &MultiPatchModelPartType::BeginModelPart)
+    .def("BeginModelPart", &MultiPatchModelPart_BeginModelPart1<MultiPatchModelPartType>)
+    .def("BeginModelPart", &MultiPatchModelPart_BeginModelPart2<MultiPatchModelPartType>)
     .def("CreateNodes", &MultiPatchModelPartType::CreateNodes)
     .def("AddElements", &MultiPatchModelPartType::AddElements)
-    .def("AddConditions", &MultiPatchModelPart_AddConditions<TDim>)
-    .def("AddConditions", &MultiPatchModelPart_AddConditions_OnBoundary<TDim>)
-    .def("AddConditions", &MultiPatchModelPart_AddConditions_OnBoundary2<TDim>)
+    .def("AddConditions", &MultiPatchModelPart_AddConditions<MultiPatchModelPartType>)
+    .def("AddConditions", &MultiPatchModelPart_AddConditions_OnBoundary<MultiPatchModelPartType>)
+    .def("AddConditions", &MultiPatchModelPart_AddConditions_OnBoundary2<MultiPatchModelPartType>)
     .def("EndModelPart", &MultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &MultiPatchModelPart_GetModelPart<MultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &MultiPatchModelPart_GetMultiPatch<MultiPatchModelPartType>, return_internal_reference<>())
@@ -280,9 +297,9 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("SynchronizeBackward", &MultiPatchModelPartType::template SynchronizeBackward<Variable<array_1d<double, 3> > >)
     .def("SynchronizeForward", &MultiPatchModelPartType::template SynchronizeForward<Variable<Vector> >)
     .def("SynchronizeBackward", &MultiPatchModelPartType::template SynchronizeBackward<Variable<Vector> >)
-    .def("SynchronizeBackward", &MultiPatchModelPart_SynchronizeBackward<TDim, Variable<double> >)
-    .def("SynchronizeBackward", &MultiPatchModelPart_SynchronizeBackward<TDim, Variable<array_1d<double, 3> > >)
-    .def("SynchronizeBackward", &MultiPatchModelPart_SynchronizeBackward<TDim, Variable<Vector> >)
+    .def("SynchronizeBackward", &MultiPatchModelPart_SynchronizeBackward<MultiPatchModelPartType, Variable<double> >)
+    .def("SynchronizeBackward", &MultiPatchModelPart_SynchronizeBackward<MultiPatchModelPartType, Variable<array_1d<double, 3> > >)
+    .def("SynchronizeBackward", &MultiPatchModelPart_SynchronizeBackward<MultiPatchModelPartType, Variable<Vector> >)
     .def(self_ns::str(self))
     ;
 
@@ -292,12 +309,13 @@ void IsogeometricApplication_AddModelPartToPython()
     class_<MultiMultiPatchModelPartType, typename MultiMultiPatchModelPartType::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def("AddMultiPatch", &MultiMultiPatchModelPartType::AddMultiPatch)
-    .def("BeginModelPart", &MultiMultiPatchModelPartType::BeginModelPart)
+    .def("BeginModelPart", &MultiPatchModelPart_BeginModelPart1<MultiMultiPatchModelPartType>)
+    .def("BeginModelPart", &MultiPatchModelPart_BeginModelPart2<MultiMultiPatchModelPartType>)
     .def("CreateNodes", &MultiMultiPatchModelPartType::CreateNodes)
     .def("AddElements", &MultiMultiPatchModelPart_AddElements<MultiMultiPatchModelPartType>)
     .def("AddConditions", &MultiMultiPatchModelPart_AddConditions<MultiMultiPatchModelPartType>)
-    .def("AddConditions", &MultiMultiPatchModelPart_AddConditions_OnBoundary<TDim>)
-    .def("AddConditions", &MultiMultiPatchModelPart_AddConditions_OnBoundary2<TDim>)
+    .def("AddConditions", &MultiMultiPatchModelPart_AddConditions_OnBoundary<MultiMultiPatchModelPartType>)
+    .def("AddConditions", &MultiMultiPatchModelPart_AddConditions_OnBoundary2<MultiMultiPatchModelPartType>)
     .def("EndModelPart", &MultiMultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &MultiPatchModelPart_GetModelPart<MultiMultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &MultiPatchModelPart_GetMultiPatch2<MultiMultiPatchModelPartType>, return_internal_reference<>())

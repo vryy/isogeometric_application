@@ -54,7 +54,7 @@ public:
 
     /// Default constructor
     NonConformingMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch)
-        : mpMultiPatch(pMultiPatch), mEchoLevel(1)
+        : mpMultiPatch(pMultiPatch), mLastNodeId(0), mLastElemId(0)
     {}
 
     /// Destructor
@@ -103,18 +103,18 @@ public:
     /// Append to model_part, the quad/hex element from patches
     void WriteModelPart(ModelPart& r_model_part) const
     {
-        if (mEchoLevel > 0)
+        if (GetEchoLevel() > 0)
         {
             std::cout << "invoking NonConformingMultipatchLagrangeMesh::" << __FUNCTION__ << std::endl;
         }
 
         // get the sample element
         std::string element_name = mBaseElementName;
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             element_name = element_name + "2D4N";
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             element_name = element_name + "3D8N";
         }
@@ -140,7 +140,7 @@ public:
                 continue;
             }
 
-            if (mEchoLevel > 1)
+            if (GetEchoLevel() > 1)
             {
                 std::cout << "Elements will be created on patch " << it->Id() << std::endl;
             }
@@ -151,15 +151,14 @@ public:
                 KRATOS_WATCH(it->LayerIndex())
                 KRATOS_WATCH(it->Id())
                 KRATOS_WATCH(it->Prefix())
-                KRATOS_ERROR << "Invalid layer index " << it->LayerIndex();
+                KRATOS_ERROR << "Patch " << it->Id() << " has invalid layer index " << it->LayerIndex();
             }
             Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->LayerIndex());
-            // Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->Id());
 
             // generate the connectivities
             std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities;
 
-            if (TDim == 2)
+            if constexpr (TDim == 2)
             {
                 // create new nodes and elements
                 typename std::map<IndexType, boost::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
@@ -170,7 +169,7 @@ public:
 
                 IndexType NumDivision1 = it_num->second[0];
                 IndexType NumDivision2 = it_num->second[1];
-                if (mEchoLevel > 1)
+                if (GetEchoLevel() > 1)
                     std::cout << "Divisioning for patch " << it->Id() << ": " << NumDivision1
                               << " " << NumDivision2 << std::endl;
 
@@ -181,7 +180,7 @@ public:
                 points_and_connectivities = IsogeometricPostUtility::GenerateQuadGrid(corners[0], corners[1],
                                             corners[2], corners[3], NodeCounter, NumDivision1, NumDivision2);
             }
-            else if (TDim == 3)
+            else if constexpr (TDim == 3)
             {
                 // create new nodes and elements
                 typename std::map<IndexType, boost::array<IndexType, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
@@ -193,7 +192,7 @@ public:
                 IndexType NumDivision1 = it_num->second[0];
                 IndexType NumDivision2 = it_num->second[1];
                 IndexType NumDivision3 = it_num->second[2];
-                if (mEchoLevel > 1)
+                if (GetEchoLevel() > 1)
                     std::cout << "Divisioning for patch " << it->Id() << ": " << NumDivision1
                               << " " << NumDivision2 << " " << NumDivision3 << std::endl;
 
@@ -218,7 +217,7 @@ public:
             for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
             {
                 r_model_part.AddElement(*it2);
-                if (mEchoLevel > 2)
+                if (GetEchoLevel() > 2)
                 {
                     std::cout << "Element " << (*it2)->Id() << " is created with connectivity:";
                     for (std::size_t n = 0; n < (*it2)->GetGeometry().size(); ++n)
@@ -256,8 +255,6 @@ private:
     std::string mBaseElementName;
     IndexType mLastNodeId;
     IndexType mLastElemId;
-
-    int mEchoLevel;
 };
 
 /// output stream function

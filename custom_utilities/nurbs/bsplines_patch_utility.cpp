@@ -433,6 +433,33 @@ void BSplinesPatchUtility::MakeInterface3D(typename Patch<3>::Pointer pPatch1, c
     }
 }
 
+std::vector<std::array<typename Patch<1>::ControlPointType, 2> > BSplinesPatchUtility::ExtractControlPolygon(typename Patch<1>::ConstPointer pPatch)
+{
+    if (pPatch->pFESpace()->Type() != BSplinesFESpace<1>::StaticType())
+    {
+        KRATOS_ERROR << "Patch " << pPatch->Name() << " is not B-Splines patch.";
+    }
+
+    // extract the structured control grid
+    typedef typename Patch<1>::ControlPointType ControlPointType;
+    typename StructuredControlGrid<1, ControlPointType>::ConstPointer pControlPointGrid =
+        iga::dynamic_pointer_cast<const StructuredControlGrid<1, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+
+    std::vector<std::array<ControlPointType, 2> > control_polygon;
+    if (pControlPointGrid->size() > 0)
+    {
+        for (std::size_t i = 0; i < pControlPointGrid->size() - 1; ++i)
+        {
+            std::array<ControlPointType, 2> line;
+            line[0] = pControlPointGrid->GetData(i);
+            line[1] = pControlPointGrid->GetData(i+1);
+            control_polygon.push_back(line);
+        }
+    }
+
+    return std::move(control_polygon);
+}
+
 /// template instantiation
 template typename Patch<2>::Pointer BSplinesPatchUtility::CreateLoftPatch<2>(typename Patch<1>::Pointer pPatch1, typename Patch<1>::Pointer pPatch2);
 template typename Patch<3>::Pointer BSplinesPatchUtility::CreateLoftPatch<3>(typename Patch<2>::Pointer pPatch1, typename Patch<2>::Pointer pPatch2);

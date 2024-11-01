@@ -72,6 +72,18 @@ public:
     template<int TDim>
     static typename MultiPatch<TDim>::Pointer CreateMultiPatchFromGeo(const std::string& fn);
 
+    /// Make the interface between two patches in 1D
+    static void MakeInterface1D(typename Patch<1>::Pointer pPatch1, const BoundarySide side1,
+                                typename Patch<1>::Pointer pPatch2, const BoundarySide side2);
+
+    /// Dummy function to silence the compiler
+    static void MakeInterface1D(typename Patch<2>::Pointer pPatch1, const BoundarySide side1,
+                                typename Patch<2>::Pointer pPatch2, const BoundarySide side2);
+
+    /// Dummy function to silence the compiler
+    static void MakeInterface1D(typename Patch<3>::Pointer pPatch1, const BoundarySide side1,
+                                typename Patch<3>::Pointer pPatch2, const BoundarySide side2);
+
     /// Dummy function to silence the compiler
     static void MakeInterface2D(typename Patch<1>::Pointer pPatch1, const BoundarySide side1,
                                 typename Patch<1>::Pointer pPatch2, const BoundarySide side2, const BoundaryDirection direction);
@@ -98,6 +110,9 @@ public:
     static void MakeInterface3D(typename Patch<3>::Pointer pPatch1, const BoundarySide side1,
                                 typename Patch<3>::Pointer pPatch2, const BoundarySide side2, const bool uv_or_vu,
                                 const BoundaryDirection direction1, const BoundaryDirection direction2);
+
+    /// Extract the control polygon of a 1D patch
+    static std::vector<std::array<typename Patch<1>::ControlPointType, 2> > ExtractControlPolygon(typename Patch<1>::ConstPointer pPatch);
 
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const

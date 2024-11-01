@@ -295,6 +295,45 @@ typename MultiPatch<TDim>::Pointer BSplinesPatchUtility::CreateMultiPatchFromGeo
     return dummy.Import(fn);
 }
 
+void BSplinesPatchUtility::MakeInterface1D(typename Patch<1>::Pointer pPatch1, const BoundarySide side1,
+        typename Patch<1>::Pointer pPatch2, const BoundarySide side2)
+{
+    typename FESpace<0>::Pointer pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
+
+    typename FESpace<0>::Pointer pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2);
+
+    if ( (*pBFESpace1) == (*pBFESpace2) )
+    {
+        typename PatchInterface<1>::Pointer pInterface12;
+        typename PatchInterface<1>::Pointer pInterface21;
+
+        pInterface12 = iga::make_shared<BSplinesPatchInterface<1> >(pPatch1, side1, pPatch2, side2);
+        pInterface21 = iga::make_shared<BSplinesPatchInterface<1> >(pPatch2, side2, pPatch1, side1);
+
+        pInterface12->SetOtherInterface(pInterface21);
+        pInterface21->SetOtherInterface(pInterface12);
+
+        pPatch1->AddInterface(pInterface12);
+        pPatch2->AddInterface(pInterface21);
+    }
+    else
+    {
+        KRATOS_ERROR << "The interface is not created because the two patch's boundaries are not conformed.";
+    }
+}
+
+void BSplinesPatchUtility::MakeInterface1D(typename Patch<2>::Pointer pPatch1, const BoundarySide side1,
+        typename Patch<2>::Pointer pPatch2, const BoundarySide side2)
+{
+    KRATOS_ERROR << "Irrelevant for 2D";
+}
+
+void BSplinesPatchUtility::MakeInterface1D(typename Patch<3>::Pointer pPatch1, const BoundarySide side1,
+        typename Patch<3>::Pointer pPatch2, const BoundarySide side2)
+{
+    KRATOS_ERROR << "Irrelevant for 3D";
+}
+
 void BSplinesPatchUtility::MakeInterface2D(typename Patch<1>::Pointer pPatch1, const BoundarySide side1,
         typename Patch<1>::Pointer pPatch2, const BoundarySide side2, const BoundaryDirection direction)
 {

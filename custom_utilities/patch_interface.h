@@ -101,7 +101,7 @@ public:
     }
 
     /// Validate the compatibility of two patches on the interface
-    virtual bool Validate() const
+    virtual bool Validate(const bool debug, const double dist_tol) const
     {
         return true;
     }

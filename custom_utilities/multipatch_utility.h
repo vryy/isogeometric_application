@@ -80,7 +80,7 @@ public:
 
     /// Check all the interfaces of the multipatch for compatibility issue
     template<int TDim>
-    static void CheckInterfaces(const MultiPatch<TDim>& rMultiPatch)
+    static void CheckInterfaces(const MultiPatch<TDim>& rMultiPatch, const bool debug = false, const double dist_tol = 0.0)
     {
         // loop through all the patches
         for (typename MultiPatch<TDim>::patch_const_iterator it = rMultiPatch.begin(); it != rMultiPatch.end(); ++it)
@@ -89,7 +89,7 @@ public:
             for (auto it_interface = it->InterfaceBegin(); it_interface != it->InterfaceEnd(); ++it_interface)
             {
                 // validate the interface
-                const bool is_valid = (*it_interface)->Validate();
+                const bool is_valid = (*it_interface)->Validate(debug, dist_tol);
 
                 if (!is_valid)
                 {

@@ -70,10 +70,24 @@ public:
     BoundaryDirection Direction(std::size_t dim) const {return _UNDEFINED_DIR_;}
 
     /// Validate the compatibility of two patches on the interface
-    bool Validate() const override
+    bool Validate(const bool debug, const double dist_tol) const override
     {
-        // TODO
-        return false;
+        typename Patch<0>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
+        typename Patch<0>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
+
+        if (debug)
+        {
+            KRATOS_WATCH(*pBPatch1)
+            KRATOS_WATCH(*pBPatch2)
+        }
+
+        bool is_valid = true;
+        if (dist_tol == 0.0)
+            is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2, debug ? 1 : 0));
+        else
+            is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2, debug ? 1 : 0, dist_tol));
+
+        return is_valid;
     }
 };
 
@@ -147,7 +161,7 @@ public:
     }
 
     /// Validate the compatibility of two patches on the interface
-    bool Validate() const override
+    bool Validate(const bool debug, const double dist_tol) const override
     {
         typename Patch<1>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
         typename Patch<1>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
@@ -157,8 +171,17 @@ public:
             BSplinesPatchUtility::Reverse<1>(pBPatch2, 0);
         }
 
+        if (debug)
+        {
+            KRATOS_WATCH(*pBPatch1)
+            KRATOS_WATCH(*pBPatch2)
+        }
+
         bool is_valid = true;
-        is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2));
+        if (dist_tol == 0.0)
+            is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2, debug ? 1 : 0));
+        else
+            is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2, debug ? 1 : 0, dist_tol));
 
         return is_valid;
     }
@@ -292,7 +315,7 @@ public:
     BoundaryDirection Direction(std::size_t dim) const {return mDirections[dim];}
 
     /// Validate the compatibility of two patches on the interface
-    bool Validate() const override
+    bool Validate(const bool debug, const double dist_tol) const override
     {
         typename Patch<2>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
         typename Patch<2>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
@@ -306,8 +329,17 @@ public:
             BSplinesPatchUtility::Reverse<2>(pBPatch2, 1);
         }
 
+        if (debug)
+        {
+            KRATOS_WATCH(*pBPatch1)
+            KRATOS_WATCH(*pBPatch2)
+        }
+
         bool is_valid = true;
-        is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2));
+        if (dist_tol == 0.0)
+            is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2, debug ? 1 : 0));
+        else
+            is_valid = is_valid && (pBPatch1->IsEquivalent(*pBPatch2, debug ? 1 : 0, dist_tol));
 
         return is_valid;
     }

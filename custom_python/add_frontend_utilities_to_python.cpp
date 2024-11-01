@@ -59,6 +59,18 @@ void MultiPatchUtility_CheckInterfaces(MultiPatchUtility& rDummy, typename Multi
 }
 
 template<int TDim>
+void MultiPatchUtility_CheckInterfacesWithDebug(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch, const bool debug)
+{
+    rDummy.CheckInterfaces<TDim>(*pMultiPatch, debug);
+}
+
+template<int TDim>
+void MultiPatchUtility_CheckInterfacesFull(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch, const bool debug, const double dist_tol)
+{
+    rDummy.CheckInterfaces<TDim>(*pMultiPatch, debug, dist_tol);
+}
+
+template<int TDim>
 boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
         const boost::python::list& P, const boost::python::list& list_nsampling)
 {
@@ -247,6 +259,15 @@ boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility
     else
         KRATOS_THROW_ERROR(std::logic_error, "The dimension of the patch is invalid", "")
         return patches;
+}
+
+void BSplinesPatchUtility_MakeInterface1D(BSplinesPatchUtility& rDummy,
+        typename Patch<1>::Pointer pPatch1, int iside1,
+        typename Patch<1>::Pointer pPatch2, int iside2)
+{
+    BoundarySide side1 = static_cast<BoundarySide>(iside1);
+    BoundarySide side2 = static_cast<BoundarySide>(iside2);
+    rDummy.MakeInterface1D(pPatch1, side1, pPatch2, side2);
 }
 
 void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
@@ -526,6 +547,12 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<1>)
     .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<2>)
     .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<3>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<1>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<2>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<3>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<1>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<2>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<3>)
     .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<2>)
     .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<3>)
     .def("ComputeSpatialDerivatives", &MultiPatchUtility_ComputeSpatialDerivatives<2>)
@@ -568,6 +595,7 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CreateLoftPatchFromList2D", &BSplinesPatchUtility_CreateLoftPatchFromList<2>)
     .def("CreateLoftPatchFromList3D", &BSplinesPatchUtility_CreateLoftPatchFromList<3>)
     .def("CreatePatchFromGeo", &BSplinesPatchUtility_CreatePatchFromGeo)
+    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface1D)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D)
     .def("MakeInterface", &BSplinesPatchUtility_MakeInterface3D)
     .def("Reverse", &BSplinesPatchUtility_Reverse<1>)

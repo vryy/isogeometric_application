@@ -858,10 +858,12 @@ public:
     }
 
     /// Compare two patches in terms of parametric information and control points.
-    bool IsEquivalent(const Patch<TDim>& rOtherPatch) const
+    bool IsEquivalent(const Patch<TDim>& rOtherPatch, const int echo_level = 0, const double dist_tol = DISTANCE_TOLERANCE) const
     {
         if (!this->IsCompatible(rOtherPatch))
         {
+            if (echo_level > 0)
+                std::cout << "Patch equivalence check: The two patches are not compatible" << std::endl;
             return false;
         }
 
@@ -872,6 +874,8 @@ public:
 
         if (pThisControlPointGrid->size() != pOtherControlPointGrid->size())
         {
+            if (echo_level > 0)
+                std::cout << "Patch equivalence check: The two control grid have different size" << std::endl;
             return false;
         }
 
@@ -881,8 +885,12 @@ public:
             const ControlPointType& p2 = pOtherControlPointGrid->GetData(i);
 
             const double dist = p1.Distance(p2);
-            if (dist > DISTANCE_TOLERANCE)
+            if (dist > dist_tol)
             {
+                if (echo_level > 0)
+                   std::cout << "Patch equivalence check: The control point " << p1 << " and " << p2
+                             << " are not the same. The difference = " << dist << " > " << dist_tol
+                             << std::endl;
                 return false;
             }
         }
@@ -1075,6 +1083,9 @@ public:
     // Type definitions
     typedef ControlPoint<double> ControlPointType;
 
+    /// Constants
+    static constexpr double DISTANCE_TOLERANCE = 1e-13;
+
     /// Default constructor
     Patch() : IndexedObject(0) {}
 
@@ -1120,7 +1131,11 @@ public:
     /// Set the control point grid
     typename GridFunction<0, ControlPointType>::Pointer CreateControlPointGridFunction(typename ControlGrid<ControlPointType>::Pointer pControlPointGrid)
     {
-        return NULL;
+        pControlPointGrid->SetName("CONTROL_POINT");
+        typename GridFunction<0, ControlPointType>::Pointer pNewGridFunc = GridFunction<0, ControlPointType>::Create(mpFESpace, pControlPointGrid);
+        mpControlPointGridFunc = pNewGridFunc;
+
+        return pNewGridFunc;
     }
 
     /// Get the control point grid function
@@ -1166,6 +1181,34 @@ public:
     // {
     //     return NULL;
     // }
+
+    /// Compare two patches in terms of parametric information and control points.
+    bool IsEquivalent(const Patch<0>& rOtherPatch, const int echo_level = 0, const double dist_tol = DISTANCE_TOLERANCE) const
+    {
+        // compare the control points
+
+        typename ControlGrid<ControlPointType>::ConstPointer pThisControlPointGrid = ControlPointGridFunction().pControlGrid();
+        typename ControlGrid<ControlPointType>::ConstPointer pOtherControlPointGrid = rOtherPatch.ControlPointGridFunction().pControlGrid();
+
+        if (pThisControlPointGrid->size() != pOtherControlPointGrid->size())
+        {
+            return false;
+        }
+
+        for (std::size_t i = 0; i < pThisControlPointGrid->size(); ++i)
+        {
+            const ControlPointType& p1 = pThisControlPointGrid->GetData(i);
+            const ControlPointType& p2 = pOtherControlPointGrid->GetData(i);
+
+            const double dist = p1.Distance(p2);
+            if (dist > dist_tol)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const

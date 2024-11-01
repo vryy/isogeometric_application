@@ -152,7 +152,7 @@ public:
 
             for (interface_const_iterator it2 = it->InterfaceBegin(); it2 != it->InterfaceEnd(); ++it2)
             {
-                bool check2 = (*it2)->Validate();
+                bool check2 = (*it2)->Validate(false, PatchType::DISTANCE_TOLERANCE);
                 if (!check2)
                 {
                     return false;

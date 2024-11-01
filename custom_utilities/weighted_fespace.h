@@ -234,7 +234,153 @@ public:
                 }
             }
         }
+    }
 
+    /// Get the derivatives of the basis functions at point xi
+    /// the output values has the form of values[func_index][dim_index]
+    void GetDerivatives(const unsigned int nd, std::vector<std::vector<std::vector<double> > >& new_dvalues, const std::vector<double>& xi) const override
+    {
+        std::vector<double> values;
+        std::vector<std::vector<std::vector<double> > > dvalues;
+        mpFESpace->GetValuesAndDerivatives(nd, values, dvalues, xi);
+
+        if (new_dvalues.size() != nd)
+            new_dvalues.resize(nd);
+
+        for (unsigned int i = 0; i < nd; ++i)
+        {
+            if (new_dvalues[i].size() != dvalues[i].size())
+            {
+                new_dvalues[i].resize(dvalues[i].size());
+            }
+            for (std::size_t j = 0; j < new_dvalues[i].size(); ++j)
+            {
+                if (new_dvalues[i][j].size() != dvalues[i][j].size())
+                {
+                    new_dvalues[i][j].resize(dvalues[i][j].size());
+                }
+            }
+        }
+
+        double sum_value = 0.0;
+        for (std::size_t i = 0; i < values.size(); ++i)
+        {
+            sum_value += mWeights[i] * values[i];
+        }
+
+        std::vector<double> dsum_value;
+        if (nd > 0)
+        {
+            dsum_value.resize(TDim);
+            std::fill(dsum_value.begin(), dsum_value.end(), 0.0);
+            for (std::size_t i = 0; i < values.size(); ++i)
+            {
+                for (int dim = 0; dim < TDim; ++dim)
+                {
+                    dsum_value[dim] += mWeights[i] * dvalues[0][i][dim];
+                }
+            }
+        }
+
+        std::vector<double> d2sum_value;
+        if (nd > 0)
+        {
+            const unsigned int nders = TDim*(TDim+1)/2;
+            d2sum_value.resize(nders);
+            std::fill(d2sum_value.begin(), d2sum_value.end(), 0.0);
+            for (std::size_t i = 0; i < values.size(); ++i)
+            {
+                for (int dim = 0; dim < nders; ++dim)
+                {
+                    d2sum_value[dim] += mWeights[i] * dvalues[1][i][dim];
+                }
+            }
+        }
+
+        if (sum_value == 0.0)
+        {
+            for (unsigned int i = 0; i < nd; ++i)
+            {
+                for (std::size_t j = 0; j < new_dvalues[i].size(); ++j)
+                {
+                    std::fill(new_dvalues[i][j].begin(), new_dvalues[i][j].end(), 0.0);
+                }
+            }
+        }
+        else
+        {
+            if (nd > 0)
+            {
+                for (std::size_t i = 0; i < new_dvalues[0].size(); ++i)
+                {
+                    for (int dim = 0; dim < TDim; ++dim)
+                    {
+                        new_dvalues[0][i][dim] = mWeights[i] * (
+                                dvalues[0][i][dim] / sum_value
+                              - values[i] * dsum_value[dim] / pow(sum_value, 2)
+                            );
+                    }
+                }
+            }
+
+            if (nd > 1)
+            {
+                for (std::size_t i = 0; i < new_dvalues[1].size(); ++i)
+                {
+                    for (int dim = 0; dim < TDim; ++dim)
+                    {
+                        new_dvalues[1][i][dim] = mWeights[i] * (
+                                dvalues[1][i][dim] / sum_value
+                              - 2 * dvalues[0][i][dim] * dsum_value[dim] / pow(sum_value, 2)
+                              - values[i] * d2sum_value[dim] / pow(sum_value, 2)
+                              + 2 * values[i] * pow(dsum_value[dim], 2) / pow(sum_value, 3)
+                            );
+                    }
+
+                    if constexpr (TDim == 2)
+                    {
+                        new_dvalues[1][i][2] = mWeights[i] * (
+                                dvalues[1][i][2] / sum_value
+                              - dvalues[0][i][0] * dsum_value[1] / pow(sum_value, 2)
+                              - dvalues[0][i][1] * dsum_value[0] / pow(sum_value, 2)
+                              - values[i] * d2sum_value[2] / pow(sum_value, 2)
+                              + 2 * values[i] * dsum_value[0] * dsum_value[1] / pow(sum_value, 3)
+                            );
+                    }
+                    else if constexpr (TDim == 3)
+                    {
+                        new_dvalues[1][i][3] = mWeights[i] * (
+                                dvalues[1][i][3] / sum_value
+                              - dvalues[0][i][0] * dsum_value[1] / pow(sum_value, 2)
+                              - dvalues[0][i][1] * dsum_value[0] / pow(sum_value, 2)
+                              - values[i] * d2sum_value[3] / pow(sum_value, 2)
+                              + 2 * values[i] * dsum_value[0] * dsum_value[1] / pow(sum_value, 3)
+                            );
+
+                        new_dvalues[1][i][4] = mWeights[i] * (
+                                dvalues[1][i][4] / sum_value
+                              - dvalues[0][i][1] * dsum_value[2] / pow(sum_value, 2)
+                              - dvalues[0][i][2] * dsum_value[1] / pow(sum_value, 2)
+                              - values[i] * d2sum_value[4] / pow(sum_value, 2)
+                              + 2 * values[i] * dsum_value[1] * dsum_value[2] / pow(sum_value, 3)
+                            );
+
+                        new_dvalues[1][i][5] = mWeights[i] * (
+                                dvalues[1][i][5] / sum_value
+                              - dvalues[0][i][0] * dsum_value[2] / pow(sum_value, 2)
+                              - dvalues[0][i][2] * dsum_value[0] / pow(sum_value, 2)
+                              - values[i] * d2sum_value[5] / pow(sum_value, 2)
+                              + 2 * values[i] * dsum_value[0] * dsum_value[2] / pow(sum_value, 3)
+                            );
+                    }
+                }
+            }
+
+            if (nd > 2)
+            {
+                KRATOS_ERROR << "Higher order " << nd << " > 2 is not yet supported";
+            }
+        }
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////

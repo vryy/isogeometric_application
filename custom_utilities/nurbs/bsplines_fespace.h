@@ -45,7 +45,19 @@ struct BSplinesFESpace_Helper
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
     static void GetValuesAndDerivatives(const BSplinesFESpace<TDim>& rFESpace,
-                                        std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi);
+                                        std::vector<double>& values,
+                                        std::vector<std::vector<double> >& derivatives,
+                                        const std::vector<double>& xi);
+
+    /// the output derivatives has the form of values[der_index][func_index][param_index]
+    /// For the first derivatives, param_index is 0,1,..,dim
+    /// For the second derivatives, param_index is 00,11,..,01,02,..,11,12,..
+    /// For the higher derivatives, param_index is [d1][d2][d3] (d1<=d2<=d3) (TODO)
+    static void GetValuesAndDerivatives(const BSplinesFESpace<TDim>& rFESpace,
+                                        const unsigned int nd,
+                                        std::vector<double>& values,
+                                        std::vector<std::vector<std::vector<double> > >& derivatives,
+                                        const std::vector<double>& xi);
 };
 
 /**
@@ -248,11 +260,24 @@ public:
         this->GetValuesAndDerivatives(dummy, values, xi);
     }
 
+    /// [derived]
+    void GetDerivatives(const unsigned int nd, std::vector<std::vector<std::vector<double> > >& values, const std::vector<double>& xi) const final
+    {
+        std::vector<double> dummy;
+        this->GetValuesAndDerivatives(nd, dummy, values, xi);
+    }
+
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
     void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const final
     {
         BSplinesFESpace_Helper<TDim>::GetValuesAndDerivatives(*this, values, derivatives, xi);
+    }
+
+    /// [derived]
+    void GetValuesAndDerivatives(const unsigned int nd, std::vector<double>& values, std::vector<std::vector<std::vector<double> > >& derivatives, const std::vector<double>& xi) const final
+    {
+        BSplinesFESpace_Helper<TDim>::GetValuesAndDerivatives(*this, nd, values, derivatives, xi);
     }
 
     /// Check if a point lies inside the parametric domain of the BSplinesFESpace
@@ -1355,11 +1380,11 @@ public:
     /// Get the order of the BSplines patch in specific direction
     std::size_t Order(std::size_t i) const final {return 0;}
 
-    /// Get the number of basis functions defined over the BSplines BSplinesFESpace on one direction
-    std::size_t Number(std::size_t i) const {return 0;}
+    /// Get the number of basis functions defined over the BSplinesFESpace on one direction
+    std::size_t Number(std::size_t i) const {return 1;}
 
-    /// Get the number of basis functions defined over the BSplines BSplinesFESpace
-    std::size_t Number() const {return 0;}
+    /// Get the number of basis functions defined over the BSplinesFESpace
+    std::size_t Number() const {return 1;}
 
     /// Get the string describing the type of the patch
     std::string Type() const final

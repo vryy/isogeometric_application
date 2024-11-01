@@ -101,6 +101,35 @@ boost::python::list GridFunction_GetDerivative2(TGridFrunctionType& rDummy, cons
     return results;
 }
 
+template<class TGridFrunctionType>
+boost::python::list GridFunction_GetSecondDerivative1(TGridFrunctionType& rDummy, const boost::python::list& xi)
+{
+    std::vector<double> xi_vec;
+    IsogeometricPythonUtils::Unpack<double, double>(xi, xi_vec);
+
+    std::vector<typename TGridFrunctionType::DataType> derivatives;
+    rDummy.GetSecondDerivative(derivatives, xi_vec);
+
+    boost::python::list results;
+    for (std::size_t i = 0; i < derivatives.size(); ++i)
+        results.append(derivatives[i]);
+
+    return results;
+}
+
+template<class TGridFrunctionType>
+boost::python::list GridFunction_GetSecondDerivative2(TGridFrunctionType& rDummy, const array_1d<double, 3>& xi)
+{
+    std::vector<typename TGridFrunctionType::DataType> derivatives;
+    rDummy.GetSecondDerivative(derivatives, xi);
+
+    boost::python::list results;
+    for (std::size_t i = 0; i < derivatives.size(); ++i)
+        results.append(derivatives[i]);
+
+    return results;
+}
+
 template<class TGridFrunctionType, typename TCoordinatesType>
 boost::python::list GridFunction_LocalCoordinates(TGridFrunctionType& rDummy,
         const typename TGridFrunctionType::DataType& v, const TCoordinatesType& xi0)
@@ -134,6 +163,8 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     .def("GetValue", &GridFunction_GetValue2<ControlPointGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative1<ControlPointGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative2<ControlPointGridFunctionType>)
+    .def("GetSecondDerivative", &GridFunction_GetSecondDerivative1<ControlPointGridFunctionType>)
+    .def("GetSecondDerivative", &GridFunction_GetSecondDerivative2<ControlPointGridFunctionType>)
     .def(self_ns::str(self))
     ;
 
@@ -148,6 +179,8 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     .def("GetValue", &GridFunction_GetValue2<DoubleGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative1<DoubleGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative2<DoubleGridFunctionType>)
+    .def("GetSecondDerivative", &GridFunction_GetSecondDerivative1<DoubleGridFunctionType>)
+    .def("GetSecondDerivative", &GridFunction_GetSecondDerivative2<DoubleGridFunctionType>)
     .def(self_ns::str(self))
     ;
 
@@ -162,6 +195,8 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     .def("GetValue", &GridFunction_GetValue2<Array1DGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative1<Array1DGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative2<Array1DGridFunctionType>)
+    .def("GetSecondDerivative", &GridFunction_GetSecondDerivative1<Array1DGridFunctionType>)
+    .def("GetSecondDerivative", &GridFunction_GetSecondDerivative2<Array1DGridFunctionType>)
     .def("LocalCoordinates", &GridFunction_LocalCoordinates<Array1DGridFunctionType, array_1d<double, 3> >)
     .def(self_ns::str(self))
     ;
@@ -177,6 +212,8 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     .def("GetValue", &GridFunction_GetValue2<VectorGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative1<VectorGridFunctionType>)
     .def("GetDerivative", &GridFunction_GetDerivative2<VectorGridFunctionType>)
+    .def("GetSecondDerivative", &GridFunction_GetSecondDerivative1<VectorGridFunctionType>)
+    .def("GetSecondDerivative", &GridFunction_GetSecondDerivative2<VectorGridFunctionType>)
     .def("LocalCoordinates", &GridFunction_LocalCoordinates<VectorGridFunctionType, array_1d<double, 3> >)
     .def(self_ns::str(self))
     ;

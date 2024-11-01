@@ -79,55 +79,38 @@ struct GridFunction_Helper
             }
         }
     }
-};
 
-template<int TDim, typename TDataType>
-struct GridFunction_Helper<TDim, TDataType, std::vector<double> >
-{
-    typedef FESpace<TDim> FESpaceType;
-    typedef ControlGrid<TDataType> ControlGridType;
-
-    static void GetValue(TDataType& v, const std::vector<double>& xi,
-                         const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
+    static void GetSecondDerivative(std::vector<TDataType>& dv, const TCoordinatesType& xi,
+                                    const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
     {
-        // firstly get the values of all the basis functions
-        std::vector<double> f_values;
-        rFESpace.GetValues(f_values, xi);
+        std::vector<double> xin(xi.size());
+        std::copy(xi.begin(), xi.end(), xin.begin());
 
-        // then interpolate the value at local coordinates using the control values
-        v = f_values[0] * r_control_grid.GetData(0);
-        for (std::size_t i = 1; i < r_control_grid.size(); ++i)
-        {
-            v += f_values[i] * r_control_grid.GetData(i);
-        }
-    }
-
-    static void GetDerivative(std::vector<TDataType>& dv, const std::vector<double>& xi,
-                              const FESpaceType& rFESpace, const ControlGridType& r_control_grid)
-    {
         // firstly get the values and derivatives of all the basis functions
-        std::vector<std::vector<double> > f_derivatives;
-        rFESpace.GetDerivatives(f_derivatives, xi);
+        std::vector<std::vector<std::vector<double> > > f_derivatives;
+        rFESpace.GetDerivatives(2, f_derivatives, xin);
 
-        // then interpolate the derivative at local coordinates using the control values
-        if (dv.size() != TDim)
+        // then interpolate the second derivative at local coordinates using the control values
+        const unsigned int size = TDim*(TDim+1)/2;
+        if (dv.size() != size)
         {
-            dv.resize(TDim);
+            dv.resize(size);
         }
 
-        for (int dim = 0; dim < TDim; ++dim)
+        for (unsigned int dim = 0; dim < size; ++dim)
         {
-            dv[dim] = f_derivatives[0][dim] * r_control_grid.GetData(0);
+            dv[dim] = f_derivatives[1][0][dim] * r_control_grid.GetData(0);
         }
 
         for (std::size_t i = 1; i < r_control_grid.size(); ++i)
         {
-            for (int dim = 0; dim < TDim; ++dim)
+            for (unsigned int dim = 0; dim < size; ++dim)
             {
-                dv[dim] += f_derivatives[i][dim] * r_control_grid.GetData(i);
+                dv[dim] += f_derivatives[1][i][dim] * r_control_grid.GetData(i);
             }
         }
     }
+
 };
 
 template<int TDim, typename TDataType, typename TCoordinatesType>
@@ -285,9 +268,9 @@ public:
     /// Get the control grid pointer
     typename ControlGridType::ConstPointer pControlGrid() const {return mpControlGrid;}
 
-    /// Get the value of the grid at specific local coordinates
-    /// The function values to interpolate the grid value are provided by FESpace. In the case of NURBS,
-    /// either FESpace or grid value must contain weight information. For examples, if TDataType is CONTROL_POINT,
+    /// Get the value of the grid function at specific local coordinates
+    /// The function values to interpolate the grid function value are provided by FESpace. In the case of NURBS,
+    /// either FESpace or grid function value must contain weight information. For examples, if TDataType is ControlPoint,
     /// the FESpace must be an unweighted one.
     template<typename TCoordinatesType>
     void GetValue(TDataType& v, const TCoordinatesType& xi) const
@@ -295,7 +278,7 @@ public:
         GridFunction_Helper<TDim, TDataType, TCoordinatesType>::GetValue(v, xi, *pFESpace(), *pControlGrid());
     }
 
-    /// Get the value of the grid at specific local coordinates
+    /// Get the value of the grid function at specific local coordinates
     template<typename TCoordinatesType>
     TDataType GetValue(const TCoordinatesType& xi) const
     {
@@ -304,9 +287,9 @@ public:
         return v;
     }
 
-    /// Get the derivatives of the grid at specific local coordinates
+    /// Get the derivatives of the grid function at specific local coordinates
     /// The output values has the form: [d(values(xi)) / d(xi_0), d(values(xi)) / d(xi_1), ...]
-    /// The function derivatives to interpolate the grid value are provided by FESpace. Hence, the TDataType must
+    /// The function derivatives to interpolate the grid function value are provided by FESpace. Hence, the TDataType must
     /// be unweighted type, in order to have correct derivative values. Because, homogeous transformation
     /// is not applied for derivatives. If TDataType is a weighted type, e.g. CONTROL_POINT, one must change to
     /// use the unweighted one, e.g. CONTROL_POINT_COORDINATES.
@@ -316,7 +299,7 @@ public:
         GridFunction_Helper<TDim, TDataType, TCoordinatesType>::GetDerivative(dv, xi, *pFESpace(), *pControlGrid());
     }
 
-    /// Get the derivatives of the grid at specific local coordinates
+    /// Get the derivatives of the grid function at specific local coordinates
     /// The return values has the form: [d_values(xi) / d_xi_0, d_values(xi) / d_xi_1, ...]
     template<typename TCoordinatesType>
     std::vector<TDataType> GetDerivative(const TCoordinatesType& xi) const
@@ -324,6 +307,21 @@ public:
         std::vector<TDataType> dv(TDim);
         this->GetDerivative(dv, xi);
         return dv;
+    }
+
+    /// Get the second derivatives of the grid function at specific local coordinates
+    /// The output values has the form:
+    /// +   in 1D: [d2(values(xi)) / d(xi_0) d(xi_0)]
+    /// +   in 2D: [d2(values(xi)) / d(xi_0) d(xi_0), d2(values(xi)) / d(xi_1) d(xi_1), d2(values(xi)) / d(xi_0) d(xi_1)]
+    /// +   in 3D: [d2(values(xi)) / d(xi_0) d(xi_0), d2(values(xi)) / d(xi_1) d(xi_1), d2(values(xi)) / d(xi_2) d(xi_2), d2(values(xi)) / d(xi_0) d(xi_1), d2(values(xi)) / d(xi_0) d(xi_2), , d2(values(xi)) / d(xi_1) d(xi_2)]
+    /// The function derivatives to interpolate the grid function value are provided by FESpace. Hence, the TDataType must
+    /// be unweighted type, in order to have correct derivative values. Because, homogeous transformation
+    /// is not applied for derivatives. If TDataType is a weighted type, e.g. CONTROL_POINT, one must change to
+    /// use the unweighted one, e.g. CONTROL_POINT_COORDINATES.
+    template<typename TCoordinatesType>
+    void GetSecondDerivative(std::vector<TDataType>& dv, const TCoordinatesType& xi) const
+    {
+        GridFunction_Helper<TDim, TDataType, TCoordinatesType>::GetSecondDerivative(dv, xi, *pFESpace(), *pControlGrid());
     }
 
     /// Compute a prediction for LocalCoordinates algorithm. Because LocalCoordinates uses Newton-Raphson algorithm to compute

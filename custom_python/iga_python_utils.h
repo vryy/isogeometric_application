@@ -10,6 +10,8 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_IGA_PYTHON_UTILS_H_INCLUDED
 
 // System includes
+#include <vector>
+#include <array>
 
 // External includes
 #include <boost/foreach.hpp>
@@ -134,6 +136,21 @@ struct IsogeometricPythonUtils
     template<typename TDataType>
     static void Unpack(const boost::python::dict& rPatchNodalValues,
                        std::map<std::size_t, std::map<std::size_t, TDataType> >& patch_nodal_values);
+
+    template<typename TInputValueType, typename TOutputValueType, std::size_t TSize>
+    static void Unpack(const boost::python::list& rValues, std::array<TOutputValueType, TSize>& values)
+    {
+        if (boost::python::len(rValues) < TSize)
+            KRATOS_ERROR << "Input list does not have sufficient dimension";
+        std::size_t cnt = 0;
+        typedef boost::python::stl_input_iterator<TInputValueType> iterator_value_type;
+        BOOST_FOREACH(const typename iterator_value_type::value_type & v,
+                      std::make_pair(iterator_value_type(rValues), iterator_value_type() ) )
+        {
+            values[cnt] = (static_cast<TOutputValueType>(v));
+            ++cnt;
+        }
+    }
 
 };
 

@@ -158,6 +158,13 @@ public:
         return std::move(values);
     }
 
+    /// Get the derivatives upto nd of the basis functions at point xi
+    /// the output values has the form of values[func_index][dim_index]
+    virtual void GetDerivatives(const unsigned int nd, std::vector<std::vector<std::vector<double> > >& values, const std::vector<double>& xi) const
+    {
+        KRATOS_ERROR << "Calling base class function";
+    }
+
     ///////////////
 
     /// Get the values and derivatives of the basis functions at point xi
@@ -168,6 +175,17 @@ public:
     {
         KRATOS_ERROR << "Calling base class function";
     }
+
+    /// Get the values and derivatives upto nd (>=0) of the basis functions at point xi
+    /// the output derivatives has the form of values[der_index][func_index][param_index]
+    /// For the first derivatives, param_index is 0,1,..,dim
+    /// For the second derivatives, param_index is 00,11,..,01,02,..,11,12,..
+    /// For the higher derivatives, param_index is [d1][d2][d3] (d1<=d2<=d3)
+    virtual void GetValuesAndDerivatives(const unsigned int nd, std::vector<double>& values,
+            std::vector<std::vector<std::vector<double> > >& derivatives,
+            const std::vector<double>& xi) const
+    {
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -545,6 +563,8 @@ public:
 
     virtual void PrintData(std::ostream& rOStream) const
     {
+        rOStream << " Function Indices: " << mFunctionId
+                 << std::endl;
     }
 
 protected:

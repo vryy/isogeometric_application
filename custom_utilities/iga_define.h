@@ -143,7 +143,7 @@ inline std::string BoundarySideName(const BoundarySide& side)
     case _BBOTTOM_:  return "bottom";
     case _BFRONT_:   return "front";
     case _BBACK_:    return "back";
-    default:        return "inner";
+    default:         return "inner";
     }
 }
 
@@ -152,9 +152,9 @@ struct ParameterDirection
 {
     static std::vector<int> Get(const BoundarySide& side)
     {
-        std::stringstream ss;
-        ss << __FUNCTION__ << " is not implemented for " << TDim << "D";
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << __FUNCTION__ << " is not implemented for " << TDim << "D";
+    }
+};
     }
 };
 
@@ -169,7 +169,7 @@ struct ParameterDirection<2>
         case _BRIGHT_:   return _PA_V_;
         case _BTOP_:     return _PA_U_;
         case _BBOTTOM_:  return _PA_U_;
-        default:        return -1;
+        default:         return -1;
         }
         return -1;
     }
@@ -193,7 +193,7 @@ struct ParameterDirection<3>
         case _BBACK_:    return std::vector<int> {_PA_U_, _PA_W_};
         case _BTOP_:     return std::vector<int> {_PA_U_, _PA_V_}; // u, v
         case _BBOTTOM_:  return std::vector<int> {_PA_U_, _PA_V_};
-        default:        return std::vector<int> {-1, -1};
+        default:         return std::vector<int> {-1, -1};
         }
         return std::vector<int> {-1, -1};
     }
@@ -217,14 +217,13 @@ struct ReversedBoundarySide
 
 enum IsogeometricEchoFlags
 {
-    ECHO_REFINEMENT   = 0b0000000000000001,
-    ECHO_REFINEMENT_DETAIL   = 0b0000000000000010,
+    ECHO_REFINEMENT         = 0b0000000000000001,
+    ECHO_REFINEMENT_DETAIL  = 0b0000000000000010,
 };
 
-struct IsogeometricEcho
+class IsogeometricEcho
 {
-    KRATOS_CLASS_POINTER_DEFINITION(IsogeometricEcho);
-
+public:
     IsogeometricEcho() : mEchoLevel(0) {}
     ~IsogeometricEcho() {}
 
@@ -241,6 +240,7 @@ struct IsogeometricEcho
         return ((echo_level & echo_flag) == echo_flag);
     }
 
+private:
     int mEchoLevel;
 };
 

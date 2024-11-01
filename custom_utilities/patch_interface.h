@@ -97,7 +97,7 @@ public:
     /// Get the indices of the control points on this strip from the parent patch
     virtual std::vector<std::size_t> GetIndicesFromParent() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Calling base class function";
     }
 
     /// Validate the compatibility of two patches on the interface

@@ -51,7 +51,7 @@ public:
     typedef MultiPatch<TDim> MultiPatchType;
     typedef Element::NodeType NodeType;
     typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
-    typedef typename Patch<TDim>::ControlPointType ControlPointType;
+    typedef typename PatchType::ControlPointType ControlPointType;
 
     /// Default constructor
     MultiMultiPatchModelPart() : mIsModelPartReady(false)

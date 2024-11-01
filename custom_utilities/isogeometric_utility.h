@@ -286,9 +286,14 @@ public:
         rOStream << pInstance << std::endl;
     }
 
+    virtual std::string Info() const
+    {
+        return "IsogeometricUtility";
+    }
+
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "IsogeometricUtility";
+        rOStream << Info();
     }
 
     virtual void PrintData(std::ostream& rOStream) const

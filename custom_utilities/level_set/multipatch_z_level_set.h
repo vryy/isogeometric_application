@@ -136,10 +136,10 @@ public:
         PointType global_point;
         int target_patch_id;
         int error_code = IsogeometricProjectionUtility::ComputeVerticalProjection(P,
-                         local_point, global_point, target_patch_id,
-                         mpMultiPatch, mProjectionTolerance, mMaxIterations,
-                         mnsampling1, mnsampling2,
-                         this->GetEchoLevel() - 2);
+                                    local_point, global_point, target_patch_id,
+                                    mpMultiPatch, mProjectionTolerance, mMaxIterations,
+                                    mnsampling1, mnsampling2,
+                                    this->GetEchoLevel() - 2);
 
         if (this->GetEchoLevel() > 1)
         {
@@ -264,10 +264,10 @@ public:
         std::vector<double> local_point(2);
         int target_patch_id;
         int error_code = IsogeometricProjectionUtility::ComputeVerticalProjection(P,
-                         local_point, Proj, target_patch_id,
-                         mpMultiPatch, mProjectionTolerance, mMaxIterations,
-                         mnsampling1, mnsampling2,
-                         this->GetEchoLevel() - 2);
+                                        local_point, Proj, target_patch_id,
+                                        mpMultiPatch, mProjectionTolerance, mMaxIterations,
+                                        mnsampling1, mnsampling2,
+                                        this->GetEchoLevel() - 2);
         return error_code;
     }
 
@@ -386,21 +386,6 @@ private:
 ///@name Input and output
 ///@{
 
-/// input stream function
-inline std::istream& operator >> (std::istream& rIStream,
-                                  MultiPatchZLevelSet& rThis)
-{}
-
-/// output stream function
-inline std::ostream& operator << (std::ostream& rOStream,
-                                  const MultiPatchZLevelSet& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
 ///@}
 
 ///@} addtogroup block

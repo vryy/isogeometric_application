@@ -66,14 +66,14 @@ public:
         }
 
         if (num_divisions.size() < TDim)
-            KRATOS_THROW_ERROR(std::logic_error, "Insufficient number of division", "")
+            KRATOS_ERROR << "Insufficient number of division";
 
-            // generate nodes and elements for each patch
+        // generate nodes and elements for each patch
 
-            if (echo_level > 1)
-            {
-                std::cout << "Elements/Conditions will be created on patch " << pPatch->Id() << std::endl;
-            }
+        if (echo_level > 1)
+        {
+            std::cout << "Elements/Conditions will be created on patch " << pPatch->Id() << std::endl;
+        }
 
         // generate the connectivities
         std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities;

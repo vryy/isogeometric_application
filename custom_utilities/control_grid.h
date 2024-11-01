@@ -122,11 +122,14 @@ public:
     virtual void CopyFrom(const ControlGrid<TDataType>& rOther)
     {
         if (rOther.Size() != this->Size())
-            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
-            for (std::size_t i = 0; i < this->size(); ++i)
-            {
-                this->SetData(i, rOther.GetData(i));
-            }
+        {
+            KRATOS_ERROR << "The size of the input grid is incompatible";
+        }
+
+        for (std::size_t i = 0; i < this->size(); ++i)
+        {
+            this->SetData(i, rOther.GetData(i));
+        }
     }
 
     /// Copy the data the other grid. The size of two grids must be equal.

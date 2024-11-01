@@ -57,7 +57,7 @@ public:
     {
         // check if the order is even
         if (this->NormalOrder() % 2 != 0)
-            KRATOS_THROW_ERROR(std::logic_error, "The strip order is not even, but", this->NormalOrder())
+            KRATOS_ERROR << "The strip order is not even, but " << this->NormalOrder();
 
             // get the boundary patches
             typename Patch < TDim - 1 >::Pointer pBPatch1 = pPatch1->ConstructBoundaryPatch(side1);
@@ -68,13 +68,13 @@ public:
         {
             KRATOS_WATCH(*pBPatch1)
             KRATOS_WATCH(*pBPatch2)
-            KRATOS_THROW_ERROR(std::logic_error, "The two boundary patches are not the same", "")
+            KRATOS_ERROR << "The two boundary patches are not the same";
         }
 
         // get the FESpace of boundary patch 1
         typename BSplinesFESpace < TDim - 1 >::Pointer pBFESpace = iga::dynamic_pointer_cast < BSplinesFESpace < TDim - 1 > > (pBPatch1->pFESpace());
         if (pBFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
+            KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
 
             // construct the FESpace
             typename BSplinesFESpace<TDim>::Pointer pFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
@@ -111,7 +111,7 @@ public:
     {
         // check if the order is even
         if (this->NormalOrder() % 2 != 0)
-            KRATOS_THROW_ERROR(std::logic_error, "The strip order is not even, but", this->NormalOrder())
+            KRATOS_ERROR << "The strip order is not even, but " << this->NormalOrder();
 
             // get the boundary patches
             typename Patch < TDim - 1 >::Pointer pBPatch1 = pPatch1->ConstructBoundaryPatch(side1);
@@ -122,16 +122,18 @@ public:
         {
             KRATOS_WATCH(*pBPatch1)
             KRATOS_WATCH(*pBPatch2)
-            KRATOS_THROW_ERROR(std::logic_error, "The two boundary patches are not the same", "")
+            KRATOS_ERROR << "The two boundary patches are not the same";
         }
 
         // get the FESpace of boundary patch 1
         typename BSplinesFESpace < TDim - 1 >::Pointer pBFESpace = iga::dynamic_pointer_cast < BSplinesFESpace < TDim - 1 > > (pBPatch1->pFESpace());
         if (pBFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
+        {
+            KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
+        }
 
-            // construct the FESpace
-            typename BSplinesFESpace<TDim>::Pointer pFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
+        // construct the FESpace
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
 
         for (std::size_t dim = 0; dim < TDim - 1; ++dim)
         {
@@ -230,20 +232,26 @@ private:
 
         typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid1 = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid1 );
         if (psControlGrid1 == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+        {
+            KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
+        }
 
-            typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid2 = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid2 );
+        typename StructuredControlGrid<TDim, TDataType>::Pointer psControlGrid2 = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, TDataType> >( pControlGrid2 );
         if (psControlGrid2 == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+        {
+            KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
+        }
 
-            typename StructuredControlGrid < TDim - 1, TDataType >::Pointer psBControlGrid = iga::dynamic_pointer_cast < StructuredControlGrid < TDim - 1, TDataType > > ( pBControlGrid );
+        typename StructuredControlGrid < TDim - 1, TDataType >::Pointer psBControlGrid = iga::dynamic_pointer_cast < StructuredControlGrid < TDim - 1, TDataType > > ( pBControlGrid );
         if (psBControlGrid == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+        {
+            KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
+        }
 
-            for (std::size_t i = 0; i < this->NormalOrder() / 2; ++i)
-            {
-                pSlicedControlGrids.push_back(psControlGrid1->Get(this->Side1(), i + 1));
-            }
+        for (std::size_t i = 0; i < this->NormalOrder() / 2; ++i)
+        {
+            pSlicedControlGrids.push_back(psControlGrid1->Get(this->Side1(), i + 1));
+        }
 
         pSlicedControlGrids.push_back(psBControlGrid);
 

@@ -66,14 +66,14 @@ struct GridFunction_Helper
             dv.resize(TDim);
         }
 
-        for (int dim = 0; dim < TDim; ++dim)
+        for (unsigned int dim = 0; dim < TDim; ++dim)
         {
             dv[dim] = f_derivatives[0][dim] * r_control_grid.GetData(0);
         }
 
         for (std::size_t i = 1; i < r_control_grid.size(); ++i)
         {
-            for (int dim = 0; dim < TDim; ++dim)
+            for (unsigned int dim = 0; dim < TDim; ++dim)
             {
                 dv[dim] += f_derivatives[i][dim] * r_control_grid.GetData(i);
             }

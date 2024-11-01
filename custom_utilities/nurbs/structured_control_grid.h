@@ -44,7 +44,7 @@ public:
     BaseStructuredControlGrid(const std::string& Name) : BaseType(Name) {}
 
     /// Destructor
-    virtual ~BaseStructuredControlGrid() {}
+    ~BaseStructuredControlGrid() override {}
 
     /************************************/
     /********* INHERIT UPSTREAM *********/
@@ -126,25 +126,25 @@ public:
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     void ResizeAndCopyFrom(ControlGrid<TDataType>& rOther) override
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     void ResizeAndCopyFrom(const typename ControlGrid<TDataType>::Pointer pOther) override
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Reverse the control grid in specific dimension
     virtual void Reverse(int idir)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Create a connectivity matrix for the structured control grid
     virtual void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
 private:
@@ -198,7 +198,7 @@ public:
     }
 
     /// Destructor
-    virtual ~StructuredControlGrid() {}
+    ~StructuredControlGrid() override {}
 
     /// Create a new control grid pointer
     static typename StructuredControlGrid<1, TDataType>::Pointer Create(const std::vector<std::size_t>& sizes)
@@ -271,11 +271,14 @@ public:
     virtual void CopyFrom(const StructuredControlGrid<1, TDataType>& rOther)
     {
         if (rOther.Size() != this->Size())
-            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
-            for (std::size_t i = 0; i < this->Size(); ++i)
-            {
-                this->SetValue(i, rOther.GetValue(i));
-            }
+        {
+            KRATOS_ERROR << "The size of the grid is incompatible";
+        }
+
+        for (std::size_t i = 0; i < this->Size(); ++i)
+        {
+            this->SetValue(i, rOther.GetValue(i));
+        }
     }
 
     /// Copy the data the other grid
@@ -393,7 +396,7 @@ public:
     }
 
     /// Destructor
-    virtual ~StructuredControlGrid() {}
+    ~StructuredControlGrid() override {}
 
     /// Create a new control grid pointer
     static typename StructuredControlGrid<2, TDataType>::Pointer Create(const std::vector<std::size_t>& sizes)
@@ -467,12 +470,17 @@ public:
     virtual void CopyFrom(const StructuredControlGrid<2, TDataType>& rOther)
     {
         if ( ( rOther.Size(0) != this->Size(1) ) || ( rOther.Size(1) != this->Size(1) ) )
-            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
-            for (std::size_t i = 0; i < this->Size(0); ++i)
-                for (std::size_t j = 0; j < this->Size(1); ++j)
-                {
-                    this->SetValue(i, j, rOther.GetValue(i, j));
-                }
+        {
+            KRATOS_ERROR << "The size of the grid is incompatible";
+        }
+
+        for (std::size_t i = 0; i < this->Size(0); ++i)
+        {
+            for (std::size_t j = 0; j < this->Size(1); ++j)
+            {
+                this->SetValue(i, j, rOther.GetValue(i, j));
+            }
+        }
     }
 
     /// Copy the data the other grid
@@ -487,24 +495,30 @@ public:
     void CopyFrom(int dir, const std::vector<typename StructuredControlGrid<1, TDataType>::Pointer>& pOthers)
     {
         if (pOthers.size() != this->Size(dir))
-            KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
+        {
+            KRATOS_ERROR << "The size is incompatible";
+        }
 
-            if (dir == 0)
+        if (dir == 0)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
             {
-                for (std::size_t i = 0; i < this->Size(0); ++i)
-                    for (std::size_t j = 0; j < this->Size(1); ++j)
-                    {
-                        this->SetValue(i, j, pOthers[i]->GetValue(j));
-                    }
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                {
+                    this->SetValue(i, j, pOthers[i]->GetValue(j));
+                }
             }
-            else if (dir == 1)
+        }
+        else if (dir == 1)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
             {
-                for (std::size_t i = 0; i < this->Size(0); ++i)
-                    for (std::size_t j = 0; j < this->Size(1); ++j)
-                    {
-                        this->SetValue(i, j, pOthers[j]->GetValue(i));
-                    }
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                {
+                    this->SetValue(i, j, pOthers[j]->GetValue(i));
+                }
             }
+        }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
@@ -515,10 +529,12 @@ public:
             BaseType::Data().resize(rOther.Size(0)*rOther.Size(1));
         }
         for (std::size_t i = 0; i < this->Size(0); ++i)
+        {
             for (std::size_t j = 0; j < this->Size(1); ++j)
             {
                 this->SetValue(i, j, rOther.GetValue(i, j));
             }
+        }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
@@ -597,7 +613,7 @@ public:
             }
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid side", side)
+            KRATOS_ERROR << "Invalid side " << side;
 
             return pControlGrid;
     }
@@ -698,7 +714,7 @@ public:
     }
 
     /// Destructor
-    virtual ~StructuredControlGrid() {}
+    ~StructuredControlGrid() override {}
 
     /// Create a new control grid pointer
     static typename StructuredControlGrid<3, TDataType>::Pointer Create(const std::vector<std::size_t>& sizes)
@@ -781,13 +797,20 @@ public:
         if ( ( rOther.Size(0) != this->Size(0) )
                 || ( rOther.Size(1) != this->Size(1) )
                 || ( rOther.Size(2) != this->Size(2) ) )
-            KRATOS_THROW_ERROR(std::logic_error, "The size of the grid is incompatible", "")
-            for (std::size_t i = 0; i < this->Size(0); ++i)
-                for (std::size_t j = 0; j < this->Size(1); ++j)
-                    for (std::size_t k = 0; k < this->Size(2); ++k)
-                    {
-                        this->SetValue(i, j, k, rOther.GetValue(i, j, k));
-                    }
+        {
+            KRATOS_ERROR << "The size of the grid is incompatible";
+        }
+
+        for (std::size_t i = 0; i < this->Size(0); ++i)
+        {
+            for (std::size_t j = 0; j < this->Size(1); ++j)
+            {
+                for (std::size_t k = 0; k < this->Size(2); ++k)
+                {
+                    this->SetValue(i, j, k, rOther.GetValue(i, j, k));
+                }
+            }
+        }
     }
 
     /// Copy the data the other grid
@@ -803,35 +826,37 @@ public:
     void CopyFrom(int dir, const std::vector<typename StructuredControlGrid<2, TDataType>::Pointer>& pOthers)
     {
         if (pOthers.size() != this->Size(dir))
-            KRATOS_THROW_ERROR(std::logic_error, "The size is incompatible", "")
+        {
+            KRATOS_ERROR << "The size is incompatible";
+        }
 
-            if (dir == 0)
-            {
-                for (std::size_t i = 0; i < this->Size(0); ++i)
-                    for (std::size_t j = 0; j < this->Size(1); ++j)
-                        for (std::size_t k = 0; k < this->Size(2); ++k)
-                        {
-                            this->SetValue(i, j, k, pOthers[i]->GetValue(j, k));
-                        }
-            }
-            else if (dir == 1)
-            {
-                for (std::size_t i = 0; i < this->Size(0); ++i)
-                    for (std::size_t j = 0; j < this->Size(1); ++j)
-                        for (std::size_t k = 0; k < this->Size(2); ++k)
-                        {
-                            this->SetValue(i, j, k, pOthers[j]->GetValue(i, k));
-                        }
-            }
-            else if (dir == 2)
-            {
-                for (std::size_t i = 0; i < this->Size(0); ++i)
-                    for (std::size_t j = 0; j < this->Size(1); ++j)
-                        for (std::size_t k = 0; k < this->Size(2); ++k)
-                        {
-                            this->SetValue(i, j, k, pOthers[k]->GetValue(i, j));
-                        }
-            }
+        if (dir == 0)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                    {
+                        this->SetValue(i, j, k, pOthers[i]->GetValue(j, k));
+                    }
+        }
+        else if (dir == 1)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                    {
+                        this->SetValue(i, j, k, pOthers[j]->GetValue(i, k));
+                    }
+        }
+        else if (dir == 2)
+        {
+            for (std::size_t i = 0; i < this->Size(0); ++i)
+                for (std::size_t j = 0; j < this->Size(1); ++j)
+                    for (std::size_t k = 0; k < this->Size(2); ++k)
+                    {
+                        this->SetValue(i, j, k, pOthers[k]->GetValue(i, j));
+                    }
+        }
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
@@ -908,7 +933,7 @@ public:
     typename StructuredControlGrid<2, TDataType>::Pointer Get(const BoundarySide& side, const unsigned int& level) const
     {
         // TODO
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented")
+        KRATOS_ERROR << "Not yet implemented";
 
         typename StructuredControlGrid<2, TDataType>::Pointer pControlGrid;
 

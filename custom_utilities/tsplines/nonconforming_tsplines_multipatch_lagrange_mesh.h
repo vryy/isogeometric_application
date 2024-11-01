@@ -48,7 +48,9 @@ public:
     typedef std::size_t IndexType;
 
     /// Default constructor
-    NonConformingTSplinesMultipatchLagrangeMesh(typename MultiPatch<TFESpaceType::Dim()>::Pointer pMultiPatch) : mpMultiPatch(pMultiPatch) {}
+    NonConformingTSplinesMultipatchLagrangeMesh(typename MultiPatch<TFESpaceType::Dim()>::Pointer pMultiPatch)
+    : mpMultiPatch(pMultiPatch)
+    {}
 
     /// Destructor
     virtual ~NonConformingTSplinesMultipatchLagrangeMesh() {}
@@ -65,7 +67,6 @@ public:
                 mNumDivision[it->Id()][dim] = num_division;
             }
         }
-
     }
 
     /// Set the division for the patch at specific dimension
@@ -99,11 +100,11 @@ public:
     {
         // get the sample element
         std::string element_name = mBaseElementName;
-        if (TFESpaceType::Dim() == 2)
+        if constexpr (TFESpaceType::Dim() == 2)
         {
             element_name = element_name + "2D4N";
         }
-        else if (TFESpaceType::Dim() == 3)
+        else if constexpr (TFESpaceType::Dim() == 3)
         {
             element_name = element_name + "3D8N";
         }
@@ -135,7 +136,7 @@ public:
 
             typename TFESpaceType::cell_container_t::Pointer pFaceManager = iga::dynamic_pointer_cast<TFESpaceType>(it->pFESpace())->pFaceManager();
 
-            if (TFESpaceType::Dim() == 2)
+            if constexpr (TFESpaceType::Dim() == 2)
             {
                 typename std::map<std::size_t, boost::array<std::size_t, TFESpaceType::Dim()> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
@@ -192,7 +193,7 @@ public:
                 // just to make sure everything is organized properly
                 r_model_part.Elements().Unique();
             }
-            else if (TFESpaceType::Dim() == 3)
+            else if constexpr (TFESpaceType::Dim() == 3)
             {
                 // create new nodes
                 typename std::map<std::size_t, boost::array<std::size_t, TFESpaceType::Dim()> >::const_iterator it_num = mNumDivision.find(it->Id());

@@ -107,7 +107,7 @@ public:
     }
 
     /// Destructor.
-    virtual ~IsogeometricPostUtility()
+    ~IsogeometricPostUtility() override
     {
     }
 

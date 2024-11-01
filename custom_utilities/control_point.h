@@ -116,6 +116,15 @@ public:
         BaseType::W() = res[3];
     }
 
+    /// Copy the coordinates of the control point to another point
+    template<typename TPointType>
+    void Copy(TPointType& rPoint) const
+    {
+        rPoint[0] = X();
+        rPoint[1] = Y();
+        rPoint[2] = Z();
+    }
+
     // overload operator []
     TDataType& operator[] (int i)
     {

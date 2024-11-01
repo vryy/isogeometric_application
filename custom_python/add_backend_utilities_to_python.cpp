@@ -28,6 +28,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/isogeometric_test_utils.h"
 #include "custom_utilities/bezier_test_utils.h"
 #include "custom_utilities/isogeometric_merge_utility.h"
+#include "custom_utilities/isogeometric_math_utils.h"
 #include "custom_python/iga_python_utils.h"
 #include "custom_python/add_utilities_to_python.h"
 
@@ -707,6 +708,36 @@ boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Vec
 
 //////////////////////////////////////////////////////////
 
+template<typename TPointType>
+boost::python::list IsogeometricMathUtils_ComputeIntersection2D(IsogeometricMathUtils<double>& rDummy,
+        const TPointType& P0, const TPointType& P1,
+        const TPointType& P2, const TPointType& P3,
+        const double TOL)
+{
+    TPointType P;
+    int error_code = IsogeometricMathUtils<double>::ComputeIntersection2D(P0, P1, P2, P3, P, TOL);
+
+    boost::python::list output;
+    output.append(error_code);
+    output.append(P);
+    return std::move(output);
+}
+
+template<typename TPointType>
+boost::python::list IsogeometricMathUtils_ComputeProjection2D(IsogeometricMathUtils<double>& rDummy,
+        const TPointType& P0,
+        const TPointType& P1, const TPointType& P2,
+        const double TOL)
+{
+    TPointType P;
+    int error_code = IsogeometricMathUtils<double>::ComputeProjection2D(P0, P1, P2, P, TOL);
+
+    boost::python::list output;
+    output.append(error_code);
+    output.append(P);
+    return std::move(output);
+}
+
 void IsogeometricApplication_AddBackendUtilitiesToPython()
 {
     enum_<PostElementType>("PostElementType")
@@ -849,6 +880,12 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
         "IsogeometricUtility", init<>())
     // .def("IsNormalPointingOutward", (bool (IsogeometricUtility::*)(const Patch<3>&, const BoundarySide&)&IsogeometricUtility::IsNormalPointingOutward)).staticmethod("IsNormalPointingOutward")
     .def("IsNormalPointingOutward", &IsogeometricUtility_IsNormalPointingOutward);
+
+    class_<IsogeometricMathUtils<double>, IsogeometricMathUtils<double>::Pointer, boost::noncopyable>(
+        "IsogeometricMathUtils", init<>())
+    .def("ComputeIntersection2D", &IsogeometricMathUtils_ComputeIntersection2D<array_1d<double, 3> >)
+    .def("ComputeProjection2D", &IsogeometricMathUtils_ComputeProjection2D<array_1d<double, 3> >)
+    ;
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////GISMO/////////////////////////////////////

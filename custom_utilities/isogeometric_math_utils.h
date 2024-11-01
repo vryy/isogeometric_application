@@ -381,6 +381,114 @@ public:
         return M;
     }
 
+    /**
+     * Compute the intersection between two lines in 2D
+     */
+    static int ComputeIntersection2D(const TDataType a1, const TDataType b1, const TDataType c1,
+                                     const TDataType a2, const TDataType b2, const TDataType c2,
+                                     TDataType& x, TDataType& y, const TDataType TOL)
+    {
+        const TDataType det = a1*b2 - a2*b1;
+        if (std::abs(det) < TOL)
+            return -1; // the two lines are parallel
+
+        x = (b1*c2 - b2*c1) / det;
+        y = (c1*a2 - c2*a1) / det;
+
+        return 0;
+    }
+
+    /**
+     * Compute the intersection between two lines in 2D
+     */
+    template<typename TPointType>
+    static int ComputeIntersection2D(const TPointType& P0, const TPointType& P1,
+            const TPointType& P2, const TPointType& P3, TPointType& P, const TDataType TOL)
+    {
+        const TDataType a1 = P1[1] - P0[1];
+        const TDataType b1 = -P1[0] + P0[0];
+        const TDataType c1 = -a1*P0[0] - b1*P0[1];
+
+        const TDataType a2 = P3[1] - P2[1];
+        const TDataType b2 = -P3[0] + P2[0];
+        const TDataType c2 = -a2*P2[0] - b2*P2[1];
+
+        TDataType x, y;
+        int error_code = ComputeIntersection2D(a1, b1, c1, a2, b2, c2, x, y, TOL);
+        if (error_code != 0)
+            return error_code;
+
+        P[0] = x;
+        P[1] = y;
+        P[2] = 0.0;
+
+        TDataType d1, d2, d;
+        int i1 = 0, i2 = 0;
+        d1 = sqrt(pow(x - P0[0], 2) + pow(y - P0[1], 2));
+        d2 = sqrt(pow(x - P1[0], 2) + pow(y - P1[1], 2));
+        d = sqrt(pow(P1[0] - P0[0], 2) + pow(P1[1] - P0[1], 2));
+        if (abs(d1 + d2 - d) < TOL) i1 = 1;
+        d1 = sqrt(pow(x - P2[0], 2) + pow(y - P2[1], 2));
+        d2 = sqrt(pow(x - P3[0], 2) + pow(y - P3[1], 2));
+        d = sqrt(pow(P3[0] - P2[0], 2) + pow(P3[1] - P2[1], 2));
+        if (abs(d1 + d2 - d) < TOL) i2 = 1;
+        if (i1 == 1 && i2 == 1) return 0; // the intersection is in the middle of both P0-P1 and P2-P3
+        if (i1 == 1 && i2 == 0) return 1; // the intersection is in the middle of P0-P1 (line 1) and not P2-P3
+        if (i1 == 0 && i2 == 1) return 2; // the intersection is in the middle of P2-P3 (line 2) and not P0-P1
+        KRATOS_ERROR << "Can't go here. Something's wrong";
+        return -1; // can't go here
+    }
+
+    /**
+     * Compute the projection of a point on the line in 2D
+     */
+    static int ComputeProjection2D(const TDataType x0, const TDataType y0,
+                                     const TDataType a, const TDataType b, const TDataType c,
+                                     TDataType& x, TDataType& y, const TDataType TOL)
+    {
+        const double norm = a*a + b*b;
+        if (norm < TOL)
+            return -1; // the line is singular
+
+        x = (-b*(a*y0 - b*x0) - c*a) / norm;
+        y = (a*(a*y0 - b*x0) - c*b) / norm;
+        return 0;
+    }
+
+    /**
+     * Compute the projection of a point on the line in 2D
+     */
+    template<typename TPointType>
+    static int ComputeProjection2D(const TPointType& P0,
+            const TPointType& P1, const TPointType& P2,
+            TPointType& P, const TDataType TOL)
+    {
+        const TDataType a = P2[1] - P1[1];
+        const TDataType b = -P2[0] + P1[0];
+        const TDataType c = -a*P1[0] - b*P1[1];
+
+        TDataType x, y;
+        int error_code = ComputeProjection2D(P0[0], P0[1], a, b, c, x, y, TOL);
+        if (error_code != 0)
+            return error_code;
+
+        P[0] = x;
+        P[1] = y;
+        P[2] = 0.0;
+
+        TDataType d1, d2, d;
+        int i = 0;
+        d1 = sqrt(pow(x - P1[0], 2) + pow(y - P1[1], 2));
+        d2 = sqrt(pow(x - P2[0], 2) + pow(y - P2[1], 2));
+        d = sqrt(pow(P2[0] - P1[0], 2) + pow(P2[1] - P1[1], 2));
+        if (abs(d1 + d2 - d) < TOL)
+            return 0; // the projection is in the middle of both P1-P2
+        else
+            return 1; // the projection is outside P1-P2
+        KRATOS_ERROR << "Can't go here. Something's wrong";
+        return -1; // can't go here
+    }
+
     /// Turn back information as a string.
     virtual std::string Info() const
     {

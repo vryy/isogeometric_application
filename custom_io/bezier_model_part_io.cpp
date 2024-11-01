@@ -264,11 +264,11 @@ void BezierModelPartIO::ReadIsogeometricBezierDataBlock(BezierInfoContainerType&
                 unsigned int size_ex_nz = Temp.size2() - 1;
                 if ( ( (double)(size_ex_nz) ) / (size_ex_n * size_ex_n) < 0.2 )
                 {
-                    p_temp_info->C = IsogeometricMathUtils::MCSR2CSR(Temp);
+                    p_temp_info->C = IsogeometricMathUtils<double>::MCSR2CSR(Temp);
                 }
                 else
                 {
-                    p_temp_info->C = IsogeometricMathUtils::MCSR2MAT(Temp);
+                    p_temp_info->C = IsogeometricMathUtils<double>::MCSR2MAT(Temp);
                 }
             }
             else if (p_temp_info->mat_type == 2)
@@ -279,7 +279,7 @@ void BezierModelPartIO::ReadIsogeometricBezierDataBlock(BezierInfoContainerType&
                 colInd = ModelPartIO::ReadVectorialValue(colInd);
                 Vector values;
                 values = ModelPartIO::ReadVectorialValue(values);
-                p_temp_info->C = IsogeometricMathUtils::Triplet2CSR(rowPtr, colInd, values);
+                p_temp_info->C = IsogeometricMathUtils<double>::Triplet2CSR(rowPtr, colInd, values);
             }
 
 //            rThisBezierInfo.push_back(p_temp_info);

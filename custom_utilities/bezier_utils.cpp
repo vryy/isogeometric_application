@@ -59,7 +59,7 @@ void BezierUtils::bezier_extraction_tsplines_1d(
 
             // compute the extended knot vector and identify the relative position of the T-splines basis function
             int nt;
-    IsogeometricMathUtils::compute_extended_knot_vector(Ubar, nt, Xi, p);
+    IsogeometricMathUtils<double>::compute_extended_knot_vector(Ubar, nt, Xi, p);
 
     // algorithm: modify from the paper: Isogeometric finite element data structure based on Bezier extraction of T-splines, Scott et al
     int a = p + 1;
@@ -236,7 +236,7 @@ void BezierUtils::bezier_extraction_local_1d(std::vector<Vector>& Crows,
         // compute the extended knot vector and identify the relative position of the T-splines basis function
         int nt;
     Vector Uextended;
-    IsogeometricMathUtils::compute_extended_knot_vector(Uextended, nt, Xi, p);
+    IsogeometricMathUtils<double>::compute_extended_knot_vector(Uextended, nt, Xi, p);
 
     // count the multiplicity of inner knots
     int i = p + 1;

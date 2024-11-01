@@ -1540,7 +1540,7 @@ void DeprecatedHBMesh<TDim>::ExportMDPA(std::string fn) const
     outfile << "//KRATOS isogeometric application data file for hierarchical B-Splines\n";
     outfile << "//(c) 2018 Hoang Giang Bui, Ruhr-University Bochum\n";
 
-    IsogeometricMathUtils::timestamp(outfile);
+    IsogeometricMathUtils<double>::timestamp(outfile);
 
     // write model_part data section
     outfile << "Begin ModelPartData\n";
@@ -1762,7 +1762,7 @@ void DeprecatedHBMesh<TDim>::ExportMDPA2(std::string fn) const
     outfile << "//KRATOS isogeometric application data file for hierarchical B-Splines\n";
     outfile << "//(c) 2018 Hoang Giang Bui, Ruhr-University Bochum\n";
 
-    IsogeometricMathUtils::timestamp(outfile);
+    IsogeometricMathUtils<double>::timestamp(outfile);
 
     // write model_part data section
     outfile << "Begin ModelPartData\n";
@@ -2172,7 +2172,7 @@ void DeprecatedHBMesh<TDim>::ExportPostMDPA(std::string fn, int NumDivision1, in
     outfile << "//KRATOS isogeometric application data file for post processing of Bezier-based discretization\n";
     outfile << "//(c) 2018 Hoang Giang Bui, Ruhr-University Bochum\n";
 
-    IsogeometricMathUtils::timestamp(outfile);
+    IsogeometricMathUtils<double>::timestamp(outfile);
 
     // write model_part data section
     outfile << "Begin ModelPartData\n";
@@ -2253,7 +2253,7 @@ void DeprecatedHBMesh<TDim>::ExportCellGeologyAsPostMDPA(std::string fn)
     outfile << "//KRATOS isogeometric application data file for post processing of Bezier-based discretization\n";
     outfile << "//(c) 2018 Hoang Giang Bui, Ruhr-University Bochum\n";
 
-    IsogeometricMathUtils::timestamp(outfile);
+    IsogeometricMathUtils<double>::timestamp(outfile);
 
     // write model_part data section
     outfile << "Begin ModelPartData\n";

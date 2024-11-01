@@ -23,15 +23,23 @@
 namespace Kratos
 {
 
-/// Short class definition.
-/** Detail class definition.
+/**
+ * Math operations for IGA
  */
-class IsogeometricMathUtils
+template<class TDataType> class IsogeometricMathUtils
 {
 public:
 
     /// Pointer definition of IsogeometricMathUtils
     KRATOS_CLASS_POINTER_DEFINITION(IsogeometricMathUtils);
+
+    typedef boost::numeric::ublas::matrix<TDataType> MatrixType;
+
+    typedef boost::numeric::ublas::vector<TDataType> VectorType;
+
+    typedef std::size_t IndexType;
+
+    typedef std::size_t SizeType;
 
     /// Default constructor.
     IsogeometricMathUtils()
@@ -59,9 +67,9 @@ public:
     }
 
     // void IsogeometricMathUtils::compute_extended_knot_vector(
-    //    Vector& Ubar,       // extended knot vector (OUTPUT)
+    //    VectorType& Ubar,       // extended knot vector (OUTPUT)
     //    int& nt,            // relative location of the basis function w.r.t extended knot vector (OUTPUT)
-    //    const std::vector<double>& Xi,   // local knot vector (INPUT)
+    //    const std::vector<TDataType>& Xi,   // local knot vector (INPUT)
     //    const int p)        // degree of the basis function (INPUT)
     // {
     //     // count the multiplicity of the first knot
@@ -212,7 +220,7 @@ public:
      * Convert a modified compressed sparse row matrix to compressed sparse row matrix B <- A
      * TODO check if compressed_matrix is returned
      */
-    static Matrix MCSR2CSR(const Matrix& A)
+    static MatrixType MCSR2CSR(const MatrixType& A)
     {
         unsigned int n = (unsigned int)(A(0, 0) - 1);
 
@@ -260,11 +268,11 @@ public:
     /**
      * Convert a modified compressed sparse row matrix to trivial matrix
      */
-    static Matrix MCSR2MAT(const Matrix& A)
+    static MatrixType MCSR2MAT(const MatrixType& A)
     {
         unsigned int n = (unsigned int)(A(0, 0) - 1);
 
-        Matrix B = ZeroMatrix(n, n);
+        MatrixType B = ZeroMatrix(n, n);
 
         for (unsigned int i = 0; i < n; ++i)
         {
@@ -287,7 +295,7 @@ public:
     /**
      * Convert a trivial matrix to modified compressed sparse row matrix
      */
-    static Matrix MAT2MCSR(const Matrix& A)
+    static MatrixType MAT2MCSR(const MatrixType& A)
     {
         int n = A.size1();
 
@@ -295,7 +303,7 @@ public:
             KRATOS_THROW_ERROR(std::logic_error, "The matrix needs to be square", "")
 
             std::vector<int> idx;
-        std::vector<double> val;
+        std::vector<TDataType> val;
 
         // firstly write the diagonal part of the matrix
         for (int i = 0; i < n; ++i)
@@ -325,10 +333,10 @@ public:
 
         idx[n] = cnt;
 
-        Matrix B(2, cnt - 1);
+        MatrixType B(2, cnt - 1);
         for (int i = 0; i < cnt - 1; ++i)
         {
-            B(0, i) = static_cast<double>(idx[i] - 1);
+            B(0, i) = static_cast<TDataType>(idx[i] - 1);
             B(1, i) = val[i];
         }
 
@@ -338,7 +346,7 @@ public:
     /**
      * Convert a triplet to compressed sparse row matrix
      */
-    static Matrix Triplet2CSR(const Vector& rowPtr, const Vector& colInd, const Vector& values)
+    static MatrixType Triplet2CSR(const VectorType& rowPtr, const VectorType& colInd, const VectorType& values)
     {
         int m = rowPtr.size() - 1; // number of rows
         int n = *(std::max_element(colInd.begin(), colInd.end())) + 1; // number of columns
@@ -348,13 +356,13 @@ public:
     /**
      * Convert a triplet to compressed sparse row matrix
      */
-    static Matrix Triplet2CSR(int m, int n, const Vector& rowPtr, const Vector& colInd, const Vector& values)
+    static MatrixType Triplet2CSR(int m, int n, const VectorType& rowPtr, const VectorType& colInd, const VectorType& values)
     {
         CompressedMatrix M(m, n);
         noalias(M) = ZeroMatrix(m, n);
 
         int i, j, nz, rowptr_this, rowptr_next, col;
-        double val;
+        TDataType val;
         for (i = 0; i < m; ++i)
         {
             rowptr_this = static_cast<int>(rowPtr[i]);
@@ -376,22 +384,18 @@ public:
     /// Turn back information as a string.
     virtual std::string Info() const
     {
-        std::stringstream buffer;
-        buffer << "IsogeometricMathUtils";
-        return buffer.str();
+        return "IsogeometricMathUtils";
     }
 
     /// Print information about this object.
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "IsogeometricMathUtils";
+        rOStream << Info();
     }
 
     /// Print object's data.
     virtual void PrintData(std::ostream& rOStream) const
     {}
-
-protected:
 
 private:
 
@@ -409,14 +413,16 @@ private:
 }; // Class IsogeometricMathUtils
 
 /// input stream function
-inline std::istream& operator >>(std::istream& rIStream, IsogeometricMathUtils& rThis)
+template<class TDataType>
+inline std::istream& operator >>(std::istream& rIStream, IsogeometricMathUtils<TDataType>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
+template<class TDataType>
 inline std::ostream& operator <<(std::ostream& rOStream,
-                                 const IsogeometricMathUtils& rThis)
+                                 const IsogeometricMathUtils<TDataType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

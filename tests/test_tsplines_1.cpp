@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     Xi[3] = 3.0;
     Xi[4] = 4.0;
 
-    IsogeometricMathUtils::compute_extended_knot_vector(Ubar_xi, nt_xi, Xi, p);
+    IsogeometricMathUtils<double>::compute_extended_knot_vector(Ubar_xi, nt_xi, Xi, p);
     KRATOS_WATCH(Ubar_xi)
     KRATOS_WATCH(nt_xi)
 

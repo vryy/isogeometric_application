@@ -598,7 +598,7 @@ public:
         // compute the extended knot vector
         ValuesContainerType ubar;
         int nt;
-        IsogeometricMathUtils::compute_extended_knot_vector(ubar, nt, knots, p);
+        IsogeometricMathUtils<double>::compute_extended_knot_vector(ubar, nt, knots, p);
 
         // find span
         int s = BSplineUtils::FindSpan(ubar.size() - p - 1, p, u, ubar);
@@ -725,10 +725,8 @@ public:
         MatrixType D1, D2;
         ComputeBsplinesKnotInsertionCoefficients1D(D1, new_knots1, p1, knots1, ins_knots1);
         ComputeBsplinesKnotInsertionCoefficients1D(D2, new_knots2, p2, knots2, ins_knots2);
-//        KRATOS_WATCH(D1)
-//        KRATOS_WATCH(D2)
-        IsogeometricMathUtils::outer_prod_mat(D, D2, D1);
-//        KRATOS_WATCH(D)
+        typedef typename MatrixType::value_type DataType;
+        IsogeometricMathUtils<DataType>::outer_prod_mat(D, D2, D1);
     }
 
     /// Compute the refinement coefficients for multiple knots insertion B-Splines refinement in 3D
@@ -753,8 +751,9 @@ public:
         ComputeBsplinesKnotInsertionCoefficients1D(D3, new_knots3, p3, knots3, ins_knots3);
 
         MatrixType tmp;
-        IsogeometricMathUtils::outer_prod_mat(tmp, D2, D1);
-        IsogeometricMathUtils::outer_prod_mat(D, D3, tmp);
+        typedef typename MatrixType::value_type DataType;
+        IsogeometricMathUtils<DataType>::outer_prod_mat(tmp, D2, D1);
+        IsogeometricMathUtils<DataType>::outer_prod_mat(D, D3, tmp);
     }
 
     /// Compute the refinement coefficients for one knot insertion NURBS refinement in 1D
@@ -882,10 +881,12 @@ public:
             const ValuesContainerType2& local_knots,
             const ValuesContainerType3& ins_knots)
     {
+        typedef typename VectorType::value_type DataType;
+
         // compute the extended knot vector
         ValuesContainerType Ubar;
         int nt;
-        IsogeometricMathUtils::compute_extended_knot_vector(Ubar, nt, local_knots, p);
+        IsogeometricMathUtils<DataType>::compute_extended_knot_vector(Ubar, nt, local_knots, p);
 //        KRATOS_WATCH(nt)
 
         // compute the refinement matrix for extended knot vector
@@ -929,10 +930,11 @@ public:
             const ValuesContainerType3& ins_knots1,
             const ValuesContainerType3& ins_knots2)
     {
+        typedef typename VectorType::value_type DataType;
         VectorType D1, D2;
         ComputeBsplinesKnotInsertionCoefficients1DLocal(D1, new_knots1, p1, local_knots1, ins_knots1);
         ComputeBsplinesKnotInsertionCoefficients1DLocal(D2, new_knots2, p2, local_knots2, ins_knots2);
-        IsogeometricMathUtils::outer_prod_vec(D, D2, D1);
+        IsogeometricMathUtils<DataType>::outer_prod_vec(D, D2, D1);
     }
 
     /// Compute the refinement coefficients for multiple knot insertion local refinement in 3D
@@ -951,14 +953,16 @@ public:
             const ValuesContainerType3& ins_knots2,
             const ValuesContainerType3& ins_knots3)
     {
+        typedef typename VectorType::value_type DataType;
+
         VectorType D1, D2, D3;
         ComputeBsplinesKnotInsertionCoefficients1DLocal(D1, new_knots1, p1, local_knots1, ins_knots1);
         ComputeBsplinesKnotInsertionCoefficients1DLocal(D2, new_knots2, p2, local_knots2, ins_knots2);
         ComputeBsplinesKnotInsertionCoefficients1DLocal(D3, new_knots3, p3, local_knots3, ins_knots3);
 
         VectorType aux;
-        IsogeometricMathUtils::outer_prod_vec(aux, D2, D1);
-        IsogeometricMathUtils::outer_prod_vec(D, D3, aux);
+        IsogeometricMathUtils<DataType>::outer_prod_vec(aux, D2, D1);
+        IsogeometricMathUtils<DataType>::outer_prod_vec(D, D3, aux);
     }
 
     /* "Adapted" modified version of Algorithm A5.9 from 'The NURBS BOOK' pg206. */

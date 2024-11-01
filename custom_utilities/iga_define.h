@@ -155,6 +155,36 @@ struct ParameterDirection
         KRATOS_ERROR << __FUNCTION__ << " is not implemented for " << TDim << "D";
     }
 };
+
+template<>
+struct ParameterDirection<1>
+{
+    static int Get_(const BoundarySide& side)
+    {
+        switch (side)
+        {
+        case _BLEFT_:    return _PA_V_;
+        case _BRIGHT_:   return _PA_V_;
+        default:         return -1;
+        }
+        return -1;
+    }
+
+    static std::vector<int> Get(const BoundarySide& side)
+    {
+        return std::vector<int> {Get_(side)};
+    }
+
+    static BoundarySide GetSide(const int idir)
+    {
+        if (idir == 0)
+        {
+            return _BLEFT_;
+        }
+        else
+        {
+            KRATOS_ERROR << "Invalid direction " << idir;
+        }
     }
 };
 
@@ -178,6 +208,22 @@ struct ParameterDirection<2>
     {
         return std::vector<int> {Get_(side)};
     }
+
+    static BoundarySide GetSide(const int idir)
+    {
+        if (idir == 0)
+        {
+            return _BLEFT_;
+        }
+        else if (idir == 1)
+        {
+            return _BBOTTOM_;
+        }
+        else
+        {
+            KRATOS_ERROR << "Invalid direction " << idir;
+        }
+    }
 };
 
 template<>
@@ -196,6 +242,26 @@ struct ParameterDirection<3>
         default:         return std::vector<int> {-1, -1};
         }
         return std::vector<int> {-1, -1};
+    }
+
+    static BoundarySide GetSide(const int idir)
+    {
+        if (idir == 0)
+        {
+            return _BLEFT_;
+        }
+        else if (idir == 1)
+        {
+            return _BBOTTOM_;
+        }
+        else if (idir == 2)
+        {
+            return _BBACK_;
+        }
+        else
+        {
+            KRATOS_ERROR << "Invalid direction " << idir;
+        }
     }
 };
 

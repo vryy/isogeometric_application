@@ -688,7 +688,7 @@ public:
                     IndexType n7 = n3 + 1;
                     IndexType n8 = n4 + 1;
 
-                    connectivities.push_back(std::vector<std::size_t> {n1, n2, n4, n3, n5, n6, n8, n7});
+                    connectivities.push_back(std::vector<std::size_t> {n5, n6, n8, n7, n1, n2, n4, n3});
                 }
             }
         }

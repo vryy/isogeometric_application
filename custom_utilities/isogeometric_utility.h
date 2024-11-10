@@ -126,6 +126,22 @@ public:
         return lastPropId;
     }
 
+    /// Get the last constraint id of the model_part
+    static std::size_t GetLastConstraintId(const ModelPart& r_model_part)
+    {
+        std::size_t lastConstraintId = 0;
+        for (typename ModelPart::MasterSlaveConstraintContainerType::const_iterator it = r_model_part.MasterSlaveConstraints().begin();
+                it != r_model_part.MasterSlaveConstraints().end(); ++it)
+        {
+            if (it->Id() > lastConstraintId)
+            {
+                lastConstraintId = it->Id();
+            }
+        }
+
+        return lastConstraintId;
+    }
+
     /// Find the element in the KRATOS container with specific key
     template<class TContainerType, class TKeyType>
     static typename TContainerType::const_iterator FindKey(const TContainerType& ThisContainer,

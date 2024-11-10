@@ -115,19 +115,24 @@ Matrix MultiPatchUtility_ComputeSpatialDerivatives(MultiPatchUtility& rDummy,
                                             rControlValueGridFunction, xi);
 }
 
-std::size_t MultiPatchUtility_GetLastNodeId(MultiPatchUtility& rDummy, ModelPart& r_model_part)
+std::size_t MultiPatchUtility_GetLastNodeId(MultiPatchUtility& rDummy, const ModelPart& r_model_part)
 {
     return rDummy.GetLastNodeId(r_model_part);
 }
 
-std::size_t MultiPatchUtility_GetLastElementId(MultiPatchUtility& rDummy, ModelPart& r_model_part)
+std::size_t MultiPatchUtility_GetLastElementId(MultiPatchUtility& rDummy, const ModelPart& r_model_part)
 {
     return rDummy.GetLastElementId(r_model_part);
 }
 
-std::size_t MultiPatchUtility_GetLastConditionId(MultiPatchUtility& rDummy, ModelPart& r_model_part)
+std::size_t MultiPatchUtility_GetLastConditionId(MultiPatchUtility& rDummy, const ModelPart& r_model_part)
 {
     return rDummy.GetLastConditionId(r_model_part);
+}
+
+std::size_t MultiPatchUtility_GetLastConstraintId(MultiPatchUtility& rDummy, const ModelPart& r_model_part)
+{
+    return rDummy.GetLastConstraintId(r_model_part);
 }
 
 Condition::Pointer MultiPatchUtility_CreateConditionFromElement(MultiPatchUtility& rDummy,
@@ -560,6 +565,7 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("GetLastNodeId", &MultiPatchUtility_GetLastNodeId)
     .def("GetLastElementId", &MultiPatchUtility_GetLastElementId)
     .def("GetLastConditionId", &MultiPatchUtility_GetLastConditionId)
+    .def("GetLastConstraintId", &MultiPatchUtility_GetLastConstraintId)
     .def("CreateConditionFromElement", &MultiPatchUtility_CreateConditionFromElement)
     .def("ListModelPart", &MultiPatchUtility_ListModelPart)
     .def("GetEquationId", &MultiPatchUtility_GetEquationId<Variable<double> >)

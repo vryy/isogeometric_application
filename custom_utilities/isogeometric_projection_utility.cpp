@@ -357,7 +357,6 @@ int IsogeometricProjectionUtility::ComputeRayProjection(const TPointType& rPoint
     {
         const TPointType& v1 = rDirection;
         TPointType v2, v12, dv12dxi;
-        double r, dr;
         while (!converged && (it < max_iters))
         {
             pControlGridFunc->GetValue(rGlobalPoint, rLocalPoint);
@@ -451,7 +450,10 @@ int IsogeometricProjectionUtility::ComputeRayProjection(const TPointType& rPoint
 
         if (echo_level > 0)
         {
-            std::cout << "Predicted local point for patch " << (*it)->Id() << ": " << LocalPoint << std::endl;
+            std::cout << "Predicted local point for patch " << (*it)->Id() << ":";
+            for (std::size_t i = 0; i < LocalPoint.size(); ++i)
+                std::cout << " " << LocalPoint[i];
+            std::cout << std::endl;
         }
 
         // compute the ray projection
@@ -767,7 +769,10 @@ int IsogeometricProjectionUtility::ComputeNormalProjection(const TPointType& rPo
 
         if (echo_level > 0)
         {
-            std::cout << "Predicted local point for patch " << (*it)->Id() << ": " << LocalPoint << std::endl;
+            std::cout << "Predicted local point for patch " << (*it)->Id() << ":";
+            for (std::size_t i = 0; i < LocalPoint.size(); ++i)
+                std::cout << " " << LocalPoint[i];
+            std::cout << std::endl;
         }
 
         // compute the normal projection

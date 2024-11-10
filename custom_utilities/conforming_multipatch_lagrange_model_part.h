@@ -48,6 +48,7 @@ public:
     /// Type definition
     typedef Patch<TDim> PatchType;
     typedef ModelPart::NodeType NodeType;
+    typedef ModelPart::NodesContainerType NodesContainerType;
     typedef ModelPart::ElementsContainerType ElementsContainerType;
     typedef ModelPart::ConditionsContainerType ConditionsContainerType;
     typedef MultiPatch<TDim> MultiPatchType;
@@ -84,6 +85,12 @@ public:
 #else
     const ModelPart& GetModelPart() const {return *mpModelPart;}
 #endif
+
+    /// Access the underlying binning
+    typename BinningType::Pointer pGetBinning() const
+    {
+        return mpBinning;
+    }
 
     /// Set the sampling for the patch at specific dimension
     void SetSampling(std::size_t patch_id, int dim, const std::vector<double>& sampling)
@@ -180,18 +187,25 @@ public:
     #endif
 
     /// create the nodes from the points and add to the model_part
-    void CreateNodes()
+    NodesContainerType CreateNodes()
     {
+        NodesContainerType pNodes;
+
         // create new nodes from points
         for (std::size_t i = 0; i < mpBinning->NumberOfNodes(); ++i)
         {
             NodeType::Pointer pNewNode = this->GetModelPart().CreateNewNode(i + 1 + mLastNodeId, mpBinning->GetX(i+1), mpBinning->GetY(i+1), mpBinning->GetZ(i+1));
+            pNodes.push_back(pNewNode);
         }
 
         if (this->GetEchoLevel() > 0)
         {
-            std::cout << Info() << "::" << __FUNCTION__ << " completed" << std::endl;
+            std::cout << Info() << "::" << __FUNCTION__ << " completed"
+                      << ", " << pNodes.size() << " new nodes are added to the model_part " << this->GetModelPart().Name()
+                      << std::endl;
         }
+
+        return pNodes;
     }
 
     /// create the elements out from the patch and add to the model_part

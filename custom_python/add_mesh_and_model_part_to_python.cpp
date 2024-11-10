@@ -334,6 +334,7 @@ void IsogeometricApplication_AddModelPartToPython()
     ss << "ConformingMultipatchLagrangeModelPart" << TDim << "D";
     class_<ConformingMultipatchLagrangeModelPartType, typename ConformingMultipatchLagrangeModelPartType::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
+    .def("GetBinning", &ConformingMultipatchLagrangeModelPartType::pGetBinning)
     .def("BeginModelPart", &MultiPatchModelPart_BeginModelPart1<ConformingMultipatchLagrangeModelPartType>)
     .def("BeginModelPart", &MultiPatchModelPart_BeginModelPart2<ConformingMultipatchLagrangeModelPartType>)
     .def("CreateNodes", &ConformingMultipatchLagrangeModelPartType::CreateNodes)

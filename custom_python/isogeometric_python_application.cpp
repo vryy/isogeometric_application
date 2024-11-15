@@ -14,7 +14,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 #if defined(KRATOS_PYTHON)
 // External includes
-#include <boost/python.hpp>
 
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_control_point_to_python.h"
@@ -37,7 +36,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 ////utilities
 
 // Project includes
-#include "includes/define.h"
+#include "includes/define_python.h"
 #include "isogeometric_application.h"
 #include "isogeometric_application_variables.h"
 

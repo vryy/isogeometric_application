@@ -20,7 +20,6 @@
 
 // External includes
 #include <omp.h>
-#include "boost/progress.hpp"
 #include "boost/algorithm/string.hpp"
 
 // Project includes

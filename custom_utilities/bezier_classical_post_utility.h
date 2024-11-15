@@ -16,7 +16,6 @@
 
 // External includes
 #include <omp.h>
-#include "boost/progress.hpp"
 
 #ifdef ISOGEOMETRIC_USE_MPI
 #include "mpi.h"
@@ -36,6 +35,7 @@
 #include "spaces/ublas_space.h"
 #include "linear_solvers/linear_solver.h"
 #include "utilities/openmp_utils.h"
+#include "utilities/progress.h"
 #ifdef SD_APP_FORWARD_COMPATIBILITY
 #include "custom_utilities/spatial_containers/auto_collapse_spatial_binning.h"
 #include "layer_application/custom_utilities/containers/vector_map.h"
@@ -213,7 +213,7 @@ public:
 
         IndexType NodeCounter = 0;
         IndexType ElementCounter = 0;
-        boost::progress_display show_progress( pElements.size() );
+        Kratos::progress_display show_progress( pElements.size() );
         for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
             bool is_active = true;
@@ -587,7 +587,7 @@ public:
 
         IndexType NodeCounter = 0;
         IndexType ElementCounter = 0;
-        boost::progress_display show_progress( pElements.size() );
+        Kratos::progress_display show_progress( pElements.size() );
         std::vector<std::size_t> dummy_ids;
         for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
@@ -660,7 +660,7 @@ public:
         IndexType ConditionCounter = 0;
         if (generate_for_condition)
         {
-            boost::progress_display show_progress2( pConditions.size() );
+            Kratos::progress_display show_progress2( pConditions.size() );
             for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
             {
                 // This is wrong, we will not kill the IS_INACTIVE conditions
@@ -763,7 +763,7 @@ public:
 
         IndexType NodeCounter = 0;
         IndexType ElementCounter = 0;
-        boost::progress_display show_progress( pElements.size() );
+        Kratos::progress_display show_progress( pElements.size() );
         VectorMap<IndexType, IndexType> MapToCollapseNode;
         for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
@@ -846,7 +846,7 @@ public:
 #endif
 
         IndexType ConditionCounter = 0;
-        boost::progress_display show_progress2( pConditions.size() );
+        Kratos::progress_display show_progress2( pConditions.size() );
         for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
             bool is_active = true;

@@ -17,7 +17,6 @@
 
 // External includes
 #include <omp.h>
-#include "boost/progress.hpp"
 
 // Project includes
 #include "includes/define.h"
@@ -26,6 +25,7 @@
 #include "includes/element.h"
 #include "includes/properties.h"
 #include "utilities/openmp_utils.h"
+#include "utilities/progress.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/isogeometric_utility.h"
 

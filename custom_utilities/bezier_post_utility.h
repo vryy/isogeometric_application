@@ -16,7 +16,6 @@
 
 // External includes
 #include <omp.h>
-#include "boost/progress.hpp"
 
 #ifdef ISOGEOMETRIC_USE_MPI
 #include "mpi.h"
@@ -39,6 +38,7 @@
 #include "custom_utilities/spatial_containers/auto_collapse_spatial_binning.h"
 #else
 #include "utilities/auto_collapse_spatial_binning.h"
+#include "utilities/progress.h"
 #endif
 #include "custom_geometries/isogeometric_geometry.h"
 #include "custom_utilities/isogeometric_post_utility.h"

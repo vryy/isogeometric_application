@@ -138,7 +138,7 @@ public:
             KRATOS_THROW_ERROR(std::invalid_argument, "Error opening output file : ", mOutputFilename.c_str());
         }
 
-        Timer::SetOuputFile(Filename + ".time");
+        Timer::SetOutputFile(Filename + ".time");
 
     }
 
@@ -158,7 +158,7 @@ public:
             KRATOS_THROW_ERROR(std::invalid_argument, "Error opening output file : ", mOutputFilename.c_str());
         }
 
-        Timer::SetOuputFile(InputFilename + ".time");
+        Timer::SetOutputFile(InputFilename + ".time");
     }
 
     /// Constructor with filenames.

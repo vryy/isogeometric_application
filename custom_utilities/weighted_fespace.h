@@ -449,7 +449,7 @@ public:
     {
         if (mWeights.size() != this->TotalNumber())
         {
-            KRATOS_THROW_ERROR(std::logic_error, "The weight information is incorrect", "")
+            KRATOS_ERROR << "The weight information is incorrect";
             return false;
         }
         return mpFESpace->Validate();
@@ -474,7 +474,7 @@ public:
     {
         typename FESpace < TDim - 1 >::Pointer pBFESpace = mpFESpace->ConstructBoundaryFESpace(side);
         // TODO extract/compute the weights on the boundary
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not completed")
+        KRATOS_ERROR << "Not completed";
         std::vector<double> boundary_weights;
 
         return typename WeightedFESpace < TDim - 1 >::Pointer(new WeightedFESpace < TDim - 1 > (pBFESpace, boundary_weights));

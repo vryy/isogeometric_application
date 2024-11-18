@@ -56,19 +56,19 @@ public:
     /// Add the cell to the set
     virtual void AddCell(const std::vector<double>& box)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Check if a cell if it is contained in the set.
     virtual bool IsInside(const std::vector<double>& bounding_box) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Export the domain to Matlab for visualization
     virtual void ExportDomain(const std::string& fn, const std::string& color, double distance) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Information

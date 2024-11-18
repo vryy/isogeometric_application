@@ -73,7 +73,7 @@ public:
     /// Get the size of underlying data
     virtual std::size_t Size() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Get the size of underlying data
@@ -85,26 +85,26 @@ public:
     /// Get the data at specific point
     virtual TDataType GetData(std::size_t i) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Set the data at specific point
     /// Be careful with this method. You can destroy the coherency of internal data.
     virtual void SetData(std::size_t i, const TDataType& value)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// overload operator []
     virtual TDataType& operator[] (std::size_t i)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// overload operator []
     virtual const TDataType& operator[] (std::size_t i) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     // /// extract the sub grid, given local indices of the control values
@@ -141,13 +141,13 @@ public:
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(ControlGrid<TDataType>& rOther)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Copy the data the other grid. In the case that the source has different size, the grid is resized.
     virtual void ResizeAndCopyFrom(const typename ControlGrid<TDataType>::Pointer pOther)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Information

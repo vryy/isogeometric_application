@@ -41,20 +41,20 @@ public:
         int error = r8tris2(node_num, &XYlist[0], &triangle_num, triangle_node, triangle_neighbor);
 
         if (error != 0)
-            KRATOS_THROW_ERROR(std::logic_error, "Error calling r8tris2, error code =", error)
+            KRATOS_ERROR << "Error calling r8tris2, error code = " << error;
 
-            // report the triangulation quality
-            // TODO
+        // report the triangulation quality
+        // TODO
 
-            // write the output data
-            for (int i = 0; i < triangle_num; ++i)
-            {
-                std::vector<TIndexType> tri(3);
-                tri[0] = static_cast<TIndexType>(triangle_node[3 * i]);
-                tri[1] = static_cast<TIndexType>(triangle_node[3 * i + 1]);
-                tri[2] = static_cast<TIndexType>(triangle_node[3 * i + 2]);
-                Connectivities.push_back(tri);
-            }
+        // write the output data
+        for (int i = 0; i < triangle_num; ++i)
+        {
+            std::vector<TIndexType> tri(3);
+            tri[0] = static_cast<TIndexType>(triangle_node[3 * i]);
+            tri[1] = static_cast<TIndexType>(triangle_node[3 * i + 1]);
+            tri[2] = static_cast<TIndexType>(triangle_node[3 * i + 2]);
+            Connectivities.push_back(tri);
+        }
 
         // free up the memory
         free(triangle_node);

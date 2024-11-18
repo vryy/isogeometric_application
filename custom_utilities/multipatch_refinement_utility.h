@@ -38,9 +38,7 @@ struct ComputeBsplinesDegreeElevation_Helper
                         StructuredControlGrid<TDim, TDataType>& NewControlValues,
                         std::vector<std::vector<double> >& new_knots)
     {
-        std::stringstream ss;
-        ss << __FUNCTION__ << " is not implemented for dimension " << TDim;
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Not implemented for dimension " << TDim;
     }
 };
 
@@ -52,9 +50,7 @@ struct ComputeBsplinesKnotInsertionCoefficients_Helper
                         typename BSplinesFESpace<TDim>::Pointer& pFESpace,
                         const std::vector<std::vector<double> >& ins_knots)
     {
-        std::stringstream ss;
-        ss << __FUNCTION__ << " is not implemented for dimension " << TDim;
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "Not implemented for dimension " << TDim;
     }
 };
 

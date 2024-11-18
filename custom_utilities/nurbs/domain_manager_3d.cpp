@@ -58,15 +58,15 @@ void DomainManager3D::AddCell(const std::vector<double>& box)
     coords_container_t::iterator it_z2 = BaseType::mZcoords.find(box[5]);
 
     if (it_x1 == BaseType::mXcoords.end() || it_x2 == BaseType::mXcoords.end())
-        KRATOS_THROW_ERROR(std::runtime_error, "Cell does not align with x-coordinates", "")
+        KRATOS_ERROR << "Cell does not align with x-coordinates";
 
-        if (it_y1 == BaseType::mYcoords.end() || it_y2 == BaseType::mYcoords.end())
-            KRATOS_THROW_ERROR(std::runtime_error, "Cell does not align with y-coordinates", "")
+    if (it_y1 == BaseType::mYcoords.end() || it_y2 == BaseType::mYcoords.end())
+        KRATOS_ERROR << "Cell does not align with y-coordinates";
 
-            if (it_z1 == BaseType::mZcoords.end() || it_z2 == BaseType::mZcoords.end())
-                KRATOS_THROW_ERROR(std::runtime_error, "Cell does not align with z-coordinates", "")
+    if (it_z1 == BaseType::mZcoords.end() || it_z2 == BaseType::mZcoords.end())
+        KRATOS_ERROR << "Cell does not align with z-coordinates";
 
-                std::size_t i1 = std::distance(BaseType::mXcoords.begin(), it_x1);
+    std::size_t i1 = std::distance(BaseType::mXcoords.begin(), it_x1);
     std::size_t i2 = std::distance(BaseType::mXcoords.begin(), it_x2);
     std::size_t j1 = std::distance(BaseType::mYcoords.begin(), it_y1);
     std::size_t j2 = std::distance(BaseType::mYcoords.begin(), it_y2);

@@ -130,7 +130,7 @@ public:
             {
                 std::cout << " " << it2->first << ": " << it2->second << std::endl;
             }
-            KRATOS_THROW_ERROR(std::logic_error, "The global id does not exist in the global_to_patch map.", "")
+            KRATOS_ERROR << "The global id " << global_id << " does not exist in the global_to_patch map.";
         }
 
         std::size_t patch_id = it->second;
@@ -169,9 +169,7 @@ public:
         patch_ptr_iterator it_patch = mpPatches.find(Id).base();
         if (it_patch == mpPatches.ptr_end())
         {
-            std::stringstream ss;
-            ss << "The patch " << Id << " does not exist in the multipatch";
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << "The patch with Id = " << Id << " does not exist in the multipatch";
         }
         return *it_patch;
     }
@@ -182,9 +180,7 @@ public:
         typename PatchContainerType::ptr_const_iterator it_patch = mpPatches.find(Id).base();
         if (it_patch == mpPatches.ptr_end())
         {
-            std::stringstream ss;
-            ss << "The patch " << Id << " does not exist in the multipatch";
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << "The patch with Id = " << Id << " does not exist in the multipatch";
         }
         return typename PatchType::ConstPointer(*it_patch);
     }

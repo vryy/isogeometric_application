@@ -94,17 +94,15 @@ public:
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+                KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
-                if (pFESpace->HasBfByEquationId(EquationId))
-                {
-                    return pFESpace->pGetBfByEquationId(EquationId);
-                }
+            if (pFESpace->HasBfByEquationId(EquationId))
+            {
+                return pFESpace->pGetBfByEquationId(EquationId);
+            }
         }
 
-        std::stringstream ss;
-        ss << "The basis function with global id " << EquationId << " does not exist" << std::endl;
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "The basis function with global id " << EquationId << " does not exist" << std::endl;
 
         return NULL;
     }
@@ -127,12 +125,12 @@ public:
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+                KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
-                for (bf_iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
-                {
-                    dofs_map[(*it_bf)->EquationId()].push_back(std::make_pair(it->Id(), (*it_bf)->Id()));
-                }
+            for (bf_iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
+            {
+                dofs_map[(*it_bf)->EquationId()].push_back(std::make_pair(it->Id(), (*it_bf)->Id()));
+            }
         }
 
         for (map_t::iterator it = dofs_map.begin(); it != dofs_map.end(); ++it)
@@ -171,8 +169,8 @@ public:
 
                         double err = std::sqrt(std::pow(p_bf->GetValue(CONTROL_POINT).X() - x, 2) + std::pow(p_bf->GetValue(CONTROL_POINT).Y() - y, 2) + std::pow(p_bf->GetValue(CONTROL_POINT).Z() - z, 2));
                         if (err > tol)
-                            KRATOS_THROW_ERROR(std::logic_error, "The CONTROL_POINT is not consistent at dof", it->first)
-                        }
+                            KRATOS_ERROR << "The CONTROL_POINT is not consistent at dof " << it->first;
+                    }
                 }
             }
         }
@@ -206,14 +204,14 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
 {
     // firstly read the FESpace
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<2>::StaticType())
-        KRATOS_THROW_ERROR(std::logic_error, "The input patch is not B-Splines patch", "")
+        KRATOS_ERROR << "The input patch is not B-Splines patch";
 
-        typename BSplinesFESpace<2>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<2> >(pPatch->pFESpace());
+    typename BSplinesFESpace<2>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<2> >(pPatch->pFESpace());
     if (pFESpace == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
+        KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
 
-        // create the hierarchical B-Splines FESpace
-        typename HBSplinesFESpace<2>::Pointer pNewFESpace = HBSplinesFESpace<2>::Create();
+    // create the hierarchical B-Splines FESpace
+    typename HBSplinesFESpace<2>::Pointer pNewFESpace = HBSplinesFESpace<2>::Create();
 
     for (int dim = 0; dim < 2; ++dim)
     {
@@ -359,14 +357,14 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
 {
     // firstly read the FESpace
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<3>::StaticType())
-        KRATOS_THROW_ERROR(std::logic_error, "The input patch is not B-Splines patch", "")
+        KRATOS_ERROR << "The input patch is not B-Splines patch";
 
-        typename BSplinesFESpace<3>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<3> >(pPatch->pFESpace());
+    typename BSplinesFESpace<3>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<3> >(pPatch->pFESpace());
     if (pFESpace == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
+        KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
 
-        // create the hierarchical B-Splines FESpace
-        typename HBSplinesFESpace<3>::Pointer pNewFESpace = HBSplinesFESpace<3>::Create();
+    // create the hierarchical B-Splines FESpace
+    typename HBSplinesFESpace<3>::Pointer pNewFESpace = HBSplinesFESpace<3>::Create();
 
     for (int dim = 0; dim < 3; ++dim)
     {

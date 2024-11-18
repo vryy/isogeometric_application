@@ -120,7 +120,7 @@ struct GridFunction_Predict_Helper
     static void Execute(TGridFunctionType& rGridFunc,
                         const TDataType& v, TCoordinatesType& xi, const std::vector<int>& nsampling)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented", __FUNCTION__)
+        KRATOS_ERROR << "Not yet implemented";
     }
 };
 
@@ -132,9 +132,9 @@ struct GridFunction_Predict_Helper<1, array_1d<double, 3>, array_1d<double, 3> >
                         const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         if (nsampling.size() < 1)
-            KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 1", "")
+            KRATOS_ERROR << "sampling array must have dimension of at least 1";
 
-            array_1d<double, 3> xi0, p;
+        array_1d<double, 3> xi0, p;
         xi0[1] = 0.0;
         xi0[2] = 0.0;
         double dist, min_dist = 1.0e99;
@@ -160,9 +160,9 @@ struct GridFunction_Predict_Helper<2, array_1d<double, 3>, array_1d<double, 3> >
                         const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         if (nsampling.size() < 2)
-            KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 2", "")
+            KRATOS_ERROR << "sampling array must have dimension of at least 2";
 
-            array_1d<double, 3> xi0, p;
+        array_1d<double, 3> xi0, p;
         xi0[2] = 0.0;
         double dist, min_dist = 1.0e99;
         for (int i = 0; i < nsampling[0] + 1; ++i)
@@ -191,9 +191,9 @@ struct GridFunction_Predict_Helper<3, array_1d<double, 3>, array_1d<double, 3> >
                         const array_1d<double, 3>& v, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
     {
         if (nsampling.size() < 3)
-            KRATOS_THROW_ERROR(std::logic_error, "sampling array must have dimension 3", "")
+            KRATOS_ERROR << "sampling array must have dimension of at least 3";
 
-            array_1d<double, 3> xi0, p;
+        array_1d<double, 3> xi0, p;
         double dist, min_dist = 1.0e99;
         for (int i = 0; i < nsampling[0] + 1; ++i)
         {
@@ -401,19 +401,19 @@ public:
     {
         if (mpFESpace == NULL)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "The FESpace is not defined for ", Info())
+            KRATOS_ERROR << "The FESpace is not defined for " << Info();
             return false;
         }
 
         if (mpControlGrid == NULL)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "The control grid is not defined for ", Info())
+            KRATOS_ERROR << "The control grid is not defined for " << Info();
             return false;
         }
 
         if (mpFESpace->TotalNumber() != mpControlGrid->Size())
         {
-            KRATOS_THROW_ERROR(std::logic_error, "The control grid and the FESpace does not have the same size", "")
+            KRATOS_ERROR << "The control grid and the FESpace does not have the same size";
             return false;
         }
 

@@ -52,13 +52,13 @@ void BezierUtils::bezier_extraction_tsplines_1d(
 {
     // bound checking
     if (Xi.size() != p + 2)
-        KRATOS_THROW_ERROR(std::logic_error, "local knot vector must be of length p + 2", "")
+        KRATOS_ERROR << "local knot vector must be of length p + 2";
 
-        if (U.size() != spans.size())
-            KRATOS_THROW_ERROR(std::logic_error, "spans array must be the same length as the number of interior knots", "")
+    if (U.size() != spans.size())
+        KRATOS_ERROR << "spans array must be the same length as the number of interior knots";
 
-            // compute the extended knot vector and identify the relative position of the T-splines basis function
-            int nt;
+    // compute the extended knot vector and identify the relative position of the T-splines basis function
+    int nt;
     IsogeometricMathUtils<double>::compute_extended_knot_vector(Ubar, nt, Xi, p);
 
     // algorithm: modify from the paper: Isogeometric finite element data structure based on Bezier extraction of T-splines, Scott et al
@@ -231,10 +231,10 @@ void BezierUtils::bezier_extraction_local_1d(std::vector<Vector>& Crows,
 {
     // bound checking
     if (Xi.size() != p + 2)
-        KRATOS_THROW_ERROR(std::logic_error, "local knot vector must be of length p + 2", "")
+        KRATOS_ERROR << "local knot vector must be of length p + 2";
 
-        // compute the extended knot vector and identify the relative position of the T-splines basis function
-        int nt;
+    // compute the extended knot vector and identify the relative position of the T-splines basis function
+    int nt;
     Vector Uextended;
     IsogeometricMathUtils<double>::compute_extended_knot_vector(Uextended, nt, Xi, p);
 

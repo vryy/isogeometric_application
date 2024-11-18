@@ -181,12 +181,12 @@ struct StructuredControlGrid_Helper
 {
     static pybind11::list GetValue(StructuredControlGrid<TDim, TDataType>& rDummy)
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "not implemented")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     static void SetValue(StructuredControlGrid<TDim, TDataType>& rDummy, pybind11::list values)
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "not implemented")
+        KRATOS_ERROR << "Not yet implemented";
     }
 };
 
@@ -208,7 +208,7 @@ struct StructuredControlGrid_Helper<1, TDataType>
 
     static void SetValue(StructuredControlGrid<1, TDataType>& rDummy, pybind11::list values)
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "not implemented")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     static void SetValue1D(StructuredControlGrid<1, TDataType>& rDummy, std::size_t i, const TDataType& value)
@@ -245,7 +245,7 @@ struct StructuredControlGrid_Helper<2, TDataType>
 
     static void SetValue(StructuredControlGrid<2, TDataType>& rDummy, pybind11::list values)
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "not implemented")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     static void SetValue2D(StructuredControlGrid<2, TDataType>& rDummy, std::size_t i, std::size_t j, const TDataType& value)
@@ -287,7 +287,7 @@ struct StructuredControlGrid_Helper<3, TDataType>
 
     static void SetValue(StructuredControlGrid<3, TDataType>& rDummy, pybind11::list values)
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "not implemented")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     static void SetValue3D(StructuredControlGrid<3, TDataType>& rDummy, std::size_t i, std::size_t j, std::size_t k, const TDataType& value)

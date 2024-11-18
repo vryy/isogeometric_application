@@ -128,7 +128,7 @@ public:
     TSplinesFESpace& operator=(const TSplinesFESpace& rOther)
     {
         // TODO copy more
-        KRATOS_THROW_ERROR(std::logic_error, "The assignment operator is not complete", "")
+        KRATOS_ERROR << "The assignment operator is not yet fully implemented";
         BaseType::operator=(rOther);
         return *this;
     }

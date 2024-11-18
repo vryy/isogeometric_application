@@ -1,41 +1,6 @@
-
 /*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
-*/
+see isogeometric_application/LICENSE.txt
+ */
 
 //
 //   Project Name:        Kratos
@@ -417,17 +382,17 @@ public:
 
 //    virtual inline SizeType NURBS_Dimension() const
 //    {
-//        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+//        KRATOS_ERROR << "Error calling base class function";
 //    }
 
 //    virtual inline SizeType NURBS_WorkingSpaceDimension() const
 //    {
-//        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+//        KRATOS_ERROR << "Error calling base class function";
 //    }
 
 //    virtual inline SizeType NURBS_LocalSpaceDimension() const
 //    {
-//        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+//        KRATOS_ERROR << "Error calling base class function";
 //    }
 
     /**
@@ -467,7 +432,7 @@ public:
         int Degree3,
         int NumberOfIntegrationMethod)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /**
@@ -484,7 +449,7 @@ public:
         int Degree3,
         int NumberOfIntegrationMethod)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
 #ifndef SD_APP_FORWARD_COMPATIBILITY
@@ -551,7 +516,7 @@ public:
         IntegrationMethod ThisMethod
     ) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /**
@@ -559,7 +524,7 @@ public:
      */
     virtual JacobiansType& Jacobian0( JacobiansType& rResult, IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
         return rResult;
     }
 
@@ -587,7 +552,7 @@ public:
      */
     virtual void ExtractControlPoints(PointsArrayType& rPoints)
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /**
@@ -595,7 +560,7 @@ public:
      */
     virtual void ExtractPoints(PointsArrayType& rPoints, const std::vector<int>& sampling_size)
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /**
@@ -603,7 +568,7 @@ public:
      */
     virtual void ExtractControlValues(const Variable<double>& rVariable, std::vector<double>& rValues) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /**
@@ -611,7 +576,7 @@ public:
      */
     virtual void ExtractValues(const Variable<double>& rVariable, std::vector<double>& rValues, const std::vector<int>& sampling_size) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /**
@@ -619,7 +584,7 @@ public:
      */
     virtual void ExtractControlValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /**
@@ -627,7 +592,7 @@ public:
      */
     virtual void ExtractValues(const Variable<array_1d<double, 3> >& rVariable, std::vector<array_1d<double, 3> >& rValues, const std::vector<int>& sampling_size) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class function", __FUNCTION__ );
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /******************************************************
@@ -653,7 +618,7 @@ public:
             mIsInitialized = true;
         }
 #else
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not available in the PRECOMPUTE mode")
+        KRATOS_ERROR << "Not available in the PRECOMPUTE mode";
 #endif
     }
 
@@ -693,13 +658,13 @@ public:
 
     Vector& ShapeFunctionsValues( Vector& rResults, const CoordinatesArrayType& rCoordinates ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class ShapeFunctionsValues method instead of derived class one. Please check the definition of derived class.", *this );
+        KRATOS_ERROR << "Error calling base class function";
         return rResults;
     }
 
     Matrix& ShapeFunctionsLocalGradients( Matrix& rResults, const CoordinatesArrayType& rCoordinates ) const override
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Calling base class ShapeFunctionsLocalGradients method instead of derived class one. Please check the definition of derived class.", *this );
+        KRATOS_ERROR << "Error calling base class function";
         return rResults;
     }
 
@@ -850,7 +815,7 @@ private:
         const CoordinatesArrayType& rPoint
     ) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling IsogeometricGeometry base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     ///@}

@@ -163,8 +163,8 @@ public:
             return mpKnots[i];
         }
         else
-            KRATOS_THROW_ERROR(std::runtime_error, "Index access out of range", "")
-        }
+            KRATOS_ERROR << "Index " << i << " is out of range";
+    }
 
     /// Get the knot at index i
     knot_t pKnotAt(std::size_t i)
@@ -174,8 +174,8 @@ public:
             return mpKnots[i];
         }
         else
-            KRATOS_THROW_ERROR(std::runtime_error, "Index access out of range", "")
-        }
+            KRATOS_ERROR << "Index " << i << " is out of range";
+    }
 
     /// Get the size of the knot vector
     std::size_t size() const {return mpKnots.size();}
@@ -220,7 +220,7 @@ public:
             }
         }
         // shall not come here
-        KRATOS_THROW_ERROR(std::logic_error, "the span index exceeds the number of span of the knot vector", "")
+        KRATOS_ERROR << "the span index exceeds the number of span of the knot vector";
     }
 
     /// Return the values of the knot vector
@@ -409,10 +409,8 @@ public:
             }
             else
             {
-                std::stringstream ss;
-                ss << "The knot vector is different at loc " << i
-                   << ": " << this->pKnotAt(i)->Value() << " != " << rOther.pKnotAt(i)->Value();
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << "The knot vector is different at loc " << i
+                             << ": " << this->pKnotAt(i)->Value() << " != " << rOther.pKnotAt(i)->Value();
             }
         }
 
@@ -435,10 +433,8 @@ public:
             }
             else
             {
-                std::stringstream ss;
-                ss << "The knot vector is different at loc " << i
-                   << ": " << this->pKnotAt(i)->Value() << " != " << rOther.pKnotAt(i)->Value();
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << "The knot vector is different at loc " << i
+                             << ": " << this->pKnotAt(i)->Value() << " != " << rOther.pKnotAt(i)->Value();
             }
         }
 

@@ -121,7 +121,7 @@ public:
             return it->second;
         }
         else
-            KRATOS_THROW_ERROR(std::runtime_error, "Access index is not found:", Id)
+            KRATOS_ERROR << "Index " << Id << " is not found";
         }
 
     /// Overload operator[]

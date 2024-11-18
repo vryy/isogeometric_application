@@ -324,7 +324,7 @@ public:
 
 ////        return p_clone;
 
-//        KRATOS_THROW_ERROR(std::logic_error, "NURBS geometry does not support for Clone", *this)
+//        KRATOS_ERROR << "NURBS geometry does not support for Clone";
 //    }
 
     /**

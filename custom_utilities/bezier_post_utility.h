@@ -85,7 +85,7 @@ struct BezierPostUtility_Helper
     static TDataType& CalculateOnPoint(const Variable<TDataType>& rVariable,
                                        TDataType& rResult, Element::Pointer& pElement, const CoordinatesArrayType& rCoordinates)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+        KRATOS_ERROR << "Not yet implemented";
     }
 };
 

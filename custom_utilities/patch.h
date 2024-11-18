@@ -112,7 +112,7 @@ public:
     {
         this->Set(ACTIVE, true);
         if (mpFESpace == NULL)
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid FESpace is provided", "")
+            KRATOS_ERROR << "Invalid FESpace is provided";
         }
 
     /// Destructor
@@ -309,9 +309,7 @@ public:
             }
         }
         // shall not come here
-        std::stringstream ss;
-        ss << "The grid function with control grid " << rVariable.Name() << " does not exist in the database of patch " << Id();
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "The grid function with control grid " << rVariable.Name() << " does not exist in the database of patch " << Id();
     }
 
     /// Get the grid function
@@ -335,9 +333,7 @@ public:
             }
         }
         // shall not come here
-        std::stringstream ss;
-        ss << "The grid function with control grid " << rVariable.Name() << " does not exist in the database of patch " << Id();
-        KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+        KRATOS_ERROR << "The grid function with control grid " << rVariable.Name() << " does not exist in the database of patch " << Id();
     }
 
     /// Filter out and get the underlying double grid functions
@@ -430,12 +426,12 @@ public:
     {
         if (Id() == 0)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "The patch must have an Id", "")
+            KRATOS_ERROR << "The patch must have an Id";
         }
 
         if (pControlPointGridFunction() != NULL)
             if (pControlPointGridFunction()->pControlGrid()->Size() != this->TotalNumber())
-                KRATOS_THROW_ERROR(std::logic_error, "The control point grid is incompatible", "")
+                KRATOS_ERROR << "The control point grid is incompatible";
 
                 DoubleGridFunctionContainerType DoubleGridFunctions_ = this->DoubleGridFunctions();
         for (typename DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
@@ -443,7 +439,7 @@ public:
         {
             if ((*it)->pControlGrid()->Size() != this->TotalNumber())
             {
-                KRATOS_THROW_ERROR(std::logic_error, "The double variable grid is incompatible", (*it)->pControlGrid()->Name())
+                KRATOS_ERROR << "The double variable grid " << (*it)->pControlGrid()->Name() << " is incompatible";
                 return false;
             }
         }
@@ -454,7 +450,7 @@ public:
         {
             if ((*it)->pControlGrid()->Size() != this->TotalNumber())
             {
-                KRATOS_THROW_ERROR(std::logic_error, "The array_1d variable grid is incompatible", (*it)->pControlGrid()->Name())
+                KRATOS_ERROR << "The array_1d variable grid " << (*it)->pControlGrid()->Name() << " is incompatible";
                 return false;
             }
         }
@@ -465,7 +461,7 @@ public:
         {
             if ((*it)->pControlGrid()->Size() != this->TotalNumber())
             {
-                KRATOS_THROW_ERROR(std::logic_error, "The vector variable grid is incompatible", (*it)->pControlGrid()->Name())
+                KRATOS_ERROR << "The vector variable grid " << (*it)->pControlGrid()->Name() <<" is incompatible";
                 return false;
             }
         }
@@ -806,9 +802,7 @@ public:
         }
         else
         {
-            std::stringstream ss;
-            ss << __FUNCTION__ << " is not implemented for " << TDim;
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << "Not implemented for " << TDim;
         }
     }
 
@@ -1012,10 +1006,8 @@ private:
     {
         if (rGrid.Size() != this->TotalNumber())
         {
-            std::stringstream ss;
-            ss << "The size of grid function (" << rGrid.size() << ") is not compatible with the current number of control values (" << this->TotalNumber()
-               << ") of patch " << Id() << ". Error at " << source;
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << "The size of grid function (" << rGrid.size() << ") is not compatible with the current number of control values (" << this->TotalNumber()
+                         << ") of patch " << Id() << ". Error at " << source;
         }
     }
 

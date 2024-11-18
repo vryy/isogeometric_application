@@ -198,15 +198,13 @@ public:
         }
         else
         {
-            KRATOS_THROW_ERROR(std::logic_error, "This element type is not supported for isogeometric post-processing", __FUNCTION__);
+            KRATOS_ERROR << "This element type is not supported for isogeometric post-processing";
         }
 
         if (!KratosComponents<Element>::Has(element_name))
         {
-            std::stringstream buffer;
-            buffer << "Element " << element_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-            KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                         << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
         }
 
         Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
@@ -600,9 +598,9 @@ public:
 //                continue;
 //            }
             if (it->pGetGeometry() == 0)
-                KRATOS_THROW_ERROR(std::logic_error, "Error: geometry is NULL at element", it->Id())
+                KRATOS_ERROR << "Error: geometry is NULL at element " << it->Id();
 
-                int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
+            int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
             int ReducedDim = it->GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
@@ -627,20 +625,16 @@ public:
             }
             else
             {
-                std::stringstream ss;
-                ss << "Invalid dimension of ";
-                ss << typeid(*it).name();
-                ss << ", Dim = " << Dim;
-                ss << ", ReducedDim = " << ReducedDim;
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), __FUNCTION__);
+                KRATOS_ERROR << "Invalid dimension of "
+                             << typeid(*it).name()
+                             << ", Dim = " << Dim
+                             << ", ReducedDim = " << ReducedDim;
             }
 
             if (!KratosComponents<Element>::Has(element_name))
             {
-                std::stringstream buffer;
-                buffer << "Element " << element_name << " is not registered in Kratos.";
-                buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-                KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+                KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                             << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
             }
 
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
@@ -672,9 +666,9 @@ public:
                 //                continue;
                 //            }
                 if (it->pGetGeometry() == 0)
-                    KRATOS_THROW_ERROR(std::logic_error, "Error: geometry is NULL at condition", it->Id())
+                    KRATOS_ERROR << "Error: geometry is NULL at condition " << it->Id();
 
-                    int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
+                int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
                 int ReducedDim = it->GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
                 IndexType NodeCounter_old = NodeCounter;
 
@@ -696,22 +690,18 @@ public:
                 }
                 else
                 {
-                    std::stringstream ss;
-                    ss << "Invalid dimension of ";
-                    ss << typeid(*it).name();
-                    ss << ", Dim = " << Dim;
-                    ss << ", ReducedDim = " << ReducedDim;
-                    ss << ". Condition " << it->Id() << " will be skipped.";
-                    //                KRATOS_THROW_ERROR(std::logic_error, ss.str(), __FUNCTION__);
+                    // KRATOS_ERROR << "Invalid dimension of "
+                    //              << typeid(*it).name()
+                    //              << ", Dim = " << Dim
+                    //              << ", ReducedDim = " << ReducedDim
+                    //              << ". Condition " << it->Id() << " will be skipped.";
                     continue;
                 }
 
                 if (!KratosComponents<Condition>::Has(condition_name))
                 {
-                    std::stringstream buffer;
-                    buffer << "Condition " << condition_name << " is not registered in Kratos.";
-                    buffer << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
-                    KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+                    KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
+                                 << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
                 }
 
                 Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
@@ -816,20 +806,16 @@ public:
             }
             else
             {
-                std::stringstream ss;
-                ss << "Invalid dimension of ";
-                ss << typeid(*it).name();
-                ss << ", Dim = " << Dim;
-                ss << ", ReducedDim = " << ReducedDim;
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), __FUNCTION__);
+                KRATOS_ERROR << "Invalid dimension of "
+                             << typeid(*it).name()
+                             << ", Dim = " << Dim
+                             << ", ReducedDim = " << ReducedDim;
             }
 
             if (!KratosComponents<Element>::Has(element_name))
             {
-                std::stringstream buffer;
-                buffer << "Element " << element_name << " is not registered in Kratos.";
-                buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-                KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+                KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                             << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
             }
 
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
@@ -892,20 +878,16 @@ public:
             }
             else
             {
-                std::stringstream ss;
-                ss << "Invalid dimension of ";
-                ss << typeid(*it).name();
-                ss << ", Dim = " << Dim;
-                ss << ", ReducedDim = " << ReducedDim;
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), __FUNCTION__);
+                KRATOS_ERROR << "Invalid dimension of "
+                             << typeid(*it).name()
+                             << ", Dim = " << Dim
+                             << ", ReducedDim = " << ReducedDim;
             }
 
             if (!KratosComponents<Condition>::Has(condition_name))
             {
-                std::stringstream buffer;
-                buffer << "Condition " << condition_name << " is not registered in Kratos.";
-                buffer << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
-                KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+                KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
+                             << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
             }
 
             Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
@@ -2353,11 +2335,11 @@ private:
             VariableSize = Dim * (Dim + 1) / 2;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, rThisVariable.Name(), " is not a supported variable for TransferVariablesToNodes routine.")
+            KRATOS_ERROR << rThisVariable.Name() << " is not a supported variable for TransferVariablesToNodes routine";
 
 #ifdef ENABLE_PROFILING
-            //profiling variables
-            double start_compute, end_compute;
+        //profiling variables
+        double start_compute, end_compute;
         start_compute = OpenMPUtils::GetCurrentTime();
 #endif
 

@@ -234,7 +234,7 @@ public:
                 KRATOS_WATCH(out_list.size())
                 KRATOS_WATCH(on_list.size())
                 KRATOS_WATCH(this->GetTolerance())
-                KRATOS_THROW_ERROR(std::logic_error, "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.", "")
+                KRATOS_ERROR << "!!!FATAL ERROR!!!The geometry is degenerated. We won't handle it.";
             }
         else
         {

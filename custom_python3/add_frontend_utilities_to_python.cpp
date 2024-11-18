@@ -138,9 +138,9 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
     }
 
     if (dim != TDim)
-        KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
+        KRATOS_ERROR << "Invalid dimension " << dim;
 
-        rDummy.InsertKnots<TDim>(patch_wrapper.GetPointer(), ins_knots_array);
+    rDummy.InsertKnots<TDim>(patch_wrapper.GetPointer(), ins_knots_array);
 }
 
 template<int TDim>
@@ -167,9 +167,9 @@ pybind11::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinementUtil
     }
 
     if (dim != TDim)
-        KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
+        KRATOS_ERROR << "Invalid dimension " << dim;
 
-        std::map<std::size_t, Matrix> trans_mats;
+    std::map<std::size_t, Matrix> trans_mats;
     rDummy.InsertKnots<TDim>(patch_wrapper.GetPointer(), ins_knots_array, trans_mats);
     // KRATOS_WATCH(trans_mats.size())
 
@@ -200,9 +200,9 @@ void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDum
     }
 
     if (dim != TDim)
-        KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
+        KRATOS_ERROR << "Invalid dimension " << dim;
 
-        rDummy.DegreeElevate<TDim>(patch_wrapper.GetPointer(), order_incr_array);
+    rDummy.DegreeElevate<TDim>(patch_wrapper.GetPointer(), order_incr_array);
 }
 
 //////////////////////////////////////////////////
@@ -243,8 +243,8 @@ pybind11::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility& dum
         patches.append(BSplinesPatchUtility::CreatePatchFromGeo<3>(filename));
     }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "The dimension of the patch is invalid", "")
-        return patches;
+        KRATOS_ERROR << "The dimension of the patch is invalid";
+    return patches;
 }
 
 void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,

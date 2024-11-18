@@ -71,19 +71,19 @@ public:
     /// Check if the cell exists in the list; ortherwise create new cell and return
     virtual cell_t CreateCell(unsigned int Level, knot_t pLeft, knot_t pRight, knot_t pDown, knot_t pUp)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class function";
     }
 
     /// Check if the cell exists in the list; ortherwise create new cell and return
     virtual cell_t CreateCell(unsigned int Level, knot_t pLeft, knot_t pRight, knot_t pDown, knot_t pUp, knot_t pBelow, knot_t pAbove)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class function";
     }
 
     /// Insert a cell to the container. If the cell is existed in the container, the iterator of the existed one will be returned.
     virtual iterator insert(cell_t p_cell)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class function";
     }
 
     /// Iterators
@@ -98,7 +98,7 @@ public:
     /// Remove a cell by its Id from the set
     virtual void erase(cell_t p_cell)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class function";
     }
 
     /// Get a cell based on its Id
@@ -117,8 +117,8 @@ public:
             return it->second;
         }
         else
-            KRATOS_THROW_ERROR(std::runtime_error, "Access index is not found:", Id)
-        }
+            KRATOS_ERROR << "Index " << Id << " is not found";
+    }
 
     /// Overload operator[]
     cell_t operator[](std::size_t Id)
@@ -129,7 +129,7 @@ public:
     /// Search the cells coverred in another cell. In return p_cell covers all the cells of std::vector<cell_t>
     virtual std::vector<cell_t> GetCells(cell_t p_cell)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class function";
     }
 
     /// Reset all the Id of all the basis functions. Remarks: use it with care, you have to be responsible to the old indexing data of the basis functions before calling this function

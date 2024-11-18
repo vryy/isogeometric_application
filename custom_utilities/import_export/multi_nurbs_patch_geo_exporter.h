@@ -30,7 +30,7 @@ public:
     template<int TDim>
     static void WriteGeoControlPoints(std::ostream& rOStream, typename Patch<TDim>::Pointer pPatch)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "WriteGeoControlPoints is not implemented for dimension", TDim)
+        KRATOS_ERROR << "Not implemented for dimension " << TDim;
     }
 };
 
@@ -61,13 +61,13 @@ public:
         rOStream << std::setprecision(BaseType::Accuracy());
 
         if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
-            KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
+            KRATOS_ERROR << "Does not support non-NURBS patch";
 
-            typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         if (pFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
+            KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
 
-            rOStream << "# nurbs mesh v.0.6\n";
+        rOStream << "# nurbs mesh v.0.6\n";
         rOStream << "#\n";
         rOStream << "# BSplines representation for patch " << pPatch->Name() << "\n";
         rOStream << "#\n";
@@ -118,9 +118,9 @@ void MultiNURBSPatchGeoExporterHelper::WriteGeoControlPoints<1>(std::ostream& rO
     typename StructuredControlGrid<1, ControlPointType>::ConstPointer pControlPointGrid
         = iga::dynamic_pointer_cast<const StructuredControlGrid<1, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
     if (pControlPointGrid == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+        KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
 
-        rOStream << "#u\n";
+    rOStream << "#u\n";
     for (std::size_t dim = 0; dim < 3; ++dim)
     {
         for (std::size_t nu = 0; nu < pControlPointGrid->Size(0); ++nu)
@@ -143,9 +143,9 @@ void MultiNURBSPatchGeoExporterHelper::WriteGeoControlPoints<2>(std::ostream& rO
     typename StructuredControlGrid<2, ControlPointType>::ConstPointer pControlPointGrid
         = iga::dynamic_pointer_cast<const StructuredControlGrid<2, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
     if (pControlPointGrid == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+        KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
 
-        rOStream << "#u v\n";
+    rOStream << "#u v\n";
     for (std::size_t dim = 0; dim < 2; ++dim)
     {
         for (std::size_t nv = 0; nv < pControlPointGrid->Size(1); ++nv)
@@ -170,9 +170,9 @@ void MultiNURBSPatchGeoExporterHelper::WriteGeoControlPoints<3>(std::ostream& rO
     typename StructuredControlGrid<3, ControlPointType>::ConstPointer pControlPointGrid
         = iga::dynamic_pointer_cast<const StructuredControlGrid<3, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
     if (pControlPointGrid == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+        KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
 
-        rOStream << "#u v w\n";
+    rOStream << "#u v w\n";
     for (std::size_t dim = 0; dim < 3; ++dim)
     {
         for (std::size_t nw = 0; nw < pControlPointGrid->Size(2); ++nw)

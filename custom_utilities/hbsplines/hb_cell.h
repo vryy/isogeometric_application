@@ -121,15 +121,15 @@ public:
 
             typename HBCellType::Pointer pOtherCell = iga::dynamic_pointer_cast<HBCellType>(pOther);
             if (pOtherCell == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBCell is failed.", "")
-                for (typename HBCellType::bf_iterator it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
-                {
-                    this->AddBf((*it_bf).lock());
-                }
+                KRATOS_ERROR << "The cast to HBCell is failed.";
+            for (typename HBCellType::bf_iterator it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
+            {
+                this->AddBf((*it_bf).lock());
+            }
         }
         catch (std::exception const& e)
         {
-            KRATOS_THROW_ERROR(std::runtime_error, __FUNCTION__, "failed.")
+            KRATOS_ERROR << "Absorb failed.";
         }
     }
 

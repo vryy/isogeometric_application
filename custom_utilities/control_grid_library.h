@@ -53,7 +53,7 @@ public:
     static ControlGrid<ControlPointType>::Pointer CreateStructuredControlPointGrid(
         const std::vector<double>& start, const std::vector<std::size_t>& ngrid, const std::vector<double>& end)
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not implemented")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     /// Generate the regular control point grid based on starting point and the director vector in each direction. All the point has unit weight.
@@ -61,7 +61,7 @@ public:
     static ControlGrid<ControlPointType>::Pointer CreateStructuredControlPointGrid(
         const std::vector<double>& start, const std::vector<std::size_t>& ngrid, const std::vector<std::vector<double> >& spacing_vectors)
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not implemented")
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     /// Generate regular control grid with a specific data type

@@ -382,7 +382,7 @@ public:
         tri_util.ComputeDelaunayTriangulation(XY, Connectivities);
 #else
         // REMARK: a tool to perform triangulation is not defined. You must define it.
-        KRATOS_THROW_ERROR(std::logic_error, "A triangulation method must be specialized", "")
+        KRATOS_ERROR << "A triangulation method must be specialized";
 #endif
 
         return Connectivities;

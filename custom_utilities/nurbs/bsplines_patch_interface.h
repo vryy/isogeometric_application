@@ -308,7 +308,7 @@ public:
             return it->second;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "The dimension is invalid", "")
+            KRATOS_ERROR << "The dimension " << dim << " is invalid";
         }
 
     /// Get the relative direction between the local parameter space

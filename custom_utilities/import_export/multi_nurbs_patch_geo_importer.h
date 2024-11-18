@@ -54,9 +54,9 @@ static int GetDimensionOfGeoHelper(const std::string& fn)
 {
     std::ifstream infile(fn.c_str());
     if (!infile)
-        KRATOS_THROW_ERROR(std::logic_error, "Error open file", fn)
+        KRATOS_ERROR << "Error open file " << fn;
 
-        std::string line;
+    std::string line;
     std::vector<std::string> words;
     int read_mode = _READ_PATCH;
     while (!infile.eof())
@@ -77,8 +77,7 @@ static int GetDimensionOfGeoHelper(const std::string& fn)
                 // bound check
                 if (words.size() < 2)
                 {
-                    std::cout << "Error at line: " << line << std::endl;
-                    KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain information about dimension and number of patches, current number of information =", words.size())
+                    KRATOS_ERROR << "The Patch section need to contain information about dimension and number of patches, current number of information = " << words.size();
                 }
 
                 // read info
@@ -98,7 +97,7 @@ struct BoundarySideHelper
 {
     static BoundarySide Get(int i)
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not implemented")
+        KRATOS_ERROR << "Not implemented";
     }
 };
 
@@ -180,7 +179,7 @@ struct BoundarySideHelper<2>
         case 2: return _BRIGHT_;
         case 3: return _BBOTTOM_;
         case 4: return _BTOP_;
-        default: KRATOS_THROW_ERROR(std::logic_error, i, "is not a valid side");
+        default: KRATOS_ERROR << i << " is not a valid side";
         }
         return _NUMBER_OF_BOUNDARY_SIDE;
     }
@@ -199,7 +198,7 @@ struct BoundarySideHelper<3>
         case 4: return _BBACK_;
         case 5: return _BBOTTOM_;
         case 6: return _BTOP_;
-        default: KRATOS_THROW_ERROR(std::logic_error, i, "is not a valid side");
+        default: KRATOS_ERROR << i << " is not a valid side";
         }
         return _NUMBER_OF_BOUNDARY_SIDE;
     }

@@ -77,8 +77,8 @@ public:
         else
         {
             if (throw_error)
-                KRATOS_THROW_ERROR(std::logic_error, "number < order+1", "")
-            }
+                KRATOS_ERROR << "number (" << number << ") < order+1 (" << order+1 << ")";
+        }
         for (std::size_t i = 0; i < order + 1; ++i)
         {
             knot_vector.pCreateKnot(1.0);
@@ -136,8 +136,6 @@ public:
     virtual void PrintData(std::ostream& rOStream) const
     {
     }
-
-private:
 };
 
 /// output stream function

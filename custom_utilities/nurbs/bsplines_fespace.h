@@ -175,7 +175,7 @@ public:
     {
         if (idir >= TDim)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension", "")
+            KRATOS_ERROR << "Invalid direction " << idir;
         }
         else
         {
@@ -221,8 +221,7 @@ public:
         {
             if (mKnotVectors[i].size() != mNumbers[i] + mOrders[i] + 1)
             {
-                KRATOS_THROW_ERROR(std::logic_error, "The knot vector is incompatible at dimension", i)
-                return false;
+                KRATOS_ERROR << "The knot vector is incompatible at dimension " << i;
             }
         }
 
@@ -349,7 +348,7 @@ public:
                 std::cout << " " << func_indices[i];
             }
             std::cout << std::endl;
-            KRATOS_THROW_ERROR(std::logic_error, "The func_indices vector does not have the same size as total number of basis functions", "")
+            KRATOS_ERROR << "The func_indices vector does not have the same size as total number of basis functions";
         }
         if (mFunctionsIds.size() != this->TotalNumber())
         {

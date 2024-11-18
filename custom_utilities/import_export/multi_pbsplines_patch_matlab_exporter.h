@@ -37,9 +37,7 @@ public:
         typename TFESpaceType::Pointer pFESpace = iga::dynamic_pointer_cast<TFESpaceType>(pPatch->pFESpace());
         if (pFESpace == NULL)
         {
-            std::stringstream ss;
-            ss << "The cast to " << TFESpaceType::StaticType() << " is failed.";
-            KRATOS_THROW_ERROR(std::runtime_error, ss.str(), "")
+            KRATOS_ERROR << "The cast to " << TFESpaceType::StaticType() << " is failed.";
         }
 
         // Type definitions

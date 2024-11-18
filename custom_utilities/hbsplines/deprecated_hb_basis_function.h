@@ -159,8 +159,8 @@ public:
             }
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension", "")
-        }
+            KRATOS_ERROR << "Invalid dimension " << Dim;
+    }
 
     /**************************************************************************
                             ACCESS SUBROUTINES
@@ -227,8 +227,8 @@ public:
             }
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension parameters", "")
-        }
+            KRATOS_ERROR << "Invalid dimension " << dim;
+    }
 
     /// Get the bounding box (=support domain) of this basis function
     void GetBoundingBox(double& Xmin, double& Xmax, double& Ymin, double& Ymax, double& Zmin, double& Zmax)
@@ -278,9 +278,7 @@ public:
         }
         else
         {
-            std::stringstream ss;
-            ss << "The basis function " << ChildId << " is not the child of basis function " << Id();
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << "The basis function " << ChildId << " is not the child of basis function " << Id();
         }
     }
 
@@ -333,8 +331,8 @@ public:
             return mpLocalKnots3;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid dimension", "")
-        }
+            KRATOS_ERROR << "Invalid dimension " << i;
+    }
 
     /**************************************************************************
                             COMPUTATION SUBROUTINES

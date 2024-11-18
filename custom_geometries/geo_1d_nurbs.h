@@ -1,39 +1,5 @@
 /*
- ==============================================================================
- Kratos
- A General Purpose Software for Multi-Physics Finite Element Analysis
- Version 1.0 (Released on march 05, 2007).
-
- Copyright 2007
- Pooyan Dadvand, Riccardo Rossi
- pooyan@cimne.upc.edu
- rrossi@cimne.upc.edu
- CIMNE (International Center for Numerical Methods in Engineering),
- Gran Capita' s/n, 08034 Barcelona, Spain
-
- Permission is hereby granted, free  of charge, to any person obtaining
- a  copy  of this  software  and  associated  documentation files  (the
- "Software"), to  deal in  the Software without  restriction, including
- without limitation  the rights to  use, copy, modify,  merge, publish,
- distribute,  sublicense and/or  sell copies  of the  Software,  and to
- permit persons to whom the Software  is furnished to do so, subject to
- the following condition:
-
- Distribution of this code for  any  commercial purpose  is permissible
- ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
- The  above  copyright  notice  and  this permission  notice  shall  be
- included in all copies or substantial portions of the Software.
-
- THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
- EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
- CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
- TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
- ==============================================================================
+see isogeometric_application/LICENSE.txt
  */
 
 //
@@ -640,7 +606,7 @@ public:
     virtual Vector& DeterminantOfJacobian( Vector& rResult,
                                            IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
@@ -669,7 +635,7 @@ public:
     virtual double DeterminantOfJacobian( IndexType IntegrationPointIndex,
                                           IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return 0.0;
     }
 
@@ -694,7 +660,7 @@ public:
      */
     virtual double DeterminantOfJacobian( const CoordinatesArrayType& rPoint ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return 0.0;
     }
 
@@ -720,7 +686,7 @@ public:
     virtual JacobiansType& InverseOfJacobian( JacobiansType& rResult,
             IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
@@ -752,7 +718,7 @@ public:
                                        IndexType IntegrationPointIndex,
                                        IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
@@ -774,7 +740,7 @@ public:
      */
     virtual Matrix& InverseOfJacobian( Matrix& rResult, const CoordinatesArrayType& rPoint ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", "" );
+        KRATOS_ERROR << "Jacobian is not square";
         return rResult;
     }
 
@@ -963,7 +929,7 @@ public:
         ShapeFunctionsGradientsType& rResult,
         IntegrationMethod ThisMethod ) const
     {
-        KRATOS_THROW_ERROR( std::logic_error, "Jacobian is not square", __FUNCTION__);
+        KRATOS_ERROR << "Jacobian is not square";
 
         return rResult;
     }
@@ -1035,7 +1001,7 @@ public:
 
         if (mNumber != this->size())
         {
-            KRATOS_THROW_ERROR(std::logic_error, "The parametric parameters is not compatible, knots.length != n+p+1.", __FUNCTION__)
+            KRATOS_ERROR << "The parametric parameters is not compatible, knots.length != n+p+1.";
         }
 
         //TODO: calculate everything related to geometry data here
@@ -1263,7 +1229,7 @@ private:
         //check the size of relevant integration method
         if (NumberOfIntegrationMethod > static_cast<int>(GeometryData::IntegrationMethod::NumberOfIntegrationMethods) - mOrder + 1)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "Number of integration methods exceeds the allowance defined by boost.array", __FUNCTION__)
+            KRATOS_ERROR << "Number of integration methods too big";
         }
 
         //generate integration points for GI_GAUSS_1 rule. Note that GI_GAUSS_1 is the default rule which take the minimum order of integration in each direction

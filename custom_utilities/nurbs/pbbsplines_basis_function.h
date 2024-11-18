@@ -242,7 +242,7 @@ public:
     virtual void GetDerivativeAt(std::vector<double>& res, const std::vector<double>& xi) const
     {
         // TODO
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     /**************************************************************************

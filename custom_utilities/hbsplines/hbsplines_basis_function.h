@@ -181,9 +181,7 @@ public:
         }
         else
         {
-            std::stringstream ss;
-            ss << "The basis function " << child_id << " is not the child of basis function " << this->Id();
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << "The basis function " << child_id << " is not the child of basis function " << this->Id();
         }
     }
 
@@ -197,9 +195,9 @@ public:
         typename HBSplinesBasisFunction < TDim - 1 >::Pointer pNewSubBf;
 
         if (dim >= TDim)
-            KRATOS_THROW_ERROR(std::logic_error, "The dimension is invalid", "")
+            KRATOS_ERROR << "The dimension " << dim << " is invalid";
 
-            pNewSubBf = typename HBSplinesBasisFunction < TDim - 1 >::Pointer(new HBSplinesBasisFunction < TDim - 1 > (this->Id(), this->Level()));
+        pNewSubBf = typename HBSplinesBasisFunction < TDim - 1 >::Pointer(new HBSplinesBasisFunction < TDim - 1 > (this->Id(), this->Level()));
         pNewSubBf->SetEquationId(this->EquationId());
 
         if (TDim == 2)

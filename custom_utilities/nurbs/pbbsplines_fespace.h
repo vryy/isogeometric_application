@@ -287,7 +287,7 @@ public:
     bool IsInside(const std::vector<double>& xi) const override
     {
         // TODO
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     /// Compare between two BSplines patches in terms of parametric information
@@ -339,7 +339,7 @@ public:
                 std::cout << " " << func_indices[i];
             }
             std::cout << std::endl;
-            KRATOS_THROW_ERROR(std::logic_error, "The func_indices vector does not have the same size as total number of basis functions", "")
+            KRATOS_ERROR << "The func_indices vector does not have the same size as total number of basis functions";
         }
         std::size_t cnt = 0;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
@@ -471,8 +471,8 @@ public:
                     map_bfs[(*it_bf)->EquationId()] = (*it_bf);
                 }
                 else if (it->second != (*it_bf))
-                    KRATOS_THROW_ERROR(std::logic_error, "There are two bfs with the same equation_id. This is not valid.", "")
-                }
+                    KRATOS_ERROR << "There are two bfs with the same equation_id. This is not valid.";
+            }
         }
 
         // then we can extract the equation_id
@@ -611,8 +611,8 @@ public:
             return it->second;
         }
         else
-            KRATOS_THROW_ERROR(std::runtime_error, "Access index is not found:", Id)
-        }
+            KRATOS_ERROR << "Index " << Id << " is not found";
+    }
 
     /// Check if the functional space has the function with equation id
     bool HasBfByEquationId(std::size_t EquationId) const
@@ -636,7 +636,7 @@ public:
     PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>& operator=(const PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>& rOther)
     {
         // TODO copy more
-        KRATOS_THROW_ERROR(std::logic_error, "The assignment operator is not complete", "")
+        KRATOS_ERROR << "The assignment operator is not fully implemented";
         BaseType::operator=(rOther);
         return *this;
     }

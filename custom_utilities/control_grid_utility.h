@@ -57,10 +57,10 @@ public:
     {
         // ensure the transformation matrix size is compatible
         if (TformMat.size1() != rControlGrid.Size())
-            KRATOS_THROW_ERROR(std::logic_error, "The first size of the transformation matrix is not compatible with old grid function size", "")
+            KRATOS_ERROR << "The first size of the transformation matrix is not compatible with old grid function size";
 
             if (TformMat.size2() != rNewControlGrid.Size())
-                KRATOS_THROW_ERROR(std::logic_error, "The second size of the transformation matrix is not compatible with new grid function size", "")
+                KRATOS_ERROR << "The second size of the transformation matrix is not compatible with new grid function size";
 
                 // compute new data and store
                 for (std::size_t i = 0; i < TformMat.size2(); ++i)
@@ -89,31 +89,31 @@ public:
     {
         // ensure the transformation matrix size is compatible
         if (TformMat.size1() != rControlGrid.Size())
-            KRATOS_THROW_ERROR(std::logic_error, "The first size of the transformation matrix is not compatible with old grid function size", "")
+            KRATOS_ERROR << "The first size of the transformation matrix is not compatible with old grid function size";
 
-            if (rOldWeights.size() != rControlGrid.Size())
-                KRATOS_THROW_ERROR(std::logic_error, "The size of the old weights is not compatible with the old grid function size", "")
+        if (rOldWeights.size() != rControlGrid.Size())
+            KRATOS_ERROR << "The size of the old weights is not compatible with the old grid function size";
 
-                if (TformMat.size2() != rNewControlGrid.Size())
-                    KRATOS_THROW_ERROR(std::logic_error, "The second size of the transformation matrix is not compatible with new grid function size", "")
+        if (TformMat.size2() != rNewControlGrid.Size())
+            KRATOS_ERROR << "The second size of the transformation matrix is not compatible with new grid function size";
 
-                    if (rNewWeights.size() != rNewControlGrid.Size())
-                        KRATOS_THROW_ERROR(std::logic_error, "The size of the new weights is not compatible with the new grid function size", "")
+        if (rNewWeights.size() != rNewControlGrid.Size())
+            KRATOS_ERROR << "The size of the new weights is not compatible with the new grid function size";
 
-                        // compute new data and store
-                        for (std::size_t i = 0; i < TformMat.size2(); ++i)
-                        {
-                            TDataType NewData = TformMat(0, i) * rControlGrid.GetData(0) * rOldWeights[0];
+        // compute new data and store
+        for (std::size_t i = 0; i < TformMat.size2(); ++i)
+        {
+            TDataType NewData = TformMat(0, i) * rControlGrid.GetData(0) * rOldWeights[0];
 
-                            for (std::size_t j = 1; j < TformMat.size1(); ++j)
-                            {
-                                if (TformMat(j, i) != 0.0)
-                                {
-                                    NewData += TformMat(j, i) * rControlGrid.GetData(j) * rOldWeights[j];
-                                }
-                            }
-                            rNewControlGrid.SetData(i, NewData / rNewWeights[i]);
-                        }
+            for (std::size_t j = 1; j < TformMat.size1(); ++j)
+            {
+                if (TformMat(j, i) != 0.0)
+                {
+                    NewData += TformMat(j, i) * rControlGrid.GetData(j) * rOldWeights[j];
+                }
+            }
+            rNewControlGrid.SetData(i, NewData / rNewWeights[i]);
+        }
     }
 
     /// Apply the homogeneous transformation to a grid of control points
@@ -203,7 +203,7 @@ public:
                 {
                     ss << " " << indices[j];
                 }
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << ss.str();
             }
             pNewControlGrid->SetData(i, pControlGrid->GetData(indices[i]));
         }

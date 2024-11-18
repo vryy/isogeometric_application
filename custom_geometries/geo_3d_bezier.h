@@ -347,7 +347,7 @@ public:
 
 ////        return p_clone;
 
-//        KRATOS_THROW_ERROR(std::logic_error, "NURBS geometry does not support for Clone", *this)
+//        KRATOS_ERROR << "NURBS geometry does not support for Clone";
 //    }
 
     /**
@@ -1194,7 +1194,7 @@ public:
     {
         // TODO
 
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not yet implemented")
+        KRATOS_ERROR << "Not yet implemented";
 
         rResults.resize(this->PointsNumber(), false);
 
@@ -1388,7 +1388,7 @@ public:
         {
             KRATOS_WATCH(this->PointsNumber())
             KRATOS_WATCH(mExtractionOperator)
-            KRATOS_THROW_ERROR(std::logic_error, "The number of row of extraction operator must be equal to number of nodes", __FUNCTION__)
+            KRATOS_ERROR << "The number of row of extraction operator must be equal to number of nodes";
         }
         if (mExtractionOperator.size2() != mNumber1 * mNumber2 * mNumber3)
         {
@@ -1396,60 +1396,60 @@ public:
             KRATOS_WATCH(mOrder1)
             KRATOS_WATCH(mOrder2)
             KRATOS_WATCH(mOrder3)
-            KRATOS_THROW_ERROR(std::logic_error, "The number of column of extraction operator must be equal to (p_u+1) * (p_v+1) * (p_w+1), error at", __FUNCTION__)
+            KRATOS_ERROR << "The number of column of extraction operator must be equal to (p_u+1) * (p_v+1) * (p_w+1).";
         }
         if (mCtrlWeights.size() != this->PointsNumber())
-            KRATOS_THROW_ERROR(std::logic_error, "The number of weights must be equal to number of nodes", __FUNCTION__)
+            KRATOS_ERROR << "The number of weights must be equal to number of nodes";
 
-            if (NumberOfIntegrationMethod > 0)
-            {
-                // find the existing integration rule or create new one if not existed
-                BezierUtils::RegisterIntegrationRule<3, 3, 3>(NumberOfIntegrationMethod, Degree1, Degree2, Degree3);
+        if (NumberOfIntegrationMethod > 0)
+        {
+            // find the existing integration rule or create new one if not existed
+            BezierUtils::RegisterIntegrationRule<3, 3, 3>(NumberOfIntegrationMethod, Degree1, Degree2, Degree3);
 
-                // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
-                mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<3, 3, 3>(NumberOfIntegrationMethod, Degree1, Degree2, Degree3);
+            // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
+            mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<3, 3, 3>(NumberOfIntegrationMethod, Degree1, Degree2, Degree3);
 #ifndef ENABLE_PRECOMPUTE
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-                BaseType::SetGeometryData(&(*mpBezierGeometryData));
+            BaseType::SetGeometryData(&(*mpBezierGeometryData));
 #else
-                BaseType::mpGeometryData = &(*mpBezierGeometryData);
+            BaseType::mpGeometryData = &(*mpBezierGeometryData);
 #endif
 #else
-                // precompute the values at each integration points; note that it can generate a LOT of data
-                IntegrationPointsContainerType all_integration_points
-                    = BezierUtils::AllIntegrationPoints(NumberOfIntegrationMethod, mOrder1, mOrder2, mOrder3);
+            // precompute the values at each integration points; note that it can generate a LOT of data
+            IntegrationPointsContainerType all_integration_points
+                = BezierUtils::AllIntegrationPoints(NumberOfIntegrationMethod, mOrder1, mOrder2, mOrder3);
 
-                ShapeFunctionsValuesContainerType shape_functions_values;
-                ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients;
+            ShapeFunctionsValuesContainerType shape_functions_values;
+            ShapeFunctionsLocalGradientsContainerType shape_functions_local_gradients;
 
-                for (IndexType i = 0; i < NumberOfIntegrationMethod; ++i)
-                {
-                    CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
-                        shape_functions_values[i],
-                        shape_functions_local_gradients[i],
-                        (GeometryData::IntegrationMethod)i
-                    );
-                }
+            for (IndexType i = 0; i < NumberOfIntegrationMethod; ++i)
+            {
+                CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
+                    shape_functions_values[i],
+                    shape_functions_local_gradients[i],
+                    (GeometryData::IntegrationMethod)i
+                );
+            }
 
-                mpGeometryData = GeometryData::Pointer(
-                                     new GeometryData(
-                                         3,
-                                         3,
-                                         3,
-                                         GeometryData::IntegrationMethod::GI_GAUSS_1,           //ThisDefaultMethod
-                                         all_integration_points,             //ThisIntegrationPoints
-                                         shape_functions_values,             //ThisShapeFunctionsValues
-                                         shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
-                                     )
-                                 );
+            mpGeometryData = GeometryData::Pointer(
+                                 new GeometryData(
+                                     3,
+                                     3,
+                                     3,
+                                     GeometryData::IntegrationMethod::GI_GAUSS_1,           //ThisDefaultMethod
+                                     all_integration_points,             //ThisIntegrationPoints
+                                     shape_functions_values,             //ThisShapeFunctionsValues
+                                     shape_functions_local_gradients     //ThisShapeFunctionsLocalGradients
+                                 )
+                             );
 
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-                BaseType::SetGeometryData(&(*mpGeometryData));
+            BaseType::SetGeometryData(&(*mpGeometryData));
 #else
-                BaseType::mpGeometryData = &(*mpGeometryData);
+            BaseType::mpGeometryData = &(*mpGeometryData);
 #endif
 #endif
-            }
+        }
     }
 
 protected:

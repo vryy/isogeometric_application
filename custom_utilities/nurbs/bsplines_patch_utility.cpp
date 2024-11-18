@@ -56,8 +56,8 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility::CreateLoftPatch(std::vector 
     // create the new FESpace
     typename BSplinesFESpace < TDim - 1 >::Pointer pFESpace0 = iga::dynamic_pointer_cast < BSplinesFESpace < TDim - 1 > > (pPatches[0]->pFESpace());
     if (pFESpace0 == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
-        typename BSplinesFESpace<TDim>::Pointer pNewFESpace = BSplinesFESpace<TDim>::Create();
+        KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
+    typename BSplinesFESpace<TDim>::Pointer pNewFESpace = BSplinesFESpace<TDim>::Create();
     for (std::size_t dim = 0; dim < TDim - 1; ++dim)
     {
         pNewFESpace->SetKnotVector(dim, pFESpace0->KnotVector(dim));
@@ -138,7 +138,7 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
         return;
     }
 
-    std::cout << "Patch " << pPatch->Name() << " will be reversed in direction " << idir << std::endl;
+    // std::cout << "Patch " << pPatch->Name() << " will be reversed in direction " << idir << std::endl;
 
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
     {

@@ -290,8 +290,8 @@ ModelPart::ElementsContainerType IsogeometricPostUtility_TransferElements(Isogeo
 {
     std::size_t last_element_id = IsogeometricPostUtility::GetLastElementId(r_other_model_part);
     if (!KratosComponents<Element>::Has(sample_element_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
-        Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+        KRATOS_ERROR << sample_element_name << " is not registered to the Kratos kernel";
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
     ModelPart::ElementsContainerType pNewElements = IsogeometricPostUtility::CreateEntities(pElements, r_other_model_part, r_clone_element, last_element_id, pProperties, retain_prop_id);
 
     for (ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
@@ -311,8 +311,8 @@ ModelPart::ConditionsContainerType IsogeometricPostUtility_TransferConditions(Is
 {
     std::size_t last_condition_id = IsogeometricPostUtility::GetLastConditionId(r_other_model_part);
     if (!KratosComponents<Condition>::Has(sample_condition_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        KRATOS_ERROR << sample_condition_name << " is not registered to the Kratos kernel";
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
     ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities(pConditions, r_other_model_part, r_clone_condition, last_condition_id, pProperties, retain_prop_id);
 
     for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
@@ -331,8 +331,8 @@ ModelPart::ElementsContainerType IsogeometricPostUtility_FindElements(Isogeometr
         ModelPart::ElementsContainerType& pElements, const std::string& sample_element_name)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
-        Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+        KRATOS_ERROR << sample_element_name << " is not registered to the Kratos kernel";
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
     return IsogeometricPostUtility::FindEntities(pElements, r_clone_element);
 }
 
@@ -340,8 +340,8 @@ ModelPart::ConditionsContainerType IsogeometricPostUtility_FindConditions(Isogeo
         ModelPart::ConditionsContainerType& pConditions, const std::string& sample_condition_name)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        KRATOS_ERROR << sample_condition_name << " is not registered to the Kratos kernel";
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
     return IsogeometricPostUtility::FindEntities(pConditions, r_clone_condition);
 }
 
@@ -356,8 +356,8 @@ pybind11::list IsogeometricPostUtility_CreateConditionsByTriangulation(Isogeomet
         Properties::Pointer pProperties)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        KRATOS_ERROR << sample_condition_name << " is not registered to the Kratos kernel";
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
     std::vector<TCoordinatesType> physical_points;
     for (auto p : list_physical_points)
@@ -418,8 +418,8 @@ pybind11::list IsogeometricPostUtility_CreateConditionsByQuadrilateralization(Is
         Properties::Pointer pProperties)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        KRATOS_ERROR << sample_condition_name << " is not registered to the Kratos kernel";
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
     std::size_t starting_node_id = last_node_id + 1;
     std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<std::size_t> > >
@@ -479,8 +479,8 @@ pybind11::list BezierClassicalPostUtility_GenerateConditions(BezierClassicalPost
         std::size_t starting_condition_id)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        KRATOS_ERROR << sample_condition_name << " is not registered to the Kratos kernel";
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
     std::size_t NodeCounter = starting_node_id;
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ConditionCounter = starting_condition_id;
@@ -509,8 +509,8 @@ pybind11::list BezierClassicalPostUtility_GenerateConditionsWithNodalVariables(B
         std::size_t starting_condition_id)
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_condition_name, "is not registered to the Kratos kernel")
-        Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
+        KRATOS_ERROR << sample_condition_name << " is not registered to the Kratos kernel";
+    Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
     std::size_t NodeCounter = starting_node_id;
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ConditionCounter = starting_condition_id;
@@ -539,8 +539,8 @@ pybind11::list BezierClassicalPostUtility_GenerateElements(BezierClassicalPostUt
         std::size_t starting_element_id)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
-        Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+        KRATOS_ERROR << sample_element_name << " is not registered to the Kratos kernel";
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
     std::size_t NodeCounter = starting_node_id;
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ElementCounter = starting_element_id;
@@ -569,8 +569,8 @@ pybind11::list BezierClassicalPostUtility_GenerateElementsWithNodalVariables(Bez
         std::size_t starting_element_id)
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
-        KRATOS_THROW_ERROR(std::logic_error, sample_element_name, "is not registered to the Kratos kernel")
-        Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
+        KRATOS_ERROR << sample_element_name << " is not registered to the Kratos kernel";
+    Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
     std::size_t NodeCounter = starting_node_id;
     std::size_t NodeCounter_old = NodeCounter;
     std::size_t ElementCounter = starting_element_id;

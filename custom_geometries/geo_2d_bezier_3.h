@@ -289,7 +289,7 @@ public:
 
 ////        return p_clone;
 
-//        KRATOS_THROW_ERROR(std::logic_error, "NURBS geometry does not support for Clone", *this)
+//        KRATOS_ERROR << "NURBS geometry does not support for Clone";
 //    }
 
     /**
@@ -570,25 +570,25 @@ public:
 
         // size checking
         if (BaseType::mExtractionOperator.size1() != this->PointsNumber())
-            KRATOS_THROW_ERROR(std::logic_error, "The number of row of extraction operator must be equal to number of nodes, mExtractionOperator.size1() =", BaseType::mExtractionOperator.size1())
-            if (BaseType::mExtractionOperator.size2() != BaseType::mNumber1 * BaseType::mNumber2)
-                KRATOS_THROW_ERROR(std::logic_error, "The number of column of extraction operator must be equal to (p_u+1) * (p_v+1), mExtractionOperator.size2() =", BaseType::mExtractionOperator.size2())
-                if (BaseType::mCtrlWeights.size() != this->PointsNumber())
-                    KRATOS_THROW_ERROR(std::logic_error, "The number of weights must be equal to number of nodes", __FUNCTION__)
+            KRATOS_ERROR << "The number of row of extraction operator must be equal to number of nodes, mExtractionOperator.size1() = " << BaseType::mExtractionOperator.size1();
+        if (BaseType::mExtractionOperator.size2() != BaseType::mNumber1 * BaseType::mNumber2)
+            KRATOS_ERROR << "The number of column of extraction operator must be equal to (p_u+1) * (p_v+1), mExtractionOperator.size2() = " << BaseType::mExtractionOperator.size2();
+        if (BaseType::mCtrlWeights.size() != this->PointsNumber())
+            KRATOS_ERROR << "The number of weights must be equal to number of nodes";
 
-                    if (NumberOfIntegrationMethod > 0)
-                    {
-                        // find the existing integration rule or create new one if not existed
-                        BezierUtils::RegisterIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
+        if (NumberOfIntegrationMethod > 0)
+        {
+            // find the existing integration rule or create new one if not existed
+            BezierUtils::RegisterIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
 
-                        // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
-                        BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
+            // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
+            BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-                        GeometryType::SetGeometryData(&(*BaseType::mpBezierGeometryData));
+            GeometryType::SetGeometryData(&(*BaseType::mpBezierGeometryData));
 #else
-                        GeometryType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
+            GeometryType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
 #endif
-                    }
+        }
     }
 
 protected:

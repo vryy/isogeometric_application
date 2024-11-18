@@ -173,9 +173,9 @@ public:
         std::vector<std::tuple<std::size_t, std::size_t, std::size_t, int> > edges;
         std::map<std::size_t, std::vector<double> > knotvec;
         // KRATOS_WATCH(__LINE__) // error with 1D here
-        if (TDim == 1)
+        if constexpr (TDim == 1)
         {
-            KRATOS_THROW_ERROR(std::logic_error, "Here there will be an error, no more proceeding", "")
+            KRATOS_ERROR << "Here there will be an error, no more proceeding";
         }
         this->GenerateCornerTopology(*pMultiPatch, nvertices, elements, boundary, edges, knotvec);
         // KRATOS_WATCH(__LINE__)
@@ -193,12 +193,12 @@ public:
                 rOStream << " 5";
             }
             else
-                KRATOS_THROW_ERROR(std::logic_error, "Invalid number of nodes for an element:", elements[i].size())
+                KRATOS_ERROR << "Invalid number of nodes " << elements[i].size() << " for element";
 
-                for (std::size_t j = 0; j < elements[i].size(); ++j)
-                {
-                    rOStream << " " << elements[i][j];
-                }
+            for (std::size_t j = 0; j < elements[i].size(); ++j)
+            {
+                rOStream << " " << elements[i][j];
+            }
             rOStream << "\n";
         }
         rOStream << "\n";
@@ -237,20 +237,20 @@ public:
             rOStream << "knotvectors\n" << TDim << "\n";
 
             if (it->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
-                KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "does not support non-NURBS patch")
+                KRATOS_ERROR << "Does not support non-NURBS patch";
 
-                typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
+            typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
-                for (std::size_t dim = 0; dim < TDim; ++dim)
+                KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
+            for (std::size_t dim = 0; dim < TDim; ++dim)
+            {
+                rOStream << pFESpace->Order(dim) << " " << pFESpace->Number(dim);
+                for (std::size_t i = 0; i < pFESpace->KnotVector(dim).size(); ++i)
                 {
-                    rOStream << pFESpace->Order(dim) << " " << pFESpace->Number(dim);
-                    for (std::size_t i = 0; i < pFESpace->KnotVector(dim).size(); ++i)
-                    {
-                        rOStream << " " << pFESpace->KnotVector(dim)[i];
-                    }
-                    rOStream << "\n";
+                    rOStream << " " << pFESpace->KnotVector(dim)[i];
                 }
+                rOStream << "\n";
+            }
             rOStream << "\n";
 
             rOStream << "dimension\n" << TDim << "\n\n";
@@ -319,16 +319,16 @@ private:
 
             typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
+                KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
 
-                // collect the knot vector in respective dimension
-                for (std::size_t i = 0; i < TDim; ++i)
+            // collect the knot vector in respective dimension
+            for (std::size_t i = 0; i < TDim; ++i)
+            {
+                for (std::size_t j = 0; j < pFESpace->KnotVector(i).size(); ++j)
                 {
-                    for (std::size_t j = 0; j < pFESpace->KnotVector(i).size(); ++j)
-                    {
-                        all_knotvec[patch_knotv[id][i]].push_back(pFESpace->KnotVector(i)[j]);
-                    }
+                    all_knotvec[patch_knotv[id][i]].push_back(pFESpace->KnotVector(i)[j]);
                 }
+            }
         }
 
 #ifdef DEBUG_GLVIS_EXPORT
@@ -623,7 +623,7 @@ private:
         else if (TDim == 3)
         {
             // TODO
-            KRATOS_THROW_ERROR(std::logic_error, "Not yet implemented for 3D", "")
+            KRATOS_ERROR << "Not yet implemented for 3D";
         }
     }
 
@@ -639,9 +639,9 @@ private:
                               std::vector<volume_t>& volumes2 ) const
     {
         if (vertices1.size() != vertices2.size())
-            KRATOS_THROW_ERROR(std::logic_error, "The number of vertices is not compatible", "")
+            KRATOS_ERROR << "The number of vertices is not compatible";
 
-            std::vector<int> map = GetJointMapping(Dim, side1, side2);
+        std::vector<int> map = GetJointMapping(Dim, side1, side2);
 
         std::map<std::size_t, std::size_t> old_to_new;
         for (std::size_t i = 0; i < vertices2.size(); ++i)
@@ -693,7 +693,7 @@ private:
                     return std::vector<int> { 0, 1, /**/ 2, 3 };
                 else
                     //TODO
-                    KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
+                    KRATOS_ERROR << "Mapping for other side is not yet implemented.";
                 }
             else if (side1 == _BRIGHT_)
             {
@@ -701,7 +701,7 @@ private:
                     return std::vector<int> { 1, 0, /**/ 3, 2 };
                 else
                     //TODO
-                    KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
+                    KRATOS_ERROR << "Mapping for other side is not yet implemented.";
                 }
             else if (side1 == _BTOP_)
             {
@@ -709,7 +709,7 @@ private:
                     return std::vector<int> { 2, 0, /**/ 3, 1 };
                 else
                     // TODO
-                    KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
+                    KRATOS_ERROR << "Mapping for other side is not yet implemented.";
                 }
             else if (side1 == _BBOTTOM_)
             {
@@ -717,13 +717,13 @@ private:
                     return std::vector<int> { 0, 2, /**/ 1, 3 };
                 else
                     // TODO
-                    KRATOS_THROW_ERROR(std::logic_error, "Mapping for other side is not yet implemented.", "")
+                    KRATOS_ERROR << "Mapping for other side is not yet implemented.";
                 }
         }
         else if (dim == 3)
         {
             // TODO
-            KRATOS_THROW_ERROR(std::logic_error, "Mapping for 3D is not implemented yet.", "")
+            KRATOS_ERROR << "Mapping for 3D is not implemented yet.";
         }
     }
 

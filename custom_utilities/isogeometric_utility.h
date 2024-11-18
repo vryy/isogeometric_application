@@ -59,7 +59,7 @@ public:
             return GeometryData::IntegrationMethod::GI_GAUSS_3;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid integration order", integration_order)
+            KRATOS_ERROR << "Invalid integration order " << integration_order;
         }
 
     /// Get the last node id of the model part
@@ -150,9 +150,7 @@ public:
         typename TContainerType::const_iterator i_result;
         if ((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
         {
-            std::stringstream buffer;
-            buffer << ComponentName << " #" << ThisKey << " is not found.";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << ComponentName << " #" << ThisKey << " is not found.";
         }
 
         return i_result;

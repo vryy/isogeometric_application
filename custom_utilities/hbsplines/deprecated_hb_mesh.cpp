@@ -161,12 +161,12 @@ void DeprecatedHBMesh<TDim>::BuildNestedSpace(std::size_t level, std::map<std::s
             mBasisFuncs[*it]->GetBoundingBox(Xmin, Xmax, Ymin, Ymax, Zmin, Zmax);
 
             bool is_inside;
-            if (TDim == 2)
+            if constexpr (TDim == 2)
             {
                 std::vector<double> bounding_box = {Xmin, Xmax, Ymin, Ymax};
                 is_inside = GetSupportDomain(level)->IsInside(bounding_box);
             }
-            else if (TDim == 3)
+            else if constexpr (TDim == 3)
             {
                 std::vector<double> bounding_box = {Xmin, Xmax, Ymin, Ymax, Zmin, Zmax};
                 is_inside = GetSupportDomain(level)->IsInside(bounding_box);
@@ -232,12 +232,12 @@ void DeprecatedHBMesh<TDim>::CheckNestedSpace()
             (*it_bf)->GetBoundingBox(Xmin, Xmax, Ymin, Ymax, Zmin, Zmax);
 
             bool is_inside;
-            if (TDim == 2)
+            if constexpr (TDim == 2)
             {
                 std::vector<double> bounding_box = {Xmin, Xmax, Ymin, Ymax};
                 is_inside = p_domain->IsInside(bounding_box);
             }
-            else if (TDim == 3)
+            else if constexpr (TDim == 3)
             {
                 std::vector<double> bounding_box = {Xmin, Xmax, Ymin, Ymax, Zmin, Zmax};
                 is_inside = p_domain->IsInside(bounding_box);
@@ -269,9 +269,9 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
 {
     std::ifstream infile(fn.c_str());
     if (!infile)
-        KRATOS_THROW_ERROR(std::logic_error, "Error open file", fn)
+        KRATOS_ERROR << "Error open file " << fn;
 
-        std::string line;
+    std::string line;
     std::vector<std::string> words;
     int read_mode = READ_PATCH;
     int npatches, dim_index = 0;
@@ -299,21 +299,20 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
                 // bound check
                 if (words.size() < 2)
                 {
-                    std::cout << "Error at line: " << line << std::endl;
-                    KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain information about dimension and number of patches, current number of information =", words.size())
+                    KRATOS_ERROR << "The Patch section need to contain information about dimension and number of patches, current number of information = " << words.size();
                 }
 
                 // read info
                 int Dim = atoi(words[0].c_str());
                 if (Dim != TDim)
-                    KRATOS_THROW_ERROR(std::logic_error, "The input dimension is invalid", "")
-                    npatches = atoi(words[1].c_str());
+                    KRATOS_ERROR << "The input dimension is invalid";
+                npatches = atoi(words[1].c_str());
                 if (npatches > 1)
                 {
                     KRATOS_WATCH(line)
                     KRATOS_WATCH(words[0])
                     KRATOS_WATCH(words[1])
-                    KRATOS_THROW_ERROR(std::logic_error, "Currently number of patches > 1 is not supported, npatches =", npatches)
+                    KRATOS_ERROR << "Currently number of patches > 1 is not supported, npatches = " << npatches;
                 }
                 read_mode = READ_ORDER;
                 continue;
@@ -323,13 +322,13 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
             {
                 // bound check
                 if (words.size() != TDim)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Order section must contained number of information equal to dimension, current number of information =", words.size())
+                    KRATOS_ERROR << "The Order section must contained number of information equal to dimension, current number of information = " << words.size();
 
-                    // read info
-                    for (std::size_t i = 0; i < TDim; ++i)
-                    {
-                        orders.push_back(atoi(words[i].c_str()));
-                    }
+                // read info
+                for (std::size_t i = 0; i < TDim; ++i)
+                {
+                    orders.push_back(atoi(words[i].c_str()));
+                }
                 read_mode = READ_NUMBER;
                 continue;
             }
@@ -338,12 +337,12 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
             {
                 // bound check
                 if (words.size() != TDim)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Number section must contained number of information equal to dimension, current number of information =", words.size())
+                    KRATOS_ERROR << "The Number section must contained number of information equal to dimension, current number of information = " << words.size();
 
-                    for (std::size_t i = 0; i < TDim; ++i)
-                    {
-                        numbers.push_back(atoi(words[i].c_str()));
-                    }
+                for (std::size_t i = 0; i < TDim; ++i)
+                {
+                    numbers.push_back(atoi(words[i].c_str()));
+                }
                 read_mode = READ_KNOTS;
                 continue;
             }
@@ -353,26 +352,26 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
                 // bound check
                 int knot_len = numbers[dim_index] + orders[dim_index] + 1;
                 if (words.size() != knot_len)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Knots section must contained number of information equal to n+p+1, current number of information =", words.size())
+                    KRATOS_ERROR << "The Knots section must contained number of information equal to n+p+1, current number of information = " << words.size();
 
-                    for (std::size_t i = 0; i < knot_len; ++i)
+                for (std::size_t i = 0; i < knot_len; ++i)
+                {
+                    double k = atof(words[i].c_str());
+                    if (dim_index == 0)
                     {
-                        double k = atof(words[i].c_str());
-                        if (dim_index == 0)
-                        {
-                            mKnots1.pCreateKnot(k);
-                        }
-                        else if (dim_index == 1)
-                        {
-                            mKnots2.pCreateKnot(k);
-                        }
-                        else if (dim_index == 2)
-                        {
-                            mKnots3.pCreateKnot(k);
-                        }
-                        else
-                            KRATOS_THROW_ERROR(std::logic_error, "Wrong knot dimension index. Something must be wrong", "")
-                        }
+                        mKnots1.pCreateKnot(k);
+                    }
+                    else if (dim_index == 1)
+                    {
+                        mKnots2.pCreateKnot(k);
+                    }
+                    else if (dim_index == 2)
+                    {
+                        mKnots3.pCreateKnot(k);
+                    }
+                    else
+                        KRATOS_ERROR << "Wrong knot dimension index. Something must be wrong.";
+                }
 
                 ++dim_index;
                 if (dim_index == TDim)
@@ -392,23 +391,23 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
                     num_basis *= numbers[i];
                 }
                 if (words.size() != num_basis)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Coordinates section must contained number of information equal to prod(ni), current number of information =", words.size())
+                    KRATOS_ERROR << "The Coordinates section must contained number of information equal to prod(ni), current number of information = " << words.size();
 
-                    if (dim_index == 0)
-                        for (std::size_t i = 0; i < num_basis; ++i)
-                        {
-                            x_coords.push_back(atof(words[i].c_str()));
-                        }
-                    else if (dim_index == 1)
-                        for (std::size_t i = 0; i < num_basis; ++i)
-                        {
-                            y_coords.push_back(atof(words[i].c_str()));
-                        }
-                    else if (dim_index == 2)
-                        for (std::size_t i = 0; i < num_basis; ++i)
-                        {
-                            z_coords.push_back(atof(words[i].c_str()));
-                        }
+                if (dim_index == 0)
+                    for (std::size_t i = 0; i < num_basis; ++i)
+                    {
+                        x_coords.push_back(atof(words[i].c_str()));
+                    }
+                else if (dim_index == 1)
+                    for (std::size_t i = 0; i < num_basis; ++i)
+                    {
+                        y_coords.push_back(atof(words[i].c_str()));
+                    }
+                else if (dim_index == 2)
+                    for (std::size_t i = 0; i < num_basis; ++i)
+                    {
+                        z_coords.push_back(atof(words[i].c_str()));
+                    }
 
                 ++dim_index;
                 if (dim_index == TDim)
@@ -428,12 +427,12 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
                     num_basis *= numbers[i];
                 }
                 if (words.size() != num_basis)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Weights section must contained number of information equal to prod(ni), current number of information =", words.size())
+                    KRATOS_ERROR << "The Weights section must contained number of information equal to prod(ni), current number of information = " << words.size();
 
-                    for (std::size_t i = 0; i < num_basis; ++i)
-                    {
-                        weights.push_back(atof(words[i].c_str()));
-                    }
+                for (std::size_t i = 0; i < num_basis; ++i)
+                {
+                    weights.push_back(atof(words[i].c_str()));
+                }
 
                 read_mode = NO_READ;
                 continue;
@@ -482,7 +481,7 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
     unsigned int level = 1;
     mLastLevel = 1;
     double area_tol = 1.0e-6; // tolerance to accept the nonzero-area cell. We should parameterize it. TODO
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         int num1 = mKnots1.size() - mOrder1 - 1;
         int num2 = mKnots2.size() - mOrder2 - 1;
@@ -537,7 +536,7 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
             }
         }
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         int num1 = mKnots1.size() - mOrder1 - 1;
         int num2 = mKnots2.size() - mOrder2 - 1;
@@ -693,7 +692,7 @@ void DeprecatedHBMesh<TDim>::Refine(std::size_t Id)
     }
 
     std::vector<std::vector<double> > new_knots(TDim);
-    if (TDim == 2)
+    if constexpr (TDim == 2)
         BSplineUtils::ComputeBsplinesKnotInsertionCoefficients2DLocal(RefinedCoeffs,
                 new_knots[0],
                 new_knots[1],
@@ -703,7 +702,7 @@ void DeprecatedHBMesh<TDim>::Refine(std::size_t Id)
                 local_knots[1],
                 ins_knots[0],
                 ins_knots[1]);
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
         BSplineUtils::ComputeBsplinesKnotInsertionCoefficients3DLocal(RefinedCoeffs,
                 new_knots[0],
                 new_knots[1],
@@ -736,7 +735,7 @@ void DeprecatedHBMesh<TDim>::Refine(std::size_t Id)
     double father_X = p_bf->GetControlPoint().X();
     double father_Y = p_bf->GetControlPoint().Y();
     double father_Z = p_bf->GetControlPoint().Z();
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         int num1 = pnew_local_knots[0].size() - mOrder1 - 1;
         int num2 = pnew_local_knots[1].size() - mOrder2 - 1;
@@ -793,7 +792,7 @@ void DeprecatedHBMesh<TDim>::Refine(std::size_t Id)
             }
         }
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         int num1 = pnew_local_knots[0].size() - mOrder1 - 1;
         int num2 = pnew_local_knots[1].size() - mOrder2 - 1;
@@ -1062,14 +1061,14 @@ void DeprecatedHBMesh<TDim>::LinearDependencyRefine(std::size_t refine_cycle)
             for (bf_container_t::iterator it_bf = mBasisFuncs.begin(); it_bf != mBasisFuncs.end(); ++it_bf)
                 if ((*it_bf)->Level() == next_level)
                     for (DeprecatedHBBasisFunction::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
-                        if (TDim == 2)
+                        if constexpr (TDim == 2)
                         {
                             p_domain->AddXcoord((*it_cell)->XiMinValue());
                             p_domain->AddXcoord((*it_cell)->XiMaxValue());
                             p_domain->AddYcoord((*it_cell)->EtaMinValue());
                             p_domain->AddYcoord((*it_cell)->EtaMaxValue());
                         }
-                        else if (TDim == 3)
+                        else if constexpr (TDim == 3)
                         {
                             p_domain->AddXcoord((*it_cell)->XiMinValue());
                             p_domain->AddXcoord((*it_cell)->XiMaxValue());
@@ -1084,12 +1083,12 @@ void DeprecatedHBMesh<TDim>::LinearDependencyRefine(std::size_t refine_cycle)
             for (bf_container_t::iterator it_bf = mBasisFuncs.begin(); it_bf != mBasisFuncs.end(); ++it_bf)
                 if ((*it_bf)->Level() == next_level)
                     for (DeprecatedHBBasisFunction::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
-                        if (TDim == 2)
+                        if constexpr (TDim == 2)
                         {
                             std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue()};
                             p_domain->AddCell(box);
                         }
-                        else if (TDim == 3)
+                        else if constexpr (TDim == 3)
                         {
                             std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue(), (*it_cell)->ZetaMinValue(), (*it_cell)->ZetaMaxValue()};
                             p_domain->AddCell(box);
@@ -1117,12 +1116,12 @@ void DeprecatedHBMesh<TDim>::LinearDependencyRefine(std::size_t refine_cycle)
 
             // check if the bf support domain contained in the refined domain managed by the domain manager
             bool is_inside;
-            if (TDim == 2)
+            if constexpr (TDim == 2)
             {
                 std::vector<double> bounding_box = {Xmin, Xmax, Ymin, Ymax};
                 is_inside = p_domain->IsInside(bounding_box);
             }
-            else if (TDim == 3)
+            else if constexpr (TDim == 3)
             {
                 std::vector<double> bounding_box = {Xmin, Xmax, Ymin, Ymax, Zmin, Zmax};
                 is_inside = p_domain->IsInside(bounding_box);
@@ -1173,11 +1172,11 @@ void DeprecatedHBMesh<TDim>::BuildMesh()
         for (typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
         {
             DeprecatedHBBasisFunction& bf = *(it_bf->lock());
-            if (TDim == 2)
+            if constexpr (TDim == 2)
             {
                 bf.ComputeExtractionOperator(*it_cell, Crow, mOrder1, mOrder2);
             }
-            else if (TDim == 3)
+            else if constexpr (TDim == 3)
             {
                 bf.ComputeExtractionOperator(*it_cell, Crow, mOrder1, mOrder2, mOrder3);
             }
@@ -1214,7 +1213,7 @@ void DeprecatedHBMesh<TDim>::ExportCellTopology(std::string fn, bool cell_number
     for (typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
     {
         cell_t p_cell = (*it);
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
 //                outfile << "line([" << p_cell->XiMinValue() << " " << p_cell->XiMaxValue() << "],[" << p_cell->EtaMinValue() << " " << p_cell->EtaMinValue() << "]);\n";
 //                outfile << "line([" << p_cell->XiMinValue() << " " << p_cell->XiMaxValue() << "],[" << p_cell->EtaMaxValue() << " " << p_cell->EtaMaxValue() << "]);\n";
@@ -1237,7 +1236,7 @@ void DeprecatedHBMesh<TDim>::ExportCellTopology(std::string fn, bool cell_number
                         << 0.5 * (p_cell->EtaMinValue() + p_cell->EtaMaxValue()) << ",'"
                         << p_cell->Id() << "');\n";
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             outfile << "verts = [" << p_cell->XiMinValue() << " " << p_cell->EtaMinValue() << " " << p_cell->ZetaMinValue() << ";"
                     << p_cell->XiMaxValue() << " " << p_cell->EtaMinValue() << " " << p_cell->ZetaMinValue() << ";"
@@ -1285,7 +1284,7 @@ void DeprecatedHBMesh<TDim>::ExportCellGeology(std::string fn)
     outfile << "close all\n";
     outfile << "hold on\n";
     outfile << "axis equal\n";
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
 //            for(std::set<unordered_pair<unsigned int> >::iterator it = Lines.begin(); it != Lines.end(); ++it)
 //                outfile << "line([" << X_list[it->first()] << " " << X_list[it->second()] << "],[" << Y_list[it->first()] << " " << Y_list[it->second()] << "]);\n";
@@ -1325,7 +1324,7 @@ void DeprecatedHBMesh<TDim>::ExportCellGeology(std::string fn)
         outfile << "];\n";
         outfile << "patch('Faces',faces4,'Vertices',verts,'FaceColor','white');\n";
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         outfile << "verts = [";
         for (std::size_t i = 0; i < point_list.size(); ++i)
@@ -1418,7 +1417,7 @@ void DeprecatedHBMesh<TDim>::ExportMatlab(std::string fn) const
     {
         (*it_bf)->GetLocalKnots(1, LocalKnots1);
         (*it_bf)->GetLocalKnots(2, LocalKnots2);
-        if (TDim == 3)
+        if constexpr (TDim == 3)
         {
             (*it_bf)->GetLocalKnots(3, LocalKnots3);
         }
@@ -1445,7 +1444,7 @@ void DeprecatedHBMesh<TDim>::ExportMatlab(std::string fn) const
             max_eta = max_eta_bf;
         }
 
-        if (TDim == 3)
+        if constexpr (TDim == 3)
         {
             double min_zeta_bf = *std::min_element(LocalKnots3.begin(), LocalKnots3.end());
             double max_zeta_bf = *std::max_element(LocalKnots3.begin(), LocalKnots3.end());
@@ -1476,7 +1475,7 @@ void DeprecatedHBMesh<TDim>::ExportMatlab(std::string fn) const
         }
         outfile << "];\n";
 
-        if (TDim == 3)
+        if constexpr (TDim == 3)
         {
             outfile << "Zeta{" << cnt << "} = [";
             for (std::size_t i = 0; i < LocalKnots3.size(); ++i)
@@ -1568,16 +1567,16 @@ void DeprecatedHBMesh<TDim>::ExportMDPA(std::string fn) const
     outfile << "End Nodes\n\n";
 
     // write elements
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         outfile << "Begin Elements KinematicLinearGeo2dBezier\n";
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         outfile << "Begin Elements KinematicLinearGeo3dBezier\n";
     }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "Invalid Dimension", "")
+        KRATOS_ERROR << "Invalid Dimension " << TDim;
 #ifdef MDPA_CELL_RENUMBERING
         int ElemId = 0;
     std::map<int, int> OldToNewElemId; // map from old element id to new element id
@@ -1706,7 +1705,7 @@ void DeprecatedHBMesh<TDim>::ExportMDPA(std::string fn) const
 #endif
     outfile << "End ElementalData\n\n";
 
-    if (TDim == 3)
+    if constexpr (TDim == 3)
     {
         outfile << "Begin ElementalData NURBS_DEGREE_3\n";
         for (typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
@@ -1737,7 +1736,7 @@ void DeprecatedHBMesh<TDim>::ExportMDPA(std::string fn) const
 #endif
     outfile << "End ElementalData\n\n";
 
-    if (TDim == 3)
+    if constexpr (TDim == 3)
     {
         outfile << "Begin ElementalData NUM_DIVISION_3\n";
         for (typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
@@ -1802,17 +1801,17 @@ void DeprecatedHBMesh<TDim>::ExportMDPA2(std::string fn) const
         outfile << "        "
                 << (*it)->Id() << " " << (*it)->NumberOfAnchors() << " ";
 
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             outfile << "2 2 ";
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             outfile << "3 3 ";
         }
 
         outfile << mOrder1 << " " << mOrder2;
-        if (TDim == 3)
+        if constexpr (TDim == 3)
         {
             outfile << " " << mOrder3 << std::endl;
         }
@@ -1862,11 +1861,11 @@ void DeprecatedHBMesh<TDim>::ExportMDPA2(std::string fn) const
     outfile << "    End IsogeometricBezierData\n\n";
 
     outfile << "    Begin ElementsWithGeometry";
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         outfile << " KinematicLinearBezier2D\n";
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         outfile << " KinematicLinearBezier3D\n";
     }
@@ -1918,7 +1917,7 @@ void DeprecatedHBMesh<TDim>::ExportPostMDPA(std::string fn, int NumDivision1, in
         SamplingKnots2.push_back(min_eta + (double) i / NumDivision2 * (max_eta - min_eta));
     }
 
-    if (TDim == 3)
+    if constexpr (TDim == 3)
     {
         int min_zeta = (*(mKnots3.begin()))->Value();
         int max_zeta = (*(mKnots3.end() - 1))->Value();
@@ -1938,7 +1937,7 @@ void DeprecatedHBMesh<TDim>::ExportPostMDPA(std::string fn, int NumDivision1, in
     std::map<int, double> zeta_list;
     std::map<int, int> parent_element_list;
     std::vector<std::vector<unsigned int> > connectivities_list;
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         int cnt = 0;
         Vector W;
@@ -2017,8 +2016,8 @@ void DeprecatedHBMesh<TDim>::ExportPostMDPA(std::string fn, int NumDivision1, in
                     }
                 }
                 if (found == false)
-                    KRATOS_THROW_ERROR(std::logic_error, "The sampling points is not detected in the hierarchical mesh", "")
-                }
+                    KRATOS_ERROR << "The sampling points is not detected in the hierarchical mesh";
+            }
         }
 
         // generate the element connectivities
@@ -2045,7 +2044,7 @@ void DeprecatedHBMesh<TDim>::ExportPostMDPA(std::string fn, int NumDivision1, in
             }
         }
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         int cnt = 0;
         Vector W;
@@ -2128,8 +2127,8 @@ void DeprecatedHBMesh<TDim>::ExportPostMDPA(std::string fn, int NumDivision1, in
                         }
                     }
                     if (found == false)
-                        KRATOS_THROW_ERROR(std::logic_error, "The sampling points is not detected in the hierarchical mesh", "")
-                    }
+                        KRATOS_ERROR << "The sampling points is not detected in the hierarchical mesh";
+                }
             }
         }
 
@@ -2192,25 +2191,25 @@ void DeprecatedHBMesh<TDim>::ExportPostMDPA(std::string fn, int NumDivision1, in
     outfile << "End Nodes\n\n";
 
     // write elements
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         outfile << "Begin Elements KinematicLinear2D4N\n";
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         outfile << "Begin Elements KinematicLinear3D8N\n";
     }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "Invalid Dimension", "")
-        for (std::size_t i = 0; i < connectivities_list.size(); ++i)
+        KRATOS_ERROR << "Invalid Dimension " << TDim;
+    for (std::size_t i = 0; i < connectivities_list.size(); ++i)
+    {
+        outfile << (i + 1) << " 1";
+        for (std::size_t j = 0; j < connectivities_list[i].size(); ++j)
         {
-            outfile << (i + 1) << " 1";
-            for (std::size_t j = 0; j < connectivities_list[i].size(); ++j)
-            {
-                outfile << " " << connectivities_list[i][j];
-            }
-            outfile << std::endl;
+            outfile << " " << connectivities_list[i][j];
         }
+        outfile << std::endl;
+    }
     outfile << "End Elements\n\n";
 
     // write nodal data
@@ -2273,7 +2272,7 @@ void DeprecatedHBMesh<TDim>::ExportCellGeologyAsPostMDPA(std::string fn)
     outfile << "End Nodes\n\n";
 
     // write elements
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         unsigned int ElementId = 0;
 
@@ -2307,7 +2306,7 @@ void DeprecatedHBMesh<TDim>::ExportCellGeologyAsPostMDPA(std::string fn)
                 }
         outfile << "End Elements\n\n";
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         unsigned int ElementId = 0;
 
@@ -2342,10 +2341,10 @@ void DeprecatedHBMesh<TDim>::ExportCellGeologyAsPostMDPA(std::string fn)
         outfile << "End Elements\n\n";
     }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "Invalid Dimension", "")
+        KRATOS_ERROR << "Invalid Dimension " << TDim;
 
-        // write nodal data
-        outfile << "Begin NodalData LOCAL_COORDINATES\n";
+    // write nodal data
+    outfile << "Begin NodalData LOCAL_COORDINATES\n";
     for (std::size_t i = 0; i < point_list.size(); ++i)
         outfile << point_list[i] << " 0 [3] (" << xi_list[point_list[i]]
                 << "," << eta_list[point_list[i]]
@@ -2379,7 +2378,7 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
     std::map<unsigned int, std::vector<unsigned int> > MapCellToNodes; // this container contains the vertex Ids in each cell
     for (typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
     {
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             unsigned int V1 = Binning.AddNode((*it)->XiMinValue(), (*it)->EtaMinValue(), 0.0);
             unsigned int V2 = Binning.AddNode((*it)->XiMaxValue(), (*it)->EtaMinValue(), 0.0);
@@ -2395,7 +2394,7 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
             MapCellToNodes[(*it)->Id()].push_back(V4);
             MapCellToNodes[(*it)->Id()].push_back(V3);
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             unsigned int V1 = Binning.AddNode((*it)->XiMinValue(), (*it)->EtaMinValue(), (*it)->ZetaMinValue());
             unsigned int V2 = Binning.AddNode((*it)->XiMaxValue(), (*it)->EtaMinValue(), (*it)->ZetaMinValue());
@@ -2435,29 +2434,29 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
         double xi, eta, zeta, local_xi, local_eta, local_zeta;
         xi = Binning.GetX(Id);
         eta = Binning.GetY(Id);
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             zeta = 0.0;
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             zeta = Binning.GetZ(Id);
         }
 
         local_xi = (xi - p_cell->XiMinValue()) / (p_cell->XiMaxValue() - p_cell->XiMinValue());
         local_eta = (eta - p_cell->EtaMinValue()) / (p_cell->EtaMaxValue() - p_cell->EtaMinValue());
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             local_zeta = 0.0;
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             local_zeta = (zeta - p_cell->ZetaMinValue()) / (p_cell->ZetaMaxValue() - p_cell->ZetaMinValue());
         }
 
         // compute the Bernstein basis function on the local coordinates
         Vector B;
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             B.resize((mOrder1 + 1) * (mOrder2 + 1));
             for (unsigned int k = 0; k < mOrder1 + 1; ++k)
@@ -2469,7 +2468,7 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
                     B(num) = B1 * B2;
                 }
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             B.resize((mOrder1 + 1) * (mOrder2 + 1) * (mOrder3 + 1));
             for (unsigned int k = 0; k < mOrder1 + 1; ++k)
@@ -2535,7 +2534,7 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
 
         // detect middle nodes
         std::set<unsigned int> MiddleNodes;
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             // extract edges
             typedef std::pair<unsigned int, unsigned int> edge_t;
@@ -2572,7 +2571,7 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
                 }
             }
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             // extract faces
             typedef std::pair<unsigned int, unsigned int> edge_t;
@@ -2630,12 +2629,12 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
                                         || ((xi_min < xi && xi < xi_max) && (eta_min == eta || eta == eta_max))   );
                     }
                     else
-                        KRATOS_THROW_ERROR(std::logic_error, "Something wrong with the surface, it must align with 1 of the 3 base surfaces", "")
+                        KRATOS_ERROR << "Something wrong with the surface, it must align with 1 of the 3 base surfaces";
 
-                        if (is_inside)
-                        {
-                            MiddleNodes.insert(Id);
-                        }
+                    if (is_inside)
+                    {
+                        MiddleNodes.insert(Id);
+                    }
                 }
             }
         }
@@ -2652,7 +2651,7 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
             CellNodes.insert(CellNodes.end(), MiddleNodes.begin(), MiddleNodes.end());
 
             // generate triangles in case of 2D
-            if (TDim == 2)
+            if constexpr (TDim == 2)
             {
                 // prepare the list of points
                 std::vector<double> XYlist;
@@ -2678,10 +2677,10 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
                 Connectivities[(*it)->Id()] = Conns;
             }
             // generate tetrahedrons in case of 3D
-            else if (TDim == 3)
+            else if constexpr (TDim == 3)
             {
 #if !defined(ISOGEOMETRIC_USE_TETGEN)
-                KRATOS_THROW_ERROR(std::runtime_error, __FUNCTION__, "requires Tetgen to generate tetrahedrons for cells")
+                KRATOS_ERROR << "Tetgen is required to generate tetrahedrons for cells";
 #endif
 
                 tetgenio in, out;

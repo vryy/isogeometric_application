@@ -37,7 +37,7 @@ struct PBBSplinesBasisFunction_Helper<1>
                 ss << "local_knots[0]:";
                 for(std::size_t j = 0; j < local_knots[0].size(); ++j)
                     ss << " " << local_knots[0][j];
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << ss.str();
             }
         }
 
@@ -154,7 +154,7 @@ struct PBBSplinesBasisFunction_Helper<2>
                 ss << "local_knots[0]:";
                 for(std::size_t j = 0; j < local_knots[0].size(); ++j)
                     ss << " " << local_knots[0][j];
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << ss.str();
             }
         }
         for(std::size_t i = 0; i < local_knots[1].size(); ++i)
@@ -167,7 +167,7 @@ struct PBBSplinesBasisFunction_Helper<2>
                 ss << "local_knots[1]:";
                 for(std::size_t j = 0; j < local_knots[1].size(); ++j)
                     ss << " " << local_knots[1][j];
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << ss.str();
             }
         }
 
@@ -348,7 +348,7 @@ struct PBBSplinesBasisFunction_Helper<3>
                 ss << "local_knots[0]:";
                 for(std::size_t j = 0; j < local_knots[0].size(); ++j)
                     ss << " " << local_knots[0][j];
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << ss.str();
             }
         }
 
@@ -362,7 +362,7 @@ struct PBBSplinesBasisFunction_Helper<3>
                 ss << "local_knots[1]:";
                 for(std::size_t j = 0; j < local_knots[1].size(); ++j)
                     ss << " " << local_knots[1][j];
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << ss.str();
             }
         }
 
@@ -376,7 +376,7 @@ struct PBBSplinesBasisFunction_Helper<3>
                 ss << "local_knots[2]:";
                 for(std::size_t j = 0; j < local_knots[2].size(); ++j)
                     ss << " " << local_knots[2][j];
-                KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+                KRATOS_ERROR << ss.str();
             }
         }
 

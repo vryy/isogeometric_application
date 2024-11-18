@@ -185,9 +185,9 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
     std::size_t dim = IsogeometricPythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
 
     if (dim != TDim)
-        KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
+        KRATOS_ERROR << "invalid dimension " << dim;
 
-        rDummy.InsertKnots<TDim>(pPatch, ins_knots_array);
+    rDummy.InsertKnots<TDim>(pPatch, ins_knots_array);
 }
 
 template<int TDim>
@@ -199,9 +199,9 @@ boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinemen
     std::size_t dim = IsogeometricPythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
 
     if (dim != TDim)
-        KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
+        KRATOS_ERROR << "Invalid dimension " << dim;
 
-        std::map<std::size_t, Matrix> trans_mats;
+    std::map<std::size_t, Matrix> trans_mats;
     rDummy.InsertKnots<TDim>(pPatch, ins_knots_array, trans_mats);
     // KRATOS_WATCH(trans_mats.size())
 
@@ -223,9 +223,9 @@ void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDum
     std::size_t dim = IsogeometricPythonUtils::Unpack<int, std::size_t>(order_increment, order_incr_array, TDim);
 
     if (dim != TDim)
-        KRATOS_THROW_ERROR(std::logic_error, "insufficient dimension", "")
+        KRATOS_ERROR << "Invalid dimension " << dim;
 
-        rDummy.DegreeElevate<TDim>(pPatch, order_incr_array);
+    rDummy.DegreeElevate<TDim>(pPatch, order_incr_array);
 }
 
 //////////////////////////////////////////////////
@@ -251,7 +251,7 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSpli
 boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility& dummy,
         const std::string& filename)
 {
-    int Dim = BSplinesPatchUtility::GetDimensionOfGeo(filename);
+    const int Dim = BSplinesPatchUtility::GetDimensionOfGeo(filename);
     boost::python::list patches;
     if (Dim == 2)
     {
@@ -262,8 +262,8 @@ boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility
         patches.append(BSplinesPatchUtility::CreatePatchFromGeo<3>(filename));
     }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "The dimension of the patch is invalid", "")
-        return patches;
+        KRATOS_ERROR << "Invalid dimension " << Dim;
+    return patches;
 }
 
 void BSplinesPatchUtility_MakeInterface1D(BSplinesPatchUtility& rDummy,

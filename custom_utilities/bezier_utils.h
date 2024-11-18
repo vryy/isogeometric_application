@@ -1132,19 +1132,19 @@ public:
             offset1 = k + base_offset;
 
             if (offset1 >= BaseRule.size())
-                KRATOS_THROW_ERROR(std::logic_error, "There are not enough Gauss point to support for integration", __FUNCTION__)
+                KRATOS_ERROR << "There are not enough Gauss point to support for integration";
 
-                for (j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
-                {
-                    const IntegrationPointType& temp1 = BaseRule[offset1][j1];
+            for (j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
+            {
+                const IntegrationPointType& temp1 = BaseRule[offset1][j1];
 
-                    IntegrationPointType temp;
+                IntegrationPointType temp;
 
-                    temp.X() = 0.5 * (temp1.X() + 1);
-                    temp.Weight() = 0.5 * temp1.Weight();
+                temp.X() = 0.5 * (temp1.X() + 1);
+                temp.Weight() = 0.5 * temp1.Weight();
 
-                    integration_points[k].push_back(temp);
-                }
+                integration_points[k].push_back(temp);
+            }
         }
 
         return integration_points;
@@ -1182,25 +1182,25 @@ public:
             offset2 = k + base_offset2;
 
             if (offset1 >= BaseRule.size() || offset2 >= BaseRule.size())
-                KRATOS_THROW_ERROR(std::logic_error, "There are not enough Gauss point to support for integration", __FUNCTION__)
+                KRATOS_ERROR << "There are not enough Gauss point to support for integration";
 
-                for (j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
+            for (j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
+            {
+                const IntegrationPointType& temp1 = BaseRule[offset1][j1];
+
+                for (j2 = 0; j2 < BaseRule[offset2].size(); ++j2)
                 {
-                    const IntegrationPointType& temp1 = BaseRule[offset1][j1];
+                    const IntegrationPointType& temp2 = BaseRule[offset2][j2];
 
-                    for (j2 = 0; j2 < BaseRule[offset2].size(); ++j2)
-                    {
-                        const IntegrationPointType& temp2 = BaseRule[offset2][j2];
+                    IntegrationPointType temp;
 
-                        IntegrationPointType temp;
+                    temp.X() = 0.5 * (temp1.X() + 1);
+                    temp.Y() = 0.5 * (temp2.X() + 1);
+                    temp.Weight() = 0.25 * temp1.Weight() * temp2.Weight();
 
-                        temp.X() = 0.5 * (temp1.X() + 1);
-                        temp.Y() = 0.5 * (temp2.X() + 1);
-                        temp.Weight() = 0.25 * temp1.Weight() * temp2.Weight();
-
-                        integration_points[k].push_back(temp);
-                    }
+                    integration_points[k].push_back(temp);
                 }
+            }
         }
 
         return integration_points;
@@ -1250,31 +1250,31 @@ public:
             if ( offset1 >= BaseRule.size() ||
                     offset2 >= BaseRule.size() ||
                     offset3 >= BaseRule.size() )
-                KRATOS_THROW_ERROR(std::logic_error, "There are not enough Gauss point to support for integration", __FUNCTION__)
+                KRATOS_ERROR << "There are not enough Gauss point to support for integration";
 
-                for (j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
+            for (j1 = 0; j1 < BaseRule[offset1].size(); ++j1)
+            {
+                const IntegrationPointType& temp1 = BaseRule[offset1][j1];
+
+                for (j2 = 0; j2 < BaseRule[offset2].size(); ++j2)
                 {
-                    const IntegrationPointType& temp1 = BaseRule[offset1][j1];
+                    const IntegrationPointType& temp2 = BaseRule[offset2][j2];
 
-                    for (j2 = 0; j2 < BaseRule[offset2].size(); ++j2)
+                    for (j3 = 0; j3 < BaseRule[offset3].size(); ++j3)
                     {
-                        const IntegrationPointType& temp2 = BaseRule[offset2][j2];
+                        const IntegrationPointType& temp3 = BaseRule[offset3][j3];
 
-                        for (j3 = 0; j3 < BaseRule[offset3].size(); ++j3)
-                        {
-                            const IntegrationPointType& temp3 = BaseRule[offset3][j3];
+                        IntegrationPointType temp;
 
-                            IntegrationPointType temp;
+                        temp.X() = 0.5 * (temp1.X() + 1);
+                        temp.Y() = 0.5 * (temp2.X() + 1);
+                        temp.Z() = 0.5 * (temp3.X() + 1);
+                        temp.Weight() = 0.125 * temp1.Weight() * temp2.Weight() * temp3.Weight();
 
-                            temp.X() = 0.5 * (temp1.X() + 1);
-                            temp.Y() = 0.5 * (temp2.X() + 1);
-                            temp.Z() = 0.5 * (temp3.X() + 1);
-                            temp.Weight() = 0.125 * temp1.Weight() * temp2.Weight() * temp3.Weight();
-
-                            integration_points[k].push_back(temp);
-                        }
+                        integration_points[k].push_back(temp);
                     }
                 }
+            }
 
 //            KRATOS_WATCH(base_offset1)
 //            KRATOS_WATCH(base_offset2)

@@ -74,9 +74,7 @@ public:
     {
         if (mpMultiPatch->Patches().find(patch_id) == mpMultiPatch->end())
         {
-            std::stringstream ss;
-            ss << "Patch " << patch_id << " is not found in the multipatch";
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << "Patch " << patch_id << " is not found in the multipatch";
         }
 
         mNumDivision[patch_id][dim] = num_division;
@@ -112,10 +110,8 @@ public:
 
         if (!KratosComponents<Element>::Has(element_name))
         {
-            std::stringstream buffer;
-            buffer << "Element " << element_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-            KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                         << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
         }
 
         Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
@@ -138,9 +134,9 @@ public:
                 // create new nodes
                 typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
-                    KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
+                    KRATOS_ERROR << "NumDivision is not set for patch " << it->Id();
 
-                    std::size_t NumDivision1 = it_num->second[0];
+                std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
 #ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
@@ -208,9 +204,9 @@ public:
                 // create new nodes
                 typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
-                    KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
+                    KRATOS_ERROR << "NumDivision is not set for patch " << it->Id();
 
-                    std::size_t NumDivision1 = it_num->second[0];
+                std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
                 std::size_t NumDivision3 = it_num->second[2];
 #ifdef DEBUG_MESH_GENERATION
@@ -323,9 +319,9 @@ public:
                 // get nodes nodes
                 typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
-                    KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
+                    KRATOS_ERROR << "NumDivision is not set for patch " << it->Id();
 
-                    std::size_t NumDivision1 = it_num->second[0];
+                std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
 #ifdef DEBUG_MESH_GENERATION
                 KRATOS_WATCH(NumDivision1)
@@ -355,9 +351,9 @@ public:
                 // create new nodes
                 typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
                 if (it_num == mNumDivision.end())
-                    KRATOS_THROW_ERROR(std::logic_error, "NumDivision is not set for patch", it->Id())
+                    KRATOS_ERROR << "NumDivision is not set for patch " << it->Id();
 
-                    std::size_t NumDivision1 = it_num->second[0];
+                std::size_t NumDivision1 = it_num->second[0];
                 std::size_t NumDivision2 = it_num->second[1];
                 std::size_t NumDivision3 = it_num->second[2];
 #ifdef DEBUG_MESH_GENERATION

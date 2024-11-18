@@ -40,8 +40,8 @@ public:
     {
         // check if the index is valid
         if (BaseType::pV1()->Index2() != BaseType::pV2()->Index2())
-            KRATOS_THROW_ERROR(std::logic_error, "The edge is not a horizonal edge", "")
-        }
+            KRATOS_ERROR << "The edge is not a horizonal edge";
+    }
 
     /// check if the edge was cut by a vertical ray
     bool IsCut(double anchor_xi_index) const override

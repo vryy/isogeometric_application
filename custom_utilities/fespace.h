@@ -372,8 +372,8 @@ public:
         else if (side == _BFRONT_) { return _BBACK_; }
         else if (side == _BBACK_) { return _BFRONT_; }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid boundary side", side)
-        }
+            KRATOS_ERROR << "Invalid boundary side " << side;
+    }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -524,7 +524,7 @@ public:
     /// Create the cell manager for all the cells in the support domain of the FESpace
     virtual cell_container_t::Pointer ConstructCellManager() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "ConstructCellManager is not supported for FESpace<0>", __FUNCTION__)
+        KRATOS_ERROR << "ConstructCellManager does not support FESpace<0>";
     }
 
     /// Get the vector of function indices

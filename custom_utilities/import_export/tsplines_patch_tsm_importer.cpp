@@ -198,7 +198,7 @@ Patch<2>::Pointer TSplinesPatchTSMImporter::ImportSingle(const std::string& file
 
 MultiPatch<2>::Pointer TSplinesPatchTSMImporter::Import(const std::string& filename) const
 {
-    KRATOS_THROW_ERROR(std::logic_error, "TSM reader does not support multipatch", "")
+    KRATOS_ERROR << "TSM reader does not support multipatch";
 }
 
 } // namespace Kratos.

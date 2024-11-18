@@ -81,9 +81,9 @@ public:
     {
         std::ifstream infile(fn.c_str());
         if (!infile)
-            KRATOS_THROW_ERROR(std::logic_error, "Error open file", fn)
+            KRATOS_ERROR << "Error open file " << fn;
 
-            std::string line;
+        std::string line;
         std::vector<std::string> words;
         int read_mode = READ_PATCH;
         int npatches, dim_index = 0;
@@ -114,8 +114,7 @@ public:
                     // bound check
                     if (words.size() < 2)
                     {
-                        std::cout << "Error at line: " << line << std::endl;
-                        KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain information about dimension and number of patches, current number of information =", words.size())
+                        KRATOS_ERROR << "The Patch section need to contain information about dimension and number of patches, current number of information = " << words.size();
                     }
 
                     // read info
@@ -129,10 +128,10 @@ public:
                 {
                     // bound check
                     if (words.size() != mDim)
-                        KRATOS_THROW_ERROR(std::logic_error, "The Order section must contained number of information equal to dimension, current number of information =", words.size())
+                        KRATOS_ERROR << "The Order section must contained number of information equal to dimension, current number of information = " << words.size();
 
-                        // read info
-                        std::vector<int> dummy;
+                    // read info
+                    std::vector<int> dummy;
                     orders.push_back(dummy);
                     for (std::size_t i = 0; i < mDim; ++i)
                     {
@@ -146,10 +145,10 @@ public:
                 {
                     // bound check
                     if (words.size() != mDim)
-                        KRATOS_THROW_ERROR(std::logic_error, "The Number section must contained number of information equal to dimension, current number of information =", words.size())
+                        KRATOS_ERROR << "The Number section must contained number of information equal to dimension, current number of information = " << words.size();
 
-                        // read info
-                        std::vector<int> dummy;
+                    // read info
+                    std::vector<int> dummy;
                     numbers.push_back(dummy);
                     for (std::size_t i = 0; i < mDim; ++i)
                     {
@@ -164,24 +163,25 @@ public:
                     // bound check
                     int knot_len = numbers.back()[dim_index] + orders.back()[dim_index] + 1;
                     if (words.size() != knot_len)
-                        KRATOS_THROW_ERROR(std::logic_error, "The Knots section must contained number of information equal to n+p+1, current number of information =", words.size())
+                        KRATOS_ERROR << "The Knots section must contained number of information equal to n+p+1, current number of information = " << words.size();
 
-                        // read info
-                        if (dim_index == 0)
-                        {
-                            std::vector<double> dummy;
-                            knots_1.push_back(dummy);
-                        }
-                        else if (dim_index == 1)
-                        {
-                            std::vector<double> dummy;
-                            knots_2.push_back(dummy);
-                        }
-                        else if (dim_index == 2)
-                        {
-                            std::vector<double> dummy;
-                            knots_3.push_back(dummy);
-                        }
+                    // read info
+                    if (dim_index == 0)
+                    {
+                        std::vector<double> dummy;
+                        knots_1.push_back(dummy);
+                    }
+                    else if (dim_index == 1)
+                    {
+                        std::vector<double> dummy;
+                        knots_2.push_back(dummy);
+                    }
+                    else if (dim_index == 2)
+                    {
+                        std::vector<double> dummy;
+                        knots_3.push_back(dummy);
+                    }
+
                     for (std::size_t i = 0; i < knot_len; ++i)
                     {
                         double k = atof(words[i].c_str());
@@ -198,8 +198,8 @@ public:
                             knots_3.back().push_back(k);
                         }
                         else
-                            KRATOS_THROW_ERROR(std::logic_error, "Wrong knot dimension index. Something must be wrong", "")
-                        }
+                            KRATOS_ERROR << "Wrong knot dimension index. Something must be wrong";
+                    }
 
                     ++dim_index;
                     if (dim_index == mDim)
@@ -219,35 +219,35 @@ public:
                         num_basis *= numbers.back()[i];
                     }
                     if (words.size() != num_basis)
-                        KRATOS_THROW_ERROR(std::logic_error, "The Coordinates section must contained number of information equal to prod(ni), current number of information =", words.size())
+                        KRATOS_ERROR << "The Coordinates section must contained number of information equal to prod(ni), current number of information = ", words.size();
 
-                        if (dim_index == 0)
+                    if (dim_index == 0)
+                    {
+                        std::vector<double> dummy;
+                        x_coords.push_back(dummy);
+                        for (std::size_t i = 0; i < num_basis; ++i)
                         {
-                            std::vector<double> dummy;
-                            x_coords.push_back(dummy);
-                            for (std::size_t i = 0; i < num_basis; ++i)
-                            {
-                                x_coords.back().push_back(atof(words[i].c_str()));
-                            }
+                            x_coords.back().push_back(atof(words[i].c_str()));
                         }
-                        else if (dim_index == 1)
+                    }
+                    else if (dim_index == 1)
+                    {
+                        std::vector<double> dummy;
+                        y_coords.push_back(dummy);
+                        for (std::size_t i = 0; i < num_basis; ++i)
                         {
-                            std::vector<double> dummy;
-                            y_coords.push_back(dummy);
-                            for (std::size_t i = 0; i < num_basis; ++i)
-                            {
-                                y_coords.back().push_back(atof(words[i].c_str()));
-                            }
+                            y_coords.back().push_back(atof(words[i].c_str()));
                         }
-                        else if (dim_index == 2)
+                    }
+                    else if (dim_index == 2)
+                    {
+                        std::vector<double> dummy;
+                        z_coords.push_back(dummy);
+                        for (std::size_t i = 0; i < num_basis; ++i)
                         {
-                            std::vector<double> dummy;
-                            z_coords.push_back(dummy);
-                            for (std::size_t i = 0; i < num_basis; ++i)
-                            {
-                                z_coords.back().push_back(atof(words[i].c_str()));
-                            }
+                            z_coords.back().push_back(atof(words[i].c_str()));
                         }
+                    }
 
                     ++dim_index;
                     if (dim_index == mDim)
@@ -267,10 +267,10 @@ public:
                         num_basis *= numbers.back()[i];
                     }
                     if (words.size() != num_basis)
-                        KRATOS_THROW_ERROR(std::logic_error, "The Weights section must contained number of information equal to prod(ni), current number of information =", words.size())
+                        KRATOS_ERROR << "The Weights section must contained number of information equal to prod(ni), current number of information = " << words.size();
 
-                        // read info
-                        std::vector<double> dummy;
+                    // read info
+                    std::vector<double> dummy;
                     weights.push_back(dummy);
                     for (std::size_t i = 0; i < num_basis; ++i)
                     {

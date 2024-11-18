@@ -1,40 +1,6 @@
 /*
- ==============================================================================
- Kratos
- A General Purpose Software for Multi-Physics Finite Element Analysis
- Version 1.0 (Released on march 05, 2007).
-
- Copyright 2007
- Pooyan Dadvand, Riccardo Rossi
- pooyan@cimne.upc.edu
- rrossi@cimne.upc.edu
- CIMNE (International Center for Numerical Methods in Engineering),
- Gran Capita' s/n, 08034 Barcelona, Spain
-
- Permission is hereby granted, free  of charge, to any person obtaining
- a  copy  of this  software  and  associated  documentation files  (the
- "Software"), to  deal in  the Software without  restriction, including
- without limitation  the rights to  use, copy, modify,  merge, publish,
- distribute,  sublicense and/or  sell copies  of the  Software,  and to
- permit persons to whom the Software  is furnished to do so, subject to
- the following condition:
-
- Distribution of this code for  any  commercial purpose  is permissible
- ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
- The  above  copyright  notice  and  this permission  notice  shall  be
- included in all copies or substantial portions of the Software.
-
- THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
- EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
- CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
- TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
- ==============================================================================
- */
+LICENSE: see isogeometric_application/LICENSE.txt
+*/
 
 //
 //   Project Name:        Kratos
@@ -973,9 +939,7 @@ public:
         //checking for singularity
         if ( det_j == 0.00 )
         {
-            KRATOS_THROW_ERROR( std::runtime_error,
-                                "Zero determinant of jacobian during inversion of matrix!",
-                                *this );
+            KRATOS_ERROR << "Zero determinant of jacobian during inversion of matrix!";
         }
 
         //setting up result matrix
@@ -1014,9 +978,7 @@ public:
         //checking for singularity
         if ( det_j == 0.00 )
         {
-            KRATOS_THROW_ERROR( std::runtime_error,
-                                "Zero determinant of jacobian during inversion of matrix!",
-                                *this );
+            KRATOS_ERROR << "Zero determinant of jacobian during inversion of matrix!";
         }
 
         //setting up result matrix
@@ -1415,7 +1377,7 @@ public:
 
         if ( integration_points_number == 0 )
         {
-            KRATOS_THROW_ERROR( std::logic_error, "This integration method is not supported", *this );
+            KRATOS_ERROR << "This integration method is not supported";
         }
 
         //workaround by riccardo
@@ -1534,7 +1496,7 @@ public:
             KRATOS_WATCH(Degree1)
             KRATOS_WATCH(Degree2)
             KRATOS_WATCH(Degree3)
-            KRATOS_THROW_ERROR(std::logic_error, "The parametric parameters is not compatible, knots.length != n+p+1.", __FUNCTION__)
+            KRATOS_ERROR << "The parametric parameters is not compatible, knots.length != n+p+1.";
         }
 
 #ifdef ENABLE_PROFILING
@@ -1830,7 +1792,7 @@ private:
             KRATOS_WATCH(mOrder1)
             KRATOS_WATCH(mOrder2)
             KRATOS_WATCH(mOrder3)
-            KRATOS_THROW_ERROR(std::logic_error, "Number of integration methods exceeds the allowance defined by boost.array", __FUNCTION__)
+            KRATOS_ERROR << "Number of integration methods exceeds the allowance defined by boost.array";
         }
 
         //generate integration points for GI_GAUSS_1 rule. Note that GI_GAUSS_1 is the default rule which take the minimum order of integration in each direction

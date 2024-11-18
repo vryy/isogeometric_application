@@ -131,10 +131,8 @@ pybind11::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDummy, 
 {
     if (!KratosComponents<Element>::Has(sample_element_name))
     {
-        std::stringstream buffer;
-        buffer << "Element " << sample_element_name << " is not registered in Kratos.";
-        buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-        KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+        KRATOS_ERROR << "Element " << sample_element_name << " is not registered in Kratos."
+                     << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
     }
 
     Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
@@ -167,10 +165,8 @@ pybind11::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& rDummy
 {
     if (!KratosComponents<Condition>::Has(sample_condition_name))
     {
-        std::stringstream buffer;
-        buffer << "Condition " << sample_condition_name << " is not registered in Kratos.";
-        buffer << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
-        KRATOS_THROW_ERROR(std::runtime_error, buffer.str(), "");
+        KRATOS_ERROR << "Condition " << sample_condition_name << " is not registered in Kratos."
+                     << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
     }
 
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);

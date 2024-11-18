@@ -126,19 +126,19 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
 
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
+        KRATOS_ERROR << "Only support the hierarchical B-Splines patch";
 
-        // extract the hierarchical B-Splines space
-        typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    // extract the hierarchical B-Splines space
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+        KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
-        // do not refine if maximum level is reached
-        if (p_bf->Level() >= pFESpace->MaxLevel())
-        {
-            std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " of patch " << pPatch->Id() << " is skipped." << std::endl;
-            return;
-        }
+    // do not refine if maximum level is reached
+    if (p_bf->Level() >= pFESpace->MaxLevel())
+    {
+        std::cout << "Maximum level is reached, basis function " << p_bf->Id() << " of patch " << pPatch->Id() << " is skipped." << std::endl;
+        return;
+    }
 
     // refine the patch
     std::set<std::size_t> refined_patches;
@@ -152,15 +152,15 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
     typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
 
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
+        KRATOS_ERROR << "Only support the hierarchical B-Splines patch";
 
-        // extract the hierarchical B-Splines space
-        typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
+    // extract the hierarchical B-Splines space
+    typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+        KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
-        // get the correct basis function
-        bf_t p_bf;
+    // get the correct basis function
+    bf_t p_bf;
     bool found = false;
     for (typename bf_container_t::iterator it = pFESpace->bf_begin(); it != pFESpace->bf_end(); ++it)
     {
@@ -233,10 +233,10 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+        KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
-        // get the list of variables in the patch
-        std::vector<Variable<double>*> double_variables = pPatch->template ExtractVariables<Variable<double> >();
+    // get the list of variables in the patch
+    std::vector<Variable<double>*> double_variables = pPatch->template ExtractVariables<Variable<double> >();
     std::vector<Variable<array_1d<double, 3> >*> array_1d_variables = pPatch->template ExtractVariables<Variable<array_1d<double, 3> > >();
     std::vector<Variable<Vector>*> vector_variables = pPatch->template ExtractVariables<Variable<Vector> >();
 
@@ -813,8 +813,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     {
         typename WeightedFESpace<TDim>::Pointer pThisFESpace = iga::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
         if (pThisFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
-            pThisFESpace->SetWeights(Weights);
+            KRATOS_ERROR << "The cast to WeightedFESpace is failed.";
+        pThisFESpace->SetWeights(Weights);
     }
 
     typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
@@ -823,8 +823,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     {
         typename WeightedFESpace<TDim>::Pointer pThisFESpace = iga::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
         if (pThisFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
-            pThisFESpace->SetWeights(Weights);
+            KRATOS_ERROR << "The cast to WeightedFESpace is failed.";
+        pThisFESpace->SetWeights(Weights);
     }
 
     typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
@@ -833,8 +833,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     {
         typename WeightedFESpace<TDim>::Pointer pThisFESpace = iga::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
         if (pThisFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to WeightedFESpace is failed.", "")
-            pThisFESpace->SetWeights(Weights);
+            KRATOS_ERROR << "The cast to WeightedFESpace is failed.";
+        pThisFESpace->SetWeights(Weights);
     }
 
     // record the refinement history
@@ -864,10 +864,10 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
         // extract the hierarchical B-Splines space
         typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
         if (pNeighborFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+            KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
-            // get the correct basis function
-            bf_t p_neighbor_bf;
+        // get the correct basis function
+        bf_t p_neighbor_bf;
         bool found = false;
         for (typename bf_container_t::iterator it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
         {
@@ -904,10 +904,10 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch
         const std::vector<std::vector<double> >& window, int echo_level)
 {
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
+        KRATOS_ERROR << "Only support the hierarchical B-Splines patch";
 
-        // Type definitions
-        typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
+    // Type definitions
+    typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
     typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
     typedef typename HBSplinesFESpace<TDim>::CellType CellType;
     typedef typename HBSplinesFESpace<TDim>::cell_t cell_t;
@@ -917,7 +917,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+        KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
         std::cout << "window:";
     for (std::size_t i = 0; i < window.size(); ++i)
@@ -959,10 +959,10 @@ template<int TDim>
 inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(typename Patch<TDim>::Pointer pPatch, std::size_t refine_cycle, int echo_level)
 {
     if (pPatch->pFESpace()->Type() != HBSplinesFESpace<TDim>::StaticType())
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the hierarchical B-Splines patch")
+        KRATOS_ERROR << "Only support the hierarchical B-Splines patch";
 
-        // Type definitions
-        typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
+    // Type definitions
+    typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
     typedef typename HBSplinesFESpace<TDim>::bf_container_t bf_container_t;
     typedef typename HBSplinesFESpace<TDim>::CellType CellType;
     typedef typename HBSplinesFESpace<TDim>::cell_t cell_t;
@@ -973,9 +973,9 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == NULL)
-        KRATOS_THROW_ERROR(std::runtime_error, "The cast to HBSplinesFESpace is failed.", "")
+        KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
-        if (pFESpace->LastLevel() < 1) { return; }
+    if (pFESpace->LastLevel() < 1) { return; }
 
 #ifdef ENABLE_PROFILING
     double start = OpenMPUtils::GetCurrentTime();

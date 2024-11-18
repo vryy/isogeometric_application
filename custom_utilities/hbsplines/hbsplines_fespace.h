@@ -407,7 +407,7 @@ public:
     HBSplinesFESpace<TDim>& operator=(const HBSplinesFESpace<TDim>& rOther)
     {
         // TODO copy more
-        KRATOS_THROW_ERROR(std::logic_error, "The assignment oprator is not complete", "")
+        KRATOS_ERROR << "The assignment oprator is not yet implemented";
         BaseType::operator=(rOther);
         return *this;
     }

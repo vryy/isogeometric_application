@@ -94,7 +94,7 @@ public:
 //
 //        if(size != rN + rP + 1)
 //        {
-//            KRATOS_THROW_ERROR(std::logic_error, "Size of rU must be n + p + 1", __FUNCTION__);
+//            KRATOS_ERROR << "Size of rU must be n + p + 1";
 //        }
 //
 //        double tol = 1e-12;
@@ -908,15 +908,15 @@ public:
 #ifdef FUNCTIONALITY_CHECK
         for (unsigned int i = 0; i < nt; ++i)
             if (M(nt, i) != 0.0)
-                KRATOS_THROW_ERROR(std::runtime_error, "M(nt,..) is nonzero at", i)
-                for (unsigned int i = 0; i < num_basis; ++i)
-                    if (D(i) == 0.0)
-                        KRATOS_THROW_ERROR(std::runtime_error, "D(..) is zero at", i)
-                        for (unsigned int i = nt + num_basis; i < M.size2(); ++i)
-                            if (M(nt, i) != 0.0)
-                                KRATOS_THROW_ERROR(std::runtime_error, "M(nt,..) is nonzero at", i)
+                KRATOS_ERROR << "M(nt,..) is nonzero at " << i;
+        for (unsigned int i = 0; i < num_basis; ++i)
+            if (D(i) == 0.0)
+                KRATOS_ERROR << "D(..) is zero at " << i;
+        for (unsigned int i = nt + num_basis; i < M.size2(); ++i)
+            if (M(nt, i) != 0.0)
+                KRATOS_ERROR << "M(nt,..) is nonzero at " << i;
 #endif
-                            }
+    }
 
     /// Compute the refinement coefficients for multiple knot insertion local refinement in 2D
     template<class VectorType, class ValuesContainerType, class ValuesContainerType2, class ValuesContainerType3>

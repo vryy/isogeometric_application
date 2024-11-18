@@ -111,13 +111,13 @@ public:
     /// Check if the cell exists in the list; otherwise create new cell and return
     virtual cell_t CreateCell(const std::vector<knot_t>& pKnots)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class function";
     }
 
     /// Insert a cell to the container. If the cell is existed in the container, the iterator of the existed one will be returned.
     virtual iterator insert(cell_t p_cell)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class function";
     }
 
     /// Iterators
@@ -132,7 +132,7 @@ public:
     /// Remove a cell by its Id from the set
     virtual void erase(cell_t p_cell)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class function";
     }
 
     /// Get a cell based on its Id
@@ -151,7 +151,7 @@ public:
             return it->second;
         }
         else
-            KRATOS_THROW_ERROR(std::runtime_error, "Access index is not found:", Id)
+            KRATOS_ERROR << "Access index " << Id << " is not found";
         }
 
     /// Overload operator[]
@@ -193,7 +193,7 @@ public:
     /// Search the cells covered in another cell. In return, std::vector<cell_t> are all the cells covered by p_cell.
     virtual std::vector<cell_t> GetCells(cell_t p_cell)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling the virtual function", __FUNCTION__)
+        KRATOS_ERROR << "Calling the base class function";
     }
 
     /// Collapse the overlapping cells

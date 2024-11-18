@@ -300,9 +300,9 @@ public:
         int n = A.size1();
 
         if (A.size2() != n)
-            KRATOS_THROW_ERROR(std::logic_error, "The matrix needs to be square", "")
+            KRATOS_ERROR << "The matrix is not square";
 
-            std::vector<int> idx;
+        std::vector<int> idx;
         std::vector<TDataType> val;
 
         // firstly write the diagonal part of the matrix

@@ -1,39 +1,5 @@
 /*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
+see isogeometric_application/LICENSE.txt
 */
 
 //
@@ -131,11 +97,11 @@ public:
     {
         if (!mInput)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "Error opening input file : ", mInputFilename.c_str());
+            KRATOS_ERROR << "Error opening input file " << mInputFilename;
         }
         if (!mOutput)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "Error opening output file : ", mOutputFilename.c_str());
+            KRATOS_ERROR << "Error opening output file " << mOutputFilename;
         }
 
         Timer::SetOutputFile(Filename + ".time");
@@ -151,11 +117,11 @@ public:
     {
         if (!mInput)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "Error opening input file : ", mInputFilename.c_str());
+            KRATOS_ERROR << "Error opening input file " << mInputFilename;
         }
         if (!mOutput)
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "Error opening output file : ", mOutputFilename.c_str());
+            KRATOS_ERROR << "Error opening output file " << mOutputFilename;
         }
 
         Timer::SetOutputFile(InputFilename + ".time");
@@ -180,7 +146,7 @@ public:
 
     virtual bool ReadNode(NodeType& rThisNode)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class member. Please check the definition of derived class.", "")
+        KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
     virtual bool ReadNodes(NodesContainerType& rThisNodes)
@@ -250,7 +216,7 @@ public:
 
     virtual void ReadProperties(Properties& rThisProperties)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class member. Please check the definition of derived class", "")
+        KRATOS_ERROR << "Calling base class member. Please check the definition of derived class";
     }
 
     virtual void ReadProperties(PropertiesContainerType& rThisProperties)
@@ -291,7 +257,7 @@ public:
 
     virtual void ReadElement(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, Element::Pointer& pThisElements)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class member. Please check the definition of derived class", "")
+        KRATOS_ERROR << "Calling base class member. Please check the definition of derived class";
     }
 
     virtual void ReadElements(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ElementsContainerType& rThisElements)
@@ -448,7 +414,7 @@ public:
 
     virtual void ReadMesh(MeshType & rThisMesh)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "IsogeometricModelPartIO does not implement this method.", "")
+        KRATOS_ERROR << "IsogeometricModelPartIO does not implement this method.";
     }
 
     virtual void WriteMesh(MeshType & rThisMesh)
@@ -633,7 +599,7 @@ public:
             std::ofstream* p_ofstream = new std::ofstream(buffer.str().c_str());
             if (!(*p_ofstream))
             {
-                KRATOS_THROW_ERROR(std::invalid_argument, "Error opening output file : ", buffer.str());
+                KRATOS_ERROR << "Error opening output file : ", buffer.str();
             }
 
             output_files.push_back(p_ofstream);
@@ -891,10 +857,8 @@ private:
             }
             else
             {
-                std::stringstream buffer;
-                buffer << variable_name << " is not a valid variable!!!" << std::endl;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << variable_name << " is not a valid variable!!!" << std::endl
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
         }
@@ -920,10 +884,8 @@ private:
 
         if (!KratosComponents<Variable<double> >::Has(variable_name))
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not a valid argument variable!!! Table only accepts double arguments." << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not a valid argument variable!!! Table only accepts double arguments." << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
 
         }
 
@@ -931,11 +893,8 @@ private:
 
         if (!KratosComponents<Variable<double> >::Has(variable_name))
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not a valid value variable!!! Table only accepts double values." << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-
+            KRATOS_ERROR << variable_name << " is not a valid value variable!!! Table only accepts double values." << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         while (!mInput.eof())
@@ -1271,10 +1230,8 @@ private:
             }
             else
             {
-                std::stringstream buffer;
-                buffer << variable_name << " is not a valid variable!!!" << std::endl;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << variable_name << " is not a valid variable!!!" << std::endl
+                             << " [Line " << mNumberOfLines << " ]";
             }
         }
 
@@ -1309,12 +1266,9 @@ private:
 
 //        if(!KratosComponents<Element>::Has(element_name))
 //        {
-//            std::stringstream buffer;
-//            buffer << "Element " << element_name << " is not registered in Kratos.";
-//            buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-//            buffer << " [Line " << mNumberOfLines << " ]";
-//            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-//            return;
+//            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+//                         << " Please check the spelling of the element name and see if the application which containing it, is registered corectly."
+//                         << " [Line " << mNumberOfLines << " ]";
 //        }
 
 //        Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
@@ -1368,12 +1322,9 @@ private:
 
         if (!KratosComponents<Element>::Has(element_name))
         {
-            std::stringstream buffer;
-            buffer << "Element " << element_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-            return;
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                         << " Please check the spelling of the element name and see if the application which containing it, is registered corectly."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
@@ -1454,12 +1405,9 @@ private:
 //        ReadWord(condition_name);
 //        if(!KratosComponents<Condition>::Has(condition_name))
 //        {
-//            std::stringstream buffer;
-//            buffer << "Condition " << condition_name << " is not registered in Kratos.";
-//            buffer << " Please check the spelling of the condition name and see if the application containing it is registered corectly.";
-//            buffer << " [Line " << mNumberOfLines << " ]";
-//            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-//            return;
+//            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
+//                         << " Please check the spelling of the condition name and see if the application containing it is registered corectly."
+//                         << " [Line " << mNumberOfLines << " ]";
 //        }
 
 //        Condition const& r_clone_condition = KratosComponents<Condition>::Get(condition_name);
@@ -1510,12 +1458,9 @@ private:
 
         if (!KratosComponents<Condition>::Has(condition_name))
         {
-            std::stringstream buffer;
-            buffer << "Condition " << condition_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the condition name and see if the application containing it is registered corectly.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-            return;
+            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
+                         << " Please check the spelling of the condition name and see if the application containing it is registered corectly."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Condition const& r_clone_condition = KratosComponents<Condition>::Get(condition_name);
@@ -1609,17 +1554,13 @@ private:
         }
         else if (KratosComponents<VariableData>::Has(variable_name))
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not supported to be read by this IO or the type of variable is not registered correctly" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not supported to be read by this IO or the type of variable is not registered correctly" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
         else
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not a valid variable!!!" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not a valid variable!!!" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         KRATOS_CATCH("")
@@ -1716,10 +1657,8 @@ private:
             ExtractValue(value, is_fixed);
             if (is_fixed)
             {
-                std::stringstream buffer;
-                buffer << "Only double variables or components can be fixed.";
-                buffer <<  " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Only double variables or components can be fixed."
+                             <<  " [Line " << mNumberOfLines << " ]";
             }
 
             // readidng nodal_value
@@ -1758,10 +1697,8 @@ private:
             ExtractValue(value, is_fixed);
             if (is_fixed)
             {
-                std::stringstream buffer;
-                buffer << "Only double variables or components can be fixed.";
-                buffer <<  " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Only double variables or components can be fixed."
+                             <<  " [Line " << mNumberOfLines << " ]";
             }
 
             // readidng nodal_value
@@ -1813,10 +1750,8 @@ private:
         }
         else
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not a valid variable!!!" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not a valid variable!!!" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         KRATOS_CATCH("")
@@ -1935,10 +1870,8 @@ private:
         }
         else
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not a valid variable!!!" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not a valid variable!!!" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         KRATOS_CATCH("")
@@ -2033,12 +1966,9 @@ private:
 //        ReadWord(element_name);
 //        if(!KratosComponents<Element>::Has(element_name))
 //        {
-//            std::stringstream buffer;
-//            buffer << "Element " << element_name << " is not registered in Kratos.";
-//            buffer << " Please check the spelling of the element name and see if the application containing it is registered corectly.";
-//            buffer << " [Line " << mNumberOfLines << " ]";
-//            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-//            return number_of_connectivities;
+//            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+//                         << " Please check the spelling of the element name and see if the application containing it is registered corectly."
+//                         << " [Line " << mNumberOfLines << " ]";
 //        }
 //
 //        Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
@@ -2094,12 +2024,9 @@ private:
         ReadWord(element_name);
         if (!KratosComponents<Element>::Has(element_name))
         {
-            std::stringstream buffer;
-            buffer << "Element " << element_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the element name and see if the application containing it is registered corectly.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-            return number_of_connectivities;
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                         << " Please check the spelling of the element name and see if the application containing it is registered corectly."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
@@ -2169,12 +2096,9 @@ private:
         ReadWord(condition_name);
         if (!KratosComponents<Condition>::Has(condition_name))
         {
-            std::stringstream buffer;
-            buffer << "Condition " << condition_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the condition name and see if the application containing it is registered corectly.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-            return number_of_connectivities;
+            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
+                         << " Please check the spelling of the condition name and see if the application containing it is registered corectly."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Condition const& r_clone_condition = KratosComponents<Condition>::Get(condition_name);
@@ -2222,11 +2146,9 @@ private:
         ReadWord(element_name);
         if (!KratosComponents<Element>::Has(element_name))
         {
-            std::stringstream buffer;
-            buffer << "Element " << element_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the element name and see if the application containing it is registered corectly.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                         << " Please check the spelling of the element name and see if the application containing it is registered corectly."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
@@ -2256,7 +2178,7 @@ private:
                 node_id = temp_element_nodes[i];
                 if (node_id > number_of_nodes) // Ids begin on 1
                 {
-                    KRATOS_THROW_ERROR(std::runtime_error, "Element connectivities contain undefined node with id ", node_id);
+                    KRATOS_ERROR << "Element connectivities contain undefined node with id " << node_id;
                 }
                 for (SizeType j = 0; j < i; j++)
                 {
@@ -2286,11 +2208,9 @@ private:
         ReadWord(condition_name);
         if (!KratosComponents<Condition>::Has(condition_name))
         {
-            std::stringstream buffer;
-            buffer << "Condition " << condition_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the condition name and see if the application containing it is registered corectly.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
+                         << " Please check the spelling of the condition name and see if the application containing it is registered corectly."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Condition const& r_clone_condition = KratosComponents<Condition>::Get(condition_name);
@@ -2320,7 +2240,7 @@ private:
                 node_id = temp_condition_nodes[i];
                 if (node_id > number_of_nodes) // Ids begin on 1
                 {
-                    KRATOS_THROW_ERROR(std::runtime_error, "Condition connectivities contain undefined node with id ", node_id);
+                    KRATOS_ERROR << "Condition connectivities contain undefined node with id " << node_id;
                 }
                 for (SizeType j = 0; j < i; j++)
                 {
@@ -2407,11 +2327,9 @@ private:
 
         if (interface_id > rThisCommunicator.GetNumberOfColors())
         {
-            std::stringstream buffer;
-            buffer << "Interface " << interface_id << " is not valid.";
-            buffer << " The number of colors is " << rThisCommunicator.GetNumberOfColors() << " and the interface id must be les than or equal to number of colors" ;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << "Interface " << interface_id << " is not valid."
+                         << " The number of colors is " << rThisCommunicator.GetNumberOfColors() << " and the interface id must be les than or equal to number of colors"
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Communicator::MeshType* p_local_mesh;
@@ -2467,11 +2385,9 @@ private:
 
         if (interface_id > rThisCommunicator.GetNumberOfColors())
         {
-            std::stringstream buffer;
-            buffer << "Interface " << interface_id << " is not valid.";
-            buffer << " The number of colors is " << rThisCommunicator.GetNumberOfColors() << " and the interface id must be les than or equal to number of colors" ;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << "Interface " << interface_id << " is not valid."
+                         << " The number of colors is " << rThisCommunicator.GetNumberOfColors() << " and the interface id must be les than or equal to number of colors"
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Communicator::MeshType* p_ghost_mesh;
@@ -2530,12 +2446,12 @@ private:
 
         if (mesh_id > 1000000) // this would be a case of error in reading.
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "Too large mesh id :", mesh_id);
+            KRATOS_ERROR << "Too large mesh id " << mesh_id;
         }
 
         if (mesh_id == 0) // this would be a case of error in reading.
         {
-            KRATOS_THROW_ERROR(std::invalid_argument, "The mesh zero is the reference mesh and already created. You cannot create a mesh 0 with mesh block.", "");
+            KRATOS_ERROR << "The mesh zero is the reference mesh and already created. You cannot create a mesh 0 with mesh block.";
         }
 
         // adding necessary meshes to the model part.
@@ -2730,10 +2646,8 @@ private:
 
             if (id > NodesAllPartitions.size())
             {
-                std::stringstream buffer;
-                buffer << "Invalid node id : " << id;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Invalid node id : " << id
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
             std::string node_data;
@@ -2750,10 +2664,8 @@ private:
                 SizeType partition_id = NodesAllPartitions[id - 1][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for node " << id << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for node " << id << " [Line " << mNumberOfLines << " ]";
                 }
 
                 *(OutputFiles[partition_id]) << node_data;
@@ -2780,12 +2692,9 @@ private:
         ReadWord(element_name);
         if (!KratosComponents<Element>::Has(element_name))
         {
-            std::stringstream buffer;
-            buffer << "Element " << element_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the element name and see if the application containing it is registered corectly.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-            return;
+            KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                         << " Please check the spelling of the element name and see if the application containing it is registered corectly."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
@@ -2806,10 +2715,8 @@ private:
             ExtractValue(word, id);
             if (id > ElementsAllPartitions.size())
             {
-                std::stringstream buffer;
-                buffer << "Invalid element id : " << id;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Invalid element id : " << id
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
             std::string element_data;
@@ -2828,10 +2735,8 @@ private:
                 SizeType partition_id = ElementsAllPartitions[id - 1][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for node " << id << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for node " << id << " [Line " << mNumberOfLines << " ]";
                 }
 
                 *(OutputFiles[partition_id]) << element_data;
@@ -2857,12 +2762,9 @@ private:
         ReadWord(condition_name);
         if (!KratosComponents<Condition>::Has(condition_name))
         {
-            std::stringstream buffer;
-            buffer << "Condition " << condition_name << " is not registered in Kratos.";
-            buffer << " Please check the spelling of the condition name and see if the application containing it is registered corectly.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-            return;
+            KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
+                         << " Please check the spelling of the condition name and see if the application containing it is registered corectly."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         Condition const& r_clone_condition = KratosComponents<Condition>::Get(condition_name);
@@ -2883,10 +2785,8 @@ private:
             ExtractValue(word, id);
             if (id > ConditionsAllPartitions.size())
             {
-                std::stringstream buffer;
-                buffer << "Invalid condition id : " << id;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Invalid condition id : " << id
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
             std::string condition_data;
@@ -2905,10 +2805,8 @@ private:
                 SizeType partition_id = ConditionsAllPartitions[id - 1][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for node " << id << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for node " << id << " [Line " << mNumberOfLines << " ]";
                 }
 
                 *(OutputFiles[partition_id]) << condition_data;
@@ -2967,17 +2865,13 @@ private:
         }
         else if (KratosComponents<VariableData>::Has(variable_name))
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not supported to be read by this IO or the type of variable is not registered correctly" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not supported to be read by this IO or the type of variable is not registered correctly" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
         else
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not a valid variable!!!" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not a valid variable!!!" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         WriteInAllFiles(OutputFiles, "End NodalData\n");
@@ -3008,10 +2902,8 @@ private:
 
             if (id > NodesAllPartitions.size())
             {
-                std::stringstream buffer;
-                buffer << "Invalid node id : " << id;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Invalid node id : " << id
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
             std::string node_data;
@@ -3026,10 +2918,8 @@ private:
                 SizeType partition_id = NodesAllPartitions[id - 1][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for node " << id << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for node " << id << " [Line " << mNumberOfLines << " ]";
                 }
 
                 *(OutputFiles[partition_id]) << node_data;
@@ -3061,10 +2951,8 @@ private:
 
             if (id > EntitiesPartitions.size())
             {
-                std::stringstream buffer;
-                buffer << "Invalid node id : " << id;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Invalid node id : " << id
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
             std::string entity_data;
@@ -3077,10 +2965,8 @@ private:
                 SizeType partition_id = EntitiesPartitions[id - 1][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for node " << id << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for node " << id << " [Line " << mNumberOfLines << " ]";
                 }
 
                 *(OutputFiles[partition_id]) << entity_data << temp_vector << std::endl;
@@ -3134,17 +3020,13 @@ private:
         }
         else if (KratosComponents<VariableData>::Has(variable_name))
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not supported to be read by this IO or the type of variable is not registered correctly" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not supported to be read by this IO or the type of variable is not registered correctly" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
         else
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not a valid variable!!!" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not a valid variable!!!" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         WriteInAllFiles(OutputFiles, "End ElementalData\n");
@@ -3174,10 +3056,8 @@ private:
 
             if (id > EntitiesPartitions.size())
             {
-                std::stringstream buffer;
-                buffer << "Invalid id : " << id;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Invalid id : " << id
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
             std::string entity_data;
@@ -3190,10 +3070,8 @@ private:
                 SizeType partition_id = EntitiesPartitions[id - 1][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for entity " << id << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for entity " << id << " [Line " << mNumberOfLines << " ]";
                 }
 
                 *(OutputFiles[partition_id]) << entity_data;
@@ -3247,17 +3125,13 @@ private:
         }
         else if (KratosComponents<VariableData>::Has(variable_name))
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not supported to be read by this IO or the type of variable is not registered correctly" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not supported to be read by this IO or the type of variable is not registered correctly" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
         else
         {
-            std::stringstream buffer;
-            buffer << variable_name << " is not a valid variable!!!" << std::endl;
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << variable_name << " is not a valid variable!!!" << std::endl
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         WriteInAllFiles(OutputFiles, "End ConditionalData\n");
@@ -3337,10 +3211,8 @@ private:
 
             if (id > NodesAllPartitions.size())
             {
-                std::stringstream buffer;
-                buffer << "Invalid node id : " << id;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Invalid node id : " << id
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
             for (SizeType i = 0 ; i < NodesAllPartitions[id - 1].size() ; i++)
@@ -3348,10 +3220,8 @@ private:
                 SizeType partition_id = NodesAllPartitions[id - 1][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for node " << id << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for node " << id << " [Line " << mNumberOfLines << " ]";
                 }
 
                 *(OutputFiles[partition_id]) << word << std::endl;
@@ -3388,10 +3258,8 @@ private:
 
             if (id > ElementsAllPartitions.size())
             {
-                std::stringstream buffer;
-                buffer << "Invalid element id : " << id;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Invalid element id : " << id
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
             for (SizeType i = 0 ; i < ElementsAllPartitions[id - 1].size() ; i++)
@@ -3399,10 +3267,8 @@ private:
                 SizeType partition_id = ElementsAllPartitions[id - 1][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for element " << id << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for element " << id << " [Line " << mNumberOfLines << " ]";
                 }
 
                 *(OutputFiles[partition_id]) << word << std::endl;
@@ -3439,10 +3305,8 @@ private:
 
             if (id > ConditionsAllPartitions.size())
             {
-                std::stringstream buffer;
-                buffer << "Invalid condition id : " << id;
-                buffer << " [Line " << mNumberOfLines << " ]";
-                KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                KRATOS_ERROR << "Invalid condition id : " << id
+                             << " [Line " << mNumberOfLines << " ]";
             }
 
             for (SizeType i = 0 ; i < ConditionsAllPartitions[id - 1].size() ; i++)
@@ -3450,10 +3314,8 @@ private:
                 SizeType partition_id = ConditionsAllPartitions[id - 1][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for condition " << id << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for condition " << id << " [Line " << mNumberOfLines << " ]";
                 }
 
                 *(OutputFiles[partition_id]) << word << std::endl;
@@ -3477,10 +3339,8 @@ private:
                 SizeType partition_id = NodesAllPartitions[i_node][i];
                 if (partition_id > OutputFiles.size())
                 {
-                    std::stringstream buffer;
-                    buffer << "Invalid prtition id : " << partition_id;
-                    buffer << " for node " << i_node + 1 << " [Line " << mNumberOfLines << " ]";
-                    KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+                    KRATOS_ERROR << "Invalid partition id : " << partition_id
+                                 << " for node " << i_node + 1 << " [Line " << mNumberOfLines << " ]";
                 }
 
                 const SizeType node_partition = NodesPartitions[i_node];
@@ -3652,10 +3512,8 @@ private:
         typename TContainerType::iterator i_result;
         if ((i_result = ThisContainer.find(ThisKey)) == ThisContainer.end())
         {
-            std::stringstream buffer;
-            buffer << ComponentName << " #" << ThisKey << " is not found.";
-            buffer << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << ComponentName << " #" << ThisKey << " is not found."
+                         << " [Line " << mNumberOfLines << " ]";
         }
 
         return i_result;
@@ -3838,10 +3696,8 @@ private:
         bool result = false;
         if (rGivenWord != rStatement)
         {
-            std::stringstream buffer;
-            buffer << "A \"" << rStatement << "\" statement was expected but the given statement was \"";
-            buffer <<  rGivenWord << "\"" << " [Line " << mNumberOfLines << " ]";
-            KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
+            KRATOS_ERROR << "A \"" << rStatement << "\" statement was expected but the given statement was \""
+                         << rGivenWord << "\"" << " [Line " << mNumberOfLines << " ]";
         }
         else
         {

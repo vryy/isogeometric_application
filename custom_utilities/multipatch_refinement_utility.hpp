@@ -23,7 +23,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
     bool record_trans_mat)
 {
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the NURBS patch")
+        KRATOS_ERROR << "Only support the NURBS patch";
 
     bool to_refine = false;
     if (refined_patches.find( pPatch->Id() ) == refined_patches.end())
@@ -74,7 +74,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
         typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         if (pFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
+            KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
 
         Matrix T;
@@ -177,11 +177,11 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         {
             typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
             if (pInterface == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesPatchInterface is failed", "")
+                KRATOS_ERROR << "The cast to BSplinesPatchInterface is failed";
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
 
             if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
-                KRATOS_THROW_ERROR(std::logic_error, "The FESpace of the neighbor is not BSplinesFESpace", "")
+                KRATOS_ERROR << "The FESpace of the neighbor is not BSplinesFESpace";
 
             // transfer the inserted knots to neighbors
             std::vector<std::vector<double> > neib_ins_knots(TDim);
@@ -256,7 +256,7 @@ template<int TDim>
 void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& pPatch, std::map<std::size_t, std::vector<int> >& refined_patches, const std::vector<std::size_t>& order_increment)
 {
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "only support the NURBS patch")
+        KRATOS_ERROR << "Only support the NURBS patch";
 
     bool to_refine = false;
     if (refined_patches.find( pPatch->Id() ) == refined_patches.end())
@@ -283,7 +283,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         // elevate the degree and initialize new patch
         typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
         if (pFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace is failed.", "")
+            KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
         typename BSplinesFESpace<TDim>::Pointer pNewFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
 
         std::vector<std::vector<double> > new_knots(TDim);
@@ -295,7 +295,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         typename StructuredControlGrid<TDim, ControlPoint<double> >::Pointer pControlPoints
             = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPoint<double> > >(pPatch->pControlPointGridFunction()->pControlGrid());
         if (pControlPoints == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+            KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
 
         typename StructuredControlGrid<TDim, ControlPoint<double> >::Pointer pNewControlPoints
             = typename StructuredControlGrid<TDim, ControlPoint<double> >::Pointer(new StructuredControlGrid<TDim, ControlPoint<double> >(new_size)); // note here that the size is just temporary, it will be raised later on.
@@ -335,7 +335,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             typename StructuredControlGrid<TDim, double>::Pointer pNewDoubleControlGrid = typename StructuredControlGrid<TDim, double>::Pointer(new StructuredControlGrid<TDim, double>(new_size));
             typename StructuredControlGrid<TDim, double>::Pointer pDoubleControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
             if (pDoubleControlGrid == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+                KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
             this->ComputeBsplinesDegreeElevation<TDim, double>(*pDoubleControlGrid, *pFESpace, order_increment, *pNewDoubleControlGrid, new_knots);
             pNewDoubleControlGrid->SetName((*it)->pControlGrid()->Name());
             pNewPatch->template CreateGridFunction<double>(pNewDoubleControlGrid);
@@ -348,7 +348,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pNewArray1DControlGrid = typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer(new StructuredControlGrid<TDim, array_1d<double, 3> >(new_size));
             typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pArray1DControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
             if (pArray1DControlGrid == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+                KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
             this->ComputeBsplinesDegreeElevation<TDim, array_1d<double, 3> >(*pArray1DControlGrid, *pFESpace, order_increment, *pNewArray1DControlGrid, new_knots);
             pNewArray1DControlGrid->SetName((*it)->pControlGrid()->Name());
             pNewPatch->template CreateGridFunction<array_1d<double, 3> >(pNewArray1DControlGrid);
@@ -360,7 +360,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             typename StructuredControlGrid<TDim, Vector>::Pointer pNewVectorControlGrid = typename StructuredControlGrid<TDim, Vector>::Pointer(new StructuredControlGrid<TDim, Vector>(new_size));
             typename StructuredControlGrid<TDim, Vector>::Pointer pVectorControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
             if (pVectorControlGrid == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to StructuredControlGrid is failed.", "")
+                KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
             this->ComputeBsplinesDegreeElevation<TDim, Vector>(*pVectorControlGrid, *pFESpace, order_increment, *pNewVectorControlGrid, new_knots);
             pNewVectorControlGrid->SetName((*it)->pControlGrid()->Name());
             pNewPatch->template CreateGridFunction<Vector>(pNewVectorControlGrid);
@@ -385,11 +385,11 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         {
             typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
             if (pInterface == NULL)
-                KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesPatchInterface is failed", "")
+                KRATOS_ERROR << "The cast to BSplinesPatchInterface is failed";
             typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
 
             if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
-                KRATOS_THROW_ERROR(std::logic_error, "The FESpace of the neighbor is not BSplinesFESpace", "")
+                KRATOS_ERROR << "The FESpace of the neighbor is not BSplinesFESpace";
 
             // transfer the order increment to neighbors
             std::vector<std::size_t> neib_order_increment(TDim);

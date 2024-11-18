@@ -380,8 +380,8 @@ private:
     void LockQuery()
     {
         if (mLockConstruct)
-            KRATOS_THROW_ERROR(std::logic_error, "The T-splines mesh is currently locked. Please call BeginConstruct() to unlock", "")
-        }
+            KRATOS_ERROR << "The T-splines mesh is currently locked. Please call BeginConstruct() to unlock";
+    }
 
     /// For debugging only
     void FindKnots2(double Anchor_xi_index, double Anchor_eta_index,

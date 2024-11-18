@@ -1,39 +1,5 @@
 /*
-==============================================================================
-Kratos
-A General Purpose Software for Multi-Physics Finite Element Analysis
-Version 1.0 (Released on march 05, 2007).
-
-Copyright 2007
-Pooyan Dadvand, Riccardo Rossi
-pooyan@cimne.upc.edu
-rrossi@cimne.upc.edu
-CIMNE (International Center for Numerical Methods in Engineering),
-Gran Capita' s/n, 08034 Barcelona, Spain
-
-Permission is hereby granted, free  of charge, to any person obtaining
-a  copy  of this  software  and  associated  documentation files  (the
-"Software"), to  deal in  the Software without  restriction, including
-without limitation  the rights to  use, copy, modify,  merge, publish,
-distribute,  sublicense and/or  sell copies  of the  Software,  and to
-permit persons to whom the Software  is furnished to do so, subject to
-the following condition:
-
-Distribution of this code for  any  commercial purpose  is permissible
-ONLY BY DIRECT ARRANGEMENT WITH THE COPYRIGHT OWNER.
-
-The  above  copyright  notice  and  this permission  notice  shall  be
-included in all copies or substantial portions of the Software.
-
-THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT  SHALL THE AUTHORS OR COPYRIGHT HOLDERS  BE LIABLE FOR ANY
-CLAIM, DAMAGES OR  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT,
-TORT  OR OTHERWISE, ARISING  FROM, OUT  OF OR  IN CONNECTION  WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==============================================================================
+see isogeometric_application/LICENSE.txt
 */
 
 //
@@ -241,43 +207,43 @@ void BezierModelPartIO::ReadIsogeometricBezierDataBlock(BezierInfoContainerType&
             p_temp_info->mat_type = 2;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "Invalid matrix type", word)
+            KRATOS_ERROR << "Invalid matrix type " << word;
 
-            if (p_temp_info->mat_type == 0)
-            {
-                p_temp_info->C = ModelPartIO::ReadVectorialValue(p_temp_info->C);
-            }
-            else if (p_temp_info->mat_type == 1)
-            {
-                Matrix Temp;
-                Temp = ModelPartIO::ReadVectorialValue(Temp);
+        if (p_temp_info->mat_type == 0)
+        {
+            p_temp_info->C = ModelPartIO::ReadVectorialValue(p_temp_info->C);
+        }
+        else if (p_temp_info->mat_type == 1)
+        {
+            Matrix Temp;
+            Temp = ModelPartIO::ReadVectorialValue(Temp);
 
-                // check if the input is 2 rows
-                if (Temp.size1() != 2)
-                    KRATOS_THROW_ERROR(std::logic_error, "Invalid MCSR matrix for extraction operator found at geometry", p_temp_info->Id())
+            // check if the input is 2 rows
+            if (Temp.size1() != 2)
+                KRATOS_ERROR << "Invalid MCSR matrix for extraction operator found at geometry " << p_temp_info->Id();
 
-                    // choose the best storage scheme based ratio between number of nonzeros and the full size of the matrix
-                    unsigned int size_ex_n = (unsigned int)(Temp(0, 0) - 1);
-                unsigned int size_ex_nz = Temp.size2() - 1;
-                if ( ( (double)(size_ex_nz) ) / (size_ex_n * size_ex_n) < 0.2 )
-                {
-                    p_temp_info->C = IsogeometricMathUtils<double>::MCSR2CSR(Temp);
-                }
-                else
-                {
-                    p_temp_info->C = IsogeometricMathUtils<double>::MCSR2MAT(Temp);
-                }
-            }
-            else if (p_temp_info->mat_type == 2)
+            // choose the best storage scheme based ratio between number of nonzeros and the full size of the matrix
+            unsigned int size_ex_n = (unsigned int)(Temp(0, 0) - 1);
+            unsigned int size_ex_nz = Temp.size2() - 1;
+            if ( ( (double)(size_ex_nz) ) / (size_ex_n * size_ex_n) < 0.2 )
             {
-                Vector rowPtr;
-                rowPtr = ModelPartIO::ReadVectorialValue(rowPtr);
-                Vector colInd;
-                colInd = ModelPartIO::ReadVectorialValue(colInd);
-                Vector values;
-                values = ModelPartIO::ReadVectorialValue(values);
-                p_temp_info->C = IsogeometricMathUtils<double>::Triplet2CSR(rowPtr, colInd, values);
+                p_temp_info->C = IsogeometricMathUtils<double>::MCSR2CSR(Temp);
             }
+            else
+            {
+                p_temp_info->C = IsogeometricMathUtils<double>::MCSR2MAT(Temp);
+            }
+        }
+        else if (p_temp_info->mat_type == 2)
+        {
+            Vector rowPtr;
+            rowPtr = ModelPartIO::ReadVectorialValue(rowPtr);
+            Vector colInd;
+            colInd = ModelPartIO::ReadVectorialValue(colInd);
+            Vector values;
+            values = ModelPartIO::ReadVectorialValue(values);
+            p_temp_info->C = IsogeometricMathUtils<double>::Triplet2CSR(rowPtr, colInd, values);
+        }
 
 //            rThisBezierInfo.push_back(p_temp_info);
         rThisBezierInfo.insert(rThisBezierInfo.begin(), p_temp_info);
@@ -308,12 +274,9 @@ void BezierModelPartIO::ReadElementsWithGeometryBlock(NodesContainerType& rThisN
 
     if (!KratosComponents<Element>::Has(element_name))
     {
-        std::stringstream buffer;
-        buffer << "Element " << element_name << " is not registered in Kratos.";
-        buffer << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
-        buffer << " [Line " << mNumberOfLines << " ]";
-        KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-        return;
+        KRATOS_ERROR << "Element " << element_name << " is not registered in Kratos."
+                     << " Please check the spelling of the element name and see if the application which containing it, is registered corectly."
+                     << " [Line " << mNumberOfLines << " ]";
     }
 
     Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
@@ -368,9 +331,9 @@ void BezierModelPartIO::ReadElementsWithGeometryBlock(NodesContainerType& rThisN
 //                p_temp_geometry = IsogeometricGeometryType::Pointer(new Geo2dBezier3<NodeType>(temp_element_nodes));
         p_temp_geometry = iga::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
         if (p_temp_geometry == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
+            KRATOS_ERROR << "The cast to IsogeometricGeometry is failed.";
 
-            Vector dummy;
+        Vector dummy;
         int max_integration_method = (*p_temp_properties)[NUM_IGA_INTEGRATION_METHOD];
 //            KRATOS_WATCH(max_integration_method)
         p_temp_geometry->AssignGeometryData(dummy,
@@ -413,12 +376,9 @@ void BezierModelPartIO::ReadConditionsWithGeometryBlock(NodesContainerType& rThi
 
     if (!KratosComponents<Condition>::Has(condition_name))
     {
-        std::stringstream buffer;
-        buffer << "Condition " << condition_name << " is not registered in Kratos.";
-        buffer << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
-        buffer << " [Line " << mNumberOfLines << " ]";
-        KRATOS_THROW_ERROR(std::invalid_argument, buffer.str(), "");
-        return;
+        KRATOS_ERROR << "Condition " << condition_name << " is not registered in Kratos."
+                     << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly."
+                     << " [Line " << mNumberOfLines << " ]";
     }
 
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(condition_name);
@@ -473,9 +433,9 @@ void BezierModelPartIO::ReadConditionsWithGeometryBlock(NodesContainerType& rThi
 //                p_temp_geometry = IsogeometricGeometryType::Pointer(new Geo2dBezier3<NodeType>(temp_condition_nodes));
         p_temp_geometry = iga::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_condition.GetGeometry().Create(temp_condition_nodes));
         if (p_temp_geometry == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to IsogeometricGeometry is failed.", "")
+            KRATOS_ERROR << "The cast to IsogeometricGeometry is failed.";
 
-            Vector dummy;
+        Vector dummy;
         int max_integration_method = (*p_temp_properties)[NUM_IGA_INTEGRATION_METHOD];
 //            KRATOS_WATCH(max_integration_method)
         p_temp_geometry->AssignGeometryData(dummy,

@@ -60,8 +60,8 @@ knot_t TsMesh2D::InsertKnot(int dim, double value)
         mKnots[1].push_back(pKnot);
     }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "The 2D T-splines does not support for higher dimension", "")
-        return pKnot;
+        KRATOS_ERROR << "The 2D T-splines does not support for higher dimension";
+    return pKnot;
 }
 
 /// Add a vertex to the topology mesh
@@ -100,13 +100,13 @@ void TsMesh2D::EndConstruct()
     if (mKnots[0].size() != 0)
         for (std::size_t i = 0; i < mKnots[0].size() - 1; ++i)
             if (mKnots[0][i + 1]->Value() < mKnots[0][i]->Value())
-                KRATOS_THROW_ERROR(std::logic_error, "The knot vector in u-direction is not ascending at i =", i)
-                std::cout << "Check OK! The knot vector in u-direction is in ascending order" << std::endl;
+                KRATOS_ERROR << "The knot vector in u-direction is not ascending at i = " << i;
+    std::cout << "Check OK! The knot vector in u-direction is in ascending order" << std::endl;
     if (mKnots[1].size() != 0)
         for (std::size_t i = 0; i < mKnots[1].size() - 1; ++i)
             if (mKnots[1][i + 1]->Value() < mKnots[1][i]->Value())
-                KRATOS_THROW_ERROR(std::logic_error, "The knot vector in v-direction is not ascending at i =", i)
-                std::cout << "Check OK! The knot vector in v-direction is in ascending order" << std::endl;
+                KRATOS_ERROR << "The knot vector in v-direction is not ascending at i = " << i;
+    std::cout << "Check OK! The knot vector in v-direction is in ascending order" << std::endl;
 
     // check for the repetition of knots at first p values and last p values
     mKnotsMin[0] = mKnots[0].front()->Value();
@@ -120,17 +120,17 @@ void TsMesh2D::EndConstruct()
     for (std::size_t i = 0; i < this->Order(0); ++i)
     {
         if (mKnots[0][i]->Value() != mKnotsMin[0])
-            KRATOS_THROW_ERROR(std::logic_error, "Knots1 does not repeat at begin. Error at knot", i)
-            if (mKnots[0][mKnots[0].size() - i - 1]->Value() != mKnotsMax[0])
-                KRATOS_THROW_ERROR(std::logic_error, "Knots1 does not repeat at end. Error at knot", i)
-            }
+            KRATOS_ERROR << "Knots1 does not repeat at begin. Error at knot " << i;
+        if (mKnots[0][mKnots[0].size() - i - 1]->Value() != mKnotsMax[0])
+            KRATOS_ERROR << "Knots1 does not repeat at end. Error at knot " << i;
+    }
     for (std::size_t i = 0; i < this->Order(1); ++i)
     {
         if (mKnots[1][i]->Value() != mKnotsMin[1])
-            KRATOS_THROW_ERROR(std::logic_error, "Knots2 does not repeat at begin. Error at knot", i)
-            if (mKnots[1][mKnots[1].size() - i - 1]->Value() != mKnotsMax[1])
-                KRATOS_THROW_ERROR(std::logic_error, "Knots2 does not repeat at end. Error at knot", i)
-            }
+            KRATOS_ERROR << "Knots2 does not repeat at begin. Error at knot " << i;
+        if (mKnots[1][mKnots[1].size() - i - 1]->Value() != mKnotsMax[1])
+            KRATOS_ERROR << "Knots2 does not repeat at end. Error at knot " << i;
+    }
     std::cout << "Check OK! The knot vector satisfies repetitiveness condition" << std::endl;
 
     // update the indexing of knot vectors
@@ -175,10 +175,10 @@ void TsMesh2D::EndConstruct()
     for (vertex_container_t::iterator it = mVertices.begin(); it != mVertices.end(); ++it)
     {
         if (std::find(mKnots[0].begin(), mKnots[0].end(), (*it)->pXi()) == mKnots[0].end())
-            KRATOS_THROW_ERROR(std::logic_error, "The u-knot vector does not contain knot at", *(*it))
-            if (std::find(mKnots[1].begin(), mKnots[1].end(), (*it)->pEta()) == mKnots[1].end())
-                KRATOS_THROW_ERROR(std::logic_error, "The v-knot vector does not contain knot at", *(*it))
-            }
+            KRATOS_ERROR << "The u-knot vector does not contain knot at " << *(*it);
+        if (std::find(mKnots[1].begin(), mKnots[1].end(), (*it)->pEta()) == mKnots[1].end())
+            KRATOS_ERROR << "The v-knot vector does not contain knot at " << *(*it);
+    }
     std::cout << "Check OK! All vertices contain knots in knot vectors" << std::endl;
 
     // check if all edges contain the vertices in the T-splines mesh
@@ -186,8 +186,8 @@ void TsMesh2D::EndConstruct()
     {
         if (std::find(mVertices.begin(), mVertices.end(), (*it)->pV1()) == mVertices.end()
                 || std::find(mVertices.begin(), mVertices.end(), (*it)->pV2()) == mVertices.end())
-            KRATOS_THROW_ERROR(std::logic_error, "The edge does not contain a vertex in the vertex list, wrong edge is", (*it)->Id())
-        }
+            KRATOS_ERROR << "The edge does not contain a vertex in the vertex list, wrong edge is " << (*it)->Id();
+    }
     std::cout << "Check OK! All edges contain vertices in the vertex list" << std::endl;
 
     // check for the horizontalness and verticalness of the edges
@@ -196,16 +196,16 @@ void TsMesh2D::EndConstruct()
         if ((*it)->EdgeType() == TsEdge::VERTICAL_EDGE) //vertical edge
         {
             if ((*it)->pV1()->Index1() != (*it)->pV2()->Index1())
-                KRATOS_THROW_ERROR(std::logic_error, "An incompatible horizontal edge is found:", *(*it))
-            }
+                KRATOS_ERROR << "An incompatible horizontal edge " << *(*it) << " is found";
+        }
         else if ((*it)->EdgeType() == TsEdge::HORIZONTAL_EDGE) //horizontal edge
         {
             if ((*it)->pV1()->Index2() != (*it)->pV2()->Index2())
-                KRATOS_THROW_ERROR(std::logic_error, "An incompatible vertical edge is found:", *(*it))
-            }
-        else
-            KRATOS_THROW_ERROR(std::logic_error, "An unknown edge is found", *(*it))
+                KRATOS_ERROR << "An incompatible vertical edge " << *(*it) << " is found";
         }
+        else
+            KRATOS_ERROR << "An unknown edge " << *(*it) << " is found";
+    }
     std::cout << "Check OK! All edge vertical/horizontal configurations are valid" << std::endl;
 
     // set the type for vertex
@@ -252,8 +252,8 @@ void TsMesh2D::EndConstruct()
                         ++num_vertical_edges;
                     }
                     else
-                        KRATOS_THROW_ERROR(std::logic_error, "An incompatible edge was found in neighbours set at vertex", *(it->first))
-                    }
+                        KRATOS_ERROR << "An incompatible edge was found in neighbours set at vertex " << *(it->first);
+                }
 //                    KRATOS_WATCH(num_vertical_edges)
 //                    KRATOS_WATCH(num_horizontal_edges)
 
@@ -298,17 +298,17 @@ void TsMesh2D::EndConstruct()
                         }
                 }
                 else
-                    KRATOS_THROW_ERROR(std::logic_error, "Error detecting T-joint at vertex", *(it->first))
+                    KRATOS_ERROR << "Error detecting T-joint at vertex " << *(it->first);
 
-                    ++num_t_joints;
+                ++num_t_joints;
             }
             else if (it->second.size() == 2)
             {
-                KRATOS_THROW_ERROR(std::logic_error, "L-joint and I-joint is not supported yet. Error found at vertex", *(it->first))
+                KRATOS_ERROR << "L-joint and I-joint is not supported yet. Error found at vertex " << *(it->first);
             }
             else
-                KRATOS_THROW_ERROR(std::logic_error, "Error finding neighbour at vertex", *(it->first))
-            }
+                KRATOS_ERROR << "Error finding neighbour at vertex " << *(it->first);
+        }
     }
     std::cout << "Check joint type successfully. There are " << num_t_joints << " T-joints in the T-splines topology mesh" << std::endl;
 }
@@ -463,8 +463,8 @@ void TsMesh2D::FindCells(std::set<cell_t>& rCells, bool _extend) const
                         it_old = it;
                     }
                     if (detect == false)
-                        KRATOS_THROW_ERROR(std::logic_error, "ERROR: cannot detect the intersection", "")
-                    }
+                        KRATOS_ERROR << "ERROR: cannot detect the intersection";
+                }
 
                 // now we make the box intersection
                 std::vector<std::size_t> Temp(Segments.begin(), Segments.end());
@@ -870,11 +870,11 @@ void TsMesh2D::BuildAnchors(std::string fn)
             if (words[0] == std::string("Begin"))
             {
                 if (words.size() < 2)
-                    KRATOS_THROW_ERROR(std::logic_error, "Missing statement for Begin", "")
-                    if (words[1] == "Anchors")
-                    {
-                        ReadMode = READ_ANCHORS;
-                    }
+                    KRATOS_ERROR << "Missing statement for Begin";
+                if (words[1] == "Anchors")
+                {
+                    ReadMode = READ_ANCHORS;
+                }
                 continue;
             }
 
@@ -887,9 +887,9 @@ void TsMesh2D::BuildAnchors(std::string fn)
             if (ReadMode == READ_ANCHORS)
             {
                 if (words.size() < 8)
-                    KRATOS_THROW_ERROR(std::logic_error, "There are not enough number of parameters at line", num_lines)
+                    KRATOS_ERROR << "There are not enough number of parameters at line " << num_lines;
 
-                    Id   = atoi(words[0].c_str());
+                Id   = atoi(words[0].c_str());
                 Xi   = atof(words[1].c_str());
                 Eta  = atof(words[2].c_str());
                 Zeta = atof(words[3].c_str());
@@ -930,17 +930,17 @@ void TsMesh2D::BuildAnchors(std::string fn)
 void TsMesh2D::BuildCells()
 {
     if (!mIsExtended)
-        KRATOS_THROW_ERROR(std::logic_error, "Extended T-splines mesh is not constructed yet", "")
+        KRATOS_ERROR << "Extended T-splines mesh is not constructed yet";
 
-        // firstly check if anchors has been found
-        if (mAnchors.size() == 0)
-            KRATOS_THROW_ERROR(std::logic_error, "The anchors size is zero", "")
+    // firstly check if anchors has been found
+    if (mAnchors.size() == 0)
+        KRATOS_ERROR << "The anchors size is zero";
 
-            // clear the cell container
-            if (!mCells.empty())
-            {
-                mCells.clear();
-            }
+    // clear the cell container
+    if (!mCells.empty())
+    {
+        mCells.clear();
+    }
 
     // secondly find all the cells of the extended T-splines topology mesh
     std::set<cell_t> cell_covers;
@@ -1040,14 +1040,14 @@ void TsMesh2D::BuildCells()
                 }
                 std::cout << std::endl;
                 if (spans_xi.size() > 1)
-                    KRATOS_THROW_ERROR(std::logic_error, "The cell must not terminate at more than one virtual vertex in u-direction", "")
+                    KRATOS_ERROR << "The cell must not terminate at more than one virtual vertex in u-direction";
 
-                    if (std::find(KnotsIndex2.begin(), KnotsIndex2.end(), down) == KnotsIndex2.end())
-                    {
-                        Ueta.push_back(mKnots[1][down]->Value());
-                        temp = BSplineUtils::FindSpanLocal(mKnots[1][down]->Value(), Knots2);
-                        spans_eta.push_back(temp);
-                    }
+                if (std::find(KnotsIndex2.begin(), KnotsIndex2.end(), down) == KnotsIndex2.end())
+                {
+                    Ueta.push_back(mKnots[1][down]->Value());
+                    temp = BSplineUtils::FindSpanLocal(mKnots[1][down]->Value(), Knots2);
+                    spans_eta.push_back(temp);
+                }
                 if (std::find(KnotsIndex2.begin(), KnotsIndex2.end(), up) == KnotsIndex2.end())
                 {
                     Ueta.push_back(mKnots[1][up]->Value());
@@ -1067,10 +1067,10 @@ void TsMesh2D::BuildCells()
                 }
                 std::cout << std::endl;
                 if (spans_eta.size() > 1)
-                    KRATOS_THROW_ERROR(std::logic_error, "The cell must not terminate at more than one virtual vertex in v-direction", "")
+                    KRATOS_ERROR << "The cell must not terminate at more than one virtual vertex in v-direction";
 
-                    // compute the 2d bezier extraction operator
-                    std::cout << "Knots1:";
+                // compute the 2d bezier extraction operator
+                std::cout << "Knots1:";
                 for (std::size_t i = 0; i < Knots1.size(); ++i)
                 {
                     std::cout << " " << Knots1[i];

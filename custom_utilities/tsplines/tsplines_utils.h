@@ -237,23 +237,23 @@ public:
                 if (words[0] == std::string("Begin"))
                 {
                     if (words.size() < 2)
-                        KRATOS_THROW_ERROR(std::logic_error, "Missing statement for Begin", "")
-                        if (words[1] == "Order")
-                        {
-                            ReadMode = TsMesh2D::READ_ORDER;
-                        }
-                        else if (words[1] == std::string("Knots"))
-                        {
-                            ReadMode = TsMesh2D::READ_KNOTS;
-                        }
-                        else if (words[1] == std::string("H-edges"))
-                        {
-                            ReadMode = TsMesh2D::READ_H_EDGES;
-                        }
-                        else if (words[1] == std::string("V-edges"))
-                        {
-                            ReadMode = TsMesh2D::READ_V_EDGES;
-                        }
+                        KRATOS_ERROR << "Missing statement for Begin";
+                    if (words[1] == "Order")
+                    {
+                        ReadMode = TsMesh2D::READ_ORDER;
+                    }
+                    else if (words[1] == std::string("Knots"))
+                    {
+                        ReadMode = TsMesh2D::READ_KNOTS;
+                    }
+                    else if (words[1] == std::string("H-edges"))
+                    {
+                        ReadMode = TsMesh2D::READ_H_EDGES;
+                    }
+                    else if (words[1] == std::string("V-edges"))
+                    {
+                        ReadMode = TsMesh2D::READ_V_EDGES;
+                    }
                     continue;
                 }
 

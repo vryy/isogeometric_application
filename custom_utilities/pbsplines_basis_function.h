@@ -30,12 +30,12 @@ struct PBSplinesBasisFunction_InitializeValue_Helper
 {
     static void Initialize(TBasisFunctionType& r_bf, const TVariableType& rVariable)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+        KRATOS_ERROR << "Not yet implemented";
     }
 
     static void Initialize(TBasisFunctionType& r_bf, const TVariableType& rVariable, typename TBasisFunctionType::Pointer p_ref_bf)
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling unimplemented function", __FUNCTION__)
+        KRATOS_ERROR << "Not yet implemented";
     }
 };
 
@@ -147,31 +147,31 @@ public:
     /// Get the bounding box (=support domain) of this basis function
     virtual std::vector<double> GetBoundingBox() const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Get the value of point-based B-splines basis function
     virtual double GetValueAt(const std::vector<double>& xi) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Get the value of point-based B-splines basis function
     virtual void GetValueAt(double& res, const std::vector<double>& xi) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Get the derivative of point-based B-splines basis function
     virtual std::vector<double> GetDerivativeAt(const std::vector<double>& xi) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Get the derivative of point-based B-splines basis function
     virtual void GetDerivativeAt(std::vector<double>& res, const std::vector<double>& xi) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Error calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Access the internal data container, be very careful with this function
@@ -343,7 +343,7 @@ struct PBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variabl
 {
     static void Initialize(TBasisFunctionType& r_bf, const Variable<Vector>& rVariable)
     {
-        KRATOS_THROW_ERROR(std::logic_error, __FUNCTION__, "is not supported")
+        KRATOS_ERROR << "Not supported";
     }
 
     static void Initialize(TBasisFunctionType& r_bf, const Variable<Vector>& rVariable, typename TBasisFunctionType::Pointer p_ref_bf)

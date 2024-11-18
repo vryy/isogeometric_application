@@ -78,9 +78,9 @@ typename MultiPatch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::Import(cons
 {
     std::ifstream infile(filename.c_str());
     if (!infile)
-        KRATOS_THROW_ERROR(std::logic_error, "Error open file", filename)
+        KRATOS_ERROR << "Error open file " << filename;
 
-        std::vector<std::vector<std::size_t> > orders;
+    std::vector<std::vector<std::size_t> > orders;
     std::vector<std::vector<std::size_t> > numbers;
     std::vector<std::vector<std::vector<double> > > knots;
     std::vector<std::vector<std::vector<double> > > wcoords;
@@ -99,9 +99,9 @@ typename MultiPatch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::Import(cons
         ReadV21Multi(infile, orders, numbers, knots, wcoords, weights, interfaces);
     }
     else
-        KRATOS_THROW_ERROR(std::logic_error, "Unknown NURBS file format", words[3])
+        KRATOS_ERROR << "Unknown NURBS file format " << words[3];
 
-        infile.close();
+    infile.close();
 
     typename MultiPatch<TDim>::Pointer pNewMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
 
@@ -234,21 +234,20 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV07Single(std::ifstream& infile,
                 // bound check
                 if (words.size() < 2)
                 {
-                    std::cout << "Error at line: " << line << std::endl;
-                    KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain information about dimension and number of patches, current number of information =", words.size())
+                    KRATOS_ERROR << "The Patch section need to contain information about dimension and number of patches, current number of information = " << words.size();
                 }
 
                 // read info
                 int Dim = atoi(words[0].c_str());
                 if (Dim != TDim)
-                    KRATOS_THROW_ERROR(std::logic_error, "The input dimension is invalid", "")
-                    npatches = atoi(words[1].c_str());
+                    KRATOS_ERROR << "The input dimension " << Dim << " is invalid";
+                npatches = atoi(words[1].c_str());
                 if (npatches > 1)
                 {
                     KRATOS_WATCH(line)
                     KRATOS_WATCH(words[0])
                     KRATOS_WATCH(words[1])
-                    KRATOS_THROW_ERROR(std::logic_error, "At present, the number of patches > 1 is not supported, npatches =", npatches)
+                    KRATOS_ERROR << "At present, the number of patches (" << npatches << ") > 1 is not supported";
                 }
                 read_mode = _READ_ORDER;
                 continue;
@@ -258,13 +257,13 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV07Single(std::ifstream& infile,
             {
                 // bound check
                 if (words.size() != TDim)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Order section must contained number of information equal to dimension, current number of information =", words.size())
+                    KRATOS_ERROR << "The Order section must contained number of information equal to dimension, current number of information = " << words.size();
 
-                    // read info
-                    for (std::size_t i = 0; i < TDim; ++i)
-                    {
-                        orders.push_back(static_cast<std::size_t>(atoi(words[i].c_str())));
-                    }
+                // read info
+                for (std::size_t i = 0; i < TDim; ++i)
+                {
+                    orders.push_back(static_cast<std::size_t>(atoi(words[i].c_str())));
+                }
                 read_mode = _READ_NUMBER;
                 continue;
             }
@@ -273,12 +272,12 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV07Single(std::ifstream& infile,
             {
                 // bound check
                 if (words.size() != TDim)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Number section must contained number of information equal to dimension, current number of information =", words.size())
+                    KRATOS_ERROR << "The Number section must contained number of information equal to dimension, current number of information = " << words.size();
 
-                    for (std::size_t i = 0; i < TDim; ++i)
-                    {
-                        numbers.push_back(static_cast<std::size_t>(atoi(words[i].c_str())));
-                    }
+                for (std::size_t i = 0; i < TDim; ++i)
+                {
+                    numbers.push_back(static_cast<std::size_t>(atoi(words[i].c_str())));
+                }
                 read_mode = _READ_KNOTS;
                 continue;
             }
@@ -288,13 +287,13 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV07Single(std::ifstream& infile,
                 // bound check
                 int knot_len = numbers[dim_index] + orders[dim_index] + 1;
                 if (words.size() != knot_len)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Knots section must contained number of information equal to n+p+1, current number of information =", words.size())
+                    KRATOS_ERROR << "The Knots section must contained number of information equal to n+p+1, current number of information = " << words.size();
 
-                    for (std::size_t i = 0; i < knot_len; ++i)
-                    {
-                        double k = atof(words[i].c_str());
-                        knots[dim_index].push_back(k);
-                    }
+                for (std::size_t i = 0; i < knot_len; ++i)
+                {
+                    double k = atof(words[i].c_str());
+                    knots[dim_index].push_back(k);
+                }
 
                 ++dim_index;
                 if (dim_index == TDim)
@@ -314,12 +313,12 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV07Single(std::ifstream& infile,
                     num_basis *= numbers[i];
                 }
                 if (words.size() != num_basis)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Coordinates section must contained number of information equal to prod(ni), current number of information =", words.size())
+                    KRATOS_ERROR << "The Coordinates section must contained number of information equal to prod(ni), current number of information = " << words.size();
 
-                    for (std::size_t i = 0; i < num_basis; ++i)
-                    {
-                        wcoords[dim_index].push_back(atof(words[i].c_str()));
-                    }
+                for (std::size_t i = 0; i < num_basis; ++i)
+                {
+                    wcoords[dim_index].push_back(atof(words[i].c_str()));
+                }
 
                 ++dim_index;
                 if (dim_index == TDim)
@@ -339,12 +338,12 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV07Single(std::ifstream& infile,
                     num_basis *= numbers[i];
                 }
                 if (words.size() != num_basis)
-                    KRATOS_THROW_ERROR(std::logic_error, "The Weights section must contained number of information equal to prod(ni), current number of information =", words.size())
+                    KRATOS_ERROR << "The Weights section must contained number of information equal to prod(ni), current number of information = " << words.size();
 
-                    for (std::size_t i = 0; i < num_basis; ++i)
-                    {
-                        weights.push_back(atof(words[i].c_str()));
-                    }
+                for (std::size_t i = 0; i < num_basis; ++i)
+                {
+                    weights.push_back(atof(words[i].c_str()));
+                }
 
                 read_mode = _NO_READ;
                 continue;
@@ -385,15 +384,14 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Single(std::ifstream& infile,
                 // bound check
                 if (words.size() < 2)
                 {
-                    std::cout << "Error at line: " << line << std::endl;
-                    KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain information about dimension and number of patches, current number of information =", words.size())
+                    KRATOS_ERROR << "The Patch section need to contain information about dimension and number of patches, current number of information = " << words.size();
                 }
 
                 // read info
                 int Dim = atoi(words[0].c_str());
                 if (Dim != TDim)
-                    KRATOS_THROW_ERROR(std::logic_error, "The input dimension is invalid", "")
-                    rdim = atoi(words[1].c_str());
+                    KRATOS_ERROR << "The input dimension " << Dim << " is invalid";
+                rdim = atoi(words[1].c_str());
                 npatches = atoi(words[2].c_str());
                 KRATOS_WATCH(rdim)
                 KRATOS_WATCH(npatches)
@@ -402,7 +400,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Single(std::ifstream& infile,
                     KRATOS_WATCH(line)
                     KRATOS_WATCH(words[0])
                     KRATOS_WATCH(words[1])
-                    KRATOS_THROW_ERROR(std::logic_error, "At present, the number of patches > 1 is not supported, npatches =", npatches)
+                    KRATOS_ERROR << "At present, the number of patches (" << npatches << ") > 1 is not supported";
                 }
                 read_mode = _CHECK_PATCH;
                 continue;
@@ -413,8 +411,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Single(std::ifstream& infile,
                 // bound check
                 if (words.size() < 2)
                 {
-                    std::cout << "Error at line: " << line << std::endl;
-                    KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain PATCH and the patch index, current number of information =", words.size())
+                    KRATOS_ERROR << "The Patch section need to contain PATCH and the patch index, current number of information = " << words.size();
                 }
 
                 if (words[0] == "PATCH")
@@ -426,9 +423,9 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Single(std::ifstream& infile,
                     ++ipatch;
                 }
                 else
-                    KRATOS_THROW_ERROR(std::logic_error, "The patch section has wrong keyword", words[0])
+                    KRATOS_ERROR << "The patch section has wrong keyword " << words[0];
 
-                    this->ReadPatchData(infile, rdim, orders, numbers, knots, wcoords, weights);
+                this->ReadPatchData(infile, rdim, orders, numbers, knots, wcoords, weights);
 
                 break;
             }
@@ -471,14 +468,14 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
                 if (words.size() < 2)
                 {
                     std::cout << "Error at line: " << line << std::endl;
-                    KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain information about dimension and number of patches, current number of information =", words.size())
+                    KRATOS_ERROR << "The Patch section need to contain information about dimension and number of patches, current number of information = " << words.size();
                 }
 
                 // read info
                 int Dim = atoi(words[0].c_str());
                 if (Dim != TDim)
-                    KRATOS_THROW_ERROR(std::logic_error, "The input dimension is invalid", "")
-                    rdim = atoi(words[1].c_str());
+                    KRATOS_ERROR << "The input dimension " << Dim << " is invalid";
+                rdim = atoi(words[1].c_str());
                 npatches = atoi(words[2].c_str());
                 ninterfaces = atoi(words[3].c_str());
                 KRATOS_WATCH(rdim)
@@ -499,8 +496,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
                 // bound check
                 if (words.size() < 2)
                 {
-                    std::cout << "Error at line: " << line << std::endl;
-                    KRATOS_THROW_ERROR(std::logic_error, "The Patch section need to contain PATCH and the patch index, current number of information =", words.size())
+                    KRATOS_ERROR << "The Patch section need to contain PATCH and the patch index, current number of information = " << words.size();
                 }
 
                 if (words[0] == "PATCH")
@@ -509,7 +505,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
                 }
                 else
                 {
-                    KRATOS_THROW_ERROR(std::logic_error, "The patch section has wrong keyword", words[0])
+                    KRATOS_ERROR << "The patch section has wrong keyword " << words[0];
                 }
 
                 knots[ipatch].resize(3);
@@ -533,8 +529,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
                 // bound check
                 if (words.size() < 2)
                 {
-                    std::cout << "Error at line: " << line << std::endl;
-                    KRATOS_THROW_ERROR(std::logic_error, "The Interface section need to contain INTERFACE and the interface index, current number of information =", words.size())
+                    KRATOS_ERROR << "The Interface section need to contain INTERFACE and the interface index, current number of information = " << words.size();
                 }
 
                 if (words[0] == "INTERFACE")
@@ -545,7 +540,7 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadV21Multi(std::ifstream& infile,
                 {
                     KRATOS_WATCH(words[0])
                     KRATOS_WATCH(words[1])
-                    KRATOS_THROW_ERROR(std::logic_error, "The interface section has wrong keyword", words[0])
+                    KRATOS_ERROR << "The interface section has wrong keyword " << words[0];
                 }
 
                 std::getline(infile, line);
@@ -619,13 +614,13 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadPatchData(std::ifstream& infile,
         {
             // bound check
             if (words.size() != TDim)
-                KRATOS_THROW_ERROR(std::logic_error, "The Order section must contained number of information equal to dimension, current number of information =", words.size())
+                KRATOS_ERROR << "The Order section must contained number of information equal to dimension, current number of information = " << words.size();
 
-                // read info
-                for (std::size_t i = 0; i < TDim; ++i)
-                {
-                    orders.push_back(static_cast<std::size_t>(atoi(words[i].c_str())));
-                }
+            // read info
+            for (std::size_t i = 0; i < TDim; ++i)
+            {
+                orders.push_back(static_cast<std::size_t>(atoi(words[i].c_str())));
+            }
             read_mode = _READ_NUMBER;
             continue;
         }
@@ -634,12 +629,12 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadPatchData(std::ifstream& infile,
         {
             // bound check
             if (words.size() != TDim)
-                KRATOS_THROW_ERROR(std::logic_error, "The Number section must contained number of information equal to dimension, current number of information =", words.size())
+                KRATOS_ERROR << "The Number section must contained number of information equal to dimension, current number of information = " << words.size();
 
-                for (std::size_t i = 0; i < TDim; ++i)
-                {
-                    numbers.push_back(static_cast<std::size_t>(atoi(words[i].c_str())));
-                }
+            for (std::size_t i = 0; i < TDim; ++i)
+            {
+                numbers.push_back(static_cast<std::size_t>(atoi(words[i].c_str())));
+            }
             read_mode = _READ_KNOTS;
             continue;
         }
@@ -649,13 +644,13 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadPatchData(std::ifstream& infile,
             // bound check
             int knot_len = numbers[dim_index] + orders[dim_index] + 1;
             if (words.size() != knot_len)
-                KRATOS_THROW_ERROR(std::logic_error, "The Knots section must contained number of information equal to n+p+1, current number of information =", words.size())
+                KRATOS_ERROR << "The Knots section must contained number of information equal to n+p+1, current number of information = " << words.size();
 
-                for (std::size_t i = 0; i < knot_len; ++i)
-                {
-                    double k = atof(words[i].c_str());
-                    knots[dim_index].push_back(k);
-                }
+            for (std::size_t i = 0; i < knot_len; ++i)
+            {
+                double k = atof(words[i].c_str());
+                knots[dim_index].push_back(k);
+            }
 
             ++dim_index;
             if (dim_index == TDim)
@@ -675,9 +670,9 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadPatchData(std::ifstream& infile,
                 num_basis *= numbers[i];
             }
             if (words.size() != num_basis)
-                KRATOS_THROW_ERROR(std::logic_error, "The Coordinates section must contained number of information equal to prod(ni), current number of information =", words.size())
+                KRATOS_ERROR << "The Coordinates section must contained number of information equal to prod(ni), current number of information = " << words.size();
 
-                wcoords[dim_index].resize(num_basis);
+            wcoords[dim_index].resize(num_basis);
             for (std::size_t i = 0; i < num_basis; ++i)
             {
                 wcoords[dim_index][i] = atof(words[i].c_str());
@@ -706,12 +701,12 @@ void MultiNURBSPatchGeoImporter<TDim>::ReadPatchData(std::ifstream& infile,
                 num_basis *= numbers[i];
             }
             if (words.size() != num_basis)
-                KRATOS_THROW_ERROR(std::logic_error, "The Weights section must contained number of information equal to prod(ni), current number of information =", words.size())
+                KRATOS_ERROR << "The Weights section must contained number of information equal to prod(ni), current number of information = " << words.size();
 
-                for (std::size_t i = 0; i < num_basis; ++i)
-                {
-                    weights.push_back(atof(words[i].c_str()));
-                }
+            for (std::size_t i = 0; i < num_basis; ++i)
+            {
+                weights.push_back(atof(words[i].c_str()));
+            }
 
             read_mode = _NO_READ;
             continue;

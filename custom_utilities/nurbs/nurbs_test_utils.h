@@ -109,11 +109,11 @@ public:
         // get the FESpace
         typename BSplinesFESpace<1>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<1> >(pPatch->pFESpace());
         if (pFESpace == NULL)
-            KRATOS_THROW_ERROR(std::runtime_error, "The cast to BSplinesFESpace<1> is failed.", "")
+            KRATOS_ERROR << "The cast to BSplinesFESpace<1> is failed.";
 
-            // extract the control point grid function
-            // auto& rControlGridFunction = pPatch->ControlPointGridFunction();
-            auto pControlGridFunction = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        // extract the control point grid function
+        // auto& rControlGridFunction = pPatch->ControlPointGridFunction();
+        auto pControlGridFunction = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
         Vector shape_values;
         Matrix shape_local_gradients;
@@ -217,13 +217,13 @@ public:
 
                 double Cdiff = std::abs(C[0] - Cref[0]);
                 if (Cdiff > tol)
-                    KRATOS_THROW_ERROR(std::logic_error, "Error computing the point", "")
+                    KRATOS_ERROR << "Error computing the point";
 
-                    // double Tdiff = std::abs(T[0] - Tref[0]);
-                    // if (Tdiff > tol)
-                    //     KRATOS_THROW_ERROR(std::logic_error, "Error computing the tangent", "")
+                // double Tdiff = std::abs(T[0] - Tref[0]);
+                // if (Tdiff > tol)
+                //     KRATOS_ERROR << "Error computing the tangent";
 
-                    std::cout << "--------------" << std::endl;
+                std::cout << "--------------" << std::endl;
             }
 
             std::cout << "------------------------------" << std::endl;

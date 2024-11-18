@@ -100,8 +100,8 @@ void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessIn
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_5;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration rule", this->GetValue(INTEGRATION_ORDER_var))
-        }
+            KRATOS_ERROR << "Does not support for integration rule " << this->GetValue(INTEGRATION_ORDER_var);
+    }
     else if (GetProperties().Has( INTEGRATION_ORDER_var ))
     {
         if (GetProperties()[INTEGRATION_ORDER_var] == 1)
@@ -125,8 +125,8 @@ void DummyIsogeometricCondition::Initialize(const ProcessInfo& rCurrentProcessIn
             mThisIntegrationMethod = GeometryData::IntegrationMethod::GI_GAUSS_5;
         }
         else
-            KRATOS_THROW_ERROR(std::logic_error, "DummyIsogeometricCondition does not support for integration points", GetProperties()[INTEGRATION_ORDER_var])
-        }
+            KRATOS_ERROR << "Does not support for integration rule " << GetProperties()[INTEGRATION_ORDER_var];
+    }
     else
     {
         mThisIntegrationMethod = GetGeometry().GetDefaultIntegrationMethod();    // default method

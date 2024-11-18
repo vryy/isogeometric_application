@@ -18,7 +18,7 @@ void DeprecatedHBBasisFunction::ComputeExtractionOperator(cell_t p_cell, Vector&
             {
                 ss << " " << mpLocalKnots1[j];
             }
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << ss.str();
         }
     for (std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
         if (mpLocalKnots2[i]->Value() > p_cell->EtaMinValue() && mpLocalKnots2[i]->Value() < p_cell->EtaMaxValue())
@@ -31,7 +31,7 @@ void DeprecatedHBBasisFunction::ComputeExtractionOperator(cell_t p_cell, Vector&
             {
                 ss << " " << mpLocalKnots2[j];
             }
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << ss.str();
         }
 
 #ifdef DEBUG_BEZIER_EXTRACTION
@@ -205,7 +205,7 @@ void DeprecatedHBBasisFunction::ComputeExtractionOperator(cell_t p_cell, Vector&
             {
                 ss << " " << mpLocalKnots1[j];
             }
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << ss.str();
         }
     for (std::size_t i = 0; i < mpLocalKnots2.size(); ++i)
         if (mpLocalKnots2[i]->Value() > p_cell->EtaMinValue() && mpLocalKnots2[i]->Value() < p_cell->EtaMaxValue())
@@ -218,7 +218,7 @@ void DeprecatedHBBasisFunction::ComputeExtractionOperator(cell_t p_cell, Vector&
             {
                 ss << " " << mpLocalKnots2[j];
             }
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << ss.str();
         }
     for (std::size_t i = 0; i < mpLocalKnots3.size(); ++i)
         if (mpLocalKnots3[i]->Value() > p_cell->ZetaMinValue() && mpLocalKnots3[i]->Value() < p_cell->ZetaMaxValue())
@@ -231,7 +231,7 @@ void DeprecatedHBBasisFunction::ComputeExtractionOperator(cell_t p_cell, Vector&
             {
                 ss << " " << mpLocalKnots3[j];
             }
-            KRATOS_THROW_ERROR(std::logic_error, ss.str(), "")
+            KRATOS_ERROR << ss.str();
         }
 
 #ifdef DEBUG_BEZIER_EXTRACTION

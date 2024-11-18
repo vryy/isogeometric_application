@@ -45,13 +45,13 @@ public:
     /// Import a single patch from file
     virtual typename Patch<TDim>::Pointer ImportSingle(const std::string& filename) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Import a multipatch from file
     virtual typename MultiPatch<TDim>::Pointer Import(const std::string& filename) const
     {
-        KRATOS_THROW_ERROR(std::logic_error, "Calling base class function", __FUNCTION__)
+        KRATOS_ERROR << "Error calling base class function";
     }
 
     /// Information

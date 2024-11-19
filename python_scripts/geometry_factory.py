@@ -341,21 +341,21 @@ def CreateHalfCircle4(center, axis, radius, rotation_angle, params={}):
 
     return [patch1_ptr, patch2_ptr, patch3_ptr, patch4_ptr]
 
-### Create a list of Frenet frame along a curve. The Frenet frame is stored as a transformation matrix.
+### Create a list of Frenet frame for specific points on a curve. The Frenet frame is stored as a transformation matrix.
 ### zvec is a reference vector to compute B at the first sampling point. It shall not be parallel with the tangent vector of the first sampling point.
-def GenerateLocalFrenetFrame(curve, num_sampling_points, zvec = [1.0, 0.0, 0.0]):
+def GenerateLocalFrenetFrameAt(curve, xi_list, zvec = [1.0, 0.0, 0.0]):
     trans_list = []
     B = Array3()
     ctrl_pnt_grid_func = curve.GridFunction(CONTROL_POINT_COORDINATES)
     # print(ctrl_pnt_grid_func)
-    for i in range(0, num_sampling_points):
-        xi = float(i) / (num_sampling_points-1)
+    cnt = 0
+    for xi in xi_list:
         pnt = [xi, 0.0, 0.0]
         P = ctrl_pnt_grid_func.GetValue(pnt)
         T = ctrl_pnt_grid_func.GetDerivative(pnt)
         T = normalize(T[0])
 
-        if i == 0:
+        if cnt == 0:
             cross(B, zvec, T)
             B = normalize(B)
         else:
@@ -365,7 +365,17 @@ def GenerateLocalFrenetFrame(curve, num_sampling_points, zvec = [1.0, 0.0, 0.0])
         trans = Transformation(B, T, P)
         trans_list.append(trans)
 
+        cnt = cnt + 1
+
     return trans_list
+
+### Create a list of Frenet frame along a curve. The Frenet frame is stored as a transformation matrix.
+### zvec is a reference vector to compute B at the first sampling point. It shall not be parallel with the tangent vector of the first sampling point.
+def GenerateLocalFrenetFrame(curve, num_sampling_points, zvec = [1.0, 0.0, 0.0]):
+    xi_list = []
+    for i in range(0, num_sampling_points):
+        xi_list.append(float(i) / (num_sampling_points-1))
+    return GenerateLocalFrenetFrameAt(curve, xi_list, zvec = zvec)
 
 def ExportLocalFrenetFrameToMatlab(trans_list, fn, s = 1.0):
     ifile = open(fn, "w")

@@ -76,7 +76,7 @@ public:
 
     /// Set the division for the patch at specific dimension
     /// Note that if the division is changed, the post_model_part must be generated again
-    void SetDivision(std::size_t patch_id, int dim, IndexType num_division)
+    void SetDivision(IndexType patch_id, int dim, IndexType num_division)
     {
         if (dim >= TDim)
         {

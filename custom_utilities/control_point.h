@@ -60,7 +60,7 @@ public:
     }
 
     /// Destructor
-    virtual ~ControlPoint() {}
+    ~ControlPoint() override {}
 
     /// homogeneous X-coordinate
     TDataType& WX() {return BaseType::WV()[0];}

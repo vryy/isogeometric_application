@@ -169,7 +169,7 @@ public:
         }
     }
 
-    /// Helper function to create the unstructured control value grid
+    /// Helper function to create the unstructured control value grid (without weight)
     template<typename TControlValueType>
     static typename ControlGrid<typename TControlValueType::DataType>::Pointer CreateControlPointValueGrid(
         typename ControlGrid<TControlValueType>::ConstPointer pControlPointGrid)

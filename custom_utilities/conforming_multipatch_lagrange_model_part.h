@@ -92,24 +92,8 @@ public:
         return mpBinning;
     }
 
-    /// Set the sampling for the patch at specific dimension
-    void SetSampling(std::size_t patch_id, int dim, const std::vector<double>& sampling)
-    {
-        if (dim >= TDim)
-        {
-            KRATOS_ERROR << "The dimension " << dim << " is invalid";
-        }
-
-        if (mpMultiPatch->Patches().find(patch_id) == mpMultiPatch->end())
-        {
-            KRATOS_ERROR << "Patch " << patch_id << " is not found in the multipatch";
-        }
-
-        mPatchSamping[patch_id][dim] = sampling;
-    }
-
-    /// Set the sampling for the patch at specific dimension
-    void SetUniformSampling(std::size_t patch_id, int dim, const std::size_t nsampling)
+    /// Set the uniform sampling for the patch at specific dimension
+    void SetDivision(IndexType patch_id, int dim, const IndexType nsampling)
     {
         if (dim >= TDim)
         {
@@ -124,6 +108,22 @@ public:
         std::vector<double> sampling;
         for (std::size_t i = 0; i <= nsampling; ++i)
             sampling.push_back((double) i / nsampling);
+
+        mPatchSamping[patch_id][dim] = sampling;
+    }
+
+    /// Set the sampling for the patch at specific dimension
+    void SetSampling(IndexType patch_id, int dim, const std::vector<double>& sampling)
+    {
+        if (dim >= TDim)
+        {
+            KRATOS_ERROR << "The dimension " << dim << " is invalid";
+        }
+
+        if (mpMultiPatch->Patches().find(patch_id) == mpMultiPatch->end())
+        {
+            KRATOS_ERROR << "Patch " << patch_id << " is not found in the multipatch";
+        }
 
         mPatchSamping[patch_id][dim] = sampling;
     }

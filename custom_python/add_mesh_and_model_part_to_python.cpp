@@ -351,9 +351,10 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("AddConditions", &Helper_AddConditions_OnBoundary<ConformingMultipatchLagrangeModelPartType>)
     .def("AddConditions", &Helper_AddConditions_OnSlice<ConformingMultipatchLagrangeModelPartType>)
     .def("EndModelPart", &ConformingMultipatchLagrangeModelPartType::EndModelPart)
-    .def("SetUniformSampling", &ConformingMultipatchLagrangeModelPartType::SetUniformSampling)
     .def("GetModelPart", &Helper_GetModelPart<ConformingMultipatchLagrangeModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &Helper_GetMultiPatch<ConformingMultipatchLagrangeModelPartType>, return_internal_reference<>())
+    .def("SetDivision", &ConformingMultipatchLagrangeModelPartType::SetDivision)
+    .def("SetSampling", &Helper_SetSampling<ConformingMultipatchLagrangeModelPartType>)
     .def(self_ns::str(self))
     ;
 }

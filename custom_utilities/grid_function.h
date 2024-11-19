@@ -324,6 +324,19 @@ public:
         GridFunction_Helper<TDim, TDataType, TCoordinatesType>::GetSecondDerivative(dv, xi, *pFESpace(), *pControlGrid());
     }
 
+    /// Get the second derivatives of the grid function at specific local coordinates
+    /// The output values has the form:
+    /// +   in 1D: [d2(values(xi)) / d(xi_0) d(xi_0)]
+    /// +   in 2D: [d2(values(xi)) / d(xi_0) d(xi_0), d2(values(xi)) / d(xi_1) d(xi_1), d2(values(xi)) / d(xi_0) d(xi_1)]
+    /// +   in 3D: [d2(values(xi)) / d(xi_0) d(xi_0), d2(values(xi)) / d(xi_1) d(xi_1), d2(values(xi)) / d(xi_2) d(xi_2), d2(values(xi)) / d(xi_0) d(xi_1), d2(values(xi)) / d(xi_0) d(xi_2), , d2(values(xi)) / d(xi_1) d(xi_2)]
+    template<typename TCoordinatesType>
+    std::vector<TDataType> GetSecondDerivative(const TCoordinatesType& xi) const
+    {
+        std::vector<TDataType> dv;
+        GridFunction_Helper<TDim, TDataType, TCoordinatesType>::GetSecondDerivative(dv, xi, *pFESpace(), *pControlGrid());
+        return dv;
+    }
+
     /// Compute a prediction for LocalCoordinates algorithm. Because LocalCoordinates uses Newton-Raphson algorithm to compute
     /// the inversion, it requires a good initial starting point
     template<typename TCoordinatesType>

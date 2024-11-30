@@ -64,7 +64,7 @@ public:
     }
 
     /// Destructor.
-    ~BSplinesProjectionUtility() override
+    virtual ~BSplinesProjectionUtility()
     {}
 
     ///@}
@@ -95,7 +95,7 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    std::string Info() const override
+    virtual std::string Info() const
     {
         return "BSplinesProjectionUtility";
     }

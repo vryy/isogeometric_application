@@ -43,7 +43,7 @@ int BSplinesProjectionUtility<TPointType, TDim>::ComputeNormalProjection(const T
         // TODO estimate the local coordinates of the projection
 
         // compute the normal projection
-        int error_code = IsogeometricProjectionUtility<TPointType, TDim>::ComputeNormalProjection<TPointType, 1>(rPoint, rLocalPoint, rGlobalPoint, *it, TOL, max_iters, echo_level);
+        int error_code = IsogeometricProjectionUtility<TPointType, TDim>::ComputeNormalProjection(rPoint, rLocalPoint, rGlobalPoint, *it, TOL, max_iters, echo_level);
 
         if (error_code == 0)
         {

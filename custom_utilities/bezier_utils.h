@@ -245,7 +245,7 @@ public:
         }
         else
         {
-            int cnt;
+            int cnt = 0;
             for (int j = 0; j < p - 2; ++j)
             {
                 cnt += (j + 2) / 2;

@@ -25,7 +25,7 @@ namespace Kratos
 /**
 THis class supports some operations on B-Splines patch
  */
-class BSplinesPatchUtility
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) BSplinesPatchUtility
 {
 public:
     /// Pointer definition

@@ -55,6 +55,12 @@ void DeprecatedHBMesh<TDim>::PrintKnotVectors() const
 }
 
 template<int TDim>
+void DeprecatedHBMesh<TDim>::PrintLocalKnotVectors(unsigned int Id) const
+{
+    KRATOS_ERROR << "Not yet implemented";
+}
+
+template<int TDim>
 void DeprecatedHBMesh<TDim>::PrintCells(int level) const
 {
     if (level > 0)
@@ -160,7 +166,7 @@ void DeprecatedHBMesh<TDim>::BuildNestedSpace(std::size_t level, std::map<std::s
         {
             mBasisFuncs[*it]->GetBoundingBox(Xmin, Xmax, Ymin, Ymax, Zmin, Zmax);
 
-            bool is_inside;
+            bool is_inside = false;
             if constexpr (TDim == 2)
             {
                 std::vector<double> bounding_box = {Xmin, Xmax, Ymin, Ymax};
@@ -231,7 +237,7 @@ void DeprecatedHBMesh<TDim>::CheckNestedSpace()
         {
             (*it_bf)->GetBoundingBox(Xmin, Xmax, Ymin, Ymax, Zmin, Zmax);
 
-            bool is_inside;
+            bool is_inside = false;
             if constexpr (TDim == 2)
             {
                 std::vector<double> bounding_box = {Xmin, Xmax, Ymin, Ymax};
@@ -1115,7 +1121,7 @@ void DeprecatedHBMesh<TDim>::LinearDependencyRefine(std::size_t refine_cycle)
             (*it_bf)->GetBoundingBox(Xmin, Xmax, Ymin, Ymax, Zmin, Zmax);
 
             // check if the bf support domain contained in the refined domain managed by the domain manager
-            bool is_inside;
+            bool is_inside = false;
             if constexpr (TDim == 2)
             {
                 std::vector<double> bounding_box = {Xmin, Xmax, Ymin, Ymax};

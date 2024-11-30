@@ -47,7 +47,7 @@ namespace Kratos
 /// Short class definition.
 /** Detail class definition.
 */
-class KratosIsogeometricApplication : public KratosApplication
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) KratosIsogeometricApplication : public KratosApplication
 {
 public:
     ///@name Type Definitions
@@ -64,7 +64,7 @@ public:
     KratosIsogeometricApplication();
 
     /// Destructor.
-    virtual ~KratosIsogeometricApplication()
+    ~KratosIsogeometricApplication() override
     {}
 
     ///@}
@@ -75,7 +75,7 @@ public:
     ///@name Operations
     ///@{
 
-    virtual void Register();
+    void Register() override;
 
     ///@}
     ///@name Access
@@ -90,20 +90,20 @@ public:
     ///@{
 
     /// Turn back information as a string.
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "KratosIsogeometricApplication";
     }
 
     /// Print information about this object.
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Info();
         PrintData(rOStream);
     }
 
     ///// Print object's data.
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         KRATOS_WATCH("in KratosIsogeometricApplication");
         KRATOS_WATCH(KratosComponents<VariableData>::GetComponents().size() );

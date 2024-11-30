@@ -44,7 +44,7 @@ namespace Kratos
 /**
  * Compute class to compute the projection on B-Splines patch and multipatch
  */
-class BSplinesProjectionUtility : public IsogeometricProjectionUtility
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) BSplinesProjectionUtility : public IsogeometricProjectionUtility
 {
 public:
     ///@name Type Definitions

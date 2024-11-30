@@ -132,6 +132,8 @@ public:
         else if (i == 1) { return WY(); }
         else if (i == 2) { return WZ(); }
         else if (i == 3) { return BaseType::W(); }
+        else
+            KRATOS_ERROR << "Out of bound access at i = " << i;
     }
 
     const TDataType& operator[] (int i) const
@@ -140,6 +142,8 @@ public:
         else if (i == 1) { return WY(); }
         else if (i == 2) { return WZ(); }
         else if (i == 3) { return BaseType::W(); }
+        else
+            KRATOS_ERROR << "Out of bound access at i = " << i;
     }
 
     // overload operator ()
@@ -149,6 +153,8 @@ public:
         else if (i == 1) { return Y(); }
         else if (i == 2) { return Z(); }
         else if (i == 3) { return BaseType::W(); }
+        else
+            KRATOS_ERROR << "Out of bound access at i = " << i;
     }
 
     /// Assignment operator

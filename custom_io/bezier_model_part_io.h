@@ -91,11 +91,11 @@ public:
 
 private:
     friend class Serializer;
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
     }
 };
@@ -107,7 +107,7 @@ inline std::ostream & operator <<(std::ostream& rOStream, const BezierInfo& rThi
     return rOStream;
 }
 
-class BezierModelPartIO : public ModelPartIO
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) BezierModelPartIO : public ModelPartIO
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(BezierModelPartIO);

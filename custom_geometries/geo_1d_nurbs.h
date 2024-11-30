@@ -1236,16 +1236,16 @@ private:
         std::vector<IntegrationPointsArrayType> GaussRule;
 
         std::vector<IntegrationPointsArrayType> BaseRule;
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints1, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints2, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints3, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints4, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints5, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints6, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints7, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints8, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints9, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
-        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints10, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<1>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<2>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<3>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<4>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<5>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<6>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<7>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<8>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<9>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
+        BaseRule.push_back(Quadrature<LineGaussLegendreIntegrationPoints<10>, 1, IntegrationPoint<3> >::GenerateIntegrationPoints());
 
         ValuesContainerType UnrepeatedKnots;
         this->FilterUniqueKnots(UnrepeatedKnots, mKnots);

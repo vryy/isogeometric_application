@@ -10,7 +10,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/kratos)
 include_directories( ${CMAKE_SOURCE_DIR}/applications)
 
 # add_subdirectory(custom_external_libraries/geomod)
-add_subdirectory(custom_external_libraries/tetgen1.5.0)
 add_definitions( -DISOGEOMETRIC_USE_TETGEN )
 # add_definitions( -DENABLE_BEZIER_GEOMETRY ) # this was promoted to system level
 # add_definitions( -DENABLE_PRECOMPUTE )
@@ -140,7 +139,7 @@ if(${ISOGEOMETRIC_APPLICATION_ENABLE_TESTS} MATCHES ON)
 endif()
 
 target_link_libraries(KratosIsogeometricApplication KratosCore)
-target_link_libraries(KratosIsogeometricApplication iga_tetgen150)
+target_link_libraries(KratosIsogeometricApplication tetgen150)
 if(${ISOGEOMETRIC_USE_MPI} MATCHES TRUE)
     target_link_libraries(KratosIsogeometricApplication ${METIS_FOR_IGA_LIBRARY})
     target_link_libraries(KratosIsogeometricApplication ${PARMETIS_FOR_IGA_LIBRARY})

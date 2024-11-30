@@ -17,7 +17,7 @@
 
 #ifdef ISOGEOMETRIC_USE_TETGEN
 #define TETLIBRARY
-#include "custom_external_libraries/tetgen1.5.0/tetgen.h"
+#include "external_libraries/tetgen1.5.0/tetgen.h"
 #endif
 
 #define ENABLE_PROFILING
@@ -2700,7 +2700,7 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
 
                 // fill in points
                 in.numberofpoints = CellNodes.size();
-                in.pointlist = new REAL[in.numberofpoints * 3];
+                in.pointlist = new REAL_tetgen_t[in.numberofpoints * 3];
                 for (std::size_t i = 0; i < CellNodes.size(); ++i)
                 {
                     in.pointlist[3 * i    ] = Binning.GetX(CellNodes[i]);

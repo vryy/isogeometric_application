@@ -132,6 +132,9 @@ endif()
 ###############################################################
 ## define library Kratos which defines the basic python interface
 add_library(KratosIsogeometricApplication SHARED ${KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES})
+if(MSVC AND (${CMAKE_BUILD_TYPE} MATCHES Debug))
+    target_compile_options(KratosIsogeometricApplication PRIVATE /bigobj)
+endif()
 
 option(ISOGEOMETRIC_APPLICATION_ENABLE_TESTS "Enable tests of IsogeometricApplication" ON)
 if(${ISOGEOMETRIC_APPLICATION_ENABLE_TESTS} MATCHES ON)

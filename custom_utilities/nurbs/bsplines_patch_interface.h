@@ -297,6 +297,8 @@ public:
         {
             return typename BaseType::Pointer(new BSplinesPatchInterface<3>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), false, this->Direction(0), this->Direction(1)));
         }
+        else
+            KRATOS_ERROR << "Invalid local parameter mapping";
     }
 
     /// Get the local parameter space mapping

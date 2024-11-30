@@ -66,7 +66,7 @@ public:
     {
         typedef typename HBSplinesFESpace<TDim>::bf_iterator bf_iterator;
 
-        rOStream << "Listing of boundary basis function on " << BoundarySideName(side) << " side of hierarchical B-Splines space:" << std::endl;
+        rOStream << "Listing of boundary basis function on " << side << " side of hierarchical B-Splines space:" << std::endl;
         rOStream << "<<<<<" << std::endl;
 
         for (bf_iterator it = pFESpace->bf_begin(); it != pFESpace->bf_end(); ++it)

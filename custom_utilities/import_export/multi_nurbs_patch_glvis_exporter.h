@@ -6,8 +6,8 @@
 //
 //
 
-#if !defined(KRATOS_ISOGLVisMETRIC_APPLICATION_MULTI_NURBS_PATCH_GLVIS_EXPORTER_H_INCLUDED)
-#define  KRATOS_ISOGLVisMETRIC_APPLICATION_MULTI_NURBS_PATCH_GLVIS_EXPORTER_H_INCLUDED
+#if !defined(KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_NURBS_PATCH_GLVIS_EXPORTER_H_INCLUDED)
+#define  KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_NURBS_PATCH_GLVIS_EXPORTER_H_INCLUDED
 
 // System includes
 #include <vector>
@@ -725,6 +725,10 @@ private:
             // TODO
             KRATOS_ERROR << "Mapping for 3D is not implemented yet.";
         }
+        else
+            KRATOS_ERROR << "Invalid dimension " << dim;
+
+        return std::vector<int>{}; // silence the compiler
     }
 
 }; // end class MultiNURBSPatchGLVisExporterWriter
@@ -842,4 +846,4 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiNURBSPatchGL
 
 #undef DEBUG_GLVIS_EXPORT
 
-#endif // KRATOS_ISOGLVisMETRIC_APPLICATION_MULTI_NURBS_PATCH_GLVIS_EXPORTER_H_INCLUDED defined
+#endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_NURBS_PATCH_GLVIS_EXPORTER_H_INCLUDED defined

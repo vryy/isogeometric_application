@@ -599,7 +599,7 @@ public:
             std::ofstream* p_ofstream = new std::ofstream(buffer.str().c_str());
             if (!(*p_ofstream))
             {
-                KRATOS_ERROR << "Error opening output file : ", buffer.str();
+                KRATOS_ERROR << "Error opening output file : " << buffer.str();
             }
 
             output_files.push_back(p_ofstream);

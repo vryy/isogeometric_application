@@ -135,7 +135,7 @@ public:
         else
         {
             rOStream << this->pPatch1()->Id() << "(" << this->pPatch1() << ")"
-                     << ": " << BoundarySideName(this->Side1());
+                     << ": " << this->Side1();
         }
         rOStream << " - Patch ";
         if (this->pPatch2() == NULL)
@@ -145,7 +145,7 @@ public:
         else
         {
             rOStream << this->pPatch2()->Id() << "(" << this->pPatch2() << ")"
-                     << ": " << BoundarySideName(this->Side2());
+                     << ": " << this->Side2();
         }
         rOStream << ", Opposite Interface: ";
         if (this->pOtherInterface() == NULL) { rOStream << "null"; }

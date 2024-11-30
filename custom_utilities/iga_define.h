@@ -96,6 +96,21 @@ enum BoundarySide
     _NUMBER_OF_BOUNDARY_SIDE = 6
 };
 
+inline std::ostream& operator<<(std::ostream& rOStream, const BoundarySide& side)
+{
+    switch (side)
+    {
+        case _BLEFT_:    rOStream << "left";    break;
+        case _BRIGHT_:   rOStream << "right";   break;
+        case _BTOP_:     rOStream << "top";     break;
+        case _BBOTTOM_:  rOStream << "bottom";  break;
+        case _BFRONT_:   rOStream << "front";   break;
+        case _BBACK_:    rOStream << "back";    break;
+        default:         break;
+    }
+    return rOStream;
+}
+
 enum BoundarySide2D
 {
     _B2LEFT_   = 0,
@@ -132,20 +147,6 @@ enum BoundaryFlag
     _FFRONT_  = BOUNDARY_FLAG(_BFRONT_),
     _FBACK_   = BOUNDARY_FLAG(_BBACK_)
 };
-
-inline std::string BoundarySideName(const BoundarySide& side)
-{
-    switch (side)
-    {
-    case _BLEFT_:    return "left";
-    case _BRIGHT_:   return "right";
-    case _BTOP_:     return "top";
-    case _BBOTTOM_:  return "bottom";
-    case _BFRONT_:   return "front";
-    case _BBACK_:    return "back";
-    default:         return "inner";
-    }
-}
 
 template<int TDim>
 struct ParameterDirection
@@ -277,6 +278,7 @@ struct ReversedBoundarySide
         case _BBACK_:    return _BFRONT_;
         case _BTOP_:     return _BBOTTOM_;
         case _BBOTTOM_:  return _BTOP_;
+        default: KRATOS_ERROR << "Invalid side " << side;
         }
     }
 };

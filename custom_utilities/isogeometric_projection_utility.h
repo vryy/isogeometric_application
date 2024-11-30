@@ -49,7 +49,8 @@ namespace Kratos
 /**
  * Compute class to compute the projection on patch and multipatch
  */
-class IsogeometricProjectionUtility
+template<typename TPointType, int TDim>
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) IsogeometricProjectionUtility
 {
 public:
     ///@name Type Definitions
@@ -84,37 +85,37 @@ public:
     /************* VERTICAL PROJECTION (ALONG Z AXIS) *****************/
     /******************************************************************/
 
-    /// Compute the prediction of vertical projection (along z axis) of a point on a surface patch
-    template<typename TPointType>
+    /// Compute the prediction of vertical projection (along z axis) of a point on a surface patch in 3D
+    /// and along y axis on a line patch in 2D
     static int PredictVerticalProjection(const TPointType& rPoint,
                                          std::vector<double>& rLocalPoint,
-                                         typename Patch<2>::Pointer pPatch,
-                                         std::size_t nsampling1, std::size_t nsampling2);
+                                         typename Patch<TDim>::Pointer pPatch,
+                                         const std::array<unsigned int, TDim>& nsampling);
 
-    /// Compute the vertical projection (along z axis) of a point on a surface patch
-    template<typename TPointType>
+    /// Compute the vertical projection (along z axis) of a point on a surface patch in 3D
+    /// and along y axis on a line patch in 2D
     static int ComputeVerticalProjection(const TPointType& rPoint,
                                          std::vector<double>& rLocalPoint, TPointType& rGlobalPoint,
-                                         typename Patch<2>::Pointer pPatch,
+                                         typename Patch<TDim>::Pointer pPatch,
                                          double TOL, int max_iters,
                                          int echo_level);
 
-    /// Compute the vertical projection (along z axis) of a point on a surface multipatch
+    /// Compute the vertical projection (along z axis) of a point on a surface multipatch in 3D
+    /// and along y axis on a line patch in 2D
     /// The rLocalPoint shall be initialized to a good value to find out the vertical projection
-    template<typename TPointType>
     static int ComputeVerticalProjection(const TPointType& rPoint,
                                          std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,
-                                         typename MultiPatch<2>::Pointer pMultiPatch,
+                                         typename MultiPatch<TDim>::Pointer pMultiPatch,
                                          double TOL, int max_iters,
                                          int echo_level);
 
-    /// Compute the vertical projection (along z axis) of a point on a surface multipatch
-    template<typename TPointType>
+    /// Compute the vertical projection (along z axis) of a point on a surface multipatch in 3D
+    /// and along y axis on a line patch in 2D
     static int ComputeVerticalProjection(const TPointType& rPoint,
                                          std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,
-                                         typename MultiPatch<2>::Pointer pMultiPatch,
+                                         typename MultiPatch<TDim>::Pointer pMultiPatch,
                                          double TOL, int max_iters,
-                                         std::size_t nsampling1, std::size_t nsampling2,
+                                         const std::array<unsigned int, TDim>& nsampling,
                                          int echo_level);
 
     /******************************************************************/
@@ -122,15 +123,13 @@ public:
     /******************************************************************/
 
     /// Compute the prediction of the intersection of a ray on a line/surface patch
-    template<typename TPointType, int TDim>
     static int PredictRayProjection(const TPointType& rPoint, const TPointType& rDirection,
                                     std::vector<double>& rLocalPoint,
                                     typename Patch<TDim>::Pointer pPatch,
                                     double TOL,
-                                    const std::array<int, TDim>& nsampling);
+                                    const std::array<unsigned int, TDim>& nsampling);
 
     /// Compute the intersection of a ray on a line/surface patch
-    template<typename TPointType, int TDim>
     static int ComputeRayProjection(const TPointType& rPoint, const TPointType& rDirection,
                                     std::vector<double>& rLocalPoint, TPointType& rGlobalPoint,
                                     typename Patch<TDim>::Pointer pPatch,
@@ -138,27 +137,24 @@ public:
                                     int echo_level);
 
     /// Compute the intersection of a ray on a line/surface multipatch
-    template<typename TPointType, int TDim>
     static int ComputeRayProjection(const TPointType& rPoint, const TPointType& rDirection,
                                     std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,
                                     typename MultiPatch<TDim>::Pointer pMultiPatch,
                                     double TOL, int max_iters,
-                                    const std::array<int, TDim>& nsampling,
+                                    const std::array<unsigned int, TDim>& nsampling,
                                     int echo_level);
 
     /******************************************************************/
-    /************** NORMAL PROJECTION (ALONG Z AXIS) ******************/
+    /*********************** NORMAL PROJECTION ************************/
     /******************************************************************/
 
     /// Compute the prediction of normal projection of a point on a line patch
-    template<typename TPointType, int TDim>
     static int PredictNormalProjection(const TPointType& rPoint,
                                        std::vector<double>& rLocalPoint,
                                        typename Patch<TDim>::Pointer pPatch,
-                                       const std::array<int, TDim>& nsampling);
+                                       const std::array<unsigned int, TDim>& nsampling);
 
     /// Compute the normal projection of a point on a line patch
-    template<typename TPointType, int TDim>
     static int ComputeNormalProjection(const TPointType& rPoint,
                                        std::vector<double>& rLocalPoint, TPointType& rGlobalPoint,
                                        typename Patch<TDim>::Pointer pPatch,
@@ -166,12 +162,11 @@ public:
                                        int echo_level);
 
     /// Compute the normal projection of a point on a line/surface multipatch
-    template<typename TPointType, int TDim>
     static int ComputeNormalProjection(const TPointType& rPoint,
                                        std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,
                                        typename MultiPatch<TDim>::Pointer pMultiPatch,
                                        double TOL, int max_iters,
-                                       const std::array<int, TDim>& nsampling,
+                                       const std::array<unsigned int, TDim>& nsampling,
                                        int echo_level);
 
     ///@}
@@ -285,13 +280,15 @@ private:
 ///@{
 
 /// input stream function
-inline std::istream& operator >>(std::istream& rIStream, IsogeometricProjectionUtility& rThis)
+template<typename TPointType, int TDim>
+inline std::istream& operator >>(std::istream& rIStream, IsogeometricProjectionUtility<TPointType, TDim>& rThis)
 {
     return rIStream;
 }
 
 /// output stream function
-inline std::ostream& operator <<(std::ostream& rOStream, const IsogeometricProjectionUtility& rThis)
+template<typename TPointType, int TDim>
+inline std::ostream& operator <<(std::ostream& rOStream, const IsogeometricProjectionUtility<TPointType, TDim>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

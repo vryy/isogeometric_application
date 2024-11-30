@@ -741,17 +741,23 @@ boost::python::list IsogeometricMathUtils_ComputeProjection2D(IsogeometricMathUt
 
 //////////////////////////////////////////////////////////
 
+/// Python wrapper for IsogeometricProjectionUtility
+struct IsogeometricProjectionUtilityPythonInterface
+{
+    KRATOS_CLASS_POINTER_DEFINITION(IsogeometricProjectionUtilityPythonInterface);
+};
+
 template<typename TPointType, int TDim>
-boost::python::list IsogeometricProjectionUtility_ComputeRayProjection(IsogeometricProjectionUtility& rDummy,
+boost::python::list IsogeometricProjectionUtility_ComputeRayProjection(IsogeometricProjectionUtilityPythonInterface& rDummy,
         const TPointType& rPoint, const TPointType& rDirection, typename MultiPatch<TDim>::Pointer pMultiPatch,
         double TOL, int max_iters, const boost::python::list& list_nsamplings, const int echo_level)
 {
     std::vector<double> LocalPoint(TDim);
     TPointType GlobalPoint;
     int patch_id;
-    std::array<int, TDim> nsamplings;
-    IsogeometricPythonUtils::Unpack<int, int, TDim>(list_nsamplings, nsamplings);
-    int error_code = rDummy.ComputeRayProjection<TPointType, TDim>(rPoint, rDirection, LocalPoint, GlobalPoint, patch_id,
+    std::array<unsigned int, TDim> nsamplings;
+    IsogeometricPythonUtils::Unpack<int, unsigned int, TDim>(list_nsamplings, nsamplings);
+    int error_code = IsogeometricProjectionUtility<TPointType, TDim>::ComputeRayProjection(rPoint, rDirection, LocalPoint, GlobalPoint, patch_id,
                                         pMultiPatch, TOL, max_iters, nsamplings, echo_level);
 
     boost::python::list output;
@@ -912,7 +918,7 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("ComputeProjection2D", &IsogeometricMathUtils_ComputeProjection2D<array_1d<double, 3> >)
     ;
 
-    class_<IsogeometricProjectionUtility, IsogeometricProjectionUtility::Pointer, boost::noncopyable>(
+    class_<IsogeometricProjectionUtilityPythonInterface, IsogeometricProjectionUtilityPythonInterface::Pointer, boost::noncopyable>(
         "IsogeometricProjectionUtility", init<>())
     .def("ComputeRayProjection", &IsogeometricProjectionUtility_ComputeRayProjection<array_1d<double, 3>, 1>)
     .def("ComputeRayProjection", &IsogeometricProjectionUtility_ComputeRayProjection<Element::GeometryType::PointType::PointType, 1>)

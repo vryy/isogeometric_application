@@ -103,7 +103,7 @@ public:
     ///@name Operations
     ///@{
 
-    void SetPredictionSampling(std::size_t nsampling1, std::size_t nsampling2)
+    void SetPredictionSampling(unsigned int nsampling1, unsigned int nsampling2)
     {
         mnsampling1 = nsampling1;
         mnsampling2 = nsampling2;
@@ -135,10 +135,10 @@ public:
         std::vector<double> local_point(2);
         PointType global_point;
         int target_patch_id;
-        int error_code = IsogeometricProjectionUtility::ComputeVerticalProjection(P,
+        int error_code = IsogeometricProjectionUtility<PointType, 2>::ComputeVerticalProjection(P,
                                     local_point, global_point, target_patch_id,
                                     mpMultiPatch, mProjectionTolerance, mMaxIterations,
-                                    mnsampling1, mnsampling2,
+                                    { mnsampling1, mnsampling2 },
                                     this->GetEchoLevel() - 2);
 
         if (this->GetEchoLevel() > 1)
@@ -263,10 +263,10 @@ public:
     {
         std::vector<double> local_point(2);
         int target_patch_id;
-        int error_code = IsogeometricProjectionUtility::ComputeVerticalProjection(P,
+        int error_code = IsogeometricProjectionUtility<PointType, 2>::ComputeVerticalProjection(P,
                                         local_point, Proj, target_patch_id,
                                         mpMultiPatch, mProjectionTolerance, mMaxIterations,
-                                        mnsampling1, mnsampling2,
+                                        { mnsampling1, mnsampling2 },
                                         this->GetEchoLevel() - 2);
         return error_code;
     }
@@ -346,7 +346,7 @@ private:
     ///@{
 
     typename MultiPatchType::Pointer mpMultiPatch;
-    std::size_t mnsampling1, mnsampling2;
+    unsigned int mnsampling1, mnsampling2;
     double mProjectionTolerance;
     int mMaxIterations;
 

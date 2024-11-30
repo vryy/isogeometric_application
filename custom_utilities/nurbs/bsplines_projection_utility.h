@@ -44,7 +44,8 @@ namespace Kratos
 /**
  * Compute class to compute the projection on B-Splines patch and multipatch
  */
-class KRATOS_API(ISOGEOMETRIC_APPLICATION) BSplinesProjectionUtility : public IsogeometricProjectionUtility
+template<typename TPointType, int TDim>
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) BSplinesProjectionUtility
 {
 public:
     ///@name Type Definitions
@@ -75,10 +76,9 @@ public:
     ///@{
 
     /// Compute the normal projection of a point on a line multipatch
-    template<typename TPointType>
     static int ComputeNormalProjection(const TPointType& rPoint,
                                        std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,
-                                       typename MultiPatch<1>::Pointer pMultiPatch, const int nsampling,
+                                       typename MultiPatch<TDim>::Pointer pMultiPatch, const int nsampling,
                                        double TOL, int max_iters,
                                        int echo_level);
 

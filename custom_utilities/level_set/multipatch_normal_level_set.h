@@ -155,7 +155,7 @@ public:
         std::vector<double> local_point(TDim);
         PointType global_point;
         int target_patch_id;
-        int error_code = IsogeometricProjectionUtility::ComputeNormalProjection<PointType, TDim>(P,
+        int error_code = IsogeometricProjectionUtility<PointType, TDim>::ComputeNormalProjection(P,
                                 local_point, global_point, target_patch_id,
                                 mpMultiPatch, mProjectionTolerance, mMaxIterations,
                                 mnsampling,
@@ -206,7 +206,7 @@ public:
     {
         std::vector<double> local_point(TDim);
         int target_patch_id;
-        int error_code = IsogeometricProjectionUtility::ComputeNormalProjection<PointType, TDim>(P,
+        int error_code = IsogeometricProjectionUtility<PointType, TDim>::ComputeNormalProjection(P,
                                 local_point, Proj, target_patch_id,
                                 mpMultiPatch, mProjectionTolerance, mMaxIterations,
                                 mnsampling,
@@ -289,7 +289,7 @@ private:
     ///@{
 
     typename MultiPatchType::Pointer mpMultiPatch;
-    std::array<int, TDim> mnsampling;
+    std::array<unsigned int, TDim> mnsampling;
     double mProjectionTolerance;
     int mMaxIterations;
     PointType mInnerPoint;

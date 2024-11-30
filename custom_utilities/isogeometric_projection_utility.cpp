@@ -21,26 +21,29 @@
 namespace Kratos
 {
 
-template<typename TPointType>
-int IsogeometricProjectionUtility::PredictVerticalProjection(const TPointType& rPoint,
-        std::vector<double>& rLocalPoint, typename Patch<2>::Pointer pPatch,
-        std::size_t nsampling1, std::size_t nsampling2)
+template<typename TPointType, int TDim>
+int IsogeometricProjectionUtility<TPointType, TDim>::PredictVerticalProjection(
+        const TPointType& rPoint,
+        std::vector<double>& rLocalPoint, typename Patch<TDim>::Pointer pPatch,
+        const std::array<unsigned int, TDim>& nsampling
+)
 {
-    typedef Patch<2> PatchType;
+    typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
 
-    typename GridFunction<2, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+    typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
     double dist = 1.0e99;
-    std::vector<double> xi(2);
+    std::vector<double> xi(TDim);
     array_1d<double, 3> P;
 
-    for (std::size_t i = 0; i < nsampling1 + 1; ++i)
+    rLocalPoint.clear();
+
+    if constexpr (TDim == 1)
     {
-        xi[0] = ((double) i) / nsampling1;
-        for (std::size_t j = 0; j < nsampling2 + 1; ++j)
+        for (unsigned int i = 0; i < nsampling[0] + 1; ++i)
         {
-            xi[1] = ((double) j) / nsampling2;
+            xi[0] = ((double)i) / nsampling[0];
 
             pControlGridFunc->GetValue(P, xi);
 
@@ -50,7 +53,28 @@ int IsogeometricProjectionUtility::PredictVerticalProjection(const TPointType& r
             {
                 dist = d;
                 rLocalPoint[0] = xi[0];
-                rLocalPoint[1] = xi[1];
+            }
+        }
+    }
+    else if constexpr (TDim == 2)
+    {
+        for (unsigned int i = 0; i < nsampling[0] + 1; ++i)
+        {
+            xi[0] = ((double)i) / nsampling[0];
+            for (unsigned int j = 0; j < nsampling[1] + 1; ++j)
+            {
+                xi[1] = ((double)j) / nsampling[1];
+
+                pControlGridFunc->GetValue(P, xi);
+
+                double d = sqrt(pow(rPoint[0] - P[0], 2) + pow(rPoint[1] - P[1], 2));
+
+                if (d < dist)
+                {
+                    dist = d;
+                    rLocalPoint[0] = xi[0];
+                    rLocalPoint[1] = xi[1];
+                }
             }
         }
     }
@@ -58,92 +82,103 @@ int IsogeometricProjectionUtility::PredictVerticalProjection(const TPointType& r
     return 0;
 }
 
-template<typename TPointType>
-int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& rPoint,
+template<typename TPointType, int TDim>
+int IsogeometricProjectionUtility<TPointType, TDim>::ComputeVerticalProjection(
+        const TPointType& rPoint,
         std::vector<double>& rLocalPoint, TPointType& rGlobalPoint,
-        typename Patch<2>::Pointer pPatch,
+        typename Patch<TDim>::Pointer pPatch,
         double TOL, int max_iters,
-        int echo_level)
+        int echo_level
+)
 {
-    typedef Patch<2> PatchType;
+    typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
 
-    typename GridFunction<2, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+    typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
     std::vector<array_1d<double, 3> > dP;
-
-    int it = 0;
-    bool converged = false;
-    double a00, a01, a10, a11;
 
     if (echo_level > 0)
     {
         std::cout << "Global point to be projected: " << rPoint << std::endl;
     }
 
-    while (!converged && (it < max_iters))
+    int it = 0;
+    bool converged = false;
+
+    if constexpr (TDim == 1)
     {
-        pControlGridFunc->GetValue(rGlobalPoint, rLocalPoint);
+        // TODO
+        KRATOS_ERROR << "To be implemented";
+    }
+    else if constexpr (TDim == 2)
+    {
+        double a00, a01, a10, a11;
 
-        double dist = sqrt(pow(rPoint[0] - rGlobalPoint[0], 2) + pow(rPoint[1] - rGlobalPoint[1], 2));
-
-        if (echo_level > 1)
+        while (!converged && (it < max_iters))
         {
-            std::cout << "At iteration " << (it + 1) << ", local point = " << rLocalPoint[0] << ", " << rLocalPoint[1]
-                      << ", projected global point = " << rGlobalPoint
-                      << ", distance = " << dist
-                      << std::endl;
-        }
+            pControlGridFunc->GetValue(rGlobalPoint, rLocalPoint);
 
-        if (dist < TOL)
-        {
-            converged = true;
-        }
-        else
-        {
-            // pPatch->pFESpace()->PrintInfo(std::cout); std::cout << std::endl;
-            // std::vector<double> f_values;
-            // std::vector<std::vector<double> > f_derivatives;
-            // pPatch->pFESpace()->GetValues(f_values, rLocalPoint);
-            // pPatch->pFESpace()->GetDerivatives(f_derivatives, rLocalPoint);
-            // // pPatch->pFESpace()->GetValuesAndDerivatives(f_values, f_derivatives, rLocalPoint);
-            // std::cout << "f_values:";
-            // for (std::size_t i = 0; i < f_values.size(); ++i)
-            //     std::cout << " " << f_values[i];
-            // std::cout << std::endl;
-            // for (std::size_t i = 0; i < f_derivatives.size(); ++i)
-            // {
-            //     std::cout << "f_derivatives[" << i << "]:";
-            //     for (std::size_t j = 0; j < f_derivatives[i].size(); ++j)
-            //         std::cout << " " << f_derivatives[i][j];
-            //     std::cout << std::endl;
-            // }
-            // std::cout << "control points:" << std::endl;
-            // for (std::size_t i = 0; i < f_values.size(); ++i)
-            //     std::cout << i << ": " << pControlGridFunc->pControlGrid()->GetData(i) << std::endl;
+            double dist = sqrt(pow(rPoint[0] - rGlobalPoint[0], 2) + pow(rPoint[1] - rGlobalPoint[1], 2));
 
-            pControlGridFunc->GetDerivative(dP, rLocalPoint);
-            a00 = dP[0][0];
-            a01 = dP[1][0];
-            a10 = dP[0][1];
-            a11 = dP[1][1];
-
-            double det = a00 * a11 - a01 * a10;
-            rLocalPoint[0] += ( a11 * (rPoint[0] - rGlobalPoint[0]) - a01 * (rPoint[1] - rGlobalPoint[1])) / det;
-            rLocalPoint[1] += (-a10 * (rPoint[0] - rGlobalPoint[0]) + a00 * (rPoint[1] - rGlobalPoint[1])) / det;
-
-            if (rLocalPoint[0] < 0.0) { rLocalPoint[0] = 0.0; }
-            if (rLocalPoint[0] > 1.0) { rLocalPoint[0] = 1.0; }
-            if (rLocalPoint[1] < 0.0) { rLocalPoint[1] = 0.0; }
-            if (rLocalPoint[1] > 1.0) { rLocalPoint[1] = 1.0; }
-
-            if (echo_level > 2)
+            if (echo_level > 1)
             {
-                std::cout << "tangent matrix: [[" << a00 << ", " << a01 << "], [" << a10 << ", " << a11 << "]" << std::endl;
+                std::cout << "At iteration " << (it + 1) << ", local point = " << rLocalPoint[0] << ", " << rLocalPoint[1]
+                          << ", projected global point = " << rGlobalPoint
+                          << ", distance = " << dist
+                          << std::endl;
             }
-        }
 
-        ++it;
+            if (dist < TOL)
+            {
+                converged = true;
+            }
+            else
+            {
+                // pPatch->pFESpace()->PrintInfo(std::cout); std::cout << std::endl;
+                // std::vector<double> f_values;
+                // std::vector<std::vector<double> > f_derivatives;
+                // pPatch->pFESpace()->GetValues(f_values, rLocalPoint);
+                // pPatch->pFESpace()->GetDerivatives(f_derivatives, rLocalPoint);
+                // // pPatch->pFESpace()->GetValuesAndDerivatives(f_values, f_derivatives, rLocalPoint);
+                // std::cout << "f_values:";
+                // for (std::size_t i = 0; i < f_values.size(); ++i)
+                //     std::cout << " " << f_values[i];
+                // std::cout << std::endl;
+                // for (std::size_t i = 0; i < f_derivatives.size(); ++i)
+                // {
+                //     std::cout << "f_derivatives[" << i << "]:";
+                //     for (std::size_t j = 0; j < f_derivatives[i].size(); ++j)
+                //         std::cout << " " << f_derivatives[i][j];
+                //     std::cout << std::endl;
+                // }
+                // std::cout << "control points:" << std::endl;
+                // for (std::size_t i = 0; i < f_values.size(); ++i)
+                //     std::cout << i << ": " << pControlGridFunc->pControlGrid()->GetData(i) << std::endl;
+
+                pControlGridFunc->GetDerivative(dP, rLocalPoint);
+                a00 = dP[0][0];
+                a01 = dP[1][0];
+                a10 = dP[0][1];
+                a11 = dP[1][1];
+
+                double det = a00 * a11 - a01 * a10;
+                rLocalPoint[0] += ( a11 * (rPoint[0] - rGlobalPoint[0]) - a01 * (rPoint[1] - rGlobalPoint[1])) / det;
+                rLocalPoint[1] += (-a10 * (rPoint[0] - rGlobalPoint[0]) + a00 * (rPoint[1] - rGlobalPoint[1])) / det;
+
+                if (rLocalPoint[0] < 0.0) { rLocalPoint[0] = 0.0; }
+                if (rLocalPoint[0] > 1.0) { rLocalPoint[0] = 1.0; }
+                if (rLocalPoint[1] < 0.0) { rLocalPoint[1] = 0.0; }
+                if (rLocalPoint[1] > 1.0) { rLocalPoint[1] = 1.0; }
+
+                if (echo_level > 2)
+                {
+                    std::cout << "tangent matrix: [[" << a00 << ", " << a01 << "], [" << a10 << ", " << a11 << "]" << std::endl;
+                }
+            }
+
+            ++it;
+        }
     }
 
     if (it >= max_iters && !converged)
@@ -154,14 +189,16 @@ int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& r
     return 0;
 }
 
-template<typename TPointType>
-int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& rPoint,
+template<typename TPointType, int TDim>
+int IsogeometricProjectionUtility<TPointType, TDim>::ComputeVerticalProjection(
+        const TPointType& rPoint,
         std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,
-        typename MultiPatch<2>::Pointer pMultiPatch,
+        typename MultiPatch<TDim>::Pointer pMultiPatch,
         double TOL, int max_iters,
-        int echo_level)
+        int echo_level
+)
 {
-    typedef MultiPatch<2> MultiPatchType;
+    typedef MultiPatch<TDim> MultiPatchType;
     typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;
 
     std::vector<double> InitialLocalPoint = rLocalPoint;
@@ -173,10 +210,18 @@ int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& r
         (*it)->GetBoundingBox(bounding_box);
 
         bool is_in = true;
-        is_in = is_in && (rPoint[0] > bounding_box[0] - TOL);
-        is_in = is_in && (rPoint[0] < bounding_box[1] + TOL);
-        is_in = is_in && (rPoint[1] > bounding_box[2] - TOL);
-        is_in = is_in && (rPoint[1] < bounding_box[3] + TOL);
+        if constexpr (TDim == 1)
+        {
+            is_in = is_in && (rPoint[0] > bounding_box[0] - TOL)
+                          && (rPoint[0] < bounding_box[1] + TOL);
+        }
+        else if constexpr (TDim == 2)
+        {
+            is_in = is_in && (rPoint[0] > bounding_box[0] - TOL)
+                          && (rPoint[0] < bounding_box[1] + TOL)
+                          && (rPoint[1] > bounding_box[2] - TOL)
+                          && (rPoint[1] < bounding_box[3] + TOL);
+        }
 
         if (!is_in)
         {
@@ -198,15 +243,17 @@ int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& r
     return 1; // can't find the projection point
 }
 
-template<typename TPointType>
-int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& rPoint,
+template<typename TPointType, int TDim>
+int IsogeometricProjectionUtility<TPointType, TDim>::ComputeVerticalProjection(
+        const TPointType& rPoint,
         std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,
-        typename MultiPatch<2>::Pointer pMultiPatch,
+        typename MultiPatch<TDim>::Pointer pMultiPatch,
         double TOL, int max_iters,
-        std::size_t nsampling1, std::size_t nsampling2,
-        int echo_level)
+        const std::array<unsigned int, TDim>& nsampling,
+        int echo_level
+)
 {
-    typedef MultiPatch<2> MultiPatchType;
+    typedef MultiPatch<TDim> MultiPatchType;
     typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;
 
     for (patch_ptr_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
@@ -216,10 +263,18 @@ int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& r
         (*it)->GetBoundingBox(bounding_box);
 
         bool is_in = true;
-        is_in = is_in && (rPoint[0] > bounding_box[0] - TOL);
-        is_in = is_in && (rPoint[0] < bounding_box[1] + TOL);
-        is_in = is_in && (rPoint[1] > bounding_box[2] - TOL);
-        is_in = is_in && (rPoint[1] < bounding_box[3] + TOL);
+        if constexpr (TDim == 1)
+        {
+            is_in = is_in && (rPoint[0] > bounding_box[0] - TOL)
+                          && (rPoint[0] < bounding_box[1] + TOL);
+        }
+        else if constexpr (TDim == 2)
+        {
+            is_in = is_in && (rPoint[0] > bounding_box[0] - TOL)
+                          && (rPoint[0] < bounding_box[1] + TOL)
+                          && (rPoint[1] > bounding_box[2] - TOL)
+                          && (rPoint[1] < bounding_box[3] + TOL);
+        }
 
         if (!is_in)
         {
@@ -227,7 +282,7 @@ int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& r
         }
 
         // compute a closest prediction
-        int error_code = PredictVerticalProjection(rPoint, rLocalPoint, *it, nsampling1, nsampling2);
+        int error_code = PredictVerticalProjection(rPoint, rLocalPoint, *it, nsampling);
 
         if (echo_level > 0)
         {
@@ -249,11 +304,13 @@ int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& r
 }
 
 template<typename TPointType, int TDim>
-int IsogeometricProjectionUtility::PredictRayProjection(const TPointType& rPoint, const TPointType& rDirection,
+int IsogeometricProjectionUtility<TPointType, TDim>::PredictRayProjection(
+        const TPointType& rPoint, const TPointType& rDirection,
         std::vector<double>& rLocalPoint,
         typename Patch<TDim>::Pointer pPatch,
         double TOL,
-        const std::array<int, TDim>& nsampling)
+        const std::array<unsigned int, TDim>& nsampling
+)
 {
     typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
@@ -332,13 +389,15 @@ int IsogeometricProjectionUtility::PredictRayProjection(const TPointType& rPoint
 }
 
 template<typename TPointType, int TDim>
-int IsogeometricProjectionUtility::ComputeRayProjection(const TPointType& rPoint, const TPointType& rDirection,
+int IsogeometricProjectionUtility<TPointType, TDim>::ComputeRayProjection(
+        const TPointType& rPoint, const TPointType& rDirection,
         std::vector<double>& rLocalPoint, TPointType& rGlobalPoint,
         typename Patch<TDim>::Pointer pPatch,
         double TOL, int max_iters,
-        int echo_level)
+        int echo_level
+)
 {
-    typedef Patch<1> PatchType;
+    typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
 
     typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
@@ -425,12 +484,14 @@ int IsogeometricProjectionUtility::ComputeRayProjection(const TPointType& rPoint
 }
 
 template<typename TPointType, int TDim>
-int IsogeometricProjectionUtility::ComputeRayProjection(const TPointType& rPoint, const TPointType& rDirection,
+int IsogeometricProjectionUtility<TPointType, TDim>::ComputeRayProjection(
+        const TPointType& rPoint, const TPointType& rDirection,
         std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,
         typename MultiPatch<TDim>::Pointer pMultiPatch,
         double TOL, int max_iters,
-        const std::array<int, TDim>& nsampling,
-        int echo_level)
+        const std::array<unsigned int, TDim>& nsampling,
+        int echo_level
+)
 {
     typedef MultiPatch<TDim> MultiPatchType;
     typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;
@@ -446,7 +507,7 @@ int IsogeometricProjectionUtility::ComputeRayProjection(const TPointType& rPoint
     for (patch_ptr_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
     {
         // compute a closest prediction
-        int error_code = PredictRayProjection<TPointType, TDim>(rPoint, rDirection, LocalPoint, *it, TOL, nsampling);
+        int error_code = PredictRayProjection(rPoint, rDirection, LocalPoint, *it, TOL, nsampling);
 
         if (echo_level > 0)
         {
@@ -457,7 +518,7 @@ int IsogeometricProjectionUtility::ComputeRayProjection(const TPointType& rPoint
         }
 
         // compute the ray projection
-        error_code = ComputeRayProjection<TPointType, TDim>(rPoint, rDirection, LocalPoint, GlobalPoint, *it, TOL, max_iters, echo_level);
+        error_code = ComputeRayProjection(rPoint, rDirection, LocalPoint, GlobalPoint, *it, TOL, max_iters, echo_level);
 
         // store the one with acute angle
         if (error_code == 0)
@@ -495,10 +556,12 @@ int IsogeometricProjectionUtility::ComputeRayProjection(const TPointType& rPoint
 }
 
 template<typename TPointType, int TDim>
-int IsogeometricProjectionUtility::PredictNormalProjection(const TPointType& rPoint,
+int IsogeometricProjectionUtility<TPointType, TDim>::PredictNormalProjection(
+        const TPointType& rPoint,
         std::vector<double>& rLocalPoint,
         typename Patch<TDim>::Pointer pPatch,
-        const std::array<int, TDim>& nsampling)
+        const std::array<unsigned int, TDim>& nsampling
+)
 {
     typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
@@ -553,11 +616,13 @@ int IsogeometricProjectionUtility::PredictNormalProjection(const TPointType& rPo
 }
 
 template<typename TPointType, int TDim>
-int IsogeometricProjectionUtility::ComputeNormalProjection(const TPointType& rPoint,
+int IsogeometricProjectionUtility<TPointType, TDim>::ComputeNormalProjection(
+        const TPointType& rPoint,
         std::vector<double>& rLocalPoint, TPointType& rGlobalPoint,
         typename Patch<TDim>::Pointer pPatch,
         double TOL, int max_iters,
-        int echo_level)
+        int echo_level
+)
 {
     typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
@@ -747,12 +812,14 @@ int IsogeometricProjectionUtility::ComputeNormalProjection(const TPointType& rPo
 }
 
 template<typename TPointType, int TDim>
-int IsogeometricProjectionUtility::ComputeNormalProjection(const TPointType& rPoint,
+int IsogeometricProjectionUtility<TPointType, TDim>::ComputeNormalProjection(
+        const TPointType& rPoint,
         std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,
         typename MultiPatch<TDim>::Pointer pMultiPatch,
         double TOL, int max_iters,
-        const std::array<int, TDim>& nsampling,
-        int echo_level)
+        const std::array<unsigned int, TDim>& nsampling,
+        int echo_level
+)
 {
     typedef MultiPatch<TDim> MultiPatchType;
     typedef typename MultiPatchType::patch_ptr_iterator patch_ptr_iterator;
@@ -765,7 +832,7 @@ int IsogeometricProjectionUtility::ComputeNormalProjection(const TPointType& rPo
     for (patch_ptr_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
     {
         // compute a closest prediction
-        int error_code = PredictNormalProjection<TPointType, TDim>(rPoint, LocalPoint, *it, nsampling);
+        int error_code = PredictNormalProjection(rPoint, LocalPoint, *it, nsampling);
 
         if (echo_level > 0)
         {
@@ -776,7 +843,7 @@ int IsogeometricProjectionUtility::ComputeNormalProjection(const TPointType& rPo
         }
 
         // compute the normal projection
-        error_code = ComputeNormalProjection<TPointType, TDim>(rPoint, LocalPoint, GlobalPoint, *it, TOL, max_iters, echo_level);
+        error_code = ComputeNormalProjection(rPoint, LocalPoint, GlobalPoint, *it, TOL, max_iters, echo_level);
 
         // update the one with shortest distance
         if (error_code == 0)
@@ -801,56 +868,14 @@ int IsogeometricProjectionUtility::ComputeNormalProjection(const TPointType& rPo
 }
 
 
-//// template instantiation
+//// template class instantiation
 
-#define IsogeometricProjectionUtility_TemplateInstantiation(TPointType) \
-\
-template \
-int IsogeometricProjectionUtility::ComputeVerticalProjection(const TPointType& rPoint,  \
-        std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,      \
-        typename MultiPatch<2>::Pointer pMultiPatch,                                    \
-        double TOL, int max_iters,                                                      \
-        std::size_t nsampling1, std::size_t nsampling2,                                 \
-        int echo_level);                                                                \
-\
-template \
-int IsogeometricProjectionUtility::ComputeRayProjection<TPointType, 1>(const TPointType& rPoint,    \
-        const TPointType& rDirection,                                                   \
-        std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,      \
-        typename MultiPatch<1>::Pointer pMultiPatch,                                    \
-        double TOL, int max_iters,                                                      \
-        const std::array<int, 1>& nsampling,                                            \
-        int echo_level);                                                                \
-\
-template \
-int IsogeometricProjectionUtility::ComputeRayProjection<TPointType, 2>(const TPointType& rPoint,    \
-        const TPointType& rDirection,                                                   \
-        std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,      \
-        typename MultiPatch<2>::Pointer pMultiPatch,                                    \
-        double TOL, int max_iters,                                                      \
-        const std::array<int, 2>& nsampling,                                            \
-        int echo_level);                                                                \
-template \
-int IsogeometricProjectionUtility::ComputeNormalProjection<TPointType, 1>(const TPointType& rPoint, \
-        std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,      \
-        typename MultiPatch<1>::Pointer pMultiPatch,                                    \
-        double TOL, int max_iters,                                                      \
-        const std::array<int, 1>& nsampling,                                            \
-        int echo_level);                                                                \
-\
-template \
-int IsogeometricProjectionUtility::ComputeNormalProjection<TPointType, 2>(const TPointType& rPoint, \
-        std::vector<double>& rLocalPoint, TPointType& rGlobalPoint, int& patch_id,      \
-        typename MultiPatch<2>::Pointer pMultiPatch,                                    \
-        double TOL, int max_iters,                                                      \
-        const std::array<int, 2>& nsampling,                                            \
-        int echo_level);                                                                \
+template class IsogeometricProjectionUtility<Element::GeometryType::PointType::PointType, 1>;
+template class IsogeometricProjectionUtility<Element::GeometryType::PointType::PointType, 2>;
 
-IsogeometricProjectionUtility_TemplateInstantiation(Element::GeometryType::PointType::PointType)
+template class IsogeometricProjectionUtility<array_1d<double, 3>, 1>;
+template class IsogeometricProjectionUtility<array_1d<double, 3>, 2>;
 
-typedef array_1d<double, 3> array_1d_double_3;
-IsogeometricProjectionUtility_TemplateInstantiation(array_1d_double_3)
-
-}
+} // end namespace Kratos
 
 #undef CHECK_DERIVATIVES

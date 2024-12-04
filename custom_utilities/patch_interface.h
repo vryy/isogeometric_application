@@ -110,7 +110,7 @@ public:
     virtual void Enumerate()
     {
         std::vector<std::size_t> func_indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side1());
-        this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices);
+        this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices, false);
     }
 
     /// Overload operator ==

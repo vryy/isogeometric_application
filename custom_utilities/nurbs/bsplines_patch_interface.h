@@ -15,6 +15,7 @@
 
 // Project includes
 #include "custom_utilities/patch_interface.h"
+#include "custom_utilities/nurbs/bsplines_indexing_utility.h"
 #include "custom_utilities/nurbs/bsplines_patch_utility.h"
 
 namespace Kratos
@@ -194,7 +195,7 @@ public:
         {
             std::reverse(func_indices.begin(), func_indices.end());
         }
-        this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices);
+        this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices, false);
     }
 
     /// Information
@@ -294,16 +295,15 @@ public:
     /// Create a clone of this interface
     typename BaseType::Pointer Clone() const override
     {
-        if (this->LocalParameterMapping(0) == 0)
+        const bool uv_or_vu = (this->LocalParameterMapping(0) == 0);
+        if (uv_or_vu)
         {
             return typename BaseType::Pointer(new BSplinesPatchInterface<3>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), true, this->Direction(0), this->Direction(1)));
         }
-        else if (this->LocalParameterMapping(0) == 1)
+        else
         {
             return typename BaseType::Pointer(new BSplinesPatchInterface<3>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), false, this->Direction(0), this->Direction(1)));
         }
-        else
-            KRATOS_ERROR << "Invalid local parameter mapping";
     }
 
     /// Get the local parameter space mapping
@@ -325,19 +325,19 @@ public:
     bool Validate(const bool debug, const double dist_tol) const override
     {
         typename Patch<2>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
-        typename Patch<2>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
 
-        if (mDirections[0] == _REVERSED_)
-        {
-            BSplinesPatchUtility::Reverse<2>(pBPatch2, 0);
-        }
-        if (mDirections[1] == _REVERSED_)
-        {
-            BSplinesPatchUtility::Reverse<2>(pBPatch2, 1);
-        }
+        std::vector<BoundaryDirection> directions = {mDirections[LocalParameterMapping(0)], mDirections[LocalParameterMapping(1)]};
+
+        typename Patch<2>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2(), mLocalParameterMap, directions);
 
         if (debug)
         {
+            auto pBFESpace1 = this->pPatch1()->pFESpace()->ConstructBoundaryFESpace(this->Side1());
+            auto pBFESpace2 = this->pPatch2()->pFESpace()->ConstructBoundaryFESpace(this->Side2(), mLocalParameterMap, directions);
+            KRATOS_WATCH(*pBFESpace1)
+            KRATOS_WATCH(*pBFESpace2)
+
+            std::cout << "Comparing two boundary patches on interface " << this << std::endl;
             KRATOS_WATCH(*pBPatch1)
             KRATOS_WATCH(*pBPatch2)
         }
@@ -357,39 +357,12 @@ public:
         std::vector<std::size_t> size_info;
         std::vector<std::size_t> func_indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(size_info, this->Side1());
 
-        if (mDirections[0] == _REVERSED_)
-        {
-            for (std::size_t i = 0; i < size_info[0]; ++i)
-            {
-                std::vector<std::size_t> tmp(size_info[1]);
-                for (std::size_t j = 0; j < size_info[1]; ++j)
-                {
-                    tmp[j] = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, size_info[1] - j, size_info[0], size_info[1])];
-                }
-                for (std::size_t j = 0; j < size_info[1]; ++j)
-                {
-                    func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, size_info[0], size_info[1])] = tmp[j];
-                }
-            }
-        }
+        const bool uv_or_vu = (this->LocalParameterMapping(0) == 0);
 
-        if (mDirections[1] == _REVERSED_)
-        {
-            for (std::size_t j = 0; j < size_info[1]; ++j)
-            {
-                std::vector<std::size_t> tmp(size_info[0]);
-                for (std::size_t i = 0; i < size_info[0]; ++i)
-                {
-                    tmp[i] = func_indices[BSplinesIndexingUtility_Helper::Index2D(size_info[0] - i, j + 1, size_info[0], size_info[1])];
-                }
-                for (std::size_t i = 0; i < size_info[0]; ++i)
-                {
-                    func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, size_info[0], size_info[1])] = tmp[i];
-                }
-            }
-        }
+        BSplinesIndexingUtility::Transform(func_indices, size_info, uv_or_vu, mDirections[this->LocalParameterMapping(0)], mDirections[this->LocalParameterMapping(1)]);
 
-        this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices);
+
+        this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices, false);
     }
 
     /// Information

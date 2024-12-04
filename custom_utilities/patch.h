@@ -474,10 +474,27 @@ public:
     /// Construct the boundary patch based on side
     virtual typename Patch < TDim - 1 >::Pointer ConstructBoundaryPatch(const BoundarySide& side) const
     {
-        typename Patch < TDim - 1 >::Pointer pBPatch = typename Patch < TDim - 1 >::Pointer(new Patch < TDim - 1 > (-1));
-
         // construct the boundary FESpace
         typename FESpace < TDim - 1 >::Pointer pBFESpace = this->pFESpace()->ConstructBoundaryFESpace(side);
+
+        return this->ConstructBoundaryPatch(pBFESpace);
+    }
+
+    /// Construct the boundary patch based on side and local relative configuration
+    virtual typename Patch < TDim - 1 >::Pointer ConstructBoundaryPatch(const BoundarySide& side,
+            const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
+    {
+        // construct the boundary FESpace
+        typename FESpace < TDim - 1 >::Pointer pBFESpace = this->pFESpace()->ConstructBoundaryFESpace(side, local_parameter_map, directions);
+
+        return this->ConstructBoundaryPatch(pBFESpace);
+    }
+
+    /// Construct the boundary patch based on boundary FESpace
+    typename Patch < TDim - 1 >::Pointer ConstructBoundaryPatch(const typename FESpace < TDim - 1 >::Pointer pBFESpace) const
+    {
+        // construct the boundary patch based on boundary FESpace
+        typename Patch < TDim - 1 >::Pointer pBPatch = typename Patch < TDim - 1 >::Pointer(new Patch < TDim - 1 > (-1));
         pBPatch->SetFESpace(pBFESpace);
 
         // transfer the control values

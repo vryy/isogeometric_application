@@ -737,7 +737,7 @@ public:
     }
 
     /// Assign the index for the functions on the boundary
-    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices) final
+    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices, const bool override) final
     {
         if (side == _BLEFT_)
         {
@@ -745,7 +745,18 @@ public:
             {
                 if (func_indices[0] != -1)
                 {
-                    mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(1, this->Number(0))] = func_indices[0];
+                    const auto index = BSplinesIndexingUtility_Helper::Index1D(1, this->Number(0));
+                    if (override)
+                    {
+                        const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                        mFunctionsIds[index] = func_indices[0];
+                        BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                    }
+                    else
+                    {
+                        if (mFunctionsIds[index] == -1)
+                            mFunctionsIds[index] = func_indices[0];
+                    }
                 }
             }
             else if constexpr (TDim == 2)
@@ -755,7 +766,18 @@ public:
                     std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j + 1, this->Number(1))];
                     if (aux != -1)
                     {
-                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(1, j + 1, this->Number(0), this->Number(1))] = aux;
+                        const auto index = BSplinesIndexingUtility_Helper::Index2D(1, j + 1, this->Number(0), this->Number(1));
+                        if (override)
+                        {
+                            const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                            mFunctionsIds[index] = aux;
+                            BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                        }
+                        else
+                        {
+                            if (mFunctionsIds[index] == -1)
+                                mFunctionsIds[index] = aux;
+                        }
                     }
                 }
             }
@@ -768,7 +790,18 @@ public:
                         std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j + 1, k + 1, this->Number(1), this->Number(2))];
                         if (aux != -1)
                         {
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(1, j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            const auto index = BSplinesIndexingUtility_Helper::Index3D(1, j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2));
+                            if (override)
+                            {
+                                const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                                mFunctionsIds[index] = aux;
+                                BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                            }
+                            else
+                            {
+                                if (mFunctionsIds[index] == -1)
+                                    mFunctionsIds[index] = aux;
+                            }
                         }
                     }
                 }
@@ -780,7 +813,18 @@ public:
             {
                 if (func_indices[0] != -1)
                 {
-                    mFunctionsIds[BSplinesIndexingUtility_Helper::Index1D(this->Number(0), this->Number(0))] = func_indices[0];
+                    const auto index = BSplinesIndexingUtility_Helper::Index1D(this->Number(0), this->Number(0));
+                    if (override)
+                    {
+                        const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                        mFunctionsIds[index] = func_indices[0];
+                        BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                    }
+                    else
+                    {
+                        if (mFunctionsIds[index] == -1)
+                            mFunctionsIds[index] = func_indices[0];
+                    }
                 }
             }
             else if constexpr (TDim == 2)
@@ -790,7 +834,18 @@ public:
                     std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(j + 1, this->Number(1))];
                     if (aux != -1)
                     {
-                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(this->Number(0), j + 1, this->Number(0), this->Number(1))] = aux;
+                        const auto index = BSplinesIndexingUtility_Helper::Index2D(this->Number(0), j + 1, this->Number(0), this->Number(1));
+                        if (override)
+                        {
+                            const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                            mFunctionsIds[index] = aux;
+                            BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                        }
+                        else
+                        {
+                            if (mFunctionsIds[index] == -1)
+                                mFunctionsIds[index] = aux;
+                        }
                     }
                 }
             }
@@ -803,7 +858,18 @@ public:
                         std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(j + 1, k + 1, this->Number(1), this->Number(2))];
                         if (aux != -1)
                         {
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(this->Number(0), j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            const auto index = BSplinesIndexingUtility_Helper::Index3D(this->Number(0), j + 1, k + 1, this->Number(0), this->Number(1), this->Number(2));
+                            if (override)
+                            {
+                                const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                                mFunctionsIds[index] = aux;
+                                BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                            }
+                            else
+                            {
+                                if (mFunctionsIds[index] == -1)
+                                    mFunctionsIds[index] = aux;
+                            }
                         }
                     }
                 }
@@ -818,7 +884,18 @@ public:
                     std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i + 1, this->Number(0))];
                     if (aux != -1)
                     {
-                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i + 1, 1, this->Number(0), this->Number(1))] = aux;
+                        const auto index = BSplinesIndexingUtility_Helper::Index2D(i + 1, 1, this->Number(0), this->Number(1));
+                        if (override)
+                        {
+                            const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                            mFunctionsIds[index] = aux;
+                            BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                        }
+                        else
+                        {
+                            if (mFunctionsIds[index] == -1)
+                                mFunctionsIds[index] = aux;
+                        }
                     }
                 }
             }
@@ -831,7 +908,18 @@ public:
                         std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, this->Number(0), this->Number(1))];
                         if (aux != -1)
                         {
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            const auto index = BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, 1, this->Number(0), this->Number(1), this->Number(2));
+                            if (override)
+                            {
+                                const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                                mFunctionsIds[index] = aux;
+                                BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                            }
+                            else
+                            {
+                                if (mFunctionsIds[index] == -1)
+                                    mFunctionsIds[index] = aux;
+                            }
                         }
                     }
                 }
@@ -846,7 +934,18 @@ public:
                     std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index1D(i + 1, this->Number(0))];
                     if (aux != -1)
                     {
-                        mFunctionsIds[BSplinesIndexingUtility_Helper::Index2D(i + 1, this->Number(1), this->Number(0), this->Number(1))] = aux;
+                        const auto index = BSplinesIndexingUtility_Helper::Index2D(i + 1, this->Number(1), this->Number(0), this->Number(1));
+                        if (override)
+                        {
+                            const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                            mFunctionsIds[index] = aux;
+                            BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                        }
+                        else
+                        {
+                            if (mFunctionsIds[index] == -1)
+                                mFunctionsIds[index] = aux;
+                        }
                     }
                 }
             }
@@ -859,7 +958,18 @@ public:
                         std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, this->Number(0), this->Number(1))];
                         if (aux != -1)
                         {
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, this->Number(2), this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            const auto index = BSplinesIndexingUtility_Helper::Index3D(i + 1, j + 1, this->Number(2), this->Number(0), this->Number(1), this->Number(2));
+                            if (override)
+                            {
+                                const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                                mFunctionsIds[index] = aux;
+                                BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                            }
+                            else
+                            {
+                                if (mFunctionsIds[index] == -1)
+                                    mFunctionsIds[index] = aux;
+                            }
                         }
                     }
                 }
@@ -876,7 +986,18 @@ public:
                         std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, k + 1, this->Number(0), this->Number(2))];
                         if (aux != -1)
                         {
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, 1, k + 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            const auto index = BSplinesIndexingUtility_Helper::Index3D(i + 1, 1, k + 1, this->Number(0), this->Number(1), this->Number(2));
+                            if (override)
+                            {
+                                const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                                mFunctionsIds[index] = aux;
+                                BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                            }
+                            else
+                            {
+                                if (mFunctionsIds[index] == -1)
+                                    mFunctionsIds[index] = aux;
+                            }
                         }
                     }
                 }
@@ -893,7 +1014,18 @@ public:
                         std::size_t aux = func_indices[BSplinesIndexingUtility_Helper::Index2D(i + 1, k + 1, this->Number(0), this->Number(2))];
                         if (aux != -1)
                         {
-                            mFunctionsIds[BSplinesIndexingUtility_Helper::Index3D(i + 1, this->Number(1), k + 1, this->Number(0), this->Number(1), this->Number(2))] = aux;
+                            const auto index = BSplinesIndexingUtility_Helper::Index3D(i + 1, this->Number(1), k + 1, this->Number(0), this->Number(1), this->Number(2));
+                            if (override)
+                            {
+                                const auto local_id = this->LocalId(mFunctionsIds[index]); // record the local id
+                                mFunctionsIds[index] = aux;
+                                BaseType::mGlobalToLocal[mFunctionsIds[index]] = local_id; // reassign the local id
+                            }
+                            else
+                            {
+                                if (mFunctionsIds[index] == -1)
+                                    mFunctionsIds[index] = aux;
+                            }
                         }
                     }
                 }
@@ -924,6 +1056,7 @@ public:
         {
             if (side == _BLEFT_ || side == _BRIGHT_)
             {
+                // on the left and right side, the boundary patch is always (v,w) -> (u,v)
                 pBFESpace->SetKnotVector(0, KnotVector(1).Clone());
                 pBFESpace->SetKnotVector(1, KnotVector(2).Clone());
                 pBFESpace->SetInfo(0, Number(1), Order(1));
@@ -931,6 +1064,7 @@ public:
             }
             else if (side == _BTOP_ || side == _BBOTTOM_)
             {
+                // on the top and bottom side, the boundary patch is always (u,v) -> (u,v)
                 pBFESpace->SetKnotVector(0, KnotVector(0).Clone());
                 pBFESpace->SetKnotVector(1, KnotVector(1).Clone());
                 pBFESpace->SetInfo(0, Number(0), Order(0));
@@ -938,6 +1072,7 @@ public:
             }
             else if (side == _BFRONT_ || side == _BBACK_)
             {
+                // on the front and back side, the boundary patch is always (u,w) -> (u,v)
                 pBFESpace->SetKnotVector(0, KnotVector(0).Clone());
                 pBFESpace->SetKnotVector(1, KnotVector(2).Clone());
                 pBFESpace->SetInfo(0, Number(0), Order(0));
@@ -979,7 +1114,24 @@ public:
         }
 
         // transfer the function indices
-        std::vector<std::size_t> b_func_indices = this->ExtractBoundaryFunctionIndices(side);
+        std::vector<std::size_t> size_info;
+        std::vector<std::size_t> b_func_indices = this->ExtractBoundaryFunctionIndices(size_info, side);
+
+        // here transform the function indices
+        if constexpr (TDim == 2)
+        {
+            if (directions[0] == BoundaryDirection::_REVERSED_)
+            {
+                // reverse the function indices
+                BSplinesIndexingUtility::Reverse<1, std::vector<std::size_t>, std::vector<std::size_t> >(b_func_indices, size_info, 0);
+            }
+        }
+        else if constexpr (TDim == 3)
+        {
+            const bool uv_or_vu = (local_parameter_map.at(0) == 0);
+            BSplinesIndexingUtility::Transform(b_func_indices, size_info, uv_or_vu, directions[local_parameter_map.at(0)], directions[local_parameter_map.at(1)]);
+        }
+
         pBFESpace->ResetFunctionIndices(b_func_indices);
 
         return pBFESpace;

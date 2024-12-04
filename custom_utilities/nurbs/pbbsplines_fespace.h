@@ -529,7 +529,7 @@ public:
     }
 
     /// Assign the index for the functions on the boundary
-    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices) override
+    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices, const bool override) override
     {
         // firstly we organize the basis functions based on its equation_id
         std::map<std::size_t, bf_t> map_bfs;
@@ -545,7 +545,21 @@ public:
         std::size_t cnt = 0;
         for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
         {
-            it->second->SetEquationId(func_indices[cnt++]);
+            if (func_indices[cnt] != -1)
+            {
+                if (override)
+                {
+                    const auto local_id = this->LocalId(it->second->EquationId()); // record the local id
+                    it->second->SetEquationId(func_indices[cnt]);
+                    BaseType::mGlobalToLocal[it->second->EquationId()] = local_id; // reassign the local id
+                }
+                else
+                {
+                    if (it->second->EquationId() == -1)
+                        it->second->SetEquationId(func_indices[cnt]);
+                }
+            }
+            ++cnt;
         }
     }
 

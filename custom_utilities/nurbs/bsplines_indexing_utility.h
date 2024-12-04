@@ -17,6 +17,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "custom_utilities/iga_define.h"
 
 namespace Kratos
 {
@@ -113,6 +114,10 @@ public:
     {
         BSplinesIndexingUtility_Reverse_Helper<TDim, TContainerType, TIndexContainerType>::Reverse(values, sizes, idir);
     }
+
+    /// Transform the indices with parameter mapping for 2D surface patch
+    static void Transform(std::vector<std::size_t>& func_indices, const std::vector<std::size_t>& size_info,
+            const bool uv_or_vu, const BoundaryDirection dir1, const BoundaryDirection dir2);
 
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const

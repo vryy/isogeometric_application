@@ -322,7 +322,9 @@ public:
     }
 
     /// Assign the index for the functions on the boundary
-    virtual void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices)
+    /// If the override flag is on, all the boundary function indices will be overwritten if the target value is not -1
+    /// If the override flag is off, only the boundary function index of not -1 is assigned
+    virtual void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices, const bool override)
     {
         KRATOS_ERROR << "Calling base class function";
     }
@@ -357,7 +359,9 @@ public:
     /// Comparison operator
     virtual bool operator==(const FESpace<TDim>& rOther) const
     {
-        return this->IsCompatible(rOther);
+        const std::vector<std::size_t> my_func_indices = this->FunctionIndices();
+        const std::vector<std::size_t> other_func_indices = rOther.FunctionIndices();
+        return this->IsCompatible(rOther) && (my_func_indices == other_func_indices);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////

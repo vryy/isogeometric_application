@@ -356,6 +356,12 @@ void BSplinesPatchUtility::MakeInterface2D(typename Patch<2>::Pointer pPatch1, c
         typename PatchInterface<2>::Pointer pInterface12;
         typename PatchInterface<2>::Pointer pInterface21;
 
+        /*
+         * The logic of making interface here is simple. It's all about relative position to each other.
+         * If patch 1 boundary see patch 2 boundary in the reversed direction, so is the patch 2 boundary.
+         * Therefore, the direction information of both two interfaces is the same.
+         */
+
         pInterface12 = iga::make_shared<BSplinesPatchInterface<2> >(pPatch1, side1, pPatch2, side2, direction);
         pInterface21 = iga::make_shared<BSplinesPatchInterface<2> >(pPatch2, side2, pPatch1, side1, direction);
 
@@ -419,7 +425,16 @@ void BSplinesPatchUtility::MakeInterface3D(typename Patch<3>::Pointer pPatch1, c
         typename PatchInterface<3>::Pointer pInterface21;
 
         pInterface12 = iga::make_shared<BSplinesPatchInterface<3> >(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
-        pInterface21 = iga::make_shared<BSplinesPatchInterface<3> >(pPatch2, side2, pPatch1, side1, uv_or_vu, direction1, direction2);
+
+        if (uv_or_vu)
+        {
+            pInterface21 = iga::make_shared<BSplinesPatchInterface<3> >(pPatch2, side2, pPatch1, side1, uv_or_vu, direction1, direction2);
+        }
+        else
+        {
+            // if the local parameter space is swapped, then the direction seeing from the other interface must be reversed
+            pInterface21 = iga::make_shared<BSplinesPatchInterface<3> >(pPatch2, side2, pPatch1, side1, uv_or_vu, direction2, direction1);
+        }
 
         pInterface12->SetOtherInterface(pInterface21);
         pInterface21->SetOtherInterface(pInterface12);

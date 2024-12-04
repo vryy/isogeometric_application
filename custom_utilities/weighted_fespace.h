@@ -57,6 +57,12 @@ public:
         return typename WeightedFESpace<TDim>::Pointer(new WeightedFESpace(pFESpace, weights));
     }
 
+    /// Get the underlying FESpace
+    typename BaseType::ConstPointer pFESpace() const
+    {
+        return mpFESpace;
+    }
+
     /// Get the number of basis functions defined over the WeightedFESpace
     std::size_t TotalNumber() const override
     {
@@ -464,9 +470,9 @@ public:
     }
 
     /// Assign the index for the functions on the boundary
-    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices) override
+    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices, const bool override) override
     {
-        mpFESpace->AssignBoundaryFunctionIndices(side, func_indices);
+        mpFESpace->AssignBoundaryFunctionIndices(side, func_indices, override);
     }
 
     /// Construct the boundary WeightedFESpace based on side
@@ -515,9 +521,13 @@ public:
     }
 
     /// Overload comparison operator
-    bool operator==(const FESpace<TDim>& rOther) const override
+    bool operator==(const FESpace<TDim>& rOtherFESpace) const override
     {
-        return this->IsCompatible(rOther);
+        // TODO compare weight?
+        const auto* pOtherWeightedFESpace = static_cast<const WeightedFESpace<TDim>*>(&rOtherFESpace);
+        if (pOtherWeightedFESpace == nullptr)
+            return false;
+        return *(this->mpFESpace) == *(pOtherWeightedFESpace->pFESpace());
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////

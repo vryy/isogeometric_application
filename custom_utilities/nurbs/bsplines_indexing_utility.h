@@ -191,38 +191,12 @@ struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainer
         if (idir == 0)
         {
             for (std::size_t j = 0; j < sizes[1]; ++j)
+            {
                 for (std::size_t k = 0; k < sizes[2]; ++k)
                 {
                     std::reverse(values.begin() + (k * sizes[1] + j)*sizes[0], values.begin() + (k * sizes[1] + j + 1)*sizes[0]);
                 }
-
-            // std::size_t loc;
-
-            // for (std::size_t j = 0; j < sizes[1]; ++j)
-            // {
-            //     for (std::size_t k = 0; k < sizes[2]; ++k)
-            //     {
-            //         // extract the value
-            //         TContainerType Temp(sizes[0]);
-            //         for (std::size_t i = 0; i < sizes[0]; ++i)
-            //         {
-            //             loc = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, sizes[0], sizes[1], sizes[2]);
-            //             // KRATOS_WATCH(loc)
-            //             Temp[i] = values[loc];
-            //             // KRATOS_WATCH(Temp[i])
-            //         }
-
-            //         // assign the reverse value
-            //         for (std::size_t i = 0; i < sizes[0]; ++i)
-            //         {
-            //             loc = BSplinesIndexingUtility_Helper::Index3D(i+1, j+1, k+1, sizes[0], sizes[1], sizes[2]);
-            //             // KRATOS_WATCH(loc)
-            //             values[loc] = Temp[sizes[0]-1-i];
-            //             // KRATOS_WATCH(values[loc])
-            //         }
-            //         // KRATOS_WATCH("---------------")
-            //     }
-            // }
+            }
         }
         else if (idir == 1)
         {

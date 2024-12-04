@@ -120,14 +120,14 @@ public:
     /// The direction variable is to indicate if the local parameters shall be reversed.
     BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
                            typename PatchType::Pointer pPatch2, const BoundarySide side2,
-                           const BoundaryDirection& direction)
+                           const BoundaryDirection direction)
         : BaseType(pPatch1, side1, pPatch2, side2)
     {
         mDirection = direction;
     }
 
     /// Destructor
-    virtual ~BSplinesPatchInterface()
+    ~BSplinesPatchInterface() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "BSplinesPatchInterface2D, Addr = " << this << " is destroyed" << std::endl;
@@ -246,7 +246,7 @@ public:
     /// The direction variable is to indicate if the local parameters shall be reversed.
     BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
                            typename PatchType::Pointer pPatch2, const BoundarySide side2,
-                           const BoundaryDirection& direction)
+                           const BoundaryDirection direction)
         : BaseType(pPatch1, side1, pPatch2, side2)
     {
         mLocalParameterMap[0] = 0;
@@ -255,12 +255,17 @@ public:
 
     /// Full Constructor with the relative direction. This constructor is only valid in 3D.
     /// if uv_or_vu is true, the local configuration {(u:ub) - (v:vb)} is assumed; otherwise, it is {(u:vb) - (v:ub)}
-    /// The direction indicates if the respective local parameters shall be reversed or not
+    /// The direction indicates if the respective local parameters shall be reversed
+    /// In principal, the boundary face in 3D has local parameters u,v. The local direction u (or v)
+    /// corresponds to which parameter direction of the 3D patch depends on how the boundary patch
+    /// is constructed. The local parameter direction (uv) of one patch may align with those of
+    /// the other patch. In that case uv_or_vu == true, otherwise uv_or_vu == false. The correct
+    /// rotation is then determined by the direction information in each local parameter direction.
     BSplinesPatchInterface(typename PatchType::Pointer pPatch1, const BoundarySide side1,
                            typename PatchType::Pointer pPatch2, const BoundarySide side2,
-                           const bool& uv_or_vu,
-                           const BoundaryDirection& direction1,
-                           const BoundaryDirection& direction2)
+                           const bool uv_or_vu,
+                           const BoundaryDirection direction1,
+                           const BoundaryDirection direction2)
         : BaseType(pPatch1, side1, pPatch2, side2)
     {
         if (uv_or_vu == true)
@@ -279,7 +284,7 @@ public:
     }
 
     /// Destructor
-    virtual ~BSplinesPatchInterface()
+    ~BSplinesPatchInterface() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "BSplinesPatchInterface3D, Addr = " << this << " is destroyed" << std::endl;

@@ -324,7 +324,7 @@ public:
     }
 
     /// Compute the knots in the respective direction
-    static std::vector<TDataType> CloneKnots(const std::vector<TDataType>& knots, const BoundaryDirection& direction)
+    static std::vector<TDataType> CloneKnots(const std::vector<TDataType>& knots, const BoundaryDirection direction)
     {
         if (direction == BoundaryDirection::_FORWARD_)
         {
@@ -338,7 +338,7 @@ public:
     }
 
     /// Compute the knots in the respective direction
-    static std::vector<TDataType> CloneKnotsWithPivot(const TDataType& pivot, const std::vector<TDataType>& knots, const BoundaryDirection& direction)
+    static std::vector<TDataType> CloneKnotsWithPivot(const TDataType& pivot, const std::vector<TDataType>& knots, const BoundaryDirection direction)
     {
         if (direction == BoundaryDirection::_FORWARD_)
         {

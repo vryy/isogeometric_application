@@ -333,7 +333,7 @@ public:
         KRATOS_ERROR << "Calling base class function";
     }
 
-    /// Construct the boundary FESpace based on side and local relative configuration between two patches
+    /// Construct the boundary FESpace based on side and local relative configuration
     virtual typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
             const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
@@ -348,13 +348,13 @@ public:
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /// Compare the two FESpacees in terms of its parametric information.
+    /// Compare the two FESpace's in terms of its parametric information.
     virtual bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const
     {
         return false;
     }
 
-    /// Overload comparison operator
+    /// Comparison operator
     virtual bool operator==(const FESpace<TDim>& rOther) const
     {
         return this->IsCompatible(rOther);

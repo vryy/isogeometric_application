@@ -243,6 +243,25 @@ def CreateSlab(start_point, end_point):
     volume_patch_ptr = bsplines_patch_util.CreateLoftPatch(face1, face2)
     return volume_patch_ptr
 
+### Create the 3D parallelpiped
+def CreateParallelepiped(start_point, dir1, dir2, dir3):
+    # l1: start -> start + d1
+    line1 = CreateLine(start_point, [start_point[0] + dir1[0], start_point[1] + dir1[1], start_point[2] + dir1[2]])
+    # l2: start + d2 -> start + d1 + d2
+    line2 = CreateLine([start_point[0] + dir2[0], start_point[1] + dir2[1], start_point[2] + dir2[2]], [start_point[0] + dir1[0] + dir2[0], start_point[1] + dir1[1] + dir2[1], start_point[2] + dir1[2] + dir2[2]])
+    face1_ptr = bsplines_patch_util.CreateLoftPatch(line1, line2)
+    face1 = face1_ptr.GetReference()
+
+    # l3: start + d3 -> start + d1 + d3
+    line3 = CreateLine([start_point[0] + dir3[0], start_point[1] + dir3[1], start_point[2] + dir3[2]], [start_point[0] + dir1[0] + dir3[0], start_point[1] + dir1[1] + dir3[1], start_point[2] + dir1[2] + dir3[2]])
+    # l4: start + d2 + d3 -> start + d1 + d2 + d3
+    line4 = CreateLine([start_point[0] + dir2[0] + dir3[0], start_point[1] + dir2[1] + dir3[1], start_point[2] + dir2[2] + dir3[2]], [start_point[0] + dir1[0] + dir2[0] + dir3[0], start_point[1] + dir1[1] + dir2[1] + dir3[1], start_point[2] + dir1[2] + dir2[2] + dir3[2]])
+    face2_ptr = bsplines_patch_util.CreateLoftPatch(line3, line4)
+    face2 = face2_ptr.GetReference()
+
+    volume_patch_ptr = bsplines_patch_util.CreateLoftPatch(face1, face2)
+    return volume_patch_ptr
+
 ### Create a half circle with 4 patches configuration
 def CreateHalfCircle4(center, axis, radius, rotation_angle, params={}):
 

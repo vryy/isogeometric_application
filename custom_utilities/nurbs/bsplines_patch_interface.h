@@ -66,8 +66,8 @@ public:
     }
 
     /// Get the relative direction between the local parameter space
-    BoundaryDirection Direction() const {return _UNDEFINED_DIR_;}
-    BoundaryDirection Direction(std::size_t dim) const {return _UNDEFINED_DIR_;}
+    BoundaryDirection Direction() const {return BoundaryDirection::_UNDEFINED_DIR_;}
+    BoundaryDirection Direction(std::size_t dim) const {return BoundaryDirection::_UNDEFINED_DIR_;}
 
     /// Validate the compatibility of two patches on the interface
     bool Validate(const bool debug, const double dist_tol) const override
@@ -113,7 +113,7 @@ public:
                            typename PatchType::Pointer pPatch2, const BoundarySide side2)
         : BaseType(pPatch1, side1, pPatch2, side2)
     {
-        mDirection = _FORWARD_;
+        mDirection = BoundaryDirection::_FORWARD_;
     }
 
     /// Full Constructor with the relative direction. This constructor is only valid in 2D.
@@ -156,7 +156,7 @@ public:
         }
         else
         {
-            return _UNDEFINED_DIR_;
+            return BoundaryDirection::_UNDEFINED_DIR_;
         }
     }
 
@@ -166,7 +166,7 @@ public:
         typename Patch<1>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
         typename Patch<1>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
 
-        if (mDirection == _REVERSED_)
+        if (mDirection == BoundaryDirection::_REVERSED_)
         {
             BSplinesPatchUtility::Reverse<1>(pBPatch2, 0);
         }
@@ -190,7 +190,7 @@ public:
     void Enumerate() override
     {
         std::vector<std::size_t> func_indices = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side1());
-        if (mDirection == _REVERSED_)
+        if (mDirection == BoundaryDirection::_REVERSED_)
         {
             std::reverse(func_indices.begin(), func_indices.end());
         }
@@ -238,8 +238,8 @@ public:
     {
         mLocalParameterMap[0] = 0;
         mLocalParameterMap[1] = 1;
-        mDirections[0] = _FORWARD_;
-        mDirections[1] = _FORWARD_;
+        mDirections[0] = BoundaryDirection::_FORWARD_;
+        mDirections[1] = BoundaryDirection::_FORWARD_;
     }
 
     /// Full Constructor with the relative direction. This constructor is only valid in 2D.

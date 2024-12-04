@@ -136,11 +136,11 @@ typename MultiPatch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::Import(cons
             BoundaryDirection dir;
             if (interface.ornt1 == 1)
             {
-                dir = _FORWARD_;
+                dir = BoundaryDirection::_FORWARD_;
             }
             else if (interface.ornt1 == -1)
             {
-                dir = _REVERSED_;
+                dir = BoundaryDirection::_REVERSED_;
             }
 
             BSplinesPatchUtility::MakeInterface2D(pPatch1, side1, pPatch2, side2, dir);
@@ -161,20 +161,20 @@ typename MultiPatch<TDim>::Pointer MultiNURBSPatchGeoImporter<TDim>::Import(cons
 
             if (interface.ornt1 == 1)
             {
-                dir1 = _FORWARD_;
+                dir1 = BoundaryDirection::_FORWARD_;
             }
             else if (interface.ornt1 == -1)
             {
-                dir1 = _REVERSED_;
+                dir1 = BoundaryDirection::_REVERSED_;
             }
 
             if (interface.ornt2 == 1)
             {
-                dir2 = _FORWARD_;
+                dir2 = BoundaryDirection::_FORWARD_;
             }
             else if (interface.ornt2 == -1)
             {
-                dir2 = _REVERSED_;
+                dir2 = BoundaryDirection::_REVERSED_;
             }
 
             BSplinesPatchUtility::MakeInterface3D(pPatch1, side1, pPatch2, side2, uv_or_vu, dir1, dir2);

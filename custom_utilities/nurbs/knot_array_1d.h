@@ -133,18 +133,18 @@ public:
     }
 
     /// Create a clone of this knot vector
-    KnotArray1D<TDataType> Clone(const BoundaryDirection& dir = _FORWARD_) const
+    KnotArray1D<TDataType> Clone(const BoundaryDirection dir = BoundaryDirection::_FORWARD_) const
     {
         KnotArray1D<TDataType> kvec;
 
-        if (dir == _FORWARD_)
+        if (dir == BoundaryDirection::_FORWARD_)
         {
             for (std::size_t i = 0; i < mpKnots.size(); ++i)
             {
                 kvec.pCreateKnot(mpKnots[i]->Value());
             }
         }
-        else if (dir == _REVERSED_)
+        else if (dir == BoundaryDirection::_REVERSED_)
         {
             for (std::size_t i = 0; i < mpKnots.size(); ++i)
             {
@@ -326,11 +326,11 @@ public:
     /// Compute the knots in the respective direction
     static std::vector<TDataType> CloneKnots(const std::vector<TDataType>& knots, const BoundaryDirection& direction)
     {
-        if (direction == _FORWARD_)
+        if (direction == BoundaryDirection::_FORWARD_)
         {
             return knots;
         }
-        else if (direction == _REVERSED_)
+        else if (direction == BoundaryDirection::_REVERSED_)
         {
             return ReverseKnots(knots);
         }
@@ -340,11 +340,11 @@ public:
     /// Compute the knots in the respective direction
     static std::vector<TDataType> CloneKnotsWithPivot(const TDataType& pivot, const std::vector<TDataType>& knots, const BoundaryDirection& direction)
     {
-        if (direction == _FORWARD_)
+        if (direction == BoundaryDirection::_FORWARD_)
         {
             return knots;
         }
-        else if (direction == _REVERSED_)
+        else if (direction == BoundaryDirection::_REVERSED_)
         {
             return ReverseKnotsWithPivot(pivot, knots);
         }

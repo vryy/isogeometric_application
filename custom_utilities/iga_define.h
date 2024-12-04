@@ -131,12 +131,24 @@ enum BoundarySide3D
 
 #define BOUNDARY_FLAG(x) (1 << (x+1))
 
-enum BoundaryDirection
+enum class BoundaryDirection
 {
     _FORWARD_ = 0,
     _REVERSED_ = 1,
     _UNDEFINED_DIR_ = -1
 };
+
+inline std::ostream& operator << (std::ostream& rOStream, const BoundaryDirection rThis)
+{
+    switch(rThis)
+    {
+        case BoundaryDirection::_FORWARD_:          rOStream << "forward";      break;
+        case BoundaryDirection::_REVERSED_:         rOStream << "reversed";     break;
+        case BoundaryDirection::_UNDEFINED_DIR_:    rOStream << "undefined";    break;
+        default: break;
+    }
+    return rOStream;
+}
 
 enum BoundaryFlag
 {

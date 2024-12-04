@@ -535,8 +535,8 @@ void IsogeometricApplication_AddPatchesToPython()
     ;
 
     enum_<BoundaryDirection>("BoundaryDirection")
-    .value("Forward", _FORWARD_)
-    .value("Reversed", _REVERSED_)
+    .value("Forward", BoundaryDirection::_FORWARD_)
+    .value("Reversed", BoundaryDirection::_REVERSED_)
     ;
 
     enum_<BoundaryFlag>("BoundaryFlag")

@@ -245,6 +245,20 @@ typename Patch < TDim - 1 >::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& r
     return rDummy.ConstructBoundaryPatch(side);
 }
 
+template<int TDim>
+static typename MultiPatch<TDim>::Pointer MultiPatch_init(const boost::python::list& patch_list)
+{
+    typename MultiPatch<TDim>::Pointer pMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
+
+    std::vector<typename Patch<TDim>::Pointer> patches;
+    IsogeometricPythonUtils::Unpack<typename Patch<TDim>::Pointer>(patch_list, patches);
+
+    for (std::size_t i = 0; i < patches.size(); ++i)
+        pMultiPatch->AddPatch(patches[i]);
+
+    return pMultiPatch;
+}
+
 template<class TMultiPatchType>
 typename TMultiPatchType::PatchContainerType MultiPatch_GetPatches(TMultiPatchType& rDummy)
 {
@@ -393,6 +407,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     ss << "MultiPatch" << TDim << "D";
     class_<MultiPatch<TDim>, typename MultiPatch<TDim>::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<>())
+    .def("__init__", make_constructor(&MultiPatch_init<TDim>))
     // .def("ResetId", &MultiPatch<TDim>::ResetId) // this function is not really useful. One shall keep control over the id of the patch.
     .def("AddPatch", &MultiPatch<TDim>::AddPatch)
     .def("RemovePatch", &MultiPatch<TDim>::RemovePatch)

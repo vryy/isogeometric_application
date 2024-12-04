@@ -32,7 +32,7 @@ namespace Python
 struct IsogeometricPythonUtils
 {
 
-    template<typename TInputValueType, typename TOutputValueType>
+    template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static void Unpack(const boost::python::list& rValues, std::vector<TOutputValueType>& values)
     {
         typedef boost::python::stl_input_iterator<TInputValueType> iterator_value_type;
@@ -43,7 +43,7 @@ struct IsogeometricPythonUtils
         }
     }
 
-    template<typename TInputValueType, typename TOutputValueType>
+    template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static std::size_t Unpack(const boost::python::list& rValues, std::vector<TOutputValueType>& values, std::size_t Dim)
     {
         if (values.size() != Dim)
@@ -66,7 +66,7 @@ struct IsogeometricPythonUtils
         return dim;
     }
 
-    template<typename TInputValueType, typename TOutputValueType>
+    template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static void Unpack(const boost::python::list& rValues, std::vector<std::vector<TOutputValueType> >& values)
     {
         typedef boost::python::stl_input_iterator<boost::python::list> iterator_value_type;
@@ -88,7 +88,7 @@ struct IsogeometricPythonUtils
         }
     }
 
-    template<typename TInputValueType, typename TOutputValueType>
+    template<typename TInputValueType, typename TOutputValueType = TInputValueType>
     static std::size_t Unpack(const boost::python::list& rValues, std::vector<std::vector<TOutputValueType> >& values, std::size_t Dim)
     {
         if (values.size() != Dim)

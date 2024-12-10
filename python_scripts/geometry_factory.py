@@ -414,3 +414,381 @@ def ExportLocalFrenetFrameToMatlab(trans_list, fn, s = 1.0):
         cnt = cnt + 1
     ifile.close()
 
+## Create multipatch of two slabs in 3D along the x-direction. The dimension of each cube along x-, y-, and z-direction is L, w, h correspondingly.
+## On output returns the multipatch and the corresponding parameter direction of L, w and h side of the first patch
+def CreateTwoSlabs(setting=1, configuration = 1, dist = 0.1, L = 1.0, w = 1.0, h = 1.0):
+    if setting == 1:
+        return CreateTwoSlabs1(configuration = configuration, dist = dist, L = L, w = w, h = h)
+    elif setting == 2:
+        return CreateTwoSlabs2(configuration = configuration, dist = dist, L = L, w = w, h = h)
+    elif setting == 3:
+        return CreateTwoSlabs3(configuration = configuration, dist = dist, L = L, w = w, h = h)
+    elif setting == 4:
+        return CreateTwoSlabs4(configuration = configuration, dist = dist, L = L, w = w, h = h)
+    elif setting == 5:
+        return CreateTwoSlabs5(configuration = configuration, dist = dist, L = L, w = w, h = h)
+    elif setting == 6:
+        return CreateTwoSlabs6(configuration = configuration, dist = dist, L = L, w = w, h = h)
+    else:
+        raise Exception("Unknown setting %d", setting)
+
+## Create multipatch of two slabs in 3D along the x-direction. The dimension of each cube along x-, y-, and z-direction is L, w, h correspondingly.
+## in this setting, the two surface patch matches on v->v and w->w, that means uv_or_vu == True
+def CreateTwoSlabs1(configuration = 1, dist = 0.1, L = 1.0, w = 1.0, h = 1.0):
+
+    # create patch 1
+    p1 = [0.0, 0.0, 0.0]
+    p2 = [L, w, h]
+    patch1_ptr = CreateSlab(p1, p2)
+    patch1 = patch1_ptr.GetReference()
+    patch1.Id = 1
+    patch1.LayerIndex = 1
+
+    # create patch 2
+    p3 = [L + dist, 0.0, 0.0]
+    p4 = [2.0*L + dist, w, h]
+    patch2_ptr = CreateSlab(p3, p4)
+    patch2 = patch2_ptr.GetReference()
+    patch2.Id = 2
+    patch2.LayerIndex = 1
+
+    if configuration == 1:
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.U1, patch2, BoundarySide3D.U0, True, BoundaryDirection.Forward, BoundaryDirection.Forward)
+
+    elif configuration == 2:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.U0, patch2, BoundarySide3D.U0, True, BoundaryDirection.Forward, BoundaryDirection.Reversed)
+
+    elif configuration == 3:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+        bsplines_patch_util.Reverse(patch1, 1)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.U0, patch2, BoundarySide3D.U0, True, BoundaryDirection.Reversed, BoundaryDirection.Forward)
+
+    elif configuration == 4:
+
+        bsplines_patch_util.Reverse(patch1, 1)
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.U1, patch2, BoundarySide3D.U0, True, BoundaryDirection.Reversed, BoundaryDirection.Reversed)
+
+    else:
+        raise Exception("Unknown configuration %d" % (configuration))
+
+    return mpatch, [0, 1, 2]
+
+## Create multipatch of two slabs in 3D along the x-direction. The dimension of each cube along x-, y-, and z-direction is L, w, h correspondingly.
+## in this setting, the two surface patch matches on v->w and w->v, that means uv_or_vu == False
+def CreateTwoSlabs2(configuration = 1, dist = 0.1, L = 1.0, w = 1.0, h = 1.0):
+
+    # create patch 1
+    p1 = [0.0, 0.0, 0.0]
+    d1 = [L, 0.0, 0.0]
+    d2 = [0.0, 0.0, h]
+    d3 = [0.0, w, 0.0]
+    patch1_ptr = CreateParallelepiped(p1, d1, d2, d3)
+    patch1 = patch1_ptr.GetReference()
+    patch1.Id = 1
+    patch1.LayerIndex = 1
+
+    # create patch 2
+    p3 = [L + dist, 0.0, 0.0]
+    p4 = [2.0*L + dist, w, h]
+    patch2_ptr = CreateSlab(p3, p4)
+    patch2 = patch2_ptr.GetReference()
+    patch2.Id = 2
+    patch2.LayerIndex = 1
+
+    if configuration == 1:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.U0, patch2, BoundarySide3D.U0, False, BoundaryDirection.Forward, BoundaryDirection.Forward)
+
+    elif configuration == 2:
+
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.U1, patch2, BoundarySide3D.U0, False, BoundaryDirection.Forward, BoundaryDirection.Reversed)
+
+    elif configuration == 3:
+
+        bsplines_patch_util.Reverse(patch1, 1)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.U1, patch2, BoundarySide3D.U0, False, BoundaryDirection.Reversed, BoundaryDirection.Forward)
+
+    elif configuration == 4:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+        bsplines_patch_util.Reverse(patch1, 1)
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.U0, patch2, BoundarySide3D.U0, False, BoundaryDirection.Reversed, BoundaryDirection.Reversed)
+
+    else:
+        raise Exception("Unknown configuration %d" % (configuration))
+
+    return mpatch, [0, 2, 1]
+
+## Create multipatch of two slabs in 3D along the x-direction. The dimension of each cube along x-, y-, and z-direction is L, w, h correspondingly.
+## in this setting, the two surface patch matches on u->v and w->w, that means uv_or_vu == True
+def CreateTwoSlabs3(configuration = 1, dist = 0.1, L = 1.0, w = 1.0, h = 1.0):
+
+    # create patch 1
+    p1 = [0.0, 0.0, 0.0]
+    d1 = [0.0, w, 0.0]
+    d2 = [L, 0.0, 0.0]
+    d3 = [0.0, 0.0, h]
+    patch1_ptr = CreateParallelepiped(p1, d1, d2, d3)
+    patch1 = patch1_ptr.GetReference()
+    patch1.Id = 1
+    patch1.LayerIndex = 1
+
+    # create patch 2
+    p3 = [L + dist, 0.0, 0.0]
+    p4 = [2.0*L + dist, w, h]
+    patch2_ptr = CreateSlab(p3, p4)
+    patch2 = patch2_ptr.GetReference()
+    patch2.Id = 2
+    patch2.LayerIndex = 1
+
+    if configuration == 1:
+
+        bsplines_patch_util.Reverse(patch1, 1)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.V0, patch2, BoundarySide3D.U0, True, BoundaryDirection.Forward, BoundaryDirection.Forward)
+
+    elif configuration == 2:
+
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.V1, patch2, BoundarySide3D.U0, True, BoundaryDirection.Forward, BoundaryDirection.Reversed)
+
+    elif configuration == 3:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.V1, patch2, BoundarySide3D.U0, True, BoundaryDirection.Reversed, BoundaryDirection.Forward)
+
+    elif configuration == 4:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+        bsplines_patch_util.Reverse(patch1, 1)
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.V0, patch2, BoundarySide3D.U0, True, BoundaryDirection.Reversed, BoundaryDirection.Reversed)
+
+    else:
+        raise Exception("Unknown configuration %d" % (configuration))
+
+    return mpatch, [1, 0, 2]
+
+## Create multipatch of two slabs in 3D along the x-direction. The dimension of each cube along x-, y-, and z-direction is L, w, h correspondingly.
+## in this setting, the two surface patch matches on w->v and u->w, that means uv_or_vu == False
+def CreateTwoSlabs4(configuration = 1, dist = 0.1, L = 1.0, w = 1.0, h = 1.0):
+
+    # create patch 1
+    p1 = [0.0, 0.0, 0.0]
+    d1 = [0.0, 0.0, h]
+    d2 = [L, 0.0, 0.0]
+    d3 = [0.0, w, 0.0]
+    patch1_ptr = CreateParallelepiped(p1, d1, d2, d3)
+    patch1 = patch1_ptr.GetReference()
+    patch1.Id = 1
+    patch1.LayerIndex = 1
+
+    # create patch 2
+    p3 = [L + dist, 0.0, 0.0]
+    p4 = [2.0*L + dist, w, h]
+    patch2_ptr = CreateSlab(p3, p4)
+    patch2 = patch2_ptr.GetReference()
+    patch2.Id = 2
+    patch2.LayerIndex = 1
+
+    if configuration == 1:
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.V1, patch2, BoundarySide3D.U0, False, BoundaryDirection.Forward, BoundaryDirection.Forward)
+
+    elif configuration == 2:
+
+        bsplines_patch_util.Reverse(patch1, 2)
+        bsplines_patch_util.Reverse(patch1, 1)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.V0, patch2, BoundarySide3D.U0, False, BoundaryDirection.Forward, BoundaryDirection.Reversed)
+
+    elif configuration == 3:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+        bsplines_patch_util.Reverse(patch1, 1)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.V0, patch2, BoundarySide3D.U0, False, BoundaryDirection.Reversed, BoundaryDirection.Forward)
+
+    elif configuration == 4:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.V1, patch2, BoundarySide3D.U0, False, BoundaryDirection.Reversed, BoundaryDirection.Reversed)
+
+    else:
+        raise Exception("Unknown configuration %d" % (configuration))
+
+    return mpatch, [1, 2, 0]
+
+## Create multipatch of two slabs in 3D along the x-direction. The dimension of each cube along x-, y-, and z-direction is L, w, h correspondingly.
+## in this setting, the two surface patch matches on u->v and v->w, that means uv_or_vu == True
+def CreateTwoSlabs5(configuration = 1, dist = 0.1, L = 1.0, w = 1.0, h = 1.0):
+
+    # create patch 1
+    p1 = [0.0, 0.0, 0.0]
+    d1 = [0.0, w, 0.0]
+    d2 = [0.0, 0.0, h]
+    d3 = [L, 0.0, 0.0]
+    patch1_ptr = CreateParallelepiped(p1, d1, d2, d3)
+    patch1 = patch1_ptr.GetReference()
+    patch1.Id = 1
+    patch1.LayerIndex = 1
+
+    # create patch 2
+    p3 = [L + dist, 0.0, 0.0]
+    p4 = [2.0*L + dist, w, h]
+    patch2_ptr = CreateSlab(p3, p4)
+    patch2 = patch2_ptr.GetReference()
+    patch2.Id = 2
+    patch2.LayerIndex = 1
+
+    if configuration == 1:
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.W1, patch2, BoundarySide3D.U0, True, BoundaryDirection.Forward, BoundaryDirection.Forward)
+
+    elif configuration == 2:
+
+        bsplines_patch_util.Reverse(patch1, 1)
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.W0, patch2, BoundarySide3D.U0, True, BoundaryDirection.Forward, BoundaryDirection.Reversed)
+
+    elif configuration == 3:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.W0, patch2, BoundarySide3D.U0, True, BoundaryDirection.Reversed, BoundaryDirection.Forward)
+
+    elif configuration == 4:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+        bsplines_patch_util.Reverse(patch1, 1)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.W1, patch2, BoundarySide3D.U0, True, BoundaryDirection.Reversed, BoundaryDirection.Reversed)
+
+    else:
+        raise Exception("Unknown configuration %d" % (configuration))
+
+    return mpatch, [2, 0, 1]
+
+## Create multipatch of two slabs in 3D along the x-direction. The dimension of each cube along x-, y-, and z-direction is L, w, h correspondingly.
+## in this setting, the two surface patch matches on v->v and u->w, that means uv_or_vu == False
+def CreateTwoSlabs6(configuration = 1, dist = 0.1, L = 1.0, w = 1.0, h = 1.0):
+
+    # create patch 1
+    p1 = [0.0, 0.0, 0.0]
+    d1 = [0.0, 0.0, h]
+    d2 = [0.0, w, 0.0]
+    d3 = [L, 0.0, 0.0]
+    patch1_ptr = CreateParallelepiped(p1, d1, d2, d3)
+    patch1 = patch1_ptr.GetReference()
+    patch1.Id = 1
+    patch1.LayerIndex = 1
+
+    # create patch 2
+    p3 = [L + dist, 0.0, 0.0]
+    p4 = [2.0*L + dist, w, h]
+    patch2_ptr = CreateSlab(p3, p4)
+    patch2 = patch2_ptr.GetReference()
+    patch2.Id = 2
+    patch2.LayerIndex = 1
+
+    if configuration == 1:
+
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.W0, patch2, BoundarySide3D.U0, False, BoundaryDirection.Forward, BoundaryDirection.Forward)
+
+    elif configuration == 2:
+
+        bsplines_patch_util.Reverse(patch1, 1)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.W1, patch2, BoundarySide3D.U0, False, BoundaryDirection.Forward, BoundaryDirection.Reversed)
+
+    elif configuration == 3:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.W1, patch2, BoundarySide3D.U0, False, BoundaryDirection.Reversed, BoundaryDirection.Forward)
+
+    elif configuration == 4:
+
+        bsplines_patch_util.Reverse(patch1, 0)
+        bsplines_patch_util.Reverse(patch1, 1)
+        bsplines_patch_util.Reverse(patch1, 2)
+
+        ######create multipatch
+        mpatch = MultiPatch3D([patch1_ptr, patch2_ptr])
+        bsplines_patch_util.MakeInterface(patch1, BoundarySide3D.W0, patch2, BoundarySide3D.U0, False, BoundaryDirection.Reversed, BoundaryDirection.Reversed)
+
+    else:
+        raise Exception("Unknown configuration %d" % (configuration))
+
+    return mpatch, [2, 1, 0]

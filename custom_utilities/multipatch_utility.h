@@ -42,7 +42,7 @@ public:
     MultiPatchUtility() {}
 
     /// Destructor
-    virtual ~MultiPatchUtility() {}
+    ~MultiPatchUtility() override {}
 
     /// Create new patch from a FESpace and wrap it with pointer
 #ifdef SD_APP_FORWARD_COMPATIBILITY
@@ -273,15 +273,6 @@ public:
     }
 
 }; // end class MultiPatchUtility
-
-/// output stream function
-inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchUtility& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
 
 } // namespace Kratos.
 

@@ -58,6 +58,9 @@ public:
     /// Add the patch
     void AddPatch(typename Patch<TDim>::Pointer pPatch)
     {
+        const auto it = mpPatches.find(pPatch->Id());
+        if (it != mpPatches.end())
+            KRATOS_ERROR << "WARNING!!! Patch " << pPatch->Id() << " exists";
         mpPatches.push_back(pPatch);
         pPatch->pSetParentMultiPatch(this->shared_from_this());
     }

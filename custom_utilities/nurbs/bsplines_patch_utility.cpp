@@ -55,7 +55,7 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility::CreateLoftPatch(std::vector 
 
     // create the new FESpace
     typename BSplinesFESpace < TDim - 1 >::Pointer pFESpace0 = iga::dynamic_pointer_cast < BSplinesFESpace < TDim - 1 > > (pPatches[0]->pFESpace());
-    if (pFESpace0 == NULL)
+    if (pFESpace0 == nullptr)
         KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
     typename BSplinesFESpace<TDim>::Pointer pNewFESpace = BSplinesFESpace<TDim>::Create();
     for (std::size_t dim = 0; dim < TDim - 1; ++dim)
@@ -75,7 +75,7 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility::CreateLoftPatch(std::vector 
     typedef typename Patch<TDim>::ControlPointType ControlPointType;
     typename StructuredControlGrid < TDim - 1, ControlPointType >::Pointer pControlPointGrid0
         = iga::dynamic_pointer_cast < StructuredControlGrid < TDim - 1, ControlPointType > > (pPatches[0]->pControlPointGridFunction()->pControlGrid());
-    if (pControlPointGrid0 == NULL)
+    if (pControlPointGrid0 == nullptr)
     {
         KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
     }
@@ -153,7 +153,7 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
     typedef typename Patch<TDim>::ControlPointType ControlPointType;
     typename StructuredControlGrid<TDim, ControlPointType>::Pointer pControlPointGrid =
         iga::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
-    if (pControlPointGrid != NULL)
+    if (pControlPointGrid != nullptr)
     {
         pControlPointGrid->Reverse(idir);
     }
@@ -169,7 +169,7 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
     {
         typename StructuredControlGrid<TDim, double>::Pointer pControlValueGrid =
             iga::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
-        if (pControlValueGrid != NULL)
+        if (pControlValueGrid != nullptr)
         {
             pControlValueGrid->Reverse(idir);
         }
@@ -187,7 +187,7 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
         typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pControlValueGrid =
             iga::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
         if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") { continue; }
-        if (pControlValueGrid != NULL)
+        if (pControlValueGrid != nullptr)
         {
             pControlValueGrid->Reverse(idir);
         }
@@ -204,7 +204,7 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
     {
         typename StructuredControlGrid<TDim, Vector>::Pointer pControlValueGrid =
             iga::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
-        if (pControlValueGrid != NULL)
+        if (pControlValueGrid != nullptr)
         {
             pControlValueGrid->Reverse(idir);
         }
@@ -218,15 +218,15 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
     reversed_patches.insert(pPatch->Id());
 
     // look for neighbours and reverse
-    if (TDim > 1)
+    if constexpr (TDim > 1)
     {
         for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
         {
             typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
 
-            if (pInterface != NULL)
+            if (pInterface != nullptr)
             {
-                if (TDim == 2)
+                if constexpr (TDim == 2)
                 {
                     std::size_t idir1 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side1()));
                     std::size_t idir2 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side2()));
@@ -242,7 +242,7 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
                         pInterface->pOtherInterface()->FlipSide2();
                     }
                 }
-                else if (TDim == 3)
+                else if constexpr (TDim == 3)
                 {
                     std::vector<int> dirs1 = ParameterDirection<3>::Get(pInterface->Side1());
                     std::vector<int> dirs2 = ParameterDirection<3>::Get(pInterface->Side2());

@@ -55,7 +55,7 @@ namespace Kratos
 /** A level set using multi-patch as level boundary
 level_set > 0 if the vertical projection on the multipatch is below the point, and vice versa
 */
-class MultiPatchZLevelSet : public LevelSet, public IsogeometricEcho
+class MultiPatchZLevelSet : public LevelSet
 {
 public:
     ///@name Type Definitions
@@ -84,7 +84,7 @@ public:
 
     /// Copy constructor.
     MultiPatchZLevelSet(MultiPatchZLevelSet const& rOther)
-        : BaseType(rOther), IsogeometricEcho(rOther)
+        : BaseType(rOther)
         , mpMultiPatch(rOther.mpMultiPatch)
         , mnsampling1(rOther.mnsampling1)
         , mnsampling2(rOther.mnsampling2)
@@ -93,7 +93,7 @@ public:
     {}
 
     /// Destructor.
-    virtual ~MultiPatchZLevelSet() {}
+    ~MultiPatchZLevelSet() override {}
 
     ///@}
     ///@name Operators

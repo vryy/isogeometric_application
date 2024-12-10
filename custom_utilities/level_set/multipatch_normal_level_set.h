@@ -58,7 +58,7 @@ namespace Kratos
  * It uses normal projection to evaluate the level set value
  */
 template<int TDim>
-class MultiPatchNormalLevelSet : public LevelSet, public IsogeometricEcho
+class MultiPatchNormalLevelSet : public LevelSet
 {
 public:
     ///@name Type Definitions
@@ -91,7 +91,7 @@ public:
 
     /// Copy constructor.
     MultiPatchNormalLevelSet(MultiPatchNormalLevelSet const& rOther)
-        : BaseType(rOther), IsogeometricEcho(rOther)
+        : BaseType(rOther)
         , mpMultiPatch(rOther.mpMultiPatch)
         , mnsampling(rOther.mnsampling)
         , mProjectionTolerance(rOther.mProjectionTolerance)

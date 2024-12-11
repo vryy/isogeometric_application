@@ -23,7 +23,9 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
     bool record_trans_mat)
 {
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+    {
         KRATOS_ERROR << "Only support the NURBS patch";
+    }
 
     bool to_refine = false;
     if (refined_patches.find( pPatch->Id() ) == refined_patches.end())
@@ -47,11 +49,10 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
 
     if (to_refine)
     {
-        std::cout << "patch " << pPatch->Id() << " will be refined" << std::endl;
-//        std::cout << " ins_knots.size:";
-//        for (unsigned int i = 0; i < TDim; ++i)
-//            std::cout << " " << ins_knots[i].size();
-//        std::cout << std::endl;
+        #ifdef ENABLE_VERBOSE_REFINEMENT
+        std::cout << "Patch " << pPatch->Id() << " will be refined" << std::endl;
+        #endif
+
         #ifdef DEBUG_INS_KNOTS
         std::cout << " ins_knots:";
         for (unsigned int i = 0; i < ins_knots.size(); ++i)
@@ -101,7 +102,6 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         ControlGridUtility::Transform<ControlPoint<double>, Matrix>(T, *(pPatch->pControlPointGridFunction()->pControlGrid()), *pNewControlPoints);
         pNewControlPoints->SetName(pPatch->pControlPointGridFunction()->pControlGrid()->Name());
         pNewPatch->CreateControlPointGridFunction(pNewControlPoints);
-//        KRATOS_WATCH(*pNewControlPoints)
 
         // transfer the grid function
         // here to transfer correctly we apply a two-step process:
@@ -212,7 +212,9 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
                 neib_ins_knots[param_dirs_2[ pInterface->LocalParameterMapping(1) ] ] = KnotArray1D<double>::CloneKnotsWithPivot(new_knots[param_dirs_1[1]].back(), ins_knots[param_dirs_1[1]], pInterface->Direction(1));
             }
 
+            #ifdef ENABLE_VERBOSE_REFINEMENT
             std::cout << "Neighbor patch " << pNeighbor->Id() << " of patch " << pPatch->Id() << " is accounted" << std::endl;
+            #endif
 
             InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots, trans_mats, record_trans_mat);
 
@@ -236,9 +238,13 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         }
 
         // swap
+        #ifdef ENABLE_VERBOSE_REFINEMENT
         std::cout << __FUNCTION__ << ": " << pPatch << " is swapped with ";
+        #endif
         pPatch.swap(pNewPatch);
+        #ifdef ENABLE_VERBOSE_REFINEMENT
         std::cout << pPatch << std::endl;
+        #endif
 
         if (pMultiPatch != nullptr)
         {
@@ -247,7 +253,9 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
             pMultiPatch->Patches().Unique();
         }
 
+        #ifdef ENABLE_VERBOSE_REFINEMENT
         std::cout << __FUNCTION__ << " completed for patch " << pPatch->Id() << std::endl;
+        #endif
     }
 }
 
@@ -436,9 +444,13 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         }
 
         // swap
+        #ifdef ENABLE_VERBOSE_REFINEMENT
         std::cout << __FUNCTION__ << ": " << pPatch << " is swapped with ";
+        #endif
         pPatch.swap(pNewPatch);
+        #ifdef ENABLE_VERBOSE_REFINEMENT
         std::cout << pPatch << std::endl;
+        #endif
 
         if (pMultiPatch != nullptr)
         {
@@ -447,7 +459,9 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             pMultiPatch->Patches().Unique();
         }
 
+        #ifdef ENABLE_VERBOSE_REFINEMENT
         std::cout << __FUNCTION__ << " completed for patch " << pPatch->Id() << std::endl;
+        #endif
     }
 }
 
@@ -566,5 +580,6 @@ struct ComputeBsplinesDegreeElevation_Helper<3, TDataType>
 } // namespace Kratos.
 
 #undef DEBUG_INS_KNOTS
+#undef ENABLE_VERBOSE_REFINEMENT
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_REFINEMENT_UTILITY_HPP_INCLUDED defined

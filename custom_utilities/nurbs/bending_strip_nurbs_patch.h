@@ -157,14 +157,14 @@ public:
     }
 
     /// Destructor
-    virtual ~BendingStripNURBSPatch()
+    ~BendingStripNURBSPatch() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Id = " << Id() << ", Addr = " << this << " is destroyed" << std::endl;
 #endif
     }
 
-    /// Return true if this patch is a primary patch
+    /// Return true if this patch is a primary patch. For bending strip patch, it it false.
     bool IsPrimary() const override
     {
         return false;

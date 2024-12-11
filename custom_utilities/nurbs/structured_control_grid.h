@@ -738,28 +738,6 @@ public:
     /// Reverse the control grid in specific dimension
     void Reverse(int idir) override
     {
-        // if (idir == 0)
-        // {
-        //     for (std::size_t j = 0; j < mSize[1]; ++j)
-        //     {
-        //         std::reverse(BaseType::Data().begin() + j*mSize[0], BaseType::Data().begin() + (j+1)*mSize[0]);
-        //     }
-        // }
-        // else if (idir == 1)
-        // {
-        //     for (std::size_t i = 0; i < mSize[0]; ++i)
-        //     {
-        //         // extract the value
-        //         DataContainerType Temp(mSize[1]);
-        //         for (std::size_t j = 0; j < mSize[1]; ++j)
-        //             Temp[j] = this->GetValue(i, j);
-
-        //         // assign the reverse value
-        //         for (std::size_t j = 0; j < mSize[1]; ++j)
-        //             this->SetValue(i, j, Temp[mSize[1]-1-j]);
-        //     }
-        // }
-
         BSplinesIndexingUtility::Reverse<2, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir);
     }
 
@@ -805,9 +783,11 @@ public:
             }
         }
         else
+        {
             KRATOS_ERROR << "Invalid side " << side;
+        }
 
-            return pControlGrid;
+        return pControlGrid;
     }
 
     /// Create a connectivity for the structured control grid
@@ -822,10 +802,10 @@ public:
             for (std::size_t j = 0; j < this->Size(1) - 1; ++j)
             {
                 connectivities[cnt].resize(4);
-                connectivities[cnt][0] = i + j * this->Size(0) + offset;
-                connectivities[cnt][1] = i + 1 + j * this->Size(0) + offset;
+                connectivities[cnt][0] = i     + j * this->Size(0)       + offset;
+                connectivities[cnt][1] = i + 1 + j * this->Size(0)       + offset;
                 connectivities[cnt][2] = i + 1 + (j + 1) * this->Size(0) + offset;
-                connectivities[cnt][3] = i + (j + 1) * this->Size(0) + offset;
+                connectivities[cnt][3] = i     + (j + 1) * this->Size(0) + offset;
                 ++cnt;
             }
         }
@@ -1077,47 +1057,6 @@ public:
     /// Reverse the control grid in specific dimension
     void Reverse(int idir) override
     {
-        // if (idir == 0)
-        // {
-        //     for (std::size_t j = 0; j < mSize[1]; ++j)
-        //         for (std::size_t k = 0; k < mSize[2]; ++k)
-        //             std::reverse(BaseType::Data().begin() + (k*mSize[1] + j)*mSize[0], BaseType::Data().begin() + (k*mSize[1] + j + 1)*mSize[0]);
-        // }
-        // else if (idir == 1)
-        // {
-        //     for (std::size_t i = 0; i < mSize[0]; ++i)
-        //     {
-        //         for (std::size_t k = 0; k < mSize[2]; ++k)
-        //         {
-        //             // extract the value
-        //             DataContainerType Temp(mSize[1]);
-        //             for (std::size_t j = 0; j < mSize[1]; ++j)
-        //                 Temp[j] = this->GetValue(i, j, k);
-
-        //             // assign the reverse value
-        //             for (std::size_t j = 0; j < mSize[1]; ++j)
-        //                 this->SetValue(i, j, k, Temp[mSize[1]-1-j]);
-        //         }
-        //     }
-        // }
-        // else if (idir == 2)
-        // {
-        //     for (std::size_t i = 0; i < mSize[0]; ++i)
-        //     {
-        //         for (std::size_t j = 0; j < mSize[1]; ++j)
-        //         {
-        //             // extract the value
-        //             DataContainerType Temp(mSize[2]);
-        //             for (std::size_t k = 0; k < mSize[2]; ++k)
-        //                 Temp[k] = this->GetValue(i, j, k);
-
-        //             // assign the reverse value
-        //             for (std::size_t k = 0; k < mSize[2]; ++k)
-        //                 this->SetValue(i, j, k, Temp[mSize[2]-1-k]);
-        //         }
-        //     }
-        // }
-
         BSplinesIndexingUtility::Reverse<3, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir);
     }
 

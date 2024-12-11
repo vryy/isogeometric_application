@@ -375,6 +375,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("ConstructBoundaryPatch", &Patch_ConstructBoundaryPatch<TDim>)
     .def("ConstructSlicedPatch", &Patch<TDim>::ConstructSlicedPatch)
     .def("FindBoundarySide", &Patch<TDim>::FindBoundarySide)
+    .def("Validate", &Patch<TDim>::Validate)
     .def(self_ns::str(self))
     ;
 
@@ -421,6 +422,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("Enumerate", &MultiPatch_Enumerate2<TDim>)
     .def("IsEnumerated", &MultiPatch<TDim>::IsEnumerated)
     .def("LocalCoordinates", &Patch_LocalCoordinates<MultiPatch<TDim> >)
+    .def("Validate", &MultiPatch<TDim>::Validate)
     .def(self_ns::str(self))
     ;
 }

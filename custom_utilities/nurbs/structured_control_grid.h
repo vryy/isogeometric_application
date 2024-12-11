@@ -1108,10 +1108,10 @@ public:
                     connectivities[cnt][1] = i + 1 + j * this->Size(0) + k * this->Size(0) * this->Size(1) + offset;
                     connectivities[cnt][2] = i + 1 + (j + 1) * this->Size(0) + k * this->Size(0) * this->Size(1) + offset;
                     connectivities[cnt][3] = i + (j + 1) * this->Size(0) + k * this->Size(0) * this->Size(1) + offset;
-                    connectivities[cnt][4] = connectivities[cnt][0] + this->Size(0) * this->Size(1) + offset;
-                    connectivities[cnt][5] = connectivities[cnt][1] + this->Size(0) * this->Size(1) + offset;
-                    connectivities[cnt][6] = connectivities[cnt][2] + this->Size(0) * this->Size(1) + offset;
-                    connectivities[cnt][7] = connectivities[cnt][3] + this->Size(0) * this->Size(1) + offset;
+                    connectivities[cnt][4] = connectivities[cnt][0] + this->Size(0) * this->Size(1);
+                    connectivities[cnt][5] = connectivities[cnt][1] + this->Size(0) * this->Size(1);
+                    connectivities[cnt][6] = connectivities[cnt][2] + this->Size(0) * this->Size(1);
+                    connectivities[cnt][7] = connectivities[cnt][3] + this->Size(0) * this->Size(1);
                     ++cnt;
                 }
             }

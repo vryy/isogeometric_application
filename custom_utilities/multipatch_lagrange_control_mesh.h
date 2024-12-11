@@ -28,6 +28,7 @@
 #include "custom_utilities/nurbs/structured_control_grid.h"
 
 // #define DEBUG_MESH_GENERATION
+#define USE_FUNCTION_ID_FOR_NODE_ID
 
 namespace Kratos
 {
@@ -77,11 +78,11 @@ public:
 
         // get the sample element
         std::string element_name = mBaseElementName;
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             element_name = element_name + "2D4N";
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             element_name = element_name + "3D8N";
         }
@@ -121,7 +122,6 @@ public:
                 KRATOS_ERROR << "Invalid layer index " << it->LayerIndex();
             }
             Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->LayerIndex());
-            // Properties::Pointer pNewProperties = r_model_part.pGetProperties(it->Id());
 
             // generate the connectivities
             std::vector<std::vector<IndexType> > connectivities;
@@ -131,18 +131,61 @@ public:
             {
                 typename StructuredControlGrid<TDim, ControlPointType>::Pointer pcontrol_grid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >(it->ControlPointGridFunction().pControlGrid());
 
+                #ifdef USE_FUNCTION_ID_FOR_NODE_ID
+                const auto func_ids = it->pFESpace()->FunctionIndices();
+                std::map<IndexType, IndexType> true_node_ids;
+                #endif
+
                 for (std::size_t i = 0; i < pcontrol_grid->size(); ++i)
                 {
                     const ControlPointType& cp = pcontrol_grid->operator[](i);
+                    #ifdef USE_FUNCTION_ID_FOR_NODE_ID
+                    ++NodeCounter;
+                    typename NodeType::Pointer pNewNode = r_model_part.CreateNewNode(func_ids[i]+1, cp.X(), cp.Y(), cp.Z());
+                    true_node_ids[NodeCounter] = pNewNode->Id();
+                    #else
                     typename NodeType::Pointer pNewNode = r_model_part.CreateNewNode(++NodeCounter, cp.X(), cp.Y(), cp.Z());
+                    #endif
                     // TODO transfer the nodal values
+
+                    #ifdef DEBUG_MESH_GENERATION
+                    std::cout << "Node " << pNewNode->Id() << " is added to model_part " << r_model_part.Name() << std::endl;
+                    #endif
                 }
 
+                #ifdef USE_FUNCTION_ID_FOR_NODE_ID
+                // obtain the raw connectivity
+                std::vector<std::vector<IndexType> > tmp_connectivities;
+                pcontrol_grid->CreateConnectivity(offset, tmp_connectivities);
+
+                // modify the connectivity
+                connectivities = tmp_connectivities;
+                for (std::size_t i = 0; i < tmp_connectivities.size(); ++i)
+                {
+                    for (std::size_t j = 0; j < tmp_connectivities[i].size(); ++j)
+                    {
+                        connectivities[i][j] = true_node_ids[tmp_connectivities[i][j]];
+                    }
+                }
+                #else
                 pcontrol_grid->CreateConnectivity(offset, connectivities);
+                #endif
+
+                #ifdef DEBUG_MESH_GENERATION
+                for (std::size_t i = 0; i < connectivities.size(); ++i)
+                {
+                    std::cout << "connectivities[" << i << "]:";
+                    for (std::size_t j = 0; j < connectivities[i].size(); ++j)
+                    {
+                        std::cout << " " << connectivities[i][j];
+                    }
+                    std::cout << std::endl;
+                }
+                #endif
             }
             else
             {
-                KRATOS_ERROR << "FESpace of type " << it->pFESpace()->Type() << " is not yet handled";
+                KRATOS_ERROR << "FESpace of type " << it->pFESpace()->Type() << " is not yet supported";
             }
 
             // create elements
@@ -165,9 +208,6 @@ public:
 
             // just to make sure everything is organized properly
             r_model_part.Elements().Unique();
-
-            // create and add conditions on the boundary
-            // TODO
         }
     }
 
@@ -207,5 +247,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultipatchLagrang
 } // namespace Kratos.
 
 #undef DEBUG_MESH_GENERATION
+#undef USE_FUNCTION_ID_FOR_NODE_ID
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_LAGRANGE_CONTROL_MESH_H_INCLUDED defined

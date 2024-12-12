@@ -28,7 +28,8 @@
 #include "custom_utilities/nurbs/structured_control_grid.h"
 
 // #define DEBUG_MESH_GENERATION
-#define USE_FUNCTION_ID_FOR_NODE_ID
+// #define USE_FUNCTION_ID_FOR_NODE_ID // this option will allow duplicated node with the same id in the post model_part
+                // However, it could cause segmentation fault if the model_part cleans the duplicated nodes
 
 namespace Kratos
 {
@@ -131,8 +132,9 @@ public:
             {
                 typename StructuredControlGrid<TDim, ControlPointType>::Pointer pcontrol_grid = boost::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >(it->ControlPointGridFunction().pControlGrid());
 
-                #ifdef USE_FUNCTION_ID_FOR_NODE_ID
                 const auto func_ids = it->pFESpace()->FunctionIndices();
+
+                #ifdef USE_FUNCTION_ID_FOR_NODE_ID
                 std::map<IndexType, IndexType> true_node_ids;
                 #endif
 
@@ -146,6 +148,8 @@ public:
                     #else
                     typename NodeType::Pointer pNewNode = r_model_part.CreateNewNode(++NodeCounter, cp.X(), cp.Y(), cp.Z());
                     #endif
+
+                    pNewNode->GetSolutionStepValue(BASIS_FUNCTION_INDEX) = func_ids[i] + 1;
                     // TODO transfer the nodal values
 
                     #ifdef DEBUG_MESH_GENERATION

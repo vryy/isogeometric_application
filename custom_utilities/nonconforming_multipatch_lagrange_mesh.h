@@ -105,7 +105,7 @@ public:
     {
         if (GetEchoLevel() > 0)
         {
-            std::cout << "invoking NonConformingMultipatchLagrangeMesh::" << __FUNCTION__ << std::endl;
+            std::cout << "NonConformingMultipatchLagrangeMesh::" << __FUNCTION__ << " - started" << std::endl;
         }
 
         // get the sample element
@@ -233,6 +233,11 @@ public:
 
             // create and add conditions on the boundary
             // TODO
+        }
+
+        if (GetEchoLevel() > 0)
+        {
+            std::cout << "NonConformingMultipatchLagrangeMesh::" << __FUNCTION__ << " - completed" << std::endl;
         }
     }
 

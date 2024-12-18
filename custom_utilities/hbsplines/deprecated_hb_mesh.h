@@ -208,7 +208,7 @@ public:
     **************************************************************************/
 
     /// Get the string describing the type of the patch
-    virtual std::string Type() const
+    std::string Type() const override
     {
         return StaticType();
     }
@@ -222,10 +222,10 @@ public:
     }
 
     /// Print information of this hierarchical mesh
-    void PrintInfo(std::ostream& rOStream) const;
+    void PrintInfo(std::ostream& rOStream) const override;
 
     /// Print data of this hierarchical mesh
-    void PrintData(std::ostream& rOStream) const;
+    void PrintData(std::ostream& rOStream) const override;
 
     /// Print knot vectors to standard output
     void PrintKnotVectors() const;

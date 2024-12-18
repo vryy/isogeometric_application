@@ -161,7 +161,7 @@ if(CGAL_FOUND)
 endif()
 # cotire(KratosIsogeometricApplication)
 
-set_target_properties(KratosIsogeometricApplication PROPERTIES COMPILE_DEFINITIONS "ISOGEOMETRIC_APPLICATION=EXPORT,API")
+set_target_properties(KratosIsogeometricApplication PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=IMPORT;ISOGEOMETRIC_APPLICATION=EXPORT")
 set_target_properties(KratosIsogeometricApplication PROPERTIES PREFIX "")
 install(TARGETS KratosIsogeometricApplication DESTINATION libs )
 
@@ -176,7 +176,7 @@ if(ISOGEOMETRIC_USE_BREP MATCHES ON)
     target_link_libraries(KratosIsogeometricBRepApplication KratosIsogeometricApplication)
 
     set_target_properties(KratosIsogeometricBRepApplication PROPERTIES PREFIX "")
-    set_target_properties(KratosIsogeometricBRepApplication PROPERTIES COMPILE_DEFINITIONS "ISOGEOMETRIC_BREP_APPLICATION=EXPORT,API")
+    set_target_properties(KratosIsogeometricBRepApplication PROPERTIES COMPILE_DEFINITIONS "KRATOS_CORE=IMPORT;ISOGEOMETRIC_BREP_APPLICATION=EXPORT;ISOGEOMETRIC_APPLICATION=IMPORT;BREP_APPLICATION=IMPORT")
     install(TARGETS KratosIsogeometricBRepApplication DESTINATION libs )
 
     # changing the .dll suffix to .pyd

@@ -197,9 +197,13 @@ public:
 
     /// iterators
     patch_iterator begin() {return mpPatches.begin();}
+    patch_ptr_iterator ptr_begin() {return mpPatches.ptr_begin();}
     patch_const_iterator begin() const {return mpPatches.begin();}
+    patch_ptr_const_iterator ptr_begin() const {return mpPatches.ptr_begin();}
     patch_iterator end() {return mpPatches.end();}
+    patch_ptr_iterator ptr_end() {return mpPatches.ptr_end();}
     patch_const_iterator end() const {return mpPatches.end();}
+    patch_ptr_const_iterator ptr_end() const {return mpPatches.ptr_end();}
 
     /// Get the number of patches
     std::size_t size() const {return mpPatches.size();}

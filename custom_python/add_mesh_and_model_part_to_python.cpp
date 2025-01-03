@@ -226,6 +226,15 @@ boost::python::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& r
 ////////////////////////////////////////
 
 template<int TDim>
+void NonConformingMultipatchLagrangeMesh_MarkConditionFace(NonConformingMultipatchLagrangeMesh<TDim>& rDummy, int patch_id, int iside, int prop_id)
+{
+    BoundarySide side = static_cast<BoundarySide>(iside);
+    rDummy.MarkConditionFace(patch_id, side, prop_id);
+}
+
+////////////////////////////////////////
+
+template<int TDim>
 void IsogeometricApplication_AddMeshToPython()
 {
     std::stringstream ss;
@@ -244,10 +253,13 @@ void IsogeometricApplication_AddMeshToPython()
     class_<NonConformingMultipatchLagrangeMesh<TDim>, typename NonConformingMultipatchLagrangeMesh<TDim>::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
     .def("SetBaseElementName", &NonConformingMultipatchLagrangeMesh<TDim>::SetBaseElementName)
+    .def("SetBaseConditionName", &NonConformingMultipatchLagrangeMesh<TDim>::SetBaseConditionName)
     .def("SetLastNodeId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastNodeId)
     .def("SetLastElemId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastElemId)
+    .def("SetLastCondId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastCondId)
     .def("SetDivision", &NonConformingMultipatchLagrangeMesh<TDim>::SetDivision)
     .def("SetUniformDivision", &NonConformingMultipatchLagrangeMesh<TDim>::SetUniformDivision)
+    .def("MarkConditionFace", &NonConformingMultipatchLagrangeMesh_MarkConditionFace<TDim>)
     .def("WriteModelPart", &NonConformingMultipatchLagrangeMesh<TDim>::WriteModelPart)
     .def(self_ns::str(self))
     ;

@@ -133,7 +133,7 @@ ModelPart::ElementsContainerType MultiMultiPatchModelPart_AddElements(T& rDummy,
 }
 
 template<class T>
-ModelPart::ConditionsContainerType MultiHelper_AddConditions(T& rDummy, const boost::python::list& patch_list,
+ModelPart::ConditionsContainerType MultiPatchHelper_AddConditions(T& rDummy, const boost::python::list& patch_list,
         const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     std::vector<typename T::PatchType::Pointer> pPatches;
@@ -143,7 +143,7 @@ ModelPart::ConditionsContainerType MultiHelper_AddConditions(T& rDummy, const bo
 }
 
 template<class T>
-ModelPart::ConditionsContainerType MultiHelper_AddConditions_OnBoundary(T& rDummy,
+ModelPart::ConditionsContainerType MultiPatchHelper_AddConditions_OnBoundary(T& rDummy,
         typename T::PatchType::Pointer pPatch, int iside,
         const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
@@ -152,7 +152,7 @@ ModelPart::ConditionsContainerType MultiHelper_AddConditions_OnBoundary(T& rDumm
 }
 
 template<class T>
-ModelPart::ConditionsContainerType MultiHelper_AddConditions_OnBoundary2(T& rDummy,
+ModelPart::ConditionsContainerType MultiPatchHelper_AddConditions_OnBoundary2(T& rDummy,
         typename T::BoundaryPatchType::Pointer pBoundaryPatch,
         const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
@@ -323,9 +323,9 @@ void IsogeometricApplication_AddModelPartToPython()
     .def("BeginModelPart", &Helper_BeginModelPart2<MultiMultiPatchModelPartType>)
     .def("CreateNodes", &MultiMultiPatchModelPartType::CreateNodes)
     .def("AddElements", &MultiMultiPatchModelPart_AddElements<MultiMultiPatchModelPartType>)
-    .def("AddConditions", &MultiHelper_AddConditions<MultiMultiPatchModelPartType>)
-    .def("AddConditions", &MultiHelper_AddConditions_OnBoundary<MultiMultiPatchModelPartType>)
-    .def("AddConditions", &MultiHelper_AddConditions_OnBoundary2<MultiMultiPatchModelPartType>)
+    .def("AddConditions", &MultiPatchHelper_AddConditions<MultiMultiPatchModelPartType>)
+    .def("AddConditions", &MultiPatchHelper_AddConditions_OnBoundary<MultiMultiPatchModelPartType>)
+    .def("AddConditions", &MultiPatchHelper_AddConditions_OnBoundary2<MultiMultiPatchModelPartType>)
     .def("EndModelPart", &MultiMultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &Helper_GetModelPart<MultiMultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &Helper_GetMultiPatch2<MultiMultiPatchModelPartType>, return_internal_reference<>())

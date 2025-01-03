@@ -109,7 +109,7 @@ public:
         for (std::size_t i = 0; i <= nsampling; ++i)
             sampling.push_back((double) i / nsampling);
 
-        mPatchSamping[patch_id][dim] = sampling;
+        mPatchSampling[patch_id][dim] = sampling;
     }
 
     /// Set the sampling for the patch at specific dimension
@@ -125,7 +125,7 @@ public:
             KRATOS_ERROR << "Patch " << patch_id << " is not found in the multipatch";
         }
 
-        mPatchSamping[patch_id][dim] = sampling;
+        mPatchSampling[patch_id][dim] = sampling;
     }
 
     /// Get the underlying multipatch pointer
@@ -251,15 +251,15 @@ public:
     }
 
     /// create the conditions out from the boundary patch and add to the model_part
-    ConditionsContainerType AddConditions(typename PatchType::Pointer pPatch, const BoundarySide& side,
+    ConditionsContainerType AddConditions(typename PatchType::Pointer pPatch, const BoundarySide side,
             const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
     {
-        // extract the boundary patch
+        // construct the boundary patch
         const auto pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
 
         // get the sampling numbers
-        const auto it_num = mPatchSamping.find(pPatch->Id());
-        if (it_num == mPatchSamping.end())
+        const auto it_num = mPatchSampling.find(pPatch->Id());
+        if (it_num == mPatchSampling.end())
         {
             KRATOS_ERROR << "Number of sampling is not set for patch " << pPatch->Id();
         }
@@ -300,8 +300,8 @@ public:
         const auto pSlicedPatch = pPatch->ConstructSlicedPatch(idir, xi);
 
         // get the sampling numbers
-        const auto it_num = mPatchSamping.find(pPatch->Id());
-        if (it_num == mPatchSamping.end())
+        const auto it_num = mPatchSampling.find(pPatch->Id());
+        if (it_num == mPatchSampling.end())
         {
             KRATOS_ERROR << "Number of sampling is not set for patch " << pPatch->Id();
         }
@@ -458,8 +458,8 @@ private:
             if constexpr (TDim == 2)
             {
                 // create new nodes and elements
-                auto it_num = mPatchSamping.find(it->Id());
-                if (it_num == mPatchSamping.end())
+                auto it_num = mPatchSampling.find(it->Id());
+                if (it_num == mPatchSampling.end())
                 {
                     KRATOS_ERROR << "Number of sampling is not set for patch " << it->Id();
                 }
@@ -483,8 +483,8 @@ private:
             else if constexpr (TDim == 3)
             {
                 // create new nodes and elements
-                auto it_num = mPatchSamping.find(it->Id());
-                if (it_num == mPatchSamping.end())
+                auto it_num = mPatchSampling.find(it->Id());
+                if (it_num == mPatchSampling.end())
                 {
                     KRATOS_ERROR << "Number of sampling is not set for patch " << it->Id();
                 }
@@ -580,7 +580,7 @@ private:
 #endif
     typename MultiPatch<TDim>::Pointer mpMultiPatch;
 
-    std::map<IndexType, boost::array<std::vector<double>, TDim> > mPatchSamping;
+    std::map<IndexType, boost::array<std::vector<double>, TDim> > mPatchSampling;
 
     typename BinningType::Pointer mpBinning;
     connectivity_t mconnectivities;

@@ -7,6 +7,12 @@ function plot_ctrl_points_3d(nurbs,params)
 %     derived by the given value; otherwise, incremental values will be used.
 %   params.patch_id: if this is given, the patch id will be plotted at the
 %     center of gravity of all control points
+% Sometimes quiver3 does not show the arrow head correctly, due to some arrow
+% head drawing face is the same as screen plane. This problem is reported here:
+%   https://savannah.gnu.org/bugs/?47185
+% Also, quiver3 will not display arrowheads for vectors which exist only
+% in the z axis (ex. <0, 0, 1>) despite set(vector, 'ShowArrowHead', 'on'), see
+%   https://savannah.gnu.org/bugs/?53187
 axis equal;
 hold on;
 
@@ -27,6 +33,7 @@ w_color = 'red';
 if ~isfield(params,'point_color')
     params.point_color = 'blue';
 end
+rgbColor = colorNameToRGB(params.point_color); % Convert to RGB
 
 if ~isfield(params,'label')
     params.label = 'off';
@@ -48,6 +55,18 @@ if ~isfield(params,'text_dc')
     params.text_dc = 1.01;
 end
 
+if ~isfield(params,'arrow_size')
+    params.arrow_size = 0.33;
+end
+
+if ~isfield(params,'font_size')
+  params.font_size = 20;
+end
+
+if ~isfield(params,'point_style')
+  params.point_style = 'o';
+end
+
 %%
 cnt = 1;
 for i = 1:w_dim
@@ -55,16 +74,19 @@ for i = 1:w_dim
         for k = 1:u_dim
             point = nurbs.coefs(:, k, j, i);
             point(1:3) = point(1:3) / point(4);
-            scatter3(point(1), point(2), point(3), params.point_color);
+            S = scatter3(point(1),point(2),point(3));
+            set(S,'Marker',params.point_style);
+            set(S,'CData',rgbColor);
             if strcmp(params.label,'on')
-                text(point(1)*params.text_dc, point(2)*params.text_dc, point(3)*params.text_dc, num2str(params.number(cnt)));
+                text(point(1)*params.text_dc, point(2)*params.text_dc, point(3)*params.text_dc, num2str(params.number(cnt)), "fontsize", params.font_size);
             end
             cnt = cnt + 1;
             if k > 1
                 if k == 2
                     if strcmp(params.legend,'on')
                         L = quiver3(old_point_u(1),old_point_u(2),old_point_u(3),point(1)-old_point_u(1),point(2)-old_point_u(2),point(3)-old_point_u(3));
-    %                    set(L, 'markersize', 10.0);
+                        %set(L, 'markersize', 10.0);
+                        set(L, "maxheadsize", params.arrow_size, 'AutoScale','on');
                         u_plot_for_legend = L;
                     else
                         L = line([old_point_u(1) point(1)], [old_point_u(2) point(2)], [old_point_u(3) point(3)]);
@@ -89,6 +111,7 @@ for i = 1:w_dim
                 if j == 2
                     if strcmp(params.legend,'on')
                         L = quiver3(old_point_v(1),old_point_v(2),old_point_v(3),point(1)-old_point_v(1),point(2)-old_point_v(2),point(3)-old_point_v(3));
+                        set(L, "maxheadsize", params.arrow_size, 'AutoScale','on');
                         v_plot_for_legend = L;
                     else
                         L = line([old_point_v(1) point(1)], [old_point_v(2) point(2)], [old_point_v(3) point(3)]);
@@ -113,6 +136,7 @@ for j = 1:v_dim
                 if i == 2
                     if strcmp(params.legend,'on')
                         L = quiver3(old_point_w(1),old_point_w(2),old_point_w(3),point(1)-old_point_w(1),point(2)-old_point_w(2),point(3)-old_point_w(3));
+                        set (L, "maxheadsize", params.arrow_size);
                         w_plot_for_legend = L;
                     else
                         L = line([old_point_w(1) point(1)], [old_point_w(2) point(2)], [old_point_w(3) point(3)]);

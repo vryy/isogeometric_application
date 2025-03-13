@@ -21,8 +21,9 @@ u_color = 'black';
 v_color = 'cyan';
 
 if ~isfield(params,'point_color')
-    params.point_color = 'b'; %'blue';
+    params.point_color = 'blue';
 end
+rgbColor = colorNameToRGB(params.point_color); % Convert to RGB
 
 if ~isfield(params,'label')
     params.label = 'off';
@@ -40,13 +41,19 @@ if ~isfield(params,'number')
     params.number = 1:(u_dim*v_dim);
 end
 
+if ~isfield(params,'point_style')
+  params.point_style = 'o';
+end
+
 %%
 cnt = 1;
 for j = 1:v_dim
     for k = 1:u_dim
         point = nurbs.coefs(:, k, j);
         point(1:3) = point(1:3) / point(4);
-        scatter3(point(1), point(2), point(3), params.point_color);
+        S = scatter3(point(1), point(2), point(3));
+        set(S,'Marker',params.point_style);
+        set(S,'CData',rgbColor);
         if strcmp(params.label,'on')
             text(point(1), point(2), point(3), num2str(params.number(cnt)), 'HorizontalAlignment', 'right', 'VerticalAlignment', 'cap');
         end

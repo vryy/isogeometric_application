@@ -21,6 +21,7 @@ end
 if ~isfield(params,'point_color')
     params.point_color = 'blue';
 end
+rgbColor = colorNameToRGB(params.point_color); % Convert to RGB
 
 if ~isfield(params,'line_style')
     params.line_style = '-';
@@ -43,7 +44,9 @@ cnt = 1;
         for k = 1:u_dim
             point = nurbs.coefs(:, k);
             point(1:3) = point(1:3) / point(4);
-            scatter3(point(1),point(2),point(3),params.point_style,params.point_color);
+            S = scatter3(point(1),point(2),point(3));
+            set(S,'Marker',params.point_style);
+            set(S,'CData',rgbColor);
             if strcmp(params.label,'on')
                 text(point(1),point(2),point(3),num2str(cnt));
             end

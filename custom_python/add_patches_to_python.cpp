@@ -375,6 +375,8 @@ void IsogeometricApplication_AddPatchesToPython_Helper()
     .def("ConstructBoundaryPatch", &Patch_ConstructBoundaryPatch<TDim>)
     .def("ConstructSlicedPatch", &Patch<TDim>::ConstructSlicedPatch)
     .def("FindBoundarySide", &Patch<TDim>::FindBoundarySide)
+    .def("SetLocalSearchTolerance", &Patch<TDim>::SetLocalSearchTolerance)
+    .def("SetLocalSearchMaxIters", &Patch<TDim>::SetLocalSearchMaxIters)
     .def("Validate", &Patch<TDim>::Validate)
     .def(self_ns::str(self))
     ;

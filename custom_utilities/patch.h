@@ -102,6 +102,7 @@ public:
     /// Constructor with id
     Patch(std::size_t Id)
         : IndexedObject(Id), mpFESpace(NULL), mPrefix("Patch"), mLayerIndex(Id)
+        , mLocalSearchMaxIters(30), mLocalSearchTolerance(1e-8)
     {
         this->Set(ACTIVE, true);
     }
@@ -109,6 +110,7 @@ public:
     /// Constructor with id and FESpace
     Patch(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
         : IndexedObject(Id), mpFESpace(pFESpace), mPrefix("Patch"), mLayerIndex(Id)
+        , mLocalSearchMaxIters(30), mLocalSearchTolerance(1e-8)
     {
         this->Set(ACTIVE, true);
         if (mpFESpace == NULL)
@@ -152,6 +154,18 @@ public:
         std::stringstream ss;
         ss << mPrefix << "_" << Id();
         return ss.str();
+    }
+
+    /// Set the local search max iteration
+    void SetLocalSearchMaxIters(unsigned int max_iters)
+    {
+        mLocalSearchMaxIters = max_iters;
+    }
+
+    /// Set the local search tolerance
+    void SetLocalSearchTolerance(double tolerance)
+    {
+        mLocalSearchTolerance = tolerance;
     }
 
     /// Set the corresponding FESpace for the patch
@@ -382,7 +396,7 @@ public:
     int LocalCoordinates(const array_1d<double, 3>& point, array_1d<double, 3>& xi) const
     {
         typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
-        int error_code = pGridFunc->LocalCoordinates(point, xi);
+        int error_code = pGridFunc->LocalCoordinates(point, xi, mLocalSearchMaxIters, mLocalSearchTolerance);
         bool is_inside = this->pFESpace()->IsInside(std::vector<double> {xi[0], xi[1], xi[2]});
         if (!is_inside)
         {
@@ -992,6 +1006,9 @@ private:
 
     // container to contain all the grid functions
     GridFunctionContainerType mpGridFunctions; // using boost::any to store pointer to grid function
+
+    unsigned int mLocalSearchMaxIters;
+    double mLocalSearchTolerance;
 
     /**
      * interface data

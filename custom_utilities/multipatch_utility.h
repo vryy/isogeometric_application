@@ -150,15 +150,21 @@ public:
     /// On output return the patch_id if sucessful; -1 otherwise
     template<int TDim>
     static int LocalCoordinates(const MultiPatch<TDim>& rMultiPatch,
-                                const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
+                                const array_1d<double, 3>& point, array_1d<double, 3>& xi,
+                                const std::vector<int>& nsampling,
+                                const int echo_level = 0)
     {
         int error_code;
+
+        if (echo_level > 0) std::cout << "searching local coordinates for point " << point << std::endl;
 
         for (typename MultiPatch<TDim>::patch_const_iterator it = rMultiPatch.begin(); it != rMultiPatch.end(); ++it)
         {
             error_code = LocalCoordinates( *it, point, xi, nsampling);
+            if (echo_level > 1) std::cout << "error code for patch " << it->Id() << ": " << error_code << std::endl;
             if (error_code == 0)
             {
+                if (echo_level > 0) std::cout << "searching local coordinates for point " << point << " successfully" << std::endl;
                 return it->Id();
             }
         }

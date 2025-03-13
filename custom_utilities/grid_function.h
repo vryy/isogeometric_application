@@ -361,7 +361,7 @@ public:
     ///     0: the local NR converged successfully, rLocalCoordinates is the found point
     ///     1: the NR does not converge
     template<typename TCoordinatesType>
-    int LocalCoordinates(const TDataType& v, TCoordinatesType& xi) const
+    int LocalCoordinates(const TDataType& v, TCoordinatesType& xi, const int max_iters = 30, const double TOL = 1.0e-8) const
     {
         typedef Vector VectorType;
         typedef Matrix MatrixType;
@@ -374,8 +374,6 @@ public:
         double DetJ;
 
         int it = 0;
-        const int max_iters = 30;
-        const double TOL = 1.0e-8;
         bool converged = false;
 
         do
@@ -390,14 +388,17 @@ public:
             this->GetDerivative(ders, xi);
 
             for (std::size_t i = 0; i < TDim; ++i)
+            {
                 for (std::size_t j = 0; j < TDim; ++j)
                 {
                     J(i, j) = ders[j][i];
                 }
+            }
 
             MathUtils<double>::InvertMatrix(J, InvJ, DetJ);
             noalias(dxi) = prod(InvJ, res);
-            xi += dxi;
+            for (std::size_t i = 0; i < TDim; ++i)
+                xi[i] += dxi[i];
         }
         while (++it < max_iters);
 

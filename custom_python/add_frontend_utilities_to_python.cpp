@@ -71,8 +71,8 @@ void MultiPatchUtility_CheckInterfacesFull(MultiPatchUtility& rDummy, typename M
 }
 
 template<int TDim>
-boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
-        const boost::python::list& P, const boost::python::list& list_nsampling)
+boost::python::list MultiPatchUtility_LocalCoordinates1(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
+        const boost::python::list& P, const boost::python::list& list_nsampling, const int echo_level)
 {
     std::vector<double> P_vec;
     IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
@@ -89,7 +89,7 @@ boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy
     std::vector<int> nsampling;
     IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
 
-    int patch_id = rDummy.LocalCoordinates(*pMultiPatch, point, xi, nsampling);
+    int patch_id = rDummy.LocalCoordinates(*pMultiPatch, point, xi, nsampling, echo_level);
 
     boost::python::list out_point;
     out_point.append(xi[0]);
@@ -100,6 +100,13 @@ boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy
     output.append(patch_id);
     output.append(out_point);
     return output;
+}
+
+template<int TDim>
+boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
+        const boost::python::list& P, const boost::python::list& list_nsampling)
+{
+    return MultiPatchUtility_LocalCoordinates1<TDim>(rDummy, pMultiPatch, P, list_nsampling, 0);
 }
 
 template<int TDim>
@@ -558,8 +565,12 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<1>)
     .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<2>)
     .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<3>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<1>)
     .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<2>)
     .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<3>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<1>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<2>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<3>)
     .def("ComputeSpatialDerivatives", &MultiPatchUtility_ComputeSpatialDerivatives<2>)
     .def("ComputeSpatialDerivatives", &MultiPatchUtility_ComputeSpatialDerivatives<3>)
     .def("GetLastNodeId", &MultiPatchUtility_GetLastNodeId)

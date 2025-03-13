@@ -118,7 +118,7 @@ public:
         }
 
     /// Destructor
-    virtual ~Patch()
+    ~Patch() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Id = " << Id()
@@ -1026,11 +1026,11 @@ private:
     /// Serializer
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
     }
 

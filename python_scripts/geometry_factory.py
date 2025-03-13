@@ -196,6 +196,60 @@ def CreateSmallArc(center, axis, radius, start_angle, end_angle):
     patch.CreateControlPointGridFunction(ctrl_grid)
     return patch_ptr
 
+### Create a single curve for NURBS half circle. Reference: https://www.geometrictools.com/Documentation/NURBSCircleSphere.pdf
+### Note that the default degree is 3
+def CreateHalfCircle(center, axis, radius, start_angle=0.0):
+    Id = 0
+    fes = nurbs_fespace_library.CreatePrimitiveFESpace(3)
+    ctrl_grid = grid_lib.CreateLinearControlPointGrid(0.0, 0.0, 0.0, fes.Number(0), radius, 0.0, 0.0)
+
+    if axis == 'z':
+        trans = RotationZ(start_angle)
+    elif axis == 'y':
+        trans = RotationZ(start_angle)
+        trans.AppendTransformation(RotationX(90.0))
+    elif axis == 'x':
+        trans = RotationZ(start_angle + 90.0)
+        trans.AppendTransformation(RotationY(90.0))
+    trans.AppendTransformation(Translation(center[0], center[1], center[2]))
+
+    pt1 = ctrl_grid[0]
+    pt1.WX = radius
+    pt1.WY = 0.0
+    pt1.WZ = 0.0
+    pt1.W = 1.0
+    pt1.ApplyTransformation(trans)
+    ctrl_grid[0] = pt1
+
+    pt2 = ctrl_grid[1]
+    pt2.WX = 1.0/3*radius
+    pt2.WY = 2.0/3*radius
+    pt2.WZ = 0.0
+    pt2.W = 1.0/3
+    pt2.ApplyTransformation(trans)
+    ctrl_grid[1] = pt2
+
+    pt3 = ctrl_grid[2]
+    pt3.WX = -1.0/3*radius
+    pt3.WY = 2.0/3*radius
+    pt3.WZ = 0.0
+    pt3.W = 1.0/3
+    pt3.ApplyTransformation(trans)
+    ctrl_grid[2] = pt3
+
+    pt4 = ctrl_grid[3]
+    pt4.WX = -radius
+    pt4.WY = 0.0
+    pt4.WZ = 0.0
+    pt4.W = 1.0
+    pt4.ApplyTransformation(trans)
+    ctrl_grid[3] = pt4
+
+    patch_ptr = multipatch_util.CreatePatchPointer(Id, fes)
+    patch = patch_ptr.GetReference()
+    patch.CreateControlPointGridFunction(ctrl_grid)
+    return patch_ptr
+
 ### Create a 2D ring at center on the surface perpendicular to the axis. By default, the quadratic arc is generated. The knot vector will be [0 0 0 1 1 1]
 ### On output the pointer to the patch will be returned. Small ring means that the open angle is typically less than 180 degrees.
 def CreateSmallRing(center, axis, rin, rout, start_angle, end_angle):

@@ -180,14 +180,14 @@ public:
     /// Get the number of basis functions defined over the patch
     virtual std::size_t TotalNumber() const
     {
-        assert(mpFESpace == NULL);
+        assert(mpFESpace != NULL);
         return mpFESpace->TotalNumber();
     }
 
     /// Get the order of the patch in specific direction
     virtual std::size_t Order(std::size_t i) const
     {
-        assert(mpFESpace == NULL);
+        assert(mpFESpace != NULL);
         if (i >= TDim) { return 0; }
         else { return mpFESpace->Order(i); }
     }

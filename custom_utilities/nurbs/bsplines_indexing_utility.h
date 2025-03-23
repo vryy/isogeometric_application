@@ -165,6 +165,8 @@ struct BSplinesIndexingUtility_Reverse_Helper<1, TContainerType, TIndexContainer
         {
             std::reverse(values.begin(), values.end());
         }
+        else
+            KRATOS_ERROR << "Invalid direction " << idir;
     }
 };
 
@@ -186,6 +188,8 @@ struct BSplinesIndexingUtility_Reverse_Helper<2, TContainerType, TIndexContainer
 
             for (std::size_t i = 0; i < sizes[0]; ++i)
             {
+                // Note: here we touch and reverse each row
+
                 // extract the value
                 TContainerType Temp(sizes[1]);
                 for (std::size_t j = 0; j < sizes[1]; ++j)
@@ -202,6 +206,8 @@ struct BSplinesIndexingUtility_Reverse_Helper<2, TContainerType, TIndexContainer
                 }
             }
         }
+        else
+            KRATOS_ERROR << "Invalid direction " << idir;
     }
 };
 
@@ -228,6 +234,8 @@ struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainer
             {
                 for (std::size_t k = 0; k < sizes[2]; ++k)
                 {
+                    // Note: here we touch and reverse each row
+
                     // extract the value
                     TContainerType Temp(sizes[1]);
                     for (std::size_t j = 0; j < sizes[1]; ++j)
@@ -253,6 +261,8 @@ struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainer
             {
                 for (std::size_t j = 0; j < sizes[1]; ++j)
                 {
+                    // Note: here we touch and reverse each row
+
                     // extract the value
                     TContainerType Temp(sizes[2]);
                     for (std::size_t k = 0; k < sizes[2]; ++k)
@@ -270,6 +280,10 @@ struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainer
                 }
             }
         }
+        else
+            KRATOS_ERROR << "Invalid direction " << idir;
+    }
+};
 
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Transpose_Helper<1, TContainerType, TIndexContainerType>

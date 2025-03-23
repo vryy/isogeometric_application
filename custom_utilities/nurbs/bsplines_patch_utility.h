@@ -47,7 +47,9 @@ public:
     /// The knot vector of the curve is adjusted accordingly with the given order and the number of patches.
     /// The knot vector will be by default uniform.
     /// To have higher order of the connection one needs to elevate the degree.
-    /// Right now, the two sub-patches must have same parameters (knot vectors) and are B-Splines.
+    /// Right now, the sub-patches must have same parameters (knot vectors) and are B-Splines.
+    /// Since the connecting curve is B-Splines, it is generally assumed that the sub-patches are not the cut section of the lofting volume,
+    /// except the case that the connecting curve is a line
     template<int TDim>
     static typename Patch<TDim>::Pointer CreateLoftPatch(std::vector < typename Patch < TDim - 1 >::Pointer > pPatches, int order);
 

@@ -233,11 +233,15 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
 
                     if (idir1 == idir)
                     {
-                        // reverse the neighbour patch
+                        // the reversed direction aligns with the direction on the interface, therefore
+                        // we need to reverse the neighbour patch
                         ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
                     }
                     else
                     {
+                        // the reversed direction does not align with the direction on the interface.
+                        // For 2D, it shall be perpendicular to the direction of the interface.
+                        // Therefore, we need to flip the side of the interface..
                         pInterface->FlipSide1();
                         pInterface->pOtherInterface()->FlipSide2();
                     }

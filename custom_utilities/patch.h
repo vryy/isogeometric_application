@@ -101,7 +101,7 @@ public:
 
     /// Constructor with id
     Patch(std::size_t Id)
-        : IndexedObject(Id), mpFESpace(NULL), mPrefix("Patch"), mLayerIndex(Id)
+        : IndexedObject(Id), mPrefix("Patch"), mLayerIndex(Id), mpFESpace(NULL)
         , mLocalSearchMaxIters(30), mLocalSearchTolerance(1e-8)
     {
         this->Set(ACTIVE, true);
@@ -109,11 +109,11 @@ public:
 
     /// Constructor with id and FESpace
     Patch(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
-        : IndexedObject(Id), mpFESpace(pFESpace), mPrefix("Patch"), mLayerIndex(Id)
+        : IndexedObject(Id), mPrefix("Patch"), mLayerIndex(Id), mpFESpace(pFESpace)
         , mLocalSearchMaxIters(30), mLocalSearchTolerance(1e-8)
     {
         this->Set(ACTIVE, true);
-        if (mpFESpace == NULL)
+        if (mpFESpace == nullptr)
             KRATOS_ERROR << "Invalid FESpace is provided";
         }
 
@@ -945,12 +945,12 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << Type() << ", Id = " << Id() << ", Addr = " << this;
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         if (pFESpace() != NULL)
         {

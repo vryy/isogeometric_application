@@ -75,6 +75,15 @@ struct BSplinesIndexingUtility_Reverse_Helper
     }
 };
 
+template<int TDim, class TContainerType, class TIndexContainerType>
+struct BSplinesIndexingUtility_Transpose_Helper
+{
+    static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
+    {
+        return;
+    }
+};
+
 /**
 This class provides sub-routines to index the BSplines basis function in 1D, 2D, 3D.
 The base index is assumed to be 1.
@@ -118,6 +127,14 @@ public:
     /// Transform the indices with parameter mapping for 2D surface patch
     static void Transform(std::vector<std::size_t>& func_indices, const std::vector<std::size_t>& size_info,
             const bool uv_or_vu, const BoundaryDirection dir1, const BoundaryDirection dir2);
+
+    /// Transpose an array in specific direction
+    /// The array is a {dim}D-tensor which is addressed by using IndexArray
+    template<int TDim, class TContainerType, class TIndexContainerType>
+    static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
+    {
+        BSplinesIndexingUtility_Transpose_Helper<TDim, TContainerType, TIndexContainerType>::Transpose(values, sizes, idir, jdir);
+    }
 
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
@@ -253,6 +270,63 @@ struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainer
                 }
             }
         }
+
+template<class TContainerType, class TIndexContainerType>
+struct BSplinesIndexingUtility_Transpose_Helper<1, TContainerType, TIndexContainerType>
+{
+    static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
+    {
+        KRATOS_ERROR << "Transpose is not relevant for 1D";
+    }
+};
+
+template<class TContainerType, class TIndexContainerType>
+struct BSplinesIndexingUtility_Transpose_Helper<2, TContainerType, TIndexContainerType>
+{
+    static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
+    {
+        if (idir == jdir)
+            return; // DO NOTHING
+
+        if ((idir != 0) && (idir != 1))
+            KRATOS_ERROR << "Invalid direction " << idir;
+
+        if ((jdir != 0) && (jdir != 1))
+            KRATOS_ERROR << "Invalid direction " << jdir;
+
+        // copy the transpose alues to a new array
+        TContainerType new_values(sizes[0]*sizes[1]);
+        std::size_t loc, new_loc;
+
+        for (std::size_t i = 0; i < sizes[0]; ++i)
+        {
+            for (std::size_t j = 0; j < sizes[1]; ++j)
+            {
+                loc = BSplinesIndexingUtility_Helper::Index2D(i + 1, j + 1, sizes[0], sizes[1]);
+                new_loc = BSplinesIndexingUtility_Helper::Index2D(j + 1, i + 1, sizes[1], sizes[0]);
+
+                new_values[new_loc] = values[loc];
+            }
+        }
+
+        // overwrite the old array with new array
+        for (std::size_t k = 0; k < new_values.size(); ++k)
+        {
+            values[k] = new_values[k];
+        }
+    }
+};
+
+template<class TContainerType, class TIndexContainerType>
+struct BSplinesIndexingUtility_Transpose_Helper<3, TContainerType, TIndexContainerType>
+{
+    static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
+    {
+        if (idir == jdir)
+            return; // DO NOTHING
+
+        // TODO
+        KRATOS_ERROR << "Transpose is not implemented for 3D";
     }
 };
 

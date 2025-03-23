@@ -295,6 +295,12 @@ public:
         KRATOS_ERROR << "Calling base class function";
     }
 
+    /// Transpose (swap) i- and j-direction
+    virtual void Transpose(std::size_t idir, std::size_t jdir)
+    {
+        KRATOS_ERROR << "Calling base class function";
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Extract the index of the functions based on the boundary flag. It allows to extract the corner one.

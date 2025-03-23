@@ -85,11 +85,17 @@ public:
     /// Get the side of the first patch where the strip locates
     BoundarySide Side1() const {return mSide1;}
 
+    /// Set the side 1
+    void SetSide1(BoundarySide side) {mSide1 = side;}
+
     /// Flip the boundary side 1
     void FlipSide1() {mSide1 = ReversedBoundarySide::Get(mSide1);}
 
     /// Get the side of the second patch where the strip locates
     BoundarySide Side2() const {return mSide2;}
+
+    /// Set the side 2
+    void SetSide2(BoundarySide side) {mSide2 = side;}
 
     /// Flip the boundary side 2
     void FlipSide2() {mSide2 = ReversedBoundarySide::Get(mSide2);}

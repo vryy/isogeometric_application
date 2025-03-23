@@ -207,6 +207,39 @@ public:
         }
     }
 
+    /// Transpose (swap) the i- and j- direction
+    void Transpose(std::size_t idir, std::size_t jdir) override
+    {
+        // reverse the knot vector
+        const auto kvi = mKnotVectors[idir];
+        const auto kvj = mKnotVectors[jdir];
+
+        std::size_t order_i = mOrders[idir];
+        std::size_t order_j = mOrders[jdir];
+
+        std::size_t number_i = mNumbers[idir];
+        std::size_t number_j = mNumbers[jdir];
+
+        mKnotVectors[idir] = kvj;
+        mKnotVectors[jdir] = kvi;
+
+        mOrders[idir] = order_j;
+        mOrders[jdir] = order_i;
+
+        mNumbers[idir] = number_j;
+        mNumbers[jdir] = number_i;
+
+        // also change the function indices
+        BSplinesIndexingUtility::Transpose<TDim, std::vector<std::size_t>, std::vector<std::size_t> >(mFunctionsIds, this->Numbers(), idir, jdir);
+
+        // and the global to local map
+        BaseType::mGlobalToLocal.clear();
+        for (std::size_t i = 0; i < mFunctionsIds.size(); ++i)
+        {
+            BaseType::mGlobalToLocal[mFunctionsIds[i]] = i;
+        }
+    }
+
     /// Set the BSplines information in the direction i
     void SetInfo(std::size_t idir, std::size_t Number, std::size_t Order)
     {

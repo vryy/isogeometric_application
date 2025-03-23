@@ -310,6 +310,12 @@ void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
     rDummy.Reverse<TDim>(pPatch, idir);
 }
 
+void BSplinesPatchUtility_Transpose2(BSplinesPatchUtility& rDummy,
+                                     typename Patch<2>::Pointer pPatch)
+{
+    rDummy.Transpose(pPatch);
+}
+
 //////////////////////////////////////////////////
 
 template<int TDim>
@@ -618,6 +624,7 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("Reverse", &BSplinesPatchUtility_Reverse<1>)
     .def("Reverse", &BSplinesPatchUtility_Reverse<2>)
     .def("Reverse", &BSplinesPatchUtility_Reverse<3>)
+    .def("Transpose", &BSplinesPatchUtility_Transpose2)
     ;
 
     class_<BendingStripUtility, BendingStripUtility::Pointer, boost::noncopyable>

@@ -59,6 +59,16 @@ public:
     template<int TDim>
     static void ReverseImpl(typename Patch<TDim>::Pointer pPatch, std::size_t idir, std::set<std::size_t>& reversed_patches);
 
+    /// Transpose the 2D B-Splines patch
+    static void Transpose(typename Patch<2>::Pointer pPatch);
+
+    /// Transpose the 3D B-Splines patch
+    static void Transpose(typename Patch<3>::Pointer pPatch, std::size_t idir, std::size_t jdir);
+
+    /// Transpose the B-Splines patch
+    template<int TDim>
+    static void TransposeImpl(typename Patch<TDim>::Pointer pPatch, std::size_t idir, std::size_t jdir);
+
     /// Get the dimension of underlying NURBS in geo file
     static int GetDimensionOfGeo(const std::string& fn);
 

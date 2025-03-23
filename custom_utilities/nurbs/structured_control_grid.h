@@ -141,6 +141,12 @@ public:
         KRATOS_ERROR << "Error calling base class function";
     }
 
+    /// Transpose the control grid in
+    virtual void Transpose(int idir, int jdir)
+    {
+        KRATOS_ERROR << "Error calling base class function";
+    }
+
     /// Create a connectivity matrix for the structured control grid
     virtual void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const
     {
@@ -315,7 +321,13 @@ public:
     /// Reverse the control grid in specific dimension
     void Reverse(int idir) override
     {
-        // DO NOTHING
+        KRATOS_ERROR << "Reverse does not make sense for 0D grid";
+    }
+
+    /// Transpose the control grid
+    void Transpose(int idir, int jdir) override
+    {
+        KRATOS_ERROR << "Tranpose does not make sense for 0D grid";
     }
 
     /// Create a connectivity matrix for the structured control grid
@@ -505,6 +517,14 @@ public:
         {
             std::reverse(BaseType::Data().begin(), BaseType::Data().end());
         }
+        else
+            KRATOS_ERROR << "Invalid direction " << idir;
+    }
+
+    /// Transpose the control grid
+    void Transpose(int idir, int jdir) override
+    {
+        KRATOS_ERROR << "Tranpose does not make sense for 1D grid";
     }
 
     /// Create a connectivity matrix for the structured control grid
@@ -741,8 +761,20 @@ public:
         BSplinesIndexingUtility::Reverse<2, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir);
     }
 
+    /// Transpose the control grid
+    void Transpose(int idir, int jdir) override
+    {
+        BSplinesIndexingUtility::Transpose<2, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir, jdir);
+
+        // swap size
+        auto isize = mSize[idir];
+        auto jsize = mSize[jdir];
+        mSize[idir] = jsize;
+        mSize[jdir] = isize;
+    }
+
     /// Get the layer of control grid from the boundary, if the level = 0, the control grid on the boundary will be extracted.
-    typename StructuredControlGrid<1, TDataType>::Pointer Get(const BoundarySide& side, std::size_t level)
+    typename StructuredControlGrid<1, TDataType>::Pointer Get(const BoundarySide side, std::size_t level)
     {
         typename StructuredControlGrid<1, TDataType>::Pointer pControlGrid;
 
@@ -1060,8 +1092,20 @@ public:
         BSplinesIndexingUtility::Reverse<3, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir);
     }
 
+    /// Transpose the control grid
+    void Transpose(int idir, int jdir) override
+    {
+        BSplinesIndexingUtility::Transpose<3, DataContainerType, std::size_t*>(BaseType::Data(), mSize, idir, jdir);
+
+        // swap size
+        auto isize = mSize[idir];
+        auto jsize = mSize[jdir];
+        mSize[idir] = jsize;
+        mSize[jdir] = isize;
+    }
+
     /// Get the layer of control grid from the boundary, if the level = 0, the control grid on the boundary will be extracted.
-    typename StructuredControlGrid<2, TDataType>::Pointer Get(const BoundarySide& side, const unsigned int& level) const
+    typename StructuredControlGrid<2, TDataType>::Pointer Get(const BoundarySide side, const std::size_t level) const
     {
         // TODO
         KRATOS_ERROR << "Not yet implemented";

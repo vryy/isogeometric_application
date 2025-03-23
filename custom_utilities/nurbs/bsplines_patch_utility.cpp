@@ -276,6 +276,133 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
     }
 }
 
+void BSplinesPatchUtility::Transpose(typename Patch<2>::Pointer pPatch)
+{
+    TransposeImpl<2>(pPatch, 0, 1);
+}
+
+void BSplinesPatchUtility::Transpose(typename Patch<3>::Pointer pPatch, std::size_t idir, std::size_t jdir)
+{
+    TransposeImpl<3>(pPatch, idir, jdir);
+}
+
+template<int TDim>
+void BSplinesPatchUtility::TransposeImpl(typename Patch<TDim>::Pointer pPatch, std::size_t idir, std::size_t jdir)
+{
+    if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+    {
+        KRATOS_ERROR << "Patch " << pPatch->Name() << " is not B-Splines patch. Transpose can't be done.";
+    }
+
+    // transpose the FESPace
+    typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+    pFESpace->Transpose(idir, jdir);
+
+    // transpose the structured control grid
+    typedef typename Patch<TDim>::ControlPointType ControlPointType;
+    typename StructuredControlGrid<TDim, ControlPointType>::Pointer pControlPointGrid =
+        iga::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+    if (pControlPointGrid != nullptr)
+    {
+        pControlPointGrid->Transpose(idir, jdir);
+    }
+    else
+    {
+        KRATOS_ERROR << "The control point grid is not structured";
+    }
+
+    typedef typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctionContainerType;
+    DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
+    for (typename DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
+            it != DoubleGridFunctions_.end(); ++it)
+    {
+        typename StructuredControlGrid<TDim, double>::Pointer pControlValueGrid =
+            iga::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
+        if (pControlValueGrid != nullptr)
+        {
+            pControlValueGrid->Transpose(idir, jdir);
+        }
+        else
+        {
+            KRATOS_ERROR << "The control value grid " << (*it)->pControlGrid()->Name() << " is not structured";
+        }
+    }
+
+    typedef typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctionContainerType;
+    Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
+    for (typename Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
+            it != Array1DGridFunctions_.end(); ++it)
+    {
+        typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pControlValueGrid =
+            iga::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
+        if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") { continue; }
+        if (pControlValueGrid != nullptr)
+        {
+            pControlValueGrid->Transpose(idir, jdir);
+        }
+        else
+        {
+            KRATOS_ERROR << "The control value grid " << (*it)->pControlGrid()->Name() << " is not structured";
+        }
+    }
+
+    typedef typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctionContainerType;
+    VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
+    for (typename VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
+            it != VectorGridFunctions_.end(); ++it)
+    {
+        typename StructuredControlGrid<TDim, Vector>::Pointer pControlValueGrid =
+            iga::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
+        if (pControlValueGrid != nullptr)
+        {
+            pControlValueGrid->Transpose(idir, jdir);
+        }
+        else
+        {
+            KRATOS_ERROR << "The control value grid " << (*it)->pControlGrid()->Name() << " is not structured";
+        }
+    }
+
+    // check for any neighbours and adapt accordingly
+    if constexpr (TDim > 1)
+    {
+        for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
+        {
+            typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
+
+            if (pInterface != nullptr)
+            {
+                if constexpr (TDim == 2)
+                {
+                    std::size_t idir1 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side1()));
+
+                    BoundarySide new_side;
+                    if (idir1 == idir)
+                    {
+                        new_side = ParameterDirection<2>::GetSide(jdir);
+                    }
+                    else if (idir1 == jdir)
+                    {
+                        new_side = ParameterDirection<2>::GetSide(idir);
+                    }
+
+                    pInterface->SetSide1(new_side);
+                    pInterface->pOtherInterface()->SetSide2(new_side);
+                }
+                else if constexpr (TDim == 3)
+                {
+                    // TODO
+                    KRATOS_ERROR << "Transpose on the interface is not yet implemented for 3D";
+                }
+            }
+            else
+            {
+                KRATOS_ERROR << "The interface is not B-Splines patch interface";
+            }
+        }
+    }
+}
+
 int BSplinesPatchUtility::GetDimensionOfGeo(const std::string& fn)
 {
     return GetDimensionOfGeoHelper(fn);
@@ -485,5 +612,7 @@ template typename Patch<3>::Pointer BSplinesPatchUtility::CreatePatchFromGeo<3>(
 template void BSplinesPatchUtility::Reverse<1>(typename Patch<1>::Pointer pPatch, std::size_t idir);
 template void BSplinesPatchUtility::Reverse<2>(typename Patch<2>::Pointer pPatch, std::size_t idir);
 template void BSplinesPatchUtility::Reverse<3>(typename Patch<3>::Pointer pPatch, std::size_t idir);
+template void BSplinesPatchUtility::TransposeImpl<2>(typename Patch<2>::Pointer pPatch, std::size_t idir, std::size_t jdir);
+template void BSplinesPatchUtility::TransposeImpl<3>(typename Patch<3>::Pointer pPatch, std::size_t idir, std::size_t jdir);
 
 } // namespace Kratos

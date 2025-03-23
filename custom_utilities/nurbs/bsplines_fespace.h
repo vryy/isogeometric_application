@@ -340,11 +340,11 @@ public:
         // compare the knot vectors and order information
         for (std::size_t i = 0; i < TDim; ++i)
         {
-            if (!(this->Number(i)) == rOtherBSplinesFESpace.Number(i))
+            if (!(this->Number(i) == rOtherBSplinesFESpace.Number(i)))
             {
                 return false;
             }
-            if (!(this->Order(i)) == rOtherBSplinesFESpace.Order(i))
+            if (!(this->Order(i) == rOtherBSplinesFESpace.Order(i)))
             {
                 return false;
             }

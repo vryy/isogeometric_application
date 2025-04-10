@@ -223,7 +223,7 @@ public:
             std::cout << "Elements will be created on patch " << pPatch->Id() << std::endl;
         }
 
-        // generate the connectivpPatchies
+        // generate the points and connectivities
         std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities;
 
         if constexpr (TDim == 2)

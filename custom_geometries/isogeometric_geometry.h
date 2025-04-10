@@ -128,17 +128,17 @@ public:
      */
     typedef typename GeometryType::PointType PointType;
 
-    /** Type used for indexing in geometry class.std::size_t used for indexing
+    /** Type used for indexing in geometry class. IndexType used for indexing
     point or integration point access methods and also all other
     methods which need point or integration point index.
     */
-    typedef std::size_t IndexType;
+    typedef typename GeometryType::IndexType IndexType;
 
     /** This typed used to return size or dimension in
     geometry. Dimension, WorkingDimension, PointsNumber and
     ... return this type as their results.
     */
-    typedef std::size_t SizeType;
+    typedef typename GeometryType::SizeType SizeType;
 
     typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
 
@@ -502,7 +502,7 @@ public:
 
         VectorType tmp_values(this->PointsNumber());
         MatrixType tmp_local_gradients(this->PointsNumber(), this->WorkingSpaceDimension());
-        for (std::size_t PointNumber = 0; PointNumber < integration_points.size(); ++PointNumber)
+        for (IndexType PointNumber = 0; PointNumber < integration_points.size(); ++PointNumber)
         {
             this->ShapeFunctionsValuesAndLocalGradients(tmp_values, tmp_local_gradients, integration_points[PointNumber]);
             noalias(row(shape_functions_values, PointNumber)) = tmp_values;

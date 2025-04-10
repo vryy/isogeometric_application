@@ -74,7 +74,7 @@ public:
     typedef TPointType PointType;
 
     /**
-     * Type used for indexing in geometry class.std::size_t used for indexing
+     * Type used for indexing in geometry class. IndexType used for indexing
      * point or integration point access methods and also all other
      * methods which need point or integration point index.
      */
@@ -206,7 +206,7 @@ public:
         , mExtractionOperator(rOther.mExtractionOperator)
         , mCtrlWeights(rOther.mCtrlWeights)
     {
-        GeometryType::mpGeometryData = &(*mpBezierGeometryData);
+        GeometryType::mpGeometryData = mpBezierGeometryData.get();
     }
 
     /**
@@ -228,7 +228,7 @@ public:
         , mExtractionOperator(rOther.mExtractionOperator)
         , mCtrlWeights(rOther.mCtrlWeights)
     {
-        Geometry<TOtherPointType>::mpGeometryData = &(*mpBezierGeometryData);
+        Geometry<TOtherPointType>::mpGeometryData = mpBezierGeometryData.get();
     }
 
     /**
@@ -255,7 +255,7 @@ public:
     {
         BaseType::operator=( rOther );
         this->mpBezierGeometryData = rOther.mpBezierGeometryData;
-        GeometryType::mpGeometryData = &(*(this->mpBezierGeometryData));
+        GeometryType::mpGeometryData = this->mpBezierGeometryData.get();
         this->mOrder = rOther.mOrder;
         this->mNumber = rOther.mNumber;
         this->mExtractionOperator = rOther.mExtractionOperator;
@@ -279,7 +279,7 @@ public:
     {
         IsogeometricGeometry<TOtherPointType>::operator=( rOther );
         this->mpBezierGeometryData = rOther.mpBezierGeometryData;
-        Geometry<TOtherPointType>::mpGeometryData = &(*(this->mpBezierGeometryData));
+        Geometry<TOtherPointType>::mpGeometryData = this->mpBezierGeometryData.get();
         this->mOrder = rOther.mOrder;
         this->mNumber = rOther.mNumber;
         this->mExtractionOperator = rOther.mExtractionOperator;
@@ -295,7 +295,7 @@ public:
     {
         Geo1dBezier::Pointer pNewGeom = Geo1dBezier::Pointer( new Geo1dBezier( ThisPoints ) );
         ValuesContainerType DummyKnots;
-        if (mpBezierGeometryData != NULL)
+        if (mpBezierGeometryData != nullptr)
         {
             pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
                                          mCtrlWeights, mExtractionOperator, mOrder, 0, 0,
@@ -991,8 +991,8 @@ public:
      */
     void ExtractControlPoints(PointsArrayType& rPoints) final
     {
-        std::size_t number_of_points = this->PointsNumber();
-        std::size_t number_of_local_points = mNumber;
+        SizeType number_of_points = this->PointsNumber();
+        SizeType number_of_local_points = mNumber;
         rPoints.clear();
         rPoints.reserve(number_of_local_points);
 
@@ -1001,10 +1001,10 @@ public:
 
         // compute the Bezier control points
         typedef typename PointType::Pointer PointPointerType;
-        for (std::size_t i = 0; i < number_of_local_points; ++i)
+        for (IndexType i = 0; i < number_of_local_points; ++i)
         {
             PointPointerType pPoint = PointPointerType(new PointType(0, 0.0, 0.0, 0.0));
-            for (std::size_t j = 0; j < number_of_points; ++j)
+            for (IndexType j = 0; j < number_of_points; ++j)
             {
                 noalias(*pPoint) += mExtractionOperator(j, i) * this->GetPoint(j).GetInitialPosition() * mCtrlWeights[j] / bezier_weights[i];
             }
@@ -1155,9 +1155,9 @@ public:
         // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
         mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<1, 1, 1>(NumberOfIntegrationMethod, Degree1);
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-        BaseType::SetGeometryData(&(*mpBezierGeometryData));
+        BaseType::SetGeometryData(mpBezierGeometryData.get());
 #else
-        BaseType::mpGeometryData = &(*mpBezierGeometryData);
+        BaseType::mpGeometryData = mpBezierGeometryData.get();
 #endif
     }
 
@@ -1310,8 +1310,8 @@ protected:
     template<typename TDataType>
     void ExtractControlValues_(const Variable<TDataType>& rVariable, std::vector<TDataType>& rValues) const
     {
-        std::size_t number_of_points = this->PointsNumber();
-        std::size_t number_of_local_points = mNumber;
+        SizeType number_of_points = this->PointsNumber();
+        SizeType number_of_local_points = mNumber;
         if (rValues.size() != number_of_local_points)
         {
             rValues.resize(number_of_local_points);
@@ -1321,10 +1321,10 @@ protected:
         VectorType bezier_weights = prod(trans(mExtractionOperator), mCtrlWeights);
 
         // compute the Bezier control points
-        for (std::size_t i = 0; i < number_of_local_points; ++i)
+        for (IndexType i = 0; i < number_of_local_points; ++i)
         {
             rValues[i] = TDataType(0.0);
-            for (std::size_t j = 0; j < number_of_points; ++j)
+            for (IndexType j = 0; j < number_of_points; ++j)
             {
                 rValues[i] += mExtractionOperator(j, i) * this->GetPoint(j).GetSolutionStepValue(rVariable) * mCtrlWeights[j] / bezier_weights[i];
             }

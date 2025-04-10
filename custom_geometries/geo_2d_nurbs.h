@@ -79,7 +79,7 @@ public:
     typedef TPointType PointType;
 
     /**
-     * Type used for indexing in geometry class.std::size_t used for indexing
+     * Type used for indexing in geometry class. IndexType used for indexing
      * point or integration point access methods and also all other
      * methods which need point or integration point index.
      */

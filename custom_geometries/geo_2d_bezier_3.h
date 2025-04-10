@@ -72,7 +72,7 @@ public:
     typedef TPointType PointType;
 
     /**
-     * Type used for indexing in geometry class.std::size_t used for indexing
+     * Type used for indexing in geometry class. IndexType used for indexing
      * point or integration point access methods and also all other
      * methods which need point or integration point index.
      */
@@ -264,7 +264,7 @@ public:
     {
         Geo2dBezier3::Pointer pNewGeom = Geo2dBezier3::Pointer( new Geo2dBezier3( ThisPoints ) );
         ValuesContainerType DummyKnots;
-        if (BaseType::mpBezierGeometryData != NULL)
+        if (BaseType::mpBezierGeometryData != nullptr)
         {
             pNewGeom->AssignGeometryData(DummyKnots, DummyKnots, DummyKnots,
                                          BaseType::mCtrlWeights, BaseType::mExtractionOperator, BaseType::mOrder1, BaseType::mOrder2, 0,
@@ -584,9 +584,9 @@ public:
             // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
             BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-            GeometryType::SetGeometryData(&(*BaseType::mpBezierGeometryData));
+            GeometryType::SetGeometryData(BaseType::mpBezierGeometryData.get());
 #else
-            GeometryType::mpGeometryData = &(*BaseType::mpBezierGeometryData);
+            GeometryType::mpGeometryData = BaseType::mpBezierGeometryData.get();
 #endif
         }
     }

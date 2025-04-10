@@ -150,6 +150,8 @@ def CreateSmallArc(center, axis, radius, start_angle, end_angle):
     ctrl_grid = grid_lib.CreateLinearControlPointGrid(0.0, 0.0, 0.0, fes.Number(0), radius, 0.0, 0.0)
 
     sweep = end_angle - start_angle
+    if (sweep > 180.0):
+        raise Exception("Small arc cannot be larger than 180 degres, the input angle is %f" % (sweep))
 
     dsweep = 0.5*sweep/180.0*math.pi
     wm = math.cos(dsweep)

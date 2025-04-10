@@ -579,6 +579,49 @@ void BSplinesPatchUtility::MakeInterface3D(typename Patch<3>::Pointer pPatch1, c
     }
 }
 
+template<>
+void BSplinesPatchUtility::CreateInterfaces<1>(typename MultiPatch<1>::Pointer pMultiPatch)
+{
+    // TODO
+    KRATOS_ERROR << "To be implemented";
+}
+
+template<>
+void BSplinesPatchUtility::CreateInterfaces<2>(typename MultiPatch<2>::Pointer pMultiPatch)
+{
+    // TODO
+
+    KRATOS_ERROR << "To be implemented";
+
+    typedef typename MultiPatch<2>::patch_const_iterator patch_const_iterator;
+
+    // const std::vector<BoundarySide> sides = {}
+
+    // Calculation sequence:
+    //  +   compute the average of control points on each side of each patch
+    //  +   check interface matching by matching the control point average
+    //  +   for each match, check further criterion:
+    //      -   all control points on the interface patch must match
+    //      -   the knot vector is the same -> the matching direction is forward
+    //      -   the knot vector is symmetric around the pivot-> the matching direction is reversed
+
+    // std::map<std::size_t, std::map<std::size_t, PointType> > PatchBoundaryCenters;
+
+    for (patch_const_iterator it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
+    {
+
+    }
+
+}
+
+template<>
+void BSplinesPatchUtility::CreateInterfaces<3>(typename MultiPatch<3>::Pointer pMultiPatch)
+{
+    // TODO
+
+    KRATOS_ERROR << "To be implemented";
+}
+
 std::vector<std::array<typename Patch<1>::ControlPointType, 2> > BSplinesPatchUtility::ExtractControlPolygon(typename Patch<1>::ConstPointer pPatch)
 {
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<1>::StaticType())
@@ -618,5 +661,8 @@ template void BSplinesPatchUtility::Reverse<2>(typename Patch<2>::Pointer pPatch
 template void BSplinesPatchUtility::Reverse<3>(typename Patch<3>::Pointer pPatch, std::size_t idir);
 template void BSplinesPatchUtility::TransposeImpl<2>(typename Patch<2>::Pointer pPatch, std::size_t idir, std::size_t jdir);
 template void BSplinesPatchUtility::TransposeImpl<3>(typename Patch<3>::Pointer pPatch, std::size_t idir, std::size_t jdir);
+template void BSplinesPatchUtility::CreateInterfaces<1>(typename MultiPatch<1>::Pointer pMultiPatch);
+template void BSplinesPatchUtility::CreateInterfaces<2>(typename MultiPatch<2>::Pointer pMultiPatch);
+template void BSplinesPatchUtility::CreateInterfaces<3>(typename MultiPatch<3>::Pointer pMultiPatch);
 
 } // namespace Kratos

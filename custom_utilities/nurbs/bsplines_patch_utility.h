@@ -123,6 +123,10 @@ public:
                                 typename Patch<3>::Pointer pPatch2, const BoundarySide side2, const bool uv_or_vu,
                                 const BoundaryDirection direction1, const BoundaryDirection direction2);
 
+    /// Search and create interfaces automatically for multipatch
+    template<int TDim>
+    static void CreateInterfaces(typename MultiPatch<TDim>::Pointer pMultiPatch);
+
     /// Extract the control polygon of a 1D patch
     static std::vector<std::array<typename Patch<1>::ControlPointType, 2> > ExtractControlPolygon(typename Patch<1>::ConstPointer pPatch);
 

@@ -42,8 +42,6 @@ KratosIsogeometricApplication::KratosIsogeometricApplication()
 
 void KratosIsogeometricApplication::Register()
 {
-    // calling base class to register Kratos components
-    KratosApplication::Register();
     std::cout << "Initializing KratosIsogeometricApplication... " << std::endl;
 
     //register variables

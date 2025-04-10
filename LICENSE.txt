@@ -1,18 +1,35 @@
-isogeometric_application (IA) is an extension of KRATOS Multiphysics framework to assist isogeometric analysis with NURBS, hierarchical B-Splines and T-Splines. IA uses the Bezier decomposition concept to retain the local characteristics of the standard finite element. Therefore, IA can interoperably works with other KRATOS applications.
+isogeometric_application (IA) is an application (in the means of extension) of Prisma Multiphysics
+framework to assist isogeometric analysis with NURBS, hierarchical B-Splines and T-Splines.
+IA uses the Bezier decomposition concept to retain the local characteristics of the standard finite element.
+Therefore, IA can interoperably work with other Prisma applications.
 
-(c) KRATOS, 2007, is copyrighted to Pooyan Dadvand and Riccardo Rossi at CIMNE (International Center for Numerical Methods in Engineering), Gran Capita' s/n, 08034 Barcelona, Spain. See kratos/license.txt for its license terms.
+Prisma Multiphysics uses the technology developed by Kratos Multi-Physics for its functionalities.
+The licence term of Kratos Multi-Physics is below:
 
-IA is licensed separately from KRATOS using MIT License terms, which is described below:
+(c) KRATOS, 2007, is copyrighted to Pooyan Dadvand and Riccardo Rossi at CIMNE (International Center
+for Numerical Methods in Engineering), Gran Capita' s/n, 08034 Barcelona, Spain. See kratos/license.txt
+for its license terms.
+
+IA is licensed separately from Prisma using MIT License terms, which is described below:
 
 *******************************************************************************
 
 Copyright (2014, 2015, 2016, 2017, 2018) Hoang-Giang Bui
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject
+to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
 
-THE SOFTWARE (IA) IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE (IA) IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 *******************************************************************************
 

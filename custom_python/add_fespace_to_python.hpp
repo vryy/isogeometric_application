@@ -18,9 +18,9 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include <boost/python.hpp>
 
 // Project includes
+#include "python/python_utils.h"
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/weighted_fespace.h"
-#include "custom_python/iga_python_utils.h"
 
 
 namespace Kratos
@@ -51,7 +51,7 @@ template<int TDim>
 boost::python::list FESpace_GetValue(FESpace<TDim>& rDummy, boost::python::list xi_list)
 {
     std::vector<double> xi;
-    IsogeometricPythonUtils::Unpack<double, double>(xi_list, xi);
+    PythonUtils::Unpack<double, double>(xi_list, xi);
 
     std::vector<double> values = rDummy.GetValues(xi);
 
@@ -66,7 +66,7 @@ template<int TDim>
 bool FESpace_IsInside(FESpace<TDim>& rDummy, boost::python::list xi_list)
 {
     std::vector<double> xi;
-    IsogeometricPythonUtils::Unpack<double, double>(xi_list, xi);
+    PythonUtils::Unpack<double, double>(xi_list, xi);
 
     return rDummy.IsInside(xi);
 }

@@ -20,13 +20,13 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/define.h"
 #include "includes/model_part.h"
 #include "python/pointer_vector_set_python_interface.h"
+#include "python/python_utils.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/nurbs/bsplines_patch_utility.h"
 #include "custom_utilities/multipatch_utility.h"
 #include "custom_utilities/multipatch_refinement_utility.h"
 #include "custom_utilities/bending_strip_utility.h"
 #include "custom_utilities/trim/isogeometric_intersection_utility.h"
-#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_utilities_to_python.h"
 
 namespace Kratos
@@ -75,7 +75,7 @@ boost::python::list MultiPatchUtility_LocalCoordinates1(MultiPatchUtility& rDumm
         const boost::python::list& P, const boost::python::list& list_nsampling, const int echo_level)
 {
     std::vector<double> P_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
+    PythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
@@ -87,7 +87,7 @@ boost::python::list MultiPatchUtility_LocalCoordinates1(MultiPatchUtility& rDumm
     }
 
     std::vector<int> nsampling;
-    IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
+    PythonUtils::Unpack<int, int>(list_nsampling, nsampling);
 
     int patch_id = rDummy.LocalCoordinates(*pMultiPatch, point, xi, nsampling, echo_level);
 
@@ -116,7 +116,7 @@ Matrix MultiPatchUtility_ComputeSpatialDerivatives(MultiPatchUtility& rDummy,
         const boost::python::list& xi_list)
 {
     std::vector<double> xi;
-    IsogeometricPythonUtils::Unpack<double, double>(xi_list, xi);
+    PythonUtils::Unpack<double, double>(xi_list, xi);
 
     return rDummy.ComputeSpatialDerivatives(rControlPointGridFunction,
                                             rControlValueGridFunction, xi);
@@ -189,7 +189,7 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
         const boost::python::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
-    std::size_t dim = IsogeometricPythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
+    std::size_t dim = PythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
 
     if (dim != TDim)
         KRATOS_ERROR << "invalid dimension " << dim;
@@ -203,7 +203,7 @@ boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinemen
         const boost::python::list& ins_knots)
 {
     std::vector<std::vector<double> > ins_knots_array(TDim);
-    std::size_t dim = IsogeometricPythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
+    std::size_t dim = PythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
 
     if (dim != TDim)
         KRATOS_ERROR << "Invalid dimension " << dim;
@@ -227,7 +227,7 @@ void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDum
         const boost::python::list& order_increment)
 {
     std::vector<std::size_t> order_incr_array(TDim);
-    std::size_t dim = IsogeometricPythonUtils::Unpack<int, std::size_t>(order_increment, order_incr_array, TDim);
+    std::size_t dim = PythonUtils::Unpack<int, std::size_t>(order_increment, order_incr_array, TDim);
 
     if (dim != TDim)
         KRATOS_ERROR << "Invalid dimension " << dim;
@@ -250,7 +250,7 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSpli
 {
     typedef typename Patch < TDim - 1 >::Pointer TPatchPointerType;
     std::vector<TPatchPointerType> pPatches;
-    IsogeometricPythonUtils::Unpack<TPatchPointerType, TPatchPointerType>(patch_list, pPatches);
+    PythonUtils::Unpack<TPatchPointerType, TPatchPointerType>(patch_list, pPatches);
 
     return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatches, order);
 }
@@ -338,7 +338,7 @@ typename Patch<TDim>::Pointer BendingStripUtility_CreateBendingStripNURBSPatch2(
     const boost::python::list& order_list)
 {
     std::vector<int> Orders(TDim);
-    IsogeometricPythonUtils::Unpack<int, int>(order_list, Orders, TDim);
+    PythonUtils::Unpack<int, int>(order_list, Orders, TDim);
 
     return rDummy.CreateBendingStripNURBSPatch<TDim>(Id, pPatch1, side1, pPatch2, side2, Orders);
 }
@@ -402,7 +402,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
     std::vector<double> starting_points;
-    IsogeometricPythonUtils::Unpack<double, double>(list_starting_points, starting_points);
+    PythonUtils::Unpack<double, double>(list_starting_points, starting_points);
 
     std::vector<std::vector<double> > intersection_points;
 
@@ -440,7 +440,7 @@ boost::python::list IsogeometricIntersectionUtility_ComputeIntersectionByNewtonR
     // std::cout << "invoking " << __FUNCTION__ << std::endl;
 
     std::vector<double> starting_points;
-    IsogeometricPythonUtils::Unpack<double, double>(list_starting_points, starting_points);
+    PythonUtils::Unpack<double, double>(list_starting_points, starting_points);
 
     std::vector<std::vector<double> > intersection_points;
 
@@ -625,6 +625,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("Reverse", &BSplinesPatchUtility_Reverse<2>)
     .def("Reverse", &BSplinesPatchUtility_Reverse<3>)
     .def("Transpose", &BSplinesPatchUtility_Transpose2)
+    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<1>)
+    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<2>)
+    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<3>)
     ;
 
     class_<BendingStripUtility, BendingStripUtility::Pointer, boost::noncopyable>

@@ -19,11 +19,11 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 // Project includes
 #include "includes/define.h"
+#include "python/python_utils.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/grid_function.h"
-#include "custom_python/iga_python_utils.h"
 
 
 namespace Kratos
@@ -62,7 +62,7 @@ template<class TGridFrunctionType>
 typename TGridFrunctionType::DataType GridFunction_GetValue1(TGridFrunctionType& rDummy, const boost::python::list& xi)
 {
     std::vector<double> xi_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(xi, xi_vec);
+    PythonUtils::Unpack<double, double>(xi, xi_vec);
     return rDummy.GetValue(xi_vec);
 }
 
@@ -76,7 +76,7 @@ template<class TGridFrunctionType>
 boost::python::list GridFunction_GetDerivative1(TGridFrunctionType& rDummy, const boost::python::list& xi)
 {
     std::vector<double> xi_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(xi, xi_vec);
+    PythonUtils::Unpack<double, double>(xi, xi_vec);
 
     std::vector<typename TGridFrunctionType::DataType> derivatives;
     rDummy.GetDerivative(derivatives, xi_vec);
@@ -105,7 +105,7 @@ template<class TGridFrunctionType>
 boost::python::list GridFunction_GetSecondDerivative1(TGridFrunctionType& rDummy, const boost::python::list& xi)
 {
     std::vector<double> xi_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(xi, xi_vec);
+    PythonUtils::Unpack<double, double>(xi, xi_vec);
 
     std::vector<typename TGridFrunctionType::DataType> derivatives;
     rDummy.GetSecondDerivative(derivatives, xi_vec);

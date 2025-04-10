@@ -18,6 +18,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
+#include "python/python_utils.h"
 #include "custom_utilities/patch_lagrange_mesh.h"
 #include "custom_utilities/nonconforming_multipatch_lagrange_mesh.h"
 #include "custom_utilities/nonconforming_variable_multipatch_lagrange_mesh.h"
@@ -25,7 +26,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/multipatch_model_part.h"
 #include "custom_utilities/multi_multipatch_model_part.h"
 #include "custom_utilities/conforming_multipatch_lagrange_model_part.h"
-#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_mesh_and_model_part_to_python.h"
 
 namespace Kratos
@@ -106,7 +106,7 @@ void Helper_SynchronizeBackward(T& rDummy,
         const TVariableType& rVariable, const boost::python::dict& rPatchNodalValues)
 {
     std::map<std::size_t, std::map<std::size_t, typename TVariableType::Type> > patch_nodal_values;
-    IsogeometricPythonUtils::Unpack(rPatchNodalValues, patch_nodal_values);
+    PythonUtils::Unpack(rPatchNodalValues, patch_nodal_values);
 
     rDummy.SynchronizeBackwardFromData(rVariable, patch_nodal_values);
 }
@@ -115,7 +115,7 @@ template<class T>
 void Helper_SetSampling(T& rDummy, const int patch_id, const int dim, const boost::python::list& list_sampling)
 {
     std::vector<double> nsampling;
-    IsogeometricPythonUtils::Unpack<double, double>(list_sampling, nsampling);
+    PythonUtils::Unpack<double, double>(list_sampling, nsampling);
 
     rDummy.SetSampling(patch_id, dim, nsampling);
 }
@@ -127,7 +127,7 @@ ModelPart::ElementsContainerType MultiMultiPatchModelPart_AddElements(T& rDummy,
         const std::string& element_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     std::vector<typename T::PatchType::Pointer> pPatches;
-    IsogeometricPythonUtils::Unpack<T>(patch_list, pPatches);
+    PythonUtils::Unpack<typename T::PatchType::Pointer>(patch_list, pPatches);
 
     return rDummy.AddElements(pPatches, element_name, starting_id, pProperties);
 }
@@ -137,7 +137,7 @@ ModelPart::ConditionsContainerType MultiPatchHelper_AddConditions(T& rDummy, con
         const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
 {
     std::vector<typename T::PatchType::Pointer> pPatches;
-    IsogeometricPythonUtils::Unpack<T>(patch_list, pPatches);
+    PythonUtils::Unpack<typename T::PatchType::Pointer>(patch_list, pPatches);
 
     return rDummy.AddConditions(pPatches, condition_name, starting_id, pProperties);
 }
@@ -176,7 +176,7 @@ boost::python::list PatchLagrangeMesh_WriteElements(PatchLagrangeMesh<TDim>& rDu
     Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
 
     std::vector<std::size_t> num_divisions;
-    IsogeometricPythonUtils::Unpack<int, std::size_t>(list_divs, num_divisions);
+    PythonUtils::Unpack<int, std::size_t>(list_divs, num_divisions);
 
     std::size_t my_last_node_id = last_node_id;
     std::size_t my_last_elem_id = last_elem_id;
@@ -207,7 +207,7 @@ boost::python::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& r
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
     std::vector<std::size_t> num_divisions;
-    IsogeometricPythonUtils::Unpack<int, std::size_t>(list_divs, num_divisions);
+    PythonUtils::Unpack<int, std::size_t>(list_divs, num_divisions);
 
     std::size_t my_last_node_id = last_node_id;
     std::size_t my_last_cond_id = last_cond_id;

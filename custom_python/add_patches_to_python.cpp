@@ -19,6 +19,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "python/pointer_vector_set_python_interface.h"
+#include "python/python_utils.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/multipatch.h"
 #include "custom_utilities/patch_interface.h"
@@ -27,7 +28,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/import_export/multi_nurbs_patch_matlab_exporter.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_glvis_exporter.h"
 #include "custom_python/iga_define_python.h"
-#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_import_export_to_python.h"
 #include "custom_python/add_patches_to_python.h"
 
@@ -100,13 +100,13 @@ boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list&
                                   const boost::python::list& list_xi_min, const boost::python::list& list_xi_max)
 {
     std::vector<double> xi_min_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(list_xi_min, xi_min_vec);
+    PythonUtils::Unpack<double, double>(list_xi_min, xi_min_vec);
 
     std::vector<double> xi_max_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(list_xi_max, xi_max_vec);
+    PythonUtils::Unpack<double, double>(list_xi_max, xi_max_vec);
 
     std::vector<double> P_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
+    PythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi, xi_min, xi_max;
     noalias(point) = ZeroVector(3);
@@ -130,7 +130,7 @@ boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list&
     }
 
     std::vector<int> nsampling;
-    IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
+    PythonUtils::Unpack<int, int>(list_nsampling, nsampling);
 
     rDummy.Predict(point, xi, nsampling, xi_min, xi_max);
 
@@ -146,7 +146,7 @@ template<class TPatchType>
 boost::python::list Patch_Predict1(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& list_nsampling)
 {
     std::vector<double> P_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
+    PythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
@@ -158,7 +158,7 @@ boost::python::list Patch_Predict1(TPatchType& rDummy, const boost::python::list
     }
 
     std::vector<int> nsampling;
-    IsogeometricPythonUtils::Unpack<int, int>(list_nsampling, nsampling);
+    PythonUtils::Unpack<int, int>(list_nsampling, nsampling);
 
     rDummy.Predict(point, xi, nsampling);
 
@@ -174,10 +174,10 @@ template<class TPatchType>
 boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& xi0)
 {
     std::vector<double> xi0_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(xi0, xi0_vec);
+    PythonUtils::Unpack<double, double>(xi0, xi0_vec);
 
     std::vector<double> P_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
+    PythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
@@ -210,10 +210,10 @@ template<class TPatchType>
 bool Patch_IsInside(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& xi0)
 {
     std::vector<double> xi0_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(xi0, xi0_vec);
+    PythonUtils::Unpack<double, double>(xi0, xi0_vec);
 
     std::vector<double> P_vec;
-    IsogeometricPythonUtils::Unpack<double, double>(P, P_vec);
+    PythonUtils::Unpack<double, double>(P, P_vec);
 
     array_1d<double, 3> point, xi;
     noalias(point) = ZeroVector(3);
@@ -251,7 +251,7 @@ static typename MultiPatch<TDim>::Pointer MultiPatch_init(const boost::python::l
     typename MultiPatch<TDim>::Pointer pMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
 
     std::vector<typename Patch<TDim>::Pointer> patches;
-    IsogeometricPythonUtils::Unpack<typename Patch<TDim>::Pointer>(patch_list, patches);
+    PythonUtils::Unpack<typename Patch<TDim>::Pointer>(patch_list, patches);
 
     for (std::size_t i = 0; i < patches.size(); ++i)
         pMultiPatch->AddPatch(patches[i]);

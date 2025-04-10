@@ -18,6 +18,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 // Project includes
 #include "includes/define.h"
+#include "python/python_utils.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/control_grid_library.h"
@@ -27,7 +28,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/nurbs/pbbsplines_fespace.h"
 #include "custom_utilities/hbsplines/hbsplines_basis_function.h"
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
-#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_utilities_to_python.h"
 #include "custom_python/add_control_grids_to_python.h"
 
@@ -156,7 +156,7 @@ ControlGrid<ControlPoint<double> >::Pointer ControlGridLibrary_CreateCubicContro
     ngrid[2] = n_points_w;
 
     std::vector<std::vector<double> > spacing_vectors;
-    IsogeometricPythonUtils::Unpack<double, double>(spacing_vectors_data, spacing_vectors);
+    PythonUtils::Unpack<double, double>(spacing_vectors_data, spacing_vectors);
 
     return rDummy.CreateStructuredControlPointGrid<3>(start, ngrid, spacing_vectors);
 }

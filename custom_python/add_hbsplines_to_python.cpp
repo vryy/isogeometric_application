@@ -19,6 +19,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "python/pointer_vector_set_python_interface.h"
+#include "python/python_utils.h"
 #include "custom_utilities/patch.h"
 #include "custom_utilities/control_grid_utility.h"
 #include "custom_utilities/hbsplines/deprecated_hb_mesh.h"
@@ -28,7 +29,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/hbsplines/hbsplines_refinement_utility.h"
 #include "custom_utilities/import_export/multi_hbsplines_patch_matlab_exporter.h"
 #include "custom_python/iga_define_python.h"
-#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_hbsplines_to_python.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
 #include "custom_python/add_import_export_to_python.h"
@@ -152,7 +152,7 @@ void HBSplinesRefinementUtility_RefineWindow(HBSplinesRefinementUtility& rDummy,
         typename Patch<TDim>::Pointer pPatch, const boost::python::list& window, int EchoLevel)
 {
     std::vector<std::vector<double> > window_vector;
-    IsogeometricPythonUtils::Unpack<double, double>(window, window_vector);
+    PythonUtils::Unpack<double, double>(window, window_vector);
     rDummy.RefineWindow<TDim>(pPatch, window_vector, EchoLevel);
 }
 

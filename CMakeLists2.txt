@@ -103,7 +103,6 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_conditions/dummy_isogeometric_condition.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/isogeometric_application_variables.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/isogeometric_application.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/iga_python_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_io_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_processes_to_python.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_python/add_backend_utilities_to_python.cpp

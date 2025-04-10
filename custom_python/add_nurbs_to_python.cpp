@@ -18,6 +18,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 
 // Project includes
 #include "includes/define.h"
+#include "python/python_utils.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/fespace.h"
@@ -31,7 +32,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/nurbs/bending_strip_nurbs_patch.h"
 #include "custom_utilities/nurbs/nurbs_test_utils.h"
 #include "custom_python/iga_define_python.h"
-#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_nurbs_to_python.h"
 
 namespace Kratos
@@ -68,7 +68,7 @@ void BSplinesFESpace_SetKnotVector(BSplinesFESpace<TDim>& rDummy, const boost::p
     if (TWhichDim < TDim)
     {
         std::vector<double> knot_vec;
-        IsogeometricPythonUtils::Unpack<double, double>(knot_list, knot_vec);
+        PythonUtils::Unpack<double, double>(knot_list, knot_vec);
 
         rDummy.SetKnotVector(TWhichDim, knot_vec);
     }

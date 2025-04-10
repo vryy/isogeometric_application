@@ -19,6 +19,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "includes/model_part.h"
+#include "python/python_utils.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/isogeometric_utility.h"
@@ -30,7 +31,6 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/isogeometric_merge_utility.h"
 #include "custom_utilities/isogeometric_math_utils.h"
 #include "custom_utilities/isogeometric_projection_utility.h"
-#include "custom_python/iga_python_utils.h"
 #include "custom_python/add_utilities_to_python.h"
 
 #ifdef ISOGEOMETRIC_USE_GISMO
@@ -365,10 +365,10 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(Isog
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
 
     std::vector<TCoordinatesType> physical_points;
-    IsogeometricPythonUtils::Unpack<array_1d<double, 3>, TCoordinatesType>(list_physical_points, physical_points);
+    PythonUtils::Unpack<array_1d<double, 3>, TCoordinatesType>(list_physical_points, physical_points);
 
     std::vector<TCoordinatesType> local_points;
-    IsogeometricPythonUtils::Unpack<array_1d<double, 3>, TCoordinatesType>(list_local_points, local_points);
+    PythonUtils::Unpack<array_1d<double, 3>, TCoordinatesType>(list_local_points, local_points);
 
     std::size_t offset = last_node_id + 1;
     std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<std::size_t> > >
@@ -756,7 +756,7 @@ boost::python::list IsogeometricProjectionUtility_ComputeRayProjection(Isogeomet
     TPointType GlobalPoint;
     int patch_id;
     std::array<unsigned int, TDim> nsamplings;
-    IsogeometricPythonUtils::Unpack<int, unsigned int, TDim>(list_nsamplings, nsamplings);
+    PythonUtils::Unpack<int, unsigned int, TDim>(list_nsamplings, nsamplings);
     int error_code = IsogeometricProjectionUtility<TPointType, TDim>::ComputeRayProjection(rPoint, rDirection, LocalPoint, GlobalPoint, patch_id,
                                         pMultiPatch, TOL, max_iters, nsamplings, echo_level);
 

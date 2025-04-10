@@ -163,8 +163,8 @@ public:
 
         // generate nodes and elements for each patch
         IndexType NodeCounter = mLastNodeId + 1;
-        IndexType ElementCounter = mLastElemId;
-        IndexType ConditionCounter = mLastCondId;
+        IndexType ElementCounter = mLastElemId + 1;
+        IndexType ConditionCounter = mLastCondId + 1;
         for (auto it = mpMultiPatch->ptr_begin(); it != mpMultiPatch->ptr_end(); ++it)
         {
             if (!(*it)->Is(ACTIVE))

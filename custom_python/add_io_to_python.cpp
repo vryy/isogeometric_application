@@ -32,11 +32,11 @@ void  IsogeometricApplication_AddIOToPython()
 {
     using namespace boost::python;
 
-    class_<IsogeometricModelPartIO, IsogeometricModelPartIO::Pointer, bases<IO>,  boost::noncopyable>(
+    class_<IsogeometricModelPartIO, IsogeometricModelPartIO::Pointer, bases<IO<> >,  boost::noncopyable>(
         "IsogeometricModelPartIO", init<std::string const&>())
     ;
 
-    class_<BezierModelPartIO, BezierModelPartIO::Pointer, bases<ModelPartIO>,  boost::noncopyable>(
+    class_<BezierModelPartIO, BezierModelPartIO::Pointer, bases<ModelPartIO<> >,  boost::noncopyable>(
         "BezierModelPartIO", init<std::string const&>())
 //        .def(init<std::string const&, const Flags>())
     ;

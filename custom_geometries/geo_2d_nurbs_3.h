@@ -248,7 +248,7 @@ public:
     /**
      * Destructor. Does nothing!!!
      */
-    virtual ~Geo2dNURBS3()
+    ~Geo2dNURBS3() override
     {}
 
     /**

@@ -85,11 +85,9 @@ public:
     typedef typename BaseType::TSystemMatrixPointerType TSystemMatrixPointerType;
     typedef typename BaseType::TSystemVectorPointerType TSystemVectorPointerType;
 
-    typedef typename BaseType::NodesArrayType NodesArrayType;
-    typedef typename BaseType::ElementsArrayType ElementsArrayType;
-    typedef typename BaseType::ConditionsArrayType ConditionsArrayType;
-
+    typedef typename BaseType::NodesContainerType NodesContainerType;
     typedef typename BaseType::ElementsContainerType ElementsContainerType;
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
 
     typedef typename TSparseSpaceType::IndexType IndexType;
 
@@ -111,7 +109,7 @@ public:
     }
 
     /// Destructor
-    virtual ~RowConstraintBuilderAndSolver()
+    ~RowConstraintBuilderAndSolver() override
     {
     }
 
@@ -133,10 +131,10 @@ public:
 
     //**************************************************************************
     //**************************************************************************
-    virtual void Build(typename TSchemeType::Pointer pScheme,
-                       ModelPart& r_model_part,
-                       TSystemMatrixType& A,
-                       TSystemVectorType& b)
+    void Build(typename TSchemeType::Pointer pScheme,
+               ModelPart& r_model_part,
+               TSystemMatrixType& A,
+               TSystemVectorType& b) override
     {
         KRATOS_TRY
 

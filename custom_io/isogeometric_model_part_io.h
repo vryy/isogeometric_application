@@ -51,7 +51,7 @@ namespace Kratos
 /// An IO class for reading and writing a modelpart
 /** This class writes all modelpart data including the meshes.
 */
-class IsogeometricModelPartIO : public IO
+class IsogeometricModelPartIO : public IO<>
 {
 public:
     ///@name Type Definitions
@@ -60,25 +60,27 @@ public:
     /// Pointer definition of IsogeometricModelPartIO
     KRATOS_CLASS_POINTER_DEFINITION(IsogeometricModelPartIO);
 
-    typedef IO BaseType;
+    typedef IO<> BaseType;
 
-    typedef BaseType::NodeType NodeType;
+    typedef typename BaseType::NodeType NodeType;
 
-    typedef BaseType::MeshType MeshType;
+    typedef typename BaseType::MeshType MeshType;
 
-    typedef BaseType::NodesContainerType NodesContainerType;
+    typedef typename BaseType::NodesContainerType NodesContainerType;
 
-    typedef BaseType::PropertiesContainerType PropertiesContainerType;
+    typedef typename BaseType::PropertiesContainerType PropertiesContainerType;
 
-    typedef BaseType::ElementsContainerType ElementsContainerType;
+    typedef typename BaseType::ElementsContainerType ElementsContainerType;
 
-    typedef BaseType::ConditionsContainerType ConditionsContainerType;
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
 
-    typedef BaseType::ConnectivitiesContainerType ConnectivitiesContainerType;
+    typedef typename BaseType::ConnectivitiesContainerType ConnectivitiesContainerType;
 
-    typedef std::vector<std::ofstream*> OutputFilesContainerType;
+    typedef typename std::vector<std::ofstream*> OutputFilesContainerType;
 
-    typedef std::size_t SizeType;
+    typedef typename BaseType::SizeType SizeType;
+
+    typedef typename ModelPart::CommunicatorType CommunicatorType;
 
 #ifndef SD_APP_FORWARD_COMPATIBILITY
     typedef VariableComponent<VectorComponentAdaptor<array_1d<double, 3> > > array_1d_component_type;
@@ -134,7 +136,7 @@ public:
 //       }
 
     /// Destructor.
-    virtual ~IsogeometricModelPartIO() {}
+    ~IsogeometricModelPartIO() override {}
 
     ///@}
     ///@name Operators
@@ -144,12 +146,12 @@ public:
     ///@name Operations
     ///@{
 
-    virtual bool ReadNode(NodeType& rThisNode)
+    bool ReadNode(NodeType& rThisNode) override
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class.";
     }
 
-    virtual bool ReadNodes(NodesContainerType& rThisNodes)
+    bool ReadNodes(NodesContainerType& rThisNodes) override
     {
         KRATOS_TRY
         ResetInput();
@@ -176,7 +178,7 @@ public:
         KRATOS_CATCH("")
     }
 
-    virtual std::size_t ReadNodesNumber()
+    SizeType ReadNodesNumber() override
     {
         KRATOS_TRY;
         ResetInput();
@@ -204,7 +206,7 @@ public:
         KRATOS_CATCH("");
     }
 
-    virtual void WriteNodes(NodesContainerType const& rThisNodes)
+    void WriteNodes(NodesContainerType const& rThisNodes) override
     {
         mOutput << "Begin Nodes" << std::endl;
         for (NodesContainerType::const_iterator i_node = rThisNodes.begin() ; i_node != rThisNodes.end() ; i_node++)
@@ -214,12 +216,12 @@ public:
         mOutput << "End Nodes" << std::endl;
     }
 
-    virtual void ReadProperties(Properties& rThisProperties)
+    void ReadProperties(Properties& rThisProperties) override
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class";
     }
 
-    virtual void ReadProperties(PropertiesContainerType& rThisProperties)
+    void ReadProperties(PropertiesContainerType& rThisProperties) override
     {
         KRATOS_TRY
         ResetInput();
@@ -255,12 +257,12 @@ public:
         }
     }
 
-    virtual void ReadElement(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, Element::Pointer& pThisElements)
+    void ReadElement(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, Element::Pointer& pThisElements) override
     {
         KRATOS_ERROR << "Calling base class member. Please check the definition of derived class";
     }
 
-    virtual void ReadElements(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ElementsContainerType& rThisElements)
+    void ReadElements(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ElementsContainerType& rThisElements) override
     {
         KRATOS_TRY
         ResetInput();
@@ -285,10 +287,11 @@ public:
         KRATOS_CATCH("")
     }
 
-    virtual std::size_t  ReadElementsConnectivities(ConnectivitiesContainerType& rElementsConnectivities)
+    SizeType ReadElementsConnectivities(ConnectivitiesContainerType& rElementsConnectivities) override
     {
         KRATOS_TRY
-        std::size_t number_of_elements = 0;
+
+        SizeType number_of_elements = 0;
         ResetInput();
         std::string word;
         while (true)
@@ -313,13 +316,13 @@ public:
         KRATOS_CATCH("")
     }
 
-    virtual void WriteElements(ElementsContainerType const& rThisElements)
+    void WriteElements(ElementsContainerType const& rThisElements) override
     {
         mOutput << "Begin Elements" << std::endl;
         mOutput << "End Elements" << std::endl;
     }
 
-    virtual void ReadConditions(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ConditionsContainerType& rThisConditions)
+    void ReadConditions(NodesContainerType& rThisNodes, PropertiesContainerType& rThisProperties, ConditionsContainerType& rThisConditions) override
     {
         KRATOS_TRY
         ResetInput();
@@ -344,10 +347,11 @@ public:
         KRATOS_CATCH("")
     }
 
-    virtual std::size_t  ReadConditionsConnectivities(ConnectivitiesContainerType& rConditionsConnectivities)
+    SizeType ReadConditionsConnectivities(ConnectivitiesContainerType& rConditionsConnectivities) override
     {
         KRATOS_TRY
-        std::size_t number_of_elements = 0;
+
+        SizeType number_of_elements = 0;
         ResetInput();
         std::string word;
         while (true)
@@ -368,6 +372,7 @@ public:
             }
         }
         return number_of_elements;
+
         KRATOS_CATCH("")
     }
 
@@ -377,7 +382,7 @@ public:
         mOutput << "End Conditions" << std::endl;
     }
 
-    virtual void ReadInitialValues(NodesContainerType& rThisNodes, ElementsContainerType& rThisElements, ConditionsContainerType& rThisConditions)
+    void ReadInitialValues(NodesContainerType& rThisNodes, ElementsContainerType& rThisElements, ConditionsContainerType& rThisConditions) override
     {
         KRATOS_TRY
         ResetInput();
@@ -412,7 +417,7 @@ public:
 
 //       void ReadGeometries(NodesContainerType& rThisNodes, GeometriesContainerType& rResults);
 
-    virtual void ReadMesh(MeshType & rThisMesh)
+    void ReadMesh(MeshType & rThisMesh) override
     {
         KRATOS_ERROR << "IsogeometricModelPartIO does not implement this method.";
     }
@@ -425,7 +430,7 @@ public:
         WriteConditions(rThisMesh.Conditions());
     }
 
-    virtual void ReadModelPart(ModelPart & rThisModelPart)
+    void ReadModelPart(ModelPart & rThisModelPart) override
     {
         KRATOS_TRY
 
@@ -517,7 +522,7 @@ public:
      * to node k (counting from 0).
      * @return Number of nodes.
      */
-    virtual std::size_t ReadNodalGraph(int **NodeIndices, int **NodeConnectivities)
+    SizeType ReadNodalGraph(int **NodeIndices, int **NodeConnectivities) override
     {
         SizeType num_nodes = ReadNodesNumber();
 
@@ -579,13 +584,13 @@ public:
         return num_nodes;
     }
 
-    virtual void DivideInputToPartitions(SizeType NumberOfPartitions, GraphType const& DomainsColoredGraph,
-                                         PartitionIndicesType const& NodesPartitions,
-                                         PartitionIndicesType const& ElementsPartitions,
-                                         PartitionIndicesType const& ConditionsPartitions,
-                                         PartitionIndicesContainerType const& NodesAllPartitions,
-                                         PartitionIndicesContainerType const& ElementsAllPartitions,
-                                         PartitionIndicesContainerType const& ConditionsAllPartitions)
+    void DivideInputToPartitions(SizeType NumberOfPartitions, GraphType const& DomainsColoredGraph,
+                                 PartitionIndicesType const& NodesPartitions,
+                                 PartitionIndicesType const& ElementsPartitions,
+                                 PartitionIndicesType const& ConditionsPartitions,
+                                 PartitionIndicesContainerType const& NodesAllPartitions,
+                                 PartitionIndicesContainerType const& ElementsAllPartitions,
+                                 PartitionIndicesContainerType const& ConditionsAllPartitions) override
     {
         KRATOS_TRY
         ResetInput();
@@ -681,22 +686,11 @@ public:
     ///@name Input and output
     ///@{
 
-//       /// Turn back information as a string.
-//       virtual std::string Info() const
-//  {
-//    return "IsogeometricModelPartIO";
-//  }
-
-//       /// Print information about this object.
-//       virtual void PrintInfo(std::ostream& rOStream) const
-//  {
-//    rOStream << "IsogeometricModelPartIO";
-//  }
-
-//       /// Print object's data.
-//       virtual void PrintData(std::ostream& rOStream) const
-//  {
-//  }
+    /// Turn back information as a string.
+    std::string Info() const override
+    {
+    return "IsogeometricModelPartIO";
+    }
 
     ///@}
     ///@name Friends
@@ -860,7 +854,6 @@ private:
                 KRATOS_ERROR << variable_name << " is not a valid variable!!!" << std::endl
                              << " [Line " << mNumberOfLines << " ]";
             }
-
         }
 
         KRATOS_CATCH("")
@@ -2256,11 +2249,11 @@ private:
         KRATOS_CATCH("");
     }
 
-    void ReadCommunicatorDataBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes)
+    void ReadCommunicatorDataBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes)
     {
         KRATOS_TRY
 
-// 	KRATOS_WATCH("begin reading CommunicatorDataBlock")
+//  KRATOS_WATCH("begin reading CommunicatorDataBlock")
 
         std::string word;
         while (true)
@@ -2310,7 +2303,7 @@ private:
         KRATOS_CATCH("")
     }
 
-    void ReadCommunicatorLocalNodesBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes)
+    void ReadCommunicatorLocalNodesBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes)
     {
         KRATOS_TRY
 
@@ -2332,8 +2325,8 @@ private:
                          << " [Line " << mNumberOfLines << " ]";
         }
 
-        Communicator::MeshType* p_local_mesh;
-        Communicator::MeshType* p_interface_mesh;
+        CommunicatorType::MeshType* p_local_mesh;
+        CommunicatorType::MeshType* p_interface_mesh;
 
         if (interface_id == 0)
         {
@@ -2368,7 +2361,7 @@ private:
         KRATOS_CATCH("")
     }
 
-    void ReadCommunicatorGhostNodesBlock(Communicator& rThisCommunicator, NodesContainerType& rThisNodes)
+    void ReadCommunicatorGhostNodesBlock(CommunicatorType& rThisCommunicator, NodesContainerType& rThisNodes)
     {
         KRATOS_TRY
 
@@ -2390,8 +2383,8 @@ private:
                          << " [Line " << mNumberOfLines << " ]";
         }
 
-        Communicator::MeshType* p_ghost_mesh;
-        Communicator::MeshType* p_interface_mesh;
+        CommunicatorType::MeshType* p_ghost_mesh;
+        CommunicatorType::MeshType* p_interface_mesh;
 
         if (interface_id == 0)
         {
@@ -3745,21 +3738,7 @@ private:
 ///@name Input and output
 ///@{
 
-//   /// input stream function
-//   inline std::istream& operator >> (std::istream& rIStream,
-//                  IsogeometricModelPartIO& rThis);
-
-//   /// output stream function
-//   inline std::ostream& operator << (std::ostream& rOStream,
-//                  const IsogeometricModelPartIO& rThis)
-//     {
-//       rThis.PrintInfo(rOStream);
-//       rOStream << std::endl;
-//       rThis.PrintData(rOStream);
-
-//       return rOStream;
-//     }
-//   ///@}
+///@}
 
 }  // namespace Kratos.
 

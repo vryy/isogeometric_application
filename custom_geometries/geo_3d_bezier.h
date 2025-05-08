@@ -221,7 +221,7 @@ public:
         , mExtractionOperator(rOther.mExtractionOperator)
         , mCtrlWeights(rOther.mCtrlWeights)
     {
-        GeometryType::mpGeometryData = mpBezierGeometryData.get();
+        GeometryType::SetGeometryData(mpBezierGeometryData.get());
     }
 
     /**
@@ -247,13 +247,13 @@ public:
         , mExtractionOperator(rOther.mExtractionOperator)
         , mCtrlWeights(rOther.mCtrlWeights)
     {
-        Geometry<TOtherPointType>::mpGeometryData = mpBezierGeometryData.get();
+        Geometry<TOtherPointType>::SetGeometryData(mpBezierGeometryData.get());
     }
 
     /**
      * Destructor. Does nothing!!!
      */
-    virtual ~Geo3dBezier()
+    ~Geo3dBezier() override
     {}
 
     /**
@@ -1409,11 +1409,7 @@ public:
             // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
             mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<3, 3, 3>(NumberOfIntegrationMethod, Degree1, Degree2, Degree3);
 #ifndef ENABLE_PRECOMPUTE
-#ifdef SD_APP_FORWARD_COMPATIBILITY
             BaseType::SetGeometryData(mpBezierGeometryData.get());
-#else
-            BaseType::mpGeometryData = mpBezierGeometryData.get();
-#endif
 #else
             // precompute the values at each integration points; note that it can generate a LOT of data
             IntegrationPointsContainerType all_integration_points
@@ -1443,11 +1439,7 @@ public:
                                  )
                              );
 
-#ifdef SD_APP_FORWARD_COMPATIBILITY
             BaseType::SetGeometryData(mpGeometryData.get());
-#else
-            BaseType::mpGeometryData = mpGeometryData.get();
-#endif
 #endif
         }
     }

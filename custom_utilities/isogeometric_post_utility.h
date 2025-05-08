@@ -897,7 +897,8 @@ public:
             }
             else
             {
-                Properties::Pointer pNewProperties = r_other_model_part.pGetProperties(it->GetProperties().Id());
+                const Properties& rProperties = static_cast<const decltype(*it)&>(*it).GetProperties();
+                Properties::Pointer pNewProperties = r_other_model_part.pGetProperties(rProperties.Id());
                 if constexpr (index_start_type == 0)
                     pNewEntities.push_back(r_sample_entity.Create(++last_entity_id, temp_entity_nodes, pNewProperties));
                 else if constexpr (index_start_type == 1)

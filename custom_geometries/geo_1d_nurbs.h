@@ -214,7 +214,7 @@ public:
     /**
      * Destructor. Does nothing!!!
      */
-    virtual ~Geo1dNURBS()
+    ~Geo1dNURBS() override
     {}
 
     /**
@@ -944,7 +944,7 @@ public:
      * @see PrintData()
      * @see PrintInfo()
      */
-    virtual std::string Info() const
+    std::string Info() const override
     {
         return "1 dimensional NURBS curve in 3D space";
     }
@@ -956,7 +956,7 @@ public:
      * @see PrintData()
      * @see Info()
      */
-    virtual void PrintInfo( std::ostream& rOStream ) const
+    void PrintInfo( std::ostream& rOStream ) const override
     {
         rOStream << Info();
     }
@@ -1054,7 +1054,7 @@ public:
 //        );
 
         mpGeometryData.swap(pNewGeometryData);
-        GeometryType::mpGeometryData = &(*mpGeometryData);
+        GeometryType::SetGeometryData(mpGeometryData.get());
     }
 
 protected:

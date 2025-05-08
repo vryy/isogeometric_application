@@ -126,7 +126,7 @@ public:
 
     typedef UblasSpace<double, Matrix, Vector> SerialDenseSpaceType;
 
-    typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType> LinearSolverType;
+    typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType, ModelPart> LinearSolverType;
 
     typedef std::size_t IndexType;
 
@@ -143,7 +143,7 @@ public:
     }
 
     /// Destructor.
-    virtual ~BezierPostUtility()
+    ~BezierPostUtility() override
     {
     }
 

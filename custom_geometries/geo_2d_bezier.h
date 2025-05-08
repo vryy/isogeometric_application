@@ -223,7 +223,7 @@ public:
         , mExtractionOperator(rOther.mExtractionOperator)
         , mCtrlWeights(rOther.mCtrlWeights)
     {
-        GeometryType::mpGeometryData = mpBezierGeometryData.get();
+        GeometryType::SetGeometryData(mpBezierGeometryData.get());
     }
 
     /**
@@ -247,13 +247,13 @@ public:
         , mExtractionOperator(rOther.mExtractionOperator)
         , mCtrlWeights(rOther.mCtrlWeights)
     {
-        Geometry<TOtherPointType>::mpGeometryData = mpBezierGeometryData.get();
+        Geometry<TOtherPointType>::SetGeometryData(mpBezierGeometryData.get());
     }
 
     /**
      * Destructor. Does nothing!!!
      */
-    virtual ~Geo2dBezier()
+    ~Geo2dBezier() override
     {}
 
     /**
@@ -1088,11 +1088,7 @@ public:
 
             // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
             mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 2, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
-#ifdef SD_APP_FORWARD_COMPATIBILITY
             BaseType::SetGeometryData(mpBezierGeometryData.get());
-#else
-            BaseType::mpGeometryData = mpBezierGeometryData.get();
-#endif
         }
     }
 

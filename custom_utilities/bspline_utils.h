@@ -276,11 +276,11 @@ public:
         unsigned int j, r;
         double saved, temp;
 
-        double* left = new double[rP + 1];
-        double* right = new double[rP + 1];
+        std::vector<double> left(rP + 1);
+        std::vector<double> right(rP + 1);
 
-        std::fill(left, left + rP + 1, 0.0);
-        std::fill(right, right + rP + 1, 0.0);
+        std::fill(left.begin(), left.end(), 0.0);
+        std::fill(right.begin(), right.end(), 0.0);
 
         rS[0] = 1.0;
         for (j = 1; j <= rP; ++j)
@@ -298,8 +298,6 @@ public:
 
             rS[j] = saved;
         }
-
-        delete left, right;
     }
     //N = 10000000: 8.18893
     //N = 100000000: 76.7523, 81.9167

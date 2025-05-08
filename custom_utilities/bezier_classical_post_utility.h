@@ -128,7 +128,7 @@ public:
 
     typedef UblasSpace<double, Matrix, Vector> SerialDenseSpaceType;
 
-    typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType> LinearSolverType;
+    typedef LinearSolver<SerialSparseSpaceType, SerialDenseSpaceType, ModelPart> LinearSolverType;
 
     typedef std::size_t IndexType;
 
@@ -988,9 +988,9 @@ public:
                     {
                         shape_values = rE.GetGeometry().ShapeFunctionsValues(shape_values, p_ref);
 
-                        VariablesList& var_list = rModelPart.GetNodalSolutionStepVariablesList();
+                        const auto& var_list = rModelPart.GetNodalSolutionStepVariablesList();
 
-                        for (VariablesList::const_iterator it = var_list.begin(); it != var_list.end(); ++it)
+                        for (auto it = var_list.begin(); it != var_list.end(); ++it)
                         {
                             if (typeid(*it) == typeid(Variable<double>))
                             {
@@ -1181,9 +1181,9 @@ public:
                         {
                             shape_values = rE.GetGeometry().ShapeFunctionsValues(shape_values, p_ref);
 
-                            VariablesList& var_list = rModelPart.GetNodalSolutionStepVariablesList();
+                            const auto& var_list = rModelPart.GetNodalSolutionStepVariablesList();
 
-                            for (VariablesList::const_iterator it = var_list.begin(); it != var_list.end(); ++it)
+                            for (auto it = var_list.begin(); it != var_list.end(); ++it)
                             {
                                 if (typeid(*it) == typeid(Variable<double>))
                                 {

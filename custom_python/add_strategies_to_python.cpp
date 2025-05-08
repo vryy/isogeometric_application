@@ -35,10 +35,10 @@ void IsogeometricApplication_AddStrategiesToPython()
 
     typedef UblasSpace<double, CompressedMatrix, Vector> SparseSpaceType;
     typedef UblasSpace<double, Matrix, Vector> LocalSpaceType;
-    typedef LinearSolver<SparseSpaceType, LocalSpaceType> LinearSolverType;
+    typedef LinearSolver<SparseSpaceType, LocalSpaceType, ModelPart> LinearSolverType;
 
 #ifdef _residualbased_elimination_builder_and_solver_deactivation_existed_
-    typedef ResidualBasedEliminationBuilderAndSolverDeactivation<SparseSpaceType, LocalSpaceType, LinearSolverType> ResidualBasedEliminationBuilderAndSolverDeactivationType;
+    typedef ResidualBasedEliminationBuilderAndSolverDeactivation<SparseSpaceType, LocalSpaceType, LinearSolverType, ModelPart> ResidualBasedEliminationBuilderAndSolverDeactivationType;
 
     typedef RowConstraintBuilderAndSolver<ResidualBasedEliminationBuilderAndSolverDeactivationType> RowConstraintResidualBasedEliminationBuilderAndSolverDeactivationType;
     class_<RowConstraintResidualBasedEliminationBuilderAndSolverDeactivationType, bases<ResidualBasedEliminationBuilderAndSolverDeactivationType>, boost::noncopyable>

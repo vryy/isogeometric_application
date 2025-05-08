@@ -215,7 +215,7 @@ public:
     /**
      * Destructor. Does nothing!!!
      */
-    virtual ~Geo2dBezier3()
+    ~Geo2dBezier3() override
     {}
 
     /**
@@ -583,11 +583,7 @@ public:
 
             // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
             BaseType::mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 3, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
-#ifdef SD_APP_FORWARD_COMPATIBILITY
             GeometryType::SetGeometryData(BaseType::mpBezierGeometryData.get());
-#else
-            GeometryType::mpGeometryData = BaseType::mpBezierGeometryData.get();
-#endif
         }
     }
 

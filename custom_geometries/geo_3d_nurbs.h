@@ -219,7 +219,7 @@ public:
     /**
      * Destructor. Does nothing!!!
      */
-    virtual ~Geo3dNURBS()
+    ~Geo3dNURBS() override
     {}
 
     /**
@@ -1597,7 +1597,7 @@ public:
 //        );
 
         mpGeometryData.swap(pNewGeometryData);
-        GeometryType::mpGeometryData = &(*mpGeometryData);
+        GeometryType::SetGeometryData(mpGeometryData.get());
     }
 
 protected:

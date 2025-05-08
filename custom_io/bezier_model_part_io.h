@@ -107,45 +107,45 @@ inline std::ostream & operator <<(std::ostream& rOStream, const BezierInfo& rThi
     return rOStream;
 }
 
-class KRATOS_API(ISOGEOMETRIC_APPLICATION) BezierModelPartIO : public ModelPartIO
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) BezierModelPartIO : public ModelPartIO<>
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(BezierModelPartIO);
 
-    typedef ModelPartIO BaseType;
+    typedef ModelPartIO<> BaseType;
 
-    typedef BaseType::NodeType NodeType;
+    typedef typename BaseType::NodeType NodeType;
 
-    typedef BaseType::MeshType MeshType;
+    typedef typename BaseType::MeshType MeshType;
 
-    typedef BaseType::NodesContainerType NodesContainerType;
+    typedef typename BaseType::NodesContainerType NodesContainerType;
 
-    typedef BaseType::PropertiesContainerType PropertiesContainerType;
+    typedef typename BaseType::PropertiesContainerType PropertiesContainerType;
 
-    typedef BaseType::ElementsContainerType ElementsContainerType;
+    typedef typename BaseType::ElementsContainerType ElementsContainerType;
 
-    typedef BaseType::ConditionsContainerType ConditionsContainerType;
+    typedef typename BaseType::ConditionsContainerType ConditionsContainerType;
 
-    typedef BaseType::ConnectivitiesContainerType ConnectivitiesContainerType;
+    typedef typename BaseType::ConnectivitiesContainerType ConnectivitiesContainerType;
 
-    typedef BaseType::SizeType SizeType;
+    typedef typename BaseType::SizeType SizeType;
 
     typedef PointerVectorSet<BezierInfo, IndexedObject> BezierInfoContainerType;
 
     /// Default Constructor with  filenames.
     BezierModelPartIO(std::string const& Filename,
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-                      const Flags Options = IO::READ
+                      const Flags Options = BaseIO::READ
 #else
-                      const Flags Options = IO::READ | IO::NOT_IGNORE_VARIABLES_ERROR
+                      const Flags Options = BaseIO::READ | BaseIO::NOT_IGNORE_VARIABLES_ERROR
 #endif
                      );
 
     /// Destructor.
-    virtual ~BezierModelPartIO();
+    ~BezierModelPartIO() override;
 
     /// Read the data and initialize the model part
-    virtual void ReadModelPart(ModelPart & rThisModelPart);
+    void ReadModelPart(ModelPart & rThisModelPart) override;
 
 private:
 

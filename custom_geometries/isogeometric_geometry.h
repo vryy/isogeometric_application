@@ -293,7 +293,7 @@ public:
     }
 
     /// Destructor. Do nothing!!!
-    virtual ~IsogeometricGeometry() {}
+    ~IsogeometricGeometry() override {}
 
     ///@}
     ///@name Operators

@@ -316,6 +316,13 @@ void BSplinesPatchUtility_Transpose2(BSplinesPatchUtility& rDummy,
     rDummy.Transpose(pPatch);
 }
 
+template<int TDim>
+void BSplinesPatchUtility_CheckRepeatedKnot(BSplinesPatchUtility& rDummy,
+                                            typename MultiPatch<TDim>::Pointer pMultiPatch)
+{
+    BSplinesPatchUtility::CheckRepeatedKnot<TDim>(pMultiPatch);
+}
+
 //////////////////////////////////////////////////
 
 template<int TDim>
@@ -628,6 +635,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<1>)
     .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<2>)
     .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<3>)
+    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<1>)
+    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<2>)
+    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<3>)
     ;
 
     class_<BendingStripUtility, BendingStripUtility::Pointer, boost::noncopyable>

@@ -622,6 +622,33 @@ void BSplinesPatchUtility::CreateInterfaces<3>(typename MultiPatch<3>::Pointer p
     KRATOS_ERROR << "To be implemented";
 }
 
+template<int TDim>
+void BSplinesPatchUtility::CheckRepeatedKnot(typename MultiPatch<TDim>::Pointer pMultiPatch)
+{
+    for (auto it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
+    {
+        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
+
+        if (pFESpace == nullptr)
+            KRATOS_ERROR << "The underlying FESpace is not BSplinesFESpace";
+
+        for (int i = 0; i < TDim; ++i)
+        {
+            const auto& knot_vector = pFESpace->KnotVector(i);
+            const auto numbers = knot_vector.GetKnotRepeatedNumber();
+            for (int i = 1; i < numbers.size() - 1; ++i)
+            {
+                if (numbers[i] > 1)
+                {
+                    knot_vector.PrintInfo(std::cout); std::cout << std::endl;
+                    KRATOS_WATCH_STD_CON(numbers)
+                    KRATOS_ERROR << "There are duplicated knots";
+                }
+            }
+        }
+    }
+}
+
 std::vector<std::array<typename Patch<1>::ControlPointType, 2> > BSplinesPatchUtility::ExtractControlPolygon(typename Patch<1>::ConstPointer pPatch)
 {
     if (pPatch->pFESpace()->Type() != BSplinesFESpace<1>::StaticType())
@@ -664,5 +691,8 @@ template void BSplinesPatchUtility::TransposeImpl<3>(typename Patch<3>::Pointer 
 template void BSplinesPatchUtility::CreateInterfaces<1>(typename MultiPatch<1>::Pointer pMultiPatch);
 template void BSplinesPatchUtility::CreateInterfaces<2>(typename MultiPatch<2>::Pointer pMultiPatch);
 template void BSplinesPatchUtility::CreateInterfaces<3>(typename MultiPatch<3>::Pointer pMultiPatch);
+template void BSplinesPatchUtility::CheckRepeatedKnot<1>(typename MultiPatch<1>::Pointer pMultiPatch);
+template void BSplinesPatchUtility::CheckRepeatedKnot<2>(typename MultiPatch<2>::Pointer pMultiPatch);
+template void BSplinesPatchUtility::CheckRepeatedKnot<3>(typename MultiPatch<3>::Pointer pMultiPatch);
 
 } // namespace Kratos

@@ -127,6 +127,10 @@ public:
     template<int TDim>
     static void CreateInterfaces(typename MultiPatch<TDim>::Pointer pMultiPatch);
 
+    /// Check for knot duplication for all the patches. This shall be used when we want no reduction in continuity.
+    template<int TDim>
+    static void CheckRepeatedKnot(typename MultiPatch<TDim>::Pointer pMultiPatch);
+
     /// Extract the control polygon of a 1D patch
     static std::vector<std::array<typename Patch<1>::ControlPointType, 2> > ExtractControlPolygon(typename Patch<1>::ConstPointer pPatch);
 

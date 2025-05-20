@@ -237,6 +237,43 @@ public:
         }
     }
 
+    /// Get the knot repeated number
+    /// For example, if the knot vector is [0 0 0 0.5 0.5 1 1 1] it should return [3 2 3]
+    std::vector<unsigned int> GetKnotRepeatedNumber() const
+    {
+        std::vector<unsigned int> numbers{};
+        if (size() < 1) return numbers;
+
+        TDataType last_value;
+        unsigned int cnt = 0;
+        for (std::size_t i = 0; i < mpKnots.size(); ++i)
+        {
+            TDataType current_value = mpKnots[i]->Value();
+            if (cnt == 0)
+            {
+                last_value = current_value;
+                ++cnt;
+                continue;
+            }
+
+            if (current_value > last_value)
+            {
+                numbers.push_back(cnt);
+                last_value = current_value;
+                cnt = 1;
+            }
+            else
+            {
+                ++cnt;
+            }
+
+            if (i == mpKnots.size() - 1)
+                numbers.push_back(cnt);
+        }
+
+        return numbers;
+    }
+
     /// Return the values of the knot vector
     std::vector<TDataType> GetValues() const
     {

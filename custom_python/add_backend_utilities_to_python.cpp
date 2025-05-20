@@ -293,7 +293,7 @@ void IsogeometricTestUtils_ProbeShapeFunctionThirdDerivatives3(
 ModelPart::ElementsContainerType IsogeometricPostUtility_TransferElements(IsogeometricPostUtility& rDummy, ModelPart::ElementsContainerType& pElements,
         ModelPart& r_other_model_part, const std::string& sample_element_name, Properties::Pointer pProperties, const bool& retain_prop_id)
 {
-    std::size_t last_element_id = IsogeometricPostUtility::GetLastElementId(r_other_model_part);
+    std::size_t last_element_id = r_other_model_part.GetLastElementId();
     if (!KratosComponents<Element>::Has(sample_element_name))
         KRATOS_ERROR << sample_element_name << " is not registered to the Kratos kernel";
     Element const& r_clone_element = KratosComponents<Element>::Get(sample_element_name);
@@ -314,7 +314,7 @@ ModelPart::ElementsContainerType IsogeometricPostUtility_TransferElements(Isogeo
 ModelPart::ConditionsContainerType IsogeometricPostUtility_TransferConditions(IsogeometricPostUtility& rDummy, ModelPart::ConditionsContainerType& pConditions,
         ModelPart& r_other_model_part, const std::string& sample_condition_name, Properties::Pointer pProperties, const bool& retain_prop_id)
 {
-    std::size_t last_condition_id = IsogeometricPostUtility::GetLastConditionId(r_other_model_part);
+    std::size_t last_condition_id = r_other_model_part.GetLastConditionId();
     if (!KratosComponents<Condition>::Has(sample_condition_name))
         KRATOS_ERROR << sample_condition_name << " is not registered to the Kratos kernel";
     Condition const& r_clone_condition = KratosComponents<Condition>::Get(sample_condition_name);
@@ -396,7 +396,7 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByTriangulation(Isog
 
     std::size_t last_condition_id_new = last_condition_id;
     const std::string NodeKey = std::string("Node");
-    ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
+    ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
                 points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
 
     boost::python::list output;
@@ -445,7 +445,7 @@ boost::python::list IsogeometricPostUtility_CreateConditionsByQuadrilateralizati
 
     std::size_t last_condition_id_new = last_condition_id;
     const std::string NodeKey = std::string("Node");
-    ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
+    ModelPart::ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<std::size_t> >, Condition, ModelPart::ConditionsContainerType>(
                 points_and_connectivities.second, r_model_part, r_clone_condition, last_condition_id_new, pProperties, NodeKey);
 
     boost::python::list output;

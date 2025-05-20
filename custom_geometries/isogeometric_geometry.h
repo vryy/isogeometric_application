@@ -140,6 +140,8 @@ public:
     */
     typedef typename GeometryType::SizeType SizeType;
 
+    /** The data type for physical coordinates
+     */
     typedef typename GeometryType::CoordinatesArrayType CoordinatesArrayType;
 
     /** This type used for representing an integration point in
@@ -147,6 +149,11 @@ public:
     additional weight component.
     */
     typedef typename GeometryType::IntegrationPointType IntegrationPointType;
+
+    /** This type used for representing the local coordinates of
+    an integration point
+    */
+    typedef typename IntegrationPointType::CoordinatesArrayType LocalCoordinatesArrayType;
 
     /** A Vector of IntegrationPointType which used to hold
     integration points related to an integration
@@ -656,13 +663,13 @@ public:
     }
 #endif
 
-    Vector& ShapeFunctionsValues( Vector& rResults, const CoordinatesArrayType& rCoordinates ) const override
+    Vector& ShapeFunctionsValues( Vector& rResults, const LocalCoordinatesArrayType& rCoordinates ) const override
     {
         KRATOS_ERROR << "Error calling base class function";
         return rResults;
     }
 
-    Matrix& ShapeFunctionsLocalGradients( Matrix& rResults, const CoordinatesArrayType& rCoordinates ) const override
+    Matrix& ShapeFunctionsLocalGradients( Matrix& rResults, const LocalCoordinatesArrayType& rCoordinates ) const override
     {
         KRATOS_ERROR << "Error calling base class function";
         return rResults;

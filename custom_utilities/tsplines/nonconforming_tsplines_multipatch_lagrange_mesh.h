@@ -166,7 +166,7 @@ public:
                         IsogeometricPostUtility::CreateNodeAndTransferValues(points_and_connectivities.first[i], *it, r_model_part, NodeCounter++);
                     }
 
-                    ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
+                    ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
                                                          points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
 
                     for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
@@ -228,7 +228,7 @@ public:
                         IsogeometricPostUtility::CreateNodeAndTransferValues(points_and_connectivities.first[i], *it, r_model_part, NodeCounter++);
                     }
 
-                    ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
+                    ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
                                                          points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pNewProperties, NodeKey);
 
                     for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)

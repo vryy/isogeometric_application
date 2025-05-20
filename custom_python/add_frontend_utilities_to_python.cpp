@@ -124,22 +124,22 @@ Matrix MultiPatchUtility_ComputeSpatialDerivatives(MultiPatchUtility& rDummy,
 
 std::size_t MultiPatchUtility_GetLastNodeId(MultiPatchUtility& rDummy, const ModelPart& r_model_part)
 {
-    return rDummy.GetLastNodeId(r_model_part);
+    return r_model_part.GetLastNodeId();
 }
 
 std::size_t MultiPatchUtility_GetLastElementId(MultiPatchUtility& rDummy, const ModelPart& r_model_part)
 {
-    return rDummy.GetLastElementId(r_model_part);
+    return r_model_part.GetLastElementId();
 }
 
 std::size_t MultiPatchUtility_GetLastConditionId(MultiPatchUtility& rDummy, const ModelPart& r_model_part)
 {
-    return rDummy.GetLastConditionId(r_model_part);
+    return r_model_part.GetLastConditionId();
 }
 
 std::size_t MultiPatchUtility_GetLastConstraintId(MultiPatchUtility& rDummy, const ModelPart& r_model_part)
 {
-    return rDummy.GetLastConstraintId(r_model_part);
+    return r_model_part.GetLastConstraintId();
 }
 
 Condition::Pointer MultiPatchUtility_CreateConditionFromElement(MultiPatchUtility& rDummy,

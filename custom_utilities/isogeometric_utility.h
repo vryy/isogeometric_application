@@ -62,85 +62,6 @@ public:
             KRATOS_ERROR << "Invalid integration order " << integration_order;
         }
 
-    /// Get the last node id of the model part
-    static std::size_t GetLastNodeId(const ModelPart& r_model_part)
-    {
-        std::size_t lastNodeId = 0;
-        for (typename ModelPart::NodesContainerType::const_iterator it = r_model_part.Nodes().begin();
-                it != r_model_part.Nodes().end(); ++it)
-        {
-            if (it->Id() > lastNodeId)
-            {
-                lastNodeId = it->Id();
-            }
-        }
-
-        return lastNodeId;
-    }
-
-    /// Get the last element id of the model part
-    static std::size_t GetLastElementId(const ModelPart& r_model_part)
-    {
-        std::size_t lastElementId = 0;
-        for (typename ModelPart::ElementsContainerType::const_iterator it = r_model_part.Elements().begin();
-                it != r_model_part.Elements().end(); ++it)
-        {
-            if (it->Id() > lastElementId)
-            {
-                lastElementId = it->Id();
-            }
-        }
-
-        return lastElementId;
-    }
-
-    /// Get the last condition id of the model part
-    static std::size_t GetLastConditionId(const ModelPart& r_model_part)
-    {
-        std::size_t lastCondId = 0;
-        for (typename ModelPart::ConditionsContainerType::const_iterator it = r_model_part.Conditions().begin();
-                it != r_model_part.Conditions().end(); ++it)
-        {
-            if (it->Id() > lastCondId)
-            {
-                lastCondId = it->Id();
-            }
-        }
-
-        return lastCondId;
-    }
-
-    /// Get the last properties id of the model_part
-    static std::size_t GetLastPropertiesId(const ModelPart& r_model_part)
-    {
-        std::size_t lastPropId = 0;
-        for (typename ModelPart::PropertiesConstantIterator it = r_model_part.PropertiesBegin();
-                it != r_model_part.PropertiesEnd(); ++it)
-        {
-            if (it->Id() > lastPropId)
-            {
-                lastPropId = it->Id();
-            }
-        }
-
-        return lastPropId;
-    }
-
-    /// Get the last constraint id of the model_part
-    static std::size_t GetLastConstraintId(const ModelPart& r_model_part)
-    {
-        std::size_t lastConstraintId = 0;
-        for (typename ModelPart::MasterSlaveConstraintContainerType::const_iterator it = r_model_part.MasterSlaveConstraints().begin();
-                it != r_model_part.MasterSlaveConstraints().end(); ++it)
-        {
-            if (it->Id() > lastConstraintId)
-            {
-                lastConstraintId = it->Id();
-            }
-        }
-
-        return lastConstraintId;
-    }
 
     /// Find the element in the KRATOS container with specific key
     template<class TContainerType, class TKeyType>
@@ -171,25 +92,23 @@ public:
     }
 
     /// List the nodes, elements, conditions of a model_part
-    static void ListModelPart(ModelPart& r_model_part)
+    template<class TModelPartType>
+    static void ListModelPart(TModelPartType& r_model_part)
     {
-        for (typename ModelPart::NodesContainerType::iterator it = r_model_part.Nodes().begin();
-                it != r_model_part.Nodes().end(); ++it)
+        for (auto it = r_model_part.Nodes().begin(); it != r_model_part.Nodes().end(); ++it)
         {
             std::cout << "Node #" << it->Id() << ": ("
                       << it->X0() << ", " << it->Y0() << ", " << it->Z0() << ")" << std::endl;
         }
 
-        for (typename ModelPart::ElementsContainerType::ptr_iterator it = r_model_part.Elements().ptr_begin();
-                it != r_model_part.Elements().ptr_end(); ++it)
+        for (auto it = r_model_part.Elements().begin(); it != r_model_part.Elements().end(); ++it)
         {
-            std::cout << typeid(*(*it)).name() << ": " << (*it)->Id() << std::endl;
+            std::cout << typeid(*it).name() << ": " << it->Id() << std::endl;
         }
 
-        for (typename ModelPart::ConditionsContainerType::ptr_iterator it = r_model_part.Conditions().ptr_begin();
-                it != r_model_part.Conditions().ptr_end(); ++it)
+        for (auto it = r_model_part.Conditions().begin(); it != r_model_part.Conditions().end(); ++it)
         {
-            std::cout << typeid(*(*it)).name() << ": " << (*it)->Id() << std::endl;
+            std::cout << typeid(*it).name() << ": " << it->Id() << std::endl;
         }
     }
 

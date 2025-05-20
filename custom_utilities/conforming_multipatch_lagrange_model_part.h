@@ -38,7 +38,7 @@ namespace Kratos
  * This class is useful for pre-processing, i.e., constructing finite element mesh, of all types of
  * isogeometric patches, including NURBS, hierarchical B-Splines and T-Splines.
  */
-template<int TDim>
+template<int TDim, typename TModelPartType>
 class ConformingMultipatchLagrangeModelPart : public IsogeometricEcho
 {
 public:
@@ -46,13 +46,17 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(ConformingMultipatchLagrangeModelPart);
 
     /// Type definition
+    typedef TModelPartType ModelPartType;
+    typedef typename ModelPartType::IndexType IndexType;
+    typedef typename ModelPartType::NodeType NodeType;
+    typedef typename ModelPartType::ElementType ElementType;
+    typedef typename ModelPartType::ConditionType ConditionType;
+    typedef typename ModelPartType::NodesContainerType NodesContainerType;
+    typedef typename ModelPartType::ElementsContainerType ElementsContainerType;
+    typedef typename ModelPartType::ConditionsContainerType ConditionsContainerType;
+
     typedef Patch<TDim> PatchType;
-    typedef ModelPart::NodeType NodeType;
-    typedef ModelPart::NodesContainerType NodesContainerType;
-    typedef ModelPart::ElementsContainerType ElementsContainerType;
-    typedef ModelPart::ConditionsContainerType ConditionsContainerType;
     typedef MultiPatch<TDim> MultiPatchType;
-    typedef std::size_t IndexType;
     typedef AutoCollapseSpatialBinning<IndexType, double> BinningType;
     typedef std::map<IndexType, std::vector<std::vector<IndexType> > > connectivity_t;
 
@@ -64,7 +68,7 @@ public:
 #ifdef SD_APP_FORWARD_COMPATIBILITY
         mpModel = Model::Pointer(new Model());
 #else
-        mpModelPart = ModelPart::Pointer(new ModelPart(mName));
+        mpModelPart = typename ModelPartType::Pointer(new ModelPartType(mName));
 #endif
         mpBinning = typename BinningType::Pointer(new BinningType(0.0, 0.0, 0.0, 1e-3, 1e-3, 1e-3, 1e-10));
     }
@@ -74,16 +78,16 @@ public:
 
     /// Get the underlying model_part
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    ModelPart& GetModelPart() {return mpModel->GetModelPart(mName);}
+    ModelPartType& GetModelPart() {return static_cast<ModelPartType&>(mpModel->GetModelPart(mName));}
 #else
-    ModelPart& GetModelPart() {return *mpModelPart;}
+    ModelPartType& GetModelPart() {return static_cast<ModelPartType&>(*mpModelPart);}
 #endif
 
     /// Get the underlying model_part
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    const ModelPart& GetModelPart() const {return mpModel->GetModelPart(mName);}
+    const ModelPartType& GetModelPart() const {return static_cast<const ModelPartType&>(mpModel->GetModelPart(mName));}
 #else
-    const ModelPart& GetModelPart() const {return *mpModelPart;}
+    const ModelPartType& GetModelPart() const {return *mpModelPart;}
 #endif
 
     /// Access the underlying binning
@@ -149,7 +153,7 @@ public:
         mpModel->CreateModelPart(mName);
 #else
         // create new model_part
-        ModelPart::Pointer pNewModelPart = ModelPart::Pointer(new ModelPart(mpModelPart->Name()));
+        typename ModelPartType::Pointer pNewModelPart = typename ModelPartType::Pointer(new ModelPartType(mpModelPart->Name()));
 
         // swap the internal model_part with new model_part
         mpModelPart.swap(pNewModelPart);
@@ -173,10 +177,10 @@ public:
         this->Initialize(*mpBinning, mconnectivities);
     }
     #else
-    void BeginModelPart(ModelPart::Pointer pModelPart)
+    void BeginModelPart(typename ModelPartType::Pointer pModelPart)
     {
         mIsModelPartReady = false;
-        mLastNodeId = MultiPatchUtility::GetLastNodeId(*pModelPart);
+        mLastNodeId = pModelPart->GetLastNodeId();
 
         // store the model_part
         mpModelPart = pModelPart;
@@ -194,7 +198,7 @@ public:
         // create new nodes from points
         for (std::size_t i = 0; i < mpBinning->NumberOfNodes(); ++i)
         {
-            NodeType::Pointer pNewNode = this->GetModelPart().CreateNewNode(i + 1 + mLastNodeId, mpBinning->GetX(i+1), mpBinning->GetY(i+1), mpBinning->GetZ(i+1));
+            auto pNewNode = this->GetModelPart().CreateNewNode(i + 1 + mLastNodeId, mpBinning->GetX(i+1), mpBinning->GetY(i+1), mpBinning->GetZ(i+1));
             pNodes.push_back(pNewNode);
         }
 
@@ -224,10 +228,10 @@ public:
                          << " Please check the spelling of the element name and see if the application which containing it, is registered corectly.";
         }
 
-        Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
+        ElementType const& rCloneElement = KratosComponents<ElementType>::Get(element_name);
 
         // create elements
-        ElementsContainerType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsContainerType, 1>(
+        ElementsContainerType pNewElements = IsogeometricPostUtility::CreateEntities<ModelPartType, std::vector<std::vector<IndexType> >, ElementType, ElementsContainerType, 1>(
                                              it->second, GetModelPart(), rCloneElement, starting_id, pProperties, NodeKey);
 
         for (auto it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
@@ -346,7 +350,7 @@ public:
                          << " Please check the spelling of the condition name and see if the application which containing it, is registered corectly.";
         }
 
-        Condition const& rCloneCondition = KratosComponents<Condition>::Get(condition_name);
+        ConditionType const& rCloneCondition = KratosComponents<ConditionType>::Get(condition_name);
 
         std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities;
         IndexType NodeCounter = 1;
@@ -401,7 +405,7 @@ public:
             }
 
             // create condition
-            Condition::Pointer pNewCondition = IsogeometricPostUtility::CreateEntity<std::vector<IndexType>, Condition>(
+            typename ConditionType::Pointer pNewCondition = IsogeometricPostUtility::CreateEntity<ModelPartType, std::vector<IndexType>, ConditionType>(
                                                         newc, GetModelPart(), rCloneCondition, i + starting_id, pProperties, NodeKey);
             this->GetModelPart().AddCondition(pNewCondition);
             pNewConditions.push_back(pNewCondition);
@@ -571,12 +575,12 @@ private:
 
     bool mIsModelPartReady;
     std::string mName;
-    std::size_t mLastNodeId;
+    IndexType mLastNodeId;
 
 #ifdef SD_APP_FORWARD_COMPATIBILITY
     Model::Pointer mpModel;
 #else
-    ModelPart::Pointer mpModelPart;
+    typename ModelPartType::Pointer mpModelPart;
 #endif
     typename MultiPatch<TDim>::Pointer mpMultiPatch;
 
@@ -587,8 +591,8 @@ private:
 };
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const ConformingMultipatchLagrangeModelPart<TDim>& rThis)
+template<int TDim, class TModelPartType>
+inline std::ostream& operator <<(std::ostream& rOStream, const ConformingMultipatchLagrangeModelPart<TDim, TModelPartType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

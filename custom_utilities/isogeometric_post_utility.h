@@ -787,10 +787,10 @@ public:
 
     /// Create the entity based on the connectivity
     /// It is noted that the newly created entity are not added to the other model_part. User must do it manually.
-    template<typename TConnectivityType, typename TEntityType>
+    template<typename TModelPartType, typename TConnectivityType, typename TEntityType>
     static typename TEntityType::Pointer CreateEntity(
         const TConnectivityType& r_connectivity,
-        ModelPart& r_model_part,
+        TModelPartType& r_model_part,
         TEntityType const& r_sample_entity,
         const std::size_t entity_id,
         Properties::Pointer pProperties,
@@ -810,10 +810,10 @@ public:
 
     /// Create the entities based on the connectivities
     /// It is noted that the newly created entities are not added to the other model_part. User must do it manually.
-    template<typename TConnectivityType, typename TEntityType, typename TEntitiesContainerType, int index_start_type = 0>
+    template<typename TModelPartType, typename TConnectivityType, typename TEntityType, typename TEntitiesContainerType, int index_start_type = 0>
     static TEntitiesContainerType CreateEntities(
         const TConnectivityType& r_connectivities,
-        ModelPart& r_model_part,
+        TModelPartType& r_model_part,
         TEntityType const& r_sample_entity,
         std::size_t& last_entity_id,
         Properties::Pointer pProperties,
@@ -844,14 +844,14 @@ public:
 
     /// Create a list of entities (element/condition) from a model_part to another model_part
     /// It is noted that the newly created entities are not added to the other model_part. User must do it manually.
-    template<class TEntityType, class TEntitiesContainerType, int index_start_type = 0>
+    template<class TModelPartType, class TEntityType, class TEntitiesContainerType, int index_start_type = 0>
     static TEntitiesContainerType CreateEntities(
         const TEntitiesContainerType& pEntities,
-        ModelPart& r_other_model_part,
+        TModelPartType& r_other_model_part,
         TEntityType const& r_sample_entity,
         std::size_t& last_entity_id,
         Properties::Pointer pProperties,
-        const bool& retain_prop_id = false)
+        const bool retain_prop_id = false)
     {
         // first collect all the nodes from the elements
         std::map<std::size_t, NodeType::Pointer> pNodes;
@@ -866,7 +866,7 @@ public:
         }
 
         // create the new nodes in the other model_part
-        std::size_t last_node_id = GetLastNodeId(r_other_model_part);
+        std::size_t last_node_id = r_other_model_part.GetLastNodeId();
         std::map<std::size_t, std::size_t> MapOldToNew;
         for (std::map<std::size_t, NodeType::Pointer>::iterator it = pNodes.begin(); it != pNodes.end(); ++it)
         {

@@ -279,7 +279,7 @@ public:
         }
 
         // create elements
-        ElementsContainerType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsContainerType, 1>(
+        ElementsContainerType pNewElements = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, Element, ElementsContainerType, 1>(
                                              points_and_connectivities.second, r_model_part, rCloneElement, ElementCounter, pProperties, NodeKey);
 
         for (typename ElementsContainerType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
@@ -402,7 +402,7 @@ public:
 
         // create conditions
         const std::string NodeKey = std::string("Node");
-        ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Condition, ConditionsContainerType, 1>(
+        ConditionsContainerType pNewConditions = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, Condition, ConditionsContainerType, 1>(
                                              points_and_connectivities.second, r_model_part, rCloneCondition, ConditionCounter, pProperties, NodeKey);
 
         for (typename ConditionsContainerType::ptr_iterator it2 = pNewConditions.ptr_begin(); it2 != pNewConditions.ptr_end(); ++it2)

@@ -39,7 +39,7 @@ namespace Kratos
 Coupling between KRATOS model_part and multiple multipatch structure. THis is useful for simulation involving mixed elements.
 All the multipatch must have the same underlying space.
  */
-template<int TDim>
+template<int TDim, class TModelPartType>
 class MultiMultiPatchModelPart : public IsogeometricEcho
 {
 public:
@@ -50,9 +50,17 @@ public:
     typedef Patch<TDim> PatchType;
     typedef Patch<TDim-1> BoundaryPatchType;
     typedef MultiPatch<TDim> MultiPatchType;
-    typedef Element::NodeType NodeType;
-    typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
     typedef typename PatchType::ControlPointType ControlPointType;
+
+    typedef TModelPartType ModelPartType;
+    typedef typename ModelPartType::NodeType NodeType;
+    typedef typename ModelPartType::ElementType ElementType;
+    typedef typename ModelPartType::ConditionType ConditionType;
+    typedef typename ModelPartType::NodesContainerType NodesContainerType;
+    typedef typename ModelPartType::ConditionsContainerType ConditionsContainerType;
+    typedef typename ModelPartType::ElementsContainerType ElementsContainerType;
+
+    typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
 
     /// Default constructor
     MultiMultiPatchModelPart() : mIsModelPartReady(false), mNodeOffset(0)
@@ -60,7 +68,7 @@ public:
 #ifdef SD_APP_FORWARD_COMPATIBILITY
         mpModel = Model::Pointer(new Model());
 #else
-        mpModelPart = ModelPart::Pointer(new ModelPart("MultiMultiPatch"));
+        mpModelPart = typename ModelPartType::Pointer(new ModelPartType("MultiMultiPatch"));
 #endif
     }
 
@@ -69,16 +77,16 @@ public:
 
     /// Get the underlying model_part
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    ModelPart& GetModelPart() {return mpModel->GetModelPart("MultiMultiPatch");}
+    ModelPartType& GetModelPart() {return static_cast<ModelPartType&>(mpModel->GetModelPart("MultiMultiPatch"));}
 #else
-    ModelPart& GetModelPart() {return *mpModelPart;}
+    ModelPartType& GetModelPart() {return *mpModelPart;}
 #endif
 
     /// Get the underlying model_part
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    const ModelPart& GetModelPart() const {return mpModel->GetModelPart("MultiMultiPatch");}
+    const ModelPartType& GetModelPart() const {return static_cast<const ModelPartType&>(mpModel->GetModelPart("MultiMultiPatch"));}
 #else
-    const ModelPart& GetModelPart() const {return *mpModelPart;}
+    const ModelPartType& GetModelPart() const {return *mpModelPart;}
 #endif
 
     /// Add the multipatch to the list
@@ -123,7 +131,7 @@ public:
         mpModel->CreateModelPart("MultiMultiPatch");
 #else
         // create new model_part
-        ModelPart::Pointer pNewModelPart = ModelPart::Pointer(new ModelPart(mpModelPart->Name()));
+        typename ModelPartType::Pointer pNewModelPart = typename ModelPartType::Pointer(new ModelPartType(mpModelPart->Name()));
 
         // swap the internal model_part with new model_part
         mpModelPart.swap(pNewModelPart);
@@ -131,10 +139,10 @@ public:
     }
 
     /// Start the process to fill existing model_part. This function will first create the new model_part instance and add in the nodes (which are the control points in the multipatch)
-    void BeginModelPart(ModelPart::Pointer pModelPart)
+    void BeginModelPart(typename ModelPartType::Pointer pModelPart)
     {
         mIsModelPartReady = false;
-        mNodeOffset = MultiPatchUtility::GetLastNodeId(*pModelPart) + 1;
+        mNodeOffset = pModelPart->GetLastNodeId() + 1;
 
         // always enumerate the multipatch first
         std::size_t EquationSystemSize = 0;
@@ -178,7 +186,7 @@ public:
                 const ControlPointType& point = mpMultiPatches[ip]->pGetPatch(patch_id)->pControlPointGridFunction()->pControlGrid()->GetData(local_id);
                 // KRATOS_WATCH(point)
 
-                ModelPart::NodeType::Pointer pNewNode = this->GetModelPart().CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(node_counter) + mNodeOffset, point.X(), point.Y(), point.Z());
+                auto pNewNode = this->GetModelPart().CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(node_counter) + mNodeOffset, point.X(), point.Y(), point.Z());
                 ++node_counter;
             }
         }
@@ -194,11 +202,11 @@ public:
     }
 
     /// create the elements out from the patches and add to the model_part
-    ModelPart::ElementsContainerType AddElements(std::vector<typename PatchType::Pointer> pPatches,
+    ElementsContainerType AddElements(std::vector<typename PatchType::Pointer> pPatches,
             const std::string& element_name,
             std::size_t starting_id, Properties::Pointer pProperties)
     {
-        if (IsReady()) { return ModelPart::ElementsContainerType(); } // call BeginModelPart first before adding elements
+        if (IsReady()) { return ElementsContainerType(); } // call BeginModelPart first before adding elements
 
 #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();
@@ -216,13 +224,13 @@ public:
         }
 
         // create new elements and add to the model_part
-        ModelPart::ElementsContainerType pNewElements = CreateEntitiesFromFESpace<Element, FESpace<TDim>,
-                ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(
+        ElementsContainerType pNewElements = CreateEntitiesFromFESpace<ElementType, FESpace<TDim>,
+                ControlGrid<ControlPointType>, NodesContainerType>(
             pFESpaces, pControlGrids, this->GetModelPart().Nodes(),
             element_name, starting_id, mNodeOffset,
             pProperties, this->GetEchoLevel());
 
-        for (ModelPart::ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
+        for (auto it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
         {
             this->GetModelPart().Elements().push_back(*it);
         }
@@ -243,11 +251,11 @@ public:
     }
 
     /// create the elements out from the patches and add to the model_part
-    ModelPart::ConditionsContainerType AddConditions(std::vector<typename PatchType::Pointer> pPatches,
+    ConditionsContainerType AddConditions(std::vector<typename PatchType::Pointer> pPatches,
             const std::string& condition_name,
             std::size_t starting_id, Properties::Pointer pProperties)
     {
-        if (IsReady()) { return ModelPart::ConditionsContainerType(); } // call BeginModelPart first before adding elements
+        if (IsReady()) { return ConditionsContainerType(); } // call BeginModelPart first before adding elements
 
 #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();
@@ -265,13 +273,13 @@ public:
         }
 
         // create new elements and add to the model_part
-        ModelPart::ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<Condition, FESpace<TDim>,
-                ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(
+        ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<ConditionType, FESpace<TDim>,
+                ControlGrid<ControlPointType>, NodesContainerType>(
             pFESpaces, pControlGrids, this->GetModelPart().Nodes(),
             condition_name, starting_id, mNodeOffset,
             pProperties, this->GetEchoLevel());
 
-        for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
+        for (auto it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
             this->GetModelPart().Conditions().push_back(*it);
         }
@@ -292,10 +300,10 @@ public:
     }
 
     /// create the conditions out from the boundary of the patch and add to the model_part
-    ModelPart::ConditionsContainerType AddConditions(typename PatchType::Pointer pPatch, const BoundarySide& side,
+    ConditionsContainerType AddConditions(typename PatchType::Pointer pPatch, const BoundarySide& side,
             const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
     {
-        if (IsReady()) { return ModelPart::ConditionsContainerType(); } // call BeginModelPart first before adding conditions
+        if (IsReady()) { return ConditionsContainerType(); } // call BeginModelPart first before adding conditions
 
         // construct the boundary patch
         typename Patch < TDim - 1 >::Pointer pBoundaryPatch = pPatch->ConstructBoundaryPatch(side);
@@ -304,10 +312,10 @@ public:
     }
 
     /// create the conditions out from the boundary of the patch and add to the model_part
-    ModelPart::ConditionsContainerType AddConditions(typename Patch < TDim - 1 >::Pointer pBoundaryPatch,
+    ConditionsContainerType AddConditions(typename Patch < TDim - 1 >::Pointer pBoundaryPatch,
             const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
     {
-        if (IsReady()) { return ModelPart::ConditionsContainerType(); } // call BeginModelPart first before adding conditions
+        if (IsReady()) { return ConditionsContainerType(); } // call BeginModelPart first before adding conditions
 
 #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();
@@ -319,14 +327,14 @@ public:
         const GridFunction < TDim - 1, ControlPointType > & rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
 
         // create new conditions and add to the model_part
-        ModelPart::ConditionsContainerType pNewConditions = MultiPatchModelPart<TDim>::template CreateEntitiesFromFESpace<Condition, FESpace<TDim - 1>,
-                ControlGrid<ControlPointType>, ModelPart::NodesContainerType>(
+        ConditionsContainerType pNewConditions = MultiPatchModelPart<TDim, ModelPartType>::template CreateEntitiesFromFESpace<ConditionType, FESpace<TDim - 1>,
+                ControlGrid<ControlPointType>, NodesContainerType>(
             pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(),
             this->GetModelPart().Nodes(), condition_name,
             starting_id, mNodeOffset,
             pProperties, this->GetEchoLevel());
 
-        for (ModelPart::ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
+        for (auto it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
             this->GetModelPart().Conditions().push_back(*it);
         }
@@ -380,7 +388,7 @@ public:
                 const typename TVariableType::Type& value = mpMultiPatches[ip]->pGetPatch(patch_id)->pGetGridFunction(rVariable)->pControlGrid()->GetData(local_id);
                 // KRATOS_WATCH(value)
 
-                ModelPart::NodeType::Pointer pNode = this->GetModelPart().pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(cnt++) + mNodeOffset);
+                auto pNode = this->GetModelPart().pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(cnt++) + mNodeOffset);
 
                 pNode->GetSolutionStepValue(rVariable) = value;
             }
@@ -446,7 +454,7 @@ private:
 #ifdef SD_APP_FORWARD_COMPATIBILITY
     Model::Pointer mpModel;
 #else
-    ModelPart::Pointer mpModelPart;
+    typename ModelPartType::Pointer mpModelPart;
 #endif
     std::vector<typename MultiPatch<TDim>::Pointer> mpMultiPatches;
 
@@ -518,7 +526,7 @@ private:
         std::size_t ic = 0; // this is to mark the location of the iterator
         for (typename cell_container_t::iterator it_dummy = pCellManagers[0]->begin(); it_dummy != pCellManagers[0]->end(); ++it_dummy)
         {
-            std::vector<Element::GeometryType::Pointer> p_temp_geometries;
+            std::vector<typename ElementType::GeometryType::Pointer> p_temp_geometries;
 
             // fill the vector of geometries
             for (std::size_t ip = 0; ip < pFESpaces.size(); ++ip)
@@ -597,8 +605,8 @@ private:
 };
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const MultiMultiPatchModelPart<TDim>& rThis)
+template<int TDim, class TModelPartType>
+inline std::ostream& operator <<(std::ostream& rOStream, const MultiMultiPatchModelPart<TDim, TModelPartType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;
@@ -608,12 +616,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const MultiMultiPatchMo
 
 } // namespace Kratos.
 
-#ifdef DEBUG_GEN_ENTITY
 #undef DEBUG_GEN_ENTITY
-#endif
-
-#ifdef ENABLE_PROFILING
 #undef ENABLE_PROFILING
-#endif
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTI_MULTIPATCH_MODEL_PART_H_INCLUDED

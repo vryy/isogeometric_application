@@ -41,7 +41,7 @@ namespace Kratos
 /**
  * Coupling between KRATOS model_part and multipatch structure
  */
-template<int TDim>
+template<int TDim, class TModelPartType>
 class MultiPatchModelPart : public IsogeometricEcho
 {
 public:
@@ -52,12 +52,17 @@ public:
     typedef Patch<TDim> PatchType;
     typedef Patch<TDim-1> BoundaryPatchType;
     typedef MultiPatch<TDim> MultiPatchType;
-    typedef Element::NodeType NodeType;
-    typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
     typedef typename PatchType::ControlPointType ControlPointType;
-    typedef ModelPart::NodesContainerType NodesContainerType;
-    typedef ModelPart::ConditionsContainerType ConditionsContainerType;
-    typedef ModelPart::ElementsContainerType ElementsContainerType;
+
+    typedef TModelPartType ModelPartType;
+    typedef typename ModelPartType::NodeType NodeType;
+    typedef typename ModelPartType::ElementType ElementType;
+    typedef typename ModelPartType::ConditionType ConditionType;
+    typedef typename ModelPartType::NodesContainerType NodesContainerType;
+    typedef typename ModelPartType::ConditionsContainerType ConditionsContainerType;
+    typedef typename ModelPartType::ElementsContainerType ElementsContainerType;
+
+    typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
 
     /// Default constructor
     MultiPatchModelPart(typename MultiPatch<TDim>::Pointer pMultiPatch)
@@ -67,7 +72,7 @@ public:
 #ifdef SD_APP_FORWARD_COMPATIBILITY
         mpModel = Model::Pointer(new Model());
 #else
-        mpModelPart = ModelPart::Pointer(new ModelPart(mName));
+        mpModelPart = typename ModelPartType::Pointer(new ModelPartType(mName));
 #endif
     }
 
@@ -76,16 +81,16 @@ public:
 
     /// Get the underlying model_part
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    ModelPart& GetModelPart() {return mpModel->GetModelPart(mName);}
+    ModelPartType& GetModelPart() {return static_cast<ModelPartType&>(mpModel->GetModelPart(mName));}
 #else
-    ModelPart& GetModelPart() {return *mpModelPart;}
+    ModelPartType& GetModelPart() {return *mpModelPart;}
 #endif
 
     /// Get the underlying model_part
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    const ModelPart& GetModelPart() const {return mpModel->GetModelPart(mName);}
+    const ModelPart& GetModelPart() const {return static_cast<const ModelPartType&>(mpModel->GetModelPart(mName));}
 #else
-    const ModelPart& GetModelPart() const {return *mpModelPart;}
+    const ModelPartType& GetModelPart() const {return *mpModelPart;}
 #endif
 
     /// Get the underlying multipatch pointer
@@ -112,7 +117,7 @@ public:
         mpModel->CreateModelPart(mName);
 #else
         // create new model_part
-        ModelPart::Pointer pNewModelPart = ModelPart::Pointer(new ModelPart(mpModelPart->Name()));
+        typename ModelPartType::Pointer pNewModelPart = typename ModelPartType::Pointer(new ModelPartType(mpModelPart->Name()));
 
         // swap the internal model_part with new model_part
         mpModelPart.swap(pNewModelPart);
@@ -133,10 +138,10 @@ public:
         mName = Name;
     }
     #else
-    void BeginModelPart(ModelPart::Pointer pModelPart)
+    void BeginModelPart(typename ModelPartType::Pointer pModelPart)
     {
         mIsModelPartReady = false;
-        mNodeOffset = MultiPatchUtility::GetLastNodeId(*pModelPart) + 1;
+        mNodeOffset = pModelPart->GetLastNodeId() + 1;
 
         // always enumerate the multipatch first
         mpMultiPatch->Enumerate();
@@ -168,7 +173,7 @@ public:
 
             const ControlPointType& point = mpMultiPatch->pGetPatch(patch_id)->pControlPointGridFunction()->pControlGrid()->GetData(local_id);
 
-            NodeType::Pointer pNewNode = this->GetModelPart().CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(idof) + mNodeOffset, point.X(), point.Y(), point.Z());
+            typename NodeType::Pointer pNewNode = this->GetModelPart().CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(idof) + mNodeOffset, point.X(), point.Y(), point.Z());
             pNewNode->SetValue(NURBS_WEIGHT, point.W());
         }
 
@@ -196,14 +201,14 @@ public:
         const GridFunction<TDim, ControlPointType>& rControlPointGridFunction = pPatch->ControlPointGridFunction();
 
         // create new elements and add to the model_part
-        ElementsContainerType pNewElements = CreateEntitiesFromFESpace<Element, FESpace<TDim>,
+        ElementsContainerType pNewElements = CreateEntitiesFromFESpace<ElementType, FESpace<TDim>,
                 ControlGrid<ControlPointType>, NodesContainerType>(
             pPatch->pFESpace(), rControlPointGridFunction.pControlGrid(),
             this->GetModelPart().Nodes(), element_name,
             starting_id, mNodeOffset,
             pProperties, this->GetEchoLevel());
 
-        for (ElementsContainerType::ptr_iterator it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
+        for (auto it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
         {
             this->GetModelPart().Elements().push_back(*it);
         }
@@ -238,14 +243,14 @@ public:
         const GridFunction<TDim, ControlPointType>& rControlPointGridFunction = pPatch->ControlPointGridFunction();
 
         // create new elements and add to the model_part
-        ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<Condition, FESpace<TDim>,
+        ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<ConditionType, FESpace<TDim>,
                 ControlGrid<ControlPointType>, NodesContainerType>(
             pPatch->pFESpace(), rControlPointGridFunction.pControlGrid(),
             this->GetModelPart().Nodes(), condition_name,
             starting_id, mNodeOffset,
             pProperties, this->GetEchoLevel());
 
-        for (ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
+        for (auto it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
             this->GetModelPart().Conditions().push_back(*it);
         }
@@ -296,14 +301,14 @@ public:
         const GridFunction < TDim - 1, ControlPointType > & rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
 
         // create new conditions and add to the model_part
-        ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<Condition, FESpace < TDim - 1 >,
+        ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<ConditionType, FESpace < TDim - 1 >,
                 ControlGrid<ControlPointType>, NodesContainerType>(
             pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(),
             this->GetModelPart().Nodes(), condition_name,
             starting_id, mNodeOffset,
             pProperties, this->GetEchoLevel());
 
-        for (ConditionsContainerType::ptr_iterator it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
+        for (auto it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
             this->GetModelPart().Conditions().push_back(*it);
         }
@@ -353,7 +358,7 @@ public:
                 const typename TVariableType::Type& value = mpMultiPatch->pGetPatch(patch_id)->pGetGridFunction(rVariable)->pControlGrid()->GetData(local_id);
                 // KRATOS_WATCH(value)
 
-                NodeType::Pointer pNode = this->GetModelPart().pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(idof) + mNodeOffset);
+                typename NodeType::Pointer pNode = this->GetModelPart().pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(idof) + mNodeOffset);
 
                 pNode->GetSolutionStepValue(rVariable) = value;
             }
@@ -388,7 +393,7 @@ public:
                 std::size_t global_id = func_ids[i];
                 std::size_t node_id = CONVERT_INDEX_IGA_TO_KRATOS(global_id) + mNodeOffset;
 
-                NodesContainerType::iterator it_node = this->GetModelPart().Nodes().find(node_id);
+                auto it_node = this->GetModelPart().Nodes().find(node_id);
                 if (it_node == this->GetModelPart().Nodes().end())
                 {
                     KRATOS_ERROR << "Node " << node_id << " does not exist in the model_part " << this->GetModelPart().Name();
@@ -658,15 +663,15 @@ private:
 #ifdef SD_APP_FORWARD_COMPATIBILITY
     Model::Pointer mpModel;
 #else
-    ModelPart::Pointer mpModelPart;
+    typename ModelPartType::Pointer mpModelPart;
 #endif
     typename MultiPatch<TDim>::Pointer mpMultiPatch;
 
 };
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchModelPart<TDim>& rThis)
+template<int TDim, class TModelPartType>
+inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchModelPart<TDim, TModelPartType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

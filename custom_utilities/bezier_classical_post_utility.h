@@ -388,7 +388,7 @@ public:
                     }
                 }
 
-                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
+                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
                                                      connectivities, rModelPartPost, rCloneElement, ElementCounter, pProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
@@ -538,7 +538,7 @@ public:
                     }
                 }
 
-                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
+                ElementsArrayType pNewElements = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, Element, ElementsArrayType>(
                                                      connectivities, rModelPartPost, rCloneElement, ElementCounter, pProperties, NodeKey);
 
                 for (typename ElementsArrayType::ptr_iterator it2 = pNewElements.ptr_begin(); it2 != pNewElements.ptr_end(); ++it2)
@@ -1082,7 +1082,7 @@ public:
                 }
             }
 
-            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
                                                     connectivities, rModelPart, rSample, EntityCounter, pProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
@@ -1293,7 +1293,7 @@ public:
                 }
             }
 
-            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
                                                     connectivities, rModelPart, rSample, EntityCounter, pProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
@@ -1494,7 +1494,7 @@ public:
                 }
             }
 
-            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
                                                     connectivities, rModelPart, rSample, EntityCounter, pProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)
@@ -1682,7 +1682,7 @@ public:
                 }
             }
 
-            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
+            TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
                                                     connectivities, rModelPart, rSample, EntityCounter, pProperties, NodeKey);
 
             for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)

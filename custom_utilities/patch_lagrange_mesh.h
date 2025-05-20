@@ -115,7 +115,7 @@ public:
 
         // create elements
         const std::string NodeKey = std::string("Node");
-        TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
+        TEntityContainerType pNewEntities = IsogeometricPostUtility::CreateEntities<ModelPart, std::vector<std::vector<IndexType> >, TEntityType, TEntityContainerType>(
                                                 points_and_connectivities.second, r_model_part, r_clone_entity, last_entity_id, pProperties, NodeKey);
 
         for (typename TEntityContainerType::ptr_iterator it2 = pNewEntities.ptr_begin(); it2 != pNewEntities.ptr_end(); ++it2)

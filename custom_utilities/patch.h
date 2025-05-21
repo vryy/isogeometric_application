@@ -44,18 +44,18 @@ namespace Kratos
 {
 
 // Forward Declaration
-template<int TDim> class MultiPatch;
-template<int TDim> class PatchInterface;
+template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType> class MultiPatch;
+template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType> class PatchInterface;
 
 /**
 This class represents an isogeometric patch in parametric coordinates. An isogeometric patch can be a NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
  */
-template<int TDim>
+template<int TDim, typename TLocalCoordinateType = double, typename TCoordinateType = double, typename TDataType = double>
 class Patch : public IndexedObject, public Flags
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    , public std::enable_shared_from_this<Patch<TDim> >
+    , public std::enable_shared_from_this<Patch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> >
 #else
-    , public boost::enable_shared_from_this<Patch<TDim> >
+    , public boost::enable_shared_from_this<Patch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> >
 #endif
 {
 public:
@@ -65,28 +65,36 @@ public:
     typedef Kratos::shared_ptr<const Patch> ConstPointer;
 #endif
 
-    /// Constants
-    static constexpr double DISTANCE_TOLERANCE = 1e-13;
-
     /// Type definition
-    typedef ControlPoint<double> ControlPointType;
-    typedef Transformation<double> TransformationType;
+    typedef Patch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> PatchType;
+    typedef Patch<TDim-1, TLocalCoordinateType, TCoordinateType, TDataType> BoundaryPatchType;
+    typedef MultiPatch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> MultiPatchType;
+    typedef PatchInterface<TDim, TLocalCoordinateType, TCoordinateType, TDataType> PatchInterfaceType;
+
+    typedef TLocalCoordinateType LocalCoordinateType;
+    typedef TCoordinateType CoordinateType;
+    typedef TDataType DataType;
+    typedef typename DataTypeToValueType<TCoordinateType>::value_type TCoordinateValueType;
+    typedef typename DataTypeToValueType<TCoordinateType>::value_type CoordinateValueType;
+
+    typedef ControlPoint<TCoordinateType> ControlPointType;
+    typedef Transformation<TCoordinateType> TransformationType;
 
     typedef std::map<std::string, boost::any> GridFunctionContainerType;
 
-    typedef GridFunction<TDim, double> DoubleGridFunctionType;
+    typedef GridFunction<TDim, TDataType> DoubleGridFunctionType;
     typedef std::vector<typename DoubleGridFunctionType::Pointer> DoubleGridFunctionContainerType;
 
-    typedef GridFunction<TDim, array_1d<double, 3> > Array1DGridFunctionType;
+    typedef GridFunction<TDim, array_1d<TDataType, 3> > Array1DGridFunctionType;
     typedef std::vector<typename Array1DGridFunctionType::Pointer> Array1DGridFunctionContainerType;
 
     typedef GridFunction<TDim, Vector> VectorGridFunctionType;
     typedef std::vector<typename VectorGridFunctionType::Pointer> VectorGridFunctionContainerType;
 
-    typedef std::vector<typename Patch<TDim>::Pointer> NeighborPatchContainerType;
+    typedef std::vector<typename PatchType::Pointer> NeighborPatchContainerType;
 
-//    typedef std::vector<typename PatchInterface<TDim>::Pointer> InterfaceContainerType;
-    typedef std::list<typename PatchInterface<TDim>::Pointer> InterfaceContainerType;
+//    typedef std::vector<typename PatchInterfaceType::Pointer> InterfaceContainerType;
+    typedef std::list<typename PatchInterfaceType::Pointer> InterfaceContainerType;
     typedef typename InterfaceContainerType::iterator interface_iterator;
     typedef typename InterfaceContainerType::const_iterator interface_const_iterator;
 
@@ -98,6 +106,10 @@ public:
     typedef std::tuple<std::size_t, std::size_t, std::size_t, std::size_t, std::size_t, std::size_t, std::size_t, std::size_t> volume_t;
 
     typedef FESpace<TDim> FESpaceType;
+
+    /// Constants
+    static constexpr int Dim = TDim;
+    static constexpr TCoordinateValueType DISTANCE_TOLERANCE = 1e-13;
 
     /// Constructor with id
     Patch(std::size_t Id)
@@ -128,9 +140,9 @@ public:
     }
 
     /// Helper function to create new patch pointer
-    static typename Patch<TDim>::Pointer Create(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
+    static typename PatchType::Pointer Create(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
     {
-        return typename Patch<TDim>::Pointer(new Patch<TDim>(Id, pFESpace));
+        return typename PatchType::Pointer(new PatchType(Id, pFESpace));
     }
 
     /// Get the working space dimension of the patch
@@ -163,7 +175,7 @@ public:
     }
 
     /// Set the local search tolerance
-    void SetLocalSearchTolerance(double tolerance)
+    void SetLocalSearchTolerance(TCoordinateType tolerance)
     {
         mLocalSearchTolerance = tolerance;
     }
@@ -231,7 +243,7 @@ public:
 
         // create additional grid for control point coordinates, in order to compute the derivatives
         typedef typename ControlPointType::CoordinatesType CoordinatesType;
-        ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
+        typename ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
         pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
         typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
         typename GridFunction<TDim, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
@@ -253,10 +265,10 @@ public:
     typename GridFunction<TDim, ControlPointType>::ConstPointer pControlPointGridFunction() const {return this->pGetGridFunction(CONTROL_POINT);}
 
     /// Get the control point weights vector
-    std::vector<double> GetControlWeights() const
+    std::vector<TCoordinateType> GetControlWeights() const
     {
         typename ControlGrid<ControlPointType>::ConstPointer pControlPointGrid = pControlPointGridFunction()->pControlGrid();
-        std::vector<double> Weights(pControlPointGrid->size());
+        std::vector<TCoordinateType> Weights(pControlPointGrid->size());
         for (std::size_t i = 0; i < pControlPointGrid->size(); ++i)
         {
             Weights[i] = (*pControlPointGrid)[i].W();
@@ -272,7 +284,7 @@ public:
 
         // transform the control point coordinates grid
         typedef typename ControlPointType::CoordinatesType CoordinatesType;
-        ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
+        typename ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
         pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
         typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
         typename GridFunction<TDim, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
@@ -283,12 +295,12 @@ public:
 
     /// Create and add the grid function. This function will create the new FESpace based on the original FESpace of the control grid and the weights, and then assign to the new grid function.
     /// One must not use this function for the ControlPoint data type.
-    template<typename TDataType>
-    typename GridFunction<TDim, TDataType>::Pointer CreateGridFunction(typename ControlGrid<TDataType>::Pointer pControlGrid)
+    template<typename TOtherDataType>
+    typename GridFunction<TDim, TOtherDataType>::Pointer CreateGridFunction(typename ControlGrid<TOtherDataType>::Pointer pControlGrid)
     {
         CheckSize(*pControlGrid, __FUNCTION__);
         typename FESpace<TDim>::Pointer pNewFESpace = WeightedFESpace<TDim>::Create(mpFESpace, this->GetControlWeights());
-        typename GridFunction<TDim, TDataType>::Pointer pNewGridFunc = GridFunction<TDim, TDataType>::Create(pNewFESpace, pControlGrid);
+        typename GridFunction<TDim, TOtherDataType>::Pointer pNewGridFunc = GridFunction<TDim, TOtherDataType>::Create(pNewFESpace, pControlGrid);
         mpGridFunctions[pControlGrid->Name()] = pNewGridFunc;
         return pNewGridFunc;
     }
@@ -378,26 +390,26 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Compute a rough estimation of the local coordinates of a point by sampling technique
-    void Predict(const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling,
-                 const array_1d<double, 3>& xi_min, const array_1d<double, 3>& xi_max) const
+    void Predict(const array_1d<TCoordinateType, 3>& point, array_1d<TLocalCoordinateType, 3>& xi, const std::vector<int>& nsampling,
+                 const array_1d<TLocalCoordinateType, 3>& xi_min, const array_1d<TLocalCoordinateType, 3>& xi_max) const
     {
-        typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<TDim, array_1d<TCoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
         pGridFunc->Predict(point, xi, nsampling, xi_min, xi_max);
     }
 
     /// Compute a rough estimation of the local coordinates of a point by sampling technique
-    void Predict(const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling) const
+    void Predict(const array_1d<TCoordinateType, 3>& point, array_1d<TLocalCoordinateType, 3>& xi, const std::vector<int>& nsampling) const
     {
-        typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<TDim, array_1d<TCoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
         pGridFunc->Predict(point, xi, nsampling);
     }
 
     /// Compute the local coordinates of a point
-    int LocalCoordinates(const array_1d<double, 3>& point, array_1d<double, 3>& xi) const
+    int LocalCoordinates(const array_1d<TCoordinateType, 3>& point, array_1d<TLocalCoordinateType, 3>& xi) const
     {
-        typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<TDim, array_1d<TCoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
         int error_code = pGridFunc->LocalCoordinates(point, xi, mLocalSearchMaxIters, mLocalSearchTolerance);
-        bool is_inside = this->pFESpace()->IsInside(std::vector<double> {xi[0], xi[1], xi[2]});
+        bool is_inside = this->pFESpace()->IsInside(std::vector<TLocalCoordinateType> {xi[0], xi[1], xi[2]});
         if (!is_inside)
         {
             return 2;
@@ -410,14 +422,14 @@ public:
 
     /// Check if the point is inside the patch
     /// This subroutine requires xi0, which is a prediction of the projected local point. This has to be determined, i.e. using a sampling technique.
-    bool IsInside(const array_1d<double, 3>& point, const array_1d<double, 3>& xi0) const
+    bool IsInside(const array_1d<TCoordinateType, 3>& point, const array_1d<TLocalCoordinateType, 3>& xi0) const
     {
-        array_1d<double, 3> xi;
+        array_1d<TLocalCoordinateType, 3> xi;
         noalias(xi) = xi0;
         int stat = this->LocalCoordinates(point, xi);
 
         if (stat == 0)
-            return this->pFESpace()->IsInside(std::vector<double> {xi[0], xi[1], xi[2]});
+            return this->pFESpace()->IsInside(std::vector<TLocalCoordinateType> {xi[0], xi[1], xi[2]});
         else
         {
             return false;
@@ -486,29 +498,29 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Construct the boundary patch based on side
-    virtual typename Patch < TDim - 1 >::Pointer ConstructBoundaryPatch(const BoundarySide& side) const
+    virtual typename BoundaryPatchType::Pointer ConstructBoundaryPatch(const BoundarySide& side) const
     {
         // construct the boundary FESpace
-        typename FESpace < TDim - 1 >::Pointer pBFESpace = this->pFESpace()->ConstructBoundaryFESpace(side);
+        typename FESpace<TDim-1>::Pointer pBFESpace = this->pFESpace()->ConstructBoundaryFESpace(side);
 
         return this->ConstructBoundaryPatch(pBFESpace);
     }
 
     /// Construct the boundary patch based on side and local relative configuration
-    virtual typename Patch < TDim - 1 >::Pointer ConstructBoundaryPatch(const BoundarySide& side,
+    virtual typename BoundaryPatchType::Pointer ConstructBoundaryPatch(const BoundarySide& side,
             const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
         // construct the boundary FESpace
-        typename FESpace < TDim - 1 >::Pointer pBFESpace = this->pFESpace()->ConstructBoundaryFESpace(side, local_parameter_map, directions);
+        typename FESpace<TDim-1>::Pointer pBFESpace = this->pFESpace()->ConstructBoundaryFESpace(side, local_parameter_map, directions);
 
         return this->ConstructBoundaryPatch(pBFESpace);
     }
 
     /// Construct the boundary patch based on boundary FESpace
-    typename Patch < TDim - 1 >::Pointer ConstructBoundaryPatch(const typename FESpace < TDim - 1 >::Pointer pBFESpace) const
+    typename BoundaryPatchType::Pointer ConstructBoundaryPatch(const typename FESpace<TDim-1>::Pointer pBFESpace) const
     {
         // construct the boundary patch based on boundary FESpace
-        typename Patch < TDim - 1 >::Pointer pBPatch = typename Patch < TDim - 1 >::Pointer(new Patch < TDim - 1 > (-1));
+        typename BoundaryPatchType::Pointer pBPatch = typename BoundaryPatchType::Pointer(new BoundaryPatchType (-1));
         pBPatch->SetFESpace(pBFESpace);
 
         // transfer the control values
@@ -522,8 +534,8 @@ public:
                 it != DoubleGridFunctions_.end(); ++it)
         {
             // std::cout << "Double grid function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
-            typename ControlGrid<double>::Pointer pBoundaryDoubleControlGrid = ControlGridUtility::ExtractSubGrid<TDim, double>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
-            pBPatch->template CreateGridFunction<double>(pBoundaryDoubleControlGrid);
+            typename ControlGrid<TDataType>::Pointer pBoundaryDoubleControlGrid = ControlGridUtility::ExtractSubGrid<TDim, TDataType>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
+            pBPatch->template CreateGridFunction<TDataType>(pBoundaryDoubleControlGrid);
         }
 
         Array1DGridFunctionContainerType Array1DGridFunctions_ = this->Array1DGridFunctions();
@@ -532,8 +544,8 @@ public:
         {
             if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") { continue; }
             // std::cout << "Array1D function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
-            typename ControlGrid<array_1d<double, 3> >::Pointer pBoundaryArray1DControlGrid = ControlGridUtility::ExtractSubGrid<TDim, array_1d<double, 3> >((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
-            pBPatch->template CreateGridFunction<array_1d<double, 3> >(pBoundaryArray1DControlGrid);
+            typename ControlGrid<array_1d<TDataType, 3> >::Pointer pBoundaryArray1DControlGrid = ControlGridUtility::ExtractSubGrid<TDim, array_1d<TDataType, 3> >((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
+            pBPatch->template CreateGridFunction<array_1d<TDataType, 3> >(pBoundaryArray1DControlGrid);
         }
 
         VectorGridFunctionContainerType VectorGridFunctions_ = this->VectorGridFunctions();
@@ -549,12 +561,12 @@ public:
     }
 
     /// Construct the sliced patch on a specific direction
-    virtual typename Patch < TDim - 1 >::Pointer ConstructSlicedPatch(int idir, double xi) const
+    virtual typename BoundaryPatchType::Pointer ConstructSlicedPatch(int idir, TLocalCoordinateType xi) const
     {
-        typename Patch < TDim - 1 >::Pointer pSPatch = typename Patch < TDim - 1 >::Pointer(new Patch < TDim - 1 > (-1));
+        typename BoundaryPatchType::Pointer pSPatch = typename BoundaryPatchType::Pointer(new BoundaryPatchType (-1));
 
         // construct the sliced FESpace
-        typename FESpace < TDim - 1 >::Pointer pSFESpace = this->pFESpace()->ConstructSlicedFESpace(idir, xi);
+        typename FESpace<TDim-1>::Pointer pSFESpace = this->pFESpace()->ConstructSlicedFESpace(idir, xi);
         pSPatch->SetFESpace(pSFESpace);
 
         // transfer the control values
@@ -568,8 +580,8 @@ public:
                 it != DoubleGridFunctions_.end(); ++it)
         {
             std::cout << "Double grid function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
-            typename ControlGrid<double>::Pointer pSlicedDoubleControlGrid = ControlGridUtility::ComputeSlicedGrid<TDim, double>((*it)->pControlGrid(), *(this->pFESpace()), idir, xi);
-            pSPatch->template CreateGridFunction<double>(pSlicedDoubleControlGrid);
+            typename ControlGrid<TDataType>::Pointer pSlicedDoubleControlGrid = ControlGridUtility::ComputeSlicedGrid<TDim, TDataType>((*it)->pControlGrid(), *(this->pFESpace()), idir, xi);
+            pSPatch->template CreateGridFunction<TDataType>(pSlicedDoubleControlGrid);
         }
 
         Array1DGridFunctionContainerType Array1DGridFunctions_ = this->Array1DGridFunctions();
@@ -578,8 +590,8 @@ public:
         {
             if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") { continue; }
             std::cout << "Array1D function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
-            typename ControlGrid<array_1d<double, 3> >::Pointer pSlicedArray1DControlGrid = ControlGridUtility::ComputeSlicedGrid<TDim, array_1d<double, 3> >((*it)->pControlGrid(), *(this->pFESpace()), idir, xi);
-            pSPatch->template CreateGridFunction<array_1d<double, 3> >(pSlicedArray1DControlGrid);
+            typename ControlGrid<array_1d<TDataType, 3> >::Pointer pSlicedArray1DControlGrid = ControlGridUtility::ComputeSlicedGrid<TDim, array_1d<TDataType, 3> >((*it)->pControlGrid(), *(this->pFESpace()), idir, xi);
+            pSPatch->template CreateGridFunction<array_1d<TDataType, 3> >(pSlicedArray1DControlGrid);
         }
 
         VectorGridFunctionContainerType VectorGridFunctions_ = this->VectorGridFunctions();
@@ -597,7 +609,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Search for the neighbor
-    typename Patch<TDim>::Pointer pNeighbor(const BoundarySide& side)
+    typename PatchType::Pointer pNeighbor(const BoundarySide& side)
     {
         for (interface_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
@@ -610,7 +622,7 @@ public:
     }
 
     /// Search for the neighbor
-    typename Patch<TDim>::ConstPointer pNeighbor(const BoundarySide& side) const
+    typename PatchType::ConstPointer pNeighbor(const BoundarySide& side) const
     {
         for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
@@ -623,7 +635,7 @@ public:
     }
 
     /// Search for the boundary side (in the current patch) of the neighbor patch, if it exists
-    int FindBoundarySide(typename Patch<TDim>::ConstPointer pPatch) const
+    int FindBoundarySide(typename PatchType::ConstPointer pPatch) const
     {
         for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
         {
@@ -636,7 +648,7 @@ public:
     }
 
     /// Add an interface to the patch
-    void AddInterface(typename PatchInterface<TDim>::Pointer pInterface)
+    void AddInterface(typename PatchInterfaceType::Pointer pInterface)
     {
         if (&(*(pInterface->pPatch1())) != this)
         {
@@ -657,7 +669,7 @@ public:
     }
 
     /// Remove an interface from the patch
-    void RemoveInterface(typename PatchInterface<TDim>::Pointer pInterface)
+    void RemoveInterface(typename PatchInterfaceType::Pointer pInterface)
     {
         if (&(*(pInterface->pPatch1())) != this)
         {
@@ -695,7 +707,7 @@ public:
     interface_const_iterator InterfaceEnd() const {return mpInterfaces.end();}
 
     /// Get the interface
-    typename PatchInterface<TDim>::Pointer pInterface(std::size_t i)
+    typename PatchInterfaceType::Pointer pInterface(std::size_t i)
     {
         std::size_t cnt = 0;
         for (interface_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
@@ -712,7 +724,7 @@ public:
         return NULL;
     }
 
-    typename PatchInterface<TDim>::ConstPointer pInterface(std::size_t i) const
+    typename PatchInterfaceType::ConstPointer pInterface(std::size_t i) const
     {
         std::size_t cnt = 0;
         for (interface_const_iterator it = InterfaceBegin(); it != InterfaceEnd(); ++it)
@@ -730,11 +742,11 @@ public:
     }
 
     /// Get/Set the parent multipatch
-    void pSetParentMultiPatch(typename MultiPatch<TDim>::Pointer pPatch) {mpParentMultiPatch = pPatch;}
-    MultiPatch<TDim>& ParentMultiPatch() {return *pParentMultiPatch();}
-    const MultiPatch<TDim>& ParentMultiPatch() const {return *pParentMultiPatch();}
-    typename MultiPatch<TDim>::Pointer pParentMultiPatch() {return mpParentMultiPatch.lock();}
-    const typename MultiPatch<TDim>::Pointer pParentMultiPatch() const {return mpParentMultiPatch.lock();}
+    void pSetParentMultiPatch(typename MultiPatchType::Pointer pPatch) {mpParentMultiPatch = pPatch;}
+    MultiPatchType& ParentMultiPatch() {return *pParentMultiPatch();}
+    const MultiPatchType& ParentMultiPatch() const {return *pParentMultiPatch();}
+    typename MultiPatchType::Pointer pParentMultiPatch() {return mpParentMultiPatch.lock();}
+    const typename MultiPatchType::Pointer pParentMultiPatch() const {return mpParentMultiPatch.lock();}
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -747,7 +759,7 @@ public:
                               std::size_t& starting_knotv_id,
                               std::vector<std::size_t>& knotv ) const
     {
-        if (TDim == 1)
+        if constexpr (TDim == 1)
         {
             vertices.resize(2);
             vertices[0] = starting_vertex_id++;
@@ -762,7 +774,7 @@ public:
             faces.resize(0);
             volumes.resize(0);
         }
-        else if (TDim == 2)
+        else if constexpr (TDim == 2)
         {
             /// Reference for edge mapping: Fig.2, Burstedde et al, SCALABLE ALGORITHMS FOR PARALLEL ADAPTIVE MESH REFINEMENT ON FORESTS OF OCTREES
             /// Mapping for edges: table 2
@@ -787,7 +799,7 @@ public:
 
             volumes.resize(0);
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             /// Reference for edge mapping: Fig.2, Burstedde et al, SCALABLE ALGORITHMS FOR PARALLEL ADAPTIVE MESH REFINEMENT ON FORESTS OF OCTREES
             /// Mapping for faces: table 2
@@ -840,25 +852,25 @@ public:
     /// Get the bounding box of the patch
     /// The arrangement is [x_min, x_max, y_min, y_max, z_min, z_max]
     /// This function takes advantage of the convex hull properties of a NURBS patch
-    void GetBoundingBox(std::vector<double>& bounding_box) const
+    void GetBoundingBox(std::vector<TCoordinateType>& bounding_box) const
     {
         if (bounding_box.size() != 6)
         {
             bounding_box.resize(6);
         }
 
-        double& x_min = bounding_box[0];
-        double& x_max = bounding_box[1];
-        double& y_min = bounding_box[2];
-        double& y_max = bounding_box[3];
-        double& z_min = bounding_box[4];
-        double& z_max = bounding_box[5];
+        TCoordinateType& x_min = bounding_box[0];
+        TCoordinateType& x_max = bounding_box[1];
+        TCoordinateType& y_min = bounding_box[2];
+        TCoordinateType& y_max = bounding_box[3];
+        TCoordinateType& z_min = bounding_box[4];
+        TCoordinateType& z_max = bounding_box[5];
 
         x_min = 1.0e99; y_min = 1.0e99; z_min = 1.0e99;
         x_max = -1.0e99; y_max = -1.0e99; z_max = -1.0e99;
 
         typename ControlGrid<ControlPointType>::ConstPointer pControlPointGrid = pControlPointGridFunction()->pControlGrid();
-        double x, y, z;
+        TCoordinateType x, y, z;
         for (std::size_t i = 0; i < pControlPointGrid->size(); ++i)
         {
             x = (*pControlPointGrid)[i].X();
@@ -877,13 +889,13 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Compare two patches in terms of its parametric information. The grid function data, including control points, are not checked.
-    virtual bool IsCompatible(const Patch<TDim>& rOtherPatch) const
+    virtual bool IsCompatible(const PatchType& rOtherPatch) const
     {
         return *(this->pFESpace()) == *(rOtherPatch.pFESpace());
     }
 
     /// Compare two patches in terms of parametric information and control points.
-    bool IsEquivalent(const Patch<TDim>& rOtherPatch, const int echo_level = 0, const double dist_tol = DISTANCE_TOLERANCE) const
+    bool IsEquivalent(const PatchType& rOtherPatch, const int echo_level = 0, const TCoordinateValueType dist_tol = DISTANCE_TOLERANCE) const
     {
         if (!this->IsCompatible(rOtherPatch))
         {
@@ -909,8 +921,8 @@ public:
             const ControlPointType& p1 = pThisControlPointGrid->GetData(i);
             const ControlPointType& p2 = pOtherControlPointGrid->GetData(i);
 
-            const double dist = p1.Distance(p2);
-            if (dist > dist_tol)
+            const TCoordinateType dist = p1.Distance(p2);
+            if (std::abs(dist) > dist_tol)
             {
                 if (echo_level > 0)
                    std::cout << "Patch equivalence check: The control point " << p1 << " and " << p2
@@ -924,7 +936,7 @@ public:
     }
 
     /// Compare two patches in terms of parametric information and grid function data, including the control points.
-    bool IsSame(const Patch<TDim>& rOtherPatch) const
+    bool IsSame(const PatchType& rOtherPatch) const
     {
         if (!this->IsEquivalent(rOtherPatch))
         {
@@ -937,7 +949,7 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const Patch<TDim>& rOther)
+    virtual bool operator==(const PatchType& rOther)
     {
         return (Id() == rOther.Id()) && this->IsSame(rOther);
     }
@@ -1008,7 +1020,7 @@ private:
     GridFunctionContainerType mpGridFunctions; // using boost::any to store pointer to grid function
 
     unsigned int mLocalSearchMaxIters;
-    double mLocalSearchTolerance;
+    TLocalCoordinateType mLocalSearchTolerance;
 
     /**
      * interface data
@@ -1018,7 +1030,7 @@ private:
     /**
      * pointer to parent multipatch
      */
-    typename MultiPatch<TDim>::WeakPointer mpParentMultiPatch;
+    typename MultiPatchType::WeakPointer mpParentMultiPatch;
 
     /// Empty Constructor for serializer
     Patch() : IndexedObject(0), mpFESpace(NULL) {}
@@ -1090,7 +1102,7 @@ private:
 
         return var_list;
     }
-};
+}; // class Patch
 
 /**
  * Template specific instantiation for null-D patch to terminate the compilation.
@@ -1423,8 +1435,9 @@ public:
 };
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const Patch<TDim>& rThis)
+template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+inline std::ostream& operator <<(std::ostream& rOStream,
+        const Patch<TDim, TLocalCoordinateType, TCoordinateType, TDataType>& rThis)
 {
     rOStream << "-------------Begin PatchInfo-------------" << std::endl;
     rThis.PrintInfo(rOStream);

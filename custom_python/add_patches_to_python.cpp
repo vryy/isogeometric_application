@@ -83,14 +83,14 @@ typename TPatchType::FESpaceType::Pointer Patch_pFESpace(TPatchType& rDummy)
     return rDummy.pFESpace();
 }
 
-template<int TDim, typename TDataType>
-typename GridFunction<TDim, TDataType>::Pointer Patch_CreateGridFunction(Patch<TDim>& rDummy, typename ControlGrid<TDataType>::Pointer pControlGrid)
+template<class TPatchType, typename TDataType>
+typename GridFunction<TPatchType::Dim, TDataType>::Pointer Patch_CreateGridFunction(TPatchType& rDummy, typename ControlGrid<TDataType>::Pointer pControlGrid)
 {
     return rDummy.template CreateGridFunction<TDataType>(pControlGrid);
 }
 
-template<int TDim, class TVariableType>
-typename GridFunction<TDim, typename TVariableType::Type>::Pointer Patch_GridFunction(Patch<TDim>& rDummy, const TVariableType& rVariable)
+template<class TPatchType, class TVariableType>
+typename GridFunction<TPatchType::Dim, typename TVariableType::Type>::Pointer Patch_GridFunction(TPatchType& rDummy, const TVariableType& rVariable)
 {
     return rDummy.template pGetGridFunction<TVariableType>(rVariable);
 }
@@ -99,20 +99,25 @@ template<class TPatchType>
 boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& list_nsampling,
                                   const boost::python::list& list_xi_min, const boost::python::list& list_xi_max)
 {
-    std::vector<double> xi_min_vec;
-    PythonUtils::Unpack<double, double>(list_xi_min, xi_min_vec);
+    typedef typename TPatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename TPatchType::CoordinateType CoordinateType;
 
-    std::vector<double> xi_max_vec;
-    PythonUtils::Unpack<double, double>(list_xi_max, xi_max_vec);
+    std::vector<LocalCoordinateType> xi_min_vec;
+    PythonUtils::Unpack<double, LocalCoordinateType>(list_xi_min, xi_min_vec);
 
-    std::vector<double> P_vec;
-    PythonUtils::Unpack<double, double>(P, P_vec);
+    std::vector<LocalCoordinateType> xi_max_vec;
+    PythonUtils::Unpack<double, LocalCoordinateType>(list_xi_max, xi_max_vec);
 
-    array_1d<double, 3> point, xi, xi_min, xi_max;
-    noalias(point) = ZeroVector(3);
-    noalias(xi) = ZeroVector(3);
-    noalias(xi_min) = ZeroVector(3);
-    noalias(xi_max) = ZeroVector(3);
+    std::vector<CoordinateType> P_vec;
+    PythonUtils::Unpack<CoordinateType, CoordinateType>(P, P_vec);
+
+    array_1d<CoordinateType, 3> point;
+    array_1d<LocalCoordinateType, 3> xi, xi_min, xi_max;
+
+    point.clear();
+    xi.clear();
+    xi_min .clear();
+    xi_max.clear();
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
     {
@@ -145,12 +150,17 @@ boost::python::list Patch_Predict(TPatchType& rDummy, const boost::python::list&
 template<class TPatchType>
 boost::python::list Patch_Predict1(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& list_nsampling)
 {
-    std::vector<double> P_vec;
-    PythonUtils::Unpack<double, double>(P, P_vec);
+    typedef typename TPatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename TPatchType::CoordinateType CoordinateType;
 
-    array_1d<double, 3> point, xi;
-    noalias(point) = ZeroVector(3);
-    noalias(xi) = ZeroVector(3);
+    std::vector<CoordinateType> P_vec;
+    PythonUtils::Unpack<CoordinateType, CoordinateType>(P, P_vec);
+
+    array_1d<CoordinateType, 3> point;
+    array_1d<LocalCoordinateType, 3> xi;
+
+    point.clear();
+    xi.clear();
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
     {
@@ -173,15 +183,20 @@ boost::python::list Patch_Predict1(TPatchType& rDummy, const boost::python::list
 template<class TPatchType>
 boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& xi0)
 {
-    std::vector<double> xi0_vec;
-    PythonUtils::Unpack<double, double>(xi0, xi0_vec);
+    typedef typename TPatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename TPatchType::CoordinateType CoordinateType;
 
-    std::vector<double> P_vec;
-    PythonUtils::Unpack<double, double>(P, P_vec);
+    std::vector<LocalCoordinateType> xi0_vec;
+    PythonUtils::Unpack<double, LocalCoordinateType>(xi0, xi0_vec);
 
-    array_1d<double, 3> point, xi;
-    noalias(point) = ZeroVector(3);
-    noalias(xi) = ZeroVector(3);
+    std::vector<CoordinateType> P_vec;
+    PythonUtils::Unpack<CoordinateType, CoordinateType>(P, P_vec);
+
+    array_1d<CoordinateType, 3> point;
+    array_1d<LocalCoordinateType, 3> xi;
+
+    point.clear();
+    xi.clear();
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
     {
@@ -209,15 +224,20 @@ boost::python::list Patch_LocalCoordinates(TPatchType& rDummy, const boost::pyth
 template<class TPatchType>
 bool Patch_IsInside(TPatchType& rDummy, const boost::python::list& P, const boost::python::list& xi0)
 {
-    std::vector<double> xi0_vec;
-    PythonUtils::Unpack<double, double>(xi0, xi0_vec);
+    typedef typename TPatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename TPatchType::CoordinateType CoordinateType;
 
-    std::vector<double> P_vec;
-    PythonUtils::Unpack<double, double>(P, P_vec);
+    std::vector<LocalCoordinateType> xi0_vec;
+    PythonUtils::Unpack<double, LocalCoordinateType>(xi0, xi0_vec);
 
-    array_1d<double, 3> point, xi;
-    noalias(point) = ZeroVector(3);
-    noalias(xi) = ZeroVector(3);
+    std::vector<CoordinateType> P_vec;
+    PythonUtils::Unpack<CoordinateType, CoordinateType>(P, P_vec);
+
+    array_1d<CoordinateType, 3> point;
+    array_1d<LocalCoordinateType, 3> xi;
+
+    point.clear();
+    xi.clear();
 
     for (std::size_t i = 0; i < std::min(static_cast<std::size_t>(3), P_vec.size()); ++i)
     {
@@ -232,26 +252,28 @@ bool Patch_IsInside(TPatchType& rDummy, const boost::python::list& P, const boos
     return rDummy.IsInside(point, xi);
 }
 
-template<int TDim>
-typename PatchInterface<TDim>::Pointer Patch_GetInterface(Patch<TDim>& rDummy, std::size_t i)
+template<class TPatchType>
+typename TPatchType::PatchInterfaceType::Pointer Patch_GetInterface(TPatchType& rDummy, std::size_t i)
 {
     return rDummy.pInterface(i);
 }
 
-template<int TDim>
-typename Patch < TDim - 1 >::Pointer Patch_ConstructBoundaryPatch(Patch<TDim>& rDummy, std::size_t iside)
+template<class TPatchType>
+typename TPatchType::BoundaryPatchType::Pointer Patch_ConstructBoundaryPatch(TPatchType& rDummy, std::size_t iside)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     return rDummy.ConstructBoundaryPatch(side);
 }
 
-template<int TDim>
-static typename MultiPatch<TDim>::Pointer MultiPatch_init(const boost::python::list& patch_list)
+template<class TMultiPatchType>
+static typename TMultiPatchType::Pointer MultiPatch_init(const boost::python::list& patch_list)
 {
-    typename MultiPatch<TDim>::Pointer pMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
+    typedef typename TMultiPatchType::PatchType PatchType;
 
-    std::vector<typename Patch<TDim>::Pointer> patches;
-    PythonUtils::Unpack<typename Patch<TDim>::Pointer>(patch_list, patches);
+    typename TMultiPatchType::Pointer pMultiPatch = typename TMultiPatchType::Pointer(new TMultiPatchType());
+
+    std::vector<typename PatchType::Pointer> patches;
+    PythonUtils::Unpack<typename PatchType::Pointer>(patch_list, patches);
 
     for (std::size_t i = 0; i < patches.size(); ++i)
         pMultiPatch->AddPatch(patches[i]);
@@ -289,8 +311,8 @@ std::size_t MultiPatch_Len(TMultiPatchType& rDummy)
     return rDummy.size();
 }
 
-template<int TDim>
-std::size_t MultiPatch_Enumerate1(MultiPatch<TDim>& rDummy)
+template<class TMultiPatchType>
+std::size_t MultiPatch_Enumerate1(TMultiPatchType& rDummy)
 {
     std::size_t system_size;
 
@@ -300,8 +322,8 @@ std::size_t MultiPatch_Enumerate1(MultiPatch<TDim>& rDummy)
     return system_size;
 }
 
-template<int TDim>
-std::size_t MultiPatch_Enumerate2(MultiPatch<TDim>& rDummy, std::size_t start)
+template<class TMultiPatchType>
+std::size_t MultiPatch_Enumerate2(TMultiPatchType& rDummy, std::size_t start)
 {
     std::size_t system_size;
 
@@ -311,8 +333,8 @@ std::size_t MultiPatch_Enumerate2(MultiPatch<TDim>& rDummy, std::size_t start)
     return system_size;
 }
 
-template<int TDim>
-typename Patch<TDim>::Pointer PatchInterface_pPatch1(PatchInterface<TDim>& rDummy)
+template<class TPatchInterfaceType>
+typename TPatchInterfaceType::PatchType::Pointer PatchInterface_pPatch1(TPatchInterfaceType& rDummy)
 {
     return rDummy.pPatch1();
 }
@@ -323,8 +345,8 @@ BoundarySide PatchInterface_Side1(TPatchInterfaceType& rDummy)
     return rDummy.Side1();
 }
 
-template<int TDim>
-typename Patch<TDim>::Pointer PatchInterface_pPatch2(PatchInterface<TDim>& rDummy)
+template<class TPatchInterfaceType>
+typename TPatchInterfaceType::PatchType::Pointer PatchInterface_pPatch2(TPatchInterfaceType& rDummy)
 {
     return rDummy.pPatch2();
 }
@@ -337,94 +359,100 @@ BoundarySide PatchInterface_Side2(TPatchInterfaceType& rDummy)
 
 ////////////////////////////////////////
 
-template<int TDim>
-void IsogeometricApplication_AddPatchesToPython_Helper()
+template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix)
 {
     std::stringstream ss;
 
+    typedef Patch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> PatchType;
+    typedef MultiPatch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> MultiPatchType;
+    typedef PatchInterface<TDim, TLocalCoordinateType, TCoordinateType, TDataType> PatchInterfaceType;
+
+    typedef typename MatrixVectorTypeSelector<TDataType>::VectorType VectorType;
+
     ss.str(std::string());
-    ss << "Patch" << TDim << "D";
-    class_<Patch<TDim>, bases<Flags> >
-    // class_<Patch<TDim>, typename Patch<TDim>::Pointer > // do not use this to export Patch pointer
+    ss << Prefix << "Patch" << TDim << "D";
+    class_<PatchType, bases<Flags> >
+    // class_<PatchType, typename PatchType::Pointer > // do not use this to export Patch pointer
     (ss.str().c_str(), init<std::size_t, typename FESpace<TDim>::Pointer>())
-    .add_property("Id", &Patch_GetId<Patch<TDim> >, &Patch_SetId<Patch<TDim> >)
-    .add_property("Prefix", &Patch_GetPrefix<Patch<TDim> >, &Patch_SetPrefix<Patch<TDim> >)
-    .add_property("LayerIndex", &Patch_GetLayerIndex<Patch<TDim> >, &Patch_SetLayerIndex<Patch<TDim> >)
-    .def("WorkingSpaceDimension", &Patch<TDim>::WorkingSpaceDimension)
-    .def("Name", &Patch<TDim>::Name)
-    .def("CreateControlPointGridFunction", &Patch<TDim>::CreateControlPointGridFunction)
-    .def("CreateGridFunction", &Patch_CreateGridFunction<TDim, double>)
-    .def("CreateGridFunction", &Patch_CreateGridFunction<TDim, array_1d<double, 3> >)
-    .def("CreateGridFunction", &Patch_CreateGridFunction<TDim, Vector>)
-    .def("GridFunction", &Patch_GridFunction<TDim, Variable<ControlPoint<double> > >)
-    .def("GridFunction", &Patch_GridFunction<TDim, Variable<double> >)
-    .def("GridFunction", &Patch_GridFunction<TDim, Variable<array_1d<double, 3> > >)
-    .def("GridFunction", &Patch_GridFunction<TDim, Variable<Vector> >)
-    .def("ApplyTransformation", &Patch<TDim>::ApplyTransformation)
-    .def("Order", &Patch<TDim>::Order)
-    .def("TotalNumber", &Patch<TDim>::TotalNumber)
-    .def("FESpace", &Patch_pFESpace<Patch<TDim> >)
-    .def("Predict", &Patch_Predict<Patch<TDim> >)
-    .def("Predict", &Patch_Predict1<Patch<TDim> >)
-    .def("LocalCoordinates", &Patch_LocalCoordinates<Patch<TDim> >)
-    .def("IsInside", &Patch_IsInside<Patch<TDim> >)
-    .def("NumberOfInterfaces", &Patch<TDim>::NumberOfInterfaces)
-    .def("AddInterface", &Patch<TDim>::AddInterface)
-    .def("RemoveInterface", &Patch<TDim>::RemoveInterface)
-    .def("GetInterface", &Patch_GetInterface<TDim>)
-    .def("ConstructBoundaryPatch", &Patch_ConstructBoundaryPatch<TDim>)
-    .def("ConstructSlicedPatch", &Patch<TDim>::ConstructSlicedPatch)
-    .def("FindBoundarySide", &Patch<TDim>::FindBoundarySide)
-    .def("SetLocalSearchTolerance", &Patch<TDim>::SetLocalSearchTolerance)
-    .def("SetLocalSearchMaxIters", &Patch<TDim>::SetLocalSearchMaxIters)
-    .def("Validate", &Patch<TDim>::Validate)
+    .add_property("Id", &Patch_GetId<PatchType>, &Patch_SetId<PatchType>)
+    .add_property("Prefix", &Patch_GetPrefix<PatchType>, &Patch_SetPrefix<PatchType>)
+    .add_property("LayerIndex", &Patch_GetLayerIndex<PatchType>, &Patch_SetLayerIndex<PatchType>)
+    .def("WorkingSpaceDimension", &PatchType::WorkingSpaceDimension)
+    .def("Name", &PatchType::Name)
+    .def("CreateControlPointGridFunction", &PatchType::CreateControlPointGridFunction)
+    .def("CreateGridFunction", &Patch_CreateGridFunction<PatchType, TDataType>)
+    .def("CreateGridFunction", &Patch_CreateGridFunction<PatchType, array_1d<TDataType, 3> >)
+    .def("CreateGridFunction", &Patch_CreateGridFunction<PatchType, VectorType>)
+    .def("GridFunction", &Patch_GridFunction<PatchType, Variable<ControlPoint<TCoordinateType> > >)
+    .def("GridFunction", &Patch_GridFunction<PatchType, Variable<TDataType> >)
+    .def("GridFunction", &Patch_GridFunction<PatchType, Variable<array_1d<TDataType, 3> > >)
+    .def("GridFunction", &Patch_GridFunction<PatchType, Variable<VectorType> >)
+    .def("ApplyTransformation", &PatchType::ApplyTransformation)
+    .def("Order", &PatchType::Order)
+    .def("TotalNumber", &PatchType::TotalNumber)
+    .def("FESpace", &Patch_pFESpace<PatchType>)
+    .def("Predict", &Patch_Predict<PatchType>)
+    .def("Predict", &Patch_Predict1<PatchType>)
+    .def("LocalCoordinates", &Patch_LocalCoordinates<PatchType>)
+    .def("IsInside", &Patch_IsInside<PatchType>)
+    .def("NumberOfInterfaces", &PatchType::NumberOfInterfaces)
+    .def("AddInterface", &PatchType::AddInterface)
+    .def("RemoveInterface", &PatchType::RemoveInterface)
+    .def("GetInterface", &Patch_GetInterface<PatchType>)
+    .def("ConstructBoundaryPatch", &Patch_ConstructBoundaryPatch<PatchType>)
+    .def("ConstructSlicedPatch", &PatchType::ConstructSlicedPatch)
+    .def("FindBoundarySide", &PatchType::FindBoundarySide)
+    .def("SetLocalSearchTolerance", &PatchType::SetLocalSearchTolerance)
+    .def("SetLocalSearchMaxIters", &PatchType::SetLocalSearchMaxIters)
+    .def("Validate", &PatchType::Validate)
     .def(self_ns::str(self))
     ;
 
     ss.str(std::string());
-    ss << "Patch" << TDim << "DPointer";
-    class_<typename Patch<TDim>::Pointer>
-    (ss.str().c_str(), init<typename Patch<TDim>::Pointer>())
-    .def("GetReference", GetReference<Patch<TDim> >, return_value_policy<reference_existing_object>())
+    ss << Prefix << "Patch" << TDim << "DPointer";
+    class_<typename PatchType::Pointer>
+    (ss.str().c_str(), init<typename PatchType::Pointer>())
+    .def("GetReference", GetReference<PatchType>, return_value_policy<reference_existing_object>())
     .def(self_ns::str(self))
     ;
 
     ss.str(std::string());
-    ss << "Patch" << TDim << "DContainer";
-    PointerVectorSetPythonInterface<typename MultiPatch<TDim>::PatchContainerType>::CreateInterface(ss.str());
+    ss << Prefix << "Patch" << TDim << "DContainer";
+    PointerVectorSetPythonInterface<typename MultiPatchType::PatchContainerType>::CreateInterface(ss.str());
 
     ss.str(std::string());
-    ss << "PatchInterface" << TDim << "D";
-    // class_<PatchInterface<TDim> >
-    class_<PatchInterface<TDim>, typename PatchInterface<TDim>::Pointer, boost::noncopyable>
+    ss << Prefix << "PatchInterface" << TDim << "D";
+    // class_<PatchInterfaceType>
+    class_<PatchInterfaceType, typename PatchInterfaceType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<>())
-    .def(init<typename Patch<TDim>::Pointer, const BoundarySide&, typename Patch<TDim>::Pointer, const BoundarySide&>())
-    .def("Patch1", &PatchInterface_pPatch1<TDim>)
-    .def("Patch2", &PatchInterface_pPatch2<TDim>)
-    .def("Side1", &PatchInterface_Side1<PatchInterface<TDim> >)
-    .def("Side2", &PatchInterface_Side2<PatchInterface<TDim> >)
+    .def(init<typename PatchType::Pointer, const BoundarySide&, typename PatchType::Pointer, const BoundarySide&>())
+    .def("Patch1", &PatchInterface_pPatch1<PatchInterfaceType>)
+    .def("Patch2", &PatchInterface_pPatch2<PatchInterfaceType>)
+    .def("Side1", &PatchInterface_Side1<PatchInterfaceType>)
+    .def("Side2", &PatchInterface_Side2<PatchInterfaceType>)
     .def(self_ns::str(self))
     ;
 
     ss.str(std::string());
-    ss << "MultiPatch" << TDim << "D";
-    class_<MultiPatch<TDim>, typename MultiPatch<TDim>::Pointer, boost::noncopyable>
+    ss << Prefix << "MultiPatch" << TDim << "D";
+    class_<MultiPatchType, typename MultiPatchType::Pointer, boost::noncopyable>
     (ss.str().c_str(), init<>())
-    .def("__init__", make_constructor(&MultiPatch_init<TDim>))
-    // .def("ResetId", &MultiPatch<TDim>::ResetId) // this function is not really useful. One shall keep control over the id of the patch.
-    .def("AddPatch", &MultiPatch<TDim>::AddPatch)
-    .def("RemovePatch", &MultiPatch<TDim>::RemovePatch)
-    .def("Patches", &MultiPatch_GetPatches<MultiPatch<TDim> >)
-    .def("PatchIndices", &MultiPatch_GetPatchIndices<MultiPatch<TDim> >)
-    .def("__getitem__", &MultiPatch_GetItem<Patch<TDim>, MultiPatch<TDim> >)
-    .def("__len__", &MultiPatch_Len<MultiPatch<TDim> >)
-    .def("EquationSystemSize", &MultiPatch<TDim>::EquationSystemSize)
-    .def("ResetFunctionIndices", &MultiPatch<TDim>::ResetFunctionIndices)
-    .def("Enumerate", &MultiPatch_Enumerate1<TDim>)
-    .def("Enumerate", &MultiPatch_Enumerate2<TDim>)
-    .def("IsEnumerated", &MultiPatch<TDim>::IsEnumerated)
-    .def("LocalCoordinates", &Patch_LocalCoordinates<MultiPatch<TDim> >)
-    .def("Validate", &MultiPatch<TDim>::Validate)
+    .def("__init__", make_constructor(&MultiPatch_init<MultiPatchType>))
+    // .def("ResetId", &MultiPatchType::ResetId) // this function is not really useful. One shall keep control over the id of the patch.
+    .def("AddPatch", &MultiPatchType::AddPatch)
+    .def("RemovePatch", &MultiPatchType::RemovePatch)
+    .def("Patches", &MultiPatch_GetPatches<MultiPatchType>)
+    .def("PatchIndices", &MultiPatch_GetPatchIndices<MultiPatchType>)
+    .def("__getitem__", &MultiPatch_GetItem<PatchType, MultiPatchType>)
+    .def("__len__", &MultiPatch_Len<MultiPatchType>)
+    .def("EquationSystemSize", &MultiPatchType::EquationSystemSize)
+    .def("ResetFunctionIndices", &MultiPatchType::ResetFunctionIndices)
+    .def("Enumerate", &MultiPatch_Enumerate1<MultiPatchType>)
+    .def("Enumerate", &MultiPatch_Enumerate2<MultiPatchType>)
+    .def("IsEnumerated", &MultiPatchType::IsEnumerated)
+    .def("LocalCoordinates", &Patch_LocalCoordinates<MultiPatchType>)
+    .def("Validate", &MultiPatchType::Validate)
     .def(self_ns::str(self))
     ;
 }
@@ -557,9 +585,9 @@ void IsogeometricApplication_AddPatchesToPython()
     .value("ECHO_REFINEMENT_DETAIL", ECHO_REFINEMENT_DETAIL)
     ;
 
-    IsogeometricApplication_AddPatchesToPython_Helper<1>();
-    IsogeometricApplication_AddPatchesToPython_Helper<2>();
-    IsogeometricApplication_AddPatchesToPython_Helper<3>();
+    IsogeometricApplication_AddPatchesToPython_Helper<1, double, double, double>("");
+    IsogeometricApplication_AddPatchesToPython_Helper<2, double, double, double>("");
+    IsogeometricApplication_AddPatchesToPython_Helper<3, double, double, double>("");
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////IMPORT/EXPORT/////////////////////////////

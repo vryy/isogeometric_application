@@ -23,12 +23,12 @@ namespace Kratos
  * This class represents an interface connecting two patches.
  * The interface is designed using half-edge philosophy, in which the interface keeps a pointer to the interface of the other side.
  */
-template<int TDim>
+template<int TDim, typename TLocalCoordinateType = double, typename TCoordinateType = double, typename TDataType = double>
 class PatchInterface
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    : public std::enable_shared_from_this<PatchInterface<TDim> >
+    : public std::enable_shared_from_this<PatchInterface<TDim, TLocalCoordinateType, TCoordinateType, TDataType> >
 #else
-    : public boost::enable_shared_from_this<PatchInterface<TDim> >
+    : public boost::enable_shared_from_this<PatchInterface<TDim, TLocalCoordinateType, TCoordinateType, TDataType> >
 #endif
 {
 public:
@@ -38,7 +38,8 @@ public:
     typedef Kratos::shared_ptr<const PatchInterface> ConstPointer;
 #endif
 
-    typedef Patch<TDim> PatchType;
+    typedef Patch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> PatchType;
+    typedef PatchInterface<TDim, TLocalCoordinateType, TCoordinateType, TDataType> PatchInterfaceType;
 
     /// Empty Constructor, be careful when using
     PatchInterface()
@@ -61,14 +62,14 @@ public:
     }
 
     /// Create a clone of this interface
-    virtual typename PatchInterface<TDim>::Pointer Clone() const
+    virtual typename PatchInterfaceType::Pointer Clone() const
     {
-        return typename PatchInterface<TDim>::Pointer(new PatchInterface<TDim>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2()));
+        return typename PatchInterfaceType::Pointer(new PatchInterfaceType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2()));
     }
 
     /// Get/Set the other half interface
-    void SetOtherInterface(typename PatchInterface<TDim>::Pointer pOther) {mpOtherInterface = pOther->shared_from_this();}
-    typename PatchInterface<TDim>::Pointer pOtherInterface() const {return mpOtherInterface.lock();}
+    void SetOtherInterface(typename PatchInterfaceType::Pointer pOther) {mpOtherInterface = pOther->shared_from_this();}
+    typename PatchInterfaceType::Pointer pOtherInterface() const {return mpOtherInterface.lock();}
 
     /// Get/Set the first patch
     void SetPatch1(typename PatchType::Pointer pPatch) {mpPatch1 = pPatch->shared_from_this();}
@@ -120,7 +121,7 @@ public:
     }
 
     /// Overload operator ==
-    virtual bool operator==(const PatchInterface<TDim>& rOther) const
+    virtual bool operator==(const PatchInterfaceType& rOther) const
     {
         if (this->pPatch1() != rOther.pPatch1()) { return false; }
         if (this->pPatch2() != rOther.pPatch2()) { return false; }
@@ -187,12 +188,13 @@ private:
     typename PatchType::WeakPointer mpPatch1;
     typename PatchType::WeakPointer mpPatch2;
 
-    typename PatchInterface<TDim>::WeakPointer mpOtherInterface;
-};
+    typename PatchInterfaceType::WeakPointer mpOtherInterface;
+}; // class PatchInterface
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const PatchInterface<TDim>& rThis)
+template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+inline std::ostream& operator <<(std::ostream& rOStream,
+        const PatchInterface<TDim, TLocalCoordinateType, TCoordinateType, TDataType>& rThis)
 {
     rOStream << "-------------Begin PatchInterfaceInfo-------------" << std::endl;
     rThis.PrintInfo(rOStream);

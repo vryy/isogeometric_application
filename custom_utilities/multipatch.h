@@ -18,12 +18,12 @@ namespace Kratos
 /**
 This class represents an isogeometric multipatch in parametric coordinates. An isogeometric multipatch comprises a list of similar type patches, i.e NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
  */
-template<int TDim>
+template<int TDim, typename TLocalCoordinateType = double, typename TCoordinateType = double, typename TDataType = double>
 class MultiPatch
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    : public std::enable_shared_from_this<MultiPatch<TDim> >
+    : public std::enable_shared_from_this<MultiPatch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> >
 #else
-    : public boost::enable_shared_from_this<MultiPatch<TDim> >
+    : public boost::enable_shared_from_this<MultiPatch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> >
 #endif
 {
 public:
@@ -33,21 +33,26 @@ public:
     typedef Kratos::shared_ptr<const MultiPatch> ConstPointer;
 #endif
     /// Type definition
-    typedef Patch<TDim> PatchType;
+    typedef Patch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> PatchType;
     typedef PointerVectorSet<PatchType, IndexedObject> PatchContainerType;
 
-    typedef typename Patch<TDim>::vertex_t vertex_t;
-    typedef typename Patch<TDim>::edge_t edge_t;
-    typedef typename Patch<TDim>::face_t face_t;
-    typedef typename Patch<TDim>::volume_t volume_t;
+    typedef typename PatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename PatchType::CoordinateType CoordinateType;
+    typedef typename PatchType::DataType DataType;
+    typedef typename PatchType::CoordinateValueType CoordinateValueType;
+
+    typedef typename PatchType::vertex_t vertex_t;
+    typedef typename PatchType::edge_t edge_t;
+    typedef typename PatchType::face_t face_t;
+    typedef typename PatchType::volume_t volume_t;
 
     typedef typename PatchContainerType::iterator patch_iterator;
     typedef typename PatchContainerType::const_iterator patch_const_iterator;
     typedef typename PatchContainerType::ptr_iterator patch_ptr_iterator;
     typedef typename PatchContainerType::ptr_const_iterator patch_ptr_const_iterator;
 
-    typedef typename Patch<TDim>::interface_iterator interface_iterator;
-    typedef typename Patch<TDim>::interface_const_iterator interface_const_iterator;
+    typedef typename PatchType::interface_iterator interface_iterator;
+    typedef typename PatchType::interface_const_iterator interface_const_iterator;
 
     /// Default constructor
     MultiPatch() : mEquationSystemSize(0) {}
@@ -56,7 +61,7 @@ public:
     virtual ~MultiPatch() {}
 
     /// Add the patch
-    void AddPatch(typename Patch<TDim>::Pointer pPatch)
+    void AddPatch(typename PatchType::Pointer pPatch)
     {
         const auto it = mpPatches.find(pPatch->Id());
         if (it != mpPatches.end())
@@ -66,12 +71,12 @@ public:
     }
 
     /// Add the patch
-    void RemovePatch(typename Patch<TDim>::Pointer pPatch)
+    void RemovePatch(typename PatchType::Pointer pPatch)
     {
         // look for all interfaces and remove the corresponding interfaces in other patches
         for (interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
         {
-            typename Patch<TDim>::Pointer pNeighborPatch = (*it)->pPatch2();
+            typename PatchType::Pointer pNeighborPatch = (*it)->pPatch2();
 
             for (interface_iterator it2 = pNeighborPatch->InterfaceBegin(); it2 != pNeighborPatch->InterfaceEnd(); ++it2)
             {
@@ -391,11 +396,12 @@ private:
     std::size_t mEquationSystemSize; // this is the number of equation id in this multipatch
     std::map<std::size_t, std::size_t> mGlobalIdToPatchId; // this is to map each global id to a patch id
 
-};
+}; // class MultiPatch
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatch<TDim>& rThis)
+template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+inline std::ostream& operator <<(std::ostream& rOStream,
+        const MultiPatch<TDim, TLocalCoordinateType, TCoordinateType, TDataType>& rThis)
 {
     rOStream << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
     rOStream << "-------------Begin MultiPatchInfo-------------" << std::endl;

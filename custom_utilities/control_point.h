@@ -27,13 +27,15 @@ namespace Kratos
 /**
     Represent a control point in isogeometric mesh topology.
  */
-template<typename TDataType>
-class ControlPoint : public ControlValue<array_1d<TDataType, 3>, TDataType>
+template<typename TDataType, typename TWeightType = TDataType>
+class ControlPoint : public ControlValue<array_1d<TDataType, 3>, TWeightType>
 {
 public:
     // Type definitions
-    typedef ControlValue<array_1d<TDataType, 3>, TDataType> BaseType;
+    typedef TWeightType WeightType;
+    typedef ControlValue<array_1d<TDataType, 3>, TWeightType> BaseType;
     typedef typename BaseType::DataType CoordinatesType;
+    typedef TDataType CoordinateType;
 
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(ControlPoint);
@@ -42,16 +44,16 @@ public:
     ControlPoint() : BaseType() {}
 
     /// Constant constructor
-    ControlPoint(double v)
+    ControlPoint(TDataType v)
     {
         BaseType::WV()[0] = v;
         BaseType::WV()[1] = v;
         BaseType::WV()[2] = v;
-        BaseType::W() = v;
+        BaseType::W() = static_cast<TWeightType>(v);
     }
 
     /// Constructor with full coordinates
-    ControlPoint(double wx, double wy, double wz, double w)
+    ControlPoint(TDataType wx, TDataType wy, TDataType wz, TWeightType w)
     {
         BaseType::WV()[0] = wx;
         BaseType::WV()[1] = wy;
@@ -84,7 +86,7 @@ public:
     TDataType Z() const {return BaseType::WV()[2] / BaseType::W();}
 
     /// Set the coordinate. The input is the physical coordinates in 3D space.
-    void SetCoordinates(const TDataType& _X, const TDataType& _Y, const TDataType& _Z, const TDataType& _W)
+    void SetCoordinates(const TDataType& _X, const TDataType& _Y, const TDataType& _Z, const TWeightType& _W)
     {
         BaseType::WV()[0] = _W * _X;
         BaseType::WV()[1] = _W * _Y;
@@ -93,7 +95,7 @@ public:
     }
 
     /// Add to the coordinate. The input is the increment of physical coordinates in 3D space.
-    void AddCoordinates(const TDataType& _X, const TDataType& _Y, const TDataType& _Z, const TDataType& _W)
+    void AddCoordinates(const TDataType& _X, const TDataType& _Y, const TDataType& _Z, const TWeightType& _W)
     {
         BaseType::WV()[0] += _W * _X;
         BaseType::WV()[1] += _W * _Y;
@@ -245,8 +247,8 @@ private:
 };
 
 /// output stream function
-template<typename TDataType>
-inline std::ostream& operator <<(std::ostream& rOStream, const ControlPoint<TDataType>& rThis)
+template<typename TDataType, typename TWeightType>
+inline std::ostream& operator <<(std::ostream& rOStream, const ControlPoint<TDataType, TWeightType>& rThis)
 {
     // rThis.PrintInfo(rOStream);
     // rOStream << ": ";

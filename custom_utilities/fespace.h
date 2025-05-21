@@ -28,7 +28,7 @@ namespace Kratos
 /**
 An FESpace is a collection of shape function defined over the parametric domain. An isogeometric FESpace can be a NURBS FESpace, a hierarchical NURBS FESpace, or a T-Splines FESpace.
  */
-template<int TDim>
+template<int TDim, typename TLocalCoordinateType = double>
 class FESpace
 {
 public:
@@ -40,6 +40,10 @@ public:
 
     /// Type definition
     typedef CellContainer cell_container_t;
+    typedef TLocalCoordinateType LocalCoordinateType;
+
+    typedef FESpace<TDim, TLocalCoordinateType> FESpaceType;
+    typedef FESpace<TDim-1, TLocalCoordinateType> BoundaryFESpaceType;
 
     /// Default constructor
     FESpace() {}
@@ -53,9 +57,9 @@ public:
     }
 
     /// Helper to create new BSplinesFESpace pointer
-    static typename FESpace<TDim>::Pointer Create()
+    static typename FESpaceType::Pointer Create()
     {
-        return typename FESpace<TDim>::Pointer(new FESpace());
+        return typename FESpaceType::Pointer(new FESpace());
     }
 
     /// Get the dimension of the FESpace
@@ -77,7 +81,7 @@ public:
     }
 
     /// Get the lower and upper bound of the parametric space in a specific direction
-    virtual std::vector<double> ParametricBounds(std::size_t di) const
+    virtual std::vector<LocalCoordinateType> ParametricBounds(std::size_t di) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
@@ -99,13 +103,13 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Get the value of the basis function i at point xi
-    virtual void GetValue(double& v, std::size_t i, const std::vector<double>& xi) const
+    virtual void GetValue(double& v, std::size_t i, const std::vector<LocalCoordinateType>& xi) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the value of the basis function i at point xi
-    double GetValue(std::size_t i, const std::vector<double>& xi) const
+    double GetValue(std::size_t i, const std::vector<LocalCoordinateType>& xi) const
     {
         double v;
         this->GetValue(v, i, xi);
@@ -113,13 +117,13 @@ public:
     }
 
     /// Get the values of the basis functions at point xi
-    virtual void GetValues(std::vector<double>& values, const std::vector<double>& xi) const
+    virtual void GetValues(std::vector<double>& values, const std::vector<LocalCoordinateType>& xi) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the values of the basis functions at point xi
-    std::vector<double> GetValues(const std::vector<double>& xi) const
+    std::vector<double> GetValues(const std::vector<LocalCoordinateType>& xi) const
     {
         std::vector<double> values;
         this->GetValues(values, xi);
@@ -129,13 +133,13 @@ public:
     ///////////////
 
     /// Get the derivative of the basis function i at point xi
-    virtual void GetDerivative(std::vector<double>& values, std::size_t i, const std::vector<double>& xi) const
+    virtual void GetDerivative(std::vector<double>& values, std::size_t i, const std::vector<LocalCoordinateType>& xi) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the derivatives of the basis function i at point xi
-    std::vector<double> GetDerivatives(std::size_t i, const std::vector<double>& xi) const
+    std::vector<double> GetDerivatives(std::size_t i, const std::vector<LocalCoordinateType>& xi) const
     {
         std::vector<double> values;
         this->GetDerivatives(values, i, xi);
@@ -144,14 +148,14 @@ public:
 
     /// Get the derivatives of the basis functions at point xi
     /// the output values has the form of values[func_index][dim_index]
-    virtual void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const
+    virtual void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<LocalCoordinateType>& xi) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Get the derivatives of the basis functions at point xi
     /// the return values has the form of values[func_index][dim_index]
-    std::vector<std::vector<double> > GetDerivatives(const std::vector<double>& xi) const
+    std::vector<std::vector<double> > GetDerivatives(const std::vector<LocalCoordinateType>& xi) const
     {
         std::vector<std::vector<double> > values;
         this->GetDerivatives(values);
@@ -160,7 +164,7 @@ public:
 
     /// Get the derivatives upto nd of the basis functions at point xi
     /// the output values has the form of values[func_index][dim_index]
-    virtual void GetDerivatives(const unsigned int nd, std::vector<std::vector<std::vector<double> > >& values, const std::vector<double>& xi) const
+    virtual void GetDerivatives(const unsigned int nd, std::vector<std::vector<std::vector<double> > >& values, const std::vector<LocalCoordinateType>& xi) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
@@ -171,7 +175,7 @@ public:
     /// the output derivatives has the form of values[func_index][dim_index]
     virtual void GetValuesAndDerivatives(std::vector<double>& values,
             std::vector<std::vector<double> >& derivatives,
-            const std::vector<double>& xi) const
+            const std::vector<LocalCoordinateType>& xi) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
@@ -183,7 +187,7 @@ public:
     /// For the higher derivatives, param_index is [d1][d2][d3] (d1<=d2<=d3)
     virtual void GetValuesAndDerivatives(const unsigned int nd, std::vector<double>& values,
             std::vector<std::vector<std::vector<double> > >& derivatives,
-            const std::vector<double>& xi) const
+            const std::vector<LocalCoordinateType>& xi) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
@@ -191,7 +195,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Check if a point lies inside the parametric domain of the FESpace
-    virtual bool IsInside(const std::vector<double>& xi) const
+    virtual bool IsInside(const std::vector<LocalCoordinateType>& xi) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
@@ -274,11 +278,11 @@ public:
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpace<TDim>& rFESpace1, const BoundarySide& side1,
-                                            const FESpace<TDim>& rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
+                                            const FESpaceType& rFESpace2, const BoundarySide& side2) const
     {
-        typename FESpace < TDim - 1 >::Pointer pBFESpace1 = rFESpace1.ConstructBoundaryFESpace(side1);
-        typename FESpace < TDim - 1 >::Pointer pBFESpace2 = rFESpace1.ConstructBoundaryFESpace(side2);
+        typename BoundaryFESpaceType::Pointer pBFESpace1 = rFESpace1.ConstructBoundaryFESpace(side1);
+        typename BoundaryFESpaceType::Pointer pBFESpace2 = rFESpace1.ConstructBoundaryFESpace(side2);
 
         return (*pBFESpace1) == (*pBFESpace2);
     }
@@ -336,20 +340,20 @@ public:
     }
 
     /// Construct the boundary FESpace based on side
-    virtual typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    virtual typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Construct the boundary FESpace based on side and local relative configuration
-    virtual typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+    virtual typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
             const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Construct the sliced FESpace
-    virtual typename FESpace < TDim - 1 >::Pointer ConstructSlicedFESpace(int idir, double xi) const
+    virtual typename BoundaryFESpaceType::Pointer ConstructSlicedFESpace(int idir, double xi) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
@@ -357,13 +361,13 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Compare the two FESpace's in terms of its parametric information.
-    virtual bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const
+    virtual bool IsCompatible(const FESpaceType& rOtherFESpace) const
     {
         return false;
     }
 
     /// Comparison operator
-    virtual bool operator==(const FESpace<TDim>& rOther) const
+    virtual bool operator==(const FESpaceType& rOther) const
     {
         const std::vector<std::size_t> my_func_indices = this->FunctionIndices();
         const std::vector<std::size_t> other_func_indices = rOther.FunctionIndices();
@@ -396,16 +400,16 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Overload assignment operator
-    FESpace<TDim>& operator=(const FESpace<TDim>& rOther)
+    FESpaceType& operator=(const FESpaceType& rOther)
     {
         mGlobalToLocal = rOther.mGlobalToLocal;
         return *this;
     }
 
     /// Clone this FESpace, this is a deep copy operation
-    virtual typename FESpace<TDim>::Pointer Clone() const
+    virtual typename FESpaceType::Pointer Clone() const
     {
-        typename FESpace<TDim>::Pointer pNewFESpace = typename FESpace<TDim>::Pointer(new FESpace<TDim>());
+        typename FESpaceType::Pointer pNewFESpace = typename FESpaceType::Pointer(new FESpaceType());
         *pNewFESpace = *this;
         return pNewFESpace;
     }
@@ -754,8 +758,8 @@ public:
 };
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const FESpace<TDim>& rThis)
+template<int TDim, typename TLocalCoordinateType>
+inline std::ostream& operator <<(std::ostream& rOStream, const FESpace<TDim, TLocalCoordinateType>& rThis)
 {
     rOStream << "-------------Begin FESpaceInfo-------------" << std::endl;
     rThis.PrintInfo(rOStream);

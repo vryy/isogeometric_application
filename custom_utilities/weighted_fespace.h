@@ -25,26 +25,29 @@ namespace Kratos
 /**
  * A weighted FESpace add the weighted information to the FESpace.
  */
-template<int TDim>
-class WeightedFESpace : public FESpace<TDim>
+template<int TDim, typename TLocalCoordinateType = double, typename TWeightType = double>
+class WeightedFESpace : public FESpace<TDim, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     /// Type definition
-    typedef FESpace<TDim> BaseType;
+    typedef FESpace<TDim, TLocalCoordinateType> FESpaceType;
+    typedef typename FESpaceType::BoundaryFESpaceType BoundaryFESpaceType;
+    typedef WeightedFESpace<TDim, TLocalCoordinateType, TWeightType> WeightedFESpaceType;
+    typedef WeightedFESpace<TDim-1, TLocalCoordinateType, TWeightType> WeightedBoundaryFESpaceType;
 
     /// Default constructor
-    WeightedFESpace(typename BaseType::Pointer pFESpace, const std::vector<double>& weights)
-        : BaseType(), mpFESpace(pFESpace)
+    WeightedFESpace(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights)
+        : FESpaceType(), mpFESpace(pFESpace)
     {
         mWeights.resize(weights.size());
         std::copy(weights.begin(), weights.end(), mWeights.begin());
     }
 
     /// Destructor
-    virtual ~WeightedFESpace()
+    ~WeightedFESpace() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << this->Type() << ", Addr = " << this << " is destroyed" << std::endl;
@@ -52,13 +55,13 @@ public:
     }
 
     /// Helper to create new WeightedFESpace pointer
-    static typename WeightedFESpace<TDim>::Pointer Create(typename BaseType::Pointer pFESpace, const std::vector<double>& weights)
+    static typename WeightedFESpaceType::Pointer Create(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights)
     {
-        return typename WeightedFESpace<TDim>::Pointer(new WeightedFESpace(pFESpace, weights));
+        return typename WeightedFESpaceType::Pointer(new WeightedFESpace(pFESpace, weights));
     }
 
     /// Get the underlying FESpace
-    typename BaseType::ConstPointer pFESpace() const
+    typename FESpaceType::ConstPointer pFESpace() const
     {
         return mpFESpace;
     }
@@ -76,7 +79,7 @@ public:
     }
 
     /// Set the weight vector
-    void SetWeights(const std::vector<double>& weights)
+    void SetWeights(const std::vector<TWeightType>& weights)
     {
         if (mWeights.size() != weights.size())
         {
@@ -86,7 +89,7 @@ public:
     }
 
     /// Get the weight vector
-    const std::vector<double>& Weights() const {return mWeights;}
+    const std::vector<TWeightType>& Weights() const {return mWeights;}
 
     /// Get the string representing the type of the WeightedFESpace
     std::string Type() const override
@@ -107,7 +110,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Get the values of the basis function i at point xi
-    void GetValue(double& v, std::size_t i, const std::vector<double>& xi) const override
+    void GetValue(double& v, std::size_t i, const std::vector<TLocalCoordinateType>& xi) const override
     {
         std::vector<double> values;
         mpFESpace->GetValues(values, xi);
@@ -129,7 +132,7 @@ public:
     }
 
     /// Get the values of the basis functions at point xi
-    void GetValues(std::vector<double>& new_values, const std::vector<double>& xi) const override
+    void GetValues(std::vector<double>& new_values, const std::vector<TLocalCoordinateType>& xi) const override
     {
         std::vector<double> values;
         mpFESpace->GetValues(values, xi);
@@ -157,7 +160,7 @@ public:
     }
 
     /// Get the derivatives of the basis function i at point xi
-    void GetDerivative(std::vector<double>& new_dvalues, std::size_t i, const std::vector<double>& xi) const override
+    void GetDerivative(std::vector<double>& new_dvalues, std::size_t i, const std::vector<TLocalCoordinateType>& xi) const override
     {
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
@@ -193,7 +196,7 @@ public:
 
     /// Get the derivatives of the basis functions at point xi
     /// the output values has the form of values[func_index][dim_index]
-    void GetDerivatives(std::vector<std::vector<double> >& new_dvalues, const std::vector<double>& xi) const override
+    void GetDerivatives(std::vector<std::vector<double> >& new_dvalues, const std::vector<TLocalCoordinateType>& xi) const override
     {
         std::vector<double> values;
         std::vector<std::vector<double> > dvalues;
@@ -244,7 +247,7 @@ public:
 
     /// Get the derivatives of the basis functions at point xi
     /// the output values has the form of values[func_index][dim_index]
-    void GetDerivatives(const unsigned int nd, std::vector<std::vector<std::vector<double> > >& new_dvalues, const std::vector<double>& xi) const override
+    void GetDerivatives(const unsigned int nd, std::vector<std::vector<std::vector<double> > >& new_dvalues, const std::vector<TLocalCoordinateType>& xi) const override
     {
         std::vector<double> values;
         std::vector<std::vector<std::vector<double> > > dvalues;
@@ -392,7 +395,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Check if a point lies inside the parametric domain of the BSplinesFESpace
-    bool IsInside(const std::vector<double>& xi) const override
+    bool IsInside(const std::vector<TLocalCoordinateType>& xi) const override
     {
         return mpFESpace->IsInside(xi);
     }
@@ -444,8 +447,8 @@ public:
     }
 
     /// Check the compatibility between boundaries of two WeightedFESpacees
-    bool CheckBoundaryCompatibility(const FESpace<TDim>& rFESpace1, const BoundarySide& side1,
-                                    const FESpace<TDim>& rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
+                                    const FESpaceType& rFESpace2, const BoundarySide& side2) const override
     {
         return rFESpace1 == rFESpace2;
     }
@@ -476,24 +479,24 @@ public:
     }
 
     /// Construct the boundary WeightedFESpace based on side
-    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
+    typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
     {
         typename FESpace < TDim - 1 >::Pointer pBFESpace = mpFESpace->ConstructBoundaryFESpace(side);
         // TODO extract/compute the weights on the boundary
         KRATOS_ERROR << "Not completed";
-        std::vector<double> boundary_weights;
+        std::vector<TWeightType> boundary_weights;
 
-        return typename WeightedFESpace < TDim - 1 >::Pointer(new WeightedFESpace < TDim - 1 > (pBFESpace, boundary_weights));
+        return typename WeightedBoundaryFESpaceType::Pointer(new WeightedBoundaryFESpaceType(pBFESpace, boundary_weights));
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Compare the two weighted FESpaces in terms of its parametric information.
-    bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const override
+    bool IsCompatible(const FESpaceType& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() == this->Type())
         {
-            const WeightedFESpace<TDim>& rOtherWeightedFESpace = dynamic_cast<const WeightedFESpace<TDim>&>(rOtherFESpace);
+            const WeightedFESpaceType& rOtherWeightedFESpace = dynamic_cast<const WeightedFESpaceType&>(rOtherFESpace);
             if (this->Weights().size() != rOtherWeightedFESpace.Weights().size())
             {
                 return false;
@@ -505,7 +508,7 @@ public:
                     {
                         return false;
                     }
-                return rOtherFESpace.IsCompatible(static_cast<const FESpace<TDim>&>(*this));
+                return rOtherFESpace.IsCompatible(static_cast<const FESpaceType&>(*this));
             }
         }
         else
@@ -515,16 +518,16 @@ public:
                 {
                     return false;
                 }
-            return rOtherFESpace.IsCompatible(static_cast<const FESpace<TDim>&>(*this));
+            return rOtherFESpace.IsCompatible(static_cast<const FESpaceType&>(*this));
         }
         return false;
     }
 
     /// Overload comparison operator
-    bool operator==(const FESpace<TDim>& rOtherFESpace) const override
+    bool operator==(const FESpaceType& rOtherFESpace) const override
     {
         // TODO compare weight?
-        const auto* pOtherWeightedFESpace = static_cast<const WeightedFESpace<TDim>*>(&rOtherFESpace);
+        const auto* pOtherWeightedFESpace = static_cast<const WeightedFESpaceType*>(&rOtherFESpace);
         if (pOtherWeightedFESpace == nullptr)
             return false;
         return *(this->mpFESpace) == *(pOtherWeightedFESpace->pFESpace());
@@ -533,18 +536,18 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Overload assignment operator
-    WeightedFESpace<TDim>& operator=(const WeightedFESpace<TDim>& rOther)
+    WeightedFESpaceType& operator=(const WeightedFESpaceType& rOther)
     {
-        BaseType::operator=(rOther);
+        FESpaceType::operator=(rOther);
         this->mpFESpace = rOther.mpFESpace;
         this->mWeights = rOther.mWeights;
         return *this;
     }
 
     /// Clone this WeightedFESpace, this is a deep copy operation
-    typename FESpace<TDim>::Pointer Clone() const override
+    typename FESpaceType::Pointer Clone() const override
     {
-        typename WeightedFESpace<TDim>::Pointer pNewWeightedFESpace = typename WeightedFESpace<TDim>::Pointer(new WeightedFESpace<TDim>(mpFESpace, mWeights));
+        typename WeightedFESpaceType::Pointer pNewWeightedFESpace = typename WeightedFESpaceType::Pointer(new WeightedFESpaceType(mpFESpace, mWeights));
         *pNewWeightedFESpace = *this;
         return pNewWeightedFESpace;
     }
@@ -554,12 +557,12 @@ public:
     /// Information
     void PrintInfo(std::ostream& rOStream) const override
     {
-        BaseType::PrintInfo(rOStream);
+        FESpaceType::PrintInfo(rOStream);
     }
 
     void PrintData(std::ostream& rOStream) const override
     {
-        BaseType::PrintData(rOStream);
+        FESpaceType::PrintData(rOStream);
         rOStream << " Weights:";
         for (std::size_t i = 0; i < mWeights.size(); ++i)
         {
@@ -569,21 +572,21 @@ public:
 
 private:
 
-    typename BaseType::Pointer mpFESpace;
-    std::vector<double> mWeights;
+    typename FESpaceType::Pointer mpFESpace;
+    std::vector<TWeightType> mWeights;
 
     /// Serializer
     friend class Serializer;
 
     void save(Serializer& rSerializer) const override
     {
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer,  BaseType );
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, FESpaceType );
         rSerializer.save( "mWeights", mWeights );
     }
 
     void load(Serializer& rSerializer) override
     {
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer,  BaseType );
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, FESpaceType );
         rSerializer.load( "mWeights", mWeights );
     }
 };
@@ -850,8 +853,8 @@ public:
 };
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const WeightedFESpace<TDim>& rThis)
+template<int TDim, typename TLocalCoordinateType, typename TWeightType>
+inline std::ostream& operator <<(std::ostream& rOStream, const WeightedFESpace<TDim, TLocalCoordinateType, TWeightType>& rThis)
 {
     rOStream << "-------------Begin WeightedFESpaceInfo-------------" << std::endl;
     rThis.PrintInfo(rOStream);

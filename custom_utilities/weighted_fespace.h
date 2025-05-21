@@ -594,18 +594,20 @@ private:
 /**
  * Template specific instantiation for null-D WeightedFESpace to terminate the compilation
  */
-template<>
-class WeightedFESpace<0> : public FESpace<0>
+template<typename TLocalCoordinateType, typename TWeightType>
+class WeightedFESpace<0, TLocalCoordinateType, TWeightType> : public FESpace<0, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
+    typedef FESpace<0, TLocalCoordinateType> FESpaceType;
+
     /// Default constructor
-    WeightedFESpace(FESpace<0>::Pointer pFESpace, const std::vector<double>& weights) : mFunctionId(-1) {}
+    WeightedFESpace(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights) : mFunctionId(-1) {}
 
     /// Destructor
-    virtual ~WeightedFESpace() {}
+    ~WeightedFESpace() override {}
 
     /// Get the number of basis functions defined over the WeightedFESpace
     std::size_t TotalNumber() const override
@@ -632,7 +634,7 @@ public:
     }
 
     /// Overload comparison operator
-    bool operator==(const FESpace<0>& rOther) const override
+    bool operator==(const FESpaceType& rOther) const override
     {
         return true;
     }
@@ -654,8 +656,8 @@ public:
     std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t> {mFunctionId};}
 
     /// Check the compatibility between boundaries of two FESpacees
-    bool CheckBoundaryCompatibility(const FESpace<0>& rFESpace1, const BoundarySide& side1,
-                                    const FESpace<0>& rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
+                                    const FESpaceType& rFESpace2, const BoundarySide& side2) const override
     {
         return true;
     }
@@ -703,18 +705,20 @@ private:
 /**
  * Template specific instantiation for -1-D WeightedFESpace to terminate the compilation
  */
-template<>
-class WeightedFESpace < -1 > : public FESpace < -1 >
+template<typename TLocalCoordinateType, typename TWeightType>
+class WeightedFESpace<-1, TLocalCoordinateType, TWeightType> : public FESpace<-1, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
+    typedef FESpace<-1, TLocalCoordinateType> FESpaceType;
+
     /// Default constructor
-    WeightedFESpace(FESpace < -1 >::Pointer pFESpace, const std::vector<double>& weights) {}
+    WeightedFESpace(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights) {}
 
     /// Destructor
-    virtual ~WeightedFESpace() {}
+    ~WeightedFESpace() override {}
 
     /// Get the number of basis functions defined over the WeightedFESpace
     std::size_t TotalNumber() const override
@@ -741,14 +745,14 @@ public:
     }
 
     /// Overload comparison operator
-    bool operator==(const FESpace < -1 > & rOther) const override
+    bool operator==(const FESpaceType& rOther) const override
     {
         return true;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    bool CheckBoundaryCompatibility(const FESpace < -1 > & rFESpace1, const BoundarySide& side1,
-                                    const FESpace < -1 > & rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
+                                    const FESpaceType& rFESpace2, const BoundarySide& side2) const override
     {
         return true;
     }
@@ -779,15 +783,17 @@ public:
 /**
  * Template specific instantiation for -2-D WeightedFESpace to terminate the compilation
  */
-template<>
-class WeightedFESpace < -2 > : public FESpace < -2 >
+template<typename TLocalCoordinateType, typename TWeightType>
+class WeightedFESpace<-2, TLocalCoordinateType, TWeightType> : public FESpace<-2, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
+    typedef FESpace<-2, TLocalCoordinateType> FESpaceType;
+
     /// Default constructor
-    WeightedFESpace(FESpace < -2 >::Pointer pFESpace, const std::vector<double>& weights) {}
+    WeightedFESpace(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights) {}
 
     /// Destructor
     virtual ~WeightedFESpace() {}
@@ -823,8 +829,8 @@ public:
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    bool CheckBoundaryCompatibility(const FESpace < -2 > & rFESpace1, const BoundarySide& side1,
-                                    const FESpace < -2 > & rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
+                                    const FESpaceType& rFESpace2, const BoundarySide& side2) const override
     {
         return true;
     }

@@ -556,7 +556,7 @@ public:
                 it != VectorGridFunctions_.end(); ++it)
         {
             // std::cout << "Vector grid function " << (*it)->pControlGrid()->Name() << " will be constructed" << std::endl;
-            typename ControlGrid<VectorType>::Pointer pBoundaryVectorControlGrid = ControlGridUtility::ExtractSubGrid<TDim, Vector>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
+            typename ControlGrid<VectorType>::Pointer pBoundaryVectorControlGrid = ControlGridUtility::ExtractSubGrid<TDim, VectorType>((*it)->pControlGrid(), *(this->pFESpace()), *pBFESpace);
             pBPatch->template CreateGridFunction<VectorType>(pBoundaryVectorControlGrid);
         }
 
@@ -1111,8 +1111,8 @@ private:
  * Template specific instantiation for null-D patch to terminate the compilation.
  * In fact, null-D patch is a vertex
  */
-template<>
-class Patch<0> : public IndexedObject, public Flags
+template<typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+class Patch<0, TLocalCoordinateType, TCoordinateType, TDataType> : public IndexedObject, public Flags
 {
 public:
     /// Pointer definition
@@ -1121,11 +1121,18 @@ public:
     typedef Kratos::shared_ptr<const Patch> ConstPointer;
 #endif
 
-    // Type definitions
-    typedef ControlPoint<double> ControlPointType;
+    /// Type definitions
+    typedef TCoordinateType CoordinateType;
+    typedef typename DataTypeToValueType<TCoordinateType>::value_type CoordinateValueType;
+    typedef CoordinateValueType WeightType;
+
+    typedef ControlPoint<CoordinateType, WeightType> ControlPointType;
+    typedef FESpace<0, TLocalCoordinateType> FESpaceType;
+
+    typedef Patch<0, TLocalCoordinateType, TCoordinateType, TDataType> PatchType;
 
     /// Constants
-    static constexpr double DISTANCE_TOLERANCE = 1e-13;
+    static constexpr CoordinateValueType DISTANCE_TOLERANCE = 1e-13;
 
     /// Default constructor
     Patch() : IndexedObject(0) {}
@@ -1137,7 +1144,7 @@ public:
     virtual ~Patch() {}
 
     /// Set the FESpace for the patch
-    void SetFESpace(typename FESpace<0>::Pointer pFESpace) {mpFESpace = pFESpace;}
+    void SetFESpace(typename FESpaceType::Pointer pFESpace) {mpFESpace = pFESpace;}
 
     /// Get the number of basis functions defined over the patch
     virtual std::size_t TotalNumber() const
@@ -1186,33 +1193,33 @@ public:
     const GridFunction<0, ControlPointType>& ControlPointGridFunction() const {return *mpControlPointGridFunc;}
 
     /// Create and add the grid function
-    template<typename TDataType>
-    typename GridFunction<0, TDataType>::Pointer CreateGridFunction(typename ControlGrid<TDataType>::Pointer pControlGrid)
+    template<typename TOtherDataType>
+    typename GridFunction<0, TOtherDataType>::Pointer CreateGridFunction(typename ControlGrid<TOtherDataType>::Pointer pControlGrid)
     {
         return NULL;
     }
 
     /// Get the FESpace pointer
-    typename FESpace<0>::Pointer pFESpace() {return mpFESpace;}
+    typename FESpaceType::Pointer pFESpace() {return mpFESpace;}
 
     /// Get the FESpace pointer
-    typename FESpace<0>::ConstPointer pFESpace() const {return mpFESpace;}
+    typename FESpaceType::ConstPointer pFESpace() const {return mpFESpace;}
 
     /// Compare between two patches in terms of parametric information and grid function data, including the control points.
-    bool IsSame(const Patch<0>& rOtherPatch) const
+    bool IsSame(const PatchType& rOtherPatch) const
     {
         return true;
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const Patch<0>& rOther)
+    virtual bool operator==(const PatchType& rOther)
     {
         return Id() == rOther.Id();
     }
 
     /// Check the compatibility between boundaries of two patches
-    static bool CheckBoundaryCompatibility(const Patch<0>& rPatch1, const BoundarySide& side1,
-                                           const Patch<0>& rPatch2, const BoundarySide& side2)
+    static bool CheckBoundaryCompatibility(const PatchType& rPatch1, const BoundarySide& side1,
+                                           const PatchType& rPatch2, const BoundarySide& side2)
     {
         return true;
     }
@@ -1224,7 +1231,7 @@ public:
     // }
 
     /// Compare two patches in terms of parametric information and control points.
-    bool IsEquivalent(const Patch<0>& rOtherPatch, const int echo_level = 0, const double dist_tol = DISTANCE_TOLERANCE) const
+    bool IsEquivalent(const PatchType& rOtherPatch, const int echo_level = 0, const CoordinateValueType dist_tol = DISTANCE_TOLERANCE) const
     {
         // compare the control points
 
@@ -1264,14 +1271,14 @@ public:
 private:
 
     typename GridFunction<0, ControlPointType>::Pointer mpControlPointGridFunc;
-    typename FESpace<0>::Pointer mpFESpace;
+    typename FESpaceType::Pointer mpFESpace;
 };
 
 /**
  * Template specific instantiation for -1-D patch to terminate the compilation.
  */
-template<>
-class Patch < -1 > : public IndexedObject, public Flags
+template<typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+class Patch<-1, TLocalCoordinateType, TCoordinateType, TDataType> : public IndexedObject, public Flags
 {
 public:
     /// Pointer definition
@@ -1280,6 +1287,16 @@ public:
     typedef Kratos::shared_ptr<const Patch> ConstPointer;
 #endif
 
+    /// Type definitions
+    typedef TCoordinateType CoordinateType;
+    typedef typename DataTypeToValueType<TCoordinateType>::value_type CoordinateValueType;
+    typedef CoordinateValueType WeightType;
+
+    typedef ControlPoint<CoordinateType, WeightType> ControlPointType;
+    typedef FESpace<-1, TLocalCoordinateType> FESpaceType;
+
+    typedef Patch<-1, TLocalCoordinateType, TCoordinateType, TDataType> PatchType;
+
     /// Default constructor
     Patch() : IndexedObject(0) {}
 
@@ -1287,10 +1304,10 @@ public:
     Patch(std::size_t Id) : IndexedObject(Id) {}
 
     /// Destructor
-    virtual ~Patch() {}
+    ~Patch() override {}
 
     /// Set the FESpace for the patch
-    void SetFESpace(typename FESpace < -1 >::Pointer pFESpace) {}
+    void SetFESpace(typename FESpaceType::Pointer pFESpace) {}
 
     /// Get the number of basis functions defined over the patch
     virtual std::size_t TotalNumber() const
@@ -1323,14 +1340,14 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const Patch < -1 > & rOther)
+    virtual bool operator==(const PatchType& rOther)
     {
         return Id() == rOther.Id();
     }
 
     /// Check the compatibility between boundaries of two patches
-    static bool CheckBoundaryCompatibility(const Patch < -1 > & rPatch1, const BoundarySide& side1,
-                                           const Patch < -1 > & rPatch2, const BoundarySide& side2)
+    static bool CheckBoundaryCompatibility(const PatchType& rPatch1, const BoundarySide& side1,
+                                           const PatchType& rPatch2, const BoundarySide& side2)
     {
         return true;
     }
@@ -1355,8 +1372,8 @@ public:
 /**
  * Template specific instantiation for -2-D patch to terminate the compilation.
  */
-template<>
-class Patch < -2 > : public IndexedObject, public Flags
+template<typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+class Patch<-2, TLocalCoordinateType, TCoordinateType, TDataType> : public IndexedObject, public Flags
 {
 public:
     /// Pointer definition
@@ -1365,6 +1382,16 @@ public:
     typedef Kratos::shared_ptr<const Patch> ConstPointer;
 #endif
 
+    /// Type definitions
+    typedef TCoordinateType CoordinateType;
+    typedef typename DataTypeToValueType<TCoordinateType>::value_type CoordinateValueType;
+    typedef CoordinateValueType WeightType;
+
+    typedef ControlPoint<CoordinateType, WeightType> ControlPointType;
+    typedef FESpace<-2, TLocalCoordinateType> FESpaceType;
+
+    typedef Patch<-2, TLocalCoordinateType, TCoordinateType, TDataType> PatchType;
+
     /// Default constructor
     Patch() : IndexedObject(0) {}
 
@@ -1372,10 +1399,10 @@ public:
     Patch(std::size_t Id) : IndexedObject(Id) {}
 
     /// Destructor
-    virtual ~Patch() {}
+    ~Patch() override {}
 
     /// Set the FESpace for the patch
-    void SetFESpace(typename FESpace < -2 >::Pointer pFESpace) {}
+    void SetFESpace(typename FESpaceType::Pointer pFESpace) {}
 
     /// Get the number of basis functions defined over the patch
     virtual std::size_t TotalNumber() const
@@ -1408,14 +1435,14 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const Patch < -2 > & rOther)
+    virtual bool operator==(const PatchType& rOther)
     {
         return Id() == rOther.Id();
     }
 
     /// Check the compatibility between boundaries of two patches
-    static bool CheckBoundaryCompatibility(const Patch < -2 > & rPatch1, const BoundarySide& side1,
-                                           const Patch < -2 > & rPatch2, const BoundarySide& side2)
+    static bool CheckBoundaryCompatibility(const PatchType& rPatch1, const BoundarySide& side1,
+                                           const PatchType& rPatch2, const BoundarySide& side2)
     {
         return true;
     }

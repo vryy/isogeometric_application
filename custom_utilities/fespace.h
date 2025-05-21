@@ -461,8 +461,8 @@ private:
 /**
  * Template specific instantiation for null-D FESpace to terminate the compilation
  */
-template<>
-class FESpace<0>
+template<typename TLocalCoordinateType>
+class FESpace<0, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
@@ -473,6 +473,8 @@ public:
 
     /// Type definition
     typedef CellContainer cell_container_t;
+
+    typedef FESpace<0, TLocalCoordinateType> FESpaceType;
 
     /// Default constructor
     FESpace() : mFunctionId(-1) {}
@@ -505,7 +507,7 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const FESpace<0>& rOther) const
+    virtual bool operator==(const FESpaceType& rOther) const
     {
         return true;
     }
@@ -545,8 +547,8 @@ public:
     virtual std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t> {mFunctionId};}
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpace<0>& rFESpace1, const BoundarySide& side1,
-                                            const FESpace<0>& rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
+                                            const FESpaceType& rFESpace2, const BoundarySide& side2) const
     {
         return true;
     }
@@ -564,7 +566,7 @@ public:
     // }
 
     /// Compare the two FESpacees in terms of its parametric information.
-    virtual bool IsCompatible(const FESpace<0>& rOtherFESpace) const
+    virtual bool IsCompatible(const FESpaceType& rOtherFESpace) const
     {
         return true;
     }
@@ -602,8 +604,8 @@ private:
 /**
  * Template specific instantiation for -1-D FESpace to terminate the compilation
  */
-template<>
-class FESpace < -1 >
+template<typename TLocalCoordinateType>
+class FESpace<-1, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
@@ -611,6 +613,8 @@ public:
 #ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const FESpace> ConstPointer;
 #endif
+
+    typedef FESpace<-1, TLocalCoordinateType> FESpaceType;
 
     /// Default constructor
     FESpace() {}
@@ -643,14 +647,14 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const FESpace < -1 > & rOther) const
+    virtual bool operator==(const FESpaceType & rOther) const
     {
         return true;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpace < -1 > & rFESpace1, const BoundarySide& side1,
-                                            const FESpace < -1 > & rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
+                                            const FESpaceType& rFESpace2, const BoundarySide& side2) const
     {
         return true;
     }
@@ -681,8 +685,8 @@ public:
 /**
  * Template specific instantiation for -2-D FESpace to terminate the compilation
  */
-template<>
-class FESpace < -2 >
+template<typename TLocalCoordinateType>
+class FESpace<-2, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
@@ -690,6 +694,8 @@ public:
 #ifdef SD_APP_FORWARD_COMPATIBILITY
     typedef Kratos::shared_ptr<const FESpace> ConstPointer;
 #endif
+
+    typedef FESpace<-2, TLocalCoordinateType> FESpaceType;
 
     /// Default constructor
     FESpace() {}
@@ -722,14 +728,14 @@ public:
     }
 
     /// Overload comparison operator
-    virtual bool operator==(const FESpace < -2 > & rOther) const
+    virtual bool operator==(const FESpaceType& rOther) const
     {
         return true;
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpace < -2 > & rFESpace1, const BoundarySide& side1,
-                                            const FESpace < -2 > & rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
+                                            const FESpaceType& rFESpace2, const BoundarySide& side2) const
     {
         return true;
     }

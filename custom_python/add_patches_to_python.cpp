@@ -585,9 +585,12 @@ void IsogeometricApplication_AddPatchesToPython()
     .value("ECHO_REFINEMENT_DETAIL", ECHO_REFINEMENT_DETAIL)
     ;
 
-    IsogeometricApplication_AddPatchesToPython_Helper<1, double, double, double>("");
-    IsogeometricApplication_AddPatchesToPython_Helper<2, double, double, double>("");
-    IsogeometricApplication_AddPatchesToPython_Helper<3, double, double, double>("");
+    IsogeometricApplication_AddPatchesToPython_Helper<1, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE>("");
+    IsogeometricApplication_AddPatchesToPython_Helper<2, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE>("");
+    IsogeometricApplication_AddPatchesToPython_Helper<3, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE>("");
+    IsogeometricApplication_AddPatchesToPython_Helper<1, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
+    IsogeometricApplication_AddPatchesToPython_Helper<2, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
+    IsogeometricApplication_AddPatchesToPython_Helper<3, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////IMPORT/EXPORT/////////////////////////////

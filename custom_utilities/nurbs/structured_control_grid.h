@@ -193,14 +193,14 @@ public:
     StructuredControlGrid(const std::vector<std::size_t>& sizes) : BaseType()
     {
         BaseType::Data().resize(1);
-        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
     }
 
     /// Constructor with size
     StructuredControlGrid(std::size_t n) : BaseType()
     {
         BaseType::Data().resize(1);
-        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
     }
 
     /// Destructor

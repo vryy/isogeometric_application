@@ -525,7 +525,6 @@ void IsogeometricApplication_AddImportToPython()
     .def("Import", &MultiNURBSPatchGeoImporter<TDim>::Import)
     .def(self_ns::str(self))
     ;
-
 }
 
 void IsogeometricApplication_AddPatchesToPython()

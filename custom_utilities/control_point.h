@@ -49,7 +49,7 @@ public:
         BaseType::WV()[0] = v;
         BaseType::WV()[1] = v;
         BaseType::WV()[2] = v;
-        BaseType::W() = static_cast<TWeightType>(v);
+        BaseType::W() = static_cast<TWeightType>(1.0);
     }
 
     /// Constructor with full coordinates
@@ -115,7 +115,23 @@ public:
         BaseType::WV()[0] = res[0];
         BaseType::WV()[1] = res[1];
         BaseType::WV()[2] = res[2];
-        BaseType::W() = res[3];
+        if constexpr (std::is_same<TWeightType, TDataType>::value)
+        {
+            BaseType::W() = res[3];
+        }
+        else if constexpr (std::is_same<TDataType, KRATOS_COMPLEX_TYPE>::value
+                        && std::is_same<TWeightType, KRATOS_DOUBLE_TYPE>::value)
+        {
+            if (res[3].imag() == 0)
+                BaseType::W() = res[3].real();
+            else
+                // here we shall throw and error because the transformation leads to complex weight.
+                // Which is not meaningful because the weight is assumed to be double.
+                // The typical transformation like translation, rotation shall preserve the data type of weight.
+                KRATOS_ERROR << "Encounted complex weight after transformation. This is not allowed.";
+        }
+        else
+            KRATOS_ERROR << "Unimplemented case";
     }
 
     /// Copy the coordinates of the control point to another point

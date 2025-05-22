@@ -256,16 +256,28 @@ public:
     }
 
     /// Get the control point grid function
-    GridFunction<TDim, ControlPointType>& ControlPointGridFunction() {return *(this->pGetGridFunction(CONTROL_POINT));}
+    GridFunction<TDim, ControlPointType>& ControlPointGridFunction()
+    {
+        return *(this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT)));
+    }
 
     /// Get the control point grid function
-    const GridFunction<TDim, ControlPointType>& ControlPointGridFunction() const {return *(this->pGetGridFunction(CONTROL_POINT));}
+    const GridFunction<TDim, ControlPointType>& ControlPointGridFunction() const
+    {
+        return *(this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT)));
+    }
 
     /// Get the control point grid function pointer
-    typename GridFunction<TDim, ControlPointType>::Pointer pControlPointGridFunction() {return this->pGetGridFunction(CONTROL_POINT);}
+    typename GridFunction<TDim, ControlPointType>::Pointer pControlPointGridFunction()
+    {
+        return this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT));
+    }
 
     /// Get the control point grid
-    typename GridFunction<TDim, ControlPointType>::ConstPointer pControlPointGridFunction() const {return this->pGetGridFunction(CONTROL_POINT);}
+    typename GridFunction<TDim, ControlPointType>::ConstPointer pControlPointGridFunction() const
+    {
+        return this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT));
+    }
 
     /// Get the control point weights vector
     std::vector<WeightType> GetControlWeights() const
@@ -396,21 +408,21 @@ public:
     void Predict(const array_1d<CoordinateType, 3>& point, array_1d<LocalCoordinateType, 3>& xi, const std::vector<int>& nsampling,
                  const array_1d<LocalCoordinateType, 3>& xi_min, const array_1d<LocalCoordinateType, 3>& xi_max) const
     {
-        typename GridFunction<TDim, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<TDim, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT_COORDINATES));
         pGridFunc->Predict(point, xi, nsampling, xi_min, xi_max);
     }
 
     /// Compute a rough estimation of the local coordinates of a point by sampling technique
     void Predict(const array_1d<CoordinateType, 3>& point, array_1d<LocalCoordinateType, 3>& xi, const std::vector<int>& nsampling) const
     {
-        typename GridFunction<TDim, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<TDim, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT_COORDINATES));
         pGridFunc->Predict(point, xi, nsampling);
     }
 
     /// Compute the local coordinates of a point
     int LocalCoordinates(const array_1d<CoordinateType, 3>& point, array_1d<LocalCoordinateType, 3>& xi) const
     {
-        typename GridFunction<TDim, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<TDim, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT_COORDINATES));
         int error_code = pGridFunc->LocalCoordinates(point, xi, mLocalSearchMaxIters, mLocalSearchTolerance);
         bool is_inside = this->pFESpace()->IsInside(std::vector<LocalCoordinateType> {xi[0], xi[1], xi[2]});
         if (!is_inside)

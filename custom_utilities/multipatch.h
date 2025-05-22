@@ -398,6 +398,20 @@ private:
 
 }; // class MultiPatch
 
+/// Selector for patch based on dimension
+template<int TDim>
+struct PatchSelector
+{
+    typedef Patch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE> RealPatch;
+    typedef Patch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE> ComplexPatch;
+
+    typedef PatchInterface<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE> RealPatchInterface;
+    typedef PatchInterface<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE> ComplexPatchInterface;
+
+    typedef MultiPatch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE> RealMultiPatch;
+    typedef MultiPatch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE> ComplexMultiPatch;
+};
+
 /// output stream function
 template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
 inline std::ostream& operator <<(std::ostream& rOStream,

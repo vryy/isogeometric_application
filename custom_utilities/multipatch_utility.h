@@ -46,16 +46,16 @@ public:
 
     /// Create new patch from a FESpace and wrap it with pointer
 #ifdef SD_APP_FORWARD_COMPATIBILITY
-    template<int TDim>
-    static iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer> CreatePatchPointer(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
+    template<class TPatchType>
+    static iga::Wrapper<TPatchType, typename TPatchType::Pointer> CreatePatchPointer(std::size_t Id, typename TPatchType::FESpaceType::Pointer pFESpace)
     {
-        return iga::Wrapper<Patch<TDim>, typename Patch<TDim>::Pointer>(typename Patch<TDim>::Pointer(new Patch<TDim>(Id, pFESpace)));
+        return iga::Wrapper<TPatchType, typename TPatchType::Pointer>(typename TPatchType::Pointer(new TPatchType(Id, pFESpace)));
     }
 #else
-    template<int TDim>
-    static typename Patch<TDim>::Pointer CreatePatchPointer(std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
+    template<class TPatchType>
+    static typename TPatchType::Pointer CreatePatchPointer(std::size_t Id, typename TPatchType::FESpaceType::Pointer pFESpace)
     {
-        return typename Patch<TDim>::Pointer(new Patch<TDim>(Id, pFESpace));
+        return typename TPatchType::Pointer(new TPatchType(Id, pFESpace));
     }
 #endif
 

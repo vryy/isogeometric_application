@@ -40,9 +40,6 @@ public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(ControlGridUtility);
 
-    /// Type definition
-    typedef ControlPoint<double> ControlPointType;
-
     /// Default constructor
     ControlGridUtility() {}
 
@@ -117,24 +114,24 @@ public:
     }
 
     /// Apply the homogeneous transformation to a grid of control points
-    template<typename TDataType>
-    static void ApplyTransformation(ControlGrid<ControlPointType>& rControlPointGrid, const Transformation<TDataType>& trans)
+    template<typename TControlPointType, typename TDataType>
+    static void ApplyTransformation(ControlGrid<TControlPointType>& rControlPointGrid, const Transformation<TDataType>& trans)
     {
         for (std::size_t i = 0; i < rControlPointGrid.size(); ++i)
         {
-            ControlPointType point = rControlPointGrid.GetData(i);
+            TControlPointType point = rControlPointGrid.GetData(i);
             point.ApplyTransformation(trans);
             rControlPointGrid.SetData(i, point);
         }
     }
 
     /// Apply the homogeneous transformation to a grid of points
-    template<typename TDataType>
-    static void ApplyTransformation(ControlGrid<array_1d<TDataType, 3> >& rControlGrid, const Transformation<TDataType>& trans)
+    template<typename TCoordinateType, typename TDataType>
+    static void ApplyTransformation(ControlGrid<array_1d<TCoordinateType, 3> >& rControlGrid, const Transformation<TDataType>& trans)
     {
         for (std::size_t i = 0; i < rControlGrid.size(); ++i)
         {
-            array_1d<TDataType, 3> point = rControlGrid.GetData(i);
+            array_1d<TCoordinateType, 3> point = rControlGrid.GetData(i);
             trans.ApplyTransformation(point);
             rControlGrid.SetData(i, point);
         }

@@ -39,10 +39,10 @@ using namespace boost::python;
 
 ////////////////////////////////////////
 
-template<int TDim>
-typename Patch<TDim>::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUtility& rDummy, std::size_t Id, typename FESpace<TDim>::Pointer pFESpace)
+template<class TPatchType>
+typename TPatchType::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUtility& rDummy, std::size_t Id, typename TPatchType::FESpaceType::Pointer pFESpace)
 {
-    return rDummy.template CreatePatchPointer<TDim>(Id, pFESpace);
+    return rDummy.template CreatePatchPointer<TPatchType>(Id, pFESpace);
 }
 
 template<int TDim>
@@ -563,9 +563,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
 
     class_<MultiPatchUtility, MultiPatchUtility::Pointer, boost::noncopyable>
     ("MultiPatchUtility", init<>())
-    .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<1>)
-    .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<2>)
-    .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<3>)
+    .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<1>::RealPatch>)
+    .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<2>::RealPatch>)
+    .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<3>::RealPatch>)
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<1>)
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<2>)
     .def("MakeInterface", &MultiPatchUtility_MakeInterface<3>)

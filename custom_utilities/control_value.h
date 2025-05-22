@@ -37,7 +37,7 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(ControlValue);
 
     /// Default constructor
-    ControlValue() : mWV(TDataType(0.0)), mW(0.0) {}
+    ControlValue() : mWV(TDataType(0.0)), mW(1.0) {}
 
     /// Constructor with full coordinates
     ControlValue(const TDataType& wv, const TWeightType& w) : mWV(wv), mW(w) {}

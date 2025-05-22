@@ -20,25 +20,27 @@
 namespace Kratos
 {
 
-template<int TDim>
-typename Patch<TDim>::Pointer BSplinesPatchUtility::CreateLoftPatch(typename Patch < TDim - 1 >::Pointer pPatch1, typename Patch < TDim - 1 >::Pointer pPatch2)
+template<class TPatchType>
+typename TPatchType::Pointer BSplinesPatchUtility::CreateLoftPatch(typename TPatchType::BoundaryPatchType::Pointer pPatch1, typename TPatchType::BoundaryPatchType::Pointer pPatch2)
 {
-    std::vector < typename Patch < TDim - 1 >::Pointer > pPatches = {pPatch1, pPatch2};
-    return CreateLoftPatch<TDim>(pPatches, 1);
+    std::vector<typename TPatchType::BoundaryPatchType::Pointer> pPatches = {pPatch1, pPatch2};
+    return CreateLoftPatch<TPatchType>(pPatches, 1);
 }
 
-template<int TDim>
-typename Patch<TDim>::Pointer BSplinesPatchUtility::CreateLoftPatch(std::vector < typename Patch < TDim - 1 >::Pointer > pPatches, int order)
+template<class TPatchType>
+typename TPatchType::Pointer BSplinesPatchUtility::CreateLoftPatch(std::vector<typename TPatchType::BoundaryPatchType::Pointer> pPatches, int order)
 {
+    constexpr int Dim = TPatchType::Dim;
+
     if (pPatches.size() == 0)
     {
-        return typename Patch<TDim>::Pointer(new Patch<TDim>(-1));
+        return typename TPatchType::Pointer(new TPatchType(-1));
     }
 
     // check prerequisites
     for (std::size_t i = 0; i < pPatches.size(); ++i)
     {
-        if (pPatches[i]->pFESpace()->Type() != BSplinesFESpace < TDim - 1 >::StaticType())
+        if (pPatches[i]->pFESpace()->Type() != BSplinesFESpace<Dim-1>::StaticType())
         {
             KRATOS_ERROR << "Patch " << pPatches[i]->Name() << " is not B-Splines patch";
         }
@@ -54,27 +56,27 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility::CreateLoftPatch(std::vector 
     }
 
     // create the new FESpace
-    typename BSplinesFESpace < TDim - 1 >::Pointer pFESpace0 = iga::dynamic_pointer_cast < BSplinesFESpace < TDim - 1 > > (pPatches[0]->pFESpace());
+    typename BSplinesFESpace<Dim-1>::Pointer pFESpace0 = iga::dynamic_pointer_cast<BSplinesFESpace<Dim-1> > (pPatches[0]->pFESpace());
     if (pFESpace0 == nullptr)
         KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
-    typename BSplinesFESpace<TDim>::Pointer pNewFESpace = BSplinesFESpace<TDim>::Create();
-    for (std::size_t dim = 0; dim < TDim - 1; ++dim)
+    typename BSplinesFESpace<Dim>::Pointer pNewFESpace = BSplinesFESpace<Dim>::Create();
+    for (std::size_t dim = 0; dim < Dim - 1; ++dim)
     {
         pNewFESpace->SetKnotVector(dim, pFESpace0->KnotVector(dim));
         pNewFESpace->SetInfo(dim, pFESpace0->Number(dim), pFESpace0->Order(dim));
     }
 
-    typename BSplinesFESpace<TDim>::knot_container_t new_knot_vector = BSplinesFESpaceLibrary::CreateUniformOpenKnotVector(pPatches.size(), order);
-    pNewFESpace->SetKnotVector(TDim - 1, new_knot_vector);
-    pNewFESpace->SetInfo(TDim - 1, pPatches.size(), order);
+    typename BSplinesFESpace<Dim>::knot_container_t new_knot_vector = BSplinesFESpaceLibrary::CreateUniformOpenKnotVector(pPatches.size(), order);
+    pNewFESpace->SetKnotVector(Dim - 1, new_knot_vector);
+    pNewFESpace->SetInfo(Dim - 1, pPatches.size(), order);
 
     // create the new patch
-    typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(-1, pNewFESpace));
+    typename TPatchType::Pointer pNewPatch = typename TPatchType::Pointer(new TPatchType(-1, pNewFESpace));
 
     // create the new control point grid
-    typedef typename Patch<TDim>::ControlPointType ControlPointType;
-    typename StructuredControlGrid < TDim - 1, ControlPointType >::Pointer pControlPointGrid0
-        = iga::dynamic_pointer_cast < StructuredControlGrid < TDim - 1, ControlPointType > > (pPatches[0]->pControlPointGridFunction()->pControlGrid());
+    typedef typename TPatchType::ControlPointType ControlPointType;
+    typename StructuredControlGrid < Dim - 1, ControlPointType >::Pointer pControlPointGrid0
+        = iga::dynamic_pointer_cast < StructuredControlGrid < Dim - 1, ControlPointType > > (pPatches[0]->pControlPointGridFunction()->pControlGrid());
     if (pControlPointGrid0 == nullptr)
     {
         KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
@@ -91,13 +93,13 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility::CreateLoftPatch(std::vector 
     }
 
     // assign data to the new control point grid
-    std::vector<std::size_t> new_sizes(TDim);
-    for (std::size_t dim = 0; dim < TDim - 1; ++dim)
+    std::vector<std::size_t> new_sizes(Dim);
+    for (std::size_t dim = 0; dim < Dim - 1; ++dim)
     {
         new_sizes[dim] = pControlPointGrid0->Size(dim);
     }
-    new_sizes[TDim - 1] = pPatches.size();
-    typename StructuredControlGrid<TDim, ControlPointType>::Pointer pNewControlPointGrid = StructuredControlGrid<TDim, ControlPointType>::Create(new_sizes);
+    new_sizes[Dim - 1] = pPatches.size();
+    typename StructuredControlGrid<Dim, ControlPointType>::Pointer pNewControlPointGrid = StructuredControlGrid<Dim, ControlPointType>::Create(new_sizes);
     for (std::size_t j = 0; j < pPatches.size(); ++j)
     {
         typename ControlGrid<ControlPointType>::Pointer pControlPointGrid = pPatches[j]->pControlPointGridFunction()->pControlGrid();
@@ -123,16 +125,25 @@ typename Patch<TDim>::Pointer BSplinesPatchUtility::CreateLoftPatch(std::vector 
     return pNewPatch;
 }
 
-template<int TDim>
-void BSplinesPatchUtility::Reverse(typename Patch<TDim>::Pointer pPatch, std::size_t idir)
+template<typename TPatchPointerType>
+void BSplinesPatchUtility::Reverse(TPatchPointerType pPatch, std::size_t idir)
 {
     std::set<std::size_t> reversed_patches;
-    ReverseImpl<TDim>(pPatch, idir, reversed_patches);
+    ReverseImpl(pPatch, idir, reversed_patches);
 }
 
-template<int TDim>
-void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std::size_t idir, std::set<std::size_t>& reversed_patches)
+template<typename TPatchPointerType>
+void BSplinesPatchUtility::ReverseImpl(TPatchPointerType pPatch, std::size_t idir, std::set<std::size_t>& reversed_patches)
 {
+    typedef typename TPatchPointerType::element_type PatchType;
+    typedef typename PatchType::DataType DataType;
+    typedef typename PatchType::VectorType VectorType;
+
+    constexpr int Dim = PatchType::Dim;
+
+    typedef BSplinesPatchInterface<Dim, typename PatchType::LocalCoordinateType,
+            typename PatchType::CoordinateType, typename PatchType::DataType> BSplinesPatchInterfaceType;
+
     if (reversed_patches.find(pPatch->Id()) != reversed_patches.end())
     {
         return;
@@ -140,19 +151,19 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
 
     // std::cout << "Patch " << pPatch->Name() << " will be reversed in direction " << idir << std::endl;
 
-    if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+    if (pPatch->pFESpace()->Type() != BSplinesFESpace<Dim>::StaticType())
     {
         KRATOS_ERROR << "Patch " << pPatch->Name() << " is not B-Splines patch. Reverse can't be done.";
     }
 
     // reverse the FESPace
-    typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+    typename BSplinesFESpace<Dim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<Dim> >(pPatch->pFESpace());
     pFESpace->Reverse(idir);
 
     // reverse the structured control grid
-    typedef typename Patch<TDim>::ControlPointType ControlPointType;
-    typename StructuredControlGrid<TDim, ControlPointType>::Pointer pControlPointGrid =
-        iga::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+    typedef typename PatchType::ControlPointType ControlPointType;
+    typename StructuredControlGrid<Dim, ControlPointType>::Pointer pControlPointGrid =
+        iga::dynamic_pointer_cast<StructuredControlGrid<Dim, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
     if (pControlPointGrid != nullptr)
     {
         pControlPointGrid->Reverse(idir);
@@ -162,13 +173,13 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
         KRATOS_ERROR << "The control point grid is not structured";
     }
 
-    typedef typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctionContainerType;
+    typedef typename PatchType::DoubleGridFunctionContainerType DoubleGridFunctionContainerType;
     DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
     for (typename DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
             it != DoubleGridFunctions_.end(); ++it)
     {
-        typename StructuredControlGrid<TDim, double>::Pointer pControlValueGrid =
-            iga::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
+        typename StructuredControlGrid<Dim, DataType>::Pointer pControlValueGrid =
+            iga::dynamic_pointer_cast<StructuredControlGrid<Dim, DataType> >((*it)->pControlGrid());
         if (pControlValueGrid != nullptr)
         {
             pControlValueGrid->Reverse(idir);
@@ -179,13 +190,13 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
         }
     }
 
-    typedef typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctionContainerType;
+    typedef typename PatchType::Array1DGridFunctionContainerType Array1DGridFunctionContainerType;
     Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
     for (typename Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
             it != Array1DGridFunctions_.end(); ++it)
     {
-        typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pControlValueGrid =
-            iga::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
+        typename StructuredControlGrid<Dim, array_1d<DataType, 3> >::Pointer pControlValueGrid =
+            iga::dynamic_pointer_cast<StructuredControlGrid<Dim, array_1d<DataType, 3> > >((*it)->pControlGrid());
         if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") { continue; }
         if (pControlValueGrid != nullptr)
         {
@@ -197,13 +208,13 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
         }
     }
 
-    typedef typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctionContainerType;
+    typedef typename PatchType::VectorGridFunctionContainerType VectorGridFunctionContainerType;
     VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
     for (typename VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
             it != VectorGridFunctions_.end(); ++it)
     {
-        typename StructuredControlGrid<TDim, Vector>::Pointer pControlValueGrid =
-            iga::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
+        typename StructuredControlGrid<Dim, VectorType>::Pointer pControlValueGrid =
+            iga::dynamic_pointer_cast<StructuredControlGrid<Dim, VectorType> >((*it)->pControlGrid());
         if (pControlValueGrid != nullptr)
         {
             pControlValueGrid->Reverse(idir);
@@ -218,15 +229,15 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
     reversed_patches.insert(pPatch->Id());
 
     // look for neighbours and reverse
-    if constexpr (TDim > 1)
+    if constexpr (Dim > 1)
     {
         for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
+            typename BSplinesPatchInterfaceType::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterfaceType>(pPatch->pInterface(i));
 
             if (pInterface != nullptr)
             {
-                if constexpr (TDim == 2)
+                if constexpr (Dim == 2)
                 {
                     std::size_t idir1 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side1()));
                     std::size_t idir2 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side2()));
@@ -235,7 +246,7 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
                     {
                         // the reversed direction aligns with the direction on the interface, therefore
                         // we need to reverse the neighbour patch
-                        ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
+                        ReverseImpl(pInterface->pPatch2(), idir2, reversed_patches);
                     }
                     else
                     {
@@ -246,7 +257,7 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
                         pInterface->pOtherInterface()->FlipSide2();
                     }
                 }
-                else if constexpr (TDim == 3)
+                else if constexpr (Dim == 3)
                 {
                     std::vector<int> dirs1 = ParameterDirection<3>::Get(pInterface->Side1());
                     std::vector<int> dirs2 = ParameterDirection<3>::Get(pInterface->Side2());
@@ -256,14 +267,14 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
                         std::size_t idir2 = dirs2[pInterface->LocalParameterMapping(0)];
 
                         // reverse the neighbour patch
-                        ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
+                        ReverseImpl(pInterface->pPatch2(), idir2, reversed_patches);
                     }
                     else if (static_cast<std::size_t>(dirs1[1]) == idir)
                     {
                         std::size_t idir2 = dirs2[pInterface->LocalParameterMapping(1)];
 
                         // reverse the neighbour patch
-                        ReverseImpl<TDim>(pInterface->pPatch2(), idir2, reversed_patches);
+                        ReverseImpl(pInterface->pPatch2(), idir2, reversed_patches);
                     }
                     else
                     {
@@ -280,32 +291,55 @@ void BSplinesPatchUtility::ReverseImpl(typename Patch<TDim>::Pointer pPatch, std
     }
 }
 
-void BSplinesPatchUtility::Transpose(typename Patch<2>::Pointer pPatch)
+template<class TPatchPointerType>
+void BSplinesPatchUtility::Transpose2D(TPatchPointerType pPatch)
 {
-    TransposeImpl<2>(pPatch, 0, 1);
+    typedef typename TPatchPointerType::element_type PatchType;
+
+    if constexpr (PatchType::Dim == 2)
+        Transpose<PatchType>(*pPatch, 0, 1);
+    else
+        KRATOS_ERROR << "Not a 2D patch";
 }
 
-void BSplinesPatchUtility::Transpose(typename Patch<3>::Pointer pPatch, std::size_t idir, std::size_t jdir)
+template<class TPatchPointerType>
+void BSplinesPatchUtility::Transpose3D(TPatchPointerType pPatch, std::size_t idir, std::size_t jdir)
 {
-    TransposeImpl<3>(pPatch, idir, jdir);
+    typedef typename TPatchPointerType::element_type PatchType;
+
+    if constexpr (PatchType::Dim == 3)
+        Transpose<PatchType>(*pPatch, idir, jdir);
+    else
+        KRATOS_ERROR << "Not a 3D patch";
 }
 
-template<int TDim>
-void BSplinesPatchUtility::TransposeImpl(typename Patch<TDim>::Pointer pPatch, std::size_t idir, std::size_t jdir)
+template<class TPatchType>
+void BSplinesPatchUtility::Transpose(TPatchType& rPatch, std::size_t idir, std::size_t jdir)
 {
-    if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+    typedef TPatchType PatchType;
+    typedef typename PatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename PatchType::CoordinateType CoordinateType;
+    typedef typename PatchType::DataType DataType;
+    typedef typename PatchType::VectorType VectorType;
+
+    constexpr int Dim = PatchType::Dim;
+
+    typedef BSplinesFESpace<Dim, LocalCoordinateType> BSplinesFESpaceType;
+    typedef BSplinesPatchInterface<Dim, LocalCoordinateType, CoordinateType, DataType> BSplinesPatchInterfaceType;
+
+    if (rPatch.pFESpace()->Type() != BSplinesFESpaceType::StaticType())
     {
-        KRATOS_ERROR << "Patch " << pPatch->Name() << " is not B-Splines patch. Transpose can't be done.";
+        KRATOS_ERROR << "Patch " << rPatch.Name() << " is not B-Splines patch. Transpose can't be done.";
     }
 
     // transpose the FESPace
-    typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+    typename BSplinesFESpaceType::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpaceType>(rPatch.pFESpace());
     pFESpace->Transpose(idir, jdir);
 
     // transpose the structured control grid
-    typedef typename Patch<TDim>::ControlPointType ControlPointType;
-    typename StructuredControlGrid<TDim, ControlPointType>::Pointer pControlPointGrid =
-        iga::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPointType> >(pPatch->pControlPointGridFunction()->pControlGrid());
+    typedef typename PatchType::ControlPointType ControlPointType;
+    typename StructuredControlGrid<Dim, ControlPointType>::Pointer pControlPointGrid =
+        iga::dynamic_pointer_cast<StructuredControlGrid<Dim, ControlPointType> >(rPatch.pControlPointGridFunction()->pControlGrid());
     if (pControlPointGrid != nullptr)
     {
         pControlPointGrid->Transpose(idir, jdir);
@@ -315,13 +349,13 @@ void BSplinesPatchUtility::TransposeImpl(typename Patch<TDim>::Pointer pPatch, s
         KRATOS_ERROR << "The control point grid is not structured";
     }
 
-    typedef typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctionContainerType;
-    DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
+    typedef typename PatchType::DoubleGridFunctionContainerType DoubleGridFunctionContainerType;
+    DoubleGridFunctionContainerType DoubleGridFunctions_ = rPatch.DoubleGridFunctions();
     for (typename DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
             it != DoubleGridFunctions_.end(); ++it)
     {
-        typename StructuredControlGrid<TDim, double>::Pointer pControlValueGrid =
-            iga::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
+        typename StructuredControlGrid<Dim, DataType>::Pointer pControlValueGrid =
+            iga::dynamic_pointer_cast<StructuredControlGrid<Dim, DataType> >((*it)->pControlGrid());
         if (pControlValueGrid != nullptr)
         {
             pControlValueGrid->Transpose(idir, jdir);
@@ -332,13 +366,13 @@ void BSplinesPatchUtility::TransposeImpl(typename Patch<TDim>::Pointer pPatch, s
         }
     }
 
-    typedef typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctionContainerType;
-    Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
+    typedef typename PatchType::Array1DGridFunctionContainerType Array1DGridFunctionContainerType;
+    Array1DGridFunctionContainerType Array1DGridFunctions_ = rPatch.Array1DGridFunctions();
     for (typename Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
             it != Array1DGridFunctions_.end(); ++it)
     {
-        typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pControlValueGrid =
-            iga::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
+        typename StructuredControlGrid<Dim, array_1d<DataType, 3> >::Pointer pControlValueGrid =
+            iga::dynamic_pointer_cast<StructuredControlGrid<Dim, array_1d<DataType, 3> > >((*it)->pControlGrid());
         if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") { continue; }
         if (pControlValueGrid != nullptr)
         {
@@ -350,13 +384,13 @@ void BSplinesPatchUtility::TransposeImpl(typename Patch<TDim>::Pointer pPatch, s
         }
     }
 
-    typedef typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctionContainerType;
-    VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
+    typedef typename PatchType::VectorGridFunctionContainerType VectorGridFunctionContainerType;
+    VectorGridFunctionContainerType VectorGridFunctions_ = rPatch.VectorGridFunctions();
     for (typename VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
             it != VectorGridFunctions_.end(); ++it)
     {
-        typename StructuredControlGrid<TDim, Vector>::Pointer pControlValueGrid =
-            iga::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
+        typename StructuredControlGrid<Dim, VectorType>::Pointer pControlValueGrid =
+            iga::dynamic_pointer_cast<StructuredControlGrid<Dim, VectorType> >((*it)->pControlGrid());
         if (pControlValueGrid != nullptr)
         {
             pControlValueGrid->Transpose(idir, jdir);
@@ -368,15 +402,15 @@ void BSplinesPatchUtility::TransposeImpl(typename Patch<TDim>::Pointer pPatch, s
     }
 
     // check for any neighbours and adapt accordingly
-    if constexpr (TDim > 1)
+    if constexpr (Dim > 1)
     {
-        for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
+        for (std::size_t i = 0; i < rPatch.NumberOfInterfaces(); ++i)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(pPatch->pInterface(i));
+            typename BSplinesPatchInterfaceType::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterfaceType>(rPatch.pInterface(i));
 
             if (pInterface != nullptr)
             {
-                if constexpr (TDim == 2)
+                if constexpr (Dim == 2)
                 {
                     std::size_t idir1 = static_cast<std::size_t>(ParameterDirection<2>::Get_(pInterface->Side1()));
 
@@ -393,7 +427,7 @@ void BSplinesPatchUtility::TransposeImpl(typename Patch<TDim>::Pointer pPatch, s
                     pInterface->SetSide1(new_side);
                     pInterface->pOtherInterface()->SetSide2(new_side);
                 }
-                else if constexpr (TDim == 3)
+                else if constexpr (Dim == 3)
                 {
                     // TODO
                     KRATOS_ERROR << "Transpose on the interface is not yet implemented for 3D";
@@ -426,213 +460,220 @@ typename MultiPatch<TDim>::Pointer BSplinesPatchUtility::CreateMultiPatchFromGeo
     return dummy.Import(fn);
 }
 
-void BSplinesPatchUtility::MakeInterface1D(typename Patch<1>::Pointer pPatch1, const BoundarySide side1,
-        typename Patch<1>::Pointer pPatch2, const BoundarySide side2)
+template<typename TPatchPointerType>
+void BSplinesPatchUtility::MakeInterface1D(TPatchPointerType pPatch1, const BoundarySide side1,
+        TPatchPointerType pPatch2, const BoundarySide side2)
 {
-    typename FESpace<0>::Pointer pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
+    typedef typename TPatchPointerType::element_type PatchType;
+    constexpr int Dim = PatchType::Dim;
 
-    typename FESpace<0>::Pointer pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2);
+    typedef BSplinesPatchInterface<1, typename PatchType::LocalCoordinateType,
+            typename PatchType::CoordinateType, typename PatchType::DataType> BSplinesPatchInterfaceType;
 
-    if ( (*pBFESpace1) == (*pBFESpace2) )
+    if constexpr (Dim == 1)
     {
-        typename PatchInterface<1>::Pointer pInterface12;
-        typename PatchInterface<1>::Pointer pInterface21;
+        auto pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
 
-        pInterface12 = iga::make_shared<BSplinesPatchInterface<1> >(pPatch1, side1, pPatch2, side2);
-        pInterface21 = iga::make_shared<BSplinesPatchInterface<1> >(pPatch2, side2, pPatch1, side1);
+        auto pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2);
 
-        pInterface12->SetOtherInterface(pInterface21);
-        pInterface21->SetOtherInterface(pInterface12);
-
-        pPatch1->AddInterface(pInterface12);
-        pPatch2->AddInterface(pInterface21);
-    }
-    else
-    {
-        KRATOS_ERROR << "The interface is not created because the two patch's boundaries are not conformed.";
-    }
-}
-
-void BSplinesPatchUtility::MakeInterface1D(typename Patch<2>::Pointer pPatch1, const BoundarySide side1,
-        typename Patch<2>::Pointer pPatch2, const BoundarySide side2)
-{
-    KRATOS_ERROR << "Irrelevant for 2D";
-}
-
-void BSplinesPatchUtility::MakeInterface1D(typename Patch<3>::Pointer pPatch1, const BoundarySide side1,
-        typename Patch<3>::Pointer pPatch2, const BoundarySide side2)
-{
-    KRATOS_ERROR << "Irrelevant for 3D";
-}
-
-void BSplinesPatchUtility::MakeInterface2D(typename Patch<1>::Pointer pPatch1, const BoundarySide side1,
-        typename Patch<1>::Pointer pPatch2, const BoundarySide side2, const BoundaryDirection direction)
-{
-    KRATOS_ERROR << "Irrelevant for 1D";
-}
-
-void BSplinesPatchUtility::MakeInterface2D(typename Patch<2>::Pointer pPatch1, const BoundarySide side1,
-        typename Patch<2>::Pointer pPatch2, const BoundarySide side2, const BoundaryDirection direction)
-{
-    typename FESpace<1>::Pointer pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
-
-    typename FESpace<1>::Pointer pBFESpace2;
-
-    std::map<std::size_t, std::size_t> local_parameter_map;
-    std::vector<BoundaryDirection> directions = {direction};
-    pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2, local_parameter_map, directions);
-
-    if ( (*pBFESpace1) == (*pBFESpace2) )
-    {
-        typename PatchInterface<2>::Pointer pInterface12;
-        typename PatchInterface<2>::Pointer pInterface21;
-
-        /*
-         * The logic of making interface here is simple. It's all about relative position to each other.
-         * If patch 1 boundary see patch 2 boundary in the reversed direction, so is the patch 2 boundary.
-         * Therefore, the direction information of both two interfaces is the same.
-         */
-
-        pInterface12 = iga::make_shared<BSplinesPatchInterface<2> >(pPatch1, side1, pPatch2, side2, direction);
-        pInterface21 = iga::make_shared<BSplinesPatchInterface<2> >(pPatch2, side2, pPatch1, side1, direction);
-
-        pInterface12->SetOtherInterface(pInterface21);
-        pInterface21->SetOtherInterface(pInterface12);
-
-        pPatch1->AddInterface(pInterface12);
-        pPatch2->AddInterface(pInterface21);
-    }
-    else
-    {
-        KRATOS_ERROR << "The interface is not created because the two patch's boundaries are not conformed.";
-    }
-}
-
-void BSplinesPatchUtility::MakeInterface2D(typename Patch<3>::Pointer pPatch1, const BoundarySide side1,
-        typename Patch<3>::Pointer pPatch2, const BoundarySide side2, const BoundaryDirection direction)
-{
-    KRATOS_ERROR << "Irrelevant for 3D";
-}
-
-void BSplinesPatchUtility::MakeInterface3D(typename Patch<1>::Pointer pPatch1, const BoundarySide side1,
-        typename Patch<1>::Pointer pPatch2, const BoundarySide side2, const bool uv_or_vu,
-        const BoundaryDirection direction1, const BoundaryDirection direction2)
-{
-    KRATOS_ERROR << "Irrelevant for 1D";
-}
-
-void BSplinesPatchUtility::MakeInterface3D(typename Patch<2>::Pointer pPatch1, const BoundarySide side1,
-        typename Patch<2>::Pointer pPatch2, const BoundarySide side2, const bool uv_or_vu,
-        const BoundaryDirection direction1, const BoundaryDirection direction2)
-{
-    KRATOS_ERROR << "Irrelevant for 2D";
-}
-
-void BSplinesPatchUtility::MakeInterface3D(typename Patch<3>::Pointer pPatch1, const BoundarySide side1,
-        typename Patch<3>::Pointer pPatch2, const BoundarySide side2, const bool uv_or_vu,
-        const BoundaryDirection direction1, const BoundaryDirection direction2)
-{
-    typename FESpace<2>::Pointer pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
-
-    typename FESpace<2>::Pointer pBFESpace2;
-
-    std::map<std::size_t, std::size_t> local_parameter_map;
-    if (uv_or_vu)
-    {
-        local_parameter_map[0] = 0;
-        local_parameter_map[1] = 1;
-    }
-    else
-    {
-        local_parameter_map[0] = 1;
-        local_parameter_map[1] = 0;
-    }
-    std::vector<BoundaryDirection> directions = {direction1, direction2};
-    pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2, local_parameter_map, directions);
-
-    if ( (*pBFESpace1) == (*pBFESpace2) )
-    {
-        typename PatchInterface<3>::Pointer pInterface12;
-        typename PatchInterface<3>::Pointer pInterface21;
-
-        pInterface12 = iga::make_shared<BSplinesPatchInterface<3> >(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
-
-        if (uv_or_vu)
+        if ( (*pBFESpace1) == (*pBFESpace2) )
         {
-            pInterface21 = iga::make_shared<BSplinesPatchInterface<3> >(pPatch2, side2, pPatch1, side1, uv_or_vu, direction1, direction2);
+            typename PatchType::PatchInterfaceType::Pointer pInterface12;
+            typename PatchType::PatchInterfaceType::Pointer pInterface21;
+
+            pInterface12 = iga::make_shared<BSplinesPatchInterfaceType>(pPatch1, side1, pPatch2, side2);
+            pInterface21 = iga::make_shared<BSplinesPatchInterfaceType>(pPatch2, side2, pPatch1, side1);
+
+            pInterface12->SetOtherInterface(pInterface21);
+            pInterface21->SetOtherInterface(pInterface12);
+
+            pPatch1->AddInterface(pInterface12);
+            pPatch2->AddInterface(pInterface21);
         }
         else
         {
-            // if the local parameter space is swapped, then the direction seeing from the other interface must be reversed
-            pInterface21 = iga::make_shared<BSplinesPatchInterface<3> >(pPatch2, side2, pPatch1, side1, uv_or_vu, direction2, direction1);
+            KRATOS_ERROR << "The interface is not created because the two patch's boundaries are not conformed.";
         }
-
-        pInterface12->SetOtherInterface(pInterface21);
-        pInterface21->SetOtherInterface(pInterface12);
-
-        pPatch1->AddInterface(pInterface12);
-        pPatch2->AddInterface(pInterface21);
     }
     else
+        KRATOS_ERROR << "Irrelevant for " << Dim << "D";
+}
+
+template<typename TPatchPointerType>
+void BSplinesPatchUtility::MakeInterface2D(TPatchPointerType pPatch1, const BoundarySide side1,
+        TPatchPointerType pPatch2, const BoundarySide side2, const BoundaryDirection direction)
+{
+    typedef typename TPatchPointerType::element_type PatchType;
+
+    constexpr int Dim = PatchType::Dim;
+
+    if constexpr (Dim == 2)
     {
-        KRATOS_ERROR << "The interface is not created because the two patch's boundaries are not conformed.";
+        typedef BSplinesPatchInterface<2, typename PatchType::LocalCoordinateType,
+                typename PatchType::CoordinateType, typename PatchType::DataType> BSplinesPatchInterfaceType;
+
+        auto pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
+
+        typename PatchType::BoundaryPatchType::FESpaceType::Pointer pBFESpace2;
+
+        std::map<std::size_t, std::size_t> local_parameter_map;
+        std::vector<BoundaryDirection> directions = {direction};
+        pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2, local_parameter_map, directions);
+
+        if ( (*pBFESpace1) == (*pBFESpace2) )
+        {
+            typename PatchType::PatchInterfaceType::Pointer pInterface12;
+            typename PatchType::PatchInterfaceType::Pointer pInterface21;
+
+            /*
+             * The logic of making interface here is simple. It's all about relative position to each other.
+             * If patch 1 boundary see patch 2 boundary in the reversed direction, so is the patch 2 boundary.
+             * Therefore, the direction information of both two interfaces is the same.
+             */
+
+            pInterface12 = iga::make_shared<BSplinesPatchInterfaceType>(pPatch1, side1, pPatch2, side2, direction);
+            pInterface21 = iga::make_shared<BSplinesPatchInterfaceType>(pPatch2, side2, pPatch1, side1, direction);
+
+            pInterface12->SetOtherInterface(pInterface21);
+            pInterface21->SetOtherInterface(pInterface12);
+
+            pPatch1->AddInterface(pInterface12);
+            pPatch2->AddInterface(pInterface21);
+        }
+        else
+        {
+            KRATOS_ERROR << "The interface is not created because the two patch's boundaries are not conformed.";
+        }
+    }
+    else
+        KRATOS_ERROR << "Irrelevant for " << Dim << "D";
+}
+
+template<typename TPatchPointerType>
+void BSplinesPatchUtility::MakeInterface3D(TPatchPointerType pPatch1, const BoundarySide side1,
+        TPatchPointerType pPatch2, const BoundarySide side2, const bool uv_or_vu,
+        const BoundaryDirection direction1, const BoundaryDirection direction2)
+{
+    typedef typename TPatchPointerType::element_type PatchType;
+
+    constexpr int Dim = PatchType::Dim;
+
+    if constexpr (Dim == 3)
+    {
+        typedef BSplinesPatchInterface<3, typename PatchType::LocalCoordinateType,
+                typename PatchType::CoordinateType, typename PatchType::DataType> BSplinesPatchInterfaceType;
+
+        auto pBFESpace1 = pPatch1->pFESpace()->ConstructBoundaryFESpace(side1);
+
+        typename PatchType::BoundaryPatchType::FESpaceType::Pointer pBFESpace2;
+
+        std::map<std::size_t, std::size_t> local_parameter_map;
+        if (uv_or_vu)
+        {
+            local_parameter_map[0] = 0;
+            local_parameter_map[1] = 1;
+        }
+        else
+        {
+            local_parameter_map[0] = 1;
+            local_parameter_map[1] = 0;
+        }
+        std::vector<BoundaryDirection> directions = {direction1, direction2};
+        pBFESpace2 = pPatch2->pFESpace()->ConstructBoundaryFESpace(side2, local_parameter_map, directions);
+
+        if ( (*pBFESpace1) == (*pBFESpace2) )
+        {
+            typename PatchType::PatchInterfaceType::Pointer pInterface12;
+            typename PatchType::PatchInterfaceType::Pointer pInterface21;
+
+            pInterface12 = iga::make_shared<BSplinesPatchInterfaceType>(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
+
+            if (uv_or_vu)
+            {
+                pInterface21 = iga::make_shared<BSplinesPatchInterfaceType>(pPatch2, side2, pPatch1, side1, uv_or_vu, direction1, direction2);
+            }
+            else
+            {
+                // if the local parameter space is swapped, then the direction seeing from the other interface must be reversed
+                pInterface21 = iga::make_shared<BSplinesPatchInterfaceType>(pPatch2, side2, pPatch1, side1, uv_or_vu, direction2, direction1);
+            }
+
+            pInterface12->SetOtherInterface(pInterface21);
+            pInterface21->SetOtherInterface(pInterface12);
+
+            pPatch1->AddInterface(pInterface12);
+            pPatch2->AddInterface(pInterface21);
+        }
+        else
+        {
+            KRATOS_ERROR << "The interface is not created because the two patch's boundaries are not conformed.";
+        }
+    }
+    else
+        KRATOS_ERROR << "Irrelevant for " << Dim << "D";
+}
+
+template<class TMultiPatchType>
+void BSplinesPatchUtility::CreateInterfaces(typename TMultiPatchType::Pointer pMultiPatch)
+{
+    constexpr int Dim = TMultiPatchType::PatchType::Dim;
+
+    if constexpr (Dim == 1)
+    {
+        // TODO
+        KRATOS_ERROR << "To be implemented";
+    }
+    else if constexpr (Dim == 2)
+    {
+        // TODO
+
+        KRATOS_ERROR << "To be implemented";
+
+        typedef typename TMultiPatchType::patch_const_iterator patch_const_iterator;
+
+        // const std::vector<BoundarySide> sides = {}
+
+        // Calculation sequence:
+        //  +   compute the average of control points on each side of each patch
+        //  +   check interface matching by matching the control point average
+        //  +   for each match, check further criterion:
+        //      -   all control points on the interface patch must match
+        //      -   the knot vector is the same -> the matching direction is forward
+        //      -   the knot vector is symmetric around the pivot-> the matching direction is reversed
+
+        // std::map<std::size_t, std::map<std::size_t, PointType> > PatchBoundaryCenters;
+
+        for (patch_const_iterator it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
+        {
+
+        }
+    }
+    else if constexpr (Dim == 3)
+    {
+        // TODO
+
+        KRATOS_ERROR << "To be implemented";
     }
 }
 
-template<>
-void BSplinesPatchUtility::CreateInterfaces<1>(typename MultiPatch<1>::Pointer pMultiPatch)
+template<class TMultiPatchType>
+void BSplinesPatchUtility::CheckRepeatedKnot(typename TMultiPatchType::Pointer pMultiPatch)
 {
-    // TODO
-    KRATOS_ERROR << "To be implemented";
-}
+    constexpr int Dim = TMultiPatchType::PatchType::Dim;
 
-template<>
-void BSplinesPatchUtility::CreateInterfaces<2>(typename MultiPatch<2>::Pointer pMultiPatch)
-{
-    // TODO
+    typedef typename TMultiPatchType::PatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename TMultiPatchType::PatchType::CoordinateType CoordinateType;
 
-    KRATOS_ERROR << "To be implemented";
+    typedef BSplinesFESpace<Dim, LocalCoordinateType> BSplinesFESpaceType;
 
-    typedef typename MultiPatch<2>::patch_const_iterator patch_const_iterator;
-
-    // const std::vector<BoundarySide> sides = {}
-
-    // Calculation sequence:
-    //  +   compute the average of control points on each side of each patch
-    //  +   check interface matching by matching the control point average
-    //  +   for each match, check further criterion:
-    //      -   all control points on the interface patch must match
-    //      -   the knot vector is the same -> the matching direction is forward
-    //      -   the knot vector is symmetric around the pivot-> the matching direction is reversed
-
-    // std::map<std::size_t, std::map<std::size_t, PointType> > PatchBoundaryCenters;
-
-    for (patch_const_iterator it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
-    {
-
-    }
-
-}
-
-template<>
-void BSplinesPatchUtility::CreateInterfaces<3>(typename MultiPatch<3>::Pointer pMultiPatch)
-{
-    // TODO
-
-    KRATOS_ERROR << "To be implemented";
-}
-
-template<int TDim>
-void BSplinesPatchUtility::CheckRepeatedKnot(typename MultiPatch<TDim>::Pointer pMultiPatch)
-{
     for (auto it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
     {
-        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(it->pFESpace());
+        typename BSplinesFESpaceType::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpaceType>(it->pFESpace());
 
         if (pFESpace == nullptr)
             KRATOS_ERROR << "The underlying FESpace is not BSplinesFESpace";
 
-        for (int i = 0; i < TDim; ++i)
+        for (int i = 0; i < Dim; ++i)
         {
             const auto& knot_vector = pFESpace->KnotVector(i);
             const auto numbers = knot_vector.GetKnotRepeatedNumber();
@@ -677,22 +718,36 @@ std::vector<std::array<typename Patch<1>::ControlPointType, 2> > BSplinesPatchUt
 }
 
 /// template instantiation
-template typename Patch<2>::Pointer BSplinesPatchUtility::CreateLoftPatch<2>(typename Patch<1>::Pointer pPatch1, typename Patch<1>::Pointer pPatch2);
-template typename Patch<3>::Pointer BSplinesPatchUtility::CreateLoftPatch<3>(typename Patch<2>::Pointer pPatch1, typename Patch<2>::Pointer pPatch2);
-template typename Patch<2>::Pointer BSplinesPatchUtility::CreateLoftPatch<2>(std::vector<typename Patch<1>::Pointer> pPatches, int order);
-template typename Patch<3>::Pointer BSplinesPatchUtility::CreateLoftPatch<3>(std::vector<typename Patch<2>::Pointer> pPatches, int order);
-template typename Patch<2>::Pointer BSplinesPatchUtility::CreatePatchFromGeo<2>(const std::string& fn);
-template typename Patch<3>::Pointer BSplinesPatchUtility::CreatePatchFromGeo<3>(const std::string& fn);
-template void BSplinesPatchUtility::Reverse<1>(typename Patch<1>::Pointer pPatch, std::size_t idir);
-template void BSplinesPatchUtility::Reverse<2>(typename Patch<2>::Pointer pPatch, std::size_t idir);
-template void BSplinesPatchUtility::Reverse<3>(typename Patch<3>::Pointer pPatch, std::size_t idir);
-template void BSplinesPatchUtility::TransposeImpl<2>(typename Patch<2>::Pointer pPatch, std::size_t idir, std::size_t jdir);
-template void BSplinesPatchUtility::TransposeImpl<3>(typename Patch<3>::Pointer pPatch, std::size_t idir, std::size_t jdir);
-template void BSplinesPatchUtility::CreateInterfaces<1>(typename MultiPatch<1>::Pointer pMultiPatch);
-template void BSplinesPatchUtility::CreateInterfaces<2>(typename MultiPatch<2>::Pointer pMultiPatch);
-template void BSplinesPatchUtility::CreateInterfaces<3>(typename MultiPatch<3>::Pointer pMultiPatch);
-template void BSplinesPatchUtility::CheckRepeatedKnot<1>(typename MultiPatch<1>::Pointer pMultiPatch);
-template void BSplinesPatchUtility::CheckRepeatedKnot<2>(typename MultiPatch<2>::Pointer pMultiPatch);
-template void BSplinesPatchUtility::CheckRepeatedKnot<3>(typename MultiPatch<3>::Pointer pMultiPatch);
+template typename PatchSelector<2>::RealPatch::Pointer BSplinesPatchUtility::CreatePatchFromGeo<2>(const std::string& fn);
+template typename PatchSelector<3>::RealPatch::Pointer BSplinesPatchUtility::CreatePatchFromGeo<3>(const std::string& fn);
+
+//
+
+#define BSplinesPatchUtility_Template_Instantiate(PatchName, MultiPatchName) \
+template typename PatchSelector<2>::PatchName::Pointer BSplinesPatchUtility::CreateLoftPatch<PatchSelector<2>::PatchName>(typename PatchSelector<1>::PatchName::Pointer pPatch1, typename PatchSelector<1>::PatchName::Pointer pPatch2);    \
+template typename PatchSelector<3>::PatchName::Pointer BSplinesPatchUtility::CreateLoftPatch<PatchSelector<3>::PatchName>(typename PatchSelector<2>::PatchName::Pointer pPatch1, typename PatchSelector<2>::PatchName::Pointer pPatch2);    \
+template typename PatchSelector<2>::PatchName::Pointer BSplinesPatchUtility::CreateLoftPatch<PatchSelector<2>::PatchName>(std::vector<typename PatchSelector<1>::PatchName::Pointer> pPatches, int order);  \
+template typename PatchSelector<3>::PatchName::Pointer BSplinesPatchUtility::CreateLoftPatch<PatchSelector<3>::PatchName>(std::vector<typename PatchSelector<2>::PatchName::Pointer> pPatches, int order);  \
+\
+template void BSplinesPatchUtility::MakeInterface1D<PatchSelector<1>::PatchName::Pointer>(typename PatchSelector<1>::PatchName::Pointer pPatch1, const BoundarySide side1, typename PatchSelector<1>::PatchName::Pointer pPatch2, const BoundarySide side2);    \
+template void BSplinesPatchUtility::MakeInterface2D<PatchSelector<2>::PatchName::Pointer>(typename PatchSelector<2>::PatchName::Pointer pPatch1, const BoundarySide side1, typename PatchSelector<2>::PatchName::Pointer pPatch2, const BoundarySide side2, const BoundaryDirection direction); \
+template void BSplinesPatchUtility::MakeInterface3D<PatchSelector<3>::PatchName::Pointer>(typename PatchSelector<3>::PatchName::Pointer pPatch1, const BoundarySide side1, typename PatchSelector<3>::PatchName::Pointer pPatch2, const BoundarySide side2, const bool uv_or_vu, const BoundaryDirection direction1, const BoundaryDirection direction2);   \
+\
+template void BSplinesPatchUtility::Reverse<PatchSelector<1>::PatchName::Pointer>(typename PatchSelector<1>::PatchName::Pointer pPatch, std::size_t idir);   \
+template void BSplinesPatchUtility::Reverse<PatchSelector<2>::PatchName::Pointer>(typename PatchSelector<2>::PatchName::Pointer pPatch, std::size_t idir);   \
+template void BSplinesPatchUtility::Reverse<PatchSelector<3>::PatchName::Pointer>(typename PatchSelector<3>::PatchName::Pointer pPatch, std::size_t idir);   \
+template void BSplinesPatchUtility::Transpose2D<PatchSelector<2>::PatchName::Pointer>(PatchSelector<2>::PatchName::Pointer pPatch); \
+template void BSplinesPatchUtility::Transpose3D<PatchSelector<3>::PatchName::Pointer>(PatchSelector<3>::PatchName::Pointer pPatch, std::size_t idir, std::size_t jdir); \
+template void BSplinesPatchUtility::Transpose<PatchSelector<2>::PatchName>(PatchSelector<2>::PatchName& rPatch, std::size_t idir, std::size_t jdir);    \
+template void BSplinesPatchUtility::Transpose<PatchSelector<3>::PatchName>(PatchSelector<3>::PatchName& rPatch, std::size_t idir, std::size_t jdir);    \
+template void BSplinesPatchUtility::CreateInterfaces<PatchSelector<1>::MultiPatchName>(typename PatchSelector<1>::MultiPatchName::Pointer pMultiPatch); \
+template void BSplinesPatchUtility::CreateInterfaces<PatchSelector<2>::MultiPatchName>(typename PatchSelector<2>::MultiPatchName::Pointer pMultiPatch); \
+template void BSplinesPatchUtility::CreateInterfaces<PatchSelector<3>::MultiPatchName>(typename PatchSelector<3>::MultiPatchName::Pointer pMultiPatch); \
+template void BSplinesPatchUtility::CheckRepeatedKnot<PatchSelector<1>::MultiPatchName>(typename PatchSelector<1>::MultiPatchName::Pointer pMultiPatch);    \
+template void BSplinesPatchUtility::CheckRepeatedKnot<PatchSelector<2>::MultiPatchName>(typename PatchSelector<2>::MultiPatchName::Pointer pMultiPatch);    \
+template void BSplinesPatchUtility::CheckRepeatedKnot<PatchSelector<3>::MultiPatchName>(typename PatchSelector<3>::MultiPatchName::Pointer pMultiPatch);    \
+
+BSplinesPatchUtility_Template_Instantiate(RealPatch, RealMultiPatch);
+BSplinesPatchUtility_Template_Instantiate(ComplexPatch, ComplexMultiPatch);
 
 } // namespace Kratos

@@ -45,33 +45,33 @@ typename TPatchType::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUtil
     return rDummy.template CreatePatchPointer<TPatchType>(Id, pFESpace);
 }
 
-template<int TDim>
-void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename Patch<TDim>::Pointer pPatch1, const BoundarySide side1,
-                                     typename Patch<TDim>::Pointer pPatch2, const BoundarySide side2)
+template<class TPatchType>
+void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename TPatchType::Pointer pPatch1, const BoundarySide side1,
+                                     typename TPatchType::Pointer pPatch2, const BoundarySide side2)
 {
-    rDummy.MakeInterface<TDim>(pPatch1, side1, pPatch2, side2);
+    rDummy.MakeInterface<TPatchType>(pPatch1, side1, pPatch2, side2);
 }
 
-template<int TDim>
-void MultiPatchUtility_CheckInterfaces(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch)
+template<class TMultiPatchType>
+void MultiPatchUtility_CheckInterfaces(MultiPatchUtility& rDummy, typename TMultiPatchType::Pointer pMultiPatch)
 {
-    rDummy.CheckInterfaces<TDim>(*pMultiPatch);
+    rDummy.CheckInterfaces<TMultiPatchType>(*pMultiPatch);
 }
 
-template<int TDim>
-void MultiPatchUtility_CheckInterfacesWithDebug(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch, const bool debug)
+template<class TMultiPatchType>
+void MultiPatchUtility_CheckInterfacesWithDebug(MultiPatchUtility& rDummy, typename TMultiPatchType::Pointer pMultiPatch, const bool debug)
 {
-    rDummy.CheckInterfaces<TDim>(*pMultiPatch, debug);
+    rDummy.CheckInterfaces<TMultiPatchType>(*pMultiPatch, debug);
 }
 
-template<int TDim>
-void MultiPatchUtility_CheckInterfacesFull(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch, const bool debug, const double dist_tol)
+template<class TMultiPatchType>
+void MultiPatchUtility_CheckInterfacesFull(MultiPatchUtility& rDummy, typename TMultiPatchType::Pointer pMultiPatch, const bool debug, const double dist_tol)
 {
-    rDummy.CheckInterfaces<TDim>(*pMultiPatch, debug, dist_tol);
+    rDummy.CheckInterfaces<TMultiPatchType>(*pMultiPatch, debug, dist_tol);
 }
 
-template<int TDim>
-boost::python::list MultiPatchUtility_LocalCoordinates1(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
+template<class TMultiPatchType>
+boost::python::list MultiPatchUtility_LocalCoordinates1(MultiPatchUtility& rDummy, typename TMultiPatchType::Pointer pMultiPatch,
         const boost::python::list& P, const boost::python::list& list_nsampling, const int echo_level)
 {
     std::vector<double> P_vec;
@@ -102,11 +102,11 @@ boost::python::list MultiPatchUtility_LocalCoordinates1(MultiPatchUtility& rDumm
     return output;
 }
 
-template<int TDim>
-boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename MultiPatch<TDim>::Pointer pMultiPatch,
+template<class TMultiPatchType>
+boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy, typename TMultiPatchType::Pointer pMultiPatch,
         const boost::python::list& P, const boost::python::list& list_nsampling)
 {
-    return MultiPatchUtility_LocalCoordinates1<TDim>(rDummy, pMultiPatch, P, list_nsampling, 0);
+    return MultiPatchUtility_LocalCoordinates1<TMultiPatchType>(rDummy, pMultiPatch, P, list_nsampling, 0);
 }
 
 template<int TDim>
@@ -183,33 +183,33 @@ void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassTy
 
 //////////////////////////////////////////////////
 
-template<int TDim>
+template<class TPatchType>
 void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer& pPatch,
+        typename TPatchType::Pointer& pPatch,
         const boost::python::list& ins_knots)
 {
-    std::vector<std::vector<double> > ins_knots_array(TDim);
-    std::size_t dim = PythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
+    std::vector<std::vector<typename TPatchType::LocalCoordinateType> > ins_knots_array(TPatchType::Dim);
+    std::size_t dim = PythonUtils::Unpack<double, typename TPatchType::LocalCoordinateType>(ins_knots, ins_knots_array, TPatchType::Dim);
 
-    if (dim != TDim)
+    if (dim != TPatchType::Dim)
         KRATOS_ERROR << "invalid dimension " << dim;
 
-    rDummy.InsertKnots<TDim>(pPatch, ins_knots_array);
+    rDummy.InsertKnots<TPatchType>(pPatch, ins_knots_array);
 }
 
-template<int TDim>
+template<class TPatchType>
 boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer& pPatch,
+        typename TPatchType::Pointer& pPatch,
         const boost::python::list& ins_knots)
 {
-    std::vector<std::vector<double> > ins_knots_array(TDim);
-    std::size_t dim = PythonUtils::Unpack<double, double>(ins_knots, ins_knots_array, TDim);
+    std::vector<std::vector<typename TPatchType::LocalCoordinateType> > ins_knots_array(TPatchType::Dim);
+    std::size_t dim = PythonUtils::Unpack<double, typename TPatchType::LocalCoordinateType>(ins_knots, ins_knots_array, TPatchType::Dim);
 
-    if (dim != TDim)
+    if (dim != TPatchType::Dim)
         KRATOS_ERROR << "Invalid dimension " << dim;
 
     std::map<std::size_t, Matrix> trans_mats;
-    rDummy.InsertKnots<TDim>(pPatch, ins_knots_array, trans_mats);
+    rDummy.InsertKnots<TPatchType>(pPatch, ins_knots_array, trans_mats);
     // KRATOS_WATCH(trans_mats.size())
 
     boost::python::dict res;
@@ -221,38 +221,38 @@ boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinemen
     return res;
 }
 
-template<int TDim>
+template<class TPatchType>
 void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDummy,
-        typename Patch<TDim>::Pointer& pPatch,
+        typename TPatchType::Pointer& pPatch,
         const boost::python::list& order_increment)
 {
-    std::vector<std::size_t> order_incr_array(TDim);
-    std::size_t dim = PythonUtils::Unpack<int, std::size_t>(order_increment, order_incr_array, TDim);
+    std::vector<std::size_t> order_incr_array(TPatchType::Dim);
+    std::size_t dim = PythonUtils::Unpack<int, std::size_t>(order_increment, order_incr_array, TPatchType::Dim);
 
-    if (dim != TDim)
+    if (dim != TPatchType::Dim)
         KRATOS_ERROR << "Invalid dimension " << dim;
 
-    rDummy.DegreeElevate<TDim>(pPatch, order_incr_array);
+    rDummy.DegreeElevate<TPatchType>(pPatch, order_incr_array);
 }
 
 //////////////////////////////////////////////////
 
-template<int TDim>
-typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatch(BSplinesPatchUtility& dummy,
-        typename Patch < TDim - 1 >::Pointer pPatch1, typename Patch < TDim - 1 >::Pointer pPatch2)
+template<class TPatchType>
+typename TPatchType::Pointer BSplinesPatchUtility_CreateLoftPatch(BSplinesPatchUtility& dummy,
+        typename TPatchType::BoundaryPatchType::Pointer pPatch1, typename TPatchType::BoundaryPatchType::Pointer pPatch2)
 {
-    return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatch1, pPatch2);
+    return BSplinesPatchUtility::CreateLoftPatch<TPatchType>(pPatch1, pPatch2);
 }
 
-template<int TDim>
-typename Patch<TDim>::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSplinesPatchUtility& dummy,
+template<class TPatchType>
+typename TPatchType::Pointer BSplinesPatchUtility_CreateLoftPatchFromList(BSplinesPatchUtility& dummy,
         const boost::python::list& patch_list, int order)
 {
-    typedef typename Patch < TDim - 1 >::Pointer TPatchPointerType;
-    std::vector<TPatchPointerType> pPatches;
-    PythonUtils::Unpack<TPatchPointerType, TPatchPointerType>(patch_list, pPatches);
+    typedef typename TPatchType::BoundaryPatchType::Pointer TBoundaryPatchPointerType;
+    std::vector<TBoundaryPatchPointerType> pPatches;
+    PythonUtils::Unpack<TBoundaryPatchPointerType, TBoundaryPatchPointerType>(patch_list, pPatches);
 
-    return BSplinesPatchUtility::CreateLoftPatch<TDim>(pPatches, order);
+    return BSplinesPatchUtility::CreateLoftPatch<TPatchType>(pPatches, order);
 }
 
 boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility& dummy,
@@ -273,54 +273,65 @@ boost::python::list BSplinesPatchUtility_CreatePatchFromGeo(BSplinesPatchUtility
     return patches;
 }
 
+template<typename TPatchPointerType>
 void BSplinesPatchUtility_MakeInterface1D(BSplinesPatchUtility& rDummy,
-        typename Patch<1>::Pointer pPatch1, int iside1,
-        typename Patch<1>::Pointer pPatch2, int iside2)
+        TPatchPointerType pPatch1, int iside1,
+        TPatchPointerType pPatch2, int iside2)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
     BoundarySide side2 = static_cast<BoundarySide>(iside2);
     rDummy.MakeInterface1D(pPatch1, side1, pPatch2, side2);
 }
 
+template<typename TPatchPointerType>
 void BSplinesPatchUtility_MakeInterface2D(BSplinesPatchUtility& rDummy,
-        typename Patch<2>::Pointer pPatch1, int iside1,
-        typename Patch<2>::Pointer pPatch2, int iside2,
-        const BoundaryDirection& direction)
+        TPatchPointerType pPatch1, int iside1,
+        TPatchPointerType pPatch2, int iside2,
+        const BoundaryDirection direction)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
     BoundarySide side2 = static_cast<BoundarySide>(iside2);
     rDummy.MakeInterface2D(pPatch1, side1, pPatch2, side2, direction);
 }
 
+template<typename TPatchPointerType>
 void BSplinesPatchUtility_MakeInterface3D(BSplinesPatchUtility& rDummy,
-        typename Patch<3>::Pointer pPatch1, int iside1,
-        typename Patch<3>::Pointer pPatch2, int iside2,
+        TPatchPointerType pPatch1, int iside1,
+        TPatchPointerType pPatch2, int iside2,
         const bool uv_or_vu,
-        const BoundaryDirection& direction1, const BoundaryDirection& direction2)
+        const BoundaryDirection direction1, const BoundaryDirection direction2)
 {
     BoundarySide side1 = static_cast<BoundarySide>(iside1);
     BoundarySide side2 = static_cast<BoundarySide>(iside2);
     rDummy.MakeInterface3D(pPatch1, side1, pPatch2, side2, uv_or_vu, direction1, direction2);
 }
 
-template<int TDim>
+template<typename TPatchPointerType>
 void BSplinesPatchUtility_Reverse(BSplinesPatchUtility& rDummy,
-                                  typename Patch<TDim>::Pointer pPatch, std::size_t idir)
+                                  TPatchPointerType pPatch, std::size_t idir)
 {
-    rDummy.Reverse<TDim>(pPatch, idir);
+    rDummy.Reverse(pPatch, idir);
 }
 
+template<class TPatchType>
 void BSplinesPatchUtility_Transpose2(BSplinesPatchUtility& rDummy,
-                                     typename Patch<2>::Pointer pPatch)
+                                     typename TPatchType::Pointer pPatch)
 {
-    rDummy.Transpose(pPatch);
+    rDummy.Transpose2D(pPatch);
 }
 
-template<int TDim>
-void BSplinesPatchUtility_CheckRepeatedKnot(BSplinesPatchUtility& rDummy,
-                                            typename MultiPatch<TDim>::Pointer pMultiPatch)
+template<class TPatchType>
+void BSplinesPatchUtility_Transpose3(BSplinesPatchUtility& rDummy,
+                                     typename TPatchType::Pointer pPatch, std::size_t idir, std::size_t jdir)
 {
-    BSplinesPatchUtility::CheckRepeatedKnot<TDim>(pMultiPatch);
+    rDummy.Transpose3D(pPatch, idir, jdir);
+}
+
+template<class TMultiPatchType>
+void BSplinesPatchUtility_CheckRepeatedKnot(BSplinesPatchUtility& rDummy,
+                                            typename TMultiPatchType::Pointer pMultiPatch)
+{
+    BSplinesPatchUtility::CheckRepeatedKnot<TMultiPatchType>(pMultiPatch);
 }
 
 //////////////////////////////////////////////////
@@ -566,24 +577,45 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<1>::RealPatch>)
     .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<2>::RealPatch>)
     .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<3>::RealPatch>)
-    .def("MakeInterface", &MultiPatchUtility_MakeInterface<1>)
-    .def("MakeInterface", &MultiPatchUtility_MakeInterface<2>)
-    .def("MakeInterface", &MultiPatchUtility_MakeInterface<3>)
-    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<1>)
-    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<2>)
-    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<3>)
-    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<1>)
-    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<2>)
-    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<3>)
-    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<1>)
-    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<2>)
-    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<3>)
-    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<1>)
-    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<2>)
-    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<3>)
-    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<1>)
-    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<2>)
-    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<3>)
+    .def("CreateComplexPatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<1>::ComplexPatch>)
+    .def("CreateComplexPatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<2>::ComplexPatch>)
+    .def("CreateComplexPatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<3>::ComplexPatch>)
+    .def("MakeInterface", &MultiPatchUtility_MakeInterface<PatchSelector<1>::RealPatch>)
+    .def("MakeInterface", &MultiPatchUtility_MakeInterface<PatchSelector<2>::RealPatch>)
+    .def("MakeInterface", &MultiPatchUtility_MakeInterface<PatchSelector<3>::RealPatch>)
+    .def("MakeInterface", &MultiPatchUtility_MakeInterface<PatchSelector<1>::ComplexPatch>)
+    .def("MakeInterface", &MultiPatchUtility_MakeInterface<PatchSelector<2>::ComplexPatch>)
+    .def("MakeInterface", &MultiPatchUtility_MakeInterface<PatchSelector<3>::ComplexPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<PatchSelector<1>::RealMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<PatchSelector<2>::RealMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<PatchSelector<3>::RealMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<PatchSelector<1>::ComplexMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<PatchSelector<2>::ComplexMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfaces<PatchSelector<3>::ComplexMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<PatchSelector<1>::RealMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<PatchSelector<2>::RealMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<PatchSelector<3>::RealMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<PatchSelector<1>::ComplexMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<PatchSelector<2>::ComplexMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesWithDebug<PatchSelector<3>::ComplexMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<PatchSelector<1>::RealMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<PatchSelector<2>::RealMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<PatchSelector<3>::RealMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<PatchSelector<1>::ComplexMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<PatchSelector<2>::ComplexMultiPatch>)
+    .def("CheckInterfaces", &MultiPatchUtility_CheckInterfacesFull<PatchSelector<3>::ComplexMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<PatchSelector<1>::RealMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<PatchSelector<2>::RealMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<PatchSelector<3>::RealMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<PatchSelector<1>::ComplexMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<PatchSelector<2>::ComplexMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates<PatchSelector<3>::ComplexMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<PatchSelector<1>::RealMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<PatchSelector<2>::RealMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<PatchSelector<3>::RealMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<PatchSelector<1>::ComplexMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<PatchSelector<2>::ComplexMultiPatch>)
+    .def("LocalCoordinates", &MultiPatchUtility_LocalCoordinates1<PatchSelector<3>::ComplexMultiPatch>)
     .def("ComputeSpatialDerivatives", &MultiPatchUtility_ComputeSpatialDerivatives<2>)
     .def("ComputeSpatialDerivatives", &MultiPatchUtility_ComputeSpatialDerivatives<3>)
     .def("GetLastNodeId", &MultiPatchUtility_GetLastNodeId)
@@ -597,47 +629,81 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("BoundaryFlag", &MultiPatchUtility_BoundaryFlag)
     .def("BoundaryFlag", &MultiPatchUtility_BoundaryFlag2D)
     .def("BoundaryFlag", &MultiPatchUtility_BoundaryFlag3D)
-    .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<1> >)
-    .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<2> >)
-    .def("PrintAddress", &MultiPatchUtility_PrintAddress<Patch<3> >)
+    .def("PrintAddress", &MultiPatchUtility_PrintAddress<PatchSelector<1>::RealPatch>)
+    .def("PrintAddress", &MultiPatchUtility_PrintAddress<PatchSelector<2>::RealPatch>)
+    .def("PrintAddress", &MultiPatchUtility_PrintAddress<PatchSelector<3>::RealPatch>)
     ;
 
     class_<MultiPatchRefinementUtility, MultiPatchRefinementUtility::Pointer, boost::noncopyable>
     ("MultiPatchRefinementUtility", init<>())
-    .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<1>)
-    .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<2>)
-    .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<3>)
-    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<1>) // deprecated
-    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<2>) // deprecated
-    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<3>) // deprecated
-    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<1>)
-    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<2>)
-    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<3>)
-    .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<1>)
-    .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<2>)
-    .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<3>)
+    .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<PatchSelector<1>::RealPatch>)
+    .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<PatchSelector<2>::RealPatch>)
+    .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<PatchSelector<3>::RealPatch>)
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<1>::RealPatch>) // deprecated
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<2>::RealPatch>) // deprecated
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<3>::RealPatch>) // deprecated
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<1>::RealPatch>)
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<2>::RealPatch>)
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<3>::RealPatch>)
+    .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<PatchSelector<1>::RealPatch>)
+    .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<PatchSelector<2>::RealPatch>)
+    .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<PatchSelector<3>::RealPatch>)
+    // same as above but for ComplexPatch
+    .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<PatchSelector<1>::ComplexPatch>)
+    .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<PatchSelector<2>::ComplexPatch>)
+    .def("InsertKnots", MultiPatchRefinementUtility_InsertKnots<PatchSelector<3>::ComplexPatch>)
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<1>::ComplexPatch>) // deprecated
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<2>::ComplexPatch>) // deprecated
+    .def("InsertKnots2", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<3>::ComplexPatch>) // deprecated
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<1>::ComplexPatch>)
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<2>::ComplexPatch>)
+    .def("InsertKnotsGetTrans", MultiPatchRefinementUtility_InsertKnots2<PatchSelector<3>::ComplexPatch>)
+    .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<PatchSelector<1>::ComplexPatch>)
+    .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<PatchSelector<2>::ComplexPatch>)
+    .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<PatchSelector<3>::ComplexPatch>)
     ;
 
     class_<BSplinesPatchUtility, BSplinesPatchUtility::Pointer, boost::noncopyable>
     ("BSplinesPatchUtility", init<>())
-    .def("CreateLoftPatch", &BSplinesPatchUtility_CreateLoftPatch<2>)
-    .def("CreateLoftPatch", &BSplinesPatchUtility_CreateLoftPatch<3>)
-    .def("CreateLoftPatchFromList2D", &BSplinesPatchUtility_CreateLoftPatchFromList<2>)
-    .def("CreateLoftPatchFromList3D", &BSplinesPatchUtility_CreateLoftPatchFromList<3>)
     .def("CreatePatchFromGeo", &BSplinesPatchUtility_CreatePatchFromGeo)
-    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface1D)
-    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D)
-    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface3D)
-    .def("Reverse", &BSplinesPatchUtility_Reverse<1>)
-    .def("Reverse", &BSplinesPatchUtility_Reverse<2>)
-    .def("Reverse", &BSplinesPatchUtility_Reverse<3>)
-    .def("Transpose", &BSplinesPatchUtility_Transpose2)
-    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<1>)
-    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<2>)
-    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<3>)
-    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<1>)
-    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<2>)
-    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<3>)
+    //
+    .def("CreateLoftPatch", &BSplinesPatchUtility_CreateLoftPatch<PatchSelector<2>::RealPatch>)
+    .def("CreateLoftPatch", &BSplinesPatchUtility_CreateLoftPatch<PatchSelector<3>::RealPatch>)
+    .def("CreateLoftPatchFromList2D", &BSplinesPatchUtility_CreateLoftPatchFromList<PatchSelector<2>::RealPatch>)
+    .def("CreateLoftPatchFromList3D", &BSplinesPatchUtility_CreateLoftPatchFromList<PatchSelector<3>::RealPatch>)
+    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface1D<PatchSelector<1>::RealPatch::Pointer>)
+    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D<PatchSelector<2>::RealPatch::Pointer>)
+    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface3D<PatchSelector<3>::RealPatch::Pointer>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<PatchSelector<1>::RealPatch::Pointer>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<PatchSelector<2>::RealPatch::Pointer>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<PatchSelector<3>::RealPatch::Pointer>)
+    .def("Transpose", &BSplinesPatchUtility_Transpose2<PatchSelector<2>::RealPatch>)
+    .def("Transpose", &BSplinesPatchUtility_Transpose3<PatchSelector<3>::RealPatch>)
+    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<PatchSelector<1>::RealMultiPatch>)
+    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<PatchSelector<2>::RealMultiPatch>)
+    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<PatchSelector<3>::RealMultiPatch>)
+    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<PatchSelector<1>::RealMultiPatch>)
+    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<PatchSelector<2>::RealMultiPatch>)
+    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<PatchSelector<3>::RealMultiPatch>)
+    // same as above but for ComplexPatch
+    .def("CreateLoftPatch", &BSplinesPatchUtility_CreateLoftPatch<PatchSelector<2>::ComplexPatch>)
+    .def("CreateLoftPatch", &BSplinesPatchUtility_CreateLoftPatch<PatchSelector<3>::ComplexPatch>)
+    .def("CreateLoftPatchFromList2D", &BSplinesPatchUtility_CreateLoftPatchFromList<PatchSelector<2>::ComplexPatch>)
+    .def("CreateLoftPatchFromList3D", &BSplinesPatchUtility_CreateLoftPatchFromList<PatchSelector<3>::ComplexPatch>)
+    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface1D<PatchSelector<1>::ComplexPatch::Pointer>)
+    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface2D<PatchSelector<2>::ComplexPatch::Pointer>)
+    .def("MakeInterface", &BSplinesPatchUtility_MakeInterface3D<PatchSelector<3>::ComplexPatch::Pointer>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<PatchSelector<1>::ComplexPatch::Pointer>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<PatchSelector<2>::ComplexPatch::Pointer>)
+    .def("Reverse", &BSplinesPatchUtility_Reverse<PatchSelector<3>::ComplexPatch::Pointer>)
+    .def("Transpose", &BSplinesPatchUtility_Transpose2<PatchSelector<2>::ComplexPatch>)
+    .def("Transpose", &BSplinesPatchUtility_Transpose3<PatchSelector<3>::ComplexPatch>)
+    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<PatchSelector<1>::ComplexMultiPatch>)
+    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<PatchSelector<2>::ComplexMultiPatch>)
+    .def("CreateInterfaces", &BSplinesPatchUtility::CreateInterfaces<PatchSelector<3>::ComplexMultiPatch>)
+    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<PatchSelector<1>::ComplexMultiPatch>)
+    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<PatchSelector<2>::ComplexMultiPatch>)
+    .def("CheckRepeatedKnot", &BSplinesPatchUtility_CheckRepeatedKnot<PatchSelector<3>::ComplexMultiPatch>)
     ;
 
     class_<BendingStripUtility, BendingStripUtility::Pointer, boost::noncopyable>

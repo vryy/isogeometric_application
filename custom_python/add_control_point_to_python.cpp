@@ -94,11 +94,14 @@ inline void ControlPoint_ApplyTransformation(ControlPoint<double>& rDummy, const
 
 ////////////////////////////////////////
 
-void IsogeometricApplication_AddControlPointToPython()
+template<typename TDataType, typename TWeightType>
+void IsogeometricApplication_AddControlPointToPythonImpl(const std::string& Prefix)
 {
-    class_<ControlPoint<double>, ControlPoint<double>::Pointer>
-    ("ControlPoint", init<>())
-    .def(init<double, double, double, double>())
+    typedef ControlPoint<TDataType, TWeightType> ControlPointType;
+
+    class_<ControlPointType, typename ControlPointType::Pointer>
+    ((Prefix+"ControlPoint").c_str(), init<>())
+    .def(init<TDataType, TDataType, TDataType, TWeightType>())
     .add_property("WX", ControlPoint_GetWX, ControlPoint_SetWX)
     .add_property("WY", ControlPoint_GetWY, ControlPoint_SetWY)
     .add_property("WZ", ControlPoint_GetWZ, ControlPoint_SetWZ)
@@ -110,9 +113,17 @@ void IsogeometricApplication_AddControlPointToPython()
     .def(self_ns::str(self))
     ;
 
-    class_<Variable<ControlPoint<double> >, bases<VariableData>, boost::noncopyable >( "ControlPointVariable", no_init )
+    class_<Variable<ControlPointType>, bases<VariableData>, boost::noncopyable >( (Prefix+"ControlPointVariable").c_str(), no_init )
     .def( self_ns::str( self ) )
     ;
+}
+
+void IsogeometricApplication_AddControlPointToPython()
+{
+
+    IsogeometricApplication_AddControlPointToPythonImpl<KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE>("");
+    IsogeometricApplication_AddControlPointToPythonImpl<KRATOS_COMPLEX_TYPE, KRATOS_DOUBLE_TYPE>("Complex");
+
 }
 
 }  // namespace Python.

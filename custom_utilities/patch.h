@@ -223,7 +223,13 @@ public:
     /// Get the string representing the type of the patch
     virtual std::string Type() const
     {
-        return StaticType();
+        std::stringstream ss;
+        ss << "Patch<" << TDim
+           << ", " << DataTypeToString<LocalCoordinateType>::Get()
+           << ", " << DataTypeToString<CoordinateType>::Get()
+           << ", " << DataTypeToString<DataType>::Get()
+           << ">";
+        return ss.str();
     }
 
     /// Get the string representing the type of the patch

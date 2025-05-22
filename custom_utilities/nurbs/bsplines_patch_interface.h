@@ -25,22 +25,23 @@ namespace Kratos
  * This class represents an interface connecting two patches.
  * The interface is designed using half-edge philosophy, in which the interface keeps a pointer to the interface of the other side.
  */
-template<int TDim>
-class BSplinesPatchInterface : public PatchInterface<TDim>
+template<int TDim, typename TLocalCoordinateType = double, typename TCoordinateType = double, typename TDataType = double>
+class BSplinesPatchInterface : public PatchInterface<TDim, TLocalCoordinateType, TCoordinateType, TDataType>
 {
 };
 
 /**
  * Template specialization for 1D
  */
-template<>
-class BSplinesPatchInterface<1> : public PatchInterface<1>
+template<typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+class BSplinesPatchInterface<1, TLocalCoordinateType, TCoordinateType, TDataType> : public PatchInterface<1, TLocalCoordinateType, TCoordinateType, TDataType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
 
-    typedef PatchInterface<1> BaseType;
+    typedef PatchInterface<1, TLocalCoordinateType, TCoordinateType, TDataType> BaseType;
+    typedef BSplinesPatchInterface<1, TLocalCoordinateType, TCoordinateType, TDataType> ThisType;
     typedef typename BaseType::PatchType PatchType;
 
     /// Empty Constructor
@@ -57,7 +58,7 @@ public:
     /// Create a clone of this interface
     typename BaseType::Pointer Clone() const override
     {
-        return typename BaseType::Pointer(new BSplinesPatchInterface<1>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2()));
+        return typename BaseType::Pointer(new ThisType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2()));
     }
 
     /// Get the local parameter space mapping
@@ -73,8 +74,8 @@ public:
     /// Validate the compatibility of two patches on the interface
     bool Validate(const bool debug, const double dist_tol) const override
     {
-        typename Patch<0>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
-        typename Patch<0>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
+        typename PatchType::BoundaryPatchType::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
+        typename PatchType::BoundaryPatchType::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
 
         if (debug)
         {
@@ -95,14 +96,15 @@ public:
 /**
  * Template specialization for 2D
  */
-template<>
-class BSplinesPatchInterface<2> : public PatchInterface<2>
+template<typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+class BSplinesPatchInterface<2, TLocalCoordinateType, TCoordinateType, TDataType> : public PatchInterface<2, TLocalCoordinateType, TCoordinateType, TDataType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
 
-    typedef PatchInterface<2> BaseType;
+    typedef PatchInterface<2, TLocalCoordinateType, TCoordinateType, TDataType> BaseType;
+    typedef BSplinesPatchInterface<2, TLocalCoordinateType, TCoordinateType, TDataType> ThisType;
     typedef typename BaseType::PatchType PatchType;
 
     /// Empty Constructor
@@ -138,7 +140,7 @@ public:
     /// Create a clone of this interface
     typename BaseType::Pointer Clone() const override
     {
-        return typename BaseType::Pointer(new BSplinesPatchInterface<2>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), this->Direction()));
+        return typename BaseType::Pointer(new ThisType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), this->Direction()));
     }
 
     /// Get the local parameter space mapping
@@ -164,12 +166,12 @@ public:
     /// Validate the compatibility of two patches on the interface
     bool Validate(const bool debug, const double dist_tol) const override
     {
-        typename Patch<1>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
-        typename Patch<1>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
+        typename PatchType::BoundaryPatchType::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
+        typename PatchType::BoundaryPatchType::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2());
 
         if (mDirection == BoundaryDirection::_REVERSED_)
         {
-            BSplinesPatchUtility::Reverse<1>(pBPatch2, 0);
+            BSplinesPatchUtility::Reverse(pBPatch2, 0);
         }
 
         if (debug)
@@ -218,14 +220,15 @@ private:
 /**
  * Template specialization for 3D
  */
-template<>
-class BSplinesPatchInterface<3> : public PatchInterface<3>
+template<typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+class BSplinesPatchInterface<3, TLocalCoordinateType, TCoordinateType, TDataType> : public PatchInterface<3, TLocalCoordinateType, TCoordinateType, TDataType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BSplinesPatchInterface);
 
-    typedef PatchInterface<3> BaseType;
+    typedef PatchInterface<3, TLocalCoordinateType, TCoordinateType, TDataType> BaseType;
+    typedef BSplinesPatchInterface<3, TLocalCoordinateType, TCoordinateType, TDataType> ThisType;
     typedef typename BaseType::PatchType PatchType;
 
     /// Empty Constructor
@@ -298,11 +301,11 @@ public:
         const bool uv_or_vu = (this->LocalParameterMapping(0) == 0);
         if (uv_or_vu)
         {
-            return typename BaseType::Pointer(new BSplinesPatchInterface<3>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), true, this->Direction(0), this->Direction(1)));
+            return typename BaseType::Pointer(new ThisType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), true, this->Direction(0), this->Direction(1)));
         }
         else
         {
-            return typename BaseType::Pointer(new BSplinesPatchInterface<3>(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), false, this->Direction(0), this->Direction(1)));
+            return typename BaseType::Pointer(new ThisType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), false, this->Direction(0), this->Direction(1)));
         }
     }
 
@@ -324,11 +327,11 @@ public:
     /// Validate the compatibility of two patches on the interface
     bool Validate(const bool debug, const double dist_tol) const override
     {
-        typename Patch<2>::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
+        typename PatchType::BoundaryPatchType::Pointer pBPatch1 = this->pPatch1()->ConstructBoundaryPatch(this->Side1());
 
         std::vector<BoundaryDirection> directions = {mDirections[LocalParameterMapping(0)], mDirections[LocalParameterMapping(1)]};
 
-        typename Patch<2>::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2(), mLocalParameterMap, directions);
+        typename PatchType::BoundaryPatchType::Pointer pBPatch2 = this->pPatch2()->ConstructBoundaryPatch(this->Side2(), mLocalParameterMap, directions);
 
         if (debug)
         {
@@ -359,10 +362,37 @@ public:
 
         const bool uv_or_vu = (this->LocalParameterMapping(0) == 0);
 
+        // KRATOS_WATCH_STD_CON(func_indices)
+        // BSplinesIndexingUtility::Transform(func_indices, size_info, uv_or_vu, mDirections[0], mDirections[1]);
         BSplinesIndexingUtility::Transform(func_indices, size_info, uv_or_vu, mDirections[this->LocalParameterMapping(0)], mDirections[this->LocalParameterMapping(1)]);
 
+        // std::vector<std::size_t> size_info2;
+        // std::vector<std::size_t> other_func_indices = this->pPatch2()->pFESpace()->ExtractBoundaryFunctionIndices(size_info2, this->Side2());
+
+        // std::cout << "Patch " << this->pPatch1()->Id() << " transfers boundary function indices to Patch " << this->pPatch2()->Id() << ":";
+        // KRATOS_WATCH_STD_CON(func_indices)
+
+        // std::cout << "Current boundary function indices of Patch " << this->pPatch2()->Id() << ":";
+        // KRATOS_WATCH_STD_CON(other_func_indices)
 
         this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices, false);
+
+        // other_func_indices = this->pPatch2()->pFESpace()->ExtractBoundaryFunctionIndices(size_info2, this->Side2());
+        // std::cout << "New boundary function indices of Patch " << this->pPatch2()->Id() << ":";
+        // KRATOS_WATCH_STD_CON(other_func_indices)
+        // KRATOS_WATCH(uv_or_vu)
+        // KRATOS_WATCH(mDirections[0])
+        // KRATOS_WATCH(mDirections[1])
+        // const auto pBFESpace1 = this->pPatch1()->pFESpace()->ConstructBoundaryFESpace(this->Side1());
+        // KRATOS_WATCH(*pBFESpace1)
+        // std::vector<BoundaryDirection> directions = {mDirections[LocalParameterMapping(0)], mDirections[LocalParameterMapping(1)]};
+        // const auto pBFESpace2 = this->pPatch2()->pFESpace()->ConstructBoundaryFESpace(this->Side2(), mLocalParameterMap, directions);
+        // KRATOS_WATCH(*pBFESpace2);
+        // KRATOS_WATCH("-------------------")
+        // KRATOS_WATCH("-------------------")
+        // KRATOS_WATCH("-------------------")
+        // KRATOS_WATCH("")
+        // KRATOS_WATCH("")
     }
 
     /// Information
@@ -387,7 +417,7 @@ private:
 };
 
 /// output stream function
-template<int TDim>
+template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
 inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesPatchInterface<TDim>& rThis)
 {
     rOStream << "-------------Begin BSplinesPatchInterfaceInfo-------------" << std::endl;

@@ -61,15 +61,15 @@ public:
 
     /// Make a simple interface between two patches
     /// For BSplines patch, one shall use BSplinesPatchUtility::MakeInterfacexD instead
-    template<int TDim>
-    static void MakeInterface(typename Patch<TDim>::Pointer pPatch1, const BoundarySide& side1,
-                              typename Patch<TDim>::Pointer pPatch2, const BoundarySide& side2)
+    template<class TPatchType>
+    static void MakeInterface(typename TPatchType::Pointer pPatch1, const BoundarySide side1,
+                              typename TPatchType::Pointer pPatch2, const BoundarySide side2)
     {
-        typename PatchInterface<TDim>::Pointer pInterface12;
-        typename PatchInterface<TDim>::Pointer pInterface21;
+        typename TPatchType::PatchInterfaceType::Pointer pInterface12;
+        typename TPatchType::PatchInterfaceType::Pointer pInterface21;
 
-        pInterface12 = iga::make_shared<PatchInterface<TDim> >(pPatch1, side1, pPatch2, side2);
-        pInterface21 = iga::make_shared<PatchInterface<TDim> >(pPatch2, side2, pPatch1, side1);
+        pInterface12 = iga::make_shared<typename TPatchType::PatchInterfaceType>(pPatch1, side1, pPatch2, side2);
+        pInterface21 = iga::make_shared<typename TPatchType::PatchInterfaceType>(pPatch2, side2, pPatch1, side1);
 
         pInterface12->SetOtherInterface(pInterface21);
         pInterface21->SetOtherInterface(pInterface12);
@@ -79,11 +79,11 @@ public:
     }
 
     /// Check all the interfaces of the multipatch for compatibility issue
-    template<int TDim>
-    static void CheckInterfaces(const MultiPatch<TDim>& rMultiPatch, const bool debug = false, const double dist_tol = 0.0)
+    template<class TMultiPatchType>
+    static void CheckInterfaces(const TMultiPatchType& rMultiPatch, const bool debug = false, const double dist_tol = 0.0)
     {
         // loop through all the patches
-        for (typename MultiPatch<TDim>::patch_const_iterator it = rMultiPatch.begin(); it != rMultiPatch.end(); ++it)
+        for (typename TMultiPatchType::patch_const_iterator it = rMultiPatch.begin(); it != rMultiPatch.end(); ++it)
         {
             // loop through all interfaces of the patch
             for (auto it_interface = it->InterfaceBegin(); it_interface != it->InterfaceEnd(); ++it_interface)
@@ -134,9 +134,11 @@ public:
     /// Find the local coordinates of a point on a patch. The sampling is performed
     /// on the patch to determine the best initial point.
     /// On output return the error code (0: successful)
-    template<int TDim>
-    static int LocalCoordinates(const Patch<TDim>& rPatch,
-                                const array_1d<double, 3>& point, array_1d<double, 3>& xi, const std::vector<int>& nsampling)
+    template<class TPatchType>
+    static int LocalCoordinates(const TPatchType& rPatch,
+                                const array_1d<typename TPatchType::CoordinateType, 3>& point,
+                                array_1d<typename TPatchType::LocalCoordinateType, 3>& xi,
+                                const std::vector<int>& nsampling)
     {
         /// find the best initial point by sampling
         rPatch.Predict(point, xi, nsampling);
@@ -148,17 +150,18 @@ public:
     /// Find the local coordinates of a point on a multipatch. The sampling is performed
     /// on each patch to determine the best initial point.
     /// On output return the patch_id if sucessful; -1 otherwise
-    template<int TDim>
-    static int LocalCoordinates(const MultiPatch<TDim>& rMultiPatch,
-                                const array_1d<double, 3>& point, array_1d<double, 3>& xi,
+    template<class TMultiPatchType>
+    static int LocalCoordinates(const TMultiPatchType& rMultiPatch,
+                                const array_1d<typename TMultiPatchType::CoordinateType, 3>& point,
+                                array_1d<typename TMultiPatchType::LocalCoordinateType, 3>& xi,
                                 const std::vector<int>& nsampling,
-                                const int echo_level = 0)
+                                const int echo_level)
     {
         int error_code;
 
         if (echo_level > 0) std::cout << "searching local coordinates for point " << point << std::endl;
 
-        for (typename MultiPatch<TDim>::patch_const_iterator it = rMultiPatch.begin(); it != rMultiPatch.end(); ++it)
+        for (typename TMultiPatchType::patch_const_iterator it = rMultiPatch.begin(); it != rMultiPatch.end(); ++it)
         {
             error_code = LocalCoordinates( *it, point, xi, nsampling);
             if (echo_level > 1) std::cout << "error code for patch " << it->Id() << ": " << error_code << std::endl;

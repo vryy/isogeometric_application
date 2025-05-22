@@ -83,6 +83,12 @@ typename TPatchType::FESpaceType::Pointer Patch_pFESpace(TPatchType& rDummy)
     return rDummy.pFESpace();
 }
 
+template<class TPatchType>
+typename TPatchType::Pointer Patch_Create(TPatchType& rDummy, std::size_t Id, typename TPatchType::FESpaceType::Pointer pFESpace)
+{
+    return rDummy.Create(Id, pFESpace);
+}
+
 template<class TPatchType, typename TDataType>
 typename GridFunction<TPatchType::Dim, TDataType>::Pointer Patch_CreateGridFunction(TPatchType& rDummy, typename ControlGrid<TDataType>::Pointer pControlGrid)
 {
@@ -380,6 +386,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
     .add_property("LayerIndex", &Patch_GetLayerIndex<PatchType>, &Patch_SetLayerIndex<PatchType>)
     .def("WorkingSpaceDimension", &PatchType::WorkingSpaceDimension)
     .def("Name", &PatchType::Name)
+    .def("Create", &Patch_Create<PatchType>)
     .def("CreateControlPointGridFunction", &PatchType::CreateControlPointGridFunction)
     .def("CreateGridFunction", &Patch_CreateGridFunction<PatchType, TDataType>)
     .def("CreateGridFunction", &Patch_CreateGridFunction<PatchType, array_1d<TDataType, 3> >)
@@ -457,6 +464,18 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
     ;
 }
 
+template<int TDim>
+void IsogeometricApplication_AddPatchSelectorToPython_Helper()
+{
+    std::stringstream ss;
+    ss << "Patch" << TDim << "DSelectorClass";
+    class_<PatchSelector<TDim>, boost::noncopyable>
+    (ss.str().c_str(), no_init)
+    .add_property("RealPatch", make_function(&PatchSelector<TDim>::GetRealPatch, return_value_policy<reference_existing_object>()))
+    .add_property("ComplexPatch", make_function(&PatchSelector<TDim>::GetComplexPatch, return_value_policy<reference_existing_object>()))
+    ;
+}
+
 void IsogeometricApplication_AddExportToPython()
 {
     class_<MultiNURBSPatchGeoExporter, MultiNURBSPatchGeoExporter::Pointer, boost::noncopyable>
@@ -510,6 +529,14 @@ void IsogeometricApplication_AddExportToPython()
     .def(self_ns::str(self))
     ;
 
+    // export the patch selector to select patch at runtime
+    IsogeometricApplication_AddPatchSelectorToPython_Helper<1>();
+    IsogeometricApplication_AddPatchSelectorToPython_Helper<2>();
+    IsogeometricApplication_AddPatchSelectorToPython_Helper<3>();
+
+    scope().attr("Patch1DSelector") = boost::ref(PatchSelector1DInstance);
+    scope().attr("Patch2DSelector") = boost::ref(PatchSelector2DInstance);
+    scope().attr("Patch3DSelector") = boost::ref(PatchSelector3DInstance);
 }
 
 template<int TDim>
@@ -590,6 +617,7 @@ void IsogeometricApplication_AddPatchesToPython()
     IsogeometricApplication_AddPatchesToPython_Helper<1, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
     IsogeometricApplication_AddPatchesToPython_Helper<2, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
     IsogeometricApplication_AddPatchesToPython_Helper<3, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
+    // IsogeometricApplication_AddPatchesToPython_Helper<3, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE, KRATOS_COMPLEX_TYPE>("GComplex");
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////IMPORT/EXPORT/////////////////////////////

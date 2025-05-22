@@ -32,47 +32,51 @@
 namespace Kratos
 {
 
-template<int TDim>
+template<int TDim, typename TLocalCoordinateType>
 class BSplinesFESpace;
 
 template<int TDim>
 struct BSplinesFESpace_Helper
 {
     /// Get the values of the basis functions at point xi
-    static void GetValues(const BSplinesFESpace<TDim>& rFESpace,
-                          std::vector<double>& values, const std::vector<double>& xi);
+    template<typename TLocalCoordinateType>
+    static void GetValues(const BSplinesFESpace<TDim, TLocalCoordinateType>& rFESpace,
+                          std::vector<double>& values, const std::vector<TLocalCoordinateType>& xi);
 
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
-    static void GetValuesAndDerivatives(const BSplinesFESpace<TDim>& rFESpace,
+    template<typename TLocalCoordinateType>
+    static void GetValuesAndDerivatives(const BSplinesFESpace<TDim, TLocalCoordinateType>& rFESpace,
                                         std::vector<double>& values,
                                         std::vector<std::vector<double> >& derivatives,
-                                        const std::vector<double>& xi);
+                                        const std::vector<TLocalCoordinateType>& xi);
 
     /// the output derivatives has the form of values[der_index][func_index][param_index]
     /// For the first derivatives, param_index is 0,1,..,dim
     /// For the second derivatives, param_index is 00,11,..,01,02,..,11,12,..
     /// For the higher derivatives, param_index is [d1][d2][d3] (d1<=d2<=d3) (TODO)
-    static void GetValuesAndDerivatives(const BSplinesFESpace<TDim>& rFESpace,
+    template<typename TLocalCoordinateType>
+    static void GetValuesAndDerivatives(const BSplinesFESpace<TDim, TLocalCoordinateType>& rFESpace,
                                         const unsigned int nd,
                                         std::vector<double>& values,
                                         std::vector<std::vector<std::vector<double> > >& derivatives,
-                                        const std::vector<double>& xi);
+                                        const std::vector<TLocalCoordinateType>& xi);
 };
 
 /**
 This class represents the FESpace for a single BSplines patch defined over parametric domain.
  */
-template<int TDim>
-class BSplinesFESpace : public FESpace<TDim>
+template<int TDim, typename TLocalCoordinateType = double>
+class BSplinesFESpace : public FESpace<TDim, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BSplinesFESpace);
 
     /// Type definition
-    typedef FESpace<TDim> BaseType;
-    typedef KnotArray1D<double> knot_container_t;
+    typedef FESpace<TDim, TLocalCoordinateType> BaseType;
+    typedef BSplinesFESpace<TDim, TLocalCoordinateType> ThisType;
+    typedef KnotArray1D<TLocalCoordinateType> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
     typedef BCellManager<TDim, BCell> cell_container_t;
 
@@ -80,7 +84,7 @@ public:
     BSplinesFESpace() : BaseType() {}
 
     /// Destructor
-    virtual ~BSplinesFESpace()
+    ~BSplinesFESpace() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << this->Type() << ", Addr = " << this << " is destroyed" << std::endl;
@@ -88,9 +92,9 @@ public:
     }
 
     /// Helper to create new BSplinesFESpace pointer
-    static typename BSplinesFESpace<TDim>::Pointer Create()
+    static typename ThisType::Pointer Create()
     {
-        return typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace());
+        return typename ThisType::Pointer(new ThisType());
     }
 
     /// Get the order of the BSplines patch in specific direction
@@ -142,9 +146,9 @@ public:
     }
 
     /// Get the lower and upper bound of the parametric space in a specific direction
-    std::vector<double> ParametricBounds(std::size_t idir) const final
+    std::vector<TLocalCoordinateType> ParametricBounds(std::size_t idir) const final
     {
-        std::vector<double> bound(2);
+        std::vector<TLocalCoordinateType> bound(2);
         bound[0] = (*(mKnotVectors[idir].begin()))->Value();
         bound[1] = (*(mKnotVectors[idir].end() - 1))->Value();
         return bound;
@@ -171,7 +175,7 @@ public:
     }
 
     /// Create and set the knot vector in direction i.
-    void SetKnotVector(std::size_t idir, const std::vector<double>& values)
+    void SetKnotVector(std::size_t idir, const std::vector<TLocalCoordinateType>& values)
     {
         if (idir >= TDim)
         {
@@ -262,7 +266,7 @@ public:
     }
 
     /// Get the values of the basis function i at point xi
-    void GetValue(double& v, std::size_t i, const std::vector<double>& xi) const final
+    void GetValue(double& v, std::size_t i, const std::vector<TLocalCoordinateType>& xi) const final
     {
         // TODO the current approach is expensive (all is computed). We have to find the way to optimize it.
         std::vector<double> values;
@@ -271,13 +275,13 @@ public:
     }
 
     /// Get the values of the basis functions at point xi
-    void GetValues(std::vector<double>& values, const std::vector<double>& xi) const final
+    void GetValues(std::vector<double>& values, const std::vector<TLocalCoordinateType>& xi) const final
     {
-        BSplinesFESpace_Helper<TDim>::GetValues(*this, values, xi);
+        BSplinesFESpace_Helper<TDim>::template GetValues(*this, values, xi);
     }
 
     /// Get the derivatives of the basis function i at point xi
-    void GetDerivative(std::vector<double>& values, std::size_t i, const std::vector<double>& xi) const final
+    void GetDerivative(std::vector<double>& values, std::size_t i, const std::vector<TLocalCoordinateType>& xi) const final
     {
         // TODO the current approach is expensive (all is computed). Find the way to optimize it.
         std::vector<std::vector<double> > tmp;
@@ -286,14 +290,14 @@ public:
     }
 
     /// Get the derivatives of the basis functions at point xi
-    void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const final
+    void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<TLocalCoordinateType>& xi) const final
     {
         std::vector<double> dummy;
         this->GetValuesAndDerivatives(dummy, values, xi);
     }
 
     /// [derived]
-    void GetDerivatives(const unsigned int nd, std::vector<std::vector<std::vector<double> > >& values, const std::vector<double>& xi) const final
+    void GetDerivatives(const unsigned int nd, std::vector<std::vector<std::vector<double> > >& values, const std::vector<TLocalCoordinateType>& xi) const final
     {
         std::vector<double> dummy;
         this->GetValuesAndDerivatives(nd, dummy, values, xi);
@@ -301,19 +305,19 @@ public:
 
     /// Get the values and derivatives of the basis functions at point xi
     /// the output derivatives has the form of values[func_index][dim_index]
-    void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<double>& xi) const final
+    void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<TLocalCoordinateType>& xi) const final
     {
-        BSplinesFESpace_Helper<TDim>::GetValuesAndDerivatives(*this, values, derivatives, xi);
+        BSplinesFESpace_Helper<TDim>::template GetValuesAndDerivatives(*this, values, derivatives, xi);
     }
 
     /// [derived]
-    void GetValuesAndDerivatives(const unsigned int nd, std::vector<double>& values, std::vector<std::vector<std::vector<double> > >& derivatives, const std::vector<double>& xi) const final
+    void GetValuesAndDerivatives(const unsigned int nd, std::vector<double>& values, std::vector<std::vector<std::vector<double> > >& derivatives, const std::vector<TLocalCoordinateType>& xi) const final
     {
-        BSplinesFESpace_Helper<TDim>::GetValuesAndDerivatives(*this, nd, values, derivatives, xi);
+        BSplinesFESpace_Helper<TDim>::template GetValuesAndDerivatives(*this, nd, values, derivatives, xi);
     }
 
     /// Check if a point lies inside the parametric domain of the BSplinesFESpace
-    bool IsInside(const std::vector<double>& xi) const final
+    bool IsInside(const std::vector<TLocalCoordinateType>& xi) const final
     {
         bool is_inside = true;
         for (std::size_t i = 0; i < TDim; ++i)
@@ -325,7 +329,7 @@ public:
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const final
+    bool IsCompatible(const BaseType& rOtherFESpace) const final
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -335,7 +339,7 @@ public:
             return false;
         }
 
-        const BSplinesFESpace<TDim>& rOtherBSplinesFESpace = dynamic_cast<const BSplinesFESpace<TDim>&>(rOtherFESpace);
+        const ThisType& rOtherBSplinesFESpace = dynamic_cast<const ThisType&>(rOtherFESpace);
 
         // compare the knot vectors and order information
         for (std::size_t i = 0; i < TDim; ++i)
@@ -1067,9 +1071,9 @@ public:
     }
 
     /// Construct the boundary patch based on side
-    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const final
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const final
     {
-        typename BSplinesFESpace < TDim - 1 >::Pointer pBFESpace = typename BSplinesFESpace < TDim - 1 >::Pointer(new BSplinesFESpace < TDim - 1 > ());
+        typename BSplinesFESpace<TDim-1, TLocalCoordinateType>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1, TLocalCoordinateType>::Pointer(new BSplinesFESpace<TDim-1, TLocalCoordinateType> ());
 
         // assign the knot vectors
         if constexpr (TDim == 2)
@@ -1121,10 +1125,10 @@ public:
     }
 
     /// Construct the boundary patch based on side and direction
-    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
             const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const final
     {
-        typename BSplinesFESpace < TDim - 1 >::Pointer pBFESpace = typename BSplinesFESpace < TDim - 1 >::Pointer(new BSplinesFESpace < TDim - 1 > ());
+        typename BSplinesFESpace<TDim-1, TLocalCoordinateType>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1, TLocalCoordinateType>::Pointer(new BSplinesFESpace<TDim-1, TLocalCoordinateType> ());
         std::vector<int> param_dirs = ParameterDirection<TDim>::Get(side);
 
         // assign the knot vectors
@@ -1171,15 +1175,15 @@ public:
     }
 
     /// Construct the sliced FESpace
-    typename FESpace < TDim - 1 >::Pointer ConstructSlicedFESpace(int idir, double xi) const final
+    typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir, TLocalCoordinateType xi) const final
     {
         return this->ConstructSlicedFESpace(idir);
     }
 
     /// Construct the sliced FESpace
-    typename FESpace < TDim - 1 >::Pointer ConstructSlicedFESpace(int idir) const
+    typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir) const
     {
-        typename FESpace < TDim - 1 >::Pointer pSFESpace;
+        typename FESpace<TDim-1>::Pointer pSFESpace;
 
         if (idir == 0)
         {
@@ -1203,9 +1207,9 @@ public:
     }
 
     /// Construct the FESpace in single direction
-    typename FESpace<1>::Pointer ConstructUniaxialFESpace(int idir) const
+    typename FESpace<1, TLocalCoordinateType>::Pointer ConstructUniaxialFESpace(int idir) const
     {
-        typename BSplinesFESpace<1>::Pointer pBFESpace = typename BSplinesFESpace<1>::Pointer(new BSplinesFESpace<1>());
+        typename BSplinesFESpace<1, TLocalCoordinateType>::Pointer pBFESpace = typename BSplinesFESpace<1, TLocalCoordinateType>::Pointer(new BSplinesFESpace<1, TLocalCoordinateType>());
         pBFESpace->SetKnotVector(0, KnotVector(idir).Clone());
         pBFESpace->SetInfo(0, Number(idir), Order(idir));
         pBFESpace->ResetFunctionIndices();
@@ -1439,7 +1443,7 @@ public:
     }
 
     /// Overload assignment operator
-    BSplinesFESpace<TDim>& operator=(const BSplinesFESpace<TDim>& rOther)
+    ThisType& operator=(const ThisType& rOther)
     {
         for (std::size_t dim = 0; dim < TDim; ++dim)
         {
@@ -1452,9 +1456,9 @@ public:
     }
 
     /// Clone this FESpace, this is a deep copy operation
-    typename FESpace<TDim>::Pointer Clone() const final
+    typename BaseType::Pointer Clone() const final
     {
-        typename BSplinesFESpace<TDim>::Pointer pNewFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
+        typename ThisType::Pointer pNewFESpace = typename ThisType::Pointer(new ThisType());
         *pNewFESpace = *this;
         return pNewFESpace;
     }
@@ -1543,23 +1547,23 @@ private:
 /**
  * Template specific instantiation for null-D BSplines patch to terminate the compilation
  */
-template<>
-class BSplinesFESpace<0> : public FESpace<0>
+template<typename TLocalCoordinateType>
+class BSplinesFESpace<0, TLocalCoordinateType> : public FESpace<0, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(BSplinesFESpace);
 
     /// Type definition
-    typedef FESpace<0> BaseType;
-    typedef KnotArray1D<double> knot_container_t;
+    typedef FESpace<0, TLocalCoordinateType> BaseType;
+    typedef KnotArray1D<TLocalCoordinateType> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
 
     /// Default constructor
     BSplinesFESpace() : BaseType() {}
 
     /// Destructor
-    virtual ~BSplinesFESpace() {}
+    ~BSplinesFESpace() override {}
 
     /// Get the order of the BSplines patch in specific direction
     std::size_t Order(std::size_t i) const final {return 0;}
@@ -1608,7 +1612,7 @@ public:
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    bool IsCompatible(const FESpace<0>& rOtherFESpace) const
+    bool IsCompatible(const BaseType& rOtherFESpace) const
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -1629,8 +1633,8 @@ public:
 };
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesFESpace<TDim>& rThis)
+template<int TDim, typename TLocalCoordinateType>
+inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesFESpace<TDim, TLocalCoordinateType>& rThis)
 {
     rOStream << "-------------Begin BSplinesFESpace Info-------------" << std::endl;
     rThis.PrintInfo(rOStream);
@@ -1644,5 +1648,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesFESpace<T
 } // namespace Kratos.
 
 #undef DEBUG_GEN_CELL
+
+#include "bsplines_fespace.hpp"
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BSPLINES_FESPACE_H_INCLUDED defined

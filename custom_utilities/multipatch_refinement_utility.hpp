@@ -10,19 +10,29 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_REFINEMENT_UTILITY_HPP_INCLUDED
 
 // #define DEBUG_INS_KNOTS
+// #define ENABLE_VERBOSE_REFINEMENT
 
 namespace Kratos
 {
 
 /// Insert the knots to the NURBS patch and make it compatible across neighbors
-template<int TDim>
-void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPatch,
+template<class TPatchType>
+void MultiPatchRefinementUtility::InsertKnots(typename TPatchType::Pointer& pPatch,
     std::map<std::size_t, std::vector<int> >& refined_patches,
-    const std::vector<std::vector<double> >& ins_knots,
+    const std::vector<std::vector<typename TPatchType::LocalCoordinateType> >& ins_knots,
     std::map<std::size_t, Matrix>& trans_mats,
     bool record_trans_mat)
 {
-    if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+    constexpr int Dim = TPatchType::Dim;
+
+    typedef typename TPatchType::DataType DataType;
+    typedef typename MatrixVectorTypeSelector<DataType>::VectorType VectorType;
+    typedef typename TPatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename TPatchType::CoordinateType CoordinateType;
+    typedef BSplinesFESpace<Dim, LocalCoordinateType> BSplinesFESpaceType;
+    typedef BSplinesPatchInterface<Dim, LocalCoordinateType, CoordinateType, DataType> BSplinesPatchInterfaceType;
+
+    if (pPatch->pFESpace()->Type() != BSplinesFESpaceType::StaticType())
     {
         KRATOS_ERROR << "Only support the NURBS patch";
     }
@@ -31,7 +41,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
     if (refined_patches.find( pPatch->Id() ) == refined_patches.end())
     // the patch is not yet refined
     {
-        for (unsigned int i = 0; i < TDim; ++i)
+        for (unsigned int i = 0; i < Dim; ++i)
         {
             if ( ins_knots[i].size() != 0 )
                 to_refine = true;
@@ -40,7 +50,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
     else
     // the patch is refined but it has some unrefined directions
     {
-        for (unsigned int i = 0; i < TDim; ++i)
+        for (unsigned int i = 0; i < Dim; ++i)
         {
             if ( (ins_knots[i].size() != 0) && (refined_patches[pPatch->Id()][i] == 0) )
                 to_refine = true;
@@ -67,23 +77,23 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         #endif
 
         // create new patch with same Id
-        typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
+        typename TPatchType::Pointer pNewPatch = typename TPatchType::Pointer(new TPatchType(pPatch->Id()));
         pNewPatch->SetPrefix(pPatch->Prefix());
         pNewPatch->SetLayerIndex(pPatch->LayerIndex());
 
         // compute the transformation matrix
-        std::vector<std::vector<double> > new_knots(TDim);
+        std::vector<std::vector<double> > new_knots(Dim);
 
-        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+        typename BSplinesFESpaceType::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpaceType>(pPatch->pFESpace());
         if (pFESpace == nullptr)
             KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
-        typename BSplinesFESpace<TDim>::Pointer pNewFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
+        typename BSplinesFESpaceType::Pointer pNewFESpace = typename BSplinesFESpaceType::Pointer(new BSplinesFESpaceType());
 
         Matrix T;
-        this->ComputeBsplinesKnotInsertionCoefficients<TDim>(T, new_knots, pFESpace, ins_knots);
+        this->ComputeBsplinesKnotInsertionCoefficients<Dim>(T, new_knots, pFESpace, ins_knots);
 
-        std::vector<std::size_t> new_size(TDim);
-        for (std::size_t dim = 0; dim < TDim; ++dim)
+        std::vector<std::size_t> new_size(Dim);
+        for (std::size_t dim = 0; dim < Dim; ++dim)
         {
             new_size[dim] = new_knots[dim].size() - pPatch->Order(dim) - 1;
             pNewFESpace->SetKnotVector(dim, new_knots[dim]);
@@ -98,7 +108,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         pNewPatch->SetFESpace(pNewFESpace);
 
         // transform and transfer the control points
-        typename ControlGrid<ControlPoint<double> >::Pointer pNewControlPoints = typename ControlGrid<ControlPoint<double> >::Pointer (new StructuredControlGrid<TDim, ControlPoint<double> >(new_size));
+        typename ControlGrid<ControlPoint<double> >::Pointer pNewControlPoints = typename ControlGrid<ControlPoint<double> >::Pointer (new StructuredControlGrid<Dim, ControlPoint<double> >(new_size));
         ControlGridUtility::Transform<ControlPoint<double>, Matrix>(T, *(pPatch->pControlPointGridFunction()->pControlGrid()), *pNewControlPoints);
         pNewControlPoints->SetName(pPatch->pControlPointGridFunction()->pControlGrid()->Name());
         pNewPatch->CreateControlPointGridFunction(pNewControlPoints);
@@ -125,48 +135,48 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
             trans_mats[pPatch->Id()] = M;
         }
 
-        typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
+        typename TPatchType::DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
 
-        typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
+        typename TPatchType::Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
 
-        typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
+        typename TPatchType::VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
 
-        for (typename Patch<TDim>::DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
+        for (typename TPatchType::DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
                 it != DoubleGridFunctions_.end(); ++it)
         {
-            typename ControlGrid<double>::Pointer pNewDoubleControlGrid = typename ControlGrid<double>::Pointer (new StructuredControlGrid<TDim, double>(new_size));
-            ControlGridUtility::Transform<double, Matrix>(T, old_weights, *((*it)->pControlGrid()), new_weights, *pNewDoubleControlGrid);
+            typename ControlGrid<DataType>::Pointer pNewDoubleControlGrid = typename ControlGrid<DataType>::Pointer (new StructuredControlGrid<Dim, DataType>(new_size));
+            ControlGridUtility::Transform<DataType, Matrix>(T, old_weights, *((*it)->pControlGrid()), new_weights, *pNewDoubleControlGrid);
             pNewDoubleControlGrid->SetName((*it)->pControlGrid()->Name());
-            pNewPatch->template CreateGridFunction<double>(pNewDoubleControlGrid);
+            pNewPatch->template CreateGridFunction<DataType>(pNewDoubleControlGrid);
         }
 
-        for (typename Patch<TDim>::Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
+        for (typename TPatchType::Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
                 it != Array1DGridFunctions_.end(); ++it)
         {
             if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
-            typename ControlGrid<array_1d<double, 3> >::Pointer pNewArray1DControlGrid = typename ControlGrid<array_1d<double, 3> >::Pointer (new StructuredControlGrid<TDim, array_1d<double, 3> >(new_size));
-            ControlGridUtility::Transform<array_1d<double, 3>, Matrix>(T, old_weights, *((*it)->pControlGrid()), new_weights, *pNewArray1DControlGrid);
+            typename ControlGrid<array_1d<DataType, 3> >::Pointer pNewArray1DControlGrid = typename ControlGrid<array_1d<DataType, 3> >::Pointer (new StructuredControlGrid<Dim, array_1d<DataType, 3> >(new_size));
+            ControlGridUtility::Transform<array_1d<DataType, 3>, Matrix>(T, old_weights, *((*it)->pControlGrid()), new_weights, *pNewArray1DControlGrid);
             pNewArray1DControlGrid->SetName((*it)->pControlGrid()->Name());
-            pNewPatch->template CreateGridFunction<array_1d<double, 3> >(pNewArray1DControlGrid);
+            pNewPatch->template CreateGridFunction<array_1d<DataType, 3> >(pNewArray1DControlGrid);
         }
 
-        for (typename Patch<TDim>::VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
+        for (typename TPatchType::VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
                 it != VectorGridFunctions_.end(); ++it)
         {
-            typename ControlGrid<Vector>::Pointer pNewVectorControlGrid = typename ControlGrid<Vector>::Pointer (new StructuredControlGrid<TDim, Vector>(new_size));
-            ControlGridUtility::Transform<Vector, Matrix>(T, old_weights, *((*it)->pControlGrid()), new_weights, *pNewVectorControlGrid);
+            typename ControlGrid<VectorType>::Pointer pNewVectorControlGrid = typename ControlGrid<VectorType>::Pointer (new StructuredControlGrid<Dim, VectorType>(new_size));
+            ControlGridUtility::Transform<VectorType, Matrix>(T, old_weights, *((*it)->pControlGrid()), new_weights, *pNewVectorControlGrid);
             pNewVectorControlGrid->SetName((*it)->pControlGrid()->Name());
-            pNewPatch->template CreateGridFunction<Vector>(pNewVectorControlGrid);
+            pNewPatch->template CreateGridFunction<VectorType>(pNewVectorControlGrid);
         }
 
         // mark refined patch
         if (refined_patches.find(pPatch->Id()) == refined_patches.end())
         {
-            refined_patches[pPatch->Id()].resize(TDim);
-            for (unsigned int i = 0; i < TDim; ++i)
+            refined_patches[pPatch->Id()].resize(Dim);
+            for (unsigned int i = 0; i < Dim; ++i)
                 refined_patches[pPatch->Id()][i] = 0;
         }
-        for (unsigned int i = 0; i < TDim; ++i)
+        for (unsigned int i = 0; i < Dim; ++i)
         {
             if (ins_knots[i].size() != 0)
             {
@@ -174,22 +184,22 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
             }
         }
 
-        for (typename Patch<TDim>::interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
+        for (typename TPatchType::interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
+            typename BSplinesPatchInterfaceType::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterfaceType>(*it);
             if (pInterface == nullptr)
                 KRATOS_ERROR << "The cast to BSplinesPatchInterface is failed";
-            typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
+            typename TPatchType::Pointer pNeighbor = pInterface->pPatch2();
 
-            if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+            if (pNeighbor->pFESpace()->Type() != BSplinesFESpaceType::StaticType())
                 KRATOS_ERROR << "The FESpace of the neighbor is not BSplinesFESpace";
 
             // transfer the inserted knots to neighbors
-            std::vector<std::vector<double> > neib_ins_knots(TDim);
-            for (unsigned int i = 0; i < TDim; ++i)
+            std::vector<std::vector<double> > neib_ins_knots(Dim);
+            for (unsigned int i = 0; i < Dim; ++i)
                 neib_ins_knots[i].resize(0);
 
-            if constexpr (TDim == 2)
+            if constexpr (Dim == 2)
             {
                 int dir1 = ParameterDirection<2>::Get_(pInterface->Side1());
                 int dir2 = ParameterDirection<2>::Get_(pInterface->Side2());
@@ -203,7 +213,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
                 std::cout << " to " << pNeighbor->Id() << " dir " << dir2 << std::endl;
                 #endif
             }
-            else if constexpr (TDim == 3)
+            else if constexpr (Dim == 3)
             {
                 std::vector<int> param_dirs_1 = ParameterDirection<3>::Get(pInterface->Side1());
                 std::vector<int> param_dirs_2 = ParameterDirection<3>::Get(pInterface->Side2());
@@ -216,7 +226,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
             std::cout << "Neighbor patch " << pNeighbor->Id() << " of patch " << pPatch->Id() << " is accounted" << std::endl;
             #endif
 
-            InsertKnots<TDim>(pNeighbor, refined_patches, neib_ins_knots, trans_mats, record_trans_mat);
+            InsertKnots<TPatchType>(pNeighbor, refined_patches, neib_ins_knots, trans_mats, record_trans_mat);
 
             pInterface->SetPatch1(pNewPatch);
             pInterface->SetPatch2(pNeighbor);
@@ -226,7 +236,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
         }
 
         // get the parent multipatch
-        typename MultiPatch<TDim>::Pointer pMultiPatch = pPatch->pParentMultiPatch();
+        auto pMultiPatch = pPatch->pParentMultiPatch();
 
         if (pMultiPatch != nullptr)
         {
@@ -259,12 +269,19 @@ void MultiPatchRefinementUtility::InsertKnots(typename Patch<TDim>::Pointer& pPa
     }
 }
 
-
 /// Degree elevation for the NURBS patch and make it compatible across neighbors
-template<int TDim>
-void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& pPatch, std::map<std::size_t, std::vector<int> >& refined_patches, const std::vector<std::size_t>& order_increment)
+template<class TPatchType>
+void MultiPatchRefinementUtility::DegreeElevate(typename TPatchType::Pointer& pPatch, std::map<std::size_t, std::vector<int> >& refined_patches, const std::vector<std::size_t>& order_increment)
 {
-    if (pPatch->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+    constexpr int Dim = TPatchType::Dim;
+
+    typedef typename TPatchType::DataType DataType;
+    typedef typename TPatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename TPatchType::CoordinateType CoordinateType;
+    typedef BSplinesFESpace<Dim, LocalCoordinateType> BSplinesFESpaceType;
+    typedef BSplinesPatchInterface<Dim, LocalCoordinateType, CoordinateType, DataType> BSplinesPatchInterfaceType;
+
+    if (pPatch->pFESpace()->Type() != BSplinesFESpaceType::StaticType())
         KRATOS_ERROR << "Only support the NURBS patch";
 
     bool to_refine = false;
@@ -276,7 +293,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
     else
     // the patch is refined but it has some unrefined directions
     {
-        for (unsigned int i = 0; i < TDim; ++i)
+        for (unsigned int i = 0; i < Dim; ++i)
         {
             if ( (order_increment[i] != 0) && (refined_patches[pPatch->Id()][i] == 0) )
                 to_refine = true;
@@ -286,33 +303,33 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
     if (to_refine)
     {
         // create new patch with same Id
-        typename Patch<TDim>::Pointer pNewPatch = typename Patch<TDim>::Pointer(new Patch<TDim>(pPatch->Id()));
+        typename TPatchType::Pointer pNewPatch = typename TPatchType::Pointer(new TPatchType(pPatch->Id()));
         pNewPatch->SetPrefix(pPatch->Prefix());
         pNewPatch->SetLayerIndex(pPatch->LayerIndex());
 
         // elevate the degree and initialize new patch
-        typename BSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<TDim> >(pPatch->pFESpace());
+        typename BSplinesFESpaceType::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpaceType>(pPatch->pFESpace());
         if (pFESpace == nullptr)
             KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
-        typename BSplinesFESpace<TDim>::Pointer pNewFESpace = typename BSplinesFESpace<TDim>::Pointer(new BSplinesFESpace<TDim>());
+        typename BSplinesFESpaceType::Pointer pNewFESpace = typename BSplinesFESpaceType::Pointer(new BSplinesFESpaceType());
 
-        std::vector<std::vector<double> > new_knots(TDim);
+        std::vector<std::vector<double> > new_knots(Dim);
 
-        std::vector<std::size_t> new_size(TDim);
-        for (std::size_t i = 0; i < TDim; ++i)
+        std::vector<std::size_t> new_size(Dim);
+        for (std::size_t i = 0; i < Dim; ++i)
             new_size[i] = pFESpace->Number(i);
 
-        typename StructuredControlGrid<TDim, ControlPoint<double> >::Pointer pControlPoints
-            = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, ControlPoint<double> > >(pPatch->pControlPointGridFunction()->pControlGrid());
+        typename StructuredControlGrid<Dim, ControlPoint<double> >::Pointer pControlPoints
+            = iga::dynamic_pointer_cast<StructuredControlGrid<Dim, ControlPoint<double> > >(pPatch->pControlPointGridFunction()->pControlGrid());
         if (pControlPoints == nullptr)
             KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
 
-        typename StructuredControlGrid<TDim, ControlPoint<double> >::Pointer pNewControlPoints
-            = typename StructuredControlGrid<TDim, ControlPoint<double> >::Pointer(new StructuredControlGrid<TDim, ControlPoint<double> >(new_size)); // note here that the size is just temporary, it will be raised later on.
+        typename StructuredControlGrid<Dim, ControlPoint<double> >::Pointer pNewControlPoints
+            = typename StructuredControlGrid<Dim, ControlPoint<double> >::Pointer(new StructuredControlGrid<Dim, ControlPoint<double> >(new_size)); // note here that the size is just temporary, it will be raised later on.
 
-        this->ComputeBsplinesDegreeElevation<TDim, ControlPoint<double> >(*pControlPoints, *pFESpace, order_increment, *pNewControlPoints, new_knots);
+        this->ComputeBsplinesDegreeElevation<Dim, ControlPoint<double> >(*pControlPoints, *pFESpace, order_increment, *pNewControlPoints, new_knots);
 
-        for (std::size_t dim = 0; dim < TDim; ++dim)
+        for (std::size_t dim = 0; dim < Dim; ++dim)
         {
             new_size[dim] = new_knots[dim].size() - pFESpace->Order(dim) - order_increment[dim] - 1;
             pNewFESpace->SetKnotVector(dim, new_knots[dim]);
@@ -328,50 +345,50 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         pNewPatch->CreateControlPointGridFunction(pNewControlPoints);
 
         // raise the order for other control grids
-        typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
+        typename TPatchType::DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
 
-        typename Patch<TDim>::Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
+        typename TPatchType::Array1DGridFunctionContainerType Array1DGridFunctions_ = pPatch->Array1DGridFunctions();
 
-        typename Patch<TDim>::VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
+        typename TPatchType::VectorGridFunctionContainerType VectorGridFunctions_ = pPatch->VectorGridFunctions();
 
         // transfer the grid function
         // here to transfer correctly we apply a two-step process:
         // + firstly the old control values is multiplied with weight to make it weighted control values
         // + secondly the control values will be transferred
         // + the new control values will be divided by the new weight to make it unweighted
-        for (typename Patch<TDim>::DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
+        for (typename TPatchType::DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
                 it != DoubleGridFunctions_.end(); ++it)
         {
-            typename StructuredControlGrid<TDim, double>::Pointer pNewDoubleControlGrid = typename StructuredControlGrid<TDim, double>::Pointer(new StructuredControlGrid<TDim, double>(new_size));
-            typename StructuredControlGrid<TDim, double>::Pointer pDoubleControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, double> >((*it)->pControlGrid());
+            typename StructuredControlGrid<Dim, double>::Pointer pNewDoubleControlGrid = typename StructuredControlGrid<Dim, double>::Pointer(new StructuredControlGrid<Dim, double>(new_size));
+            typename StructuredControlGrid<Dim, double>::Pointer pDoubleControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<Dim, double> >((*it)->pControlGrid());
             if (pDoubleControlGrid == nullptr)
                 KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
-            this->ComputeBsplinesDegreeElevation<TDim, double>(*pDoubleControlGrid, *pFESpace, order_increment, *pNewDoubleControlGrid, new_knots);
+            this->ComputeBsplinesDegreeElevation<Dim, double>(*pDoubleControlGrid, *pFESpace, order_increment, *pNewDoubleControlGrid, new_knots);
             pNewDoubleControlGrid->SetName((*it)->pControlGrid()->Name());
             pNewPatch->template CreateGridFunction<double>(pNewDoubleControlGrid);
         }
 
-        for (typename Patch<TDim>::Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
+        for (typename TPatchType::Array1DGridFunctionContainerType::const_iterator it = Array1DGridFunctions_.begin();
                 it != Array1DGridFunctions_.end(); ++it)
         {
             if ((*it)->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES") continue;
-            typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pNewArray1DControlGrid = typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer(new StructuredControlGrid<TDim, array_1d<double, 3> >(new_size));
-            typename StructuredControlGrid<TDim, array_1d<double, 3> >::Pointer pArray1DControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, array_1d<double, 3> > >((*it)->pControlGrid());
+            typename StructuredControlGrid<Dim, array_1d<double, 3> >::Pointer pNewArray1DControlGrid = typename StructuredControlGrid<Dim, array_1d<double, 3> >::Pointer(new StructuredControlGrid<Dim, array_1d<double, 3> >(new_size));
+            typename StructuredControlGrid<Dim, array_1d<double, 3> >::Pointer pArray1DControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<Dim, array_1d<double, 3> > >((*it)->pControlGrid());
             if (pArray1DControlGrid == nullptr)
                 KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
-            this->ComputeBsplinesDegreeElevation<TDim, array_1d<double, 3> >(*pArray1DControlGrid, *pFESpace, order_increment, *pNewArray1DControlGrid, new_knots);
+            this->ComputeBsplinesDegreeElevation<Dim, array_1d<double, 3> >(*pArray1DControlGrid, *pFESpace, order_increment, *pNewArray1DControlGrid, new_knots);
             pNewArray1DControlGrid->SetName((*it)->pControlGrid()->Name());
             pNewPatch->template CreateGridFunction<array_1d<double, 3> >(pNewArray1DControlGrid);
         }
 
-        for (typename Patch<TDim>::VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
+        for (typename TPatchType::VectorGridFunctionContainerType::const_iterator it = VectorGridFunctions_.begin();
                 it != VectorGridFunctions_.end(); ++it)
         {
-            typename StructuredControlGrid<TDim, Vector>::Pointer pNewVectorControlGrid = typename StructuredControlGrid<TDim, Vector>::Pointer(new StructuredControlGrid<TDim, Vector>(new_size));
-            typename StructuredControlGrid<TDim, Vector>::Pointer pVectorControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<TDim, Vector> >((*it)->pControlGrid());
+            typename StructuredControlGrid<Dim, Vector>::Pointer pNewVectorControlGrid = typename StructuredControlGrid<Dim, Vector>::Pointer(new StructuredControlGrid<Dim, Vector>(new_size));
+            typename StructuredControlGrid<Dim, Vector>::Pointer pVectorControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<Dim, Vector> >((*it)->pControlGrid());
             if (pVectorControlGrid == nullptr)
                 KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
-            this->ComputeBsplinesDegreeElevation<TDim, Vector>(*pVectorControlGrid, *pFESpace, order_increment, *pNewVectorControlGrid, new_knots);
+            this->ComputeBsplinesDegreeElevation<Dim, Vector>(*pVectorControlGrid, *pFESpace, order_increment, *pNewVectorControlGrid, new_knots);
             pNewVectorControlGrid->SetName((*it)->pControlGrid()->Name());
             pNewPatch->template CreateGridFunction<Vector>(pNewVectorControlGrid);
         }
@@ -379,11 +396,11 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         // mark refined patch
         if (refined_patches.find(pPatch->Id()) == refined_patches.end())
         {
-            refined_patches[pPatch->Id()].resize(TDim);
-            for (unsigned int i = 0; i < TDim; ++i)
+            refined_patches[pPatch->Id()].resize(Dim);
+            for (unsigned int i = 0; i < Dim; ++i)
                 refined_patches[pPatch->Id()][i] = 0;
         }
-        for (unsigned int i = 0; i < TDim; ++i)
+        for (unsigned int i = 0; i < Dim; ++i)
         {
             if (order_increment[i] != 0)
             {
@@ -391,29 +408,29 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
             }
         }
 
-        for (typename Patch<TDim>::interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
+        for (typename TPatchType::interface_iterator it = pPatch->InterfaceBegin(); it != pPatch->InterfaceEnd(); ++it)
         {
-            typename BSplinesPatchInterface<TDim>::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterface<TDim> >(*it);
+            typename BSplinesPatchInterfaceType::Pointer pInterface = iga::dynamic_pointer_cast<BSplinesPatchInterfaceType>(*it);
             if (pInterface == nullptr)
                 KRATOS_ERROR << "The cast to BSplinesPatchInterface is failed";
-            typename Patch<TDim>::Pointer pNeighbor = pInterface->pPatch2();
+            typename TPatchType::Pointer pNeighbor = pInterface->pPatch2();
 
-            if (pNeighbor->pFESpace()->Type() != BSplinesFESpace<TDim>::StaticType())
+            if (pNeighbor->pFESpace()->Type() != BSplinesFESpaceType::StaticType())
                 KRATOS_ERROR << "The FESpace of the neighbor is not BSplinesFESpace";
 
             // transfer the order increment to neighbors
-            std::vector<std::size_t> neib_order_increment(TDim);
-            for (unsigned int i = 0; i < TDim; ++i)
+            std::vector<std::size_t> neib_order_increment(Dim);
+            for (unsigned int i = 0; i < Dim; ++i)
                 neib_order_increment[i] = 0;
 
-            if constexpr (TDim == 2)
+            if constexpr (Dim == 2)
             {
                 int dir1 = ParameterDirection<2>::Get_(pInterface->Side1());
                 int dir2 = ParameterDirection<2>::Get_(pInterface->Side2());
 
                 neib_order_increment[dir2] = order_increment[dir1];
             }
-            else if constexpr (TDim == 3)
+            else if constexpr (Dim == 3)
             {
                 std::vector<int> param_dirs_1 = ParameterDirection<3>::Get(pInterface->Side1());
                 std::vector<int> param_dirs_2 = ParameterDirection<3>::Get(pInterface->Side2());
@@ -422,7 +439,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
                 neib_order_increment[param_dirs_2[ pInterface->LocalParameterMapping(1) ] ] = order_increment[param_dirs_1[1]];
             }
 
-            DegreeElevate<TDim>(pNeighbor, refined_patches, neib_order_increment);
+            DegreeElevate<TPatchType>(pNeighbor, refined_patches, neib_order_increment);
 
             pInterface->SetPatch1(pNewPatch);
             pInterface->SetPatch2(pNeighbor);
@@ -432,7 +449,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename Patch<TDim>::Pointer& p
         }
 
         // get the parent multipatch
-        typename MultiPatch<TDim>::Pointer pMultiPatch = pPatch->pParentMultiPatch();
+        auto pMultiPatch = pPatch->pParentMultiPatch();
 
         if (pMultiPatch != nullptr)
         {

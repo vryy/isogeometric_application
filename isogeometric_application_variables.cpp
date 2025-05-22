@@ -13,6 +13,7 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/variables.h"
+#include "custom_utilities/multipatch.h"
 #include "isogeometric_application_variables.h"
 
 namespace Kratos
@@ -59,5 +60,16 @@ KRATOS_CREATE_VARIABLE( int, HIERARCHICAL_LEVEL )
 KRATOS_CREATE_VARIABLE( int, BASIS_FUNCTION_INDEX )
 KRATOS_CREATE_VARIABLE( int, EQUATION_INDEX )
 KRATOS_CREATE_VARIABLE( int, CELL_INDEX )
+
+template<> PatchSelector<1>::RealPatch PatchSelector<1>::msRealPatch(1);
+template<> PatchSelector<2>::RealPatch PatchSelector<2>::msRealPatch(1);
+template<> PatchSelector<3>::RealPatch PatchSelector<3>::msRealPatch(1);
+template<> PatchSelector<1>::ComplexPatch PatchSelector<1>::msComplexPatch(1);
+template<> PatchSelector<2>::ComplexPatch PatchSelector<2>::msComplexPatch(1);
+template<> PatchSelector<3>::ComplexPatch PatchSelector<3>::msComplexPatch(1);
+
+PatchSelector<1> PatchSelector1DInstance;
+PatchSelector<2> PatchSelector2DInstance;
+PatchSelector<3> PatchSelector3DInstance;
 
 }  // namespace Kratos.

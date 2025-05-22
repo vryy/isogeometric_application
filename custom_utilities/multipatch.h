@@ -400,8 +400,9 @@ private:
 
 /// Selector for patch based on dimension
 template<int TDim>
-struct PatchSelector
+class PatchSelector
 {
+public:
     typedef Patch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE> RealPatch;
     typedef Patch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE> ComplexPatch;
 
@@ -410,7 +411,18 @@ struct PatchSelector
 
     typedef MultiPatch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE> RealMultiPatch;
     typedef MultiPatch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE> ComplexMultiPatch;
+
+    const RealPatch& GetRealPatch() const {return msRealPatch;}
+    const ComplexPatch& GetComplexPatch() const {return msComplexPatch;}
+
+private:
+    static RealPatch msRealPatch;
+    static ComplexPatch msComplexPatch;
 };
+
+extern PatchSelector<1> PatchSelector1DInstance;
+extern PatchSelector<2> PatchSelector2DInstance;
+extern PatchSelector<3> PatchSelector3DInstance;
 
 /// output stream function
 template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>

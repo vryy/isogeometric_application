@@ -26,8 +26,6 @@ namespace Kratos
 typedef ControlPoint<double, double> ControlPointType;
 typedef ControlPoint<std::complex<double>, double> ComplexControlPointType;
 
-#define VARSEL(DataType, V) VariableSelector_##V<DataType>::Get() // macro to select correct variable based on name and data type
-
 // Variables definition
 KRATOS_DEFINE_APPLICATION_VARIABLE( ISOGEOMETRIC_APPLICATION, double, NURBS_WEIGHT )
 KRATOS_DEFINE_APPLICATION_VARIABLE( ISOGEOMETRIC_APPLICATION, Vector, NURBS_WEIGHTS )

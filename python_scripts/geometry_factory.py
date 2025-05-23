@@ -118,11 +118,11 @@ def GenerateGaussianArray(num_span, max_elem_in_span, sigma, min_k, max_k):
 
 ### Create a line from start_point to end_point with knot vector [0 0 0 ... 1 1 1]
 ### On output the pointer to the patch will be returned
-def CreateLine(start_point, end_point, order = 1):
+def CreateLine(start_point, end_point, order = 1, sample_patch = Patch1DSelector.RealPatch):
     Id = 0
     fes = nurbs_fespace_library.CreatePrimitiveFESpace(order)
     ctrl_grid = grid_lib.CreateLinearControlPointGrid(start_point[0], start_point[1], start_point[2], fes.Number(0), end_point[0], end_point[1], end_point[2])
-    patch_ptr = multipatch_util.CreatePatchPointer(Id, fes)
+    patch_ptr = sample_patch.Create(Id, fes)
     patch = patch_ptr.GetReference()
     patch.CreateControlPointGridFunction(ctrl_grid)
     return patch_ptr
@@ -143,7 +143,7 @@ def CreateCurve(points, order):
 
 ### Create an arc at center on the surface perpendicular to the given axis. By default, the quadratic arc is generated. The knot vector will be [0 0 0 1 1 1]
 ### On output the pointer to the patch will be returned. Small arc means that the open angle is less than 90 degrees.
-def CreateSmallArc(center, axis, radius, start_angle, end_angle):
+def CreateSmallArc(center, axis, radius, start_angle, end_angle, sample_patch=Patch1DSelector.RealPatch):
     ## firstly create an arc in xy plane at (0, 0)
     Id = 0
     fes = nurbs_fespace_library.CreatePrimitiveFESpace(2)
@@ -193,7 +193,7 @@ def CreateSmallArc(center, axis, radius, start_angle, end_angle):
     pt3.ApplyTransformation(trans)
     ctrl_grid[2] = pt3
 
-    patch_ptr = multipatch_util.CreatePatchPointer(Id, fes)
+    patch_ptr = sample_patch.Create(Id, fes)
     patch = patch_ptr.GetReference()
     patch.CreateControlPointGridFunction(ctrl_grid)
     return patch_ptr

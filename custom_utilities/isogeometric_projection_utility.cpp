@@ -870,11 +870,11 @@ int IsogeometricProjectionUtility<TPointType, TDim>::ComputeNormalProjection(
 
 //// template class instantiation
 
-template class IsogeometricProjectionUtility<Element::GeometryType::PointType::PointType, 1>;
-template class IsogeometricProjectionUtility<Element::GeometryType::PointType::PointType, 2>;
+template class KRATOS_API(ISOGEOMETRIC_APPLICATION) IsogeometricProjectionUtility<Element::GeometryType::PointType::PointType, 1>;
+template class KRATOS_API(ISOGEOMETRIC_APPLICATION) IsogeometricProjectionUtility<Element::GeometryType::PointType::PointType, 2>;
 
-template class IsogeometricProjectionUtility<array_1d<double, 3>, 1>;
-template class IsogeometricProjectionUtility<array_1d<double, 3>, 2>;
+template class KRATOS_API(ISOGEOMETRIC_APPLICATION) IsogeometricProjectionUtility<array_1d<double, 3>, 1>;
+template class KRATOS_API(ISOGEOMETRIC_APPLICATION) IsogeometricProjectionUtility<array_1d<double, 3>, 2>;
 
 } // end namespace Kratos
 

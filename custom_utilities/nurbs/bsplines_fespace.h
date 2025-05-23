@@ -277,7 +277,7 @@ public:
     /// Get the values of the basis functions at point xi
     void GetValues(std::vector<double>& values, const std::vector<TLocalCoordinateType>& xi) const final
     {
-        BSplinesFESpace_Helper<TDim>::template GetValues(*this, values, xi);
+        BSplinesFESpace_Helper<TDim>::GetValues(*this, values, xi);
     }
 
     /// Get the derivatives of the basis function i at point xi
@@ -307,13 +307,13 @@ public:
     /// the output derivatives has the form of values[func_index][dim_index]
     void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives, const std::vector<TLocalCoordinateType>& xi) const final
     {
-        BSplinesFESpace_Helper<TDim>::template GetValuesAndDerivatives(*this, values, derivatives, xi);
+        BSplinesFESpace_Helper<TDim>::GetValuesAndDerivatives(*this, values, derivatives, xi);
     }
 
     /// [derived]
     void GetValuesAndDerivatives(const unsigned int nd, std::vector<double>& values, std::vector<std::vector<std::vector<double> > >& derivatives, const std::vector<TLocalCoordinateType>& xi) const final
     {
-        BSplinesFESpace_Helper<TDim>::template GetValuesAndDerivatives(*this, nd, values, derivatives, xi);
+        BSplinesFESpace_Helper<TDim>::GetValuesAndDerivatives(*this, nd, values, derivatives, xi);
     }
 
     /// Check if a point lies inside the parametric domain of the BSplinesFESpace
@@ -1175,15 +1175,15 @@ public:
     }
 
     /// Construct the sliced FESpace
-    typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir, TLocalCoordinateType xi) const final
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructSlicedFESpace(int idir, TLocalCoordinateType xi) const final
     {
         return this->ConstructSlicedFESpace(idir);
     }
 
     /// Construct the sliced FESpace
-    typename FESpace<TDim-1>::Pointer ConstructSlicedFESpace(int idir) const
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructSlicedFESpace(int idir) const
     {
-        typename FESpace<TDim-1>::Pointer pSFESpace;
+        typename FESpace<TDim-1, TLocalCoordinateType>::Pointer pSFESpace;
 
         if (idir == 0)
         {

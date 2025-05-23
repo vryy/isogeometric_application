@@ -45,8 +45,10 @@ public:
     typedef typename Element::GeometryType::CoordinatesArrayType CoordinatesArrayType;
     typedef typename Element::GeometryType::PointType NodeType;
 
+    typedef MultiPatch<TDim> MultiPatchType;
+
     /// Default constructor
-    NonConformingVariableMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch, ModelPart& r_model_part)
+    NonConformingVariableMultipatchLagrangeMesh(typename MultiPatchType::Pointer pMultiPatch, ModelPart& r_model_part)
         : mpMultiPatch(pMultiPatch), mr_model_part(r_model_part)
     {}
 
@@ -57,7 +59,7 @@ public:
     /// Note that if the division is changed, the post_model_part must be generated again
     void SetUniformDivision(std::size_t num_division)
     {
-        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        typedef typename MultiPatchType::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             for (std::size_t dim = 0; dim < TDim; ++dim)
@@ -97,11 +99,11 @@ public:
     {
         // get the sample element
         std::string element_name = mBaseElementName;
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             element_name = element_name + "2D4N";
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             element_name = element_name + "3D8N";
         }
@@ -122,7 +124,7 @@ public:
         std::size_t ElementCounter = mLastElemId;
         std::size_t PropertiesCounter = mLastPropId;
         std::vector<double> p_ref(TDim);
-        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        typedef typename MultiPatchType::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             // create new properties and add to model_part
@@ -295,7 +297,7 @@ public:
     /// Transfer the variable from the multipatch to the model_part
     /// This function allows to input a different multipatch than the one used to generate the model_part. User must keep track with the compatibility.
     template<typename TVariableType>
-    void TransferVariables(const TVariableType& rVariable, typename MultiPatch<TDim>::Pointer pMultiPatch) const
+    void TransferVariables(const TVariableType& rVariable, typename MultiPatchType::Pointer pMultiPatch) const
     {
         if (pMultiPatch != mpMultiPatch)
         {
@@ -309,12 +311,12 @@ public:
         // get nodes sequentially, with the same sequence as when creating it
         std::size_t NodeCounter = mLastNodeId;
         std::vector<double> p_ref(TDim);
-        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        typedef typename MultiPatchType::patch_iterator patch_iterator;
         for (patch_iterator it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
         {
-            typename GridFunction<TDim, typename TVariableType::Type>::Pointer pGridFunction = it->pGetGridFunction(rVariable);
+            auto pGridFunction = it->pGetGridFunction(rVariable);
 
-            if (TDim == 2)
+            if constexpr (TDim == 2)
             {
                 // get nodes nodes
                 typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
@@ -346,7 +348,7 @@ public:
                     }
                 }
             }
-            else if (TDim == 3)
+            else if constexpr (TDim == 3)
             {
                 // create new nodes
                 typename std::map<std::size_t, boost::array<std::size_t, TDim> >::const_iterator it_num = mNumDivision.find(it->Id());
@@ -395,7 +397,7 @@ public:
 
 private:
 
-    typename MultiPatch<TDim>::Pointer mpMultiPatch;
+    typename MultiPatchType::Pointer mpMultiPatch;
 
     ModelPart& mr_model_part; // reference to keep track of the generated model_part
 

@@ -130,11 +130,11 @@ boost::python::list GridFunction_GetSecondDerivative2(TGridFrunctionType& rDummy
     return results;
 }
 
-template<class TGridFrunctionType, typename TCoordinatesType>
+template<class TGridFrunctionType, typename TLocalCoordinatesType>
 boost::python::list GridFunction_LocalCoordinates(TGridFrunctionType& rDummy,
-        const typename TGridFrunctionType::DataType& v, const TCoordinatesType& xi0)
+        const typename TGridFrunctionType::DataType& v, const TLocalCoordinatesType& xi0)
 {
-    TCoordinatesType xi = xi0;
+    TLocalCoordinatesType xi = xi0;
     int stat = rDummy.LocalCoordinates(v, xi);
     // KRATOS_WATCH(v)
     // KRATOS_WATCH(stat)
@@ -147,16 +147,19 @@ boost::python::list GridFunction_LocalCoordinates(TGridFrunctionType& rDummy,
 
 ///////////////////////////////////////////////////////
 
-template<int TDim>
-void IsogeometricApplication_AddGridFunctionsToPython()
+template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TWeightType>
+void IsogeometricApplication_AddControlPointGridFunctionToPython(const std::string& Prefix)
 {
     std::stringstream ss;
 
+    typedef ControlPoint<TCoordinateType, TWeightType> ControlPointType;
+    typedef GridFunction<TDim, TLocalCoordinateType, ControlPointType> ControlPointGridFunctionType;
+    typedef FESpace<TDim, TLocalCoordinateType> FESpaceType;
+
     ss.str(std::string());
-    ss << "ControlPointGridFunction" << TDim << "D";
-    typedef GridFunction<TDim, ControlPoint<double> > ControlPointGridFunctionType;
+    ss << Prefix << "ControlPointGridFunction" << TDim << "D";
     class_<ControlPointGridFunctionType, typename ControlPointGridFunctionType::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<ControlPoint<double> >::Pointer>())
+    (ss.str().c_str(), init<typename FESpaceType::Pointer, typename ControlGrid<ControlPointType>::Pointer>())
     .add_property("FESpace", GridFunction_GetFESpace<ControlPointGridFunctionType>, GridFunction_SetFESpace<ControlPointGridFunctionType>)
     .add_property("ControlGrid", GridFunction_GetControlGrid<ControlPointGridFunctionType>, GridFunction_SetControlGrid<ControlPointGridFunctionType>)
     .def("GetValue", &GridFunction_GetValue1<ControlPointGridFunctionType>)
@@ -167,12 +170,25 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     .def("GetSecondDerivative", &GridFunction_GetSecondDerivative2<ControlPointGridFunctionType>)
     .def(self_ns::str(self))
     ;
+}
+
+template<int TDim, typename TLocalCoordinateType, typename TDataType>
+void IsogeometricApplication_AddGridFunctionsToPython(const std::string& Prefix)
+{
+    typedef typename MatrixVectorTypeSelector<TDataType>::VectorType VectorType;
+
+    typedef GridFunction<TDim, TLocalCoordinateType, TDataType> DoubleGridFunctionType;
+    typedef GridFunction<TDim, TLocalCoordinateType, array_1d<TDataType, 3> > Array1DGridFunctionType;
+    typedef GridFunction<TDim, TLocalCoordinateType, VectorType> VectorGridFunctionType;
+
+    typedef FESpace<TDim, TLocalCoordinateType> FESpaceType;
+
+    std::stringstream ss;
 
     ss.str(std::string());
-    ss << "DoubleGridFunction" << TDim << "D";
-    typedef GridFunction<TDim, double> DoubleGridFunctionType;
+    ss << Prefix << "DoubleGridFunction" << TDim << "D";
     class_<DoubleGridFunctionType, typename DoubleGridFunctionType::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<double>::Pointer>())
+    (ss.str().c_str(), init<typename FESpaceType::Pointer, typename ControlGrid<TDataType>::Pointer>())
     .add_property("FESpace", GridFunction_GetFESpace<DoubleGridFunctionType>, GridFunction_SetFESpace<DoubleGridFunctionType>)
     .add_property("ControlGrid", GridFunction_GetControlGrid<DoubleGridFunctionType>, GridFunction_SetControlGrid<DoubleGridFunctionType>)
     .def("GetValue", &GridFunction_GetValue1<DoubleGridFunctionType>)
@@ -185,10 +201,9 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     ;
 
     ss.str(std::string());
-    ss << "Array1DGridFunction" << TDim << "D";
-    typedef GridFunction<TDim, array_1d<double, 3> > Array1DGridFunctionType;
+    ss << Prefix << "Array1DGridFunction" << TDim << "D";
     class_<Array1DGridFunctionType, typename Array1DGridFunctionType::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<array_1d<double, 3> >::Pointer>())
+    (ss.str().c_str(), init<typename FESpaceType::Pointer, typename ControlGrid<array_1d<TDataType, 3> >::Pointer>())
     .add_property("FESpace", GridFunction_GetFESpace<Array1DGridFunctionType>, GridFunction_SetFESpace<Array1DGridFunctionType>)
     .add_property("ControlGrid", GridFunction_GetControlGrid<Array1DGridFunctionType>, GridFunction_SetControlGrid<Array1DGridFunctionType>)
     .def("GetValue", &GridFunction_GetValue1<Array1DGridFunctionType>)
@@ -197,15 +212,14 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     .def("GetDerivative", &GridFunction_GetDerivative2<Array1DGridFunctionType>)
     .def("GetSecondDerivative", &GridFunction_GetSecondDerivative1<Array1DGridFunctionType>)
     .def("GetSecondDerivative", &GridFunction_GetSecondDerivative2<Array1DGridFunctionType>)
-    .def("LocalCoordinates", &GridFunction_LocalCoordinates<Array1DGridFunctionType, array_1d<double, 3> >)
+    .def("LocalCoordinates", &GridFunction_LocalCoordinates<Array1DGridFunctionType, array_1d<TLocalCoordinateType, 3> >)
     .def(self_ns::str(self))
     ;
 
     ss.str(std::string());
-    ss << "VectorGridFunction" << TDim << "D";
-    typedef GridFunction<TDim, Vector> VectorGridFunctionType;
+    ss << Prefix << "VectorGridFunction" << TDim << "D";
     class_<VectorGridFunctionType, typename VectorGridFunctionType::Pointer, boost::noncopyable>
-    (ss.str().c_str(), init<typename FESpace<TDim>::Pointer, typename ControlGrid<Vector>::Pointer>())
+    (ss.str().c_str(), init<typename FESpaceType::Pointer, typename ControlGrid<VectorType>::Pointer>())
     .add_property("FESpace", GridFunction_GetFESpace<VectorGridFunctionType>, GridFunction_SetFESpace<VectorGridFunctionType>)
     .add_property("ControlGrid", GridFunction_GetControlGrid<VectorGridFunctionType>, GridFunction_SetControlGrid<VectorGridFunctionType>)
     .def("GetValue", &GridFunction_GetValue1<VectorGridFunctionType>)
@@ -214,7 +228,7 @@ void IsogeometricApplication_AddGridFunctionsToPython()
     .def("GetDerivative", &GridFunction_GetDerivative2<VectorGridFunctionType>)
     .def("GetSecondDerivative", &GridFunction_GetSecondDerivative1<VectorGridFunctionType>)
     .def("GetSecondDerivative", &GridFunction_GetSecondDerivative2<VectorGridFunctionType>)
-    .def("LocalCoordinates", &GridFunction_LocalCoordinates<VectorGridFunctionType, array_1d<double, 3> >)
+    .def("LocalCoordinates", &GridFunction_LocalCoordinates<VectorGridFunctionType, array_1d<TLocalCoordinateType, 3> >)
     .def(self_ns::str(self))
     ;
 }
@@ -222,4 +236,3 @@ void IsogeometricApplication_AddGridFunctionsToPython()
 }  // namespace Python.
 
 } // Namespace Kratos
-

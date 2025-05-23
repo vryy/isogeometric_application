@@ -236,8 +236,7 @@ public:
         typename TPatchType::Array1DGridFunctionType::ConstPointer pControlPointCoordinatesGridFunction
             = rPatch.pGetGridFunction(CONTROL_POINT_COORDINATES);
 
-        typename GridFunction<TPatchType::FESpaceType::Dim(), typename TVariableType::Type>::ConstPointer pGridFunc
-            = rPatch.pGetGridFunction(rVariable);
+        auto pGridFunc = rPatch.pGetGridFunction(rVariable);
 
 #ifdef ENABLE_BEZIER_GEOMETRY
         //initialize the geometry

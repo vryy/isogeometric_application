@@ -54,6 +54,9 @@ public:
     typedef typename PatchType::interface_iterator interface_iterator;
     typedef typename PatchType::interface_const_iterator interface_const_iterator;
 
+    /// Constants
+    static constexpr int Dim = TDim;
+
     /// Default constructor
     MultiPatch() : mEquationSystemSize(0) {}
 

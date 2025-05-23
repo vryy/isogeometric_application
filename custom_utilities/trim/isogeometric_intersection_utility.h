@@ -90,7 +90,7 @@ public:
     template<int TDim, int TOption = 0>
     static std::pair<int, std::vector<int> > CheckIntersection(typename Patch<TDim>::Pointer pPatch, double A, double B, double C, double D)
     {
-        typedef GridFunction<TDim, array_1d<double, 3> > GridFunctionType;
+        typedef GridFunction<TDim, double, array_1d<double, 3> > GridFunctionType;
 
         typename GridFunctionType::ConstPointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
@@ -171,8 +171,8 @@ public:
             int option_space = 1)
     {
         // extract the control point grid function of both curves
-        typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc1 = pPatch1->pGetGridFunction(CONTROL_POINT_COORDINATES);
-        typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc2 = pPatch2->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<1, double, array_1d<double, 3> >::Pointer pGridFunc1 = pPatch1->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<1, double, array_1d<double, 3> >::Pointer pGridFunc2 = pPatch2->pGetGridFunction(CONTROL_POINT_COORDINATES);
         // KRATOS_WATCH(typeid(*pGridFunc1->pFESpace()).name())
         // KRATOS_WATCH(typeid(*pGridFunc2->pFESpace()).name())
 
@@ -341,7 +341,7 @@ public:
             double TOL)
     {
         // extract the control point grid function of both curves
-        typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<1, double, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 #ifdef DEBUG_INTERSECT_CURVE_PLANE
         KRATOS_WATCH(typeid(*pGridFunc->pFESpace()).name())
         KRATOS_WATCH(*pPatch)
@@ -449,7 +449,7 @@ public:
             double TOL)
     {
         // extract the control point grid function of both curves
-        typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<1, double, array_1d<double, 3> >::Pointer pGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 #ifdef DEBUG_INTERSECT_CURVE_PLANE
         KRATOS_WATCH(typeid(*pGridFunc->pFESpace()).name())
         KRATOS_WATCH(*pPatch)
@@ -731,8 +731,8 @@ public:
             double TOL)
     {
         // extract the control point grid function of both curves
-        typename GridFunction<1, array_1d<double, 3> >::Pointer pGridFunc1 = pPatch1->pGetGridFunction(CONTROL_POINT_COORDINATES);
-        typename GridFunction<2, array_1d<double, 3> >::Pointer pGridFunc2 = pPatch2->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<1, double, array_1d<double, 3> >::Pointer pGridFunc1 = pPatch1->pGetGridFunction(CONTROL_POINT_COORDINATES);
+        typename GridFunction<2, double, array_1d<double, 3> >::Pointer pGridFunc2 = pPatch2->pGetGridFunction(CONTROL_POINT_COORDINATES);
         // KRATOS_WATCH(typeid(*pGridFunc1->pFESpace()).name())
         // KRATOS_WATCH(typeid(*pGridFunc2->pFESpace()).name())
 

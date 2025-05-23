@@ -91,6 +91,12 @@ public:
 
         return is_valid;
     }
+
+    /// Return information as string
+    std::string Info() const override
+    {
+        return "BSplinesPatchInterface1D";
+    }
 };
 
 /**
@@ -200,15 +206,10 @@ public:
         this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices, false);
     }
 
-    /// Information
-    void PrintInfo(std::ostream& rOStream) const override
+    /// Return information as string
+    std::string Info() const override
     {
-        BaseType::PrintInfo(rOStream);
-    }
-
-    void PrintData(std::ostream& rOStream) const override
-    {
-        BaseType::PrintData(rOStream);
+        return "BSplinesPatchInterface2D";
     }
 
 private:
@@ -395,15 +396,10 @@ public:
         // KRATOS_WATCH("")
     }
 
-    /// Information
-    void PrintInfo(std::ostream& rOStream) const override
+    /// Return information as string
+    std::string Info() const override
     {
-        BaseType::PrintInfo(rOStream);
-    }
-
-    void PrintData(std::ostream& rOStream) const override
-    {
-        BaseType::PrintData(rOStream);
+        return "BSplinesPatchInterface3D";
     }
 
 private:

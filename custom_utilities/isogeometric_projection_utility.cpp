@@ -31,7 +31,7 @@ int IsogeometricProjectionUtility<TPointType, TDim>::PredictVerticalProjection(
     typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
 
-    typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+    auto pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
     double dist = 1.0e99;
     std::vector<double> xi(TDim);
@@ -94,7 +94,7 @@ int IsogeometricProjectionUtility<TPointType, TDim>::ComputeVerticalProjection(
     typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
 
-    typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+    auto pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
     std::vector<array_1d<double, 3> > dP;
 
@@ -315,7 +315,7 @@ int IsogeometricProjectionUtility<TPointType, TDim>::PredictRayProjection(
     typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
 
-    typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+    auto pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
     double cmin = 1.0e99;
     std::vector<double> xi(TDim);
@@ -400,7 +400,7 @@ int IsogeometricProjectionUtility<TPointType, TDim>::ComputeRayProjection(
     typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
 
-    typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+    auto pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
     std::vector<array_1d<double, 3> > dP;
 
@@ -566,7 +566,7 @@ int IsogeometricProjectionUtility<TPointType, TDim>::PredictNormalProjection(
     typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
 
-    typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+    auto pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
     double dist = 1.0e99;
     std::vector<double> xi(TDim);
@@ -627,7 +627,7 @@ int IsogeometricProjectionUtility<TPointType, TDim>::ComputeNormalProjection(
     typedef Patch<TDim> PatchType;
     typedef typename PatchType::ControlPointType ControlPointType;
 
-    typename GridFunction<TDim, array_1d<double, 3> >::ConstPointer pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
+    auto pControlGridFunc = pPatch->pGetGridFunction(CONTROL_POINT_COORDINATES);
 
     std::vector<array_1d<double, 3> > dP;
 

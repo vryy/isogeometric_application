@@ -293,18 +293,18 @@ void IsogeometricApplication_AddMeshToPython()
     ;
 }
 
-template<int TDim, class TModelPartType>
+template<class TMultiPatchType, class TModelPartType>
 void IsogeometricApplication_AddModelPartToPython(const std::string& Prefix)
 {
     std::stringstream ss;
 
     typedef typename TModelPartType::DataType DataType;
 
-    typedef MultiPatchModelPart<TDim, TModelPartType> MultiPatchModelPartType;
+    typedef MultiPatchModelPart<TMultiPatchType, TModelPartType> MultiPatchModelPartType;
     ss.str(std::string());
-    ss << Prefix << "MultiPatchModelPart" << TDim << "D";
+    ss << Prefix << "MultiPatchModelPart" << TMultiPatchType::Dim << "D";
     class_<MultiPatchModelPartType, typename MultiPatchModelPartType::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
-    (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
+    (ss.str().c_str(), init<typename TMultiPatchType::Pointer>())
     .def("BeginModelPart", &Helper_BeginModelPart1<MultiPatchModelPartType>)
     .def("BeginModelPart", &Helper_BeginModelPart2<MultiPatchModelPartType>)
     .def("CreateNodes", &MultiPatchModelPartType::CreateNodes)
@@ -327,9 +327,9 @@ void IsogeometricApplication_AddModelPartToPython(const std::string& Prefix)
     .def(self_ns::str(self))
     ;
 
-    typedef MultiMultiPatchModelPart<TDim, TModelPartType> MultiMultiPatchModelPartType;
+    typedef MultiMultiPatchModelPart<TMultiPatchType, TModelPartType> MultiMultiPatchModelPartType;
     ss.str(std::string());
-    ss << Prefix << "MultiMultiPatchModelPart" << TDim << "D";
+    ss << Prefix << "MultiMultiPatchModelPart" << TMultiPatchType::Dim << "D";
     class_<MultiMultiPatchModelPartType, typename MultiMultiPatchModelPartType::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def("AddMultiPatch", &MultiMultiPatchModelPartType::AddMultiPatch)
@@ -352,11 +352,11 @@ void IsogeometricApplication_AddModelPartToPython(const std::string& Prefix)
     .def(self_ns::str(self))
     ;
 
-    typedef ConformingMultipatchLagrangeModelPart<TDim, TModelPartType> ConformingMultipatchLagrangeModelPartType;
+    typedef ConformingMultipatchLagrangeModelPart<TMultiPatchType, TModelPartType> ConformingMultipatchLagrangeModelPartType;
     ss.str(std::string());
-    ss << Prefix << "ConformingMultipatchLagrangeModelPart" << TDim << "D";
+    ss << Prefix << "ConformingMultipatchLagrangeModelPart" << TMultiPatchType::Dim << "D";
     class_<ConformingMultipatchLagrangeModelPartType, typename ConformingMultipatchLagrangeModelPartType::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
-    (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
+    (ss.str().c_str(), init<typename TMultiPatchType::Pointer>())
     .def("GetBinning", &ConformingMultipatchLagrangeModelPartType::pGetBinning)
     .def("BeginModelPart", &Helper_BeginModelPart1<ConformingMultipatchLagrangeModelPartType>)
     .def("BeginModelPart", &Helper_BeginModelPart2<ConformingMultipatchLagrangeModelPartType>)
@@ -379,15 +379,15 @@ void IsogeometricApplication_AddMeshAndModelPartToPython()
     IsogeometricApplication_AddMeshToPython<2>();
     IsogeometricApplication_AddMeshToPython<3>();
 
-    IsogeometricApplication_AddModelPartToPython<1, ModelPart>("");
-    IsogeometricApplication_AddModelPartToPython<1, ComplexModelPart>("Complex");
-    IsogeometricApplication_AddModelPartToPython<1, GComplexModelPart>("GComplex");
-    IsogeometricApplication_AddModelPartToPython<2, ModelPart>("");
-    IsogeometricApplication_AddModelPartToPython<2, ComplexModelPart>("Complex");
-    IsogeometricApplication_AddModelPartToPython<2, GComplexModelPart>("GComplex");
-    IsogeometricApplication_AddModelPartToPython<3, ModelPart>("");
-    IsogeometricApplication_AddModelPartToPython<3, ComplexModelPart>("Complex");
-    IsogeometricApplication_AddModelPartToPython<3, GComplexModelPart>("GComplex");
+    IsogeometricApplication_AddModelPartToPython<PatchSelector<1>::RealMultiPatch, ModelPart>("");
+    IsogeometricApplication_AddModelPartToPython<PatchSelector<1>::ComplexMultiPatch, ComplexModelPart>("Complex");
+    // IsogeometricApplication_AddModelPartToPython<1, GComplexModelPart>("GComplex");
+    IsogeometricApplication_AddModelPartToPython<PatchSelector<2>::RealMultiPatch, ModelPart>("");
+    IsogeometricApplication_AddModelPartToPython<PatchSelector<2>::ComplexMultiPatch, ComplexModelPart>("Complex");
+    // IsogeometricApplication_AddModelPartToPython<2, GComplexModelPart>("GComplex");
+    IsogeometricApplication_AddModelPartToPython<PatchSelector<3>::RealMultiPatch, ModelPart>("");
+    IsogeometricApplication_AddModelPartToPython<PatchSelector<3>::ComplexMultiPatch, ComplexModelPart>("Complex");
+    // IsogeometricApplication_AddModelPartToPython<3, GComplexModelPart>("GComplex");
 
 }
 

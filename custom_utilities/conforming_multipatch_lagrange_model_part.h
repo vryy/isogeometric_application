@@ -38,14 +38,23 @@ namespace Kratos
  * This class is useful for pre-processing, i.e., constructing finite element mesh, of all types of
  * isogeometric patches, including NURBS, hierarchical B-Splines and T-Splines.
  */
-template<int TDim, typename TModelPartType>
+template<class TMultiPatchType, class TModelPartType>
 class ConformingMultipatchLagrangeModelPart : public IsogeometricEcho
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(ConformingMultipatchLagrangeModelPart);
 
+    /// Constants
+    static constexpr int Dim = TMultiPatchType::Dim;
+
     /// Type definition
+    typedef TMultiPatchType MultiPatchType;
+    typedef typename MultiPatchType::PatchType PatchType;
+    typedef typename PatchType::BoundaryPatchType BoundaryPatchType;
+    typedef typename PatchType::LocalCoordinateType LocalCoordinateType;
+    typedef typename PatchType::ControlPointType ControlPointType;
+
     typedef TModelPartType ModelPartType;
     typedef typename ModelPartType::IndexType IndexType;
     typedef typename ModelPartType::NodeType NodeType;
@@ -55,13 +64,11 @@ public:
     typedef typename ModelPartType::ElementsContainerType ElementsContainerType;
     typedef typename ModelPartType::ConditionsContainerType ConditionsContainerType;
 
-    typedef Patch<TDim> PatchType;
-    typedef MultiPatch<TDim> MultiPatchType;
     typedef AutoCollapseSpatialBinning<IndexType, double> BinningType;
     typedef std::map<IndexType, std::vector<std::vector<IndexType> > > connectivity_t;
 
     /// Default constructor
-    ConformingMultipatchLagrangeModelPart(typename MultiPatch<TDim>::Pointer pMultiPatch)
+    ConformingMultipatchLagrangeModelPart(typename TMultiPatchType::Pointer pMultiPatch)
         : mpMultiPatch(pMultiPatch), mIsModelPartReady(false), mLastNodeId(0)
         , mName("MultiPatch")
     {
@@ -99,7 +106,7 @@ public:
     /// Set the uniform sampling for the patch at specific dimension
     void SetDivision(IndexType patch_id, int dim, const IndexType nsampling)
     {
-        if (dim >= TDim)
+        if (dim >= Dim)
         {
             KRATOS_ERROR << "The dimension " << dim << " is invalid";
         }
@@ -119,7 +126,7 @@ public:
     /// Set the sampling for the patch at specific dimension
     void SetSampling(IndexType patch_id, int dim, const std::vector<double>& sampling)
     {
-        if (dim >= TDim)
+        if (dim >= Dim)
         {
             KRATOS_ERROR << "The dimension " << dim << " is invalid";
         }
@@ -133,10 +140,10 @@ public:
     }
 
     /// Get the underlying multipatch pointer
-    typename MultiPatch<TDim>::Pointer pMultiPatch() {return mpMultiPatch;}
+    typename TMultiPatchType::Pointer pMultiPatch() {return mpMultiPatch;}
 
     /// Get the underlying multipatch pointer
-    typename MultiPatch<TDim>::ConstPointer pMultiPatch() const {return mpMultiPatch;}
+    typename TMultiPatchType::ConstPointer pMultiPatch() const {return mpMultiPatch;}
 
     /// Check if the multipatch model_part ready for transferring/transmitting data
     bool IsReady() const {return mpMultiPatch->IsEnumerated() && mIsModelPartReady;}
@@ -213,7 +220,7 @@ public:
     }
 
     /// create the elements out from the patch and add to the model_part
-    ElementsContainerType AddElements(typename Patch<TDim>::Pointer pPatch, const std::string& element_name,
+    ElementsContainerType AddElements(typename PatchType::Pointer pPatch, const std::string& element_name,
             std::size_t starting_id, Properties::Pointer pProperties)
     {
         const auto it = mconnectivities.find(pPatch->Id());
@@ -268,10 +275,10 @@ public:
             KRATOS_ERROR << "Number of sampling is not set for patch " << pPatch->Id();
         }
 
-        boost::array<std::vector<double>, TDim-1> div;
-        if constexpr (TDim == 2)
+        boost::array<std::vector<double>, Dim-1> div;
+        if constexpr (Dim == 2)
         {
-            const auto pdir = ParameterDirection<TDim>::Get(side);
+            const auto pdir = ParameterDirection<Dim>::Get(side);
             div[0] = it_num->second[pdir[0]];
             if (GetEchoLevel() > 1)
             {
@@ -279,9 +286,9 @@ public:
                 KRATOS_WATCH_STD_CON(div[0])
             }
         }
-        else if constexpr (TDim == 3)
+        else if constexpr (Dim == 3)
         {
-            const auto pdir = ParameterDirection<TDim>::Get(side);
+            const auto pdir = ParameterDirection<Dim>::Get(side);
             div[0] = it_num->second[pdir[0]];
             div[1] = it_num->second[pdir[1]];
             if (GetEchoLevel() > 1)
@@ -310,11 +317,11 @@ public:
             KRATOS_ERROR << "Number of sampling is not set for patch " << pPatch->Id();
         }
 
-        boost::array<std::vector<double>, TDim-1> div;
-        const BoundarySide side = ParameterDirection<TDim>::GetSide(idir);
-        if constexpr (TDim == 2)
+        boost::array<std::vector<double>, Dim-1> div;
+        const BoundarySide side = ParameterDirection<Dim>::GetSide(idir);
+        if constexpr (Dim == 2)
         {
-            const auto pdir = ParameterDirection<TDim>::Get(side);
+            const auto pdir = ParameterDirection<Dim>::Get(side);
             div[0] = it_num->second[pdir[0]];
             if (GetEchoLevel() > 1)
             {
@@ -322,9 +329,9 @@ public:
                 KRATOS_WATCH_STD_CON(div[0])
             }
         }
-        else if constexpr (TDim == 3)
+        else if constexpr (Dim == 3)
         {
-            const auto pdir = ParameterDirection<TDim>::Get(side);
+            const auto pdir = ParameterDirection<Dim>::Get(side);
             div[0] = it_num->second[pdir[0]];
             div[1] = it_num->second[pdir[1]];
             if (GetEchoLevel() > 1)
@@ -340,8 +347,8 @@ public:
     }
 
     /// create the conditions out from the boudnary patch and add to the model_part
-    ConditionsContainerType AddConditions(typename Patch<TDim-1>::Pointer pBoundaryPatch,
-            const boost::array<std::vector<double>, TDim-1>& nsampling,
+    ConditionsContainerType AddConditions(typename BoundaryPatchType::Pointer pBoundaryPatch,
+            const boost::array<std::vector<double>, Dim-1>& nsampling,
             const std::string& condition_name, std::size_t starting_id, Properties::Pointer pProperties)
     {
         if (!KratosComponents<Condition>::Has(condition_name))
@@ -356,7 +363,7 @@ public:
         IndexType NodeCounter = 1;
 
         // generate points and connectivities
-        if constexpr (TDim == 2)
+        if constexpr (Dim == 2)
         {
             std::vector<array_1d<double, 3> > corners(2);
 
@@ -364,7 +371,7 @@ public:
 
             points_and_connectivities = IsogeometricPostUtility::GenerateLineGrid(corners[0], corners[1], NodeCounter, nsampling[0]);
         }
-        else if constexpr (TDim == 3)
+        else if constexpr (Dim == 3)
         {
             std::vector<array_1d<double, 3> > corners(4);
 
@@ -377,7 +384,7 @@ public:
         // add the points to the binning
         std::map<IndexType, IndexType> old_to_new;
         IndexType cnt = 0;
-        if constexpr ((TDim == 2) || (TDim == 3))
+        if constexpr ((Dim == 2) || (Dim == 3))
         {
             for (std::size_t i = 0; i < points_and_connectivities.first.size(); ++i)
             {
@@ -427,14 +434,14 @@ public:
     std::string Info() const
     {
         std::stringstream ss;
-        ss << "ConformingMultipatchLagrangeModelPart<" << TDim << ">";
+        ss << "ConformingMultipatchLagrangeModelPart<" << Dim << ">";
         return ss.str();
     }
 
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "ConformingMultipatchLagrangeModelPart<" << TDim << ">";
+        rOStream << "ConformingMultipatchLagrangeModelPart<" << Dim << ">";
     }
 
     virtual void PrintData(std::ostream& rOStream) const
@@ -447,7 +454,7 @@ private:
     {
         IndexType NodeCounter;
 
-        typedef typename MultiPatch<TDim>::patch_const_iterator patch_const_iterator;
+        typedef typename TMultiPatchType::patch_const_iterator patch_const_iterator;
         for (patch_const_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             if (!it->Is(ACTIVE))
@@ -459,7 +466,7 @@ private:
             std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities;
 
             NodeCounter = 1;
-            if constexpr (TDim == 2)
+            if constexpr (Dim == 2)
             {
                 // create new nodes and elements
                 auto it_num = mPatchSampling.find(it->Id());
@@ -484,7 +491,7 @@ private:
                 points_and_connectivities = IsogeometricPostUtility::GenerateQuadGrid(corners[0], corners[1],
                                             corners[2], corners[3], NodeCounter, div_1, div_2);
             }
-            else if constexpr (TDim == 3)
+            else if constexpr (Dim == 3)
             {
                 // create new nodes and elements
                 auto it_num = mPatchSampling.find(it->Id());
@@ -582,17 +589,17 @@ private:
 #else
     typename ModelPartType::Pointer mpModelPart;
 #endif
-    typename MultiPatch<TDim>::Pointer mpMultiPatch;
+    typename TMultiPatchType::Pointer mpMultiPatch;
 
-    std::map<IndexType, boost::array<std::vector<double>, TDim> > mPatchSampling;
+    std::map<IndexType, boost::array<std::vector<double>, Dim> > mPatchSampling;
 
     typename BinningType::Pointer mpBinning;
     connectivity_t mconnectivities;
 };
 
 /// output stream function
-template<int TDim, class TModelPartType>
-inline std::ostream& operator <<(std::ostream& rOStream, const ConformingMultipatchLagrangeModelPart<TDim, TModelPartType>& rThis)
+template<class TMultiPatchType, class TModelPartType>
+inline std::ostream& operator <<(std::ostream& rOStream, const ConformingMultipatchLagrangeModelPart<TMultiPatchType, TModelPartType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

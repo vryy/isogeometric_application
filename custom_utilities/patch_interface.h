@@ -130,10 +130,21 @@ public:
         return true;
     }
 
+    /// Return information as string
+    virtual std::string Info() const
+    {
+        if constexpr (TDim == 1)
+            return "PatchInterface1D";
+        else if constexpr (TDim == 2)
+            return "PatchInterface2D";
+        else if constexpr (TDim == 3)
+            return "PatchInterface3D";
+    }
+
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "PatchInterface" << TDim << "D, Addr = " << this;
+        rOStream << Info() << ", Addr = " << this;
         rOStream << ", Patch ";
         if (this->pPatch1() == NULL)
         {

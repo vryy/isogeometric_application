@@ -90,13 +90,13 @@ typename TPatchType::Pointer Patch_Create(TPatchType& rDummy, std::size_t Id, ty
 }
 
 template<class TPatchType, typename TDataType>
-typename GridFunction<TPatchType::Dim, TDataType>::Pointer Patch_CreateGridFunction(TPatchType& rDummy, typename ControlGrid<TDataType>::Pointer pControlGrid)
+typename GridFunction<TPatchType::Dim, typename TPatchType::LocalCoordinateType, TDataType>::Pointer Patch_CreateGridFunction(TPatchType& rDummy, typename ControlGrid<TDataType>::Pointer pControlGrid)
 {
     return rDummy.template CreateGridFunction<TDataType>(pControlGrid);
 }
 
 template<class TPatchType, class TVariableType>
-typename GridFunction<TPatchType::Dim, typename TVariableType::Type>::Pointer Patch_GridFunction(TPatchType& rDummy, const TVariableType& rVariable)
+typename GridFunction<TPatchType::Dim, typename TPatchType::LocalCoordinateType, typename TVariableType::Type>::Pointer Patch_GridFunction(TPatchType& rDummy, const TVariableType& rVariable)
 {
     return rDummy.template pGetGridFunction<TVariableType>(rVariable);
 }
@@ -378,7 +378,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
 
     ss.str(std::string());
     ss << Prefix << "Patch" << TDim << "D";
-    class_<PatchType, bases<Flags> >
+    auto patch_class = class_<PatchType, bases<Flags> >
     // class_<PatchType, typename PatchType::Pointer > // do not use this to export Patch pointer
     (ss.str().c_str(), init<std::size_t, typename FESpace<TDim>::Pointer>())
     .add_property("Id", &Patch_GetId<PatchType>, &Patch_SetId<PatchType>)
@@ -415,6 +415,11 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
     .def("Validate", &PatchType::Validate)
     .def(self_ns::str(self))
     ;
+
+    if constexpr (!std::is_same<TCoordinateType, TDataType>::value)
+    {
+        patch_class.def("GridFunction", &Patch_GridFunction<PatchType, Variable<array_1d<TCoordinateType, 3> > >);
+    }
 
     ss.str(std::string());
     ss << Prefix << "Patch" << TDim << "DPointer";

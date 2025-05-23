@@ -83,14 +83,16 @@ public:
 
     typedef std::map<std::string, boost::any> GridFunctionContainerType;
 
-    typedef GridFunction<TDim, TDataType> DoubleGridFunctionType;
+    typedef GridFunction<TDim, TLocalCoordinateType, TDataType> DoubleGridFunctionType;
     typedef std::vector<typename DoubleGridFunctionType::Pointer> DoubleGridFunctionContainerType;
 
-    typedef GridFunction<TDim, array_1d<TDataType, 3> > Array1DGridFunctionType;
+    typedef GridFunction<TDim, TLocalCoordinateType, array_1d<TDataType, 3> > Array1DGridFunctionType;
     typedef std::vector<typename Array1DGridFunctionType::Pointer> Array1DGridFunctionContainerType;
 
-    typedef GridFunction<TDim, VectorType> VectorGridFunctionType;
+    typedef GridFunction<TDim, TLocalCoordinateType, VectorType> VectorGridFunctionType;
     typedef std::vector<typename VectorGridFunctionType::Pointer> VectorGridFunctionContainerType;
+
+    typedef GridFunction<TDim, TLocalCoordinateType, ControlPointType> ControlPointGridFunctionType;
 
     typedef std::vector<typename PatchType::Pointer> NeighborPatchContainerType;
 
@@ -243,11 +245,11 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Create the control point grid
-    typename GridFunction<TDim, ControlPointType>::Pointer CreateControlPointGridFunction(typename ControlGrid<ControlPointType>::Pointer pControlPointGrid)
+    typename ControlPointGridFunctionType::Pointer CreateControlPointGridFunction(typename ControlGrid<ControlPointType>::Pointer pControlPointGrid)
     {
         CheckSize(*pControlPointGrid, __FUNCTION__);
         pControlPointGrid->SetName("CONTROL_POINT");
-        typename GridFunction<TDim, ControlPointType>::Pointer pNewGridFunc = GridFunction<TDim, ControlPointType>::Create(mpFESpace, pControlPointGrid);
+        typename ControlPointGridFunctionType::Pointer pNewGridFunc = ControlPointGridFunctionType::Create(mpFESpace, pControlPointGrid);
         mpGridFunctions["CONTROL_POINT"] = pNewGridFunc;
 
         // create additional grid for control point coordinates, in order to compute the derivatives
@@ -255,32 +257,32 @@ public:
         typename ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
         pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
         typename FESpaceType::Pointer pNewFESpace = WeightedFESpaceType::Create(mpFESpace, this->GetControlWeights());
-        typename GridFunction<TDim, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
+        typename GridFunction<TDim, TLocalCoordinateType, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, TLocalCoordinateType, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
         mpGridFunctions["CONTROL_POINT_COORDINATES"] = pNewCoordinatesGridFunc;
 
         return pNewGridFunc;
     }
 
     /// Get the control point grid function
-    GridFunction<TDim, ControlPointType>& ControlPointGridFunction()
+    ControlPointGridFunctionType& ControlPointGridFunction()
     {
         return *(this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT)));
     }
 
     /// Get the control point grid function
-    const GridFunction<TDim, ControlPointType>& ControlPointGridFunction() const
+    const ControlPointGridFunctionType& ControlPointGridFunction() const
     {
         return *(this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT)));
     }
 
     /// Get the control point grid function pointer
-    typename GridFunction<TDim, ControlPointType>::Pointer pControlPointGridFunction()
+    typename ControlPointGridFunctionType::Pointer pControlPointGridFunction()
     {
         return this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT));
     }
 
     /// Get the control point grid
-    typename GridFunction<TDim, ControlPointType>::ConstPointer pControlPointGridFunction() const
+    typename ControlPointGridFunctionType::ConstPointer pControlPointGridFunction() const
     {
         return this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT));
     }
@@ -308,7 +310,7 @@ public:
         typename ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
         pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
         typename FESpaceType::Pointer pNewFESpace = WeightedFESpaceType::Create(mpFESpace, this->GetControlWeights());
-        typename GridFunction<TDim, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
+        typename GridFunction<TDim, TLocalCoordinateType, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, TLocalCoordinateType, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
         mpGridFunctions["CONTROL_POINT_COORDINATES"] = pNewCoordinatesGridFunc;
     }
 
@@ -317,18 +319,18 @@ public:
     /// Create and add the grid function. This function will create the new FESpace based on the original FESpace of the control grid and the weights, and then assign to the new grid function.
     /// One must not use this function for the ControlPoint data type.
     template<typename TOtherDataType>
-    typename GridFunction<TDim, TOtherDataType>::Pointer CreateGridFunction(typename ControlGrid<TOtherDataType>::Pointer pControlGrid)
+    typename GridFunction<TDim, TLocalCoordinateType, TOtherDataType>::Pointer CreateGridFunction(typename ControlGrid<TOtherDataType>::Pointer pControlGrid)
     {
         CheckSize(*pControlGrid, __FUNCTION__);
         typename FESpaceType::Pointer pNewFESpace = WeightedFESpaceType::Create(mpFESpace, this->GetControlWeights());
-        typename GridFunction<TDim, TOtherDataType>::Pointer pNewGridFunc = GridFunction<TDim, TOtherDataType>::Create(pNewFESpace, pControlGrid);
+        typename GridFunction<TDim, TLocalCoordinateType, TOtherDataType>::Pointer pNewGridFunc = GridFunction<TDim, TLocalCoordinateType, TOtherDataType>::Create(pNewFESpace, pControlGrid);
         mpGridFunctions[pControlGrid->Name()] = pNewGridFunc;
         return pNewGridFunc;
     }
 
     /// Create and add the grid function
     template<class TVariableType>
-    typename GridFunction<TDim, typename TVariableType::Type>::Pointer CreateGridFunction(const TVariableType& rVariable,
+    typename GridFunction<TDim, TLocalCoordinateType, typename TVariableType::Type>::Pointer CreateGridFunction(const TVariableType& rVariable,
             typename ControlGrid<typename TVariableType::Type>::Pointer pControlGrid)
     {
         pControlGrid->SetName(rVariable.Name());
@@ -337,9 +339,9 @@ public:
 
     /// Get the grid function
     template<class TVariableType>
-    typename GridFunction<TDim, typename TVariableType::Type>::Pointer pGetGridFunction(const TVariableType& rVariable)
+    typename GridFunction<TDim, TLocalCoordinateType, typename TVariableType::Type>::Pointer pGetGridFunction(const TVariableType& rVariable)
     {
-        typedef typename GridFunction<TDim, typename TVariableType::Type>::Pointer GridFunctionPointerType;
+        typedef typename GridFunction<TDim, TLocalCoordinateType, typename TVariableType::Type>::Pointer GridFunctionPointerType;
         for (GridFunctionContainerType::iterator it = mpGridFunctions.begin(); it != mpGridFunctions.end(); ++it)
         {
             try
@@ -361,9 +363,9 @@ public:
 
     /// Get the grid function
     template<class TVariableType>
-    typename GridFunction<TDim, typename TVariableType::Type>::ConstPointer pGetGridFunction(const TVariableType& rVariable) const
+    typename GridFunction<TDim, TLocalCoordinateType, typename TVariableType::Type>::ConstPointer pGetGridFunction(const TVariableType& rVariable) const
     {
-        typedef typename GridFunction<TDim, typename TVariableType::Type>::Pointer GridFunctionPointerType;
+        typedef typename GridFunction<TDim, TLocalCoordinateType, typename TVariableType::Type>::Pointer GridFunctionPointerType;
         for (GridFunctionContainerType::const_iterator it = mpGridFunctions.begin(); it != mpGridFunctions.end(); ++it)
         {
             try
@@ -414,21 +416,21 @@ public:
     void Predict(const array_1d<CoordinateType, 3>& point, array_1d<LocalCoordinateType, 3>& xi, const std::vector<int>& nsampling,
                  const array_1d<LocalCoordinateType, 3>& xi_min, const array_1d<LocalCoordinateType, 3>& xi_max) const
     {
-        typename GridFunction<TDim, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT_COORDINATES));
+        typename GridFunction<TDim, TLocalCoordinateType, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT_COORDINATES));
         pGridFunc->Predict(point, xi, nsampling, xi_min, xi_max);
     }
 
     /// Compute a rough estimation of the local coordinates of a point by sampling technique
     void Predict(const array_1d<CoordinateType, 3>& point, array_1d<LocalCoordinateType, 3>& xi, const std::vector<int>& nsampling) const
     {
-        typename GridFunction<TDim, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT_COORDINATES));
+        typename GridFunction<TDim, TLocalCoordinateType, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT_COORDINATES));
         pGridFunc->Predict(point, xi, nsampling);
     }
 
     /// Compute the local coordinates of a point
     int LocalCoordinates(const array_1d<CoordinateType, 3>& point, array_1d<LocalCoordinateType, 3>& xi) const
     {
-        typename GridFunction<TDim, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT_COORDINATES));
+        typename GridFunction<TDim, TLocalCoordinateType, array_1d<CoordinateType, 3> >::ConstPointer pGridFunc = this->pGetGridFunction(VARSEL(TCoordinateType, CONTROL_POINT_COORDINATES));
         int error_code = pGridFunc->LocalCoordinates(point, xi, mLocalSearchMaxIters, mLocalSearchTolerance);
         bool is_inside = this->pFESpace()->IsInside(std::vector<LocalCoordinateType> {xi[0], xi[1], xi[2]});
         if (!is_inside)
@@ -1106,7 +1108,7 @@ private:
     template<class TVariableType>
     std::vector<TVariableType*> ExtractVariables(const GridFunctionContainerType& pGridFunctions) const
     {
-        typedef GridFunction<TDim, typename TVariableType::Type> GridFunctionType;
+        typedef GridFunction<TDim, TLocalCoordinateType, typename TVariableType::Type> GridFunctionType;
         typedef std::vector<typename GridFunctionType::Pointer> GridFunctionVectorContainerType;
         GridFunctionVectorContainerType GridFuncs = this->ExtractGridFunctions<GridFunctionVectorContainerType>(pGridFunctions);
 
@@ -1146,6 +1148,7 @@ public:
 
     typedef ControlPoint<CoordinateType, WeightType> ControlPointType;
     typedef FESpace<0, TLocalCoordinateType> FESpaceType;
+    typedef GridFunction<0, TLocalCoordinateType, ControlPointType> ControlPointGridFunctionType;
 
     typedef Patch<0, TLocalCoordinateType, TCoordinateType, TDataType> PatchType;
 
@@ -1195,24 +1198,24 @@ public:
     }
 
     /// Set the control point grid
-    typename GridFunction<0, ControlPointType>::Pointer CreateControlPointGridFunction(typename ControlGrid<ControlPointType>::Pointer pControlPointGrid)
+    typename ControlPointGridFunctionType::Pointer CreateControlPointGridFunction(typename ControlGrid<ControlPointType>::Pointer pControlPointGrid)
     {
         pControlPointGrid->SetName("CONTROL_POINT");
-        typename GridFunction<0, ControlPointType>::Pointer pNewGridFunc = GridFunction<0, ControlPointType>::Create(mpFESpace, pControlPointGrid);
+        typename ControlPointGridFunctionType::Pointer pNewGridFunc = ControlPointGridFunctionType::Create(mpFESpace, pControlPointGrid);
         mpControlPointGridFunc = pNewGridFunc;
 
         return pNewGridFunc;
     }
 
     /// Get the control point grid function
-    GridFunction<0, ControlPointType>& ControlPointGridFunction() {return *mpControlPointGridFunc;}
+    ControlPointGridFunctionType& ControlPointGridFunction() {return *mpControlPointGridFunc;}
 
     /// Get the control point grid function
-    const GridFunction<0, ControlPointType>& ControlPointGridFunction() const {return *mpControlPointGridFunc;}
+    const ControlPointGridFunctionType& ControlPointGridFunction() const {return *mpControlPointGridFunc;}
 
     /// Create and add the grid function
     template<typename TOtherDataType>
-    typename GridFunction<0, TOtherDataType>::Pointer CreateGridFunction(typename ControlGrid<TOtherDataType>::Pointer pControlGrid)
+    typename GridFunction<0, TLocalCoordinateType, TOtherDataType>::Pointer CreateGridFunction(typename ControlGrid<TOtherDataType>::Pointer pControlGrid)
     {
         return NULL;
     }
@@ -1288,7 +1291,7 @@ public:
 
 private:
 
-    typename GridFunction<0, ControlPointType>::Pointer mpControlPointGridFunc;
+    typename ControlPointGridFunctionType::Pointer mpControlPointGridFunc;
     typename FESpaceType::Pointer mpFESpace;
 };
 

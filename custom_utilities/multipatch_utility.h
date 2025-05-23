@@ -181,8 +181,8 @@ public:
     /// and
     ///     [dv/dx dv/dy] in 2D
     template<int TDim>
-    static Vector ComputeSpatialDerivatives(const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
-                                            const GridFunction<TDim, double>& rControlValueGridFunction,
+    static Vector ComputeSpatialDerivatives(const GridFunction<TDim, double, array_1d<double, 3> >& rControlPointGridFunction,
+                                            const GridFunction<TDim, double, double>& rControlValueGridFunction,
                                             const std::vector<double>& rCoordinates)
     {
         // compute the Jacobian
@@ -230,8 +230,8 @@ public:
     ///      dvy/dx dvy/dy
     ///      dvz/dx dvz/dy] in 2D
     template<int TDim>
-    static Matrix ComputeSpatialDerivatives(const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
-                                            const GridFunction<TDim, array_1d<double, 3> >& rControlValueGridFunction,
+    static Matrix ComputeSpatialDerivatives(const GridFunction<TDim, double, array_1d<double, 3> >& rControlPointGridFunction,
+                                            const GridFunction<TDim, double, array_1d<double, 3> >& rControlValueGridFunction,
                                             const std::vector<double>& rCoordinates)
     {
         // compute the Jacobian

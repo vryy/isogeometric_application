@@ -299,21 +299,21 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             // transfer other data
             for (std::size_t i = 0; i < double_var_list.size(); ++i)
             {
-                GridFunction<2, double>::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<double> >(*double_var_list[i]);
+                GridFunction<2, double, double>::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<double> >(*double_var_list[i]);
                 double v = pGridFunction->pControlGrid()->GetData(i_func);
                 p_bf->SetValue(*double_var_list[i], v);
             }
 
             for (std::size_t i = 0; i < array1d_var_list.size(); ++i)
             {
-                GridFunction<2, array_1d<double, 3> >::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<array_1d<double, 3> > >(*array1d_var_list[i]);
+                GridFunction<2, double, array_1d<double, 3> >::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<array_1d<double, 3> > >(*array1d_var_list[i]);
                 const array_1d<double, 3>& v = pGridFunction->pControlGrid()->GetData(i_func);
                 p_bf->SetValue(*array1d_var_list[i], v);
             }
 
             for (std::size_t i = 0; i < vector_var_list.size(); ++i)
             {
-                GridFunction<2, Vector>::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<Vector> >(*vector_var_list[i]);
+                GridFunction<2, double, Vector>::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<Vector> >(*vector_var_list[i]);
                 const Vector& v = pGridFunction->pControlGrid()->GetData(i_func);
                 p_bf->SetValue(*vector_var_list[i], v);
             }

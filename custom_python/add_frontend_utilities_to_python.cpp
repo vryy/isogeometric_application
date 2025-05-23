@@ -111,8 +111,8 @@ boost::python::list MultiPatchUtility_LocalCoordinates(MultiPatchUtility& rDummy
 
 template<int TDim>
 Matrix MultiPatchUtility_ComputeSpatialDerivatives(MultiPatchUtility& rDummy,
-        const GridFunction<TDim, array_1d<double, 3> >& rControlPointGridFunction,
-        const GridFunction<TDim, array_1d<double, 3> >& rControlValueGridFunction,
+        const GridFunction<TDim, double, array_1d<double, 3> >& rControlPointGridFunction,
+        const GridFunction<TDim, double, array_1d<double, 3> >& rControlValueGridFunction,
         const boost::python::list& xi_list)
 {
     std::vector<double> xi;

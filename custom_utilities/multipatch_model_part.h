@@ -41,18 +41,25 @@ namespace Kratos
 /**
  * Coupling between KRATOS model_part and multipatch structure
  */
-template<int TDim, class TModelPartType>
+template<class TMultiPatchType, class TModelPartType>
 class MultiPatchModelPart : public IsogeometricEcho
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(MultiPatchModelPart);
 
+    /// Constants
+    static constexpr int Dim = TMultiPatchType::Dim;
+
     /// Type definition
-    typedef Patch<TDim> PatchType;
-    typedef Patch<TDim-1> BoundaryPatchType;
-    typedef MultiPatch<TDim> MultiPatchType;
+    typedef TMultiPatchType MultiPatchType;
+    typedef typename MultiPatchType::PatchType PatchType;
+    typedef typename PatchType::BoundaryPatchType BoundaryPatchType;
+    typedef typename PatchType::LocalCoordinateType LocalCoordinateType;
     typedef typename PatchType::ControlPointType ControlPointType;
+
+    typedef FESpace<Dim, LocalCoordinateType> FESpaceType;
+    typedef FESpace<Dim-1, LocalCoordinateType> BoundaryFESpaceType;
 
     typedef TModelPartType ModelPartType;
     typedef typename ModelPartType::NodeType NodeType;
@@ -65,7 +72,7 @@ public:
     typedef IsogeometricGeometry<NodeType> IsogeometricGeometryType;
 
     /// Default constructor
-    MultiPatchModelPart(typename MultiPatch<TDim>::Pointer pMultiPatch)
+    MultiPatchModelPart(typename MultiPatchType::Pointer pMultiPatch)
         : mpMultiPatch(pMultiPatch), mIsModelPartReady(false), mNodeOffset(0)
         , mName("MultiPatch")
     {
@@ -94,10 +101,10 @@ public:
 #endif
 
     /// Get the underlying multipatch pointer
-    typename MultiPatch<TDim>::Pointer pMultiPatch() {return mpMultiPatch;}
+    typename MultiPatchType::Pointer pMultiPatch() {return mpMultiPatch;}
 
     /// Get the underlying multipatch pointer
-    typename MultiPatch<TDim>::ConstPointer pMultiPatch() const {return mpMultiPatch;}
+    typename MultiPatchType::ConstPointer pMultiPatch() const {return mpMultiPatch;}
 
     /// Check if the multipatch model_part ready for transferring/transmitting data
     bool IsReady() const {return mpMultiPatch->IsEnumerated() && mIsModelPartReady;}
@@ -198,10 +205,10 @@ public:
 #endif
 
         // get the grid function for control points
-        const GridFunction<TDim, ControlPointType>& rControlPointGridFunction = pPatch->ControlPointGridFunction();
+        const auto& rControlPointGridFunction = pPatch->ControlPointGridFunction();
 
         // create new elements and add to the model_part
-        ElementsContainerType pNewElements = CreateEntitiesFromFESpace<ElementType, FESpace<TDim>,
+        ElementsContainerType pNewElements = CreateEntitiesFromFESpace<ElementType, FESpaceType,
                 ControlGrid<ControlPointType>, NodesContainerType>(
             pPatch->pFESpace(), rControlPointGridFunction.pControlGrid(),
             this->GetModelPart().Nodes(), element_name,
@@ -240,10 +247,10 @@ public:
 #endif
 
         // get the grid function for control points
-        const GridFunction<TDim, ControlPointType>& rControlPointGridFunction = pPatch->ControlPointGridFunction();
+        const auto& rControlPointGridFunction = pPatch->ControlPointGridFunction();
 
         // create new elements and add to the model_part
-        ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<ConditionType, FESpace<TDim>,
+        ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<ConditionType, FESpaceType,
                 ControlGrid<ControlPointType>, NodesContainerType>(
             pPatch->pFESpace(), rControlPointGridFunction.pControlGrid(),
             this->GetModelPart().Nodes(), condition_name,
@@ -298,10 +305,10 @@ public:
 #endif
 
         // get the grid function for control points
-        const GridFunction < TDim - 1, ControlPointType > & rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
+        const auto& rControlPointGridFunction = pBoundaryPatch->ControlPointGridFunction();
 
         // create new conditions and add to the model_part
-        ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<ConditionType, FESpace < TDim - 1 >,
+        ConditionsContainerType pNewConditions = CreateEntitiesFromFESpace<ConditionType, BoundaryFESpaceType,
                 ControlGrid<ControlPointType>, NodesContainerType>(
             pBoundaryPatch->pFESpace(), rControlPointGridFunction.pControlGrid(),
             this->GetModelPart().Nodes(), condition_name,
@@ -371,7 +378,7 @@ public:
         if (!IsReady()) { return; }
 
         // loop through each patch, we construct a map from each function id to the patch id
-        typedef typename MultiPatch<TDim>::patch_const_iterator patch_const_iterator;
+        typedef typename MultiPatchType::patch_const_iterator patch_const_iterator;
         for (patch_const_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             std::vector<std::size_t> func_ids = it->pFESpace()->FunctionIndices();
@@ -380,7 +387,7 @@ public:
             if (!it->template HasGridFunction<TVariableType>(rVariable))
             {
                 // --> if not then create the new grid function
-                typename ControlGrid<typename TVariableType::Type>::Pointer pNewControlGrid = ControlGridUtility::CreateControlGrid<TDim, TVariableType>(it->pFESpace(), rVariable);
+                typename ControlGrid<typename TVariableType::Type>::Pointer pNewControlGrid = ControlGridUtility::CreateControlGrid<Dim, TVariableType>(it->pFESpace(), rVariable);
                 it->template CreateGridFunction<TVariableType>(rVariable, pNewControlGrid);
             }
 
@@ -413,7 +420,7 @@ public:
         if (!IsReady()) { return; }
 
         // loop through each patch, we construct a map from each function id to the patch id
-        typedef typename MultiPatch<TDim>::patch_const_iterator patch_const_iterator;
+        typedef typename MultiPatchType::patch_const_iterator patch_const_iterator;
         for (patch_const_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             std::vector<std::size_t> func_ids = it->pFESpace()->FunctionIndices();
@@ -422,7 +429,7 @@ public:
             if (!it->template HasGridFunction<TVariableType>(rVariable))
             {
                 // --> if not then create the new grid function
-                typename ControlGrid<typename TVariableType::Type>::Pointer pNewControlGrid = ControlGridUtility::CreateControlGrid<TDim, TVariableType>(it->pFESpace(), rVariable);
+                typename ControlGrid<typename TVariableType::Type>::Pointer pNewControlGrid = ControlGridUtility::CreateControlGrid<Dim, TVariableType>(it->pFESpace(), rVariable);
                 it->template CreateGridFunction<TVariableType>(rVariable, pNewControlGrid);
             }
 
@@ -665,13 +672,13 @@ private:
 #else
     typename ModelPartType::Pointer mpModelPart;
 #endif
-    typename MultiPatch<TDim>::Pointer mpMultiPatch;
+    typename MultiPatchType::Pointer mpMultiPatch;
 
 };
 
 /// output stream function
-template<int TDim, class TModelPartType>
-inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchModelPart<TDim, TModelPartType>& rThis)
+template<class TMultiPatchType, class TModelPartType>
+inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchModelPart<TMultiPatchType, TModelPartType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

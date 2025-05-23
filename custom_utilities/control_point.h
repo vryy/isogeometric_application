@@ -49,7 +49,7 @@ public:
         BaseType::WV()[0] = v;
         BaseType::WV()[1] = v;
         BaseType::WV()[2] = v;
-        BaseType::W() = static_cast<TWeightType>(1.0);
+        BaseType::W() = static_cast<TWeightType>(v);
     }
 
     /// Constructor with full coordinates

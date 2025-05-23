@@ -61,7 +61,7 @@ void IsogeometricApplication_AddPBBSplinesSpaceToPython()
     ss.str(std::string());
     ss << "PBBSplinesFESpace" << TDim << "D";
     typedef FESpace<TDim> FESpaceType;
-    typedef PBBSplinesFESpace<TDim, PBBSplinesBasisFunctionType, BCellManager<TDim, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
+    typedef PBBSplinesFESpace<TDim, typename FESpaceType::LocalCoordinateType, PBBSplinesBasisFunctionType, BCellManager<TDim, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
     class_<PBBSplinesFESpaceType, typename PBBSplinesFESpaceType::Pointer, bases<FESpaceType>, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def("__getitem__", &FESpace_GetItem<PBBSplinesFESpaceType>)

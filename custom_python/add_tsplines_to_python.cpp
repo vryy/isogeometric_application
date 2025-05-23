@@ -96,8 +96,8 @@ void IsogeometricApplication_AddTSplinesToPython()
     /////////////////////////////////////////////////////////////////
 
     typedef PBBSplinesBasisFunction<2, TCell> PBBSplinesBasisFunctionType;
-    typedef PBBSplinesFESpace<2, PBBSplinesBasisFunctionType, BCellManager<2, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
-    typedef TSplinesFESpace<2, PBBSplinesBasisFunctionType, BCellManager<2, typename PBBSplinesBasisFunctionType::CellType> > TSplinesFESpaceType;
+    typedef PBBSplinesFESpace<2, double, PBBSplinesBasisFunctionType, BCellManager<2, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
+    typedef TSplinesFESpace<2, double, PBBSplinesBasisFunctionType, BCellManager<2, typename PBBSplinesBasisFunctionType::CellType> > TSplinesFESpaceType;
     class_<TSplinesFESpaceType, TSplinesFESpaceType::Pointer, bases<PBBSplinesFESpaceType>, boost::noncopyable>
     ("TSplinesFESpace2D", init<>())
     .def(self_ns::str(self))

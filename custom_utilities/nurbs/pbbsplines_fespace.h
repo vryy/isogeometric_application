@@ -30,15 +30,16 @@ namespace Kratos
 /**
  * Abstract class represents the FESpace for a single point-based B-Splines patch.
  */
-template<int TDim, typename TBasisFunctionType, typename TCellManagerType>
-class PBBSplinesFESpace : public FESpace<TDim>, public IsogeometricEcho
+template<int TDim, typename TLocalCoordinateType, typename TBasisFunctionType, typename TCellManagerType>
+class PBBSplinesFESpace : public FESpace<TDim, TLocalCoordinateType>, public IsogeometricEcho
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(PBBSplinesFESpace);
 
     /// Type definition
-    typedef FESpace<TDim> BaseType;
+    typedef FESpace<TDim, TLocalCoordinateType> BaseType;
+    typedef PBBSplinesFESpace<TDim, TLocalCoordinateType, TBasisFunctionType, TCellManagerType> ThisType;
     typedef TBasisFunctionType BasisFunctionType;
     typedef typename BasisFunctionType::Pointer bf_t;
     struct bf_compare { bool operator() (const bf_t& lhs, const bf_t& rhs) const {return lhs->Id() < rhs->Id();} };
@@ -61,7 +62,7 @@ public:
     }
 
     /// Destructor
-    virtual ~PBBSplinesFESpace()
+    ~PBBSplinesFESpace() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Addr = " << this << " is destroyed" << std::endl;
@@ -69,9 +70,9 @@ public:
     }
 
     /// Helper to create new PBBSplinesFESpace pointer
-    static typename PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>::Pointer Create()
+    static typename ThisType::Pointer Create()
     {
-        return typename PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>::Pointer(new PBBSplinesFESpace());
+        return typename ThisType::Pointer(new ThisType());
     }
 
     /// Add a already constructed basis function to the internal list
@@ -291,7 +292,7 @@ public:
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const override
+    bool IsCompatible(const BaseType& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -301,12 +302,14 @@ public:
             return false;
         }
 
-        const PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>& rOtherPBBSplinesFESpace = dynamic_cast<const PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>&>(rOtherFESpace);
+        const ThisType* pOtherPBBSplinesFESpace = dynamic_cast<const ThisType*>(&rOtherFESpace);
+        if (pOtherPBBSplinesFESpace == nullptr)
+            return false;
 
         // compare the knot vectors and order information
         for (std::size_t i = 0; i < TDim; ++i)
         {
-            if (!(this->Order(i)) == rOtherPBBSplinesFESpace.Order(i))
+            if (!(this->Order(i)) == pOtherPBBSplinesFESpace->Order(i))
             {
                 return false;
             }
@@ -332,7 +335,7 @@ public:
     {
         if (func_indices.size() != this->TotalNumber())
         {
-            KRATOS_WATCH(this->TotalNumber())
+            // KRATOS_WATCH(this->TotalNumber())
             std::cout << "func_indices:";
             for (std::size_t i = 0; i < func_indices.size(); ++i)
             {
@@ -647,7 +650,7 @@ public:
     }
 
     /// Overload assignment operator
-    PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>& operator=(const PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>& rOther)
+    ThisType& operator=(const ThisType& rOther)
     {
         // TODO copy more
         KRATOS_ERROR << "The assignment operator is not fully implemented";
@@ -656,9 +659,9 @@ public:
     }
 
     /// Clone this FESpace, this is a deep copy operation
-    typename FESpace<TDim>::Pointer Clone() const override
+    typename BaseType::Pointer Clone() const override
     {
-        typename PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>::Pointer pNewFESpace = typename PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>::Pointer(new PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>());
+        typename ThisType::Pointer pNewFESpace = typename ThisType::Pointer(new ThisType());
         *pNewFESpace = *this;
         return pNewFESpace;
     }
@@ -718,8 +721,8 @@ protected:
 };
 
 /// output stream function
-template<int TDim, typename TBasisFunctionType, typename TCellManagerType>
-inline std::ostream& operator <<(std::ostream& rOStream, const PBBSplinesFESpace<TDim, TBasisFunctionType, TCellManagerType>& rThis)
+template<int TDim, typename TLocalCoordinateType, typename TBasisFunctionType, typename TCellManagerType>
+inline std::ostream& operator <<(std::ostream& rOStream, const PBBSplinesFESpace<TDim, TLocalCoordinateType, TBasisFunctionType, TCellManagerType>& rThis)
 {
     rOStream << "-------------Begin PBBSplinesFESpace Info-------------" << std::endl;
     rThis.PrintInfo(rOStream);

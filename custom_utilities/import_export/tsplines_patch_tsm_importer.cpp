@@ -29,7 +29,7 @@ Patch<2>::Pointer TSplinesPatchTSMImporter::ImportSingle(const std::string& file
 
     // create the PBSplinesFESpaceType
     typedef PBBSplinesBasisFunction<2, TCell> PBBSplinesBasisFunctionType;
-    typedef TSplinesFESpace<2, PBBSplinesBasisFunctionType, BCellManager<2, TCell> > TSplinesFESpaceType;
+    typedef TSplinesFESpace<2, double, PBBSplinesBasisFunctionType, BCellManager<2, TCell> > TSplinesFESpaceType;
     typedef typename Patch<2>::ControlPointType ControlPointType;
     typedef typename TSplinesFESpaceType::knot_t knot_t;
     typedef typename TSplinesFESpaceType::cell_t cell_t;

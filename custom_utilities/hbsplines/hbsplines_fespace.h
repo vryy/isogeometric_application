@@ -36,15 +36,17 @@ namespace Kratos
 /**
 This class represents the FESpace for a single hierarchical BSplines patch defined over parametric domain.
  */
-template<int TDim>
-class HBSplinesFESpace : public PBBSplinesFESpace<TDim, HBSplinesBasisFunction<TDim>, BCellManager<TDim, typename HBSplinesBasisFunction<TDim>::CellType> >
+template<int TDim, typename TLocalCoordinateType = double>
+class HBSplinesFESpace : public PBBSplinesFESpace<TDim, TLocalCoordinateType, HBSplinesBasisFunction<TDim>, BCellManager<TDim, typename HBSplinesBasisFunction<TDim>::CellType> >
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(HBSplinesFESpace);
 
     /// Type definition
-    typedef PBBSplinesFESpace<TDim, HBSplinesBasisFunction<TDim>, BCellManager<TDim, typename HBSplinesBasisFunction<TDim>::CellType> > BaseType;
+    typedef PBBSplinesFESpace<TDim, TLocalCoordinateType, HBSplinesBasisFunction<TDim>, BCellManager<TDim, typename HBSplinesBasisFunction<TDim>::CellType> > BaseType;
+    typedef HBSplinesFESpace<TDim, TLocalCoordinateType> ThisType;
+    typedef FESpace<TDim, TLocalCoordinateType> FESpaceType;
     typedef typename BaseType::knot_container_t knot_container_t;
     typedef typename BaseType::knot_t knot_t;
 
@@ -68,7 +70,7 @@ public:
     {}
 
     /// Destructor
-    virtual ~HBSplinesFESpace()
+    ~HBSplinesFESpace() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << Type() << ", Addr = " << this << " is destroyed" << std::endl;
@@ -76,9 +78,9 @@ public:
     }
 
     /// Helper to create new HBSplinesFESpace pointer
-    static typename HBSplinesFESpace<TDim>::Pointer Create()
+    static typename ThisType::Pointer Create()
     {
-        return typename HBSplinesFESpace<TDim>::Pointer(new HBSplinesFESpace());
+        return typename ThisType::Pointer(new ThisType());
     }
 
     /// Check if the bf exists in the list; otherwise create new bf and return
@@ -164,7 +166,7 @@ public:
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    bool IsCompatible(const FESpace<TDim>& rOtherFESpace) const override
+    bool IsCompatible(const FESpaceType& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -174,16 +176,18 @@ public:
             return false;
         }
 
-        const HBSplinesFESpace<TDim>& rOtherHBSplinesFESpace = dynamic_cast<const HBSplinesFESpace<TDim>&>(rOtherFESpace);
+        const ThisType* pOtherHBSplinesFESpace = dynamic_cast<const ThisType*>(&rOtherFESpace);
+        if (pOtherHBSplinesFESpace == nullptr)
+            return false;
 
         // compare the knot vectors and order information
         for (std::size_t i = 0; i < TDim; ++i)
         {
-            if (!(this->Order(i)) == rOtherHBSplinesFESpace.Order(i))
+            if (!(this->Order(i)) == pOtherHBSplinesFESpace->Order(i))
             {
                 return false;
             }
-            if (!(this->KnotVector(i) == rOtherHBSplinesFESpace.KnotVector(i)))
+            if (!(this->KnotVector(i) == pOtherHBSplinesFESpace->KnotVector(i)))
             {
                 return false;
             }
@@ -215,11 +219,11 @@ public:
         else
         {
             domain_t p_domain;
-            if (TDim == 2)
+            if constexpr (TDim == 2)
             {
                 p_domain = domain_t(new DomainManager2D(Level));
             }
-            else if (TDim == 3)
+            else if constexpr (TDim == 3)
             {
                 p_domain = domain_t(new DomainManager3D(Level));
             }
@@ -229,9 +233,9 @@ public:
     }
 
     /// Construct the boundary FESpace based on side
-    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
     {
-        typedef HBSplinesFESpace < TDim - 1 > BoundaryFESpaceType;
+        typedef HBSplinesFESpace<TDim-1, TLocalCoordinateType> BoundaryFESpaceType;
         typename BoundaryFESpaceType::Pointer pBFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
 
         std::map<std::size_t, std::size_t> ident_indices_map;
@@ -242,7 +246,7 @@ public:
             {
                 typename BoundaryFESpaceType::bf_t pNewSubBf;
 
-                if (TDim == 2)
+                if constexpr (TDim == 2)
                 {
                     if ((side == _BLEFT_) || (side == _BRIGHT_))
                     {
@@ -253,7 +257,7 @@ public:
                         pNewSubBf = (*it)->Project(0);
                     }
                 }
-                else if (TDim == 3)
+                else if constexpr (TDim == 3)
                 {
                     if ((side == _BFRONT_) || (side == _BBACK_))
                     {
@@ -278,7 +282,7 @@ public:
         pBFESpace->UpdateFunctionIndices(ident_indices_map);
 
         // set the B-Splines information
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             if ((side == _BLEFT_) || (side == _BRIGHT_))
             {
@@ -291,7 +295,7 @@ public:
                 pBFESpace->KnotVector(0) = this->KnotVector(0);
             }
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             if ((side == _BFRONT_) || (side == _BBACK_))
             {
@@ -324,7 +328,7 @@ public:
 
         pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new BCellManager < TDim - 1, typename BoundaryFESpaceType::CellType > ());
 
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
@@ -347,7 +351,7 @@ public:
                 }
             }
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             for (typename BoundaryFESpaceType::bf_iterator it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
@@ -396,7 +400,7 @@ public:
     }
 
     /// Construct the boundary FESpace based on side and rotation
-    typename FESpace < TDim - 1 >::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
             const std::map<std::size_t, std::size_t>& local_parameter_map,
             const std::vector<BoundaryDirection>& directions) const override
     {
@@ -404,7 +408,7 @@ public:
     }
 
     /// Overload assignment operator
-    HBSplinesFESpace<TDim>& operator=(const HBSplinesFESpace<TDim>& rOther)
+    ThisType& operator=(const ThisType& rOther)
     {
         // TODO copy more
         KRATOS_ERROR << "The assignment oprator is not yet implemented";
@@ -413,9 +417,9 @@ public:
     }
 
     /// Clone this FESpace, this is a deep copy operation
-    typename FESpace<TDim>::Pointer Clone() const override
+    typename FESpaceType::Pointer Clone() const override
     {
-        typename HBSplinesFESpace<TDim>::Pointer pNewFESpace = typename HBSplinesFESpace<TDim>::Pointer(new HBSplinesFESpace<TDim>());
+        typename ThisType::Pointer pNewFESpace = typename ThisType::Pointer(new ThisType());
         *pNewFESpace = *this;
         return pNewFESpace;
     }
@@ -474,16 +478,16 @@ private:
 /**
  * Template specific instantiation for null-D BSplines patch to terminate the compilation
  */
-template<>
-class HBSplinesFESpace<0> : public FESpace<0>
+template<typename TLocalCoordinateType>
+class HBSplinesFESpace<0, TLocalCoordinateType> : public FESpace<0, TLocalCoordinateType>
 {
 public:
     /// Pointer definition
     KRATOS_CLASS_POINTER_DEFINITION(HBSplinesFESpace);
 
     /// Type definition
-    typedef FESpace<0> BaseType;
-    typedef KnotArray1D<double> knot_container_t;
+    typedef FESpace<0, TLocalCoordinateType> BaseType;
+    typedef KnotArray1D<TLocalCoordinateType> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
     typedef HBSplinesBasisFunction<0> BasisFunctionType;
     typedef typename BasisFunctionType::Pointer bf_t;
@@ -500,7 +504,7 @@ public:
     HBSplinesFESpace() : BaseType() {}
 
     /// Destructor
-    virtual ~HBSplinesFESpace() {}
+    ~HBSplinesFESpace() override {}
 
     /// Get the order of the BSplines patch in specific direction
     std::size_t Order(std::size_t i) const override {return 0;}
@@ -527,7 +531,7 @@ public:
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    bool IsCompatible(const FESpace<0>& rOtherFESpace) const override
+    bool IsCompatible(const BaseType& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() != Type())
         {
@@ -582,8 +586,8 @@ private:
 };
 
 /// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesFESpace<TDim>& rThis)
+template<int TDim, typename TLocalCoordinateType>
+inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesFESpace<TDim, TLocalCoordinateType>& rThis)
 {
     rOStream << "-------------Begin HBSplinesFESpace Info-------------" << std::endl;
     rThis.PrintInfo(rOStream);

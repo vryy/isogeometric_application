@@ -127,7 +127,7 @@ public:
     {
         std::vector<double> values;
         this->GetValues(values, xi);
-        return std::move(values);
+        return values;
     }
 
     ///////////////
@@ -143,7 +143,7 @@ public:
     {
         std::vector<double> values;
         this->GetDerivatives(values, i, xi);
-        return std::move(values);
+        return values;
     }
 
     /// Get the derivatives of the basis functions at point xi
@@ -159,7 +159,7 @@ public:
     {
         std::vector<std::vector<double> > values;
         this->GetDerivatives(values);
-        return std::move(values);
+        return values;
     }
 
     /// Get the derivatives upto nd of the basis functions at point xi

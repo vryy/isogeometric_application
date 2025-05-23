@@ -35,7 +35,7 @@ public:
     static void Export(typename Patch<TDim>::Pointer pPatch, const std::string& filename)
     {
         typedef PBBSplinesBasisFunction<TDim, TCell> PBBSplinesBasisFunctionType;
-        typedef PBBSplinesFESpace<TDim, PBBSplinesBasisFunctionType, BCellManager<TDim, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
+        typedef PBBSplinesFESpace<TDim, typename Patch<TDim>::LocalCoordinateType, PBBSplinesBasisFunctionType, BCellManager<TDim, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
 
         std::ofstream outfile;
         outfile.open(filename, std::ios::out);
@@ -61,7 +61,7 @@ public:
     static void Export(typename MultiPatch<TDim>::Pointer pMultiPatch, const std::string& filename)
     {
         typedef PBBSplinesBasisFunction<TDim, TCell> PBBSplinesBasisFunctionType;
-        typedef PBBSplinesFESpace<TDim, PBBSplinesBasisFunctionType, BCellManager<TDim, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
+        typedef PBBSplinesFESpace<TDim, typename Patch<TDim>::LocalCoordinateType, PBBSplinesBasisFunctionType, BCellManager<TDim, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
 
         std::ofstream outfile;
         outfile.open(filename, std::ios::out);

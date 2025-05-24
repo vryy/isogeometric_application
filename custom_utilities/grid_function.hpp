@@ -263,55 +263,55 @@ int GridFunction_Scalar_LocalCoordinates_Helper<TGridFunctionType, TDataType, TL
         const TGridFunctionType& rGridFunc, const TDataType& v,
         TLocalCoordinatesType& xi, const int max_iters, const double TOL)
 {
-    KRATOS_ERROR << "To be implemented";
+    // TODO check
 
-    // TODO
+    typedef typename MatrixVectorTypeSelector<TDataType>::VectorType VectorType;
+    typedef typename MatrixVectorTypeSelector<TDataType>::MatrixType MatrixType;
 
-    // typedef Vector VectorType;
-    // typedef Matrix MatrixType;
+    constexpr int Dim = TGridFunctionType::Dim;
 
-    // TDataType val;
-    // std::vector<TDataType> ders(TDim);
+    TDataType val;
+    std::vector<TDataType> ders(Dim);
 
-    // VectorType res(TDim), dxi(TDim);
-    // MatrixType J(TDim, TDim), InvJ(TDim, TDim);
-    // double DetJ;
+    TDataType res;
+    VectorType dxi(Dim), J(Dim);
+    MatrixType JtJ(Dim, Dim), InvJtJ(Dim, Dim);
+    TDataType DetJtJ;
 
-    // int it = 0;
-    // bool converged = false;
+    int it = 0;
+    bool converged = false;
 
-    // do
-    // {
-    //     this->GetValue(val, xi);
-    //     noalias(res) = v - val;
-    //     if (norm_2(res) < TOL)
-    //     {
-    //         break;
-    //     }
+    do
+    {
+        rGridFunc.GetValue(val, xi);
+        res = v - val;
+        if (std::abs(res) < TOL)
+        {
+            break;
+        }
 
-    //     this->GetDerivative(ders, xi);
+        rGridFunc.GetDerivative(ders, xi);
 
-    //     for (std::size_t i = 0; i < TDim; ++i)
-    //     {
-    //         for (std::size_t j = 0; j < TDim; ++j)
-    //         {
-    //             J(i, j) = ders[j][i];
-    //         }
-    //     }
+        for (std::size_t i = 0; i < Dim; ++i)
+        {
+            J(i) = ders[i];
+        }
 
-    //     MathUtils<double>::InvertMatrix(J, InvJ, DetJ);
-    //     noalias(dxi) = prod(InvJ, res);
-    //     for (std::size_t i = 0; i < TDim; ++i)
-    //         xi[i] += dxi[i];
-    // }
-    // while (++it < max_iters);
+        noalias(JtJ) = outer_prod(trans(J), J);
 
-    // if ((it >= max_iters) && !converged)
-    // {
-    //     return 1;
-    // }
+        MathUtils<TDataType>::InvertMatrix(JtJ, InvJtJ, DetJtJ);
+        noalias(dxi) = InvJtJ * res;
+        for (std::size_t i = 0; i < Dim; ++i)
+            xi[i] += dxi[i];
+    }
+    while (++it < max_iters);
 
-    // return 0;
+    if ((it >= max_iters) && !converged)
+    {
+        return 1;
+    }
+
+    return 0;
 }
 
 template<class TGridFunctionType, typename TVectorType, typename TLocalCoordinatesType>

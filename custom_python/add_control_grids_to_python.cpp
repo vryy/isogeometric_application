@@ -23,7 +23,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/control_grid_library.h"
 #include "custom_utilities/control_grid_utility.h"
-#include "custom_utilities/tsplines/tcell.h"
+#include "custom_utilities/tsplines/tscell.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/nurbs/pbbsplines_fespace.h"
 #include "custom_utilities/hbsplines/hbsplines_basis_function.h"
@@ -298,15 +298,15 @@ void IsogeometricApplication_AddControlGridsToPython()
 
     class_<ControlGridUtility, ControlGridUtility::Pointer, boost::noncopyable>
     ("PointBasedControlGridUtility", init<>())
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<1, double, PBBSplinesBasisFunction<1, TCell>, BCellManager<1, TCell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<2, double, PBBSplinesBasisFunction<2, TCell>, BCellManager<2, TCell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<3, double, PBBSplinesBasisFunction<3, TCell>, BCellManager<3, TCell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBBSplinesFESpace<1, double, PBBSplinesBasisFunction<1, TCell>, BCellManager<1, TCell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBBSplinesFESpace<2, double, PBBSplinesBasisFunction<2, TCell>, BCellManager<2, TCell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBBSplinesFESpace<3, double, PBBSplinesBasisFunction<3, TCell>, BCellManager<3, TCell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBBSplinesFESpace<1, double, PBBSplinesBasisFunction<1, TCell>, BCellManager<1, TCell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBBSplinesFESpace<2, double, PBBSplinesBasisFunction<2, TCell>, BCellManager<2, TCell> > >)
-    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBBSplinesFESpace<3, double, PBBSplinesBasisFunction<3, TCell>, BCellManager<3, TCell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<1, double, PBBSplinesBasisFunction<1, TsCell>, BCellManager<1, TsCell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<2, double, PBBSplinesBasisFunction<2, TsCell>, BCellManager<2, TsCell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, PBBSplinesFESpace<3, double, PBBSplinesBasisFunction<3, TsCell>, BCellManager<3, TsCell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBBSplinesFESpace<1, double, PBBSplinesBasisFunction<1, TsCell>, BCellManager<1, TsCell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBBSplinesFESpace<2, double, PBBSplinesBasisFunction<2, TsCell>, BCellManager<2, TsCell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<array_1d<double, 3>, PBBSplinesFESpace<3, double, PBBSplinesBasisFunction<3, TsCell>, BCellManager<3, TsCell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBBSplinesFESpace<1, double, PBBSplinesBasisFunction<1, TsCell>, BCellManager<1, TsCell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBBSplinesFESpace<2, double, PBBSplinesBasisFunction<2, TsCell>, BCellManager<2, TsCell> > >)
+    .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<Vector, PBBSplinesFESpace<3, double, PBBSplinesBasisFunction<3, TsCell>, BCellManager<3, TsCell> > >)
     ////
     .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, HBSplinesFESpace<1> >)
     .def("CreatePointBasedControlGrid", &ControlGridUtility_CreatePointBasedControlGrid<double, HBSplinesFESpace<2> >)

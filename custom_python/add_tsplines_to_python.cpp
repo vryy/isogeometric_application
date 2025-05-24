@@ -23,7 +23,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "includes/define.h"
 #include "custom_utilities/multipatch.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
-#include "custom_utilities/tsplines/tcell.h"
+#include "custom_utilities/tsplines/tscell.h"
 #include "custom_utilities/tsplines/tsplines_utils.h"
 #include "custom_utilities/tsplines/tsmesh_2d.h"
 #include "custom_utilities/tsplines/tsplines_fespace.h"
@@ -95,7 +95,7 @@ void IsogeometricApplication_AddTSplinesToPython()
     /////////////////////////T-SPLINES FESPACE///////////////////////
     /////////////////////////////////////////////////////////////////
 
-    typedef PBBSplinesBasisFunction<2, TCell> PBBSplinesBasisFunctionType;
+    typedef PBBSplinesBasisFunction<2, TsCell> PBBSplinesBasisFunctionType;
     typedef PBBSplinesFESpace<2, double, PBBSplinesBasisFunctionType, BCellManager<2, typename PBBSplinesBasisFunctionType::CellType> > PBBSplinesFESpaceType;
     typedef TSplinesFESpace<2, double, PBBSplinesBasisFunctionType, BCellManager<2, typename PBBSplinesBasisFunctionType::CellType> > TSplinesFESpaceType;
     class_<TSplinesFESpaceType, TSplinesFESpaceType::Pointer, bases<PBBSplinesFESpaceType>, boost::noncopyable>

@@ -8,7 +8,7 @@
 
 // Project includes
 #include "custom_utilities/import_export/tsplines_patch_tsm_importer.h"
-#include "custom_utilities/tsplines/tcell.h"
+#include "custom_utilities/tsplines/tscell.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/tsplines/tsplines_fespace.h"
 
@@ -28,8 +28,8 @@ Patch<2>::Pointer TSplinesPatchTSMImporter::ImportSingle(const std::string& file
     std::cout << "Reading T-Splines in " << filename << " completed" << std::endl;
 
     // create the PBSplinesFESpaceType
-    typedef PBBSplinesBasisFunction<2, TCell> PBBSplinesBasisFunctionType;
-    typedef TSplinesFESpace<2, double, PBBSplinesBasisFunctionType, BCellManager<2, TCell> > TSplinesFESpaceType;
+    typedef PBBSplinesBasisFunction<2, TsCell> PBBSplinesBasisFunctionType;
+    typedef TSplinesFESpace<2, double, PBBSplinesBasisFunctionType, BCellManager<2, TsCell> > TSplinesFESpaceType;
     typedef typename Patch<2>::ControlPointType ControlPointType;
     typedef typename TSplinesFESpaceType::knot_t knot_t;
     typedef typename TSplinesFESpaceType::cell_t cell_t;

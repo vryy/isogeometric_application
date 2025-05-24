@@ -28,7 +28,7 @@
 #include "custom_utilities/control_grid_utility.h"
 #include "custom_utilities/multipatch_utility.h"
 #include "custom_utilities/nurbs/bcell.h"
-#include "custom_utilities/tsplines/tcell.h"
+#include "custom_utilities/tsplines/tscell.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "isogeometric_application_variables.h"
 
@@ -603,7 +603,7 @@ public:
 
             try
             {
-                TCell& c = dynamic_cast<TCell&>(**it_cell);
+                TsCell& c = dynamic_cast<TsCell&>(**it_cell);
                 pNewElement->SetValue( KNOT_LEFT, c.XiMinValue() );
                 pNewElement->SetValue( KNOT_RIGHT, c.XiMaxValue() );
                 pNewElement->SetValue( KNOT_BOTTOM, c.EtaMinValue() );
@@ -615,7 +615,7 @@ public:
             {
                 if (echo_level > 2)
                 {
-                    std::cout << "WARNING: cell " << (*it_cell)->Id() << " cannot be casted to TCell" << std::endl;
+                    std::cout << "WARNING: cell " << (*it_cell)->Id() << " cannot be casted to TsCell" << std::endl;
                 }
             }
             //////////

@@ -391,14 +391,14 @@ public:
     StructuredControlGrid(const std::vector<std::size_t>& sizes) : BaseType(), mSize(sizes[0])
     {
         BaseType::Data().resize(sizes[0]);
-        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
     }
 
     /// Constructor with size
     StructuredControlGrid(std::size_t n) : BaseType(), mSize(n)
     {
         BaseType::Data().resize(n);
-        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
     }
 
     /// Destructor
@@ -597,14 +597,14 @@ public:
     StructuredControlGrid(const std::vector<std::size_t>& sizes) : BaseType(), mSize{sizes[0], sizes[1]}
     {
         BaseType::Data().resize(sizes[0]*sizes[1]);
-        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
     }
 
     /// Constructor with size
     StructuredControlGrid(std::size_t m, std::size_t n) : mSize{m, n}
     {
         BaseType::Data().resize(m * n);
-        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
     }
 
     /// Destructor
@@ -907,14 +907,14 @@ public:
     StructuredControlGrid(const std::vector<std::size_t>& sizes) : BaseType(), mSize{sizes[0], sizes[1], sizes[2]}
     {
         BaseType::Data().resize(sizes[0]*sizes[1]*sizes[2]);
-        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
     }
 
     /// Constructor with size
     StructuredControlGrid(std::size_t m, std::size_t n, std::size_t p) : mSize{m, n, p}
     {
         BaseType::Data().resize(m * n * p);
-        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType(0.0));
+        std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
     }
 
     /// Destructor

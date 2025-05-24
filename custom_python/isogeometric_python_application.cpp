@@ -60,9 +60,9 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
     IsogeometricApplication_AddFrontendUtilitiesToPython();
     IsogeometricApplication_AddControlPointToPython();
     IsogeometricApplication_AddControlGridsToPython();
-    IsogeometricApplication_AddFESpacesToPython<1>();
-    IsogeometricApplication_AddFESpacesToPython<2>();
-    IsogeometricApplication_AddFESpacesToPython<3>();
+    IsogeometricApplication_AddFESpacesToPython<1, KRATOS_DOUBLE_TYPE>();
+    IsogeometricApplication_AddFESpacesToPython<2, KRATOS_DOUBLE_TYPE>();
+    IsogeometricApplication_AddFESpacesToPython<3, KRATOS_DOUBLE_TYPE>();
     IsogeometricApplication_AddControlPointGridFunctionToPython<1, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE>("");
     IsogeometricApplication_AddControlPointGridFunctionToPython<2, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE>("");
     IsogeometricApplication_AddControlPointGridFunctionToPython<3, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE>("");

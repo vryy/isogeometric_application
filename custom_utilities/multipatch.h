@@ -360,11 +360,11 @@ public:
     }
 
     /// Compute the local coordinates of a point. On output returns the index of the patch containing the point if found, -1 otherwise
-    int LocalCoordinates(const array_1d<double, 3>& point, array_1d<double, 3>& xi) const
+    int LocalCoordinates(const array_1d<CoordinateType, 3>& point, array_1d<LocalCoordinateType, 3>& xi) const
     {
         int error_code;
 
-        const array_1d<double, 3> xi0 = xi;
+        const array_1d<LocalCoordinateType, 3> xi0 = xi;
         for (patch_const_iterator it = this->begin(); it != this->end(); ++it)
         {
             noalias(xi) = xi0;

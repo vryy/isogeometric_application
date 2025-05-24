@@ -180,7 +180,7 @@ public:
     }
 
     /// Set the local search tolerance
-    void SetLocalSearchTolerance(CoordinateType tolerance)
+    void SetLocalSearchTolerance(CoordinateValueType tolerance)
     {
         mLocalSearchTolerance = tolerance;
     }

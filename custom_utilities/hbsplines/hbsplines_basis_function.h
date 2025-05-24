@@ -10,19 +10,9 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_BASIS_FUNCTION_H_INCLUDED
 
 // System includes
-#include <ctime>
 #include <cmath>
-#include <climits>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <set>
-#include <list>
 
 // External includes
-#include <omp.h>
-#include "boost/algorithm/string.hpp"
 
 // Project includes
 #include "includes/define.h"

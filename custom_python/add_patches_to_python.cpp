@@ -622,7 +622,9 @@ void IsogeometricApplication_AddPatchesToPython()
     IsogeometricApplication_AddPatchesToPython_Helper<1, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
     IsogeometricApplication_AddPatchesToPython_Helper<2, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
     IsogeometricApplication_AddPatchesToPython_Helper<3, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
-    // IsogeometricApplication_AddPatchesToPython_Helper<3, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE, KRATOS_COMPLEX_TYPE>("GComplex");
+    IsogeometricApplication_AddPatchesToPython_Helper<1, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE, KRATOS_COMPLEX_TYPE>("GComplex");
+    IsogeometricApplication_AddPatchesToPython_Helper<2, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE, KRATOS_COMPLEX_TYPE>("GComplex");
+    IsogeometricApplication_AddPatchesToPython_Helper<3, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE, KRATOS_COMPLEX_TYPE>("GComplex");
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////IMPORT/EXPORT/////////////////////////////

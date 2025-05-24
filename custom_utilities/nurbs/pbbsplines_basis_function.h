@@ -70,7 +70,7 @@ public:
     {}
 
     /// Destructor
-    ~PBBSplinesBasisFunction()
+    ~PBBSplinesBasisFunction() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "PBBSplinesBasisFunction" << TDim << "D " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;

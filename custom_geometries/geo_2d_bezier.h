@@ -734,17 +734,18 @@ public:
         rResults.resize(this->PointsNumber(), 2, false);
         double tmp1 = inner_prod(bezier_functions_local_derivatives1, bezier_weights);
         double tmp2 = inner_prod(bezier_functions_local_derivatives2, bezier_weights);
+        double denom2 = denom*denom;
         VectorType tmp_gradients1 =
             prod(
                 mExtractionOperator,
-                (1 / denom) * bezier_functions_local_derivatives1 -
-                (tmp1 / pow(denom, 2)) * bezier_functions_values
+                bezier_functions_local_derivatives1 / denom
+                - tmp1 * bezier_functions_values / denom2
             );
         VectorType tmp_gradients2 =
             prod(
                 mExtractionOperator,
-                (1 / denom) * bezier_functions_local_derivatives2 -
-                (tmp2 / pow(denom, 2)) * bezier_functions_values
+                bezier_functions_local_derivatives2 / denom
+                - tmp2 * bezier_functions_values / denom2
             );
         for (IndexType i = 0; i < this->PointsNumber(); ++i)
         {
@@ -846,26 +847,29 @@ public:
         double auxs11 = inner_prod(bezier_functions_local_second_derivatives11, bezier_weights);
         double auxs12 = inner_prod(bezier_functions_local_second_derivatives12, bezier_weights);
         double auxs22 = inner_prod(bezier_functions_local_second_derivatives22, bezier_weights);
+        double denom2 = denom*denom;
+        double denom3 = denom2*denom;
         VectorType tmp_gradients11 =
             prod(mExtractionOperator,
-                 (1 / denom) * bezier_functions_local_second_derivatives11
-                 - (aux1 / pow(denom, 2)) * bezier_functions_local_derivatives1 * 2
-                 - (auxs11 / pow(denom, 2)) * bezier_functions_values
-                 + 2.0 * pow(aux1, 2) / pow(denom, 3) * bezier_functions_values
+                 bezier_functions_local_second_derivatives11 / denom
+                 - 2.0 * aux1 * bezier_functions_local_derivatives1 / denom2
+                 - auxs11 * bezier_functions_values / denom2
+                 + 2.0 * aux1 * aux1 * bezier_functions_values / denom3
                 );
         VectorType tmp_gradients12 =
             prod(mExtractionOperator,
-                 (1 / denom) * bezier_functions_local_second_derivatives12
-                 - ((aux1 + aux2) / pow(denom, 2)) * bezier_functions_local_derivatives1
-                 - (auxs12 / pow(denom, 2)) * bezier_functions_values
-                 + 2.0 * aux1 * aux2 / pow(denom, 3) * bezier_functions_values
+                 bezier_functions_local_second_derivatives12 / denom
+                 - aux2 * bezier_functions_local_derivatives1 / denom2
+                 - aux1 * bezier_functions_local_derivatives2 / denom2
+                 - auxs12 * bezier_functions_values / denom2
+                 + 2.0 * aux1 * aux2 * bezier_functions_values / denom3
                 );
         VectorType tmp_gradients22 =
             prod(mExtractionOperator,
-                 (1 / denom) * bezier_functions_local_second_derivatives22
-                 - (aux2 / pow(denom, 2)) * bezier_functions_local_derivatives2 * 2
-                 - (auxs22 / pow(denom, 2)) * bezier_functions_values
-                 + 2.0 * pow(aux2, 2) / pow(denom, 3) * bezier_functions_values
+                 bezier_functions_local_second_derivatives22 / denom
+                 - 2.0 * aux2 * bezier_functions_local_derivatives2 / denom2
+                 - auxs22 * bezier_functions_values / denom2
+                 + 2.0 * aux2 * aux2 * bezier_functions_values / denom3
                 );
         for (IndexType i = 0; i < this->PointsNumber(); ++i)
         {

@@ -138,9 +138,12 @@ public:
     ///@{
 
     /// Default constructor.
-    BezierPostUtility()
-    {
-    }
+    BezierPostUtility() : mCheckActive(false)
+    {}
+
+    /// Constructor with active check flag.
+    BezierPostUtility(const bool check_active) : mCheckActive(check_active)
+    {}
 
     /// Destructor.
     ~BezierPostUtility() override
@@ -154,6 +157,12 @@ public:
     ///@}
     ///@name Operations
     ///@{
+
+    /// Set the element active check flag
+    void SetCheckActive(const bool value)
+    {
+        mCheckActive = value;
+    }
 
     // Synchronize post model_part with the reference model_part
     template<class TVariableType>
@@ -279,26 +288,52 @@ public:
 #endif
     }
 
+    /// Transfer the variable to nodes for model_part
+    void TransferVariablesToNodes(
+        const Variable<Vector>& rThisVariable,
+        ModelPart& r_model_part,
+        const ElementsContainerType& ElementsArray,
+        LinearSolverType::Pointer pSolver,
+        std::size_t ncomponents) const
+    {
+#ifdef ENABLE_PROFILING
+        double start_compute = OpenMPUtils::GetCurrentTime();
+        std::cout << "########################################" << std::endl;
+        std::cout << "Transfer integration point results to nodes for "
+                  << rThisVariable.Name() << " starts" << std::endl;
+#endif
+
+        TransferVariablesToNodes(pSolver, r_model_part, ElementsArray, rThisVariable, ncomponents);
+
+#ifdef ENABLE_PROFILING
+        double end_compute = OpenMPUtils::GetCurrentTime();
+        std::cout << "Transfer integration point results to nodes for "
+                  << rThisVariable.Name() << " completed: "
+                  << end_compute - start_compute << "s" << std::endl;
+        std::cout << "########################################" << std::endl;
+#endif
+    }
+
     /// Compute the nodal values from the integration values
     void TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
                                        std::map<std::size_t, std::size_t>& node_row_id,
                                        SerialSparseSpaceType::VectorType& rValues, LinearSolverType::Pointer pSolver,
                                        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-                                       const Variable<double>& rThisVariable, bool check_active) const;
+                                       const Variable<double>& rThisVariable) const;
 
     /// Compute the nodal values from the integration values
     void TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
                                        std::map<std::size_t, std::size_t>& node_row_id,
                                        SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
                                        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-                                       const Variable<array_1d<double, 3> >& rThisVariable, bool check_active) const;
+                                       const Variable<array_1d<double, 3> >& rThisVariable) const;
 
     /// Compute the nodal values from the integration values
     void TransferVariablesToNodalArray(std::set<std::size_t>& active_nodes,
                                        std::map<std::size_t, std::size_t>& node_row_id,
                                        SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
                                        const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-                                       const Variable<Vector>& rThisVariable, std::size_t ncomponents, bool check_active) const;
+                                       const Variable<Vector>& rThisVariable, std::size_t ncomponents) const;
 
     ///@}
     ///@name Access
@@ -374,6 +409,9 @@ private:
     ///@name Member Variables
     ///@{
 
+    bool mCheckActive; // local flag to include or exclude elements in variable transfer from Gauss points to nodes;
+                       // if false the activeness of the elements will not be checked; true otherwise
+
     ///@}
     ///@name Private Operators
     ///@{
@@ -397,13 +435,11 @@ private:
      * @param pSolver       the solver used for solving the local system matrix
      * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
      * @param rThisVariable the variable need to transfer the respected values
-     * @param check_active  if false the activeness of the elements will not be checked; true otherwise
      * REMARKS: this subroutine will only transfer the variables to nodes connecting with the mesh defined by ElementsArray
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
                                   ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-                                  const Variable<double>& rThisVariable,
-                                  bool check_active = false) const;
+                                  const Variable<double>& rThisVariable) const;
 
     /**
      * Transfer of rThisVariable defined on integration points to corresponding
@@ -420,13 +456,11 @@ private:
      * @param pSolver       the solver used for solving the local system matrix
      * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
      * @param rThisVariable the variable need to transfer the respected values
-     * @param check_active  if false the activeness of the elements will not be checked; true otherwise
      * REMARKS: this subroutine will only transfer the variables to nodes connecting with the mesh defined by ElementsArray
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
                                   ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-                                  const Variable<array_1d<double, 3> >& rThisVariable,
-                                  bool check_active = false) const;
+                                  const Variable<array_1d<double, 3> >& rThisVariable) const;
 
     /**
      * Transfer of rThisVariable defined on integration points to corresponding
@@ -444,14 +478,12 @@ private:
      * @param pModelPart    pointer to model_part that we wish to transfer the result from its integration points to its nodes
      * @param rThisVariable the variable need to transfer the respected values
      * @param ncomponents   number of components of the nodal vector
-     * @param check_active  if false the activeness of the elements will not be checked; true otherwise
      * REMARKS: this subroutine will only transfer the variables to nodes connecting with the mesh defined by ElementsArray
      */
     void TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
                                   ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
                                   const Variable<Vector>& rThisVariable,
-                                  std::size_t ncomponents = 6,
-                                  bool check_active = false) const;
+                                  std::size_t ncomponents = 6) const;
 
     ///@}
     ///@name Private  Access

@@ -628,6 +628,14 @@ void BezierPostUtility_TransferVariablesToNodes_Elements(BezierPostUtility& rDum
     rDummy.TransferVariablesToNodes(rThisVariable, r_model_part, ElementsArray, pSolver);
 }
 
+void BezierPostUtility_TransferVariablesToNodes_Elements_Vector(BezierPostUtility& rDummy,
+        const Variable<Vector>& rThisVariable,
+        ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
+        BezierPostUtility::LinearSolverType::Pointer pSolver, std::size_t ncomponents)
+{
+    rDummy.TransferVariablesToNodes(rThisVariable, r_model_part, ElementsArray, pSolver, ncomponents);
+}
+
 boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Double(BezierPostUtility& rDummy,
         const Variable<double>& rThisVariable,
         const ModelPart& r_model_part, const BezierPostUtility::ElementsContainerType& ElementsArray,
@@ -637,10 +645,8 @@ boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Dou
     std::set<std::size_t> active_nodes;
     std::map<std::size_t, std::size_t> node_row_id;
     BezierPostUtility::SerialSparseSpaceType::VectorType g;
-    const bool check_active = true;
 
-    rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
-                                         ElementsArray, rThisVariable, check_active);
+    rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part, ElementsArray, rThisVariable);
 
     boost::python::dict Output;
 
@@ -662,10 +668,9 @@ boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Arr
     std::set<std::size_t> active_nodes;
     std::map<std::size_t, std::size_t> node_row_id;
     BezierPostUtility::SerialDenseSpaceType::MatrixType g;
-    const bool check_active = true;
 
     rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
-                                         ElementsArray, rThisVariable, check_active);
+                                         ElementsArray, rThisVariable);
 
     boost::python::dict Output;
 
@@ -689,10 +694,8 @@ boost::python::dict BezierPostUtility_TransferVariablesToNodalArray_Elements_Vec
     std::set<std::size_t> active_nodes;
     std::map<std::size_t, std::size_t> node_row_id;
     BezierPostUtility::SerialDenseSpaceType::MatrixType g;
-    const bool check_active = true;
 
-    rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
-                                         ElementsArray, rThisVariable, ncomponents, check_active);
+    rDummy.TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part, ElementsArray, rThisVariable, ncomponents);
 
     boost::python::dict Output;
 
@@ -840,6 +843,8 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     ;
 
     class_<BezierPostUtility, BezierPostUtility::Pointer, boost::noncopyable>("BezierPostUtility", init<>())
+    .def(init<const bool>())
+    .def("SetCheckActive", &BezierPostUtility::SetCheckActive)
     .def("TransferNodalResults", &BezierPostUtility::TransferNodalResults<Variable<double> >)
     .def("TransferNodalResults", &BezierPostUtility::TransferNodalResults<Variable<Vector> >)
     .def("TransferNodalResults", &BezierPostUtility::TransferNodalResults<Variable<array_1d<double, 3> > >)
@@ -850,6 +855,7 @@ void IsogeometricApplication_AddBackendUtilitiesToPython()
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_ModelPart<Variable<array_1d<double, 3> > >)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<double> >)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<Vector> >)
+    .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements_Vector)
     .def("TransferVariablesToNodes", &BezierPostUtility_TransferVariablesToNodes_Elements<Variable<array_1d<double, 3> > >)
     .def("TransferVariablesToNodalArray", &BezierPostUtility_TransferVariablesToNodalArray_Elements_Double)
     .def("TransferVariablesToNodalArray", &BezierPostUtility_TransferVariablesToNodalArray_Elements_Vector)

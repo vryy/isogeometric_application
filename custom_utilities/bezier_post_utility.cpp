@@ -77,13 +77,13 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
         std::map<std::size_t, std::size_t>& node_row_id, SerialSparseSpaceType::VectorType& rValues,
         LinearSolverType::Pointer pSolver, const ModelPart& r_model_part,
         const ElementsContainerType& ElementsArray,
-        const Variable<double>& rThisVariable, bool check_active) const
+        const Variable<double>& rThisVariable) const
 {
     active_nodes.clear();
     for ( ElementsContainerType::const_iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
     {
         bool is_inactive = false;
-        if (check_active)
+        if (mCheckActive)
         {
             if (it->IsDefined ( ACTIVE ))
             {
@@ -142,7 +142,11 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
 
     // set up the system of equations
     //create a partition of the element array
+    #ifdef ENABLE_MULTITHREAD
     int number_of_threads = omp_get_max_threads();
+    #else
+    int number_of_threads = 1;
+    #endif
     std::vector<unsigned int> element_partition;
     OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
 
@@ -168,7 +172,6 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
     {
         Matrix InvJ(3, 3);
         double DetJ;
-        unsigned int row, col;
 
         typename ElementsContainerType::const_iterator it_begin = ElementsArray.begin() + element_partition[k];
         typename ElementsContainerType::const_iterator it_end = ElementsArray.begin() + element_partition[k + 1];
@@ -176,7 +179,7 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
         for ( ElementsContainerType::const_iterator it = it_begin; it != it_end; ++it )
         {
             bool is_inactive = false;
-            if (check_active)
+            if (mCheckActive)
             {
                 if (it->IsDefined ( ACTIVE ))
                 {
@@ -190,26 +193,40 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
 #endif
             }
 
+            const auto& rElementGeometry = it->GetGeometry();
+
             if (!is_inactive)
             {
                 const IntegrationPointsArrayType& integration_points
-                    = it->GetGeometry().IntegrationPoints(it->GetIntegrationMethod());
+                    = rElementGeometry.IntegrationPoints(it->GetIntegrationMethod());
 
                 GeometryType::JacobiansType J(integration_points.size());
-
-                //                J = it->GetGeometry().Jacobian(J, it->GetIntegrationMethod());
-                //                const Matrix& Ncontainer = it->GetGeometry().ShapeFunctionsValues(it->GetIntegrationMethod());
-
-                IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>(it->GetGeometry());
-                J = rIsogeometricGeometry.Jacobian0(J, it->GetIntegrationMethod());
-
-                GeometryType::ShapeFunctionsGradientsType DN_De;
                 Matrix Ncontainer;
-                rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
-                    Ncontainer,
-                    DN_De,
-                    it->GetIntegrationMethod()
-                );
+
+                const IsogeometricGeometryType* pIsogeometricGeometry = dynamic_cast<const IsogeometricGeometryType*>(&rElementGeometry);
+                if (pIsogeometricGeometry != nullptr)
+                {
+                    J = pIsogeometricGeometry->Jacobian0(J, it->GetIntegrationMethod());
+
+                    GeometryType::ShapeFunctionsGradientsType DN_De;
+                    pIsogeometricGeometry->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
+                        Ncontainer,
+                        DN_De,
+                        it->GetIntegrationMethod()
+                    );
+                }
+                else
+                {
+                    typename GeometryType::MatrixType DeltaPosition(rElementGeometry.size(), 3);
+
+                    for ( unsigned int node = 0; node < rElementGeometry.size(); ++node )
+                        noalias( row( DeltaPosition, node ) ) = rElementGeometry[node].Coordinates()
+                                                              - rElementGeometry[node].GetInitialPosition();
+
+                    J = rElementGeometry.Jacobian( J, it->GetIntegrationMethod(), DeltaPosition );
+
+                    Ncontainer = rElementGeometry.ShapeFunctionsValues( it->GetIntegrationMethod() );
+                }
 
                 // get the values at the integration_points
                 std::vector<double> ValuesOnIntPoint(integration_points.size());
@@ -220,14 +237,14 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
                     MathUtils<double>::InvertMatrix(J[point], InvJ, DetJ);
 
                     double dV = DetJ * integration_points[point].Weight();
-                    for (unsigned int prim = 0 ; prim < it->GetGeometry().size(); ++prim)
+                    for (unsigned int prim = 0 ; prim < rElementGeometry.size(); ++prim)
                     {
-                        row = node_row_id[it->GetGeometry()[prim].Id()];
+                        unsigned int row = node_row_id[rElementGeometry[prim].Id()];
                         omp_set_lock(&lock_array[row]);
                         b(row) += (ValuesOnIntPoint[point]) * Ncontainer(point, prim) * dV;
-                        for (unsigned int sec = 0 ; sec < it->GetGeometry().size(); ++sec)
+                        for (unsigned int sec = 0 ; sec < rElementGeometry.size(); ++sec)
                         {
-                            col = node_row_id[it->GetGeometry()[sec].Id()];
+                            unsigned int col = node_row_id[rElementGeometry[sec].Id()];
                             M(row, col) += Ncontainer(point, prim) * Ncontainer(point, sec) * dV;
                         }
                         omp_unset_lock(&lock_array[row]);
@@ -237,21 +254,22 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
             else
             {
                 // for inactive elements the contribution to LHS is identity matrix and RHS is zero
-                for (unsigned int prim = 0 ; prim < it->GetGeometry().size(); ++prim)
+                for (unsigned int prim = 0 ; prim < rElementGeometry.size(); ++prim)
                 {
-                    row = node_row_id[it->GetGeometry()[prim].Id()];
+                    unsigned int row = node_row_id[rElementGeometry[prim].Id()];
+
                     omp_set_lock(&lock_array[row]);
-//                        b(row) += 0.0;
-                    for (unsigned int sec = 0 ; sec < it->GetGeometry().size(); ++sec)
+
+                    for (unsigned int sec = 0 ; sec < rElementGeometry.size(); ++sec)
                     {
-                        col = node_row_id[it->GetGeometry()[sec].Id()];
+                        unsigned int col = node_row_id[rElementGeometry[sec].Id()];
+
                         if (col == row)
                         {
                             M(row, col) += 1.0;
                         }
-//                            else
-//                                M(row, col) += 0.0;
                     }
+
                     omp_unset_lock(&lock_array[row]);
                 }
             }
@@ -271,7 +289,7 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
         std::map<std::size_t, std::size_t>& node_row_id,
         SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
         const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-        const Variable<array_1d<double, 3> >& rThisVariable, bool check_active) const
+        const Variable<array_1d<double, 3> >& rThisVariable) const
 {
 #ifdef ENABLE_PROFILING
     //profiling variables
@@ -283,7 +301,7 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
     for ( ElementsContainerType::const_iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
     {
         bool is_inactive = false;
-        if (check_active)
+        if (mCheckActive)
         {
             if (it->IsDefined ( ACTIVE ))
             {
@@ -297,11 +315,13 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
 #endif
         }
 
+        const auto& rElementGeometry = it->GetGeometry();
+
         if ( !is_inactive )
         {
-            for ( std::size_t i = 0; i < it->GetGeometry().size(); ++i )
+            for ( std::size_t i = 0; i < rElementGeometry.size(); ++i )
             {
-                active_nodes.insert( it->GetGeometry()[i].Id() );
+                active_nodes.insert( rElementGeometry[i].Id() );
             }
         }
     }
@@ -344,7 +364,11 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
     noalias(b) = ZeroMatrix(NumberOfNodes, 3);
 
     //create a partition of the elements
+    #ifdef ENABLE_MULTITHREAD
     int number_of_threads = omp_get_max_threads();
+    #else
+    int number_of_threads = 1;
+    #endif
     std::vector<unsigned int> element_partition;
     OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
 
@@ -365,14 +389,13 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
         omp_init_lock(&lock_array[i]);
     }
 
-    const unsigned int& Dim = (*(ElementsArray.ptr_begin()))->GetGeometry().WorkingSpaceDimension();
+    const unsigned int Dim = (*(ElementsArray.ptr_begin()))->GetGeometry().WorkingSpaceDimension();
 
     #pragma omp parallel for
     for (int k = 0; k < number_of_threads; ++k)
     {
         Matrix InvJ(Dim, Dim);
         double DetJ;
-        unsigned int row, col;
 
         typename ElementsContainerType::const_iterator it_begin = ElementsArray.begin() + element_partition[k];
         typename ElementsContainerType::const_iterator it_end = ElementsArray.begin() + element_partition[k + 1];
@@ -380,7 +403,7 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
         for ( ElementsContainerType::const_iterator it = it_begin; it != it_end; ++it )
         {
             bool is_inactive = false;
-            if (check_active)
+            if (mCheckActive)
             {
                 if (it->IsDefined ( ACTIVE ))
                 {
@@ -394,26 +417,40 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
 #endif
             }
 
+            const auto& rElementGeometry = it->GetGeometry();
+
             if (!is_inactive)
             {
                 const IntegrationPointsArrayType& integration_points
-                    = it->GetGeometry().IntegrationPoints(it->GetIntegrationMethod());
+                    = rElementGeometry.IntegrationPoints(it->GetIntegrationMethod());
 
                 GeometryType::JacobiansType J(integration_points.size());
-
-                //                J = it->GetGeometry().Jacobian(J, it->GetIntegrationMethod());
-                //                const Matrix& Ncontainer = it->GetGeometry().ShapeFunctionsValues(it->GetIntegrationMethod());
-
-                IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>(it->GetGeometry());
-                J = rIsogeometricGeometry.Jacobian0(J, it->GetIntegrationMethod());
-
-                GeometryType::ShapeFunctionsGradientsType DN_De;
                 Matrix Ncontainer;
-                rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
-                    Ncontainer,
-                    DN_De,
-                    it->GetIntegrationMethod()
-                );
+
+                const IsogeometricGeometryType* pIsogeometricGeometry = dynamic_cast<const IsogeometricGeometryType*>(&rElementGeometry);
+                if (pIsogeometricGeometry != nullptr)
+                {
+                    J = pIsogeometricGeometry->Jacobian0(J, it->GetIntegrationMethod());
+
+                    GeometryType::ShapeFunctionsGradientsType DN_De;
+                    pIsogeometricGeometry->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
+                        Ncontainer,
+                        DN_De,
+                        it->GetIntegrationMethod()
+                    );
+                }
+                else
+                {
+                    typename GeometryType::MatrixType DeltaPosition(rElementGeometry.size(), 3);
+
+                    for ( unsigned int node = 0; node < rElementGeometry.size(); ++node )
+                        noalias( row( DeltaPosition, node ) ) = rElementGeometry[node].Coordinates()
+                                                              - rElementGeometry[node].GetInitialPosition();
+
+                    J = rElementGeometry.Jacobian( J, it->GetIntegrationMethod(), DeltaPosition );
+
+                    Ncontainer = rElementGeometry.ShapeFunctionsValues( it->GetIntegrationMethod() );
+                }
 
                 // get the values at the integration_points
                 std::vector<array_1d<double, 3> > ValuesOnIntPoint(integration_points.size());
@@ -425,9 +462,9 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
 
                     double dV = DetJ * integration_points[point].Weight();
 
-                    for (unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
+                    for (unsigned int prim = 0; prim < rElementGeometry.size(); ++prim)
                     {
-                        row = node_row_id[it->GetGeometry()[prim].Id()];
+                        unsigned int row = node_row_id[rElementGeometry[prim].Id()];
 
                         omp_set_lock(&lock_array[row]);
 
@@ -436,9 +473,9 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
                             b(row, i) += ValuesOnIntPoint[point][i] * Ncontainer(point, prim) * dV;
                         }
 
-                        for (unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
+                        for (unsigned int sec = 0; sec < rElementGeometry.size(); ++sec)
                         {
-                            col = node_row_id[it->GetGeometry()[sec].Id()];
+                            unsigned int col = node_row_id[rElementGeometry[sec].Id()];
                             M(row, col) += Ncontainer(point, prim) * Ncontainer(point, sec) * dV;
                         }
 
@@ -449,18 +486,18 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
             else
             {
                 // for inactive elements the contribution to LHS is identity matrix and RHS is zero
-                for (unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
+                for (unsigned int prim = 0; prim < rElementGeometry.size(); ++prim)
                 {
-                    row = node_row_id[it->GetGeometry()[prim].Id()];
+                    unsigned int row = node_row_id[rElementGeometry[prim].Id()];
 
                     omp_set_lock(&lock_array[row]);
 
 //                        for(unsigned int i = 0; i < ncomponents; ++i)
 //                            b(row, i) += 0.0;
 
-                    for (unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
+                    for (unsigned int sec = 0; sec < rElementGeometry.size(); ++sec)
                     {
-                        col = node_row_id[it->GetGeometry()[sec].Id()];
+                        unsigned int col = node_row_id[rElementGeometry[sec].Id()];
                         if (col == row)
                         {
                             M(row, col) += 1.0;
@@ -505,7 +542,7 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
         std::map<std::size_t, std::size_t>& node_row_id,
         SerialDenseSpaceType::MatrixType& rValues, LinearSolverType::Pointer pSolver,
         const ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-        const Variable<Vector>& rThisVariable, std::size_t ncomponents, bool check_active) const
+        const Variable<Vector>& rThisVariable, std::size_t ncomponents) const
 {
 #ifdef ENABLE_PROFILING
     //profiling variables
@@ -517,7 +554,7 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
     for ( ElementsContainerType::const_iterator it = ElementsArray.begin(); it != ElementsArray.end(); ++it )
     {
         bool is_inactive = false;
-        if (check_active)
+        if (mCheckActive)
         {
             if (it->IsDefined ( ACTIVE ))
             {
@@ -578,18 +615,17 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
     noalias(b) = ZeroMatrix(NumberOfNodes, ncomponents);
 
     //create a partition of the elements
+    #ifdef ENABLE_MULTITHREAD
     int number_of_threads = omp_get_max_threads();
+    #else
+    int number_of_threads = 1;
+    #endif
     std::vector<unsigned int> element_partition;
     OpenMPUtils::CreatePartition(number_of_threads, ElementsArray.size(), element_partition);
 
 #ifdef ENABLE_DEBUG
     KRATOS_WATCH( number_of_threads )
-    std::cout << "element_partition:";
-    for (std::size_t i = 0; i < element_partition.size(); ++i)
-    {
-        std::cout << " " << element_partition[i];
-    }
-    std::cout << std::endl;
+    KRATOS_WATCH_STD_CON( element_partition )
 #endif
 
     // create a lock array for parallel matrix fill
@@ -599,14 +635,13 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
         omp_init_lock(&lock_array[i]);
     }
 
-    const unsigned int& Dim = (*(ElementsArray.ptr_begin()))->GetGeometry().WorkingSpaceDimension();
+    const unsigned int Dim = (*(ElementsArray.ptr_begin()))->GetGeometry().WorkingSpaceDimension();
 
     #pragma omp parallel for
     for (int k = 0; k < number_of_threads; ++k)
     {
         Matrix InvJ(Dim, Dim);
         double DetJ;
-        unsigned int row, col;
 
         typename ElementsContainerType::const_iterator it_begin = ElementsArray.begin() + element_partition[k];
         typename ElementsContainerType::const_iterator it_end = ElementsArray.begin() + element_partition[k + 1];
@@ -614,7 +649,7 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
         for ( ElementsContainerType::const_iterator it = it_begin; it != it_end; ++it )
         {
             bool is_inactive = false;
-            if (check_active)
+            if (mCheckActive)
             {
                 if (it->IsDefined ( ACTIVE ))
                 {
@@ -628,26 +663,40 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
 #endif
             }
 
+            const auto& rElementGeometry =  it->GetGeometry();
+
             if (!is_inactive)
             {
                 const IntegrationPointsArrayType& integration_points
-                    = it->GetGeometry().IntegrationPoints(it->GetIntegrationMethod());
+                    = rElementGeometry.IntegrationPoints(it->GetIntegrationMethod());
 
                 GeometryType::JacobiansType J(integration_points.size());
-
-                //                J = it->GetGeometry().Jacobian(J, it->GetIntegrationMethod());
-                //                const Matrix& Ncontainer = it->GetGeometry().ShapeFunctionsValues(it->GetIntegrationMethod());
-
-                IsogeometricGeometryType& rIsogeometricGeometry = dynamic_cast<IsogeometricGeometryType&>(it->GetGeometry());
-                J = rIsogeometricGeometry.Jacobian0(J, it->GetIntegrationMethod());
-
-                GeometryType::ShapeFunctionsGradientsType DN_De;
                 Matrix Ncontainer;
-                rIsogeometricGeometry.CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
-                    Ncontainer,
-                    DN_De,
-                    it->GetIntegrationMethod()
-                );
+
+                const IsogeometricGeometryType* pIsogeometricGeometry = dynamic_cast<const IsogeometricGeometryType*>(&rElementGeometry);
+                if (pIsogeometricGeometry != nullptr)
+                {
+                    J = pIsogeometricGeometry->Jacobian0(J, it->GetIntegrationMethod());
+
+                    GeometryType::ShapeFunctionsGradientsType DN_De;
+                    pIsogeometricGeometry->CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
+                        Ncontainer,
+                        DN_De,
+                        it->GetIntegrationMethod()
+                    );
+                }
+                else
+                {
+                    typename GeometryType::MatrixType DeltaPosition(rElementGeometry.size(), 3);
+
+                    for ( unsigned int node = 0; node < rElementGeometry.size(); ++node )
+                        noalias( row( DeltaPosition, node ) ) = rElementGeometry[node].Coordinates()
+                                                              - rElementGeometry[node].GetInitialPosition();
+
+                    J = rElementGeometry.Jacobian( J, it->GetIntegrationMethod(), DeltaPosition );
+
+                    Ncontainer = rElementGeometry.ShapeFunctionsValues( it->GetIntegrationMethod() );
+                }
 
                 // get the values at the integration_points
                 std::vector<Vector> ValuesOnIntPoint(integration_points.size());
@@ -659,9 +708,9 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
 
                     double dV = DetJ * integration_points[point].Weight();
 
-                    for (unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
+                    for (unsigned int prim = 0; prim < rElementGeometry.size(); ++prim)
                     {
-                        row = node_row_id[it->GetGeometry()[prim].Id()];
+                        unsigned int row = node_row_id[rElementGeometry[prim].Id()];
 
                         omp_set_lock(&lock_array[row]);
 
@@ -670,9 +719,9 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
                             b(row, i) += ValuesOnIntPoint[point][i] * Ncontainer(point, prim) * dV;
                         }
 
-                        for (unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
+                        for (unsigned int sec = 0; sec < rElementGeometry.size(); ++sec)
                         {
-                            col = node_row_id[it->GetGeometry()[sec].Id()];
+                            unsigned int col = node_row_id[rElementGeometry[sec].Id()];
                             M(row, col) += Ncontainer(point, prim) * Ncontainer(point, sec) * dV;
                         }
 
@@ -683,24 +732,19 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
             else
             {
                 // for inactive elements the contribution to LHS is identity matrix and RHS is zero
-                for (unsigned int prim = 0; prim < it->GetGeometry().size(); ++prim)
+                for (unsigned int prim = 0; prim < rElementGeometry.size(); ++prim)
                 {
-                    row = node_row_id[it->GetGeometry()[prim].Id()];
+                    unsigned int row = node_row_id[rElementGeometry[prim].Id()];
 
                     omp_set_lock(&lock_array[row]);
 
-//                        for(unsigned int i = 0; i < ncomponents; ++i)
-//                            b(row, i) += 0.0;
-
-                    for (unsigned int sec = 0; sec < it->GetGeometry().size(); ++sec)
+                    for (unsigned int sec = 0; sec < rElementGeometry.size(); ++sec)
                     {
-                        col = node_row_id[it->GetGeometry()[sec].Id()];
+                        unsigned int col = node_row_id[rElementGeometry[sec].Id()];
                         if (col == row)
                         {
                             M(row, col) += 1.0;
                         }
-//                            else
-//                                M(row, col) += 0.0;
                     }
 
                     omp_unset_lock(&lock_array[row]);
@@ -737,15 +781,14 @@ void BezierPostUtility::TransferVariablesToNodalArray(std::set<std::size_t>& act
 
 void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
         ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-        const Variable<double>& rThisVariable, bool check_active) const
+        const Variable<double>& rThisVariable) const
 {
     // compute the nodal values
     std::set<std::size_t> active_nodes;
     std::map<std::size_t, std::size_t> node_row_id;
     SerialSparseSpaceType::VectorType g;
 
-    this->TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
-                                        ElementsArray, rThisVariable, check_active);
+    this->TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part, ElementsArray, rThisVariable);
 
     // transfer the solution to the nodal variables
     for ( std::set<std::size_t>::iterator it = active_nodes.begin(); it != active_nodes.end(); ++it )
@@ -762,8 +805,7 @@ void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolv
 
 void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
         ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-        const Variable<Vector>& rThisVariable,
-        std::size_t ncomponents, bool check_active) const
+        const Variable<Vector>& rThisVariable, std::size_t ncomponents) const
 {
     // compute the nodal values
     std::set<std::size_t> active_nodes;
@@ -771,7 +813,7 @@ void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolv
     SerialDenseSpaceType::MatrixType g;
 
     this->TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
-                                        ElementsArray, rThisVariable, ncomponents, check_active);
+                                        ElementsArray, rThisVariable, ncomponents);
 
     // transfer the solution to the nodal variables
     Vector tmp(ncomponents);
@@ -790,16 +832,14 @@ void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolv
 
 void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolver,
         ModelPart& r_model_part, const ElementsContainerType& ElementsArray,
-        const Variable<array_1d<double, 3> >& rThisVariable,
-        bool check_active) const
+        const Variable<array_1d<double, 3> >& rThisVariable) const
 {
     // compute the nodal values
     std::set<std::size_t> active_nodes;
     std::map<std::size_t, std::size_t> node_row_id;
     SerialDenseSpaceType::MatrixType g;
 
-    this->TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part,
-                                        ElementsArray, rThisVariable, check_active);
+    this->TransferVariablesToNodalArray(active_nodes, node_row_id, g, pSolver, r_model_part, ElementsArray, rThisVariable);
 
     // transfer the solution to the nodal variables
     array_1d<double, 3> tmp;
@@ -818,14 +858,7 @@ void BezierPostUtility::TransferVariablesToNodes(LinearSolverType::Pointer pSolv
 
 }
 
-#ifdef ENABLE_DEBUG
-#define ENABLE_DEBUG
-#endif
-
-#ifdef DEBUG_MULTISOLVE
+#undef ENABLE_DEBUG
 #undef DEBUG_MULTISOLVE
-#endif
-
-#ifdef ENABLE_PROFILING
 #undef ENABLE_PROFILING
-#endif
+#undef ENABLE_MULTITHREAD

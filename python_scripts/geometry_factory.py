@@ -153,6 +153,12 @@ def CreateSmallArc(center, axis, radius, start_angle, end_angle, sample_patch=Pa
     if (sweep > 180.0):
         raise Exception("Small arc cannot be larger than 180 degres, the input angle is %f" % (sweep))
 
+    if (sweep == 180.0):
+        print("WARNING!!!the control weight of the curve will be zero when angle=180. One must do h-refinement later to fix it.")
+
+    # Note: the sweep angle=180.0 still works, but one must do h-refinement to avoid zero weight
+    # Alternatively, use CreateHalfCircle (initial order will be 3)
+
     dsweep = 0.5*sweep/180.0*math.pi
     wm = math.cos(dsweep)
     x = radius*wm

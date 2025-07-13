@@ -61,13 +61,19 @@ public:
     virtual ~MultipatchLagrangeControlMesh() {}
 
     /// Set the base element name
-    void SetBaseElementName(const std::string& BaseElementName) {mBaseElementName = BaseElementName;}
+    void SetBaseElementName(const std::string& Name) {mBaseElementName = Name;}
+
+    /// Set the base condition name
+    void SetBaseConditionName(const std::string& Name) { /*NO NOTHING*/ }
 
     /// Set the last node index
-    void SetLastNodeId(IndexType lastNodeId) {mLastNodeId = lastNodeId;}
+    void SetLastNodeId(IndexType lastId) {mLastNodeId = lastId;}
 
     /// Set the last element index
-    void SetLastElemId(IndexType lastElemId) {mLastElemId = lastElemId;}
+    void SetLastElemId(IndexType lastId) {mLastElemId = lastId;}
+
+    /// Set the last condition index
+    void SetLastCondId(IndexType lastId) { /*DO NOTHING*/ }
 
     /// Append to model_part, the quad/hex element from patches
     void WriteModelPart(ModelPart& r_model_part) const

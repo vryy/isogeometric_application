@@ -286,8 +286,10 @@ void IsogeometricApplication_AddMeshToPython()
     class_<MultipatchLagrangeControlMesh<TDim>, typename MultipatchLagrangeControlMesh<TDim>::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
     (ss.str().c_str(), init<typename MultiPatch<TDim>::Pointer>())
     .def("SetBaseElementName", &MultipatchLagrangeControlMesh<TDim>::SetBaseElementName)
+    .def("SetBaseConditionName", &MultipatchLagrangeControlMesh<TDim>::SetBaseConditionName)
     .def("SetLastNodeId", &MultipatchLagrangeControlMesh<TDim>::SetLastNodeId)
     .def("SetLastElemId", &MultipatchLagrangeControlMesh<TDim>::SetLastElemId)
+    .def("SetLastCondId", &MultipatchLagrangeControlMesh<TDim>::SetLastCondId)
     .def("WriteModelPart", &MultipatchLagrangeControlMesh<TDim>::WriteModelPart)
     .def(self_ns::str(self))
     ;

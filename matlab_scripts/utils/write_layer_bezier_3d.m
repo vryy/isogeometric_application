@@ -74,7 +74,7 @@ cnt = 1;
 b1 = p1 + 1;
 sum_mul1 = 0;
 for i = 1:ne1
-    
+
     %check the multiplicity
     tmp = b1;
     while b1 <= (n1 + p1 + 1) && nurbs.knots{1}(b1+1) == nurbs.knots{1}(b1)
@@ -83,11 +83,11 @@ for i = 1:ne1
     mul1 = b1 - tmp + 1;
     b1 = b1 + 1;
     sum_mul1 = sum_mul1 + (mul1 - 1);
-    
+
     b2 = p2 + 1;
     sum_mul2 = 0;
     for j = 1:ne2
-        
+
         %check the multiplicity
         tmp = b2;
         while b2 <= (n2 + p2 + 1) && nurbs.knots{2}(b2+1) == nurbs.knots{2}(b2)
@@ -96,11 +96,11 @@ for i = 1:ne1
         mul2 = b2 - tmp + 1;
         b2 = b2 + 1;
         sum_mul2 = sum_mul2 + (mul2 - 1);
-        
+
         b3 = p3 + 1;
         sum_mul3 = 0;
         for k = 1:ne3
-            
+
             %check the multiplicity
             tmp = b3;
             while b3 <= (n3 + p3 + 1) && nurbs.knots{3}(b3+1) == nurbs.knots{3}(b3)
@@ -109,7 +109,7 @@ for i = 1:ne1
             mul3 = b3 - tmp + 1;
             b3 = b3 + 1;
             sum_mul3 = sum_mul3 + (mul3 - 1);
-            
+
             fprintf(fid, '\t\tcurrent_entity_set[%d] = [', cnt);
             for i1 = 1:p1+1
                 for j1 = 1:p2+1
@@ -142,7 +142,7 @@ cnt = 1;
 b1 = p1 + 1;
 sum_mul1 = 0;
 for i = 1:ne1
-    
+
     %check the multiplicity
     tmp = b1;
     while b1 <= (n1 + p1 + 1) && nurbs.knots{1}(b1+1) == nurbs.knots{1}(b1)
@@ -151,11 +151,11 @@ for i = 1:ne1
     mul1 = b1 - tmp + 1;
     b1 = b1 + 1;
     sum_mul1 = sum_mul1 + (mul1 - 1);
-    
+
     b2 = p2 + 1;
     sum_mul2 = 0;
     for j = 1:ne2
-        
+
         %check the multiplicity
         tmp = b2;
         while b2 <= (n2 + p2 + 1) && nurbs.knots{2}(b2+1) == nurbs.knots{2}(b2)
@@ -164,11 +164,11 @@ for i = 1:ne1
         mul2 = b2 - tmp + 1;
         b2 = b2 + 1;
         sum_mul2 = sum_mul2 + (mul2 - 1);
-        
+
         b3 = p3 + 1;
         sum_mul3 = 0;
         for k = 1:ne3
-            
+
             %check the multiplicity
             tmp = b3;
             while b3 <= (n3 + p3 + 1) && nurbs.knots{3}(b3+1) == nurbs.knots{3}(b3)
@@ -177,7 +177,7 @@ for i = 1:ne1
             mul3 = b3 - tmp + 1;
             b3 = b3 + 1;
             sum_mul3 = sum_mul3 + (mul3 - 1);
-            
+
             fprintf(fid, '\t\ttemp[%d] = [', cnt);
             for i1 = 1:p1+1
                 for j1 = 1:p2+1
@@ -498,6 +498,12 @@ fprintf(fid, '\t\tself.layer_boundary_marker[''%s''] = boundary_marker\n\n', nam
 %%
 fprintf(fid, '\t\t# layer attributes\n');
 fprintf(fid, '\t\tself.layer_attributes[''%s''] = {}\n', name);
+fprintf(fid, '\t\tself.layer_attributes[''%s''][''%s''] = %d\n', name, 'NURBS_NUMBER_1', nurbs.number(1));
+fprintf(fid, '\t\tself.layer_attributes[''%s''][''%s''] = %d\n', name, 'NURBS_NUMBER_2', nurbs.number(2));
+fprintf(fid, '\t\tself.layer_attributes[''%s''][''%s''] = %d\n', name, 'NURBS_NUMBER_3', nurbs.number(3));
+fprintf(fid, '\t\tself.layer_attributes[''%s''][''%s''] = %d\n', name, 'NURBS_DEGREE_1', nurbs.order(1)-1);
+fprintf(fid, '\t\tself.layer_attributes[''%s''][''%s''] = %d\n', name, 'NURBS_DEGREE_2', nurbs.order(2)-1);
+fprintf(fid, '\t\tself.layer_attributes[''%s''][''%s''] = %d\n', name, 'NURBS_DEGREE_3', nurbs.order(3)-1);
 
 fprintf(fid, '\t\t################### end layer_info %s ###################\n\n', name);
 fprintf('write layer %s completed\n', name);

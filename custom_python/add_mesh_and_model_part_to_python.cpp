@@ -353,10 +353,13 @@ void IsogeometricApplication_AddModelPartToPython(const std::string& Prefix)
     .def("GetMultiPatch", &Helper_GetMultiPatch2<MultiMultiPatchModelPartType>, return_internal_reference<>())
     .def("SynchronizeForward", &MultiMultiPatchModelPartType::template SynchronizeForward<Variable<DataType> >)
     .def("SynchronizeBackward", &MultiMultiPatchModelPartType::template SynchronizeBackward<Variable<DataType> >)
+    .def("SynchronizeBackward", &MultiMultiPatchModelPartType::template SynchronizeBackwardAll<Variable<DataType> >)
     .def("SynchronizeForward", &MultiMultiPatchModelPartType::template SynchronizeForward<Variable<array_1d<DataType, 3> > >)
     .def("SynchronizeBackward", &MultiMultiPatchModelPartType::template SynchronizeBackward<Variable<array_1d<DataType, 3> > >)
+    .def("SynchronizeBackward", &MultiMultiPatchModelPartType::template SynchronizeBackwardAll<Variable<array_1d<DataType, 3> > >)
     .def("SynchronizeForward", &MultiMultiPatchModelPartType::template SynchronizeForward<Variable<Vector> >)
     .def("SynchronizeBackward", &MultiMultiPatchModelPartType::template SynchronizeBackward<Variable<Vector> >)
+    .def("SynchronizeBackward", &MultiMultiPatchModelPartType::template SynchronizeBackwardAll<Variable<Vector> >)
     .def(self_ns::str(self))
     ;
 

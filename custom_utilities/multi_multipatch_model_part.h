@@ -401,6 +401,16 @@ public:
         }
     }
 
+    /// Synchronize from model_part to the multipatches
+    template<class TVariableType>
+    void SynchronizeBackwardAll(const TVariableType& rVariable)
+    {
+        for (std::size_t ip = 0; ip < mpMultiPatches.size(); ++ip)
+        {
+            this->SynchronizeBackward(ip, rVariable);
+        }
+    }
+
     /// Synchronize from model_part to the multipatch
     template<class TVariableType>
     void SynchronizeBackward(std::size_t ip, const TVariableType& rVariable)
@@ -497,7 +507,7 @@ private:
         {
             if ((*pCellManagers[ip]) != (*pCellManagers[0]))
                 KRATOS_ERROR << "The cell manager does not match at index " << ip;
-            }
+        }
 
         if (echo_level > 0)
         {

@@ -50,6 +50,12 @@ typename T::MultiPatchType& Helper_GetMultiPatch(T& rDummy)
 }
 
 template<class T>
+typename T::MultiPatchType& Helper_GetMultiPatch1(T& rDummy)
+{
+    return *(rDummy.pMultiPatch(0));
+}
+
+template<class T>
 typename T::MultiPatchType& Helper_GetMultiPatch2(T& rDummy, std::size_t i)
 {
     return *(rDummy.pMultiPatch(i));
@@ -343,6 +349,7 @@ void IsogeometricApplication_AddModelPartToPython(const std::string& Prefix)
     .def("AddConditions", &MultiPatchHelper_AddConditions_OnBoundary2<MultiMultiPatchModelPartType>)
     .def("EndModelPart", &MultiMultiPatchModelPartType::EndModelPart)
     .def("GetModelPart", &Helper_GetModelPart<MultiMultiPatchModelPartType>, return_internal_reference<>())
+    .def("GetMultiPatch", &Helper_GetMultiPatch1<MultiMultiPatchModelPartType>, return_internal_reference<>())
     .def("GetMultiPatch", &Helper_GetMultiPatch2<MultiMultiPatchModelPartType>, return_internal_reference<>())
     .def("SynchronizeForward", &MultiMultiPatchModelPartType::template SynchronizeForward<Variable<DataType> >)
     .def("SynchronizeBackward", &MultiMultiPatchModelPartType::template SynchronizeBackward<Variable<DataType> >)

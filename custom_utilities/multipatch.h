@@ -57,7 +57,7 @@ public:
     static constexpr int Dim = TDim;
 
     /// Default constructor
-    MultiPatch() : mEquationSystemSize(0) {}
+    MultiPatch() : mEquationSystemSize(0), mpPatches() {}
 
     /// Destructor
     virtual ~MultiPatch() {}

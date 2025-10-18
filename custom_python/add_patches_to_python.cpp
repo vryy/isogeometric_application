@@ -271,6 +271,18 @@ typename TPatchType::BoundaryPatchType::Pointer Patch_ConstructBoundaryPatch(TPa
     return rDummy.ConstructBoundaryPatch(side);
 }
 
+template<class TPatchType>
+void Patch_save(TPatchType& rObject, Serializer& rSerializer, const std::string& rName)
+{
+    rSerializer.save(rName, rObject);
+}
+
+template<class TPatchType>
+void Patch_load(TPatchType& rObject, Serializer& rSerializer, const std::string& rName)
+{
+    rSerializer.load(rName, rObject);
+}
+
 template<class TMultiPatchType>
 static typename TMultiPatchType::Pointer MultiPatch_init(const boost::python::list& patch_list)
 {
@@ -413,6 +425,8 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
     .def("SetLocalSearchTolerance", &PatchType::SetLocalSearchTolerance)
     .def("SetLocalSearchMaxIters", &PatchType::SetLocalSearchMaxIters)
     .def("Validate", &PatchType::Validate)
+    .def("Save", &Patch_save<PatchType>)
+    .def("Load", &Patch_load<PatchType>)
     .def(self_ns::str(self))
     ;
 

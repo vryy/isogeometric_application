@@ -1032,6 +1032,8 @@ public:
 
 private:
 
+    ///@name Attributes
+    ///@{
     std::string mPrefix;
     int mLayerIndex;
 
@@ -1045,29 +1047,37 @@ private:
     unsigned int mLocalSearchMaxIters;
     LocalCoordinateType mLocalSearchTolerance;
 
-    /**
-     * interface data
-     */
+    // interface data
     InterfaceContainerType mpInterfaces;
 
-    /**
-     * pointer to parent multipatch
-     */
+    // pointer to parent multipatch
     typename MultiPatchType::WeakPointer mpParentMultiPatch;
+    ///@}
 
     /// Empty Constructor for serializer
     Patch() : IndexedObject(0), mpFESpace(NULL) {}
 
-    /// Serializer
+    ///@name Serialization
+    ///@{
     friend class Serializer;
 
     void save(Serializer& rSerializer) const override
     {
+        rSerializer.save("Prefix", mPrefix);
+        rSerializer.save("LayerIndex", mLayerIndex);
+        rSerializer.save("FESpace", *mpFESpace);
+        std::cout << "Patch " << this->Id() << " is serialized" << std::endl;
     }
 
     void load(Serializer& rSerializer) override
     {
+        rSerializer.load("Prefix", mPrefix);
+        rSerializer.load("LayerIndex", mLayerIndex);
+        mpFESpace = typename FESpaceType::Pointer(new FESpaceType());
+        rSerializer.load("FESpace", *mpFESpace);
+        std::cout << "Patch " << this->Id() << " is deserialized" << std::endl;
     }
+    ///@}
 
     /// Auxiliary
     template<class TGridFunctionType>

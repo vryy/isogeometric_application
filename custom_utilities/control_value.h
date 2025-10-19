@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosIsogeometricApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 11 May 2018 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 
@@ -23,7 +22,7 @@ namespace Kratos
 {
 
 /**
-    Represent a control value in isogeometric mesh topology.
+ * Represent a control value in isogeometric mesh topology.
  */
 template<typename TDataType, typename TWeightType>
 class ControlValue
@@ -135,7 +134,8 @@ private:
     TDataType mWV;
     TWeightType mW;
 
-    /// Serializer
+    ///@name Serialization
+    ///@{
     friend class Serializer;
 
     virtual void save(Serializer& rSerializer) const
@@ -149,6 +149,7 @@ private:
         rSerializer.load( "WV", mWV );
         rSerializer.load( "W", mW );
     }
+    ///@}
 };
 
 /// output stream function

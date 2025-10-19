@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosIsogeometricApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 27 Jul 2018 $
-//   Revision:            $Revision: 1.1 $
 //
 //
 

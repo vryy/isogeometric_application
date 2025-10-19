@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosIsogeometricApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 7 Dec 17 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 #if !defined(KRATOS_DUMMY_ISOGEOMETRIC_CONDITION_H_INCLUDED )

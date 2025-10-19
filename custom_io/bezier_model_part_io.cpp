@@ -3,10 +3,9 @@ see isogeometric_application/LICENSE.txt
 */
 
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosIsogeometricApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 19 Oct 2015 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 

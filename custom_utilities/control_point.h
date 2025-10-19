@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosIsogeometricApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 4 Nov 2017 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 
@@ -25,7 +24,7 @@ namespace Kratos
 {
 
 /**
-    Represent a control point in isogeometric mesh topology.
+ * Represent a control point in isogeometric mesh topology.
  */
 template<typename TDataType, typename TWeightType = TDataType>
 class ControlPoint : public ControlValue<array_1d<TDataType, 3>, TWeightType>

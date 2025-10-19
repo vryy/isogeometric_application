@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosIsogeometricApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 15 Nov 2017 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 
@@ -18,15 +17,14 @@
 #include "includes/define.h"
 #include "includes/serializer.h"
 #include "custom_utilities/iga_define.h"
-// #include "custom_utilities/nurbs/bcell.h"
-// #include "custom_utilities/nurbs/cell_manager.h"
 #include "custom_utilities/cell_container.h"
 
 namespace Kratos
 {
 
 /**
-An FESpace is a collection of shape function defined over the parametric domain. An isogeometric FESpace can be a NURBS FESpace, a hierarchical NURBS FESpace, or a T-Splines FESpace.
+ * An FESpace is a collection of shape function defined over the parametric domain.
+ * An isogeometric FESpace can be a NURBS FESpace, a hierarchical NURBS FESpace, or a T-Splines FESpace.
  */
 template<int TDim, typename TLocalCoordinateType = double>
 class FESpace
@@ -444,7 +442,8 @@ protected:
 
 private:
 
-    /// Serializer
+    ///@name Serialization
+    ///@{
     friend class Serializer;
 
     virtual void save(Serializer& rSerializer) const
@@ -456,6 +455,7 @@ private:
     {
 //        rSerializer.load( "mGlobalToLocal", mGlobalToLocal );
     }
+    ///@}
 };
 
 /**

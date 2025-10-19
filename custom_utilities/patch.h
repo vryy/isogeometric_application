@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosIsogeometricApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 5 Nov 2017 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 
@@ -96,7 +95,6 @@ public:
 
     typedef std::vector<typename PatchType::Pointer> NeighborPatchContainerType;
 
-//    typedef std::vector<typename PatchInterfaceType::Pointer> InterfaceContainerType;
     typedef std::list<typename PatchInterfaceType::Pointer> InterfaceContainerType;
     typedef typename InterfaceContainerType::iterator interface_iterator;
     typedef typename InterfaceContainerType::const_iterator interface_const_iterator;
@@ -242,7 +240,8 @@ public:
         return ss.str();
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///@name Control Grid
+    ///@{
 
     /// Create the control point grid
     typename ControlPointGridFunctionType::Pointer CreateControlPointGridFunction(typename ControlGrid<ControlPointType>::Pointer pControlPointGrid)
@@ -299,6 +298,8 @@ public:
         return Weights;
     }
 
+    ///@}
+
     /// Apply the homogeneous transformation to the patch by applying the homogeneous transformation to the control points grid. For DISPLACEMENT, access the grid function for DISPLACEMENT directly and transform it.
     void ApplyTransformation(const TransformationType& trans)
     {
@@ -314,7 +315,8 @@ public:
         mpGridFunctions["CONTROL_POINT_COORDINATES"] = pNewCoordinatesGridFunc;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///@name Grid function
+    ///@{
 
     /// Create and add the grid function. This function will create the new FESpace based on the original FESpace of the control grid and the weights, and then assign to the new grid function.
     /// One must not use this function for the ControlPoint data type.
@@ -410,7 +412,7 @@ public:
         return false;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///@}
 
     /// Compute a rough estimation of the local coordinates of a point by sampling technique
     void Predict(const array_1d<CoordinateType, 3>& point, array_1d<LocalCoordinateType, 3>& xi, const std::vector<int>& nsampling,
@@ -459,8 +461,6 @@ public:
         }
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /// Extract the Kratos variables from Grid functions. It is important that the Grid function has the same name and type as Kratos variable.
     template<class TVariableType>
     std::vector<TVariableType*> ExtractVariables() const
@@ -468,7 +468,8 @@ public:
         return this->ExtractVariables<TVariableType>(mpGridFunctions);
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///@name Validation
+    ///@{
 
     /// Validate the patch
     virtual bool Validate() const
@@ -482,7 +483,7 @@ public:
             if (pControlPointGridFunction()->pControlGrid()->Size() != this->TotalNumber())
                 KRATOS_ERROR << "The control point grid is incompatible";
 
-                DoubleGridFunctionContainerType DoubleGridFunctions_ = this->DoubleGridFunctions();
+        DoubleGridFunctionContainerType DoubleGridFunctions_ = this->DoubleGridFunctions();
         for (typename DoubleGridFunctionContainerType::const_iterator it = DoubleGridFunctions_.begin();
                 it != DoubleGridFunctions_.end(); ++it)
         {
@@ -518,7 +519,7 @@ public:
         return true;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///@}
 
     /// Construct the boundary patch based on side
     virtual typename BoundaryPatchType::Pointer ConstructBoundaryPatch(const BoundarySide& side) const
@@ -629,7 +630,8 @@ public:
         return pSPatch;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///@name Interface
+    ///@{
 
     /// Search for the neighbor
     typename PatchType::Pointer pNeighbor(const BoundarySide& side)
@@ -771,7 +773,7 @@ public:
     typename MultiPatchType::Pointer pParentMultiPatch() {return mpParentMultiPatch.lock();}
     const typename MultiPatchType::Pointer pParentMultiPatch() const {return mpParentMultiPatch.lock();}
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///@}
 
     /// Generate topology data to visualize with GLVis
     void GenerateTopologyData(std::size_t& starting_vertex_id,
@@ -909,7 +911,8 @@ public:
         }
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///@name Comparison
+    ///@{
 
     /// Compare two patches in terms of its parametric information. The grid function data, including control points, are not checked.
     virtual bool IsCompatible(const PatchType& rOtherPatch) const
@@ -977,7 +980,7 @@ public:
         return (Id() == rOther.Id()) && this->IsSame(rOther);
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///@}
 
     /// Information
     void PrintInfo(std::ostream& rOStream) const override

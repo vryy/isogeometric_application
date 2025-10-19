@@ -1,8 +1,7 @@
 //
-//   Project Name:        Kratos
+//   Project Name:        KratosIsogeometricApplication
 //   Last Modified by:    $Author: hbui $
 //   Date:                $Date: 8 Nov 2017 $
-//   Revision:            $Revision: 1.0 $
 //
 //
 
@@ -56,23 +55,23 @@ public:
         if (TformMat.size1() != rControlGrid.Size())
             KRATOS_ERROR << "The first size of the transformation matrix is not compatible with old grid function size";
 
-            if (TformMat.size2() != rNewControlGrid.Size())
-                KRATOS_ERROR << "The second size of the transformation matrix is not compatible with new grid function size";
+        if (TformMat.size2() != rNewControlGrid.Size())
+            KRATOS_ERROR << "The second size of the transformation matrix is not compatible with new grid function size";
 
-                // compute new data and store
-                for (std::size_t i = 0; i < TformMat.size2(); ++i)
+        // compute new data and store
+        for (std::size_t i = 0; i < TformMat.size2(); ++i)
+        {
+            TDataType NewData = TformMat(0, i) * rControlGrid.GetData(0);
+
+            for (std::size_t j = 1; j < TformMat.size1(); ++j)
+            {
+                if (TformMat(j, i) != 0.0)
                 {
-                    TDataType NewData = TformMat(0, i) * rControlGrid.GetData(0);
-
-                    for (std::size_t j = 1; j < TformMat.size1(); ++j)
-                    {
-                        if (TformMat(j, i) != 0.0)
-                        {
-                            NewData += TformMat(j, i) * rControlGrid.GetData(j);
-                        }
-                    }
-                    rNewControlGrid.SetData(i, NewData);
+                    NewData += TformMat(j, i) * rControlGrid.GetData(j);
                 }
+            }
+            rNewControlGrid.SetData(i, NewData);
+        }
     }
 
     /// Transform a control grid to new control grid by a matrix multiplication.

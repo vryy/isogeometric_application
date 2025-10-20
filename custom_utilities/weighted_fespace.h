@@ -17,6 +17,7 @@
 #include "includes/define.h"
 #include "includes/serializer.h"
 #include "custom_utilities/fespace.h"
+#include "custom_utilities/fespace_utility.h"
 
 namespace Kratos
 {
@@ -574,20 +575,30 @@ private:
     typename FESpaceType::Pointer mpFESpace;
     std::vector<TWeightType> mWeights;
 
-    /// Serializer
+    ///@name Serialization
+    ///@{
     friend class Serializer;
 
     void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, FESpaceType );
-        rSerializer.save( "mWeights", mWeights );
+        std::cout << "Serialization - WeightedFESpace " << __FUNCTION__ << " FESpaceType: " << mpFESpace->Type() << std::endl;
+        rSerializer.save("FESpaceType", mpFESpace->Type());
+        rSerializer.save("FESpace", *mpFESpace);
+        rSerializer.save( "Weights", mWeights );
     }
 
     void load(Serializer& rSerializer) override
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, FESpaceType );
-        rSerializer.load( "mWeights", mWeights );
+        std::string fespace_type;
+        rSerializer.load("FESpaceType", fespace_type);
+        std::cout << "Serialization - WeightedFESpace " << __FUNCTION__ << " fespace_type: " << fespace_type << std::endl;
+        mpFESpace = FESpaceUtility<TDim, TLocalCoordinateType>::CreateEmptyFESpace(fespace_type);
+        rSerializer.load("FESpace", *mpFESpace);
+        rSerializer.load( "Weights", mWeights );
     }
+    ///@}
 };
 
 /**
@@ -601,12 +612,19 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     typedef FESpace<0, TLocalCoordinateType> FESpaceType;
+    typedef WeightedFESpace<0, TLocalCoordinateType, TWeightType> WeightedFESpaceType;
 
     /// Default constructor
     WeightedFESpace(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights) : mFunctionId(-1) {}
 
     /// Destructor
     ~WeightedFESpace() override {}
+
+    /// Helper to create new WeightedFESpace pointer
+    static typename WeightedFESpaceType::Pointer Create(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights)
+    {
+        return typename WeightedFESpaceType::Pointer(new WeightedFESpace(pFESpace, weights));
+    }
 
     /// Get the number of basis functions defined over the WeightedFESpace
     std::size_t TotalNumber() const override
@@ -629,7 +647,7 @@ public:
     /// Get the string describing the type of the WeightedFESpace
     static std::string StaticType()
     {
-        return "FESpace0D";
+        return "WeightedFESpace0D";
     }
 
     /// Overload comparison operator
@@ -689,16 +707,22 @@ protected:
 
 private:
 
-    /// Serializer
+    ///@name Serialization
+    ///@{
     friend class Serializer;
 
     void save(Serializer& rSerializer) const override
     {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, FESpaceType );
+        rSerializer.save("FunctionId", mFunctionId);
     }
 
     void load(Serializer& rSerializer) override
     {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, FESpaceType );
+        rSerializer.load("FunctionId", mFunctionId);
     }
+    ///@}
 };
 
 /**
@@ -712,12 +736,19 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     typedef FESpace<-1, TLocalCoordinateType> FESpaceType;
+    typedef WeightedFESpace<-1, TLocalCoordinateType, TWeightType> WeightedFESpaceType;
 
     /// Default constructor
     WeightedFESpace(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights) {}
 
     /// Destructor
     ~WeightedFESpace() override {}
+
+    /// Helper to create new WeightedFESpace pointer
+    static typename WeightedFESpaceType::Pointer Create(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights)
+    {
+        return typename WeightedFESpaceType::Pointer(new WeightedFESpace(pFESpace, weights));
+    }
 
     /// Get the number of basis functions defined over the WeightedFESpace
     std::size_t TotalNumber() const override
@@ -790,12 +821,19 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(WeightedFESpace);
 
     typedef FESpace<-2, TLocalCoordinateType> FESpaceType;
+    typedef WeightedFESpace<-2, TLocalCoordinateType, TWeightType> WeightedFESpaceType;
 
     /// Default constructor
     WeightedFESpace(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights) {}
 
     /// Destructor
-    virtual ~WeightedFESpace() {}
+    ~WeightedFESpace() override {}
+
+    /// Helper to create new WeightedFESpace pointer
+    static typename WeightedFESpaceType::Pointer Create(typename FESpaceType::Pointer pFESpace, const std::vector<TWeightType>& weights)
+    {
+        return typename WeightedFESpaceType::Pointer(new WeightedFESpace(pFESpace, weights));
+    }
 
     /// Get the number of basis functions defined over the WeightedFESpace
     std::size_t TotalNumber() const override

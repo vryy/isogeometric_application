@@ -136,6 +136,19 @@ public:
         }
     }
 
+    /// Helper function to create an empty control grid based on nema
+    template<int TDim, typename TDataType>
+    static typename ControlGrid<TDataType>::Pointer CreateEmptyControlGrid(const std::string& type)
+    {
+        if (type == StructuredControlGrid<TDim, TDataType>::StaticType())
+        {
+            std::vector<std::size_t> sizes(3, 0);
+            return StructuredControlGrid<TDim, TDataType>::Create(sizes);
+        }
+        else
+            return ControlGrid<TDataType>::Create();
+    }
+
     /// Helper function to create the point-based control grid based on Variable and FESpace
     template<typename TDataType, class TFESpaceType>
     static typename ControlGrid<TDataType>::Pointer CreatePointBasedControlGrid(

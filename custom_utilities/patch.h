@@ -34,6 +34,7 @@
 #include "custom_utilities/grid_function.h"
 #include "custom_utilities/weighted_fespace.h"
 #include "custom_utilities/control_grid_utility.h"
+#include "custom_utilities/fespace_utility.h"
 #include "isogeometric_application_variables.h"
 
 #define CONVERT_INDEX_IGA_TO_KRATOS(n) (n+1)
@@ -1066,18 +1067,106 @@ private:
 
     void save(Serializer& rSerializer) const override
     {
+        std::cout << "Serialization - calling Patch " << this->Id() << " " << __FUNCTION__ << std::endl;
         rSerializer.save("Prefix", mPrefix);
         rSerializer.save("LayerIndex", mLayerIndex);
+
+        std::cout << "Serialization - Patch " << this->Id() << " calling " << __FUNCTION__ << " on " << mpFESpace->Type() << std::endl;
+        rSerializer.save("FESpaceType", mpFESpace->Type());
         rSerializer.save("FESpace", *mpFESpace);
+
+        const auto& rControlPointGridFunc = this->ControlPointGridFunction();
+        rSerializer.save("ControlPointGridFunction", rControlPointGridFunc);
+
+        DoubleGridFunctionContainerType DoubleGridFunctions_ = this->DoubleGridFunctions();
+        rSerializer.save("DoubleGridFunction_size", DoubleGridFunctions_.size());
+        std::cout << "Serialization - Patch " << this->Id() << " " << __FUNCTION__ << " DoubleGridFunctions_size: " << DoubleGridFunctions_.size() << std::endl;
+        for (std::size_t i = 0; i < DoubleGridFunctions_.size(); ++i)
+        {
+            std::stringstream ss_name;
+            ss_name << "DoubleGridFunction_" << i;
+            rSerializer.save(ss_name.str(), *(DoubleGridFunctions_[i]));
+        }
+
+        Array1DGridFunctionContainerType Array1DGridFunctions_ = this->Array1DGridFunctions();
+        std::cout << "Serialization - Patch " << this->Id() << " " << __FUNCTION__ << " Array1DGridFunction_size: " << Array1DGridFunctions_.size() << std::endl;
+        rSerializer.save("Array1DGridFunction_size", Array1DGridFunctions_.size());
+        for (std::size_t i = 0; i < Array1DGridFunctions_.size(); ++i)
+        {
+            std::stringstream ss_name;
+            ss_name << "Array1DGridFunction_" << i;
+            std::cout << "Serialization - Patch " << this->Id() << " " << __FUNCTION__ << " Array1DGridFunction_" << i << ": " << Array1DGridFunctions_[i]->pControlGrid()->Name() << std::endl;
+            rSerializer.save(ss_name.str(), *(Array1DGridFunctions_[i]));
+        }
+
+        VectorGridFunctionContainerType VectorGridFunctions_ = this->VectorGridFunctions();
+        rSerializer.save("VectorGridFunction_size", VectorGridFunctions_.size());
+        for (std::size_t i = 0; i < VectorGridFunctions_.size(); ++i)
+        {
+            std::stringstream ss_name;
+            ss_name << "VectorGridFunction_" << i;
+            rSerializer.save(ss_name.str(), *(VectorGridFunctions_[i]));
+        }
+
+        rSerializer.save("LocalSearchMaxIters", mLocalSearchMaxIters);
+        rSerializer.save("LocalSearchTolerance", mLocalSearchTolerance);
         std::cout << "Patch " << this->Id() << " is serialized" << std::endl;
     }
 
     void load(Serializer& rSerializer) override
     {
+        std::cout << "Serialization - calling Patch " << this->Id() << " " << __FUNCTION__ << std::endl;
         rSerializer.load("Prefix", mPrefix);
         rSerializer.load("LayerIndex", mLayerIndex);
-        mpFESpace = typename FESpaceType::Pointer(new FESpaceType());
+
+        std::string fespace_type;
+        rSerializer.load("FESpaceType", fespace_type);
+        mpFESpace = FESpaceUtility<TDim, TLocalCoordinateType>::CreateEmptyFESpace(fespace_type);
+        std::cout << "Serialization - Patch " << this->Id() << " calling " << __FUNCTION__ << " on " << mpFESpace->Type() << std::endl;
         rSerializer.load("FESpace", *mpFESpace);
+
+        auto pGridFunc = ControlPointGridFunctionType::Create(FESpaceType::Create(), ControlPointGridFunctionType::ControlGridType::Create());
+        rSerializer.load("ControlPointGridFunction", *pGridFunc);
+        pGridFunc->SetFESpace(mpFESpace);
+        mpGridFunctions[pGridFunc->pControlGrid()->Name()] = pGridFunc;
+
+        std::size_t size;
+        rSerializer.load("DoubleGridFunction_size", size);
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            auto pGridFunc = DoubleGridFunctionType::Create(FESpaceType::Create(), DoubleGridFunctionType::ControlGridType::Create());
+            std::stringstream ss_name;
+            ss_name << "DoubleGridFunction_" << i;
+            rSerializer.load(ss_name.str(), *pGridFunc);
+            pGridFunc->SetFESpace(mpFESpace);
+            mpGridFunctions[pGridFunc->pControlGrid()->Name()] = pGridFunc;
+        }
+
+        rSerializer.load("Array1DGridFunction_size", size);
+        std::cout << "Serialization - Patch " << this->Id() << " " << __FUNCTION__ << " Array1DGridFunction_size: " << size << std::endl;
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            auto pGridFunc = Array1DGridFunctionType::Create(FESpaceType::Create(), Array1DGridFunctionType::ControlGridType::Create());
+            std::stringstream ss_name;
+            ss_name << "Array1DGridFunction_" << i;
+            rSerializer.load(ss_name.str(), *pGridFunc);
+            pGridFunc->SetFESpace(mpFESpace);
+            mpGridFunctions[pGridFunc->pControlGrid()->Name()] = pGridFunc;
+        }
+
+        rSerializer.load("VectorGridFunction_size", size);
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            auto pGridFunc = VectorGridFunctionType::Create(FESpaceType::Create(), VectorGridFunctionType::ControlGridType::Create());
+            std::stringstream ss_name;
+            ss_name << "VectorGridFunction_" << i;
+            rSerializer.load(ss_name.str(), *pGridFunc);
+            pGridFunc->SetFESpace(mpFESpace);
+            mpGridFunctions[pGridFunc->pControlGrid()->Name()] = pGridFunc;
+        }
+
+        rSerializer.load("LocalSearchMaxIters", mLocalSearchMaxIters);
+        rSerializer.load("LocalSearchTolerance", mLocalSearchTolerance);
         std::cout << "Patch " << this->Id() << " is deserialized" << std::endl;
     }
     ///@}

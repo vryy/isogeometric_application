@@ -73,6 +73,7 @@ set( KRATOS_ISOGEOMETRIC_APPLICATION_SOURCES
 #    ${PROJECT_SOURCE_DIR}/kratos/sources/io.cpp
 #    ${PROJECT_SOURCE_DIR}/kratos/sources/model_part_io.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_io/bezier_model_part_io.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/fespace_utility.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bezier_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bspline_utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/custom_utilities/bezier_post_utility.cpp

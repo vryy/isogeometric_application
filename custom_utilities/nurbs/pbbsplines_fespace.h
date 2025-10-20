@@ -717,6 +717,26 @@ protected:
         }
         m_function_map_is_created = true;
     }
+
+private:
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
+        rSerializer.save( "Orders", mOrders );
+        // TODO
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
+        rSerializer.load( "Orders", mOrders );
+        // TODO
+    }
 };
 
 /// output stream function

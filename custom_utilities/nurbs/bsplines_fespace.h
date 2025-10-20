@@ -1541,6 +1541,41 @@ private:
      * data for grid function interpolation
      */
     std::vector<std::size_t> mFunctionsIds; // this is to store a unique number of the shape function over the forest of FESpace(s).
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        std::cout << "Serialization - calling BSplinesFESpace " << this->Type() << " " << __FUNCTION__ << std::endl;
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
+        rSerializer.save( "Orders", mOrders );
+        rSerializer.save( "Numbers", mNumbers );
+        for (int i = 0; i < TDim; ++i)
+        {
+            std::stringstream ss;
+            ss << "KnotVector_" << i;
+            rSerializer.save( ss.str(), mKnotVectors[i] );
+        }
+        rSerializer.save( "FunctionsIds", mFunctionsIds );
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        std::cout << "Serialization - calling BSplinesFESpace " << this->Type() << " " << __FUNCTION__ << std::endl;
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
+        rSerializer.load( "Orders", mOrders );
+        rSerializer.load( "Numbers", mNumbers );
+        for (int i = 0; i < TDim; ++i)
+        {
+            std::stringstream ss;
+            ss << "KnotVector_" << i;
+            rSerializer.load( ss.str(), mKnotVectors[i] );
+        }
+        rSerializer.load( "FunctionsIds", mFunctionsIds );
+    }
+    ///@}
 };
 
 /**
@@ -1555,6 +1590,7 @@ public:
 
     /// Type definition
     typedef FESpace<0, TLocalCoordinateType> BaseType;
+    typedef BSplinesFESpace<0, TLocalCoordinateType> ThisType;
     typedef KnotArray1D<TLocalCoordinateType> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
 
@@ -1563,6 +1599,12 @@ public:
 
     /// Destructor
     ~BSplinesFESpace() override {}
+
+    /// Helper to create new BSplinesFESpace pointer
+    static typename ThisType::Pointer Create()
+    {
+        return typename ThisType::Pointer(new ThisType());
+    }
 
     /// Get the order of the BSplines patch in specific direction
     std::size_t Order(std::size_t i) const final {return 0;}

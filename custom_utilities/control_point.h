@@ -16,7 +16,6 @@
 
 // Project includes
 #include "includes/define.h"
-#include "includes/serializer.h"
 #include "brep_application/custom_algebra/trans/transformation.h"
 #include "custom_utilities/control_value.h"
 
@@ -243,21 +242,6 @@ public:
         // rOStream << "(X: " << X() << ", Y: " << Y() << ", Z: " << Z() << ", W: " << BaseType::W() << ")";
         // rOStream << "(" << X() << ", " << Y() << ", " << Z() << ", " << BaseType::W() << ")";
         rOStream << "(" << WX() << ", " << WY() << ", " << WZ() << ", " << BaseType::W() << ")";
-    }
-
-private:
-
-    /// Serializer
-    friend class Serializer;
-
-    void save(Serializer& rSerializer) const override
-    {
-        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType);
-    }
-
-    void load(Serializer& rSerializer) override
-    {
-        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType);
     }
 };
 

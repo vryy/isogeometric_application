@@ -17,6 +17,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/serializer.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/nurbs/knot.h"
 
@@ -520,6 +521,37 @@ public:
 private:
 
     knot_container_t mpKnots;
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const
+    {
+        std::cout << "Serialization - calling KnotArray1D " << __FUNCTION__ << std::endl;
+        rSerializer.save( "size", mpKnots.size() );
+
+        for (const_iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        {
+            rSerializer.save( "K", *(*it) );
+        }
+    }
+
+    void load(Serializer& rSerializer)
+    {
+        std::cout << "Serialization - calling KnotArray1D " << __FUNCTION__ << std::endl;
+        std::size_t size;
+        rSerializer.load( "size", size );
+
+        KnotType knot;
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            rSerializer.load( "K", knot );
+            knot_t p_knot = knot_t(new KnotType(knot));
+            mpKnots.insert(mpKnots.end(), p_knot);
+        }
+    }
+    ///@}
 };
 
 /// output stream function

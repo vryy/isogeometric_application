@@ -16,9 +16,12 @@
 // Project includes
 #include "includes/define.h"
 #include "includes/variables.h"
+#include "includes/serializer.h"
 #include "utilities/math_utils.h"
 #include "custom_utilities/fespace.h"
+#include "custom_utilities/fespace_utility.h"
 #include "custom_utilities/control_grid.h"
+#include "custom_utilities/control_grid_utility.h"
 
 namespace Kratos
 {
@@ -284,6 +287,36 @@ private:
 
     typename FESpaceType::Pointer mpFESpace;
     typename ControlGridType::Pointer mpControlGrid;
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    virtual void save(Serializer& rSerializer) const
+    {
+        std::cout << "Serialization - GridFunction " << this->pControlGrid()->Name() << " " << __FUNCTION__ << " mpFESpace->Type: " << mpFESpace->Type() << std::endl;
+        rSerializer.save("FESpaceType", mpFESpace->Type());
+        rSerializer.save("FESpace", *mpFESpace);
+        rSerializer.save("ControlGridType", mpControlGrid->Type());
+        rSerializer.save("ControlGrid", *mpControlGrid);
+    }
+
+    virtual void load(Serializer& rSerializer)
+    {
+        std::string fespace_type;
+        rSerializer.load("FESpaceType", fespace_type);
+        std::cout << "Serialization - GridFunction " << " " << __FUNCTION__ << " FESpaceType: " << fespace_type << std::endl;
+        mpFESpace = FESpaceUtility<TDim, TLocalCoordinateType>::CreateEmptyFESpace(fespace_type);
+        rSerializer.load("FESpace", *mpFESpace);
+
+        std::string control_grid_type;
+        rSerializer.load("ControlGridType", control_grid_type);
+        mpControlGrid = ControlGridUtility::CreateEmptyControlGrid<TDim, TDataType>(control_grid_type);
+        rSerializer.load("ControlGrid", *mpControlGrid);
+
+        std::cout << "Serialization - GridFunction " << this->pControlGrid()->Name() << " " << __FUNCTION__ << " FESpaceType: " << fespace_type << std::endl;
+    }
+    ///@}
 
 };
 

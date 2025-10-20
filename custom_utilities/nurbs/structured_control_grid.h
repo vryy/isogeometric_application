@@ -155,6 +155,23 @@ public:
 private:
 
     DataContainerType mData;
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.save("Data", mData);
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.load("Data", mData);
+    }
+    ///@}
 };
 
 /**
@@ -339,7 +356,7 @@ public:
     }
 
     /// Overload assignment operator
-    StructuredControlGrid<1, TDataType>& operator=(const StructuredControlGrid<1, TDataType>& rOther)
+    StructuredControlGrid<0, TDataType>& operator=(const StructuredControlGrid<0, TDataType>& rOther)
     {
         BaseType::operator=(rOther);
         this->CopyFrom(rOther);
@@ -352,6 +369,17 @@ public:
         typename StructuredControlGrid<0, TDataType>::Pointer pNewControlGrid = typename StructuredControlGrid<0, TDataType>::Pointer(new StructuredControlGrid<0, TDataType>(1));
         *pNewControlGrid = *this;
         return pNewControlGrid;
+    }
+
+    std::string Type() const override
+    {
+        return StaticType();
+    }
+
+    /// Get the static type of the control grid
+    static std::string StaticType()
+    {
+        return "StructuredControlGrid0D";
     }
 
     /// Information
@@ -557,6 +585,17 @@ public:
         return pNewControlGrid;
     }
 
+    std::string Type() const override
+    {
+        return StaticType();
+    }
+
+    /// Get the static type of the control grid
+    static std::string StaticType()
+    {
+        return "StructuredControlGrid1D";
+    }
+
     /// Information
     void PrintInfo(std::ostream& rOStream) const override
     {
@@ -575,6 +614,23 @@ public:
 
 private:
     std::size_t mSize;
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.save("Size", mSize);
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.load("Size", mSize);
+    }
+    ///@}
 };
 
 template<typename TDataType>
@@ -860,6 +916,17 @@ public:
         return pNewControlGrid;
     }
 
+    std::string Type() const override
+    {
+        return StaticType();
+    }
+
+    /// Get the static type of the control grid
+    static std::string StaticType()
+    {
+        return "StructuredControlGrid2D";
+    }
+
     /// Information
     void PrintInfo(std::ostream& rOStream) const override
     {
@@ -885,6 +952,25 @@ public:
 
 private:
     std::size_t mSize[2];
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.save("Size1", mSize[0]);
+        rSerializer.save("Size2", mSize[1]);
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.load("Size1", mSize[0]);
+        rSerializer.load("Size2", mSize[1]);
+    }
+    ///@}
 };
 
 template<typename TDataType>
@@ -1205,8 +1291,40 @@ public:
         rOStream << " )" << std::endl;
     }
 
+    std::string Type() const override
+    {
+        return StaticType();
+    }
+
+    /// Get the static type of the control grid
+    static std::string StaticType()
+    {
+        return "StructuredControlGrid3D";
+    }
+
 private:
     std::size_t mSize[3];
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.save("Size1", mSize[0]);
+        rSerializer.save("Size2", mSize[1]);
+        rSerializer.save("Size3", mSize[2]);
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.load("Size1", mSize[0]);
+        rSerializer.load("Size2", mSize[1]);
+        rSerializer.load("Size3", mSize[2]);
+    }
+    ///@}
 };
 
 /// output stream function

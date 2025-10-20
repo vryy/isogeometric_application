@@ -15,6 +15,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/serializer.h"
 
 namespace Kratos
 {
@@ -149,6 +150,12 @@ public:
         KRATOS_ERROR << "Error calling base class function";
     }
 
+    /// Get the type of the control grid
+    virtual std::string Type() const
+    {
+        return "ControlGrid";
+    }
+
     /// Information
     virtual void PrintInfo(std::ostream& rOStream) const
     {
@@ -162,6 +169,23 @@ public:
 private:
 
     std::string mName;
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    virtual void save(Serializer& rSerializer) const
+    {
+        // std::cout << "Serialization - calling ControlGrid " << this->Type() << " " << __FUNCTION__ << std::endl;
+        rSerializer.save( "Name", mName );
+    }
+
+    virtual void load(Serializer& rSerializer)
+    {
+        // std::cout << "Serialization - calling ControlGrid " << this->Type() << " " << __FUNCTION__ << std::endl;
+        rSerializer.load( "Name", mName );
+    }
+    ///@}
 };
 
 /// output stream function

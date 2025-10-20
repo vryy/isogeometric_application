@@ -448,12 +448,14 @@ private:
 
     virtual void save(Serializer& rSerializer) const
     {
-//        rSerializer.save( "mGlobalToLocal", mGlobalToLocal ); // can't save std::map
+        std::cout << "Serialization - calling FESpace " << this->Type() << " " << __FUNCTION__ << std::endl;
+        rSerializer.save( "mGlobalToLocal", mGlobalToLocal );
     }
 
     virtual void load(Serializer& rSerializer)
     {
-//        rSerializer.load( "mGlobalToLocal", mGlobalToLocal );
+        std::cout << "Serialization - calling FESpace " << this->Type() << " " << __FUNCTION__ << std::endl;
+        rSerializer.load( "mGlobalToLocal", mGlobalToLocal );
     }
     ///@}
 };
@@ -481,6 +483,12 @@ public:
 
     /// Destructor
     virtual ~FESpace() {}
+
+    /// Helper to create new BSplinesFESpace pointer
+    static typename FESpaceType::Pointer Create()
+    {
+        return typename FESpaceType::Pointer(new FESpace());
+    }
 
     /// Get the number of basis functions defined over the FESpace
     virtual std::size_t TotalNumber() const

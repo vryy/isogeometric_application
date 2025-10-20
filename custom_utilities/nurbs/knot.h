@@ -17,6 +17,7 @@
 
 // Project includes
 #include "includes/define.h"
+#include "includes/serializer.h"
 
 namespace Kratos
 {
@@ -36,8 +37,17 @@ public:
     typedef Kratos::shared_ptr<const Knot> ConstPointer;
 #endif
 
+    /// Empty constructor
+    Knot() : mValue(0), mIndex(-1), mIsActive(true)
+    {}
+
     /// Default constructor
     Knot(const TDataType& Value) : mValue(Value), mIndex(-1), mIsActive(true)
+    {}
+
+    /// Copy constructor
+    Knot(const Knot<TDataType>& rOther)
+    : mValue(rOther.mValue), mIndex(rOther.mIndex), mIsActive(rOther.mIsActive)
     {}
 
     /// Get and Set for knot index
@@ -49,8 +59,8 @@ public:
     const TDataType& Value() const {return mValue;}
 
     /// Get and Set for mIsActive
-    const bool& IsActive() const {return mIsActive;}
-    void SetActive(const bool& IsActive) {mIsActive = IsActive;}
+    bool IsActive() const {return mIsActive;}
+    void SetActive(const bool IsActive) {mIsActive = IsActive;}
 
     /// Information
     void PrintInfo(std::ostream& rOStream) const
@@ -59,9 +69,31 @@ public:
     }
 
 private:
+
     std::size_t mIndex;
     TDataType mValue;
     bool mIsActive;
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const
+    {
+        std::cout << "Serialization - calling Knot " << __FUNCTION__ << std::endl;
+        rSerializer.save( "Index", mIndex );
+        rSerializer.save( "Value", mValue );
+        rSerializer.save( "IsActive", mIsActive );
+    }
+
+    void load(Serializer& rSerializer)
+    {
+        std::cout << "Serialization - calling Knot " << __FUNCTION__ << std::endl;
+        rSerializer.load( "Index", mIndex );
+        rSerializer.load( "Value", mValue );
+        rSerializer.load( "IsActive", mIsActive );
+    }
+    ///@}
 };
 
 /// output stream function

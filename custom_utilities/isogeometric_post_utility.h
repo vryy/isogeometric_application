@@ -31,7 +31,7 @@
 #define USE_TRIANGULATION_UTILS_FOR_TRIANGULATION
 
 #if defined(USE_TRIANGULATION_UTILS_FOR_TRIANGULATION)
-#include "custom_utilities/triangulation_utils.h"
+#include "utilities/triangulation_utils.h"
 #elif defined(USE_CGAL_FOR_TRIANGULATION) && defined(ISOGEOMETRIC_APPLICATION_USE_CGAL)
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>

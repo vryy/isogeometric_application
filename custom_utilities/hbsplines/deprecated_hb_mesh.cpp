@@ -1,13 +1,12 @@
 #include <fstream>
 #include <algorithm>
 
-#include "custom_utilities/hbsplines/deprecated_hb_mesh.h"
-
 #include "utilities/openmp_utils.h"
+#include "utilities/triangulation_utils.h"
+#include "custom_utilities/hbsplines/deprecated_hb_mesh.h"
 #include "custom_utilities/bspline_utils.h"
 #include "custom_utilities/bezier_utils.h"
 #include "custom_utilities/nurbs/bcell_manager.h"
-#include "custom_utilities/triangulation_utils.h"
 #include "custom_utilities/isogeometric_math_utils.h"
 #ifdef SD_APP_FORWARD_COMPATIBILITY
 #include "custom_utilities/spatial_containers/auto_collapse_spatial_binning.h"

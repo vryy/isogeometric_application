@@ -514,7 +514,6 @@ public:
 
         for (typename cell_container_t::iterator it_cell = pCellManager->begin(); it_cell != pCellManager->end(); ++it_cell)
         {
-            // KRATOS_WATCH(*(*it_cell))
             // get new nodes
             temp_element_nodes.clear();
 
@@ -544,19 +543,19 @@ public:
 
             // create the geometry
             p_temp_geometry = iga::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
-            if (p_temp_geometry == NULL)
+            if (p_temp_geometry == nullptr)
                 KRATOS_ERROR << "The cast to IsogeometricGeometry is failed.";
 
-                p_temp_geometry->AssignGeometryData(dummy,
-                                                    dummy,
-                                                    dummy,
-                                                    weights,
-                                                    // (*it_cell)->GetExtractionOperator(),
-                                                    (*it_cell)->GetCompressedExtractionOperator(),
-                                                    static_cast<int>(pFESpace->Order(0)),
-                                                    static_cast<int>(pFESpace->Order(1)),
-                                                    static_cast<int>(pFESpace->Order(2)),
-                                                    max_integration_method);
+            p_temp_geometry->AssignGeometryData(dummy,
+                                                dummy,
+                                                dummy,
+                                                weights,
+                                                // (*it_cell)->GetExtractionOperator(),
+                                                (*it_cell)->GetCompressedExtractionOperator(),
+                                                static_cast<int>(pFESpace->Order(0)),
+                                                static_cast<int>(pFESpace->Order(1)),
+                                                static_cast<int>(pFESpace->Order(2)),
+                                                max_integration_method);
 
             if (echo_level > 1)
             {

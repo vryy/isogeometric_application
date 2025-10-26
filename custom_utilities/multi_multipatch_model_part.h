@@ -538,6 +538,7 @@ private:
         {
             max_integration_method = (*p_temp_properties)[NUM_IGA_INTEGRATION_METHOD];
         }
+        typename IsogeometricGeometryType::Pointer p_temp_geometry;
 
         std::size_t ic = 0; // this is to mark the location of the iterator
         for (typename cell_container_t::iterator it_dummy = pCellManagers[0]->begin(); it_dummy != pCellManagers[0]->end(); ++it_dummy)
@@ -580,21 +581,20 @@ private:
                 }
 
                 // create the geometry
-                typename IsogeometricGeometryType::Pointer p_temp_geometry
-                    = iga::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
+                p_temp_geometry = iga::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
                 if (p_temp_geometry == NULL)
                     KRATOS_ERROR << "The cast to IsogeometricGeometry is failed.";
 
-                    p_temp_geometry->AssignGeometryData(dummy,
-                                                        dummy,
-                                                        dummy,
-                                                        weights,
-                                                        // pcell->GetExtractionOperator(),
-                                                        pcell->GetCompressedExtractionOperator(),
-                                                        static_cast<int>(pFESpaces[ip]->Order(0)),
-                                                        static_cast<int>(pFESpaces[ip]->Order(1)),
-                                                        static_cast<int>(pFESpaces[ip]->Order(2)),
-                                                        max_integration_method);
+                p_temp_geometry->AssignGeometryData(dummy,
+                                                    dummy,
+                                                    dummy,
+                                                    weights,
+                                                    // pcell->GetExtractionOperator(),
+                                                    pcell->GetCompressedExtractionOperator(),
+                                                    static_cast<int>(pFESpaces[ip]->Order(0)),
+                                                    static_cast<int>(pFESpaces[ip]->Order(1)),
+                                                    static_cast<int>(pFESpaces[ip]->Order(2)),
+                                                    max_integration_method);
 
                 p_temp_geometries.push_back(p_temp_geometry);
             }

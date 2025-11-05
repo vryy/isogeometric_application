@@ -144,6 +144,7 @@ void IsogeometricApplication_AddFESpacesToPython()
     .def("BoundaryFunctionIndicesByFlag", &FESpace_BoundaryFunctionIndicesByFlag<FESpaceType>)
     .def("BoundaryShiftedFunctionIndices", &FESpace_BoundaryShiftedFunctionIndices<FESpaceType>)
     .def("ConstructBoundaryFESpace", &FESpace_ConstructBoundaryFESpace<FESpaceType>)
+    .def("ConstructCellManager", &FESpaceType::ConstructCellManager)
     .def(self_ns::str(self))
     ;
 

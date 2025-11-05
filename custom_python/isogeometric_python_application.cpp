@@ -23,6 +23,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/add_tsplines_to_python.h"
 #include "custom_python/add_fespace_to_python.hpp"
 #include "custom_python/add_grid_functions_to_python.hpp"
+#include "custom_python/add_cell_container_to_python.h"
 #include "custom_python/add_patches_to_python.h"
 #include "custom_python/add_mesh_and_model_part_to_python.h"
 #include "custom_python/add_processes_to_python.h"
@@ -74,6 +75,7 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
     IsogeometricApplication_AddGridFunctionsToPython<1, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
     IsogeometricApplication_AddGridFunctionsToPython<2, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
     IsogeometricApplication_AddGridFunctionsToPython<3, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE>("Complex");
+    IsogeometricApplication_AddCellContainerToPython();
     IsogeometricApplication_AddPatchesToPython();
     IsogeometricApplication_AddNURBSToPython();
     IsogeometricApplication_AddPBBSplinesToPython();

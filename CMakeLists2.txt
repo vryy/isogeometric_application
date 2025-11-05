@@ -180,6 +180,11 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set_target_properties(KratosIsogeometricApplication PROPERTIES SUFFIX .pyd)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
+# changing the .dylib suffix to .so
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set_target_properties(KratosIsogeometricApplication PROPERTIES SUFFIX .so)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
 if(ISOGEOMETRIC_USE_BREP MATCHES ON)
     add_library(KratosIsogeometricBRepApplication SHARED ${KRATOS_ISOGEOMETRIC_BREP_APPLICATION_SOURCES})
     target_link_libraries(KratosIsogeometricBRepApplication PRIVATE KratosBRepApplication)
@@ -196,6 +201,11 @@ if(ISOGEOMETRIC_USE_BREP MATCHES ON)
     if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         set_target_properties(KratosIsogeometricBRepApplication PROPERTIES SUFFIX .pyd)
     endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+    # changing the .dylib suffix to .so
+    if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+        set_target_properties(KratosIsogeometricBRepApplication PROPERTIES SUFFIX .so)
+    endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 if(${INSTALL_PYTHON_FILES} MATCHES ON)

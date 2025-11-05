@@ -80,6 +80,7 @@ public:
     typedef TCellType CellType;
     typedef typename CellType::knot_t knot_t;
     typedef typename CellType::Pointer cell_t;
+    typedef typename CellType::IndexType IndexType;
     struct cell_compare
     {
         bool operator() (const cell_t& lhs, const cell_t& rhs) const {return lhs->Id() < rhs->Id();}
@@ -94,7 +95,7 @@ public:
     {}
 
     /// Destructor
-    virtual ~BaseBCellManager()
+    ~BaseBCellManager() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         this->PrintInfo(std::cout); std::cout << ", Addr = " << this << " is destroyed" << std::endl;
@@ -121,9 +122,9 @@ public:
 
     /// Iterators
     iterator begin() {return mpCells.begin();}
-    const_iterator begin() const {return mpCells.begin();}
     iterator end() {return mpCells.end();}
-    const_iterator end() const {return mpCells.end();}
+    const_iterator cbegin() const {return mpCells.begin();}
+    const_iterator cend() const {return mpCells.end();}
 
     /// Get the number of cells of this manager
     std::size_t size() const {return mpCells.size();}
@@ -223,12 +224,12 @@ public:
 //    }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "BaseBCellManager";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -237,7 +238,7 @@ protected:
     cell_container_t mpCells;
     mutable map_t mCellsMap; // map from cell id to the basis function. It's mainly used to search for the cell quickly. But it needs to be re-initialized whenever new cell is added to the set
     bool cell_map_is_created;
-    std::size_t mLastId;
+    IndexType mLastId;
 
 private:
 
@@ -312,7 +313,7 @@ public:
     {}
 
     /// Destructor
-    virtual ~BCellManager()
+    ~BCellManager() override
     {}
 
     /// Helper function to create new instance of cell manager
@@ -437,12 +438,12 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "BCellManager1D";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -476,7 +477,7 @@ public:
     {}
 
     /// Destructor
-    virtual ~BCellManager()
+    ~BCellManager() override
     {}
 
     /// Helper function to create new instance of cell manager
@@ -603,12 +604,12 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "BCellManager2D";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 
@@ -642,7 +643,7 @@ public:
     {}
 
     /// Destructor
-    virtual ~BCellManager()
+    ~BCellManager() override
     {}
 
     /// Helper function to create new instance of cell manager
@@ -771,12 +772,12 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "BCellManager3D";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
     }
 

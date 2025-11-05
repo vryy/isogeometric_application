@@ -35,9 +35,10 @@ public:
     /// Type definitions
     typedef boost::numeric::ublas::mapped_vector<double> SparseVectorType;
     // typedef boost::numeric::ublas::vector<double> SparseVectorType;
+    typedef std::size_t IndexType;
 
     /// Default constructor
-    Cell(std::size_t Id) : mId(Id)
+    Cell(IndexType Id) : mId(Id)
     {}
 
     /// Destructor
@@ -45,10 +46,10 @@ public:
     {}
 
     /// Get the Id
-    std::size_t Id() const {return mId;}
+    IndexType Id() const {return mId;}
 
     /// Get the level of this cell
-    virtual std::size_t Level() const
+    virtual IndexType Level() const
     {
         return 1;
     }
@@ -62,7 +63,7 @@ public:
     }
 
     /// Add supported anchor and the respective extraction operator of this cell to the anchor
-    void AddAnchor(std::size_t Id, double W, const Vector& Crow)
+    void AddAnchor(IndexType Id, double W, const Vector& Crow)
     {
         mSupportedAnchors.push_back(Id);
         mAnchorWeights.push_back(W);
@@ -104,7 +105,7 @@ public:
     std::size_t NumberOfAnchors() const {return mSupportedAnchors.size();}
 
     /// Get the supported anchors of this cell
-    const std::vector<std::size_t>& GetSupportedAnchors() const {return mSupportedAnchors;}
+    const std::vector<IndexType>& GetSupportedAnchors() const {return mSupportedAnchors;}
 
     /// Get the weights of all the supported anchors
     const std::vector<double>& GetAnchorWeights() const {return mAnchorWeights;}
@@ -185,7 +186,7 @@ public:
     {
         rOStream << ", supporting anchors: ";
         rOStream << "(";
-        for (std::vector<std::size_t>::const_iterator it = mSupportedAnchors.begin(); it != mSupportedAnchors.end(); ++it)
+        for (auto it = mSupportedAnchors.begin(); it != mSupportedAnchors.end(); ++it)
         {
             rOStream << " " << (*it);
         }

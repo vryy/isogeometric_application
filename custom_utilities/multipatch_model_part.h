@@ -512,7 +512,7 @@ public:
             max_integration_method = (*p_temp_properties)[NUM_IGA_INTEGRATION_METHOD];
         }
 
-        for (typename cell_container_t::iterator it_cell = pCellManager->begin(); it_cell != pCellManager->end(); ++it_cell)
+        for (auto it_cell = pCellManager->cbegin(); it_cell != pCellManager->cend(); ++it_cell)
         {
             // get new nodes
             temp_element_nodes.clear();

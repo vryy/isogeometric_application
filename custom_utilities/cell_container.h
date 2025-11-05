@@ -9,14 +9,10 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_CELL_CONTAINER_H_INCLUDED
 
 // System includes
-#include <string>
-#include <vector>
 #include <set>
-#include <map>
 #include <iostream>
 
 // External includes
-#include <omp.h>
 
 // Project includes
 #include "includes/define.h"
@@ -26,7 +22,10 @@ namespace Kratos
 {
 
 /**
- * CellContainer provides general container to stores Cell's. It provides the iterator interface and the methods to insert or remove cells.
+ * CellContainer provides general container to stores Cell's. It provides the iterator interface to iterator through cell.
+ * However, the CellContainer cannot modify itself from outside. The reason for that is the CellContainer is the base for
+ * all kind of cell container with any kind of cell, to avoid lock in a specific type of cell via template. It shall only
+ * be modified from the subclass.
  */
 class CellContainer
 {
@@ -57,42 +56,35 @@ public:
 #endif
     }
 
-    /// Insert a cell to the container.
-    void insert(cell_t p_cell)
-    {
-        mpCells.insert(p_cell);
-    }
-
     /// Iterators
-    iterator begin() {return mpCells.begin();}
-    const_iterator begin() const {return mpCells.begin();}
-    iterator end() {return mpCells.end();}
-    const_iterator end() const {return mpCells.end();}
+    const_iterator cbegin() const {return mpCells.begin();}
+    const_iterator cend() const {return mpCells.end();}
 
     /// Get the number of cells of this container
     std::size_t size() const {return mpCells.size();}
 
-    /// Remove a cell from the container
-    void erase(cell_t p_cell)
-    {
-        mpCells.erase(p_cell);
-    }
-
     /// Overload comparison operator
-    bool operator==(const CellContainer& rOther)
+    bool operator==(const CellContainer& rOther) const
     {
+        // check size
         if (this->size() != rOther.size())
         {
             return false;
         }
 
-        // TODO check more
+        // check specific ids
+        const_iterator it1, it2;
+        for (it1 = this->cbegin(), it2 = rOther.cbegin(); it1 != this->cend(); ++it1, ++it2)
+        {
+            if ((*it1)->Id() != (*it2)->Id())
+                return false;
+        }
 
         return true;
     }
 
     /// Overload comparison operator
-    bool operator!=(const CellContainer& rOther)
+    bool operator!=(const CellContainer& rOther) const
     {
         return !(*this == rOther);
     }
@@ -105,6 +97,23 @@ public:
 
     virtual void PrintData(std::ostream& rOStream) const
     {
+    }
+
+protected:
+
+    iterator begin() {return mpCells.begin();}
+    iterator end() {return mpCells.end();}
+
+    /// Insert a cell to the container.
+    void insert(cell_t p_cell)
+    {
+        mpCells.insert(p_cell);
+    }
+
+    /// Remove a cell from the container
+    void erase(cell_t p_cell)
+    {
+        mpCells.erase(p_cell);
     }
 
 private:
@@ -121,6 +130,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const CellContainer& rT
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_CONTAINER_H_INCLUDED

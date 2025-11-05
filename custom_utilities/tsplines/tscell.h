@@ -49,19 +49,20 @@ public:
     typedef Cell BaseType;
     typedef double knot_t;
     typedef std::vector<knot_t> knot_container_t;
+    typedef BaseType::IndexType IndexType;
 
     /// Constructor with knots
-    TsCell(const std::size_t Id, knot_t XiMin, knot_t XiMax)
+    TsCell(const IndexType Id, knot_t XiMin, knot_t XiMax)
     : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(0.0), mEtaMin(0.0), mZetaMax(0.0), mZetaMin(0.0)
     {}
 
     /// Constructor with knots
-    TsCell(const std::size_t Id, knot_t XiMin, knot_t XiMax, knot_t EtaMin, knot_t EtaMax)
+    TsCell(const IndexType Id, knot_t XiMin, knot_t XiMax, knot_t EtaMin, knot_t EtaMax)
     : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(EtaMax), mEtaMin(EtaMin), mZetaMax(0.0), mZetaMin(0.0)
     {}
 
     /// Constructor with knots
-    TsCell(const std::size_t Id, knot_t XiMin, knot_t XiMax, knot_t EtaMin, knot_t EtaMax, knot_t ZetaMin, knot_t ZetaMax)
+    TsCell(const IndexType Id, knot_t XiMin, knot_t XiMax, knot_t EtaMin, knot_t EtaMax, knot_t ZetaMin, knot_t ZetaMax)
     : BaseType(Id), mXiMin(XiMin), mXiMax(XiMax), mEtaMax(EtaMax), mEtaMin(EtaMin), mZetaMax(ZetaMax), mZetaMin(ZetaMin)
     {}
 
@@ -69,7 +70,7 @@ public:
     ~TsCell() override {}
 
     /// Get the level of this cell
-    std::size_t Level() const override
+    IndexType Level() const override
     {
         return 1;
     }

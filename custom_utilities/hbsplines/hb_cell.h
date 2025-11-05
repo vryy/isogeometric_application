@@ -44,6 +44,7 @@ public:
     typedef Knot<double>::Pointer knot_t;
 
     typedef BCell BaseType;
+    typedef typename BaseType::IndexType IndexType;
 
     /*    typedef typename TBasisFuncType::Pointer bf_t;*/
     /*    typedef typename TBasisFuncType::WeakPointer bf_wt;*/
@@ -55,22 +56,22 @@ public:
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
     /// Constructor for 1D
-    HBCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax)
+    HBCell(IndexType Id, knot_t pXiMin, knot_t pXiMax)
         : BaseType(Id, pXiMin, pXiMax)
     {}
 
     /// Constructor for 2D
-    HBCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
+    HBCell(IndexType Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
         : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax)
     {}
 
     /// Constructor for 3D
-    HBCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
+    HBCell(IndexType Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
         : BaseType(Id, pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax)
     {}
 
     /// Destructor
-    virtual ~HBCell()
+    ~HBCell() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
         std::cout << "hbcell "; this->PrintInfo(std::cout); std::cout << " is destroyed" << std::endl;
@@ -78,10 +79,10 @@ public:
     }
 
     /// Set the level for this cell
-    void SetLevel(std::size_t Level) {mLevel = Level;}
+    void SetLevel(IndexType Level) {mLevel = Level;}
 
     /// Get the level of this cell
-    virtual std::size_t Level() const {return mLevel;}
+    IndexType Level() const override {return mLevel;}
 
     /// Add the basis function to the set. If it does exist in the set, return the internal one.
     /// Typically one shall add the basis function that has support domain covering this cell.
@@ -151,12 +152,12 @@ public:
     std::size_t size() const {return mpBasisFuncs.size();}
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         BaseType::PrintInfo(rOStream);
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         rOStream << ", supporting basis functions: (";
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)

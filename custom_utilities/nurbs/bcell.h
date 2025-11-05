@@ -50,27 +50,28 @@ public:
     typedef KnotArray1D<double> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
     typedef typename knot_container_t::KnotType KnotType;
+    typedef BaseType::IndexType IndexType;
 
     /// Constructor with knots
-    BCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax)
+    BCell(IndexType Id, knot_t pXiMin, knot_t pXiMax)
         : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(new KnotType(0.0)), mpEtaMin(new KnotType(0.0)), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
-    BCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
+    BCell(IndexType Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax)
         : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(new KnotType(0.0)), mpZetaMin(new KnotType(0.0))
     {}
 
     /// Constructor with knots
-    BCell(std::size_t Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
+    BCell(IndexType Id, knot_t pXiMin, knot_t pXiMax, knot_t pEtaMin, knot_t pEtaMax, knot_t pZetaMin, knot_t pZetaMax)
         : BaseType(Id), mpXiMin(pXiMin), mpXiMax(pXiMax), mpEtaMax(pEtaMax), mpEtaMin(pEtaMin), mpZetaMax(pZetaMax), mpZetaMin(pZetaMin)
     {}
 
     /// Destructor
-    virtual ~BCell() {}
+    ~BCell() override {}
 
     /// Get the level of this cell
-    virtual std::size_t Level() const {return 1;}
+    IndexType Level() const override {return 1;}
 
     /// Get the coordinates
     knot_t XiMin() const {return mpXiMin;}
@@ -207,13 +208,13 @@ public:
     }
 
     /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "{Id:" << Id() << ",range:([" << XiMinIndex() << " " << XiMaxIndex() << "];[" << EtaMinIndex() << " " << EtaMaxIndex() << "];[" << ZetaMinIndex() << " " << ZetaMaxIndex() << "])";
         rOStream << "<=>([" << XiMinValue() << " " << XiMaxValue() << "];[" << EtaMinValue() << " " << EtaMaxValue() << "];[" << ZetaMinValue() << " " << ZetaMaxValue() << "])}";
     }
 
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
     }

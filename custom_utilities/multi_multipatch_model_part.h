@@ -541,14 +541,14 @@ private:
         typename IsogeometricGeometryType::Pointer p_temp_geometry;
 
         std::size_t ic = 0; // this is to mark the location of the iterator
-        for (typename cell_container_t::iterator it_dummy = pCellManagers[0]->begin(); it_dummy != pCellManagers[0]->end(); ++it_dummy)
+        for (auto it_dummy = pCellManagers[0]->cbegin(); it_dummy != pCellManagers[0]->cend(); ++it_dummy)
         {
             std::vector<typename ElementType::GeometryType::Pointer> p_temp_geometries;
 
             // fill the vector of geometries
             for (std::size_t ip = 0; ip < pFESpaces.size(); ++ip)
             {
-                typename cell_container_t::iterator it_cell = pCellManagers[ip]->begin();
+                typename cell_container_t::const_iterator it_cell = pCellManagers[ip]->cbegin();
                 std::advance(it_cell, ic);
                 typename cell_container_t::cell_t pcell = *it_cell;
                 // KRATOS_WATCH(*pcell)

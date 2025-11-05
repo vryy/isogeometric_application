@@ -52,7 +52,7 @@ public:
     MultiNURBSPatchMatlabExporterWriter() : BaseType() {}
 
     /// Destructor
-    virtual ~MultiNURBSPatchMatlabExporterWriter() {}
+    ~MultiNURBSPatchMatlabExporterWriter() override {}
 
     /// Export a single patch
     void Export(typename Patch<TDim>::Pointer pPatch, std::ostream& rOStream) const override

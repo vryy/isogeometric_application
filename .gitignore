@@ -10,3 +10,4 @@ doc
 */bak2/*
 *.zip
 test_examples/*.m
+examples/**/*.m

@@ -130,8 +130,10 @@ public:
     {
         this->Set(ACTIVE, true);
         if (mpFESpace == nullptr)
+        {
             KRATOS_ERROR << "Invalid FESpace is provided";
         }
+    }
 
     /// Destructor
     ~Patch() override

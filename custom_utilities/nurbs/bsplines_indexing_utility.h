@@ -68,7 +68,7 @@ struct BSplinesIndexingUtility_Helper
 template<int TDim, class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Reverse_Helper
 {
-    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
+    static void Execute(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         return;
     }
@@ -77,7 +77,7 @@ struct BSplinesIndexingUtility_Reverse_Helper
 template<int TDim, class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Transpose_Helper
 {
-    static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
+    static void Execute(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
     {
         return;
     }
@@ -120,7 +120,7 @@ public:
     template<int TDim, class TContainerType, class TIndexContainerType>
     static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
-        BSplinesIndexingUtility_Reverse_Helper<TDim, TContainerType, TIndexContainerType>::Reverse(values, sizes, idir);
+        BSplinesIndexingUtility_Reverse_Helper<TDim, TContainerType, TIndexContainerType>::Execute(values, sizes, idir);
     }
 
     /// Transform the indices with parameter mapping for 2D surface patch
@@ -132,7 +132,7 @@ public:
     template<int TDim, class TContainerType, class TIndexContainerType>
     static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
     {
-        BSplinesIndexingUtility_Transpose_Helper<TDim, TContainerType, TIndexContainerType>::Transpose(values, sizes, idir, jdir);
+        BSplinesIndexingUtility_Transpose_Helper<TDim, TContainerType, TIndexContainerType>::Execute(values, sizes, idir, jdir);
     }
 
     /// Information
@@ -158,7 +158,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BSplinesIndexingU
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Reverse_Helper<1, TContainerType, TIndexContainerType>
 {
-    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
+    static void Execute(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         if (idir == 0)
         {
@@ -172,7 +172,7 @@ struct BSplinesIndexingUtility_Reverse_Helper<1, TContainerType, TIndexContainer
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Reverse_Helper<2, TContainerType, TIndexContainerType>
 {
-    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
+    static void Execute(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         if (idir == 0)
         {
@@ -213,7 +213,7 @@ struct BSplinesIndexingUtility_Reverse_Helper<2, TContainerType, TIndexContainer
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainerType>
 {
-    static void Reverse(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
+    static void Execute(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir)
     {
         if (idir == 0)
         {
@@ -287,7 +287,7 @@ struct BSplinesIndexingUtility_Reverse_Helper<3, TContainerType, TIndexContainer
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Transpose_Helper<1, TContainerType, TIndexContainerType>
 {
-    static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
+    static void Execute(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
     {
         KRATOS_ERROR << "Transpose is not relevant for 1D";
     }
@@ -296,7 +296,7 @@ struct BSplinesIndexingUtility_Transpose_Helper<1, TContainerType, TIndexContain
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Transpose_Helper<2, TContainerType, TIndexContainerType>
 {
-    static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
+    static void Execute(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
     {
         if (idir == jdir)
             return; // DO NOTHING
@@ -333,7 +333,7 @@ struct BSplinesIndexingUtility_Transpose_Helper<2, TContainerType, TIndexContain
 template<class TContainerType, class TIndexContainerType>
 struct BSplinesIndexingUtility_Transpose_Helper<3, TContainerType, TIndexContainerType>
 {
-    static void Transpose(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
+    static void Execute(TContainerType& values, const TIndexContainerType& sizes, std::size_t idir, std::size_t jdir)
     {
         if (idir == jdir)
             return; // DO NOTHING

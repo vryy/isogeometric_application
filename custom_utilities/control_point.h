@@ -255,6 +255,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const ControlPoint<TDat
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CONTROL_POINT_H_INCLUDED

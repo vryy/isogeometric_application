@@ -40,6 +40,11 @@ public:
     /// Constructor with name
     UnstructuredControlGrid(const std::string& Name, std::size_t size) : BaseType(Name) {mData.resize(size);}
 
+    // Copy constructor
+    UnstructuredControlGrid(const UnstructuredControlGrid& rOther)
+    : BaseType(rOther), mData(rOther.mData)
+    {}
+
     /// Destructor
     virtual ~UnstructuredControlGrid() {}
 
@@ -54,9 +59,7 @@ public:
     {
         UnstructuredControlGrid::Pointer pNewControlGrid = Create(size());
         for (std::size_t i = 0; i < size(); ++i)
-        {
             pNewControlGrid->SetData(i, GetData(i));
-        }
         return pNewControlGrid;
     }
 
@@ -81,6 +84,13 @@ public:
 
     /// overload operator []
     const TDataType& operator[] (std::size_t i) const override {return mData[i];}
+
+    /// Overload assignment operator
+    UnstructuredControlGrid& operator=(const UnstructuredControlGrid& rOther)
+    {
+        this->mData = rOther.mData;
+        return *this;
+    }
 
     /// Information
     void PrintInfo(std::ostream& rOStream) const override

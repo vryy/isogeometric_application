@@ -398,6 +398,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
     .def("WorkingSpaceDimension", &PatchType::WorkingSpaceDimension)
     .def("Name", &PatchType::Name)
     .def("Create", &Patch_Create<PatchType>)
+    .def("Clone", &PatchType::Clone)
     .def("CreateControlPointGridFunction", &PatchType::CreateControlPointGridFunction)
     .def("CreateGridFunction", &Patch_CreateGridFunction<PatchType, TDataType>)
     .def("CreateGridFunction", &Patch_CreateGridFunction<PatchType, array_1d<TDataType, 3> >)
@@ -478,6 +479,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
     .def("IsEnumerated", &MultiPatchType::IsEnumerated)
     .def("LocalCoordinates", &Patch_LocalCoordinates<MultiPatchType>)
     .def("Validate", &MultiPatchType::Validate)
+    .def("Clone", &MultiPatchType::Clone)
     .def(self_ns::str(self))
     ;
 }

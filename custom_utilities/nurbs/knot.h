@@ -46,9 +46,17 @@ public:
     {}
 
     /// Copy constructor
-    Knot(const Knot<TDataType>& rOther)
+    template<typename TOtherDataType>
+    Knot(const Knot<TOtherDataType>& rOther)
     : mValue(rOther.mValue), mIndex(rOther.mIndex), mIsActive(rOther.mIsActive)
     {}
+
+    /// Clone this knot
+    Knot::Pointer Clone() const
+    {
+        Knot::Pointer pKnot = Knot::Pointer(new Knot(*this));
+        return pKnot;
+    }
 
     /// Get and Set for knot index
     std::size_t Index() const {return mIndex;}
@@ -61,6 +69,16 @@ public:
     /// Get and Set for mIsActive
     bool IsActive() const {return mIsActive;}
     void SetActive(const bool IsActive) {mIsActive = IsActive;}
+
+    /// Overload operator assignment
+    template<typename TOtherDataType>
+    Knot& operator=(const Knot<TOtherDataType>& rOther)
+    {
+        this->mValue = rOther.mValue;
+        this->mIndex = rOther.mIndex;
+        this->mIsActive = rOther.mIsActive;
+        return *this;
+    }
 
     /// Information
     void PrintInfo(std::ostream& rOStream) const

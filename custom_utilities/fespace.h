@@ -46,6 +46,11 @@ public:
     /// Default constructor
     FESpace() {}
 
+    /// Copy constructor
+    FESpace(const FESpace& rOther)
+    : mGlobalToLocal(rOther.mGlobalToLocal)
+    {}
+
     /// Destructor
     virtual ~FESpace()
     {

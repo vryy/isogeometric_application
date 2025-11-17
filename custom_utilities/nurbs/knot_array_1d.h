@@ -51,6 +51,16 @@ public:
     /// Default constructor
     KnotArray1D() {}
 
+    /// Copy constructor
+    KnotArray1D(const KnotArray1D& rOther)
+    {
+        for (auto it = rOther.mpKnots.begin(); it != rOther.mpKnots.end(); ++it)
+        {
+            knot_t p_knot = (*it)->Clone();
+            this->mpKnots.push_back(p_knot);
+        }
+    }
+
     /// Destructor
     virtual ~KnotArray1D() {}
 
@@ -481,7 +491,11 @@ public:
     // overload assignment operator
     KnotArray1D& operator=(const KnotArray1D& rOther)
     {
-        this->mpKnots = rOther.mpKnots;
+        for (auto it = rOther.mpKnots.begin(); it != rOther.mpKnots.end(); ++it)
+        {
+            knot_t p_knot = (*it)->Clone();
+            this->mpKnots.push_back(p_knot);
+        }
         return *this;
     }
 

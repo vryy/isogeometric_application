@@ -41,6 +41,9 @@ public:
     /// Constructor with full coordinates
     ControlValue(const TDataType& wv, const TWeightType& w) : mWV(wv), mW(w) {}
 
+    // Copy constructor
+    ControlValue(const ControlValue& rOther) : mWV(rOther.mWV), mW(rOther.mW) {}
+
     /// Destructor
     virtual ~ControlValue() {}
 

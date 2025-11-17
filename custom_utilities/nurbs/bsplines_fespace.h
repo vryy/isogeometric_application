@@ -82,6 +82,17 @@ public:
     /// Default constructor
     BSplinesFESpace() : BaseType() {}
 
+    /// Copy constructor
+    BSplinesFESpace(const BSplinesFESpace& rOther) : BaseType(rOther)
+    {
+        for (std::size_t dim = 0; dim < TDim; ++dim)
+        {
+            this->SetKnotVector(dim, rOther.KnotVector(dim));
+            this->SetInfo(dim, rOther.Number(dim), rOther.Order(dim));
+        }
+        this->mFunctionsIds = rOther.mFunctionsIds;
+    }
+
     /// Destructor
     ~BSplinesFESpace() override
     {

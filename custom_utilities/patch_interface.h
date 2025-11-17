@@ -60,10 +60,18 @@ public:
 #endif
     }
 
-    /// Create a clone of this interface
-    virtual typename PatchInterfaceType::Pointer Clone() const
+    /// Create the patch interface between two patches using the current configuration
+    /// of this interface
+    virtual typename PatchInterfaceType::Pointer Create(typename PatchType::Pointer pPatch1,
+            typename PatchType::Pointer pPatch2) const
     {
-        return typename PatchInterfaceType::Pointer(new PatchInterfaceType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2()));
+        return typename PatchInterfaceType::Pointer(new PatchInterfaceType(pPatch1, this->Side1(), pPatch2, this->Side2()));
+    }
+
+    /// Create a clone of this interface
+    typename PatchInterfaceType::Pointer Clone() const
+    {
+        return Create(this->pPatch1(), this->pPatch2());
     }
 
     /// Get/Set the other half interface

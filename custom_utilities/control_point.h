@@ -59,6 +59,9 @@ public:
         BaseType::W() = w;
     }
 
+    /// Copy constructor
+    ControlPoint(const ControlPoint& rOther) : BaseType(rOther) {}
+
     /// Destructor
     ~ControlPoint() override {}
 

@@ -135,6 +135,47 @@ public:
         }
     }
 
+    /// Copy constructor
+    Patch(const Patch& rOther)
+    : IndexedObject(rOther), Flags(rOther)
+    , mPrefix(rOther.mPrefix), mLayerIndex(rOther.mLayerIndex)
+    , mLocalSearchMaxIters(rOther.mLocalSearchMaxIters)
+    , mLocalSearchTolerance(rOther.mLocalSearchTolerance)
+    {
+        /* clone the FESpace */
+        this->mpFESpace = rOther.pFESpace()->Clone();
+
+        /* clone the grid functions */
+
+        this->CreateControlPointGridFunction(rOther.ControlPointGridFunction().pControlGrid()->Clone());
+
+        DoubleGridFunctionContainerType DoubleGridFunctions_ = rOther.DoubleGridFunctions();
+        for (std::size_t i = 0; i < DoubleGridFunctions_.size(); ++i)
+        {
+            auto pNewControlGrid = DoubleGridFunctions_[i]->pControlGrid()->Clone();
+            this->CreateGridFunction<TDataType>(pNewControlGrid);
+        }
+
+        Array1DGridFunctionContainerType Array1DGridFunctions_ = rOther.Array1DGridFunctions();
+        for (std::size_t i = 0; i < Array1DGridFunctions_.size(); ++i)
+        {
+            if (Array1DGridFunctions_[i]->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES")
+                continue;   // skip since this grid function is created along with the control point
+            auto pNewControlGrid = Array1DGridFunctions_[i]->pControlGrid()->Clone();
+            this->CreateGridFunction<array_1d<TDataType, 3> >(pNewControlGrid);
+        }
+
+        VectorGridFunctionContainerType VectorGridFunctions_ = rOther.VectorGridFunctions();
+        for (std::size_t i = 0; i < VectorGridFunctions_.size(); ++i)
+        {
+            auto pNewControlGrid = VectorGridFunctions_[i]->pControlGrid()->Clone();
+            this->CreateGridFunction<VectorType>(pNewControlGrid);
+        }
+
+        // we can't clone the interfaces and the parent multipatch since they are nonlocal.
+        // It should be handled in the Clone function of MultiPatch
+    }
+
     /// Destructor
     ~Patch() override
     {
@@ -149,6 +190,12 @@ public:
     static typename PatchType::Pointer Create(std::size_t Id, typename FESpaceType::Pointer pFESpace)
     {
         return typename PatchType::Pointer(new PatchType(Id, pFESpace));
+    }
+
+    Patch::Pointer Clone() const
+    {
+        Patch::Pointer pNewPatch = Patch::Pointer(new Patch(*this));
+        return pNewPatch;
     }
 
     /// Get the working space dimension of the patch

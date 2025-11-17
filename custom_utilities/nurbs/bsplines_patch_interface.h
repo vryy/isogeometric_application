@@ -54,10 +54,12 @@ public:
     {
     }
 
-    /// Create a clone of this interface
-    typename BaseType::Pointer Clone() const override
+    /// Create the patch interface between two patches using the current configuration
+    /// of this interface
+    typename BaseType::Pointer Create(typename PatchType::Pointer pPatch1,
+            typename PatchType::Pointer pPatch2) const override
     {
-        return typename BaseType::Pointer(new ThisType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2()));
+        return typename BaseType::Pointer(new ThisType(pPatch1, this->Side1(), pPatch2, this->Side2()));
     }
 
     /// Get the local parameter space mapping
@@ -142,10 +144,12 @@ public:
 #endif
     }
 
-    /// Create a clone of this interface
-    typename BaseType::Pointer Clone() const override
+    /// Create the patch interface between two patches using the current configuration
+    /// of this interface
+    typename BaseType::Pointer Create(typename PatchType::Pointer pPatch1,
+            typename PatchType::Pointer pPatch2) const override
     {
-        return typename BaseType::Pointer(new ThisType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), this->Direction()));
+        return typename BaseType::Pointer(new ThisType(pPatch1, this->Side1(), pPatch2, this->Side2(), this->Direction()));
     }
 
     /// Get the local parameter space mapping
@@ -295,17 +299,19 @@ public:
 #endif
     }
 
-    /// Create a clone of this interface
-    typename BaseType::Pointer Clone() const override
+    /// Create the patch interface between two patches using the current configuration
+    /// of this interface
+    typename BaseType::Pointer Create(typename PatchType::Pointer pPatch1,
+            typename PatchType::Pointer pPatch2) const override
     {
         const bool uv_or_vu = (this->LocalParameterMapping(0) == 0);
         if (uv_or_vu)
         {
-            return typename BaseType::Pointer(new ThisType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), true, this->Direction(0), this->Direction(1)));
+            return typename BaseType::Pointer(new ThisType(pPatch1, this->Side1(), pPatch2, this->Side2(), true, this->Direction(0), this->Direction(1)));
         }
         else
         {
-            return typename BaseType::Pointer(new ThisType(this->pPatch1(), this->Side1(), this->pPatch2(), this->Side2(), false, this->Direction(0), this->Direction(1)));
+            return typename BaseType::Pointer(new ThisType(pPatch1, this->Side1(), pPatch2, this->Side2(), false, this->Direction(0), this->Direction(1)));
         }
     }
 

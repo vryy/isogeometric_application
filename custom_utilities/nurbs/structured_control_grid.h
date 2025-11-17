@@ -42,6 +42,11 @@ public:
     /// Constructor with name
     BaseStructuredControlGrid(const std::string& Name) : BaseType(Name) {}
 
+    /// Copy constructor
+    BaseStructuredControlGrid(const BaseStructuredControlGrid& rOther)
+    : BaseType(rOther), mData(rOther.mData)
+    {}
+
     /// Destructor
     ~BaseStructuredControlGrid() override {}
 
@@ -428,6 +433,11 @@ public:
         std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
     }
 
+    /// Copy constructor
+    StructuredControlGrid(const StructuredControlGrid& rOther)
+    : BaseType(rOther), mSize(rOther.mSize)
+    {}
+
     /// Destructor
     ~StructuredControlGrid() override {}
 
@@ -660,6 +670,14 @@ public:
     {
         BaseType::Data().resize(m * n);
         std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
+    }
+
+    /// Copy constructor
+    StructuredControlGrid(const StructuredControlGrid& rOther)
+    : BaseType(rOther)
+    {
+        mSize[0] = rOther.mSize[0];
+        mSize[1] = rOther.mSize[1];
     }
 
     /// Destructor
@@ -1000,6 +1018,15 @@ public:
     {
         BaseType::Data().resize(m * n * p);
         std::fill(BaseType::Data().begin(), BaseType::Data().end(), TDataType());
+    }
+
+    /// Copy constructor
+    StructuredControlGrid(const StructuredControlGrid& rOther)
+    : BaseType(rOther)
+    {
+        mSize[0] = rOther.mSize[0];
+        mSize[1] = rOther.mSize[1];
+        mSize[2] = rOther.mSize[2];
     }
 
     /// Destructor

@@ -43,6 +43,9 @@ public:
     /// Constructor with name
     ControlGrid(const std::string& Name) : mName(Name) {}
 
+    // Copy constructor
+    ControlGrid(const ControlGrid& rOther) : mName(rOther.mName) {}
+
     /// Destructor
     virtual ~ControlGrid() {}
 

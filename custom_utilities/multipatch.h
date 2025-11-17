@@ -59,8 +59,22 @@ public:
     /// Default constructor
     MultiPatch() : mEquationSystemSize(0), mpPatches() {}
 
+    /// The copy constructor does not make sense for MultiPatch because during adding patches,
+    /// a shared_ptr to this patch is needed, which is not yet available. This will lead to
+    /// the error RuntimeError: tr1::bad_weak_ptr.
+    /// Therefore, the copy constructor is disabled completely.
+    MultiPatch(const MultiPatch& rOther) = delete;
+
     /// Destructor
     virtual ~MultiPatch() {}
+
+    /// Clone the multipatch
+    MultiPatch::Pointer Clone() const
+    {
+        MultiPatch::Pointer pNewMultiPatch = MultiPatch::Pointer(new MultiPatch());
+        *pNewMultiPatch = *this;
+        return pNewMultiPatch;
+    }
 
     /// Add the patch
     void AddPatch(typename PatchType::Pointer pPatch)
@@ -375,6 +389,47 @@ public:
         }
 
         return -1;
+    }
+
+    /// Overload assignment operator
+    MultiPatch& operator=(const MultiPatch& rOther)
+    {
+        this->mEquationSystemSize = rOther.mEquationSystemSize;
+        this->mGlobalIdToPatchId = rOther.mGlobalIdToPatchId;
+
+        /* clone the patches */
+        for (patch_const_iterator itp = rOther.begin(); itp != rOther.end(); ++itp)
+        {
+            this->AddPatch(itp->Clone());
+        }
+
+        /* clone the interfaces */
+        for (patch_const_iterator itp = rOther.begin(); itp != rOther.end(); ++itp)
+        {
+            typename PatchType::Pointer pNewPatch = this->pGetPatch(itp->Id());
+
+            for (interface_const_iterator iti = itp->InterfaceBegin(); iti != itp->InterfaceEnd(); ++iti)
+            {
+                typename PatchType::Pointer pOldNeighborPatch = (*iti)->pPatch2();
+                typename PatchType::Pointer pNewNeighborPatch = this->pGetPatch(pOldNeighborPatch->Id());
+
+                auto pNewInterface = (*iti)->Create(pNewPatch, pNewNeighborPatch);
+                pNewPatch->AddInterface(pNewInterface);
+
+                // search and assign the other interface
+                for (interface_const_iterator iti2 = pNewNeighborPatch->InterfaceBegin(); iti2 != pNewNeighborPatch->InterfaceEnd(); ++iti2)
+                {
+                    if ((*iti2)->Side1() == pNewInterface->Side2()
+                     && (*iti2)->pPatch1()->Id() == pNewInterface->pPatch2()->Id())
+                    {
+                        pNewInterface->SetOtherInterface(*iti2);
+                        (*iti2)->SetOtherInterface(pNewInterface);
+                    }
+                }
+            }
+        }
+
+        return *this;
     }
 
     /// Information

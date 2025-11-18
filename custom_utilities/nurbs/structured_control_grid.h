@@ -754,7 +754,7 @@ public:
     /// Copy the data the other grid
     virtual void CopyFrom(const StructuredControlGrid<2, TDataType>& rOther)
     {
-        if ( ( rOther.Size(0) != this->Size(1) ) || ( rOther.Size(1) != this->Size(1) ) )
+        if ( ( rOther.Size(0) != this->Size(0) ) || ( rOther.Size(1) != this->Size(1) ) )
         {
             KRATOS_ERROR << "The size of the grid is incompatible";
         }

@@ -71,6 +71,12 @@ bool FESpace_IsInside(TFESpaceType& rDummy, const boost::python::list& xi_list)
 }
 
 template<class TFESpaceType>
+std::size_t FESpace_LocalId(TFESpaceType& rDummy, std::size_t global_id)
+{
+    return rDummy.LocalId(global_id);
+}
+
+template<class TFESpaceType>
 boost::python::list FESpace_FunctionIndices(TFESpaceType& rDummy)
 {
     boost::python::list indices;
@@ -134,6 +140,7 @@ void IsogeometricApplication_AddFESpacesToPython()
     (ss.str().c_str(), init<>())
     .def("Order", &FESpaceType::Order)
     .def("TotalNumber", &FESpaceType::TotalNumber)
+    .def("LocalId", &FESpace_LocalId<FESpaceType>)
     .def("GetValue", &FESpace_GetValue<FESpaceType>)
     .def("IsInside", &FESpace_IsInside<FESpaceType>)
     .def("ResetFunctionIndices", &FESpace_ResetFunctionIndices<FESpaceType>)

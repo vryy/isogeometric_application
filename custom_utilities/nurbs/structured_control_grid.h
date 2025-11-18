@@ -513,7 +513,9 @@ public:
     {
         if (rOther.Size() != this->Size())
         {
-            KRATOS_ERROR << "The size of the grid is incompatible";
+            KRATOS_ERROR << "The size of the grid is incompatible"
+                         << ", this size = " << this->Size()
+                         << ", other size = " << rOther.Size();
         }
 
         for (std::size_t i = 0; i < this->Size(); ++i)
@@ -756,7 +758,9 @@ public:
     {
         if ( ( rOther.Size(0) != this->Size(0) ) || ( rOther.Size(1) != this->Size(1) ) )
         {
-            KRATOS_ERROR << "The size of the grid is incompatible";
+            KRATOS_ERROR << "The size of the grid is incompatible"
+                         << ", this size = (" << this->Size(0) << ", " << this->Size(1) << ")"
+                         << ", other size = (" << rOther.Size(0) << ", " << rOther.Size(1) << ")";
         }
 
         for (std::size_t i = 0; i < this->Size(0); ++i)
@@ -1114,7 +1118,9 @@ public:
                 || ( rOther.Size(1) != this->Size(1) )
                 || ( rOther.Size(2) != this->Size(2) ) )
         {
-            KRATOS_ERROR << "The size of the grid is incompatible";
+            KRATOS_ERROR << "The size of the grid is incompatible"
+                         << ", this size = (" << this->Size(0) << ", " << this->Size(1) << ", " << this->Size(2) << ")"
+                         << ", other size = (" << rOther.Size(0) << ", " << rOther.Size(1) << ", " << rOther.Size(2) << ")";
         }
 
         for (std::size_t i = 0; i < this->Size(0); ++i)

@@ -1559,7 +1559,6 @@ private:
 
     void save(Serializer& rSerializer) const override
     {
-        std::cout << "Serialization - calling BSplinesFESpace " << this->Type() << " " << __FUNCTION__ << std::endl;
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
         rSerializer.save( "Orders", mOrders );
         rSerializer.save( "Numbers", mNumbers );
@@ -1574,7 +1573,6 @@ private:
 
     void load(Serializer& rSerializer) override
     {
-        std::cout << "Serialization - calling BSplinesFESpace " << this->Type() << " " << __FUNCTION__ << std::endl;
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
         rSerializer.load( "Orders", mOrders );
         rSerializer.load( "Numbers", mNumbers );

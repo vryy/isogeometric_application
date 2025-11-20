@@ -453,13 +453,11 @@ private:
 
     virtual void save(Serializer& rSerializer) const
     {
-        std::cout << "Serialization - calling FESpace " << this->Type() << " " << __FUNCTION__ << std::endl;
         rSerializer.save( "mGlobalToLocal", mGlobalToLocal );
     }
 
     virtual void load(Serializer& rSerializer)
     {
-        std::cout << "Serialization - calling FESpace " << this->Type() << " " << __FUNCTION__ << std::endl;
         rSerializer.load( "mGlobalToLocal", mGlobalToLocal );
     }
     ///@}

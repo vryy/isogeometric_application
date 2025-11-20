@@ -542,7 +542,6 @@ private:
 
     void save(Serializer& rSerializer) const
     {
-        std::cout << "Serialization - calling KnotArray1D " << __FUNCTION__ << std::endl;
         rSerializer.save( "size", mpKnots.size() );
 
         for (const_iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
@@ -553,7 +552,6 @@ private:
 
     void load(Serializer& rSerializer)
     {
-        std::cout << "Serialization - calling KnotArray1D " << __FUNCTION__ << std::endl;
         std::size_t size;
         rSerializer.load( "size", size );
 

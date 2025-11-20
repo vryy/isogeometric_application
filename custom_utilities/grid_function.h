@@ -294,7 +294,6 @@ private:
 
     virtual void save(Serializer& rSerializer) const
     {
-        std::cout << "Serialization - GridFunction " << this->pControlGrid()->Name() << " " << __FUNCTION__ << " mpFESpace->Type: " << mpFESpace->Type() << std::endl;
         rSerializer.save("FESpaceType", mpFESpace->Type());
         rSerializer.save("FESpace", *mpFESpace);
         rSerializer.save("ControlGridType", mpControlGrid->Type());
@@ -305,7 +304,6 @@ private:
     {
         std::string fespace_type;
         rSerializer.load("FESpaceType", fespace_type);
-        std::cout << "Serialization - GridFunction " << " " << __FUNCTION__ << " FESpaceType: " << fespace_type << std::endl;
         mpFESpace = FESpaceUtility<TDim, TLocalCoordinateType>::CreateEmptyFESpace(fespace_type);
         rSerializer.load("FESpace", *mpFESpace);
 
@@ -313,8 +311,6 @@ private:
         rSerializer.load("ControlGridType", control_grid_type);
         mpControlGrid = ControlGridUtility::CreateEmptyControlGrid<TDim, TDataType>(control_grid_type);
         rSerializer.load("ControlGrid", *mpControlGrid);
-
-        std::cout << "Serialization - GridFunction " << this->pControlGrid()->Name() << " " << __FUNCTION__ << " FESpaceType: " << fespace_type << std::endl;
     }
     ///@}
 

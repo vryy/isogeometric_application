@@ -98,7 +98,6 @@ private:
 
     void save(Serializer& rSerializer) const
     {
-        std::cout << "Serialization - calling Knot " << __FUNCTION__ << std::endl;
         rSerializer.save( "Index", mIndex );
         rSerializer.save( "Value", mValue );
         rSerializer.save( "IsActive", mIsActive );
@@ -106,7 +105,6 @@ private:
 
     void load(Serializer& rSerializer)
     {
-        std::cout << "Serialization - calling Knot " << __FUNCTION__ << std::endl;
         rSerializer.load( "Index", mIndex );
         rSerializer.load( "Value", mValue );
         rSerializer.load( "IsActive", mIsActive );

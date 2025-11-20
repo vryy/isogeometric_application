@@ -582,7 +582,6 @@ private:
     void save(Serializer& rSerializer) const override
     {
         KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, FESpaceType );
-        std::cout << "Serialization - WeightedFESpace " << __FUNCTION__ << " FESpaceType: " << mpFESpace->Type() << std::endl;
         rSerializer.save("FESpaceType", mpFESpace->Type());
         rSerializer.save("FESpace", *mpFESpace);
         rSerializer.save( "Weights", mWeights );
@@ -593,7 +592,6 @@ private:
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, FESpaceType );
         std::string fespace_type;
         rSerializer.load("FESpaceType", fespace_type);
-        std::cout << "Serialization - WeightedFESpace " << __FUNCTION__ << " fespace_type: " << fespace_type << std::endl;
         mpFESpace = FESpaceUtility<TDim, TLocalCoordinateType>::CreateEmptyFESpace(fespace_type);
         rSerializer.load("FESpace", *mpFESpace);
         rSerializer.load( "Weights", mWeights );

@@ -483,6 +483,8 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
     .def("LocalCoordinates", &Patch_LocalCoordinates<MultiPatchType>)
     .def("Validate", &MultiPatchType::Validate)
     .def("Clone", &MultiPatchType::Clone)
+    .def("Save", &Patch_save<MultiPatchType>)
+    .def("Load", &Patch_load<MultiPatchType>)
     .def(self_ns::str(self))
     ;
 }

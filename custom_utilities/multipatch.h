@@ -10,6 +10,7 @@
 
 #include "custom_utilities/patch.h"
 #include "custom_utilities/patch_interface.h"
+#include "custom_utilities/patch_interface_utility.h"
 
 namespace Kratos
 {
@@ -50,6 +51,7 @@ public:
     typedef typename PatchContainerType::ptr_iterator patch_ptr_iterator;
     typedef typename PatchContainerType::ptr_const_iterator patch_ptr_const_iterator;
 
+    typedef typename PatchType::PatchInterfaceType PatchInterfaceType;
     typedef typename PatchType::interface_iterator interface_iterator;
     typedef typename PatchType::interface_const_iterator interface_const_iterator;
 
@@ -452,6 +454,136 @@ private:
     PatchContainerType mpPatches; // container for all the patches
     std::size_t mEquationSystemSize; // this is the number of equation id in this multipatch
     std::map<std::size_t, std::size_t> mGlobalIdToPatchId; // this is to map each global id to a patch id
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    virtual void save(Serializer& rSerializer) const
+    {
+        rSerializer.save("size", this->size());
+
+        std::size_t ip = 0;
+        for (patch_const_iterator itp = this->begin(); itp != this->end(); ++itp, ++ip)
+        {
+            std::stringstream ss_name;
+            ss_name << "Patch_" << ip;
+            rSerializer.save(ss_name.str(), *itp);
+        }
+
+        ip = 0;
+        for (patch_const_iterator itp = this->begin(); itp != this->end(); ++itp, ++ip)
+        {
+            std::stringstream ss_isize;
+            ss_isize << "Patch_" << ip << "_Interface_size";
+            rSerializer.save(ss_isize.str(), itp->NumberOfInterfaces());
+
+            std::size_t ii = 0;
+            for (interface_const_iterator iti = itp->InterfaceBegin(); iti != itp->InterfaceEnd(); ++iti, ++ii)
+            {
+                std::stringstream ss_type_name;
+                ss_type_name << "Patch_" << ip << "_Interface_" << ii << "_type";
+                rSerializer.save(ss_type_name.str(), (*iti)->Type());
+
+                std::stringstream ss_patch1_Id;
+                ss_patch1_Id << "Patch_" << ip << "_Interface_" << ii << "_patch1_id";
+                if ((*iti)->pPatch1() != nullptr)
+                    rSerializer.save(ss_patch1_Id.str(), (*iti)->pPatch1()->Id());
+                else
+                    rSerializer.save(ss_patch1_Id.str(), 0);
+
+                std::stringstream ss_patch2_Id;
+                ss_patch2_Id << "Patch_" << ip << "_Interface_" << ii << "_patch2_id";
+                if ((*iti)->pPatch2() != nullptr)
+                    rSerializer.save(ss_patch2_Id.str(), (*iti)->pPatch2()->Id());
+                else
+                    rSerializer.save(ss_patch2_Id.str(), 0);
+
+                std::stringstream ss_iname;
+                ss_iname << "Patch_" << ip << "_Interface_" << ii;
+                rSerializer.save(ss_iname.str(), **iti);
+            }
+        }
+
+        rSerializer.save("EquationSystemSize", mEquationSystemSize);
+        rSerializer.save("GlobalIdToPatchId", mGlobalIdToPatchId);
+    }
+
+    virtual void load(Serializer& rSerializer)
+    {
+        std::size_t size;
+        rSerializer.load("size", size);
+
+        for (std::size_t ip = 0; ip < size; ++ip)
+        {
+            typename PatchType::Pointer pPatch = typename PatchType::Pointer(new PatchType(0));
+
+            std::stringstream ss_name;
+            ss_name << "Patch_" << ip;
+            rSerializer.load(ss_name.str(), *pPatch);
+
+            this->AddPatch(pPatch);
+            pPatch->pSetParentMultiPatch(this->shared_from_this());
+        }
+
+        for (std::size_t ip = 0; ip < size; ++ip)
+        {
+            std::stringstream ss_isize;
+            ss_isize << "Patch_" << ip << "_Interface_size";
+            std::size_t isize;
+            rSerializer.load(ss_isize.str(), isize);
+
+            for (std::size_t ii = 0; ii < isize; ++ii)
+            {
+                std::stringstream ss_type_name;
+                ss_type_name << "Patch_" << ip << "_Interface_" << ii << "_type";
+                std::string itype;
+                rSerializer.load(ss_type_name.str(), itype);
+
+                std::stringstream ss_patch1_Id;
+                ss_patch1_Id << "Patch_" << ip << "_Interface_" << ii << "_patch1_id";
+                std::size_t patch1_Id;
+                rSerializer.load(ss_patch1_Id.str(), patch1_Id);
+
+                std::stringstream ss_patch2_Id;
+                ss_patch2_Id << "Patch_" << ip << "_Interface_" << ii << "_patch2_id";
+                std::size_t patch2_Id;
+                rSerializer.load(ss_patch2_Id.str(), patch2_Id);
+
+                auto pNewInterface = PatchInterfaceUtility::template CreateEmptyPatchInterface<PatchInterfaceType>(itype);
+
+                std::stringstream ss_iname;
+                ss_iname << "Patch_" << ip << "_Interface_" << ii;
+                rSerializer.load(ss_iname.str(), *pNewInterface);
+
+                if (patch1_Id > 0 && patch2_Id > 0)
+                {
+                    typename PatchType::Pointer pPatch = this->pGetPatch(patch1_Id);
+                    typename PatchType::Pointer pOtherPatch = this->pGetPatch(patch2_Id);
+
+                    pNewInterface->SetPatch1(pPatch);
+                    pNewInterface->SetPatch2(pOtherPatch);
+
+                    pPatch->AddInterface(pNewInterface);
+
+                    // search and assign the other interface
+                    for (interface_const_iterator iti2 = pOtherPatch->InterfaceBegin(); iti2 != pOtherPatch->InterfaceEnd(); ++iti2)
+                    {
+                        if ((*iti2)->Side1() == pNewInterface->Side2()
+                         && (*iti2)->pPatch1()->Id() == pNewInterface->pPatch2()->Id())
+                        {
+                            pNewInterface->SetOtherInterface(*iti2);
+                            (*iti2)->SetOtherInterface(pNewInterface);
+                        }
+                    }
+                }
+            }
+        }
+
+        rSerializer.load("EquationSystemSize", mEquationSystemSize);
+        rSerializer.load("GlobalIdToPatchId", mGlobalIdToPatchId);
+    }
+    ///@}
 
 }; // class MultiPatch
 

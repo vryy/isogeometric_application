@@ -1118,6 +1118,10 @@ private:
     void save(Serializer& rSerializer) const override
     {
         std::cout << "Serialization - calling Patch " << this->Id() << " " << __FUNCTION__ << std::endl;
+
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, IndexedObject)
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, Flags)
+
         rSerializer.save("Prefix", mPrefix);
         rSerializer.save("LayerIndex", mLayerIndex);
 
@@ -1143,6 +1147,9 @@ private:
         rSerializer.save("Array1DGridFunction_size", Array1DGridFunctions_.size());
         for (std::size_t i = 0; i < Array1DGridFunctions_.size(); ++i)
         {
+            rSerializer.save("GridName", Array1DGridFunctions_[i]->pControlGrid()->Name());
+            if (Array1DGridFunctions_[i]->pControlGrid()->Name() == "CONTROL_POINT_COORDINATES")
+                continue;   // skip since this grid function is created along with the control point
             std::stringstream ss_name;
             ss_name << "Array1DGridFunction_" << i;
             std::cout << "Serialization - Patch " << this->Id() << " " << __FUNCTION__ << " Array1DGridFunction_" << i << ": " << Array1DGridFunctions_[i]->pControlGrid()->Name() << std::endl;
@@ -1160,12 +1167,17 @@ private:
 
         rSerializer.save("LocalSearchMaxIters", mLocalSearchMaxIters);
         rSerializer.save("LocalSearchTolerance", mLocalSearchTolerance);
+
         std::cout << "Patch " << this->Id() << " is serialized" << std::endl;
     }
 
     void load(Serializer& rSerializer) override
     {
         std::cout << "Serialization - calling Patch " << this->Id() << " " << __FUNCTION__ << std::endl;
+
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, IndexedObject)
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Flags)
+
         rSerializer.load("Prefix", mPrefix);
         rSerializer.load("LayerIndex", mLayerIndex);
 
@@ -1177,8 +1189,7 @@ private:
 
         auto pGridFunc = ControlPointGridFunctionType::Create(FESpaceType::Create(), ControlPointGridFunctionType::ControlGridType::Create());
         rSerializer.load("ControlPointGridFunction", *pGridFunc);
-        pGridFunc->SetFESpace(mpFESpace);
-        mpGridFunctions[pGridFunc->pControlGrid()->Name()] = pGridFunc;
+        this->CreateControlPointGridFunction(pGridFunc->pControlGrid());
 
         std::size_t size;
         rSerializer.load("DoubleGridFunction_size", size);
@@ -1196,6 +1207,10 @@ private:
         std::cout << "Serialization - Patch " << this->Id() << " " << __FUNCTION__ << " Array1DGridFunction_size: " << size << std::endl;
         for (std::size_t i = 0; i < size; ++i)
         {
+            std::string GridName;
+            rSerializer.load("GridName", GridName);
+            if (GridName == "CONTROL_POINT_COORDINATES")
+                continue;
             auto pGridFunc = Array1DGridFunctionType::Create(FESpaceType::Create(), Array1DGridFunctionType::ControlGridType::Create());
             std::stringstream ss_name;
             ss_name << "Array1DGridFunction_" << i;
@@ -1217,6 +1232,7 @@ private:
 
         rSerializer.load("LocalSearchMaxIters", mLocalSearchMaxIters);
         rSerializer.load("LocalSearchTolerance", mLocalSearchTolerance);
+
         std::cout << "Patch " << this->Id() << " is deserialized" << std::endl;
     }
     ///@}

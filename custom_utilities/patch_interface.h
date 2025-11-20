@@ -65,6 +65,12 @@ public:
 #endif
     }
 
+    /// Create empty patch interface
+    static typename PatchInterface::Pointer Create()
+    {
+        return typename PatchInterface::Pointer(new PatchInterface());
+    }
+
     /// Create the patch interface between two patches using the current configuration
     /// of this interface
     virtual typename PatchInterfaceType::Pointer Create(typename PatchType::Pointer pPatch1,
@@ -76,7 +82,21 @@ public:
     /// Create a clone of this interface
     typename PatchInterfaceType::Pointer Clone() const
     {
-        return Create(this->pPatch1(), this->pPatch2());
+        return this->Create(this->pPatch1(), this->pPatch2());
+    }
+
+    /// Get the string representing the type of the PatchInterface
+    virtual std::string Type() const
+    {
+        return StaticType();
+    }
+
+    /// Get the string representing the type of the PatchInterface
+    static std::string StaticType()
+    {
+        std::stringstream ss;
+        ss << "PatchInterface" << TDim << "D";
+        return ss.str();
     }
 
     /// Get/Set the other half interface
@@ -212,6 +232,26 @@ private:
     typename PatchType::WeakPointer mpPatch2;
 
     typename PatchInterfaceType::WeakPointer mpOtherInterface;
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    virtual void save(Serializer& rSerializer) const
+    {
+        rSerializer.save("side1", static_cast<int>(mSide1));
+        rSerializer.save("side2", static_cast<int>(mSide2));
+    }
+
+    virtual void load(Serializer& rSerializer)
+    {
+        int side1, side2;
+        rSerializer.load("side1", side1);
+        rSerializer.load("side2", side2);
+        mSide1 = static_cast<BoundarySide>(side1);
+        mSide2 = static_cast<BoundarySide>(side2);
+    }
+    ///@}
 }; // class PatchInterface
 
 /// output stream function

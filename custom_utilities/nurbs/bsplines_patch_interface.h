@@ -54,12 +54,32 @@ public:
     {
     }
 
+    /// Create empty patch interface
+    static typename BaseType::Pointer Create()
+    {
+        return typename BaseType::Pointer(new ThisType());
+    }
+
     /// Create the patch interface between two patches using the current configuration
     /// of this interface
     typename BaseType::Pointer Create(typename PatchType::Pointer pPatch1,
             typename PatchType::Pointer pPatch2) const override
     {
         return typename BaseType::Pointer(new ThisType(pPatch1, this->Side1(), pPatch2, this->Side2()));
+    }
+
+    /// Get the string representing the type of the PatchInterface
+    std::string Type() const override
+    {
+        return StaticType();
+    }
+
+    /// Get the string representing the type of the PatchInterface
+    static std::string StaticType()
+    {
+        std::stringstream ss;
+        ss << "BSplinesPatchInterface1D";
+        return ss.str();
     }
 
     /// Get the local parameter space mapping
@@ -144,12 +164,32 @@ public:
 #endif
     }
 
+    /// Create empty patch interface
+    static typename BaseType::Pointer Create()
+    {
+        return typename BaseType::Pointer(new ThisType());
+    }
+
     /// Create the patch interface between two patches using the current configuration
     /// of this interface
     typename BaseType::Pointer Create(typename PatchType::Pointer pPatch1,
             typename PatchType::Pointer pPatch2) const override
     {
         return typename BaseType::Pointer(new ThisType(pPatch1, this->Side1(), pPatch2, this->Side2(), this->Direction()));
+    }
+
+    /// Get the string representing the type of the PatchInterface
+    std::string Type() const override
+    {
+        return StaticType();
+    }
+
+    /// Get the string representing the type of the PatchInterface
+    static std::string StaticType()
+    {
+        std::stringstream ss;
+        ss << "BSplinesPatchInterface2D";
+        return ss.str();
     }
 
     /// Get the local parameter space mapping
@@ -219,6 +259,25 @@ private:
 
     BoundaryDirection mDirection;
     // this variable indicates if the relative local direction shall be reversed of each other.
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType);
+        rSerializer.save("direction", static_cast<int>(mDirection));
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType);
+        int direction;
+        rSerializer.load("direction", direction);
+        mDirection = static_cast<BoundaryDirection>(direction);
+    }
+    ///@}
 };
 
 /**
@@ -299,6 +358,12 @@ public:
 #endif
     }
 
+    /// Create empty patch interface
+    static typename BaseType::Pointer Create()
+    {
+        return typename BaseType::Pointer(new ThisType());
+    }
+
     /// Create the patch interface between two patches using the current configuration
     /// of this interface
     typename BaseType::Pointer Create(typename PatchType::Pointer pPatch1,
@@ -313,6 +378,20 @@ public:
         {
             return typename BaseType::Pointer(new ThisType(pPatch1, this->Side1(), pPatch2, this->Side2(), false, this->Direction(0), this->Direction(1)));
         }
+    }
+
+    /// Get the string representing the type of the PatchInterface
+    std::string Type() const override
+    {
+        return StaticType();
+    }
+
+    /// Get the string representing the type of the PatchInterface
+    static std::string StaticType()
+    {
+        std::stringstream ss;
+        ss << "BSplinesPatchInterface3D";
+        return ss.str();
     }
 
     /// Get the local parameter space mapping
@@ -415,6 +494,30 @@ private:
 
     boost::array<BoundaryDirection, 2> mDirections;
     // this variable indicates if the relative local direction shall be reversed of each other.
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, BaseType);
+        rSerializer.save("direction_1", static_cast<int>(mDirections[0]));
+        rSerializer.save("direction_2", static_cast<int>(mDirections[1]));
+        rSerializer.save("local_param_map", mLocalParameterMap);
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, BaseType);
+        int direction_1, direction_2;
+        rSerializer.load("direction_1", direction_1);
+        rSerializer.load("direction_2", direction_2);
+        mDirections[0] = static_cast<BoundaryDirection>(direction_1);
+        mDirections[1] = static_cast<BoundaryDirection>(direction_2);
+        rSerializer.load("local_param_map", mLocalParameterMap);
+    }
+    ///@}
 };
 
 /// output stream function

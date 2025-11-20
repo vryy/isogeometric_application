@@ -45,6 +45,12 @@ typename TPatchType::Pointer MultiPatchUtility_CreatePatchPointer(MultiPatchUtil
 }
 
 template<class TPatchType>
+typename TPatchType::Pointer MultiPatchUtility_CreateEmptyPatchPointer(MultiPatchUtility& rDummy, std::size_t Id)
+{
+    return rDummy.template CreateEmptyPatchPointer<TPatchType>(Id);
+}
+
+template<class TPatchType>
 void MultiPatchUtility_MakeInterface(MultiPatchUtility& rDummy, typename TPatchType::Pointer pPatch1, const BoundarySide side1,
                                      typename TPatchType::Pointer pPatch2, const BoundarySide side2)
 {
@@ -576,6 +582,9 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<1>::RealPatch>)
     .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<2>::RealPatch>)
     .def("CreatePatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<3>::RealPatch>)
+    .def("CreateEmptyPatch1DPointer", &MultiPatchUtility_CreateEmptyPatchPointer<PatchSelector<1>::RealPatch>)
+    .def("CreateEmptyPatch2DPointer", &MultiPatchUtility_CreateEmptyPatchPointer<PatchSelector<2>::RealPatch>)
+    .def("CreateEmptyPatch3DPointer", &MultiPatchUtility_CreateEmptyPatchPointer<PatchSelector<3>::RealPatch>)
     .def("CreateComplexPatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<1>::ComplexPatch>)
     .def("CreateComplexPatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<2>::ComplexPatch>)
     .def("CreateComplexPatchPointer", &MultiPatchUtility_CreatePatchPointer<PatchSelector<3>::ComplexPatch>)

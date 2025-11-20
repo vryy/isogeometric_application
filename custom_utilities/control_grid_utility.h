@@ -142,7 +142,7 @@ public:
     {
         if (type == StructuredControlGrid<TDim, TDataType>::StaticType())
         {
-            std::vector<std::size_t> sizes(3, 0);
+            std::vector<std::size_t> sizes(TDim, 0);
             return StructuredControlGrid<TDim, TDataType>::Create(sizes);
         }
         else

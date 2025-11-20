@@ -248,16 +248,6 @@ public:
     }
 };
 
-/// output stream function
-template<typename TDataType, typename TWeightType>
-inline std::ostream& operator <<(std::ostream& rOStream, const ControlPoint<TDataType, TWeightType>& rThis)
-{
-    // rThis.PrintInfo(rOStream);
-    // rOStream << ": ";
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
-
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CONTROL_POINT_H_INCLUDED

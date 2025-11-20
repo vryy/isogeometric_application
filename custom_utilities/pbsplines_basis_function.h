@@ -73,7 +73,7 @@ public:
     virtual ~PBSplinesBasisFunction()
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
-        std::cout << "PBSplinesBasisFunction" << TDim << "D " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;
+        std::cout << "PBSplinesBasisFunction " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;
 #endif
     }
 

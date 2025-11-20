@@ -117,7 +117,7 @@ public:
 
     /// Constructor with id
     Patch(std::size_t Id)
-        : IndexedObject(Id), mPrefix("Patch"), mLayerIndex(Id), mpFESpace(NULL)
+        : IndexedObject(Id), mPrefix("Patch"), mLayerIndex(Id), mpFESpace(nullptr)
         , mLocalSearchMaxIters(30), mLocalSearchTolerance(1e-8)
     {
         this->Set(ACTIVE, true);
@@ -180,9 +180,12 @@ public:
     ~Patch() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
-        std::cout << Type() << ", Id = " << Id()
-                  << ", " << mpFESpace->Type()
-                  << ", Addr = " << this << " is destroyed" << std::endl;
+        std::cout << Type() << ", Id = " << Id();
+        if (mpFESpace != nullptr)
+            std::cout << ", " << mpFESpace->Type();
+        else
+            std::cout << ", FESpace: 0";
+        std::cout << ", Addr = " << this << " is destroyed" << std::endl;
 #endif
     }
 
@@ -245,14 +248,14 @@ public:
     /// Get the number of basis functions defined over the patch
     virtual std::size_t TotalNumber() const
     {
-        assert(mpFESpace != NULL);
+        assert(mpFESpace != nullptr);
         return mpFESpace->TotalNumber();
     }
 
     /// Get the order of the patch in specific direction
     virtual std::size_t Order(std::size_t i) const
     {
-        assert(mpFESpace != NULL);
+        assert(mpFESpace != nullptr);
         if (i >= TDim) { return 0; }
         else { return mpFESpace->Order(i); }
     }
@@ -342,9 +345,7 @@ public:
         typename ControlGrid<ControlPointType>::ConstPointer pControlPointGrid = pControlPointGridFunction()->pControlGrid();
         std::vector<WeightType> Weights(pControlPointGrid->size());
         for (std::size_t i = 0; i < pControlPointGrid->size(); ++i)
-        {
             Weights[i] = (*pControlPointGrid)[i].W();
-        }
         return Weights;
     }
 
@@ -529,7 +530,7 @@ public:
             KRATOS_ERROR << "The patch must have an Id";
         }
 
-        if (pControlPointGridFunction() != NULL)
+        if (pControlPointGridFunction() != nullptr)
             if (pControlPointGridFunction()->pControlGrid()->Size() != this->TotalNumber())
                 KRATOS_ERROR << "The control point grid is incompatible";
 
@@ -693,7 +694,7 @@ public:
                 return (*it)->pPatch2();
             }
         }
-        return NULL;
+        return nullptr;
     }
 
     /// Search for the neighbor
@@ -706,7 +707,7 @@ public:
                 return (*it)->pPatch2();
             }
         }
-        return NULL;
+        return nullptr;
     }
 
     /// Search for the boundary side (in the current patch) of the neighbor patch, if it exists
@@ -796,7 +797,7 @@ public:
                 ++cnt;
             }
         }
-        return NULL;
+        return nullptr;
     }
 
     typename PatchInterfaceType::ConstPointer pInterface(std::size_t i) const
@@ -813,7 +814,7 @@ public:
                 ++cnt;
             }
         }
-        return NULL;
+        return nullptr;
     }
 
     /// Get/Set the parent multipatch
@@ -1040,12 +1041,12 @@ public:
 
     void PrintData(std::ostream& rOStream) const override
     {
-        if (pFESpace() != NULL)
+        if (pFESpace() != nullptr)
         {
             rOStream << *pFESpace() << std::endl;
         }
 
-        if (pControlPointGridFunction() != NULL)
+        if (pControlPointGridFunction() != nullptr)
         {
             rOStream << *(pControlPointGridFunction()->pControlGrid()) << std::endl;
         }
@@ -1108,7 +1109,7 @@ private:
     ///@}
 
     /// Empty Constructor for serializer
-    Patch() : IndexedObject(0), mpFESpace(NULL) {}
+    Patch() : IndexedObject(0), mpFESpace(nullptr) {}
 
     ///@name Serialization
     ///@{
@@ -1368,7 +1369,7 @@ public:
     template<typename TOtherDataType>
     typename GridFunction<0, TLocalCoordinateType, TOtherDataType>::Pointer CreateGridFunction(typename ControlGrid<TOtherDataType>::Pointer pControlGrid)
     {
-        return NULL;
+        return nullptr;
     }
 
     /// Get the FESpace pointer
@@ -1399,7 +1400,7 @@ public:
     // /// Construct the boundary patch based on side
     // virtual typename Patch<-1>::Pointer ConstructBoundaryPatch(const BoundarySide& side) const
     // {
-    //     return NULL;
+    //     return nullptr;
     // }
 
     /// Compare two patches in terms of parametric information and control points.
@@ -1420,7 +1421,7 @@ public:
             const ControlPointType& p1 = pThisControlPointGrid->GetData(i);
             const ControlPointType& p2 = pOtherControlPointGrid->GetData(i);
 
-            const double dist = p1.Distance(p2);
+            const double dist = std::abs(p1.Distance(p2));
             if (dist > dist_tol)
             {
                 return false;
@@ -1527,7 +1528,7 @@ public:
     // /// Construct the boundary patch based on side
     // virtual typename Patch<-1>::Pointer ConstructBoundaryPatch(const BoundarySide& side) const
     // {
-    //     return NULL;
+    //     return nullptr;
     // }
 
     /// Information
@@ -1622,7 +1623,7 @@ public:
     // /// Construct the boundary patch based on side
     // virtual typename Patch<-2>::Pointer ConstructBoundaryPatch(const BoundarySide& side) const
     // {
-    //     return NULL;
+    //     return nullptr;
     // }
 
     /// Information

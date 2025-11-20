@@ -136,7 +136,7 @@ public:
         }
     }
 
-    /// Helper function to create an empty control grid based on nema
+    /// Helper function to create an empty control grid based on name
     template<int TDim, typename TDataType>
     static typename ControlGrid<TDataType>::Pointer CreateEmptyControlGrid(const std::string& type)
     {

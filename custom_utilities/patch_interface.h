@@ -40,7 +40,12 @@ public:
     typedef Patch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> PatchType;
     typedef PatchInterface<TDim, TLocalCoordinateType, TCoordinateType, TDataType> PatchInterfaceType;
 
-    /// Empty Constructor, be careful when using
+    static constexpr int Dim = TDim;
+    typedef TLocalCoordinateType LocalCoordinateType;
+    typedef TCoordinateType CoordinateType;
+    typedef TDataType DataType;
+
+    /// Empty Constructor, mainly for serialization
     PatchInterface()
         : mSide1(_NUMBER_OF_BOUNDARY_SIDE), mSide2(_NUMBER_OF_BOUNDARY_SIDE)
     {}

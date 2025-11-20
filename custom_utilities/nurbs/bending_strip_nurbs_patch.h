@@ -159,7 +159,7 @@ public:
     ~BendingStripNURBSPatch() override
     {
 #ifdef ISOGEOMETRIC_DEBUG_DESTROY
-        std::cout << Type() << ", Id = " << Id() << ", Addr = " << this << " is destroyed" << std::endl;
+        std::cout << Type() << ", Id = " << this->Id() << ", Addr = " << this << " is destroyed" << std::endl;
 #endif
     }
 

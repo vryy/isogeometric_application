@@ -462,19 +462,24 @@ class PatchSelector
 public:
     typedef Patch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE> RealPatch;
     typedef Patch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE> ComplexPatch;
+    typedef Patch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE, KRATOS_COMPLEX_TYPE> GComplexPatch;
 
     typedef PatchInterface<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE> RealPatchInterface;
     typedef PatchInterface<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE> ComplexPatchInterface;
+    typedef PatchInterface<TDim, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE, KRATOS_COMPLEX_TYPE> GComplexPatchInterface;
 
     typedef MultiPatch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE> RealMultiPatch;
     typedef MultiPatch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE> ComplexMultiPatch;
+    typedef MultiPatch<TDim, KRATOS_DOUBLE_TYPE, KRATOS_COMPLEX_TYPE, KRATOS_COMPLEX_TYPE> GComplexMultiPatch;
 
     const RealPatch& GetRealPatch() const {return msRealPatch;}
     const ComplexPatch& GetComplexPatch() const {return msComplexPatch;}
+    const GComplexPatch& GetGComplexPatch() const {return msGComplexPatch;}
 
 private:
     static RealPatch msRealPatch;
     static ComplexPatch msComplexPatch;
+    static GComplexPatch msGComplexPatch;
 };
 
 extern PatchSelector<1> PatchSelector1DInstance;

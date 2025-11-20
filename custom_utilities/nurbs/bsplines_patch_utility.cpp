@@ -748,5 +748,6 @@ template void BSplinesPatchUtility::CheckRepeatedKnot<PatchSelector<3>::MultiPat
 
 BSplinesPatchUtility_Template_Instantiate(RealPatch, RealMultiPatch);
 BSplinesPatchUtility_Template_Instantiate(ComplexPatch, ComplexMultiPatch);
+BSplinesPatchUtility_Template_Instantiate(GComplexPatch, GComplexMultiPatch);
 
 } // namespace Kratos

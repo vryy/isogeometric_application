@@ -179,13 +179,11 @@ private:
 
     virtual void save(Serializer& rSerializer) const
     {
-        // std::cout << "Serialization - calling ControlGrid " << this->Type() << " " << __FUNCTION__ << std::endl;
         rSerializer.save( "Name", mName );
     }
 
     virtual void load(Serializer& rSerializer)
     {
-        // std::cout << "Serialization - calling ControlGrid " << this->Type() << " " << __FUNCTION__ << std::endl;
         rSerializer.load( "Name", mName );
     }
     ///@}

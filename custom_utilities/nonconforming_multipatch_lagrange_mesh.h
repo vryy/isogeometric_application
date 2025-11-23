@@ -223,7 +223,7 @@ public:
         }
 
         // generate the points and connectivities
-        std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities;
+        IsogeometricPostUtility::Grid<array_1d<double, 3>, IndexType>::Type points_and_connectivities;
 
         if constexpr (TDim == 2)
         {
@@ -370,7 +370,7 @@ public:
             Condition const& rCloneCondition,
             std::size_t& starting_node_id, std::size_t& starting_cond_id, Properties::Pointer pProperties) const
     {
-        std::pair<std::vector<array_1d<double, 3> >, std::vector<std::vector<IndexType> > > points_and_connectivities;
+        IsogeometricPostUtility::Grid<array_1d<double, 3>, IndexType>::Type points_and_connectivities;
         IndexType& NodeCounter = starting_node_id;
         IndexType& ConditionCounter = starting_cond_id;
 

@@ -93,6 +93,12 @@ public:
 
     typedef std::size_t IndexType;
 
+    template<typename TCoordinatesType, typename TIndexType>
+    struct Grid
+    {
+        typedef std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > > Type;
+    };
+
     /// Pointer definition of IsogeometricPostUtility
     KRATOS_CLASS_POINTER_DEFINITION(IsogeometricPostUtility);
 
@@ -176,7 +182,7 @@ public:
             const std::string& var_name = (*it_gf)->pControlGrid()->Name();
             if (KratosComponents<VariableData>::Has(var_name))
             {
-                VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
+                const VariableType* pVariable = dynamic_cast<const VariableType*>(&KratosComponents<VariableData>::Get(var_name));
                 DataType value = (*it_gf)->GetValue(p_ref);
                 if (rNode.SolutionStepsDataHas(*pVariable))
                 {
@@ -195,7 +201,7 @@ public:
             if (var_name == "CONTROL_POINT_COORDINATES") { continue; }
             if (KratosComponents<VariableData>::Has(var_name))
             {
-                VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
+                const VariableType* pVariable = dynamic_cast<const VariableType*>(&KratosComponents<VariableData>::Get(var_name));
                 DataType value = (*it_gf)->GetValue(p_ref);
                 if (rNode.SolutionStepsDataHas(*pVariable))
                 {
@@ -213,7 +219,7 @@ public:
             const std::string& var_name = (*it_gf)->pControlGrid()->Name();
             if (KratosComponents<VariableData>::Has(var_name))
             {
-                VariableType* pVariable = dynamic_cast<VariableType*>(&KratosComponents<VariableData>::Get(var_name));
+                const VariableType* pVariable = dynamic_cast<const VariableType*>(&KratosComponents<VariableData>::Get(var_name));
                 DataType value = (*it_gf)->GetValue(p_ref);
                 if (rNode.SolutionStepsDataHas(*pVariable))
                 {
@@ -390,7 +396,7 @@ public:
     /// The triangulation will be performed on the physical points with the information {cemter, normal, t1, t2}
     /// The refinement is performed on the local points instead.
     template<typename TCoordinatesType, typename TVectorType, typename TIndexType>
-    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateTriangleGrid(const std::vector<TCoordinatesType>& physical_points,
                          const TVectorType& rCenter,
                          const TVectorType& rNormal,
@@ -426,7 +432,7 @@ public:
     /// Generate the uniform linear grid. The 2 corner points are denoted as
     ///  1---2
     template<typename TCoordinatesType, typename TIndexType>
-    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateLineGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
                      const TIndexType& starting_node_id,
                      std::size_t num_div)
@@ -442,7 +448,7 @@ public:
     /// Generate the linear grid. The 2 corner points are denoted as
     ///  1---2
     template<typename TCoordinatesType, typename TIndexType>
-    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateLineGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
                      const TIndexType& starting_node_id,
                      const std::vector<double>& div)
@@ -480,7 +486,7 @@ public:
     ///  |   |
     ///  1---2
     template<typename TCoordinatesType, typename TIndexType>
-    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateQuadGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
                      const TCoordinatesType& p3, const TCoordinatesType& p4,
                      const TIndexType& starting_node_id,
@@ -502,7 +508,7 @@ public:
     ///  |   |
     ///  1---2
     template<typename TCoordinatesType, typename TIndexType>
-    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateQuadGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
                      const TCoordinatesType& p3, const TCoordinatesType& p4,
                      const TIndexType& starting_node_id,
@@ -598,7 +604,7 @@ public:
     ///  |   |   -->   |   |
     ///  1---2         5---6
     template<typename TCoordinatesType, typename TIndexType>
-    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateHexGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
                     const TCoordinatesType& p3, const TCoordinatesType& p4,
                     const TCoordinatesType& p5, const TCoordinatesType& p6,
@@ -626,7 +632,7 @@ public:
     ///  |   |   -->   |   |
     ///  1---2         5---6
     template<typename TCoordinatesType, typename TIndexType>
-    static std::pair<std::vector<TCoordinatesType>, std::vector<std::vector<TIndexType> > >
+    static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateHexGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
                     const TCoordinatesType& p3, const TCoordinatesType& p4,
                     const TCoordinatesType& p5, const TCoordinatesType& p6,

@@ -340,6 +340,7 @@ public:
     }
 
     /// Get the control point weights vector
+    /// Since this function return a value, be careful when using it with macro
     std::vector<WeightType> GetControlWeights() const
     {
         typename ControlGrid<ControlPointType>::ConstPointer pControlPointGrid = pControlPointGridFunction()->pControlGrid();

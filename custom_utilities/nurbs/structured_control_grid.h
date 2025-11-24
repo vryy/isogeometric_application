@@ -182,18 +182,7 @@ private:
 /**
 Class for control value container by a regular grid
 */
-template<int TDim, typename TDataType>
-class StructuredControlGrid : public BaseStructuredControlGrid<TDataType>
-{
-public:
-
-    /// Create a new control grid pointer
-    static typename StructuredControlGrid<TDim, TDataType>::Pointer Create(const std::vector<std::size_t>& sizes)
-    {
-        return typename StructuredControlGrid<TDim, TDataType>::Pointer(new StructuredControlGrid<TDim, TDataType>());
-    }
-
-};
+template<int TDim, typename TDataType> class StructuredControlGrid;
 
 template<typename TDataType>
 class StructuredControlGrid<0, TDataType> : public BaseStructuredControlGrid<TDataType>

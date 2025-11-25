@@ -20,8 +20,9 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "python/pointer_vector_set_python_interface.h"
 #include "python/python_utils.h"
 #include "custom_utilities/patch.h"
-#include "custom_utilities/multipatch.h"
 #include "custom_utilities/patch_interface.h"
+#include "custom_utilities/multipatch.h"
+#include "custom_utilities/multipatch_wrapper.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_geo_exporter.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_geo_importer.h"
 #include "custom_utilities/import_export/multi_nurbs_patch_matlab_exporter.h"
@@ -465,7 +466,7 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
 
     ss.str(std::string());
     ss << Prefix << "MultiPatch" << TDim << "D";
-    class_<MultiPatchType, typename MultiPatchType::Pointer, boost::noncopyable>
+    class_<MultiPatchType, typename MultiPatchType::Pointer, bases<BaseMultiPatch>, boost::noncopyable>
     (ss.str().c_str(), init<>())
     .def("__init__", make_constructor(&MultiPatch_init<MultiPatchType>))
     // .def("ResetId", &MultiPatchType::ResetId) // this function is not really useful. One shall keep control over the id of the patch.
@@ -634,6 +635,18 @@ void IsogeometricApplication_AddPatchesToPython()
     enum_<IsogeometricEchoFlags>("IsogeometricEchoFlags")
     .value("ECHO_REFINEMENT", ECHO_REFINEMENT)
     .value("ECHO_REFINEMENT_DETAIL", ECHO_REFINEMENT_DETAIL)
+    ;
+
+    class_<BaseMultiPatch, typename BaseMultiPatch::Pointer, boost::noncopyable>
+    ("BaseMultiPatch", init<>())
+    ;
+
+    class_<MultiPatchWrapper, typename MultiPatchWrapper::Pointer, boost::noncopyable>
+    ("MultiPatchWrapper", init<BaseMultiPatch::Pointer>())
+    .def(init<>())
+    .def("Get", &MultiPatchWrapper::Get)
+    .def("Save", &Patch_save<MultiPatchWrapper>)
+    .def("Load", &Patch_load<MultiPatchWrapper>)
     ;
 
     IsogeometricApplication_AddPatchesToPython_Helper<1, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE>("");

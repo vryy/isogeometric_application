@@ -16,6 +16,48 @@ namespace Kratos
 {
 
 /**
+ * Base class for all multipatch
+ */
+class BaseMultiPatch
+{
+public:
+    /// Pointer definition
+    KRATOS_CLASS_POINTER_DEFINITION(BaseMultiPatch);
+
+    /// Default constructor
+    BaseMultiPatch()
+    {}
+
+    virtual ~BaseMultiPatch()
+    {}
+
+    /// Provide the information on dimension
+    virtual int Dimension() const {return 0;}
+
+    /// Provide the identifier for local coordinate type
+    virtual const char* LocalCoordinateTypeStr() const {return "";}
+
+    /// Provide the identifier for physical coordinate type
+    virtual const char* CoordinateTypeStr() const {return "";}
+
+    /// Provide the identifier for underlying data type
+    virtual const char* DataTypeStr() const {return "";}
+
+private:
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    virtual void save(Serializer& rSerializer) const
+    {}
+
+    virtual void load(Serializer& rSerializer)
+    {}
+    ///@}
+};
+
+/**
  * This class represents an isogeometric multipatch in parametric coordinates. An isogeometric multipatch comprises a list of similar type patches, i.e NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
  */
 template<int TDim, typename TLocalCoordinateType = double, typename TCoordinateType = double, typename TDataType = double>
@@ -25,6 +67,7 @@ class MultiPatch
 #else
     : public boost::enable_shared_from_this<MultiPatch<TDim, TLocalCoordinateType, TCoordinateType, TDataType> >
 #endif
+    , public BaseMultiPatch
 {
 public:
     /// Pointer definition
@@ -68,7 +111,7 @@ public:
     MultiPatch(const MultiPatch& rOther) = delete;
 
     /// Destructor
-    virtual ~MultiPatch() {}
+    ~MultiPatch() override {}
 
     /// Clone the multipatch
     MultiPatch::Pointer Clone() const
@@ -76,6 +119,24 @@ public:
         MultiPatch::Pointer pNewMultiPatch = MultiPatch::Pointer(new MultiPatch());
         *pNewMultiPatch = *this;
         return pNewMultiPatch;
+    }
+
+    /// (derived!)
+    int Dimension() const override {return TDim;}
+
+    /// (derived!)
+    const char* LocalCoordinateTypeStr() const override {return DataTypeToString<TLocalCoordinateType>::Get();}
+
+    /// (derived!)
+    const char* CoordinateTypeStr() const override {return DataTypeToString<TCoordinateType>::Get();}
+
+    /// (derived!)
+    const char* DataTypeStr() const override {return DataTypeToString<TDataType>::Get();}
+
+    /// Create an empty multipatch instance
+    static MultiPatch::Pointer Create()
+    {
+        return MultiPatch::Pointer(new MultiPatch());
     }
 
     /// Add the patch
@@ -459,7 +520,7 @@ private:
     ///@{
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         rSerializer.save("size", this->size());
 
@@ -509,7 +570,7 @@ private:
         rSerializer.save("GlobalIdToPatchId", mGlobalIdToPatchId);
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         std::size_t size;
         rSerializer.load("size", size);
@@ -633,8 +694,6 @@ extern PatchSelector<1> PatchSelector1DInstance;
 extern PatchSelector<2> PatchSelector2DInstance;
 extern PatchSelector<3> PatchSelector3DInstance;
 
-{
-
 } // end namespace Kratos
 
-#endif
+#endif // KRATOS_ISOGEOMETRIC_APPLICATION_MULTIPATCH_H_INCLUDED

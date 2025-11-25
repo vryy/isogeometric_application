@@ -139,6 +139,16 @@ public:
         return MultiPatch::Pointer(new MultiPatch());
     }
 
+    /// Cast a BaseMultiPatch to this multipatch type
+    static MultiPatch::Pointer Cast(BaseMultiPatch::Pointer pMultiPatch)
+    {
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+        return std::dynamic_pointer_cast<MultiPatch>(pMultiPatch);
+#else
+        return boost::dynamic_pointer_cast<MultiPatch>(pMultiPatch);
+#endif
+    }
+
     /// Add the patch
     void AddPatch(typename PatchType::Pointer pPatch)
     {

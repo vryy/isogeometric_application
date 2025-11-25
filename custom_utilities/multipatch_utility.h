@@ -32,10 +32,8 @@ This class is a library to generate typical NURBS patch for computational mechan
 class MultiPatchUtility : public IsogeometricUtility
 {
 public:
-    /// Pointer definition
-    KRATOS_CLASS_POINTER_DEFINITION(MultiPatchUtility);
-
     /// Type definition
+    KRATOS_CLASS_POINTER_DEFINITION(MultiPatchUtility);
 
     /// Default constructor
     MultiPatchUtility() {}

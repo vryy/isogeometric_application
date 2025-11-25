@@ -46,7 +46,7 @@ public:
     {}
 
     /// Destructor
-    virtual ~UnstructuredControlGrid() {}
+    ~UnstructuredControlGrid() override {}
 
     /// Create a new control grid pointer
     static typename UnstructuredControlGrid::Pointer Create(std::size_t size)

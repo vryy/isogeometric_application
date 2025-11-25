@@ -44,7 +44,7 @@ public:
         : BaseType(rVariable.Name()), mrVariable(rVariable), mpFESpace(pFESpace) {}
 
     /// Destructor
-    virtual ~PointBasedControlGrid() {}
+    ~PointBasedControlGrid() override {}
 
     /// Create a new control grid pointer
     static typename PointBasedControlGrid::Pointer Create(const VariableType& rVariable, typename FESpaceType::Pointer pFESpace)

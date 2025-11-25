@@ -32,6 +32,12 @@ public:
     : mpMultiPatch(pMultiPatch)
     {}
 
+    /// Create an empty instance of the multipatch wrapper
+    static MultiPatchWrapper::Pointer Create()
+    {
+        return MultiPatchWrapper::Pointer(new MultiPatchWrapper());
+    }
+
     /// Get the underlying multipatch pointer
     BaseMultiPatch::Pointer Get() const
     {

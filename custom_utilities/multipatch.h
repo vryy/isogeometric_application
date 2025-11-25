@@ -16,7 +16,7 @@ namespace Kratos
 {
 
 /**
-This class represents an isogeometric multipatch in parametric coordinates. An isogeometric multipatch comprises a list of similar type patches, i.e NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
+ * This class represents an isogeometric multipatch in parametric coordinates. An isogeometric multipatch comprises a list of similar type patches, i.e NURBS patch, a hierarchical BSplines patch, or a T-Splines patch.
  */
 template<int TDim, typename TLocalCoordinateType = double, typename TCoordinateType = double, typename TDataType = double>
 class MultiPatch
@@ -587,6 +587,21 @@ private:
 
 }; // class MultiPatch
 
+/// output stream function
+template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
+inline std::ostream& operator <<(std::ostream& rOStream,
+        const MultiPatch<TDim, TLocalCoordinateType, TCoordinateType, TDataType>& rThis)
+{
+    rOStream << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    rOStream << "-------------Begin MultiPatchInfo-------------" << std::endl;
+    rThis.PrintInfo(rOStream);
+    rOStream << std::endl;
+    rThis.PrintData(rOStream);
+    rOStream << "-------------End MultiPatchInfo-------------" << std::endl;
+    rOStream << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    return rOStream;
+}
+
 /// Selector for patch based on dimension
 template<int TDim>
 class PatchSelector
@@ -618,20 +633,7 @@ extern PatchSelector<1> PatchSelector1DInstance;
 extern PatchSelector<2> PatchSelector2DInstance;
 extern PatchSelector<3> PatchSelector3DInstance;
 
-/// output stream function
-template<int TDim, typename TLocalCoordinateType, typename TCoordinateType, typename TDataType>
-inline std::ostream& operator <<(std::ostream& rOStream,
-        const MultiPatch<TDim, TLocalCoordinateType, TCoordinateType, TDataType>& rThis)
 {
-    rOStream << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-    rOStream << "-------------Begin MultiPatchInfo-------------" << std::endl;
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-    rOStream << "-------------End MultiPatchInfo-------------" << std::endl;
-    rOStream << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
-    return rOStream;
-}
 
 } // end namespace Kratos
 

@@ -38,6 +38,12 @@ public:
         return MultiPatchWrapper::Pointer(new MultiPatchWrapper());
     }
 
+    /// Create a new instance of the multipatch wrapper
+    static MultiPatchWrapper::Pointer Create(BaseMultiPatch::Pointer pMultiPatch)
+    {
+        return MultiPatchWrapper::Pointer(new MultiPatchWrapper(pMultiPatch));
+    }
+
     /// Get the underlying multipatch pointer
     BaseMultiPatch::Pointer Get() const
     {

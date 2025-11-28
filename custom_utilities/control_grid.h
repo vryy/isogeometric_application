@@ -153,6 +153,12 @@ public:
         KRATOS_ERROR << "Error calling base class function";
     }
 
+    /// Create a connectivity matrix for the control grid
+    virtual void CreateConnectivity(std::size_t offset, std::vector<std::vector<std::size_t> >& connectivities) const
+    {
+        KRATOS_ERROR << "Error calling base class function";
+    }
+
     /// Get the type of the control grid
     virtual std::string Type() const
     {

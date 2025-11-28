@@ -38,17 +38,17 @@ public:
 #endif
 
     /// Empty constructor
-    Knot() : mValue(0), mIndex(-1), mIsActive(true)
+    Knot() : mIndex(-1), mValue(0), mIsActive(true)
     {}
 
     /// Default constructor
-    Knot(const TDataType& Value) : mValue(Value), mIndex(-1), mIsActive(true)
+    Knot(const TDataType& Value) : mIndex(-1), mValue(Value), mIsActive(true)
     {}
 
     /// Copy constructor
     template<typename TOtherDataType>
     Knot(const Knot<TOtherDataType>& rOther)
-    : mValue(rOther.mValue), mIndex(rOther.mIndex), mIsActive(rOther.mIsActive)
+    : mIndex(rOther.mIndex), mValue(rOther.mValue), mIsActive(rOther.mIsActive)
     {}
 
     /// Clone this knot

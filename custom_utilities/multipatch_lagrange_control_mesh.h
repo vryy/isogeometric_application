@@ -234,8 +234,6 @@ private:
 
     typename MultiPatch<TDim>::Pointer mpMultiPatch;
 
-    std::map<IndexType, boost::array<IndexType, TDim> > mNumDivision;
-
     std::string mBaseElementName;
     IndexType mLastNodeId;
     IndexType mLastElemId;

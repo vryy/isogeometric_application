@@ -574,6 +574,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const KnotArray1D<TData
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_KNOT_ARRAY_1D_H_INCLUDED

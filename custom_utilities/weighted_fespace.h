@@ -592,7 +592,7 @@ private:
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, FESpaceType );
         std::string fespace_type;
         rSerializer.load("FESpaceType", fespace_type);
-        mpFESpace = FESpaceUtility<TDim, TLocalCoordinateType>::CreateEmptyFESpace(fespace_type);
+        mpFESpace = FESpaceUtility::CreateEmptyFESpace<TDim, TLocalCoordinateType>(fespace_type);
         rSerializer.load("FESpace", *mpFESpace);
         rSerializer.load( "Weights", mWeights );
     }

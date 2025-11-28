@@ -22,7 +22,6 @@ namespace Kratos
 /**
 Utility class for FESpace.
  */
-template<int TDim, typename TLocalCoordinateType = double>
 class FESpaceUtility
 {
 public:
@@ -36,6 +35,7 @@ public:
     virtual ~FESpaceUtility() {}
 
     /// Create the empty FESpace pointer from name
+    template<int TDim, typename TLocalCoordinateType>
     static typename FESpace<TDim, TLocalCoordinateType>::Pointer CreateEmptyFESpace(const std::string& type);
 
     /// Information
@@ -50,8 +50,7 @@ public:
 };
 
 /// output stream function
-template<int TDim, typename TLocalCoordinateType>
-inline std::ostream& operator <<(std::ostream& rOStream, const FESpaceUtility<TDim, TLocalCoordinateType>& rThis)
+inline std::ostream& operator <<(std::ostream& rOStream, const FESpaceUtility& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

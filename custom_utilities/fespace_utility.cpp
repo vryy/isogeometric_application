@@ -13,7 +13,7 @@ namespace Kratos
 {
 
 template<int TDim, typename TLocalCoordinateType>
-typename FESpace<TDim, TLocalCoordinateType>::Pointer FESpaceUtility<TDim, TLocalCoordinateType>::CreateEmptyFESpace(const std::string& type)
+typename FESpace<TDim, TLocalCoordinateType>::Pointer FESpaceUtility::CreateEmptyFESpace(const std::string& type)
 {
     const std::string wof_name = ("WeightedFESpace" + std::to_string(TDim) + "D_over_BSplinesFESpace" + std::to_string(TDim) + "D");
 
@@ -34,9 +34,9 @@ typename FESpace<TDim, TLocalCoordinateType>::Pointer FESpaceUtility<TDim, TLoca
 }
 
 /* template class instantiation */
-template class FESpaceUtility<0, double>;
-template class FESpaceUtility<1, double>;
-template class FESpaceUtility<2, double>;
-template class FESpaceUtility<3, double>;
+template FESpace<0, double>::Pointer FESpaceUtility::CreateEmptyFESpace<0, double>(const std::string&);
+template FESpace<1, double>::Pointer FESpaceUtility::CreateEmptyFESpace<1, double>(const std::string&);
+template FESpace<2, double>::Pointer FESpaceUtility::CreateEmptyFESpace<2, double>(const std::string&);
+template FESpace<3, double>::Pointer FESpaceUtility::CreateEmptyFESpace<3, double>(const std::string&);
 
 } // end namespace Kratos

@@ -1174,7 +1174,7 @@ private:
 
         std::string fespace_type;
         rSerializer.load("FESpaceType", fespace_type);
-        mpFESpace = FESpaceUtility<TDim, TLocalCoordinateType>::CreateEmptyFESpace(fespace_type);
+        mpFESpace = FESpaceUtility::CreateEmptyFESpace<TDim, TLocalCoordinateType>(fespace_type);
         rSerializer.load("FESpace", *mpFESpace);
 
         auto pGridFunc = ControlPointGridFunctionType::Create(FESpaceType::Create(), ControlPointGridFunctionType::ControlGridType::Create());

@@ -40,16 +40,16 @@ typename TPatchInterfaceType::Pointer PatchInterfaceUtility::CreateEmptyPatchInt
 
 /// template function instantiation
 
-template PatchSelector<1>::RealPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<1>::RealPatchInterface>(const std::string&);
-template PatchSelector<2>::RealPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<2>::RealPatchInterface>(const std::string&);
-template PatchSelector<3>::RealPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<3>::RealPatchInterface>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchSelector<1>::RealPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<1>::RealPatchInterface>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchSelector<2>::RealPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<2>::RealPatchInterface>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchSelector<3>::RealPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<3>::RealPatchInterface>(const std::string&);
 
-template PatchSelector<1>::ComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<1>::ComplexPatchInterface>(const std::string&);
-template PatchSelector<2>::ComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<2>::ComplexPatchInterface>(const std::string&);
-template PatchSelector<3>::ComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<3>::ComplexPatchInterface>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchSelector<1>::ComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<1>::ComplexPatchInterface>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchSelector<2>::ComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<2>::ComplexPatchInterface>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchSelector<3>::ComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<3>::ComplexPatchInterface>(const std::string&);
 
-template PatchSelector<1>::GComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<1>::GComplexPatchInterface>(const std::string&);
-template PatchSelector<2>::GComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<2>::GComplexPatchInterface>(const std::string&);
-template PatchSelector<3>::GComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<3>::GComplexPatchInterface>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchSelector<1>::GComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<1>::GComplexPatchInterface>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchSelector<2>::GComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<2>::GComplexPatchInterface>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchSelector<3>::GComplexPatchInterface::Pointer PatchInterfaceUtility::CreateEmptyPatchInterface<PatchSelector<3>::GComplexPatchInterface>(const std::string&);
 
 } // namespace Kratos.

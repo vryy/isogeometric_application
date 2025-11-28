@@ -66,7 +66,7 @@ inline double BCellManager_Helper::GetKnotValue<typename Knot<double>::Pointer>(
  * TCellType must be sub-class of BCell
  */
 template<class TCellType>
-class BaseBCellManager : public CellContainer
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) BaseBCellManager : public CellContainer
 {
 public:
     /// Pointer definition
@@ -284,7 +284,7 @@ private:
  * Abstract BCell Manager
  */
 template<int TDim, class TCellType>
-class BCellManager : public BaseBCellManager<TCellType>
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) BCellManager : public BaseBCellManager<TCellType>
 {
 public:
     KRATOS_CLASS_POINTER_DEFINITION(BCellManager);

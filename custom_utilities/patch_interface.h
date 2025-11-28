@@ -23,7 +23,7 @@ namespace Kratos
  * The interface is designed using half-edge philosophy, in which the interface keeps a pointer to the interface of the other side.
  */
 template<int TDim, typename TLocalCoordinateType = double, typename TCoordinateType = double, typename TDataType = double>
-class PatchInterface
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchInterface
 #ifdef SD_APP_FORWARD_COMPATIBILITY
     : public std::enable_shared_from_this<PatchInterface<TDim, TLocalCoordinateType, TCoordinateType, TDataType> >
 #else

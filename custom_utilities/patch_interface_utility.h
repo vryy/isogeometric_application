@@ -21,7 +21,7 @@ namespace Kratos
 /**
  * Utility class for patch interface handling and creation
  */
-class PatchInterfaceUtility
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) PatchInterfaceUtility
 {
 public:
     /// Pointer definition

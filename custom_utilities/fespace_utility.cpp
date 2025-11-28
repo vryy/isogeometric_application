@@ -34,9 +34,9 @@ typename FESpace<TDim, TLocalCoordinateType>::Pointer FESpaceUtility::CreateEmpt
 }
 
 /* template class instantiation */
-template FESpace<0, double>::Pointer FESpaceUtility::CreateEmptyFESpace<0, double>(const std::string&);
-template FESpace<1, double>::Pointer FESpaceUtility::CreateEmptyFESpace<1, double>(const std::string&);
-template FESpace<2, double>::Pointer FESpaceUtility::CreateEmptyFESpace<2, double>(const std::string&);
-template FESpace<3, double>::Pointer FESpaceUtility::CreateEmptyFESpace<3, double>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) FESpace<0, double>::Pointer FESpaceUtility::CreateEmptyFESpace<0, double>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) FESpace<1, double>::Pointer FESpaceUtility::CreateEmptyFESpace<1, double>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) FESpace<2, double>::Pointer FESpaceUtility::CreateEmptyFESpace<2, double>(const std::string&);
+template KRATOS_API(ISOGEOMETRIC_APPLICATION) FESpace<3, double>::Pointer FESpaceUtility::CreateEmptyFESpace<3, double>(const std::string&);
 
 } // end namespace Kratos

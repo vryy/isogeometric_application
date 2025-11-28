@@ -22,7 +22,7 @@ namespace Kratos
 /**
 Utility class for FESpace.
  */
-class FESpaceUtility
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) FESpaceUtility
 {
 public:
     /// Pointer definition

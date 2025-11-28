@@ -87,7 +87,7 @@ struct BSplinesIndexingUtility_Transpose_Helper
 This class provides sub-routines to index the BSplines basis function in 1D, 2D, 3D.
 The base index is assumed to be 1.
  */
-class BSplinesIndexingUtility
+class KRATOS_API(ISOGEOMETRIC_APPLICATION) BSplinesIndexingUtility
 {
 public:
     /// Pointer definition

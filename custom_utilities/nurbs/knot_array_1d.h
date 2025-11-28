@@ -48,6 +48,25 @@ public:
     typedef typename knot_container_t::iterator iterator;
     typedef typename knot_container_t::const_iterator const_iterator;
 
+    struct ValueComparator
+    {
+    private:
+        const TDataType epsilon_;
+
+    public:
+
+        explicit ValueComparator(TDataType tolerance) : epsilon_(tolerance)
+        {}
+
+        bool operator() (const TDataType a, const TDataType b) const {
+            if (std::abs(a - b) <= epsilon_) {
+                return false;
+            }
+
+            return a < b;
+        }
+    };
+
     /// Default constructor
     KnotArray1D() {}
 
@@ -234,7 +253,8 @@ public:
     }
 
     /// Return the values of the knot vector
-    void GetValues(std::vector<TDataType>& r_values) const
+    template<typename TVectorType>
+    void GetValues(TVectorType& r_values) const
     {
         if (r_values.size() != mpKnots.size())
         {
@@ -245,6 +265,39 @@ public:
         {
             r_values[i] = mpKnots[i]->Value();
         }
+    }
+
+    /// Return the inner values of the knot vector, assuming open one
+    template<typename TVectorType>
+    void GetInnerValues(TVectorType& r_values, const unsigned int order) const
+    {
+        int size = mpKnots.size() - 2*(order+1);
+        if (size < 0)
+            KRATOS_ERROR << "Invalid order " << order;
+
+        if (r_values.size() != size)
+            r_values.resize(size);
+
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            r_values[i] = mpKnots[i+order+1]->Value();
+        }
+    }
+
+    /// Return the non-repeated values of the knot vector
+    template<typename TVectorType>
+    void GetNonRepeatedValues(TVectorType& r_values, const TDataType TOL = 1e-13) const
+    {
+        ValueComparator comp(TOL);
+        std::set<TDataType, ValueComparator> nr_values(comp);
+
+        for (std::size_t i = 0; i < mpKnots.size(); ++i)
+            nr_values.insert(mpKnots[i]->Value());
+
+        r_values.clear();
+        r_values.reserve(nr_values.size());
+        for (auto v : nr_values)
+            r_values.push_back(v);
     }
 
     /// Get the knot repeated number

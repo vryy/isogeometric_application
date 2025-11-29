@@ -189,8 +189,7 @@ void MultiPatchUtility_PrintAddress(MultiPatchUtility& rDummy, typename TClassTy
 //////////////////////////////////////////////////
 
 template<class TPatchType>
-void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy,
-        typename TPatchType::Pointer& pPatch,
+void MultiPatchRefinementUtility_InsertKnots(typename TPatchType::Pointer& pPatch,
         const boost::python::list& ins_knots)
 {
     std::vector<std::vector<typename TPatchType::LocalCoordinateType> > ins_knots_array(TPatchType::Dim);
@@ -199,12 +198,11 @@ void MultiPatchRefinementUtility_InsertKnots(MultiPatchRefinementUtility& rDummy
     if (dim != TPatchType::Dim)
         KRATOS_ERROR << "invalid dimension " << dim;
 
-    rDummy.InsertKnots<TPatchType>(pPatch, ins_knots_array);
+    MultiPatchRefinementUtility::InsertKnots<TPatchType>(pPatch, ins_knots_array);
 }
 
 template<class TPatchType>
-boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinementUtility& rDummy,
-        typename TPatchType::Pointer& pPatch,
+boost::python::dict MultiPatchRefinementUtility_InsertKnots2(typename TPatchType::Pointer& pPatch,
         const boost::python::list& ins_knots)
 {
     std::vector<std::vector<typename TPatchType::LocalCoordinateType> > ins_knots_array(TPatchType::Dim);
@@ -214,7 +212,7 @@ boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinemen
         KRATOS_ERROR << "Invalid dimension " << dim;
 
     std::map<std::size_t, Matrix> trans_mats;
-    rDummy.InsertKnots<TPatchType>(pPatch, ins_knots_array, trans_mats);
+    MultiPatchRefinementUtility::InsertKnots<TPatchType>(pPatch, ins_knots_array, trans_mats);
     // KRATOS_WATCH(trans_mats.size())
 
     boost::python::dict res;
@@ -227,8 +225,7 @@ boost::python::dict MultiPatchRefinementUtility_InsertKnots2(MultiPatchRefinemen
 }
 
 template<class TPatchType>
-void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDummy,
-        typename TPatchType::Pointer& pPatch,
+void MultiPatchRefinementUtility_DegreeElevate(typename TPatchType::Pointer& pPatch,
         const boost::python::list& order_increment)
 {
     std::vector<std::size_t> order_incr_array(TPatchType::Dim);
@@ -237,7 +234,7 @@ void MultiPatchRefinementUtility_DegreeElevate(MultiPatchRefinementUtility& rDum
     if (dim != TPatchType::Dim)
         KRATOS_ERROR << "Invalid dimension " << dim;
 
-    rDummy.DegreeElevate<TPatchType>(pPatch, order_incr_array);
+    MultiPatchRefinementUtility::DegreeElevate<TPatchType>(pPatch, order_incr_array);
 }
 
 //////////////////////////////////////////////////
@@ -669,6 +666,11 @@ void IsogeometricApplication_AddFrontendUtilitiesToPython()
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<PatchSelector<1>::ComplexPatch>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<PatchSelector<2>::ComplexPatch>)
     .def("DegreeElevate", MultiPatchRefinementUtility_DegreeElevate<PatchSelector<3>::ComplexPatch>)
+    // declare the static method. Same name is allowed for polymophism methods.
+    .staticmethod("InsertKnots")
+    .staticmethod("InsertKnots2")
+    .staticmethod("InsertKnotsGetTrans")
+    .staticmethod("DegreeElevate")
     ;
 
     class_<BSplinesPatchUtility, BSplinesPatchUtility::Pointer, boost::noncopyable>

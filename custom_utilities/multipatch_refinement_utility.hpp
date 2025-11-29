@@ -89,7 +89,7 @@ void MultiPatchRefinementUtility::InsertKnots(typename TPatchType::Pointer& pPat
         typename BSplinesFESpaceType::Pointer pNewFESpace = typename BSplinesFESpaceType::Pointer(new BSplinesFESpaceType());
 
         Matrix T;
-        this->ComputeBsplinesKnotInsertionCoefficients<Dim>(T, new_knots, pFESpace, ins_knots);
+        ComputeBsplinesKnotInsertionCoefficients<Dim>(T, new_knots, pFESpace, ins_knots);
 
         std::vector<std::size_t> new_size(Dim);
         for (std::size_t dim = 0; dim < Dim; ++dim)
@@ -326,7 +326,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename TPatchType::Pointer& pP
         typename StructuredControlGrid<Dim, ControlPoint<double> >::Pointer pNewControlPoints
             = typename StructuredControlGrid<Dim, ControlPoint<double> >::Pointer(new StructuredControlGrid<Dim, ControlPoint<double> >(new_size)); // note here that the size is just temporary, it will be raised later on.
 
-        this->ComputeBsplinesDegreeElevation<Dim, ControlPoint<double> >(*pControlPoints, *pFESpace, order_increment, *pNewControlPoints, new_knots);
+        ComputeBsplinesDegreeElevation<Dim, ControlPoint<double> >(*pControlPoints, *pFESpace, order_increment, *pNewControlPoints, new_knots);
 
         for (std::size_t dim = 0; dim < Dim; ++dim)
         {
@@ -362,7 +362,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename TPatchType::Pointer& pP
             typename StructuredControlGrid<Dim, double>::Pointer pDoubleControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<Dim, double> >((*it)->pControlGrid());
             if (pDoubleControlGrid == nullptr)
                 KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
-            this->ComputeBsplinesDegreeElevation<Dim, double>(*pDoubleControlGrid, *pFESpace, order_increment, *pNewDoubleControlGrid, new_knots);
+            ComputeBsplinesDegreeElevation<Dim, double>(*pDoubleControlGrid, *pFESpace, order_increment, *pNewDoubleControlGrid, new_knots);
             pNewDoubleControlGrid->SetName((*it)->pControlGrid()->Name());
             pNewPatch->template CreateGridFunction<double>(pNewDoubleControlGrid);
         }
@@ -375,7 +375,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename TPatchType::Pointer& pP
             typename StructuredControlGrid<Dim, array_1d<double, 3> >::Pointer pArray1DControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<Dim, array_1d<double, 3> > >((*it)->pControlGrid());
             if (pArray1DControlGrid == nullptr)
                 KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
-            this->ComputeBsplinesDegreeElevation<Dim, array_1d<double, 3> >(*pArray1DControlGrid, *pFESpace, order_increment, *pNewArray1DControlGrid, new_knots);
+            ComputeBsplinesDegreeElevation<Dim, array_1d<double, 3> >(*pArray1DControlGrid, *pFESpace, order_increment, *pNewArray1DControlGrid, new_knots);
             pNewArray1DControlGrid->SetName((*it)->pControlGrid()->Name());
             pNewPatch->template CreateGridFunction<array_1d<double, 3> >(pNewArray1DControlGrid);
         }
@@ -387,7 +387,7 @@ void MultiPatchRefinementUtility::DegreeElevate(typename TPatchType::Pointer& pP
             typename StructuredControlGrid<Dim, Vector>::Pointer pVectorControlGrid = iga::dynamic_pointer_cast<StructuredControlGrid<Dim, Vector> >((*it)->pControlGrid());
             if (pVectorControlGrid == nullptr)
                 KRATOS_ERROR << "The cast to StructuredControlGrid is failed.";
-            this->ComputeBsplinesDegreeElevation<Dim, Vector>(*pVectorControlGrid, *pFESpace, order_increment, *pNewVectorControlGrid, new_knots);
+            ComputeBsplinesDegreeElevation<Dim, Vector>(*pVectorControlGrid, *pFESpace, order_increment, *pNewVectorControlGrid, new_knots);
             pNewVectorControlGrid->SetName((*it)->pControlGrid()->Name());
             pNewPatch->template CreateGridFunction<Vector>(pNewVectorControlGrid);
         }

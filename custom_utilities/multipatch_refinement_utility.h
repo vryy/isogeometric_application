@@ -54,7 +54,7 @@ struct ComputeBsplinesKnotInsertionCoefficients_Helper
 };
 
 /**
-Utility to control the refinement on multipatch structure
+ * Utility to perform the refinement on multipatch structure
  */
 class MultiPatchRefinementUtility
 {
@@ -66,43 +66,37 @@ public:
     typedef KnotArray1D<double> knot_container_t;
     typedef typename knot_container_t::knot_t knot_t;
 
-    /// Default constructor
-    MultiPatchRefinementUtility() {}
-
-    /// Destructor
-    virtual ~MultiPatchRefinementUtility() {}
-
     /*************************************************************************
                                     B-SPLINES
     *************************************************************************/
 
     /// Insert the knots to the NURBS patch and make it compatible across neighbors
     template<class TPatchType>
-    void InsertKnots(typename TPatchType::Pointer& pPatch,
+    static void InsertKnots(typename TPatchType::Pointer& pPatch,
                      const std::vector<std::vector<typename TPatchType::LocalCoordinateType> >& ins_knots)
     {
         std::map<std::size_t, std::vector<int> > refined_patches;
         std::map<std::size_t, Matrix> trans_mats;
         bool record_trans_mat = false;
-        this->InsertKnots<TPatchType>(pPatch, refined_patches, ins_knots, trans_mats, record_trans_mat);
+        InsertKnots<TPatchType>(pPatch, refined_patches, ins_knots, trans_mats, record_trans_mat);
     }
 
     /// Insert the knots to the NURBS patch and make it compatible across neighbors
     /// The transformation matrix will be stored. It will be useful for geometric multigrid.
     template<class TPatchType>
-    void InsertKnots(typename TPatchType::Pointer& pPatch,
+    static void InsertKnots(typename TPatchType::Pointer& pPatch,
                      const std::vector<std::vector<typename TPatchType::LocalCoordinateType> >& ins_knots,
                      std::map<std::size_t, Matrix>& trans_mats)
     {
         std::map<std::size_t, std::vector<int> > refined_patches;
         bool record_trans_mat = true;
-        this->InsertKnots<TPatchType>(pPatch, refined_patches, ins_knots, trans_mats, record_trans_mat);
+        InsertKnots<TPatchType>(pPatch, refined_patches, ins_knots, trans_mats, record_trans_mat);
     }
 
     /// Insert the knots to the NURBS patch and make it compatible across neighbors
     /// if record_trans_mat is true, the transformation matrix for each patch will be stored in trans_mats
     template<class TPatchType>
-    void InsertKnots(typename TPatchType::Pointer& pPatch,
+    static void InsertKnots(typename TPatchType::Pointer& pPatch,
                      std::map<std::size_t, std::vector<int> >& refined_patches,
                      const std::vector<std::vector<typename TPatchType::LocalCoordinateType> >& ins_knots,
                      std::map<std::size_t, Matrix>& trans_mats,
@@ -110,68 +104,50 @@ public:
 
     /// Degree elevation for the NURBS patch and make it compatible across neighbors
     template<class TPatchType>
-    void DegreeElevate(typename TPatchType::Pointer& pPatch,
+    static void DegreeElevate(typename TPatchType::Pointer& pPatch,
                        const std::vector<std::size_t>& order_increment)
     {
         std::map<std::size_t, std::vector<int> > refined_patches;
-        this->DegreeElevate<TPatchType>(pPatch, refined_patches, order_increment);
+        DegreeElevate<TPatchType>(pPatch, refined_patches, order_increment);
     }
 
     /// Degree elevation for the NURBS patch and make it compatible across neighbors
     template<class TPatchType>
-    void DegreeElevate(typename TPatchType::Pointer& pPatch,
+    static void DegreeElevate(typename TPatchType::Pointer& pPatch,
                        std::map<std::size_t, std::vector<int> >& refined_patches,
                        const std::vector<std::size_t>& order_increment);
 
     /*************************************************************************
                               HIERARCHICAL B-SPLINES
+                                    (TODO)
     *************************************************************************/
-
-    /// Information
-    virtual void PrintInfo(std::ostream& rOStream) const
-    {
-        rOStream << "MultiPatchRefinementUtility";
-    }
-
-    virtual void PrintData(std::ostream& rOStream) const
-    {
-    }
 
 private:
 
     /// Compute the transformation matrix for knot insertion (NURBS version)
     template<int TDim>
-    void ComputeBsplinesKnotInsertionCoefficients(
+    static void ComputeBsplinesKnotInsertionCoefficients(
         Matrix& T,
         std::vector<std::vector<double> >& new_knots,
         typename BSplinesFESpace<TDim>::Pointer& pFESpace,
-        const std::vector<std::vector<double> >& ins_knots) const
+        const std::vector<std::vector<double> >& ins_knots)
     {
         ComputeBsplinesKnotInsertionCoefficients_Helper<TDim>::Compute(T, new_knots, pFESpace, ins_knots);
     }
 
     template<int TDim, typename TDataType>
-    void ComputeBsplinesDegreeElevation(
+    static void ComputeBsplinesDegreeElevation(
         const StructuredControlGrid<TDim, TDataType>& ControlValues,
         const BSplinesFESpace<TDim>& rFESpace,
         const std::vector<std::size_t>& order_increment,
         StructuredControlGrid<TDim, TDataType>& NewControlValues,
-        std::vector<std::vector<double> >& new_knots) const
+        std::vector<std::vector<double> >& new_knots)
     {
         ComputeBsplinesDegreeElevation_Helper<TDim, TDataType>::Compute(ControlValues,
                 rFESpace, order_increment, NewControlValues, new_knots);
     }
 
 };
-
-/// output stream function
-inline std::ostream& operator <<(std::ostream& rOStream, const MultiPatchRefinementUtility& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
 
 } // namespace Kratos.
 

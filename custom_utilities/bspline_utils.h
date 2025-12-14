@@ -976,14 +976,13 @@ public:
     /// REF: int bspdegelev(int d, double *c, int mc, int nc, double *k, int nk,
     ///                          int t, int *nh, double *ic, double *ik)
     /// REMARKS: This function can also be used to elevate the degree of NURBS
-    template<typename TDataType, class ValuesContainerType, class ValuesContainerType1, class ValuesContainerType2>
+    template<class ValuesContainerType, class ValuesContainerType1, class ValuesContainerType2>
     static int ComputeBsplinesDegreeElevation1D(int d, // order of B-Splines
             const ValuesContainerType& ctrl, // control values
             const ValuesContainerType1& k, // knot vector
             int t, // order increment
             ValuesContainerType& ictrl, // new control values
-            ValuesContainerType2& ik, // new knot vector
-            const TDataType& zero) // a sample zero control value to avoid explicit declaring TDataType
+            ValuesContainerType2& ik) // new knot vector
     {
         int nc = ctrl.size();
         int nk = k.size();
@@ -1126,12 +1125,18 @@ public:
             /* degree elevate bezier */
             for (i = lbz; i <= ph; i++)
             {
-                ebpts[i] = zero;
                 mpi = std::min(d, i);
-                for (j = std::max(0, i - t); j <= mpi; j++)
-                {
-                    ebpts[i] = ebpts[i] + bezalfs[i][j] * bpts[j];
-                }
+                j = std::max(0, i - t);
+                assert(j <= mpi); // this is crucial to have the loop correct, otherwise we have to set
+                        // ebpts[i] manually to zero
+                #ifdef SIZE_CHECK
+                if (j > mpi)
+                    KRATOS_ERROR << "Invalid condition found";
+                #endif
+                ebpts[i] = bezalfs[i][j] * bpts[j];
+                j++;
+                for (; j <= mpi; j++)
+                    ebpts[i] += bezalfs[i][j] * bpts[j];
             }
             /* end of degree elevating bezier */
 
@@ -1241,7 +1246,7 @@ public:
 
     /// Degree elevation for B-Splines surface
     /// REMARKS: This function can also be used to elevate the degree of NURBS
-    template<typename TDataType, class ValuesContainerType, class ValuesContainerType1, class ValuesContainerType2>
+    template<class ValuesContainerType, class ValuesContainerType1, class ValuesContainerType2>
     static int ComputeBsplinesDegreeElevation2D(int d1, int d2, // order of B-Splines
             const ValuesContainerType& ctrl, // control values
             const ValuesContainerType1& k1, // knot vector
@@ -1250,9 +1255,10 @@ public:
             int t2, // order increment
             ValuesContainerType& ictrl, // new control values
             ValuesContainerType2& ik1, // new knot vector
-            ValuesContainerType2& ik2, // new knot vector
-            const TDataType& zero) // a sample zero control value to avoid explicit declaring TDataType
+            ValuesContainerType2& ik2) // new knot vector
     {
+        typedef typename ValuesContainerType::DataType DataType;
+
         // firstly elevate the degree along the v-direction
         // this can be done by collecting the v-line of control values and then elevate the degree
 
@@ -1265,15 +1271,15 @@ public:
 
         for (int i = 0; i < n1; ++i)
         {
-            std::vector<typename ValuesContainerType::DataType> ctrl_v(n2);
-            std::vector<typename ValuesContainerType::DataType> ictrl_v(n2); // n2 is just temporary size
+            std::vector<DataType> ctrl_v(n2);
+            std::vector<DataType> ictrl_v(n2); // n2 is just temporary size
 
             for (int j = 0; j < n2; ++j)
             {
                 ctrl_v[j] = ctrl(i, j);
             }
 
-            ComputeBsplinesDegreeElevation1D(d2, ctrl_v, k2, t2, ictrl_v, ik2, zero);
+            ComputeBsplinesDegreeElevation1D(d2, ctrl_v, k2, t2, ictrl_v, ik2);
             // here it's assumed that newly ik2 is the same for each iteration
 
             if (i == 0)
@@ -1291,15 +1297,15 @@ public:
         // the degree in the second dimension can be elevated in the same way
         for (int j = 0; j < new_n2; ++j)
         {
-            std::vector<typename ValuesContainerType::DataType> ctrl_u(n1);
-            std::vector<typename ValuesContainerType::DataType> ictrl_u(n1); // n1 is just temporary size
+            std::vector<DataType> ctrl_u(n1);
+            std::vector<DataType> ictrl_u(n1); // n1 is just temporary size
 
             for (int i = 0; i < n1; ++i)
             {
                 ctrl_u[i] = temp_ictrl(i, j);
             }
 
-            ComputeBsplinesDegreeElevation1D(d1, ctrl_u, k1, t1, ictrl_u, ik1, zero);
+            ComputeBsplinesDegreeElevation1D(d1, ctrl_u, k1, t1, ictrl_u, ik1);
             // here it's assumed that newly ik1 is the same for each iteration
 
             if (j == 0)
@@ -1319,7 +1325,7 @@ public:
 
     /// Degree elevation for B-Splines volume
     /// REMARKS: This function can also be used to elevate the degree of NURBS
-    template<typename TDataType, class ValuesContainerType, class ValuesContainerType1, class ValuesContainerType2>
+    template<class ValuesContainerType, class ValuesContainerType1, class ValuesContainerType2>
     static int ComputeBsplinesDegreeElevation3D(int d1, int d2, int d3, // order of B-Splines
             const ValuesContainerType& ctrl, // control values
             const ValuesContainerType1& k1, // knot vector
@@ -1331,9 +1337,10 @@ public:
             ValuesContainerType& ictrl, // new control values
             ValuesContainerType2& ik1, // new knot vector
             ValuesContainerType2& ik2, // new knot vector
-            ValuesContainerType2& ik3, // new knot vector
-            const TDataType& zero) // a sample zero control value to avoid explicit declaring TDataType
+            ValuesContainerType2& ik3) // new knot vector
     {
+        typedef typename ValuesContainerType::DataType DataType;
+
         // firstly elevate the degree along the w-direction
         // this can be done by collecting the w-line of control values and then elevate the degree
 
@@ -1349,15 +1356,15 @@ public:
         {
             for (int j = 0; j < n2; ++j)
             {
-                std::vector<typename ValuesContainerType::DataType> ctrl_w(n3);
-                std::vector<typename ValuesContainerType::DataType> ictrl_w(n3); // n3 is just temporary size
+                std::vector<DataType> ctrl_w(n3);
+                std::vector<DataType> ictrl_w(n3); // n3 is just temporary size
 
                 for (int k = 0; k < n3; ++k)
                 {
                     ctrl_w[k] = ctrl(i, j, k);
                 }
 
-                ComputeBsplinesDegreeElevation1D(d3, ctrl_w, k3, t3, ictrl_w, ik3, zero);
+                ComputeBsplinesDegreeElevation1D(d3, ctrl_w, k3, t3, ictrl_w, ik3);
                 // here it's assumed that newly ik3 is the same for each iteration
 
                 if (i == 0 && j == 0)
@@ -1380,15 +1387,15 @@ public:
         {
             for (int k = 0; k < new_n3; ++k)
             {
-                std::vector<typename ValuesContainerType::DataType> ctrl_v(n2);
-                std::vector<typename ValuesContainerType::DataType> ictrl_v(n2); // n2 is just temporary size
+                std::vector<DataType> ctrl_v(n2);
+                std::vector<DataType> ictrl_v(n2); // n2 is just temporary size
 
                 for (int j = 0; j < n2; ++j)
                 {
                     ctrl_v[j] = temp_ictrl(i, j, k);
                 }
 
-                ComputeBsplinesDegreeElevation1D(d2, ctrl_v, k2, t2, ictrl_v, ik2, zero);
+                ComputeBsplinesDegreeElevation1D(d2, ctrl_v, k2, t2, ictrl_v, ik2);
                 // here it's assumed that newly ik2 is the same for each iteration
 
                 if (i == 0 && k == 0)
@@ -1409,15 +1416,15 @@ public:
         {
             for (int k = 0; k < new_n3; ++k)
             {
-                std::vector<typename ValuesContainerType::DataType> ctrl_u(n1);
-                std::vector<typename ValuesContainerType::DataType> ictrl_u(n1); // n1 is just temporary size
+                std::vector<DataType> ctrl_u(n1);
+                std::vector<DataType> ictrl_u(n1); // n1 is just temporary size
 
                 for (int i = 0; i < n1; ++i)
                 {
                     ctrl_u[i] = temp_ictrl2(i, j, k);
                 }
 
-                ComputeBsplinesDegreeElevation1D(d1, ctrl_u, k1, t1, ictrl_u, ik1, zero);
+                ComputeBsplinesDegreeElevation1D(d1, ctrl_u, k1, t1, ictrl_u, ik1);
                 // here it's assumed that newly ik1 is the same for each iteration
 
                 if (j == 0 && k == 0)
@@ -1622,5 +1629,6 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 }// namespace Kratos.
 
 #undef FUNCTIONALITY_CHECK
+#undef SIZE_CHECK
 
 #endif // KRATOS_BSPLINE_UTILS_H_INCLUDED  defined

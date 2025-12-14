@@ -36,6 +36,7 @@ public:
 
     /// Type definition
     typedef TDataType DataType;
+    typedef TDataType value_type;   // std-like typedef
 
     /// Default constructor
     ControlGrid() : mName("UNKNOWN") {}

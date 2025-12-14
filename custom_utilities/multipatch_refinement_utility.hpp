@@ -539,15 +539,12 @@ struct ComputeBsplinesDegreeElevation_Helper<1, TDataType>
         StructuredControlGrid<1, TDataType>& NewControlValues,
         std::vector<std::vector<double> >& new_knots)
     {
-        TDataType null_control_value(0.0);
-
         BSplineUtils::ComputeBsplinesDegreeElevation1D(rFESpace.Order(0),
                 ControlValues,
                 rFESpace.KnotVector(0),
                 order_increment[0],
                 NewControlValues,
-                new_knots[0],
-                null_control_value);
+                new_knots[0]);
     }
 };
 
@@ -560,15 +557,12 @@ struct ComputeBsplinesDegreeElevation_Helper<2, TDataType>
         StructuredControlGrid<2, TDataType>& NewControlValues,
         std::vector<std::vector<double> >& new_knots)
     {
-        TDataType null_control_value(0.0);
-
         BSplineUtils::ComputeBsplinesDegreeElevation2D(rFESpace.Order(0), rFESpace.Order(1),
                 ControlValues,
                 rFESpace.KnotVector(0), rFESpace.KnotVector(1),
                 order_increment[0], order_increment[1],
                 NewControlValues,
-                new_knots[0], new_knots[1],
-                null_control_value);
+                new_knots[0], new_knots[1]);
     }
 };
 
@@ -581,15 +575,12 @@ struct ComputeBsplinesDegreeElevation_Helper<3, TDataType>
         StructuredControlGrid<3, TDataType>& NewControlValues,
         std::vector<std::vector<double> >& new_knots)
     {
-        TDataType null_control_value(0.0);
-
         BSplineUtils::ComputeBsplinesDegreeElevation3D(rFESpace.Order(0), rFESpace.Order(1), rFESpace.Order(2),
                 ControlValues,
                 rFESpace.KnotVector(0), rFESpace.KnotVector(1), rFESpace.KnotVector(2),
                 order_increment[0], order_increment[1], order_increment[2],
                 NewControlValues,
-                new_knots[0], new_knots[1], new_knots[2],
-                null_control_value);
+                new_knots[0], new_knots[1], new_knots[2]);
     }
 };
 

@@ -10,13 +10,11 @@ LICENSE: see isogeometric_application/LICENSE.txt
 //
 
 // System includes
-#include <string>
 
 // External includes
-#include <boost/python.hpp>
 
 // Project includes
-#include "includes/define.h"
+#include "includes/define_python.h"
 #include "python/pointer_vector_set_python_interface.h"
 #include "python/python_utils.h"
 #include "custom_utilities/patch.h"
@@ -271,18 +269,6 @@ typename TPatchType::BoundaryPatchType::Pointer Patch_ConstructBoundaryPatch(TPa
     return rDummy.ConstructBoundaryPatch(side);
 }
 
-template<class TPatchType>
-void Patch_save(TPatchType& rObject, Serializer& rSerializer, const std::string& rName)
-{
-    rSerializer.save(rName, rObject);
-}
-
-template<class TPatchType>
-void Patch_load(TPatchType& rObject, Serializer& rSerializer, const std::string& rName)
-{
-    rSerializer.load(rName, rObject);
-}
-
 template<class TMultiPatchType>
 static typename TMultiPatchType::Pointer MultiPatch_init(const boost::python::list& patch_list)
 {
@@ -429,8 +415,8 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
     .def("SetLocalSearchTolerance", &PatchType::SetLocalSearchTolerance)
     .def("SetLocalSearchMaxIters", &PatchType::SetLocalSearchMaxIters)
     .def("Validate", &PatchType::Validate)
-    .def("Save", &Patch_save<PatchType>)
-    .def("Load", &Patch_load<PatchType>)
+    .def("Save", &Serializer_save_wrapper<PatchType>)
+    .def("Load", &Serializer_load_wrapper<PatchType>)
     .def(self_ns::str(self))
     ;
 
@@ -484,8 +470,8 @@ void IsogeometricApplication_AddPatchesToPython_Helper(const std::string& Prefix
     .def("LocalCoordinates", &Patch_LocalCoordinates<MultiPatchType>)
     .def("Validate", &MultiPatchType::Validate)
     .def("Clone", &MultiPatchType::Clone)
-    .def("Save", &Patch_save<MultiPatchType>)
-    .def("Load", &Patch_load<MultiPatchType>)
+    .def("Save", &Serializer_save_wrapper<MultiPatchType>)
+    .def("Load", &Serializer_load_wrapper<MultiPatchType>)
     .def(self_ns::str(self))
     ;
 }
@@ -645,8 +631,8 @@ void IsogeometricApplication_AddPatchesToPython()
     ("MultiPatchWrapper", init<BaseMultiPatch::Pointer>())
     .def(init<>())
     .def("Get", &MultiPatchWrapper::Get)
-    .def("Save", &Patch_save<MultiPatchWrapper>)
-    .def("Load", &Patch_load<MultiPatchWrapper>)
+    .def("Save", &Serializer_save_wrapper<MultiPatchWrapper>)
+    .def("Load", &Serializer_load_wrapper<MultiPatchWrapper>)
     ;
 
     IsogeometricApplication_AddPatchesToPython_Helper<1, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE, KRATOS_DOUBLE_TYPE>("");

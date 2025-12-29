@@ -585,6 +585,15 @@ public:
         }
     }
 
+    /// Print the value only
+    void PrintValue(std::ostream& rOStream) const
+    {
+        rOStream << "[";
+        for (const_iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+            rOStream << (*it)->Value() << ", ";
+        rOStream << "]";
+    }
+
 private:
 
     knot_container_t mpKnots;

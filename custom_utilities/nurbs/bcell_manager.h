@@ -384,8 +384,9 @@ public:
         {
             if (*it == p_cell)
             {
+                auto bc = static_cast<SuperType::cell_t>(&(**it));
                 BaseType::mpCells.erase(it);
-                SuperType::erase(&(**it));
+                SuperType::erase(bc);
 
 #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
                 // update the r-tree
@@ -550,8 +551,9 @@ public:
         {
             if (*it == p_cell)
             {
+                auto bc = static_cast<SuperType::cell_t>(&(**it));
                 BaseType::mpCells.erase(it);
-                SuperType::erase(&(**it));
+                SuperType::erase(bc);
 
 #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
                 // update the r-tree
@@ -718,8 +720,9 @@ public:
         {
             if (*it == p_cell)
             {
+                auto bc = static_cast<SuperType::cell_t>(&(**it));
                 BaseType::mpCells.erase(it);
-                SuperType::erase(&(**it));
+                SuperType::erase(bc);
 
 #ifdef USE_R_TREE_TO_SEARCH_FOR_CELLS
                 // update the r-tree

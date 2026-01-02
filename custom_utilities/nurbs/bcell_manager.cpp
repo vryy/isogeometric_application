@@ -12,4 +12,3 @@ bool BCellManager_RtreeSearchCallback(std::size_t id, void* arg)
 }
 
 }
-

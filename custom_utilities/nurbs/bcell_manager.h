@@ -384,7 +384,7 @@ public:
         {
             if (*it == p_cell)
             {
-                auto bc = static_cast<SuperType::cell_t>(&(**it));
+                auto bc = static_cast<typename SuperType::cell_t>(&(**it));
                 BaseType::mpCells.erase(it);
                 SuperType::erase(bc);
 
@@ -551,7 +551,7 @@ public:
         {
             if (*it == p_cell)
             {
-                auto bc = static_cast<SuperType::cell_t>(&(**it));
+                auto bc = static_cast<typename SuperType::cell_t>(&(**it));
                 BaseType::mpCells.erase(it);
                 SuperType::erase(bc);
 
@@ -720,7 +720,7 @@ public:
         {
             if (*it == p_cell)
             {
-                auto bc = static_cast<SuperType::cell_t>(&(**it));
+                auto bc = static_cast<typename SuperType::cell_t>(&(**it));
                 BaseType::mpCells.erase(it);
                 SuperType::erase(bc);
 

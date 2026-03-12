@@ -95,6 +95,16 @@ public:
      */
     typedef typename BaseType::SizeType SizeType;
 
+    /** Type used to represent the coordinate, althought it is called DataType
+     * It should be called CoordinateType, but many downstream geometries depend
+     * on this type, I will leave it for now.
+     */
+    typedef typename PointType::DataType DataType;
+
+    /** Type used to represent the real values, like shape function
+     */
+    typedef typename BaseType::ValueType ValueType;
+
     /**
      * Array of counted pointers to point. This type used to hold
      * geometry's points.
@@ -169,6 +179,11 @@ public:
      * Type of coordinates array
      */
     typedef typename BaseType::CoordinatesArrayType CoordinatesArrayType;
+
+    /** This type used for representing the local coordinates of
+    an integration point
+    */
+    typedef typename BaseType::LocalCoordinatesArrayType LocalCoordinatesArrayType;
 
     /**
      * Type of Matrix
@@ -1309,9 +1324,8 @@ public:
     /**
      * Returns whether given local point is inside the Geometry
      */
-    bool IsInside( const CoordinatesArrayType& rPoint ) const final
+    bool IsInside( const LocalCoordinatesArrayType& rPoint, const ValueType tol ) const final
     {
-        const double tol = 1.0e-8;
         if ( (rPoint[0] > -tol) && (rPoint[0] < 1.0 + tol) )
             if ( (rPoint[1] > -tol) && (rPoint[1] < 1.0 + tol) )
                 if ( (rPoint[2] > -tol) && (rPoint[2] < 1.0 + tol) )

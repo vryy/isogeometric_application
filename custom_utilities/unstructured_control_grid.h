@@ -92,6 +92,17 @@ public:
         return *this;
     }
 
+    std::string Type() const override
+    {
+        return StaticType();
+    }
+
+    /// Get the static type of the control grid
+    static std::string StaticType()
+    {
+        return "UnstructuredControlGrid";
+    }
+
     /// Information
     void PrintInfo(std::ostream& rOStream) const override
     {
@@ -110,6 +121,23 @@ public:
 private:
 
     DataContainerType mData;
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.save("Data", mData);
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType);
+        rSerializer.load("Data", mData);
+    }
+    ///@}
 };
 
 /// output stream function

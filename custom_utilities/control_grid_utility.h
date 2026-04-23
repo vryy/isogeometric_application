@@ -145,6 +145,11 @@ public:
             std::vector<std::size_t> sizes(TDim, 0);
             return StructuredControlGrid<TDim, TDataType>::Create(sizes);
         }
+        else if (type == UnstructuredControlGrid<TDataType>::StaticType())
+        {
+            std::size_t size = 0;
+            return UnstructuredControlGrid<TDataType>::Create(size);
+        }
         else
             return ControlGrid<TDataType>::Create();
     }

@@ -19,6 +19,8 @@ void GridFunction_Helper<TFESpaceType, TDataType, TLocalCoordinatesType>::GetVal
     rFESpace.GetValues(f_values, xin);
 
     // then interpolate the value at local coordinates using the control values
+    assert(f_values.size() > 0);
+    assert(r_control_grid.size() > 0);
     v = f_values[0] * r_control_grid.GetData(0);
     for (std::size_t i = 1; i < r_control_grid.size(); ++i)
     {

@@ -221,6 +221,23 @@ private:
 
     const VariableType& mrVariable;
     typename FESpaceType::Pointer mpFESpace;
+
+    ///@name Serialization
+    ///@{
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType);
+        KRATOS_ERROR << "Serializer[save] is not yet supported for PointBasedControlGrid";
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType);
+        KRATOS_ERROR << "Serializer[load] is not yet supported for PointBasedControlGrid";
+    }
+    ///@}
 };
 
 /// output stream function

@@ -83,4 +83,3 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BendingStripUtili
 } // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BENDING_STRIP_UTILITY_H_INCLUDED defined
-

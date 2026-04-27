@@ -85,7 +85,7 @@ public:
         // REMARK: when creating the condition here, the integration rule is not passed. Instead the default integration rule of this element_type is applied, which may be not the same as the original element.
         Condition::Pointer pNewCondition = r_clone_condition.Create(++lastConditionId, pElement->pGetGeometry(), pProperties);
 
-        std::cout << "1 condition of type " << sample_condition_name << " is created" << std::endl;
+        // std::cout << "1 condition of type " << sample_condition_name << " is created" << std::endl;
 
         return pNewCondition;
     }

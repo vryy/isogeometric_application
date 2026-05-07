@@ -21,6 +21,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/patch_lagrange_mesh.h"
 #include "custom_utilities/nonconforming_multipatch_lagrange_mesh.h"
 #include "custom_utilities/nonconforming_variable_multipatch_lagrange_mesh.h"
+#include "custom_utilities/nonconforming_multi_multipatch_lagrange_mesh.h"
 #include "custom_utilities/multipatch_lagrange_control_mesh.h"
 #include "custom_utilities/multipatch_model_part.h"
 #include "custom_utilities/multi_multipatch_model_part.h"
@@ -283,6 +284,23 @@ void IsogeometricApplication_AddMeshToPython()
     .def("TransferVariables", &NonConformingVariableMultipatchLagrangeMesh<TDim>::template TransferVariables<Variable<double> >)
     .def("TransferVariables", &NonConformingVariableMultipatchLagrangeMesh<TDim>::template TransferVariables<Variable<array_1d<double, 3> > >)
     .def("TransferVariables", &NonConformingVariableMultipatchLagrangeMesh<TDim>::template TransferVariables<Variable<Vector> >)
+    .def(self_ns::str(self))
+    ;
+
+    ss.str(std::string());
+    ss << "NonConformingMultiMultipatchLagrangeMesh" << TDim << "D";
+    class_<NonConformingMultiMultipatchLagrangeMesh<TDim>, typename NonConformingMultiMultipatchLagrangeMesh<TDim>::Pointer, bases<IsogeometricEcho>, boost::noncopyable>
+    (ss.str().c_str(), init<>())
+    .def("AddMultiPatch", &NonConformingMultiMultipatchLagrangeMesh<TDim>::AddMultiPatch)
+    .def("SetBaseElementName", &NonConformingMultiMultipatchLagrangeMesh<TDim>::SetBaseElementName)
+    .def("SetBaseConditionName", &NonConformingMultiMultipatchLagrangeMesh<TDim>::SetBaseConditionName)
+    .def("SetLastNodeId", &NonConformingMultiMultipatchLagrangeMesh<TDim>::SetLastNodeId)
+    .def("SetLastElemId", &NonConformingMultiMultipatchLagrangeMesh<TDim>::SetLastElemId)
+    .def("SetLastCondId", &NonConformingMultiMultipatchLagrangeMesh<TDim>::SetLastCondId)
+    .def("SetDivision", &NonConformingMultiMultipatchLagrangeMesh<TDim>::SetDivision)
+    .def("SetUniformDivision", &NonConformingMultiMultipatchLagrangeMesh<TDim>::SetUniformDivision)
+    .def("MarkConditionFace", &MultipatchLagrangeMesh_MarkConditionFace<NonConformingMultiMultipatchLagrangeMesh<TDim> >)
+    .def("WriteModelPart", &NonConformingMultiMultipatchLagrangeMesh<TDim>::WriteModelPart)
     .def(self_ns::str(self))
     ;
 

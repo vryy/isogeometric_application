@@ -134,6 +134,18 @@ public:
         return pNewNode;
     }
 
+    /// Create a node for a model_part with a specific Id and transfer the values
+    template<class TPatchContainerType, typename TCoordinatesType, typename TIndexType>
+    static typename NodeType::Pointer CreateNodeAndTransferValuesFromMultiplePatches(const TCoordinatesType& p_ref,
+            const TPatchContainerType& pPatches, ModelPart& r_model_part, const TIndexType NodeId)
+    {
+        assert(pPatches.size() > 0);
+        typename NodeType::Pointer pNewNode = CreateNode(p_ref, **pPatches.begin(), r_model_part, NodeId);
+        for (auto it = pPatches.begin(); it != pPatches.end(); ++it)
+            TransferValuesToNodes(*pNewNode, p_ref, **it);
+        return pNewNode;
+    }
+
     /// Create a node for a model_part with a specific Id
     template<class TPatchType, typename TCoordinatesType, typename TIndexType>
     static typename NodeType::Pointer CreateNode(const TCoordinatesType& p_ref, const TPatchType& rPatch,

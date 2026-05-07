@@ -230,8 +230,8 @@ boost::python::list PatchLagrangeMesh_WriteConditions(PatchLagrangeMesh<TDim>& r
 
 ////////////////////////////////////////
 
-template<int TDim>
-void NonConformingMultipatchLagrangeMesh_MarkConditionFace(NonConformingMultipatchLagrangeMesh<TDim>& rDummy, int patch_id, int iside, int prop_id)
+template<class TMeshType>
+void MultipatchLagrangeMesh_MarkConditionFace(TMeshType& rDummy, int patch_id, int iside, int prop_id)
 {
     BoundarySide side = static_cast<BoundarySide>(iside);
     rDummy.MarkConditionFace(patch_id, side, prop_id);
@@ -264,7 +264,7 @@ void IsogeometricApplication_AddMeshToPython()
     .def("SetLastCondId", &NonConformingMultipatchLagrangeMesh<TDim>::SetLastCondId)
     .def("SetDivision", &NonConformingMultipatchLagrangeMesh<TDim>::SetDivision)
     .def("SetUniformDivision", &NonConformingMultipatchLagrangeMesh<TDim>::SetUniformDivision)
-    .def("MarkConditionFace", &NonConformingMultipatchLagrangeMesh_MarkConditionFace<TDim>)
+    .def("MarkConditionFace", &MultipatchLagrangeMesh_MarkConditionFace<NonConformingMultipatchLagrangeMesh<TDim> >)
     .def("WriteModelPart", &NonConformingMultipatchLagrangeMesh<TDim>::WriteModelPart)
     .def(self_ns::str(self))
     ;

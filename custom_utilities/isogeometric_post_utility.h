@@ -127,7 +127,7 @@ public:
     /// Create a node for a model_part with a specific Id and transfer the values
     template<class TPatchType, typename TCoordinatesType, typename TIndexType>
     static typename NodeType::Pointer CreateNodeAndTransferValues(const TCoordinatesType& p_ref, const TPatchType& rPatch,
-            ModelPart& r_model_part, const TIndexType& NodeId)
+            ModelPart& r_model_part, const TIndexType NodeId)
     {
         typename NodeType::Pointer pNewNode = CreateNode(p_ref, rPatch, r_model_part, NodeId);
         TransferValuesToNodes(*pNewNode, p_ref, rPatch);
@@ -137,7 +137,7 @@ public:
     /// Create a node for a model_part with a specific Id
     template<class TPatchType, typename TCoordinatesType, typename TIndexType>
     static typename NodeType::Pointer CreateNode(const TCoordinatesType& p_ref, const TPatchType& rPatch,
-            ModelPart& r_model_part, const TIndexType& NodeId)
+            ModelPart& r_model_part, const TIndexType NodeId)
     {
         typename TPatchType::ControlPointType p = rPatch.pControlPointGridFunction()->GetValue(p_ref);
         typename NodeType::Pointer pNewNode = r_model_part.CreateNewNode(NodeId, p.X(), p.Y(), p.Z());
@@ -403,7 +403,7 @@ public:
                          const TVectorType& rTangent1,
                          const TVectorType& rTangent2,
                          const std::vector<TCoordinatesType>& local_points,
-                         const TIndexType& offset,
+                         const TIndexType offset,
                          std::size_t nrefine)
     {
         // compute the triangulation
@@ -434,7 +434,7 @@ public:
     template<typename TCoordinatesType, typename TIndexType>
     static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateLineGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
-                     const TIndexType& starting_node_id,
+                     const TIndexType starting_node_id,
                      std::size_t num_div)
     {
         std::vector<double> div;
@@ -450,7 +450,7 @@ public:
     template<typename TCoordinatesType, typename TIndexType>
     static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateLineGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
-                     const TIndexType& starting_node_id,
+                     const TIndexType starting_node_id,
                      const std::vector<double>& div)
     {
         TCoordinatesType p;
@@ -489,7 +489,7 @@ public:
     static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateQuadGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
                      const TCoordinatesType& p3, const TCoordinatesType& p4,
-                     const TIndexType& starting_node_id,
+                     const TIndexType starting_node_id,
                      std::size_t num_div_1, std::size_t num_div_2)
     {
         std::vector<double> div_1, div_2;
@@ -511,7 +511,7 @@ public:
     static typename Grid<TCoordinatesType, TIndexType>::Type
     GenerateQuadGrid(const TCoordinatesType& p1, const TCoordinatesType& p2,
                      const TCoordinatesType& p3, const TCoordinatesType& p4,
-                     const TIndexType& starting_node_id,
+                     const TIndexType starting_node_id,
                      const std::vector<double>& div_1, const std::vector<double>& div_2)
     {
         TCoordinatesType p, pm, pn;
@@ -609,8 +609,10 @@ public:
                     const TCoordinatesType& p3, const TCoordinatesType& p4,
                     const TCoordinatesType& p5, const TCoordinatesType& p6,
                     const TCoordinatesType& p7, const TCoordinatesType& p8,
-                    const TIndexType& starting_node_id,
-                    std::size_t num_div_1, std::size_t num_div_2, std::size_t num_div_3)
+                    const TIndexType starting_node_id,
+                    std::size_t num_div_1,
+                    std::size_t num_div_2,
+                    std::size_t num_div_3)
     {
         std::vector<double> div_1, div_2, div_3;
 
@@ -637,8 +639,9 @@ public:
                     const TCoordinatesType& p3, const TCoordinatesType& p4,
                     const TCoordinatesType& p5, const TCoordinatesType& p6,
                     const TCoordinatesType& p7, const TCoordinatesType& p8,
-                    const TIndexType& starting_node_id,
-                    const std::vector<double>& div_1, const std::vector<double>& div_2,
+                    const TIndexType starting_node_id,
+                    const std::vector<double>& div_1,
+                    const std::vector<double>& div_2,
                     const std::vector<double>& div_3)
     {
         TCoordinatesType p, pm1, pn1, pm2, pn2, pq1, pq2;

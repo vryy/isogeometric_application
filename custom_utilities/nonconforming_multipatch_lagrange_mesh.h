@@ -52,8 +52,12 @@ public:
     typedef ModelPart::ConditionsContainerType ConditionsContainerType;
     typedef std::size_t IndexType;
 
+    typedef MultiPatch<TDim> MultiPatchType;
+    typedef typename MultiPatchType::PatchType PatchType;
+    typedef typename PatchType::BoundaryPatchType BoundaryPatchType;
+
     /// Default constructor
-    NonConformingMultipatchLagrangeMesh(typename MultiPatch<TDim>::Pointer pMultiPatch)
+    NonConformingMultipatchLagrangeMesh(typename MultiPatchType::Pointer pMultiPatch)
         : mpMultiPatch(pMultiPatch), mLastNodeId(0), mLastElemId(0)
     {}
 
@@ -64,7 +68,7 @@ public:
     /// Note that if the division is changed, the post_model_part must be generated again
     void SetUniformDivision(IndexType num_division)
     {
-        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
+        typedef typename MultiPatchType::patch_iterator patch_iterator;
         for (patch_iterator it = mpMultiPatch->begin(); it != mpMultiPatch->end(); ++it)
         {
             for (IndexType dim = 0; dim < TDim; ++dim)
@@ -187,7 +191,7 @@ public:
         // create and add conditions on the boundary
         for (std::size_t i = 0; i < mConditionMap.size(); ++i)
         {
-            typename Patch<TDim>::Pointer cond_patch = mpMultiPatch->pGetPatch(mConditionMap[i].first);
+            typename PatchType::Pointer cond_patch = mpMultiPatch->pGetPatch(mConditionMap[i].first);
             const BoundarySide side = mConditionMap[i].second.first;
             const IndexType prop_id = mConditionMap[i].second.second;
 
@@ -203,7 +207,7 @@ public:
     }
 
     /// create the elements out from the patch and add to the model_part
-    ElementsContainerType AddElements(ModelPart& r_model_part, typename Patch<TDim>::Pointer pPatch, Element const& rCloneElement,
+    ElementsContainerType AddElements(ModelPart& r_model_part, typename PatchType::Pointer pPatch, Element const& rCloneElement,
             std::size_t& starting_node_id, std::size_t& starting_elem_id, Properties::Pointer pProperties) const
     {
         const std::string NodeKey = std::string("Node");
@@ -302,7 +306,7 @@ public:
     }
 
     /// create the conditions out from the boundary patch and add to the model_part
-    ConditionsContainerType AddConditions(ModelPart& r_model_part, typename Patch<TDim>::Pointer pPatch, const BoundarySide side,
+    ConditionsContainerType AddConditions(ModelPart& r_model_part, typename PatchType::Pointer pPatch, const BoundarySide side,
             Condition const& rCloneCondition, std::size_t& starting_node_id, std::size_t& starting_cond_id, Properties::Pointer pProperties) const
     {
         // construct the boundary patch
@@ -333,7 +337,7 @@ public:
     }
 
     /// create the conditions out from the slice patch and add to the model_part
-    ConditionsContainerType AddConditions(ModelPart& r_model_part, typename Patch<TDim>::Pointer pPatch, const int idir, const double xi,
+    ConditionsContainerType AddConditions(ModelPart& r_model_part, typename PatchType::Pointer pPatch, const int idir, const double xi,
             Condition const& rCloneCondition, std::size_t& starting_node_id, std::size_t& starting_cond_id, Properties::Pointer pProperties) const
     {
         // extract the slice patch
@@ -365,7 +369,7 @@ public:
     }
 
     /// create the conditions out from the boudnary patch and add to the model_part
-    ConditionsContainerType AddConditions(ModelPart& r_model_part, typename Patch<TDim-1>::Pointer pBoundaryPatch,
+    ConditionsContainerType AddConditions(ModelPart& r_model_part, typename BoundaryPatchType::Pointer pBoundaryPatch,
             const boost::array<double, TDim-1>& nsampling,
             Condition const& rCloneCondition,
             std::size_t& starting_node_id, std::size_t& starting_cond_id, Properties::Pointer pProperties) const
@@ -436,7 +440,7 @@ public:
 
 private:
 
-    typename MultiPatch<TDim>::Pointer mpMultiPatch;
+    typename MultiPatchType::Pointer mpMultiPatch;
 
     std::map<IndexType, boost::array<IndexType, TDim> > mNumDivision;
 

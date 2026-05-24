@@ -526,15 +526,6 @@ public:
     }
 
     /**
-     * Compute the Jacobian in reference configuration
-     */
-    virtual JacobiansType& Jacobian0( JacobiansType& rResult, IntegrationMethod ThisMethod ) const
-    {
-        KRATOS_ERROR << "Error calling base class function";
-        return rResult;
-    }
-
-    /**
      * Compute the global coordinates in reference configuration
      */
     CoordinatesArrayType& GlobalCoordinates0( CoordinatesArrayType& rResult, CoordinatesArrayType const& LocalCoordinates ) const

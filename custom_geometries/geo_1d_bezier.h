@@ -466,8 +466,8 @@ public:
         {
             //defining single jacobian matrix
             MatrixType jacobian = ZeroMatrix( 1, 1 );
-            //loop over all nodes
 
+            //loop over all nodes
             for ( unsigned int i = 0; i < this->PointsNumber(); ++i )
             {
                 jacobian( 0, 0 ) += ( this->GetPoint( i ).X() ) * ( shape_functions_gradients[pnt]( i, 0 ) );
@@ -519,8 +519,8 @@ public:
         {
             //defining single jacobian matrix
             MatrixType jacobian = ZeroMatrix( 1, 1 );
-            //loop over all nodes
 
+            //loop over all nodes
             for ( unsigned int i = 0; i < this->PointsNumber(); ++i )
             {
                 jacobian( 0, 0 ) += ( this->GetPoint( i ).X() + DeltaPosition(i, 0) ) * ( shape_functions_gradients[pnt]( i, 0 ) );

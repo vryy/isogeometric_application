@@ -942,9 +942,9 @@ private:
             ReadWord(word);
             ExtractValue(word, temp_node.Z());
 
-            temp_node.X0() = temp_node.X();
-            temp_node.Y0() = temp_node.Y();
-            temp_node.Z0() = temp_node.Z();
+            temp_node.Set(FREEZE, false);
+            temp_node.SetInitialPosition(temp_node);
+            temp_node.Set(FREEZE, true);
 
             rThisNodes.push_back(temp_node);
             number_of_nodes_read++;
@@ -1033,9 +1033,9 @@ private:
             ReadWord(word);
             ExtractValue(word, temp_node.Z());
 
-            temp_node.X0() = temp_node.X();
-            temp_node.Y0() = temp_node.Y();
-            temp_node.Z0() = temp_node.Z();
+            temp_node.Set(FREEZE, false);
+            temp_node.SetInitialPosition(temp_node);
+            temp_node.Set(FREEZE, true);
 
             rModelPart.Nodes().push_back(temp_node);
             number_of_nodes_read++;

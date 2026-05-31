@@ -17,6 +17,7 @@
 // Project includes
 #include "includes/define.h"
 #include "containers/array_1d.h"
+#include "containers/pointer_vector_set.h"
 #include "custom_utilities/iga_define.h"
 #include "custom_utilities/fespace.h"
 #include "isogeometric_application_variables.h"
@@ -42,7 +43,7 @@ public:
     typedef TBasisFunctionType BasisFunctionType;
     typedef typename BasisFunctionType::Pointer bf_t;
     struct bf_compare { bool operator() (const bf_t& lhs, const bf_t& rhs) const {return lhs->Id() < rhs->Id();} };
-    typedef std::set<bf_t, bf_compare> bf_container_t;
+    typedef PointerVectorSet<BasisFunctionType, IndexedObject> bf_container_t;
     typedef typename bf_container_t::iterator bf_iterator;
     typedef typename bf_container_t::const_iterator bf_const_iterator;
 
@@ -55,7 +56,7 @@ public:
     typedef std::map<std::size_t, bf_t> function_map_t;
 
     /// Default constructor
-    PBBSplinesFESpace() : BaseType(), m_function_map_is_created(false)
+    PBBSplinesFESpace() : BaseType()
     {
         mpCellManager = typename cell_container_t::Pointer(new TCellManagerType());
     }
@@ -86,9 +87,9 @@ public:
     {
         // search in the current list of basis functions, the one that has the same local knot vector with provided ones
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
-            if ((*it)->Contain(rpKnots))
+            if (it->Contain(rpKnots))
             {
-                return *it;
+                return *it.base();
             }
 
         // create the new bf and add the knot
@@ -98,8 +99,7 @@ public:
             p_bf->SetLocalKnotVectors(dim, rpKnots[dim]);
             p_bf->SetInfo(dim, this->Order(dim));
         }
-        mpBasisFuncs.insert(p_bf);
-        m_function_map_is_created = false;
+        mpBasisFuncs.insert(mpBasisFuncs.end(), p_bf);
 
         return p_bf;
     }
@@ -107,7 +107,7 @@ public:
     /// Remove the basis functions from the container
     void RemoveBf(bf_t p_bf)
     {
-        mpBasisFuncs.erase(p_bf);
+        mpBasisFuncs.erase(p_bf->Id());
     }
 
     // Iterators for the basis functions
@@ -117,7 +117,7 @@ public:
     bf_const_iterator bf_end() const {return mpBasisFuncs.end();}
 
     /// Get the last id of the basis functions
-    std::size_t LastId() const {bf_const_iterator it = bf_end(); --it; return (*it)->Id();}
+    std::size_t LastId() const {bf_const_iterator it = bf_end(); --it; return it->Id();}
 
     /// Set the order for the point-based B-Splines
     void SetInfo(std::size_t i, std::size_t order) {mOrders[i] = order;}
@@ -137,9 +137,9 @@ public:
     {
         std::vector<double> bound = {1.0e99, -1.0e99};
 
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            std::vector<double> bb = (*it)->GetBoundingBox();
+            std::vector<double> bb = it->GetBoundingBox();
             if (bound[0] > bb[2 * di]) { bound[0] = bb[2 * di]; }
             if (bound[1] < bb[2 * di + 1]) { bound[1] = bb[2 * di + 1]; }
         }
@@ -152,9 +152,9 @@ public:
     {
         std::vector<double> weights(this->TotalNumber());
         std::size_t cnt = 0;
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
         {
-            weights[cnt++] = (*it)->GetValue(CONTROL_POINT).W();
+            weights[cnt] = it->GetValue(CONTROL_POINT).W();
         }
         return weights;
     }
@@ -189,7 +189,7 @@ public:
         {
             if (j == i)
             {
-                v = (*it)->GetValueAt(xi);
+                v = it->GetValueAt(xi);
                 return;
             }
             ++j;
@@ -208,7 +208,7 @@ public:
         std::size_t i = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            values[i++] = (*it)->GetValueAt(xi);
+            values[i++] = it->GetValueAt(xi);
         }
     }
 
@@ -222,7 +222,7 @@ public:
         {
             if (j == i)
             {
-                (*it)->GetDerivativeAt(values, xi);
+                it->GetDerivativeAt(values, xi);
                 return;
             }
             ++j;
@@ -250,7 +250,7 @@ public:
             {
                 values[i].resize(TDim);
             }
-            (*it)->GetDerivativeAt(values[i], xi);
+            it->GetDerivativeAt(values[i], xi);
             ++i;
         }
     }
@@ -273,12 +273,12 @@ public:
         std::size_t i = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            values[i] = (*it)->GetValueAt(xi);
+            values[i] = it->GetValueAt(xi);
             if (derivatives[i].size() != TDim)
             {
                 derivatives[i].resize(TDim);
             }
-            (*it)->GetDerivativeAt(derivatives[i], xi);
+            it->GetDerivativeAt(derivatives[i], xi);
             ++i;
         }
     }
@@ -324,7 +324,7 @@ public:
         BaseType::mGlobalToLocal.clear();
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            (*it)->SetEquationId(-1);
+            it->SetEquationId(-1);
         }
     }
 
@@ -344,11 +344,10 @@ public:
             KRATOS_ERROR << "The func_indices vector does not have the same size as total number of basis functions";
         }
         std::size_t cnt = 0;
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
         {
-            (*it)->SetEquationId(func_indices[cnt]);
-            BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt;
-            ++cnt;
+            it->SetEquationId(func_indices[cnt]);
+            BaseType::mGlobalToLocal[it->EquationId()] = cnt;
         }
     }
 
@@ -359,10 +358,10 @@ public:
     {
         BaseType::mGlobalToLocal.clear();
         std::size_t cnt = 0;
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt, ++start)
         {
-            if ((*it)->EquationId() == -1) { (*it)->SetEquationId(start++); }
-            BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt++;
+            if (it->EquationId() == -1) { it->SetEquationId(start); }
+            BaseType::mGlobalToLocal[it->EquationId()] = cnt;
         }
 
         return start;
@@ -373,10 +372,12 @@ public:
     {
         std::vector<std::size_t> func_indices(this->TotalNumber());
         std::size_t cnt = 0;
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
         {
-            func_indices[cnt] = (*it)->EquationId();
-            ++cnt;
+            // std::cout << " bf " << it->Id() << " add: " << &(*it)
+            //           << ", eq_id: " << it->EquationId()
+            //           << std::endl;
+            func_indices[cnt] = it->EquationId();
         }
         return func_indices;
     }
@@ -386,19 +387,18 @@ public:
     {
         std::size_t cnt = 0;
         BaseType::mGlobalToLocal.clear();
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
         {
-            std::map<std::size_t, std::size_t>::const_iterator it2 = indices_map.find((*it)->EquationId());
+            std::map<std::size_t, std::size_t>::const_iterator it2 = indices_map.find(it->EquationId());
 
             if (it2 == indices_map.end())
             {
-                std::cout << "WARNING!!! the indices_map does not contain " << (*it)->EquationId() << std::endl;
+                std::cout << "WARNING!!! the indices_map does not contain " << it->EquationId() << std::endl;
                 continue;
             }
 
-            (*it)->SetEquationId(it2->second);
-            BaseType::mGlobalToLocal[(*it)->EquationId()] = cnt;
-            ++cnt;
+            it->SetEquationId(it2->second);
+            BaseType::mGlobalToLocal[it->EquationId()] = cnt;
         }
     }
 
@@ -407,9 +407,9 @@ public:
     {
         std::size_t first_id;
 
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if ((*it)->EquationId() == -1)
+            if (it->EquationId() == -1)
             {
                 return -1;
             }
@@ -417,11 +417,11 @@ public:
             {
                 if (it == bf_begin())
                 {
-                    first_id = (*it)->EquationId();
+                    first_id = it->EquationId();
                 }
-                else if ((*it)->EquationId() < first_id)
+                else if (it->EquationId() < first_id)
                 {
-                    first_id = (*it)->EquationId();
+                    first_id = it->EquationId();
                 }
             }
         }
@@ -435,20 +435,20 @@ public:
         std::size_t last_id = -1;
         bool hit = false;
 
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if ((*it)->EquationId() != -1)
+            if (it->EquationId() != -1)
             {
                 if (!hit)
                 {
                     hit = true;
-                    last_id = (*it)->EquationId();
+                    last_id = it->EquationId();
                 }
                 else
                 {
-                    if ((*it)->EquationId() > last_id)
+                    if (it->EquationId() > last_id)
                     {
-                        last_id = (*it)->EquationId();
+                        last_id = it->EquationId();
                     }
                 }
             }
@@ -463,16 +463,16 @@ public:
         // firstly we organize the basis functions based on its equation_id
         // it may happen that one bf is encountered twice, so we use a map here
         std::map<std::size_t, bf_t> map_bfs;
-        for (bf_iterator it_bf = bf_begin(); it_bf != bf_end(); ++it_bf)
+        for (bf_const_iterator it_bf = bf_begin(); it_bf != bf_end(); ++it_bf)
         {
-            if ((*it_bf)->IsOnSide(boundary_id))
+            if (it_bf->IsOnSide(boundary_id))
             {
-                typename std::map<std::size_t, bf_t>::iterator it = map_bfs.find((*it_bf)->EquationId());
+                typename std::map<std::size_t, bf_t>::iterator it = map_bfs.find(it_bf->EquationId());
                 if (it == map_bfs.end())
                 {
-                    map_bfs[(*it_bf)->EquationId()] = (*it_bf);
+                    map_bfs[it_bf->EquationId()] = *it_bf.base();
                 }
-                else if (it->second != (*it_bf))
+                else if (it->second != *it_bf.base())
                     KRATOS_ERROR << "There are two bfs with the same equation_id. This is not valid.";
             }
         }
@@ -480,9 +480,9 @@ public:
         // then we can extract the equation_id
         std::vector<bf_t> bf_list(map_bfs.size());
         std::size_t cnt = 0;
-        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
+        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it, ++cnt)
         {
-            bf_list[cnt++] = it->second;
+            bf_list[cnt] = it->second;
         }
 
         return bf_list;
@@ -496,56 +496,65 @@ public:
         // then we can extract the equation_id
         std::vector<std::size_t> func_indices(bfs.size());
         std::size_t cnt = 0;
-        for (typename std::vector<bf_t>::iterator it = bfs.begin(); it != bfs.end(); ++it)
+        for (typename std::vector<bf_t>::iterator it = bfs.begin(); it != bfs.end(); ++it, ++cnt)
         {
-            func_indices[cnt++] = (*it)->EquationId();
+            func_indices[cnt] = (*it)->EquationId();
         }
 
         return func_indices;
     }
 
     /// Extract the index of the functions on the boundary
-    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const override
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide side) const override
     {
         std::vector<std::size_t> func_indices;
 
         // firstly we organize the basis functions based on its equation_id
         std::map<std::size_t, bf_t> map_bfs;
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
+            if (it->IsOnSide(BOUNDARY_FLAG(side)))
             {
-                map_bfs[(*it)->EquationId()] = (*it);
+                map_bfs[it->EquationId()] = *it.base();
             }
         }
 
         // then we can extract the equation_id
         func_indices.resize(map_bfs.size());
         std::size_t cnt = 0;
-        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
+        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it, ++cnt)
         {
-            func_indices[cnt++] = it->first;
+            func_indices[cnt] = it->first;
         }
 
         return func_indices;
     }
 
     /// Assign the index for the functions on the boundary
-    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices, const bool override) override
+    void AssignBoundaryFunctionIndices(const BoundarySide side, const std::vector<std::size_t>& func_indices, const bool override) override
     {
         // firstly we organize the basis functions based on its equation_id
         std::map<std::size_t, bf_t> map_bfs;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
+            if (it->IsOnSide(BOUNDARY_FLAG(side)))
             {
-                map_bfs[(*it)->EquationId()] = (*it);
+                map_bfs[it->Id()] = *it.base();
+                // std::cout << "bf " << it->Id() << " is on boundary " << side
+                //           << " and has eq_id = " << it->EquationId()
+                //           << " and is of type " << typeid(*it).name()
+                //           << std::endl;
             }
         }
-
+// KRATOS_WATCH(mpBasisFuncs.size())
+// KRATOS_WATCH(side)
+// KRATOS_WATCH(map_bfs.size())
+// KRATOS_WATCH_STD_CON(func_indices)
+// KRATOS_WATCH(override)
+// KRATOS_ERROR << "stop here";
         // then we can assign the equation_id incrementally
         std::size_t cnt = 0;
-        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it)
+        for (auto it = map_bfs.begin(); it != map_bfs.end(); ++it, ++cnt)
         {
             if (func_indices[cnt] != -1)
             {
@@ -561,7 +570,6 @@ public:
                         it->second->SetEquationId(func_indices[cnt]);
                 }
             }
-            ++cnt;
         }
     }
 
@@ -589,10 +597,10 @@ public:
         Vector Crow;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            for (typename BasisFunctionType::cell_iterator it_cell = (*it)->cell_begin(); it_cell != (*it)->cell_end(); ++it_cell)
+            for (typename BasisFunctionType::cell_iterator it_cell = it->cell_begin(); it_cell != it->cell_end(); ++it_cell)
             {
-                (*it)->ComputeExtractionOperator(Crow, *it_cell);
-                (*it_cell)->AddAnchor((*it)->EquationId(), (*it)->GetValue(CONTROL_POINT).W(), Crow);
+                it->ComputeExtractionOperator(Crow, *it_cell);
+                (*it_cell)->AddAnchor(it->EquationId(), it->GetValue(CONTROL_POINT).W(), Crow);
             }
         }
     }
@@ -608,26 +616,13 @@ public:
     {
         typename bf_container_t::iterator it = mpBasisFuncs.begin();
         std::advance(it, i);
-        return *it;
+        return *it.base();
     }
 
     /// Overload operator(), this allows to access the basis function based on its id
     bf_t operator()(std::size_t Id)
     {
-        // create the index map if it's not created yet
-        if (!m_function_map_is_created)
-        {
-            CreateFunctionsMap();
-        }
-
-        // return the bf if its Id exist in the list
-        typename function_map_t::iterator it = mFunctionsMap.find(Id);
-        if (it != mFunctionsMap.end())
-        {
-            return it->second;
-        }
-        else
-            KRATOS_ERROR << "Index " << Id << " is not found";
+        return mpBasisFuncs(Id);
     }
 
     /// Check if the functional space has the function with equation id
@@ -639,7 +634,7 @@ public:
     /// Check if the functional space has the function with Id
     bool HasBfById(std::size_t Id) const
     {
-        return (mFunctionsMap.find(Id) != mFunctionsMap.end());
+        return (mpBasisFuncs.find(Id) != mpBasisFuncs.end());
     }
 
     /// Get the basis function by equation id
@@ -687,7 +682,7 @@ public:
         rOStream << "Basis functions:" << std::endl;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            rOStream << " ++ " << *(*it) << std::endl;
+            rOStream << " ++ " << (*it) << std::endl;
         }
 
         // print the cells
@@ -705,23 +700,12 @@ protected:
     typename cell_container_t::Pointer mpCellManager;
 
     bf_container_t mpBasisFuncs;
-    mutable function_map_t mFunctionsMap; // map from basis function id to the basis function. It's mainly used to search for the bf quickly. But it needs to be re-initialized whenever new bf is added to the set
-    bool m_function_map_is_created;
-
-    void CreateFunctionsMap()
-    {
-        mFunctionsMap.clear();
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
-        {
-            mFunctionsMap[(*it)->Id()] = *it;
-        }
-        m_function_map_is_created = true;
-    }
 
 private:
 
     ///@name Serialization
     ///@{
+
     friend class Serializer;
 
     void save(Serializer& rSerializer) const override
@@ -737,6 +721,8 @@ private:
         rSerializer.load( "Orders", mOrders );
         // TODO
     }
+
+    ///@}
 };
 
 /// output stream function

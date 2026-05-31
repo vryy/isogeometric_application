@@ -1082,6 +1082,7 @@ public:
         int NumberOfIntegrationMethod
     ) override
     {
+KRATOS_WATCH(__LINE__)
         mCtrlWeights = Weights;
         mOrder1 = Degree1;
         mOrder2 = Degree2;
@@ -1089,7 +1090,7 @@ public:
         mNumber2 = mOrder2 + 1;
         // TODO we have to check here if the compressed_matrix copy is called or not. Otherwise, maybe the full matrix is populated.
         mExtractionOperator = ExtractionOperator;
-
+KRATOS_WATCH(mExtractionOperator)
         // size checking
         if (mExtractionOperator.size1() != this->PointsNumber())
             KRATOS_ERROR << "The number of row of extraction operator must be equal to number of nodes, mExtractionOperator.size1() = " << mExtractionOperator.size1();
@@ -1097,25 +1098,25 @@ public:
             KRATOS_ERROR << "The number of column of extraction operator must be equal to (p_u+1) * (p_v+1), mExtractionOperator.size2() = " << mExtractionOperator.size2();
         if (mCtrlWeights.size() != this->PointsNumber())
             KRATOS_ERROR << "The number of weights must be equal to number of nodes";
-
+KRATOS_WATCH(NumberOfIntegrationMethod)
         if (NumberOfIntegrationMethod > 0)
         {
+KRATOS_WATCH(__LINE__)
             // find the existing integration rule or create new one if not existed
             BezierUtils::RegisterIntegrationRule<2, 2, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
-
+KRATOS_WATCH(__LINE__)
             // get the geometry_data according to integration rule. Note that this is a static geometry_data of a reference Bezier element, not the real Bezier element.
             mpBezierGeometryData = BezierUtils::RetrieveIntegrationRule<2, 2, 2>(NumberOfIntegrationMethod, Degree1, Degree2);
+KRATOS_WATCH(__LINE__)
             BaseType::SetGeometryData(mpBezierGeometryData.get());
         }
     }
 
 protected:
 
-//    static const GeometryData msGeometryData;
     GeometryData::Pointer mpBezierGeometryData;
 
     MatrixType mExtractionOperator;
-    // CompressedMatrixType mExtractionOperator;
 
     ValuesContainerType mCtrlWeights; //weight of control points
 
@@ -1127,11 +1128,6 @@ protected:
 
 private:
 
-    /**
-     * Static Member Variables
-     */
-
-    ///@}
     ///@name Serialization
     ///@{
 
@@ -1146,6 +1142,8 @@ private:
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, PointsArrayType );
     }
+
+    ///@}
 
     /**
      * Private Operations
@@ -1302,23 +1300,17 @@ private:
      * Un accessible methods
      */
 
-};    // Class Geo2dBezier
+}; // Class Geo2dBezier
 
 /**
  * Input and output
  */
 
 /**
- * input stream function
- */
-template<class TPointType> inline std::istream& operator >>(
-    std::istream& rIStream, Geo2dBezier<TPointType>& rThis);
-
-/**
  * output stream function
  */
-template<class TPointType> inline std::ostream& operator <<(
-    std::ostream& rOStream, const Geo2dBezier<TPointType>& rThis)
+template<class TPointType>
+inline std::ostream& operator <<(std::ostream& rOStream, const Geo2dBezier<TPointType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

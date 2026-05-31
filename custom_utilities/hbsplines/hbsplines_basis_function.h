@@ -179,17 +179,17 @@ public:
     **************************************************************************/
 
     /// Construct the hierarchical B-Splines basis function in subspace
-    typename HBSplinesBasisFunction < TDim - 1 >::Pointer Project(std::size_t dim) const
+    typename HBSplinesBasisFunction<TDim-1>::Pointer Project(std::size_t dim) const
     {
-        typename HBSplinesBasisFunction < TDim - 1 >::Pointer pNewSubBf;
+        typename HBSplinesBasisFunction<TDim-1>::Pointer pNewSubBf;
 
         if (dim >= TDim)
             KRATOS_ERROR << "The dimension " << dim << " is invalid";
 
-        pNewSubBf = typename HBSplinesBasisFunction < TDim - 1 >::Pointer(new HBSplinesBasisFunction < TDim - 1 > (this->Id(), this->Level()));
+        pNewSubBf = typename HBSplinesBasisFunction<TDim-1>::Pointer(new HBSplinesBasisFunction < TDim - 1 > (this->Id(), this->Level()));
         pNewSubBf->SetEquationId(this->EquationId());
 
-        if (TDim == 2)
+        if constexpr (TDim == 2)
         {
             pNewSubBf->SetLocalKnotVectors(0, this->mpLocalKnots[dim]);
             pNewSubBf->SetInfo(0, this->mOrders[dim]);
@@ -200,7 +200,7 @@ public:
                 else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
             }
         }
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
         {
             if (dim == 0)
             {

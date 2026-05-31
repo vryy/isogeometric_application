@@ -30,7 +30,7 @@ class MultiPBSplinesPatchMatlabExporter : public MultiPatchExporter<TFESpaceType
 public:
     KRATOS_CLASS_POINTER_DEFINITION(MultiPBSplinesPatchMatlabExporter);
 
-    virtual void Export(typename Patch<TFESpaceType::Dim()>::Pointer pPatch, std::ostream& rOStream)
+    virtual void Export(typename Patch<TFESpaceType::Dim()>::Pointer pPatch, std::ostream& rOStream) const
     {
         // extract the point-based B-Splines space
         typename TFESpaceType::Pointer pFESpace = iga::dynamic_pointer_cast<TFESpaceType>(pPatch->pFESpace());
@@ -63,28 +63,28 @@ public:
 
         rOStream << "% Degree" << std::endl;
         rOStream << "P" << patch_id << "_params.p1 = " << pFESpace->Order(0) << ";\n";
-        if (TFESpaceType::Dim() > 1)
+        if constexpr (TFESpaceType::Dim() > 1)
         {
             rOStream << "P" << patch_id << "_params.p2 = " << pFESpace->Order(1) << ";\n";
         }
-        if (TFESpaceType::Dim() > 2)
+        if constexpr (TFESpaceType::Dim() > 2)
         {
             rOStream << "P" << patch_id << "_params.p3 = " << pFESpace->Order(2) << ";\n";
         }
         rOStream << "\n";
 
-        for (typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
+        for (auto it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
         {
-            (*it_bf)->LocalKnots(0, local_knots[0]);
-            if (TFESpaceType::Dim() > 1) { (*it_bf)->LocalKnots(1, local_knots[1]); }
-            if (TFESpaceType::Dim() > 2) { (*it_bf)->LocalKnots(2, local_knots[2]); }
+            it_bf->LocalKnots(0, local_knots[0]);
+            if constexpr (TFESpaceType::Dim() > 1) { it_bf->LocalKnots(1, local_knots[1]); }
+            if constexpr (TFESpaceType::Dim() > 2) { it_bf->LocalKnots(2, local_knots[2]); }
 
             double min_xi_bf = *std::min_element(local_knots[0].begin(), local_knots[0].end());
             double max_xi_bf = *std::max_element(local_knots[0].begin(), local_knots[0].end());
             if (min_xi_bf < min_xi) { min_xi = min_xi_bf; }
             if (max_xi_bf > max_xi) { max_xi = max_xi_bf; }
 
-            if (TFESpaceType::Dim() > 1)
+            if constexpr (TFESpaceType::Dim() > 1)
             {
                 double min_eta_bf = *std::min_element(local_knots[1].begin(), local_knots[1].end());
                 double max_eta_bf = *std::max_element(local_knots[1].begin(), local_knots[1].end());
@@ -92,7 +92,7 @@ public:
                 if (max_eta_bf > max_eta) { max_eta = max_eta_bf; }
             }
 
-            if (TFESpaceType::Dim() > 2)
+            if constexpr (TFESpaceType::Dim() > 2)
             {
                 double min_zeta_bf = *std::min_element(local_knots[2].begin(), local_knots[2].end());
                 double max_zeta_bf = *std::max_element(local_knots[2].begin(), local_knots[2].end());
@@ -102,7 +102,7 @@ public:
 
             ++cnt;
 
-            rOStream << "% basis function " << (*it_bf)->Id() << std::endl;
+            rOStream << "% basis function " << it_bf->Id() << std::endl;
             rOStream << "P" << patch_id << "_Xi{" << cnt << "} = [";
             for (std::size_t i = 0; i < local_knots[0].size(); ++i)
             {
@@ -110,7 +110,7 @@ public:
             }
             rOStream << "];\n";
 
-            if (TFESpaceType::Dim() > 1)
+            if constexpr (TFESpaceType::Dim() > 1)
             {
                 rOStream << "P" << patch_id << "_Eta{" << cnt << "} = [";
                 for (std::size_t i = 0; i < local_knots[1].size(); ++i)
@@ -120,7 +120,7 @@ public:
                 rOStream << "];\n";
             }
 
-            if (TFESpaceType::Dim() > 2)
+            if constexpr (TFESpaceType::Dim() > 2)
             {
                 rOStream << "P" << patch_id << "_Zeta{" << cnt << "} = [";
                 for (std::size_t i = 0; i < local_knots[2].size(); ++i)
@@ -130,12 +130,12 @@ public:
                 rOStream << "];\n";
             }
 
-            ControlPointType C = (*it_bf)->GetValue(CONTROL_POINT);
+            ControlPointType C = it_bf->GetValue(CONTROL_POINT);
 
             rOStream << "P" << patch_id << "_P(" << cnt << ",:) = [" << C.X() << " " << C.Y() << " " << C.Z() << "];\n";
             rOStream << "P" << patch_id << "_W(" << cnt << ") = " << C.W() << ";\n";
-            rOStream << "P" << patch_id << "_Id(" << cnt << ") = " << (*it_bf)->Id() << ";\n";
-            rOStream << "P" << patch_id << "_EqId(" << cnt << ") = " << (*it_bf)->EquationId() << ";\n";
+            rOStream << "P" << patch_id << "_Id(" << cnt << ") = " << it_bf->Id() << ";\n";
+            rOStream << "P" << patch_id << "_EqId(" << cnt << ") = " << it_bf->EquationId() << ";\n";
             rOStream << std::endl;
         }
 
@@ -143,7 +143,7 @@ public:
         pFESpace->UpdateCells();
 
         cnt = 0;
-        for (typename cell_container_t::iterator it_cell = pFESpace->pCellManager()->begin(); it_cell != pFESpace->pCellManager()->end(); ++it_cell)
+        for (auto it_cell = pFESpace->pCellManager()->begin(); it_cell != pFESpace->pCellManager()->end(); ++it_cell)
         {
             ++cnt;
 
@@ -151,8 +151,8 @@ public:
             rOStream << "% cell " << cnt << " information" << std::endl;
             rOStream << "P" << patch_id << "_CId{" << cnt << "} = " << (*it_cell)->Id() << ";\n";
             rOStream << "P" << patch_id << "_S{" << cnt << "} = [" << (*it_cell)->XiMinValue() << " " << (*it_cell)->XiMaxValue();
-            if (TFESpaceType::Dim() > 1) { rOStream << "; " << (*it_cell)->EtaMinValue() << " " << (*it_cell)->EtaMaxValue(); }
-            if (TFESpaceType::Dim() > 2) { rOStream << "; " << (*it_cell)->ZetaMinValue() << " " << (*it_cell)->ZetaMaxValue(); }
+            if constexpr (TFESpaceType::Dim() > 1) { rOStream << "; " << (*it_cell)->EtaMinValue() << " " << (*it_cell)->EtaMaxValue(); }
+            if constexpr (TFESpaceType::Dim() > 2) { rOStream << "; " << (*it_cell)->ZetaMinValue() << " " << (*it_cell)->ZetaMaxValue(); }
             rOStream << "];\n";
 
             // write the extraction operator
@@ -184,13 +184,13 @@ public:
         rOStream << "P" << patch_id << "_params.min_xi = " << min_xi << ";\n";
         rOStream << "P" << patch_id << "_params.max_xi = " << 0.999999 * max_xi << ";\n";
         rOStream << "P" << patch_id << "_params.num_points1 = 100;\n";
-        if (TFESpaceType::Dim() > 1)
+        if constexpr (TFESpaceType::Dim() > 1)
         {
             rOStream << "P" << patch_id << "_params.min_eta = " << min_eta << ";\n";
             rOStream << "P" << patch_id << "_params.max_eta = " << 0.999999 * max_eta << ";\n";
             rOStream << "P" << patch_id << "_params.num_points2 = 100;\n";
         }
-        if (TFESpaceType::Dim() > 2)
+        if constexpr (TFESpaceType::Dim() > 2)
         {
             rOStream << "P" << patch_id << "_params.min_zeta = " << min_zeta << ";\n";
             rOStream << "P" << patch_id << "_params.max_zeta = " << 0.999999 * max_zeta << ";\n";
@@ -198,8 +198,8 @@ public:
         }
         rOStream << "plot_geom_hbsplines_" << TFESpaceType::Dim() << "d_cdb(";
         rOStream << "P" << patch_id << "_Xi";
-        if (TFESpaceType::Dim() > 1) { rOStream << ",P" << patch_id << "_Eta"; }
-        if (TFESpaceType::Dim() > 2) { rOStream << ",P" << patch_id << "_Zeta"; }
+        if constexpr (TFESpaceType::Dim() > 1) { rOStream << ",P" << patch_id << "_Eta"; }
+        if constexpr (TFESpaceType::Dim() > 2) { rOStream << ",P" << patch_id << "_Zeta"; }
         rOStream << ",P" << patch_id << "_P";
         rOStream << ",P" << patch_id << "_W";
         rOStream << ",P" << patch_id << "_params);\n";
@@ -214,12 +214,12 @@ public:
         rOStream << "P" << patch_id << "_cell_params.tol = 1.0e-6;\n";
         rOStream << "P" << patch_id << "_cell_params.p1 = " << pFESpace->Order(0) << ";\n";
         rOStream << "P" << patch_id << "_cell_params.max_xi = 1.0;\n";
-        if (TFESpaceType::Dim() > 1)
+        if constexpr (TFESpaceType::Dim() > 1)
         {
             rOStream << "P" << patch_id << "_cell_params.p2 = " << pFESpace->Order(1) << ";\n";
             rOStream << "P" << patch_id << "_cell_params.max_eta = 1.0;\n";
         }
-        if (TFESpaceType::Dim() > 2)
+        if constexpr (TFESpaceType::Dim() > 2)
         {
             rOStream << "P" << patch_id << "_cell_params.p3 = " << pFESpace->Order(2) << ";\n";
             rOStream << "P" << patch_id << "_cell_params.max_zeta = 1.0;\n";
@@ -242,11 +242,11 @@ public:
         rOStream << std::endl;
     }
 
-    virtual void Export(typename MultiPatch<TFESpaceType::Dim()>::Pointer pMultiPatch, std::ostream& rOStream)
+    virtual void Export(typename MultiPatch<TFESpaceType::Dim()>::Pointer pMultiPatch, std::ostream& rOStream) const
     {
         typedef typename MultiPatch<TFESpaceType::Dim()>::patch_ptr_iterator patch_ptr_iterator;
 
-        for (patch_ptr_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
+        for (auto it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
         {
             this->Export(*it, rOStream);
         }

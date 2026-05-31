@@ -368,6 +368,7 @@ public:
     /// In principle, it initializes all the equation_id to -1
     void ResetFunctionIndices()
     {
+KRATOS_WATCH(__LINE__)
         for (patch_ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
             (*it)->pFESpace()->ResetFunctionIndices();
@@ -388,13 +389,16 @@ public:
         std::size_t last = start;
         for (patch_ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
-            if ((*it)->IsPrimary() == true)
+            if ((*it)->IsPrimary())
             {
+std::cout << "Enumerating patch " << (*it)->Id() << ", last = " << last << std::endl;
                 last = (*it)->pFESpace()->Enumerate(last);
-
+auto func_indices = (*it)->pFESpace()->FunctionIndices();
+KRATOS_WATCH_STD_CON(func_indices)
                 // enumerate the interface
                 for (interface_iterator it2 = (*it)->InterfaceBegin(); it2 != (*it)->InterfaceEnd(); ++it2)
                 {
+std::cout << "Enumerating interface " << (*it2)->Info() << std::endl;
                     (*it2)->Enumerate();
                 }
             }
@@ -403,7 +407,7 @@ public:
         // check if a patch is not a primary patch, then that patch must be enumerated again using the enumeration info from the other patches
         for (patch_ptr_iterator it = Patches().ptr_begin(); it != Patches().ptr_end(); ++it)
         {
-            if ((*it)->IsPrimary() == false)
+            if (!(*it)->IsPrimary())
             {
                 (*it)->Enumerate();
             }

@@ -447,8 +447,8 @@ public:
     }
 
     /// Check the compatibility between boundaries of two WeightedFESpacees
-    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
-                                    const FESpaceType& rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide side1,
+                                    const FESpaceType& rFESpace2, const BoundarySide side2) const override
     {
         return rFESpace1 == rFESpace2;
     }
@@ -467,19 +467,19 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Extract the index of the functions on the boundary
-    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const override
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide side) const override
     {
         return mpFESpace->ExtractBoundaryFunctionIndices(side);
     }
 
     /// Assign the index for the functions on the boundary
-    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices, const bool override) override
+    void AssignBoundaryFunctionIndices(const BoundarySide side, const std::vector<std::size_t>& func_indices, const bool override) override
     {
         mpFESpace->AssignBoundaryFunctionIndices(side, func_indices, override);
     }
 
     /// Construct the boundary WeightedFESpace based on side
-    typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
+    typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide side) const override
     {
         typename FESpace < TDim - 1 >::Pointer pBFESpace = mpFESpace->ConstructBoundaryFESpace(side);
         // TODO extract/compute the weights on the boundary
@@ -671,8 +671,8 @@ public:
     std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t> {mFunctionId};}
 
     /// Check the compatibility between boundaries of two FESpacees
-    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
-                                    const FESpaceType& rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide side1,
+                                    const FESpaceType& rFESpace2, const BoundarySide side2) const override
     {
         return true;
     }
@@ -684,7 +684,7 @@ public:
     }
 
     // /// Construct the boundary WeightedFESpace based on side
-    // virtual typename WeightedFESpace<-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    // virtual typename WeightedFESpace<-1>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const
     // {
     //     return NULL;
     // }
@@ -779,8 +779,8 @@ public:
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
-                                    const FESpaceType& rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide side1,
+                                    const FESpaceType& rFESpace2, const BoundarySide side2) const override
     {
         return true;
     }
@@ -792,7 +792,7 @@ public:
     }
 
     // /// Construct the boundary WeightedFESpace based on side
-    // virtual typename WeightedFESpace<-2>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    // virtual typename WeightedFESpace<-2>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const
     // {
     //     return NULL;
     // }
@@ -864,8 +864,8 @@ public:
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
-                                    const FESpaceType& rFESpace2, const BoundarySide& side2) const override
+    bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide side1,
+                                    const FESpaceType& rFESpace2, const BoundarySide side2) const override
     {
         return true;
     }
@@ -877,7 +877,7 @@ public:
     }
 
     // /// Construct the boundary WeightedFESpace based on side
-    // virtual typename WeightedFESpace<-3>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    // virtual typename WeightedFESpace<-3>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const
     // {
     //     return NULL;
     // }

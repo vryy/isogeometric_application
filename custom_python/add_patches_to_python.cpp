@@ -321,7 +321,6 @@ std::size_t MultiPatch_Enumerate1(TMultiPatchType& rDummy)
     std::size_t system_size;
 
     system_size = rDummy.Enumerate();
-//    KRATOS_WATCH(system_size)
 
     return system_size;
 }
@@ -332,7 +331,6 @@ std::size_t MultiPatch_Enumerate2(TMultiPatchType& rDummy, std::size_t start)
     std::size_t system_size;
 
     system_size = rDummy.Enumerate(start);
-//    KRATOS_WATCH(system_size)
 
     return system_size;
 }

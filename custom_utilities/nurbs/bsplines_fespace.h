@@ -553,13 +553,13 @@ public:
     }
 
     /// Extract the index of the functions on the boundary
-    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const final
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide side) const final
     {
         std::vector<std::size_t> size_info;
         return this->ExtractBoundaryFunctionIndices(size_info, side);
     }
 
-    std::vector<std::size_t> ExtractBoundaryFunctionIndices(std::vector<std::size_t>& size_info, const BoundarySide& side) const final
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(std::vector<std::size_t>& size_info, const BoundarySide side) const final
     {
         std::vector<std::size_t> func_indices;
 
@@ -681,7 +681,7 @@ public:
     }
 
     /// Extract the index of the functions on the boundary down to some level
-    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side, std::size_t level) const final
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide side, std::size_t level) const final
     {
         std::vector<std::size_t> func_indices;
 
@@ -794,7 +794,7 @@ public:
     }
 
     /// Assign the index for the functions on the boundary
-    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices, const bool override) final
+    void AssignBoundaryFunctionIndices(const BoundarySide side, const std::vector<std::size_t>& func_indices, const bool override) final
     {
         if (side == _BLEFT_)
         {
@@ -1091,7 +1091,7 @@ public:
     }
 
     /// Construct the boundary patch based on side
-    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const final
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const final
     {
         typename BSplinesFESpace<TDim-1, TLocalCoordinateType>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1, TLocalCoordinateType>::Pointer(new BSplinesFESpace<TDim-1, TLocalCoordinateType> ());
 
@@ -1145,7 +1145,7 @@ public:
     }
 
     /// Construct the boundary patch based on side and direction
-    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide side,
             const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const final
     {
         typename BSplinesFESpace<TDim-1, TLocalCoordinateType>::Pointer pBFESpace = typename BSplinesFESpace<TDim-1, TLocalCoordinateType>::Pointer(new BSplinesFESpace<TDim-1, TLocalCoordinateType> ());
@@ -1546,6 +1546,11 @@ public:
                     rOStream << std::endl;
                 }
             }
+        }
+        rOStream << " GlobalToLocal:";
+        for (auto it = BaseType::mGlobalToLocal.begin(); it != BaseType::mGlobalToLocal.end(); ++it)
+        {
+            rOStream << " " << it->first << "->" << it->second;
         }
     }
 

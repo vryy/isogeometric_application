@@ -18,6 +18,7 @@
 #include "includes/ublas_interface.h"
 #include "includes/serializer.h"
 #include "containers/data_value_container.h"
+#include "utilities/indexed_object.h"
 #include "custom_utilities/control_point.h"
 #include "isogeometric_application_variables.h"
 
@@ -43,7 +44,7 @@ struct PBSplinesBasisFunction_InitializeValue_Helper
  * Each basis function associates with a control point via CONTROL_POINT variable.
  */
 template<typename TCellType>
-class PBSplinesBasisFunction
+class PBSplinesBasisFunction : public IndexedObject
 {
 public:
     /// Pointer definition
@@ -61,12 +62,12 @@ public:
 
     /// Empty constructor for serialization
     PBSplinesBasisFunction()
-        : mId(0), mEquationId(-1)
+        : IndexedObject(0), mEquationId(-1)
     {}
 
     /// Constructor with Id
     PBSplinesBasisFunction(std::size_t Id)
-        : mId(Id), mEquationId(-1)
+        : IndexedObject(Id), mEquationId(-1)
     {}
 
     /// Destructor
@@ -127,9 +128,6 @@ public:
     cell_const_iterator cell_begin() const {return mpCells.begin();}
     cell_iterator cell_end() {return mpCells.end();}
     cell_const_iterator cell_end() const {return mpCells.end();}
-
-    /// Get the Id of this basis function. Each basis function should have unique Id within a patch
-    std::size_t Id() const {return mId;}
 
     /// Get the equation Id of this basis function. Each basis function should have unique equation Id accross patches
     std::size_t EquationId() const {return mEquationId;}
@@ -280,7 +278,6 @@ public:
 
 protected:
 
-    std::size_t mId;
     std::size_t mEquationId; // this variable stores the equation id of this basis function accross patches for the case of scalar PDE.
     cell_container_t mpCells; // list of cells support this basis function
 

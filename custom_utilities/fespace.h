@@ -249,6 +249,12 @@ public:
         KRATOS_ERROR << "Calling base class function";
     }
 
+    /// Provide the view to the global to local map
+    const std::map<std::size_t, std::size_t>& GlobalToLocal() const
+    {
+        return mGlobalToLocal;
+    }
+
     /// Return the local id of a given global id
     std::size_t LocalId(std::size_t global_id) const
     {
@@ -256,7 +262,7 @@ public:
 
         if (it == mGlobalToLocal.end())
         {
-            KRATOS_WATCH(TDim)
+            this->PrintInfo(std::cout);
             std::cout << "mGlobalToLocal:";
             for (std::map<std::size_t, std::size_t>::const_iterator it2 = mGlobalToLocal.begin(); it2 != mGlobalToLocal.end(); ++it2)
             {
@@ -281,8 +287,8 @@ public:
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
-                                            const FESpaceType& rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide side1,
+                                            const FESpaceType& rFESpace2, const BoundarySide side2) const
     {
         typename BoundaryFESpaceType::Pointer pBFESpace1 = rFESpace1.ConstructBoundaryFESpace(side1);
         typename BoundaryFESpaceType::Pointer pBFESpace2 = rFESpace1.ConstructBoundaryFESpace(side2);
@@ -317,19 +323,19 @@ public:
     }
 
     /// Extract the index of the functions on the boundary
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(std::vector<std::size_t>& size_info, const BoundarySide& side) const
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(std::vector<std::size_t>& size_info, const BoundarySide side) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Extract the index of the functions on the boundary
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide side) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Extract the index of the functions on the boundary down to some level
-    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side, std::size_t level) const
+    virtual std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide side, std::size_t level) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
@@ -337,19 +343,19 @@ public:
     /// Assign the index for the functions on the boundary
     /// If the override flag is on, all the boundary function indices will be overwritten if the target value is not -1
     /// If the override flag is off, only the boundary function index of not -1 is assigned
-    virtual void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices, const bool override)
+    virtual void AssignBoundaryFunctionIndices(const BoundarySide side, const std::vector<std::size_t>& func_indices, const bool override)
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Construct the boundary FESpace based on side
-    virtual typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    virtual typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide side) const
     {
         KRATOS_ERROR << "Calling base class function";
     }
 
     /// Construct the boundary FESpace based on side and local relative configuration
-    virtual typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+    virtual typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide side,
             const std::map<std::size_t, std::size_t>& local_parameter_map, const std::vector<BoundaryDirection>& directions) const
     {
         KRATOS_ERROR << "Calling base class function";
@@ -380,7 +386,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /// Fast function to get the opposite boundary side
-    static BoundarySide OppositeBoundarySide(const BoundarySide& side)
+    static BoundarySide OppositeBoundarySide(const BoundarySide side)
     {
         if (side == _BLEFT_) { return _BRIGHT_; }
         else if (side == _BRIGHT_) { return _BLEFT_; }
@@ -558,8 +564,8 @@ public:
     virtual std::vector<std::size_t> FunctionIndices() const {return std::vector<std::size_t> {mFunctionId};}
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
-                                            const FESpaceType& rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide side1,
+                                            const FESpaceType& rFESpace2, const BoundarySide side2) const
     {
         return true;
     }
@@ -571,7 +577,7 @@ public:
     }
 
     // /// Construct the boundary FESpace based on side
-    // virtual typename FESpace<-1>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    // virtual typename FESpace<-1>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const
     // {
     //     return NULL;
     // }
@@ -664,8 +670,8 @@ public:
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
-                                            const FESpaceType& rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide side1,
+                                            const FESpaceType& rFESpace2, const BoundarySide side2) const
     {
         return true;
     }
@@ -677,7 +683,7 @@ public:
     }
 
     // /// Construct the boundary FESpace based on side
-    // virtual typename FESpace<-2>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    // virtual typename FESpace<-2>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const
     // {
     //     return NULL;
     // }
@@ -745,8 +751,8 @@ public:
     }
 
     /// Check the compatibility between boundaries of two FESpacees
-    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide& side1,
-                                            const FESpaceType& rFESpace2, const BoundarySide& side2) const
+    virtual bool CheckBoundaryCompatibility(const FESpaceType& rFESpace1, const BoundarySide side1,
+                                            const FESpaceType& rFESpace2, const BoundarySide side2) const
     {
         return true;
     }
@@ -758,7 +764,7 @@ public:
     }
 
     // /// Construct the boundary FESpace based on side
-    // virtual typename FESpace<-3>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const
+    // virtual typename FESpace<-3>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const
     // {
     //     return NULL;
     // }

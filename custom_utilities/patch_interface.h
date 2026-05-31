@@ -57,6 +57,12 @@ public:
         , mSide1(side1), mSide2(side2)
     {}
 
+    /// Copy constructor.
+    PatchInterface(const PatchInterface& rOther)
+        : mpPatch1(rOther.mpPatch1), mpPatch2(rOther.mpPatch2)
+        , mSide1(rOther.mSide1), mSide2(rOther.mSide2)
+    {}
+
     /// Destructor
     virtual ~PatchInterface()
     {

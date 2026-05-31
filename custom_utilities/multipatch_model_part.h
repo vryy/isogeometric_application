@@ -115,8 +115,16 @@ public:
         mNodeOffset = 0;
         mName = "MultiPatch";
 
+// KRATOS_WATCH(__LINE__)
+// KRATOS_WATCH(*mpMultiPatch)
+
         // always enumerate the multipatch first
         mpMultiPatch->Enumerate();
+
+// KRATOS_WATCH(__LINE__)
+// KRATOS_WATCH(*mpMultiPatch)
+
+// KRATOS_ERROR << "stop here";
 
 #ifdef SD_APP_FORWARD_COMPATIBILITY
         mpModel->DeleteModelPart(mName);
@@ -202,7 +210,7 @@ public:
 #ifdef ENABLE_PROFILING
         double start = OpenMPUtils::GetCurrentTime();
 #endif
-
+std::cout << "AddElements for patch " << pPatch->Id() << std::endl;
         // get the grid function for control points
         const auto& rControlPointGridFunction = pPatch->ControlPointGridFunction();
 
@@ -511,13 +519,18 @@ public:
         {
             max_integration_method = (*p_temp_properties)[NUM_IGA_INTEGRATION_METHOD];
         }
-
-        for (auto it_cell = pCellManager->cbegin(); it_cell != pCellManager->cend(); ++it_cell)
+KRATOS_WATCH(starting_id)
+std::cout << "rNodes:";
+for (auto it = rNodes.begin(); it != rNodes.end(); ++it)
+    std::cout << " " << it->Id();
+std::cout << std::endl;
+        for (auto it_cell = pCellManager->cbegin(); it_cell != pCellManager->cend(); ++it_cell, ++cnt)
         {
             // get new nodes
             temp_element_nodes.clear();
 
             const std::vector<std::size_t>& anchors = (*it_cell)->GetSupportedAnchors();
+KRATOS_WATCH_STD_CON(anchors)
             Vector weights(anchors.size());
             for (std::size_t i = 0; i < anchors.size(); ++i)
             {
@@ -525,7 +538,7 @@ public:
                 weights[i] = pControlPointGrid->GetData(pFESpace->LocalId(anchors[i])).W();
             }
 
-            if (echo_level > 1)
+            // if (echo_level > 1)
             {
                 std::cout << "nodes:";
                 for (std::size_t i = 0; i < anchors.size(); ++i)
@@ -540,12 +553,14 @@ public:
                 KRATOS_WATCH(pFESpace->Order(1))
                 KRATOS_WATCH(pFESpace->Order(2))
             }
-
+KRATOS_WATCH(temp_element_nodes.size())
             // create the geometry
             p_temp_geometry = iga::dynamic_pointer_cast<IsogeometricGeometryType>(r_clone_element.GetGeometry().Create(temp_element_nodes));
+KRATOS_WATCH(typeid(*p_temp_geometry).name())
             if (p_temp_geometry == nullptr)
                 KRATOS_ERROR << "The cast to IsogeometricGeometry is failed.";
-
+KRATOS_WATCH(__LINE__)
+KRATOS_WATCH(max_integration_method)
             p_temp_geometry->AssignGeometryData(dummy,
                                                 dummy,
                                                 dummy,
@@ -556,7 +571,7 @@ public:
                                                 static_cast<int>(pFESpace->Order(1)),
                                                 static_cast<int>(pFESpace->Order(2)),
                                                 max_integration_method);
-
+KRATOS_WATCH(__LINE__)
             if (echo_level > 1)
             {
                 for (int irule = 0; irule < max_integration_method; ++irule)
@@ -570,16 +585,17 @@ public:
                     }
                 }
             }
-
+KRATOS_WATCH(__LINE__)
             // create the element and add to the list
-            typename TEntityType::Pointer pNewElement = r_clone_element.Create(cnt++, p_temp_geometry, p_temp_properties);
+            typename TEntityType::Pointer pNewElement = r_clone_element.Create(cnt, p_temp_geometry, p_temp_properties);
+KRATOS_WATCH(__LINE__)
             pNewElement->SetValue(ACTIVATION_LEVEL, 0);
 #ifdef IS_INACTIVE
             pNewElement->SetValue(IS_INACTIVE, false);
 #endif
             pNewElement->Set(ACTIVE, true);
             pNewElements.push_back(pNewElement);
-
+KRATOS_WATCH(__LINE__)
             //////////
             try
             {
@@ -598,7 +614,7 @@ public:
                     std::cout << "WARNING: cell " << (*it_cell)->Id() << " cannot be casted to BCell" << std::endl;
                 }
             }
-
+KRATOS_WATCH(__LINE__)
             try
             {
                 TsCell& c = dynamic_cast<TsCell&>(**it_cell);
@@ -621,7 +637,7 @@ public:
             // set the level
             pNewElement->SetValue(HIERARCHICAL_LEVEL, (*it_cell)->Level());
             pNewElement->SetValue(CELL_INDEX, (*it_cell)->Id());
-
+KRATOS_WATCH(__LINE__)
             if (echo_level > 1)
             {
                 std::cout << "Entity " << element_name << " " << pNewElement->Id() << " is created" << std::endl;

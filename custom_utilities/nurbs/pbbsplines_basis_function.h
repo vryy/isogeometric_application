@@ -338,8 +338,8 @@ public:
 protected:
 
     std::size_t mBoundaryId; // this variable stores the boundary information associated with this basis function.
-    // By default, the new basis function is considerred inside of the patch.
-    // User can add/remove the boundary information by using AddBoundary/RemoveBoundary
+        // By default, the new basis function is considerred inside of the patch.
+        // User can add/remove the boundary information by using AddBoundary/RemoveBoundary
     boost::array<std::size_t, TDim> mOrders;
     cell_container_t mpCells; // list of cells support this basis function
     boost::array<std::vector<knot_t>, TDim> mpLocalKnots;
@@ -348,16 +348,22 @@ protected:
 
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    ///@name Serialization
+    ///@{
+
+    void save(Serializer& rSerializer) const override
     {
         BaseType::save(rSerializer);
+        // TODO
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         BaseType::load(rSerializer);
+        // TODO
     }
 
+    ///@}
 };
 
 /// output stream function

@@ -32,6 +32,7 @@ template<int TDim>
 struct HBSplinesPatchUtility_Helper
 {
     static typename Patch<TDim>::Pointer CreatePatchFromBSplines(typename Patch<TDim>::Pointer pPatch);
+    static typename MultiPatch<TDim>::Pointer CreateMultiPatchFromBSplines(typename MultiPatch<TDim>::Pointer pMultiPatch);
 };
 
 /**
@@ -52,28 +53,34 @@ public:
     virtual ~HBSplinesPatchUtility() {}
 
     /// Create hbsplines patch from bsplines patch
-    /// One has to ensure that the B-Splines patch is enumerated properly before transforming to hierarchical B-Splines
+    /// One has to ensure that the B-Splines patch is enumerated before transforming to hierarchical B-Splines
     template<int TDim>
     static typename Patch<TDim>::Pointer CreatePatchFromBSplines(typename Patch<TDim>::Pointer pPatch)
     {
         return HBSplinesPatchUtility_Helper<TDim>::CreatePatchFromBSplines(pPatch);
     }
 
+    /// Create hbsplines multipatch from bsplines patch
+    /// One has to ensure that the B-Splines multipatch is enumerated before transforming to hierarchical B-Splines
+    template<int TDim>
+    static typename MultiPatch<TDim>::Pointer CreateMultiPatchFromBSplines(typename MultiPatch<TDim>::Pointer pMultiPatch)
+    {
+        return HBSplinesPatchUtility_Helper<TDim>::CreateMultiPatchFromBSplines(pMultiPatch);
+    }
+
     /// List the boundary basis functions on side
     template<int TDim>
-    static void ListBoundaryBfs(std::ostream& rOStream, typename HBSplinesFESpace<TDim>::Pointer pFESpace, const BoundarySide& side)
+    static void ListBoundaryBfs(std::ostream& rOStream, typename HBSplinesFESpace<TDim>::Pointer pFESpace, const BoundarySide side)
     {
-        typedef typename HBSplinesFESpace<TDim>::bf_iterator bf_iterator;
-
         rOStream << "Listing of boundary basis function on " << side << " side of hierarchical B-Splines space:" << std::endl;
         rOStream << "<<<<<" << std::endl;
 
-        for (bf_iterator it = pFESpace->bf_begin(); it != pFESpace->bf_end(); ++it)
+        for (auto it = pFESpace->bf_begin(); it != pFESpace->bf_end(); ++it)
         {
-            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
+            if (it->IsOnSide(BOUNDARY_FLAG(side)))
             {
                 // rOStream << "  bf " << (*it)->Id() << ", eq_id: " << (*it)->EquationId() << std::endl;
-                rOStream << *(*it) << std::endl;
+                rOStream << *it << std::endl;
             }
         }
 
@@ -88,11 +95,10 @@ public:
         typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
         typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
-        for (patch_iterator it = pMultiPatch->begin();
-                it != pMultiPatch->end(); ++it)
+        for (patch_iterator it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
-            if (pFESpace == NULL)
+            if (pFESpace == nullptr)
                 KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
             if (pFESpace->HasBfByEquationId(EquationId))
@@ -103,7 +109,7 @@ public:
 
         KRATOS_ERROR << "The basis function with global id " << EquationId << " does not exist" << std::endl;
 
-        return NULL;
+        return nullptr;
     }
 
     /// This subroutine finds the equation id that are duplicated among patches and print it out. It is useful to check for refinement.
@@ -118,17 +124,15 @@ public:
         typedef std::map<std::size_t, std::vector<std::pair<std::size_t, std::size_t> > > map_t;
         map_t dofs_map;
 
-        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
-        for (patch_iterator it = pMultiPatch->begin();
-                it != pMultiPatch->end(); ++it)
+        for (auto it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
-            if (pFESpace == NULL)
+            if (pFESpace == nullptr)
                 KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
             for (bf_iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
             {
-                dofs_map[(*it_bf)->EquationId()].push_back(std::make_pair(it->Id(), (*it_bf)->Id()));
+                dofs_map[it_bf->EquationId()].push_back(std::make_pair(it->Id(), it_bf->Id()));
             }
         }
 
@@ -206,7 +210,7 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
         KRATOS_ERROR << "The input patch is not B-Splines patch";
 
     typename BSplinesFESpace<2>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<2> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
+    if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
 
     // create the hierarchical B-Splines FESpace
@@ -233,6 +237,10 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
 
     std::vector<std::size_t> func_indices = pFESpace->FunctionIndices();
 
+    std::cout << "Creating bf for hbsplines patch " << pPatch->Id() << std::endl;
+    KRATOS_WATCH(number_1)
+    KRATOS_WATCH(number_2)
+
     std::size_t id = 0;
     for (std::size_t j = 0; j < number_2; ++j)
     {
@@ -257,11 +265,24 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
 
             std::size_t func_id = func_indices[i_func];
-            typename HBSplinesBasisFunction<2>::Pointer p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
+            auto p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
             p_bf->SetEquationId(func_id);
+            // std::cout << "bf " << p_bf->Id() << " is assigned eq_id = " << p_bf->EquationId()
+            //           << ", add = " << &(*p_bf)
+            //           << std::endl;
+            // KRATOS_WATCH(pNewFESpace->TotalNumber())
+            // auto new_func_indices = pNewFESpace->FunctionIndices();
+            // KRATOS_WATCH_STD_CON(new_func_indices)
+
+            // KRATOS_ERROR << "stop here";
 
             // set the boundary information
-            if (i == 0) { p_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
+            if (i == 0) {
+                p_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
+                std::cout << "bf " << p_bf->Id() << " has boundary left"
+                          << " and is assigned func_id = " << func_id
+                          << std::endl;
+            }
             else if (i == number_1 - 1) { p_bf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
 
             if (j == 0) { p_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
@@ -348,6 +369,9 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
         pNewPatch->CreateGridFunction(*vector_var_list[i], pControlGrid);
     }
 
+    // auto new_func_indices = pNewPatch->pFESpace()->FunctionIndices();
+    // KRATOS_WATCH_STD_CON(new_func_indices)
+
     return pNewPatch;
 }
 
@@ -359,7 +383,7 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
         KRATOS_ERROR << "The input patch is not B-Splines patch";
 
     typename BSplinesFESpace<3>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<3> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
+    if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
 
     // create the hierarchical B-Splines FESpace
@@ -495,6 +519,65 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
     }
 
     return pNewPatch;
+}
+
+template<int TDim>
+typename MultiPatch<TDim>::Pointer HBSplinesPatchUtility_Helper<TDim>::CreateMultiPatchFromBSplines(typename MultiPatch<TDim>::Pointer pMultiPatch)
+{
+    typename MultiPatch<TDim>::Pointer pNewMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
+
+    const auto& patches = pMultiPatch->Patches();
+
+    for (auto it = patches.ptr_begin(); it != patches.ptr_end(); ++it)
+    {
+        auto pPatch = *it;
+
+        // create the HBsplines patch
+        auto pNewPatch = CreatePatchFromBSplines(pPatch);
+        pNewPatch->SetPrefix("HB_" + pPatch->Prefix());
+
+        // add to the multipatch
+        pNewMultiPatch->AddPatch(pNewPatch);
+    }
+
+    // create the interface
+    for (auto it = patches.ptr_begin(); it != patches.ptr_end(); ++it)
+    {
+        auto pPatch = *it;
+        auto pNewPatch = pNewMultiPatch->Patches()(pPatch->Id());
+
+        for (auto iti = pPatch->InterfaceBegin(); iti != pPatch->InterfaceEnd(); ++iti)
+        {
+            auto pOldNeighborPatch = (*iti)->pPatch2();
+            auto pNewNeighborPatch = pNewMultiPatch->pGetPatch(pOldNeighborPatch->Id());
+
+            auto pNewInterface = typename PatchInterface<TDim>::Pointer(new PatchInterface<TDim>(pNewPatch, (*iti)->Side1(), pNewNeighborPatch, (*iti)->Side2()));
+            pNewPatch->AddInterface(pNewInterface);
+
+            // search and assign the other interface
+            for (auto iti2 = pNewNeighborPatch->InterfaceBegin(); iti2 != pNewNeighborPatch->InterfaceEnd(); ++iti2)
+            {
+                if ((*iti2)->Side1() == pNewInterface->Side2()
+                 && (*iti2)->pPatch1()->Id() == pNewInterface->pPatch2()->Id())
+                {
+                    pNewInterface->SetOtherInterface(*iti2);
+                    (*iti2)->SetOtherInterface(pNewInterface);
+                }
+            }
+        }
+    }
+
+    // generate the internal cells
+    for (auto it = pNewMultiPatch->Patches().ptr_begin(); it != pNewMultiPatch->Patches().ptr_end(); ++it)
+    {
+        typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >((*it)->pFESpace());
+        if (pFESpace == nullptr)
+            KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
+
+        pFESpace->UpdateCells();
+    }
+
+    return pNewMultiPatch;
 }
 
 } // namespace Kratos.

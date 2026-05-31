@@ -178,9 +178,9 @@ public:
     {
         rOStream << Info() << ", Addr = " << this;
         rOStream << ", Patch ";
-        if (this->pPatch1() == NULL)
+        if (this->pPatch1() == nullptr)
         {
-            rOStream << "null";
+            rOStream << "nullptr";
         }
         else
         {
@@ -188,9 +188,9 @@ public:
                      << ": " << this->Side1();
         }
         rOStream << " - Patch ";
-        if (this->pPatch2() == NULL)
+        if (this->pPatch2() == nullptr)
         {
-            rOStream << "null";
+            rOStream << "nullptr";
         }
         else
         {
@@ -198,13 +198,13 @@ public:
                      << ": " << this->Side2();
         }
         rOStream << ", Opposite Interface: ";
-        if (this->pOtherInterface() == NULL) { rOStream << "null"; }
+        if (this->pOtherInterface() == nullptr) { rOStream << "null"; }
         else { rOStream << this->pOtherInterface(); }
     }
 
     virtual void PrintData(std::ostream& rOStream) const
     {
-        if (this->pPatch1() == NULL)
+        if (this->pPatch1() == nullptr)
         {
             rOStream << "patch 1 is not specified" << std::endl;
         }
@@ -212,7 +212,7 @@ public:
         {
             rOStream << ">> patch 1: " << *(this->pPatch1()) << std::endl;
         }
-        if (this->pPatch2() == NULL)
+        if (this->pPatch2() == nullptr)
         {
             rOStream << "patch 2 is not specified" << std::endl;
         }

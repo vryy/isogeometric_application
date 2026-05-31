@@ -120,14 +120,14 @@ template<int TDim>
 typename HBSplinesFESpace<TDim>::bf_t HBSplinesPatchUtility_GetBfByEquationId(HBSplinesPatchUtility& rDummy,
         typename MultiPatch<TDim>::Pointer pMultiPatch, std::size_t EquationId)
 {
-    return rDummy.GetBfByEquationId<TDim>(pMultiPatch, EquationId);
+    return HBSplinesPatchUtility::GetBfByEquationId<TDim>(pMultiPatch, EquationId);
 }
 
 template<int TDim>
 void HBSplinesPatchUtility_ReportDuplicatedEquationId(HBSplinesPatchUtility& rDummy,
         typename MultiPatch<TDim>::Pointer pMultiPatch, const bool& throw_error)
 {
-    return rDummy.ReportDuplicatedEquationId<TDim>(pMultiPatch, throw_error);
+    return HBSplinesPatchUtility::ReportDuplicatedEquationId<TDim>(pMultiPatch, throw_error);
 }
 
 ////////////////////////////////////////
@@ -136,14 +136,14 @@ template<int TDim>
 void HBSplinesRefinementUtility_Refine(HBSplinesRefinementUtility& rDummy,
                                        typename Patch<TDim>::Pointer pPatch, std::size_t Id, int EchoLevel)
 {
-    rDummy.Refine<TDim>(pPatch, Id, EchoLevel);
+    HBSplinesRefinementUtility::Refine<TDim>(pPatch, Id, EchoLevel);
 }
 
 template<int TDim>
 void HBSplinesRefinementUtility_RefineBf(HBSplinesRefinementUtility& rDummy,
         typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf, int EchoLevel)
 {
-    rDummy.Refine<TDim>(pPatch, p_bf, EchoLevel);
+    HBSplinesRefinementUtility::Refine<TDim>(pPatch, p_bf, EchoLevel);
 }
 
 template<int TDim>
@@ -152,14 +152,14 @@ void HBSplinesRefinementUtility_RefineWindow(HBSplinesRefinementUtility& rDummy,
 {
     std::vector<std::vector<double> > window_vector;
     PythonUtils::Unpack<double, double>(window, window_vector);
-    rDummy.RefineWindow<TDim>(pPatch, window_vector, EchoLevel);
+    HBSplinesRefinementUtility::RefineWindow<TDim>(pPatch, window_vector, EchoLevel);
 }
 
 template<int TDim>
 void HBSplinesRefinementUtility_LinearDependencyRefine(HBSplinesRefinementUtility& rDummy,
         typename Patch<TDim>::Pointer pPatch, std::size_t refine_cycle, int EchoLevel)
 {
-    rDummy.LinearDependencyRefine<TDim>(pPatch, refine_cycle, EchoLevel);
+    HBSplinesRefinementUtility::LinearDependencyRefine<TDim>(pPatch, refine_cycle, EchoLevel);
 }
 
 ////////////////////////////////////////

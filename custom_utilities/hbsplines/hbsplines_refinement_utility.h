@@ -129,7 +129,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
+    if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
     // do not refine if maximum level is reached
@@ -155,7 +155,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
+    if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
     // get the correct basis function
@@ -231,7 +231,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
+    if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
     // get the list of variables in the patch
@@ -278,7 +278,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     }
 
     std::vector<std::vector<double> > new_knots(TDim);
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         BSplineUtils::ComputeBsplinesKnotInsertionCoefficients2DLocal(RefinedCoeffs,
                 new_knots[0], new_knots[1],
@@ -286,7 +286,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 local_knots[0], local_knots[1],
                 ins_knots[0], ins_knots[1]);
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         BSplineUtils::ComputeBsplinesKnotInsertionCoefficients3DLocal(RefinedCoeffs,
                 new_knots[0], new_knots[1], new_knots[2],
@@ -318,7 +318,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     // start to enumerate from the last equation id in the multipatch
     // we always assign an incremental equation_id for the new refined bfs, so that the bfs on the boundary will automatically match
     std::size_t starting_id;
-    if (pPatch->pParentMultiPatch() != NULL)
+    if (pPatch->pParentMultiPatch() != nullptr)
     {
         starting_id = pPatch->pParentMultiPatch()->GetLastEquationId();
     }
@@ -329,7 +329,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
     pnew_cells = typename cell_container_t::Pointer(new BCellManager<TDim, CellType>());
 
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         numbers[0] = pnew_local_knots[0].size() - pFESpace->Order(0) - 1;
         numbers[1] = pnew_local_knots[1].size() - pFESpace->Order(1) - 1;
@@ -442,7 +442,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     double old_value = p_bf->GetValue(*double_variables[i]);
                     double& new_value = pnew_bf->GetValue(*double_variables[i]);
                     new_value += RefinedCoeffs[i_func] * old_value;
-                    // pnew_bf->SetValue(*double_variables[i], new_value);
                     if (echo_refinement_detail)
                     {
                         std::cout << " completed" << std::endl;
@@ -459,7 +458,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     const array_1d<double, 3>& old_value = p_bf->GetValue(*array_1d_variables[i]);
                     array_1d<double, 3>& new_value = pnew_bf->GetValue(*array_1d_variables[i]);
                     noalias(new_value) += RefinedCoeffs[i_func] * old_value;
-                    // pnew_bf->SetValue(*array_1d_variables[i], new_value);
                     if (echo_refinement_detail)
                     {
                         std::cout << " completed" << std::endl;
@@ -475,7 +473,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     const Vector& old_value = p_bf->GetValue(*vector_variables[i]);
                     Vector& new_value = pnew_bf->GetValue(*vector_variables[i]);
                     noalias(new_value) += RefinedCoeffs[i_func] * old_value;
-                    // pnew_bf->SetValue(*vector_variables[i], new_value);
                     if (echo_refinement_detail)
                     {
                         std::cout << " completed" << std::endl;
@@ -508,7 +505,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             }
         }
     }
-    else if (TDim == 3)
+    else if constexpr (TDim == 3)
     {
         numbers[0] = pnew_local_knots[0].size() - pFESpace->Order(0) - 1;
         numbers[1] = pnew_local_knots[1].size() - pFESpace->Order(1) - 1;
@@ -609,7 +606,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     double weight = oldC.W();
                     ControlPointType& newC = pnew_bf->GetValue(CONTROL_POINT);
                     newC += RefinedCoeffs[i_func] * oldC;
-                    // pnew_bf->SetValue(CONTROL_POINT, newC);
 
                     // transfer other control values from p_bf to pnew_bf
                     for (std::size_t i = 0; i < double_variables.size(); ++i)
@@ -617,7 +613,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                         double old_value = p_bf->GetValue(*double_variables[i]);
                         double& new_value = pnew_bf->GetValue(*double_variables[i]);
                         new_value += RefinedCoeffs[i_func] * old_value;
-                        // pnew_bf->SetValue(*double_variables[i], new_value);
                     }
 
                     for (std::size_t i = 0; i < array_1d_variables.size(); ++i)
@@ -625,7 +620,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                         const array_1d<double, 3>& old_value = p_bf->GetValue(*array_1d_variables[i]);
                         array_1d<double, 3>& new_value = pnew_bf->GetValue(*array_1d_variables[i]);
                         noalias(new_value) += RefinedCoeffs[i_func] * old_value;
-                        // pnew_bf->SetValue(*array_1d_variables[i], new_value);
                     }
 
                     for (std::size_t i = 0; i < vector_variables.size(); ++i)
@@ -633,7 +627,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                         const Vector& old_value = p_bf->GetValue(*vector_variables[i]);
                         Vector& new_value = pnew_bf->GetValue(*vector_variables[i]);
                         noalias(new_value) += RefinedCoeffs[i_func] * old_value;
-                        // pnew_bf->SetValue(*vector_variables[i], new_value);
                     }
 
                     // create the cells for the basis function
@@ -676,7 +669,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     std::vector<double> xi(TDim);
     const std::size_t nsampling = 100;
     double error = 0.0;
-    if (TDim == 2)
+    if constexpr (TDim == 2)
     {
         for (std::size_t i = 0; i < nsampling; ++i)
         {
@@ -811,7 +804,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             it != DoubleGridFunctions_.end(); ++it)
     {
         typename WeightedFESpace<TDim>::Pointer pThisFESpace = iga::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
-        if (pThisFESpace == NULL)
+        if (pThisFESpace == nullptr)
             KRATOS_ERROR << "The cast to WeightedFESpace is failed.";
         pThisFESpace->SetWeights(Weights);
     }
@@ -821,7 +814,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             it != Array1DGridFunctions_.end(); ++it)
     {
         typename WeightedFESpace<TDim>::Pointer pThisFESpace = iga::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
-        if (pThisFESpace == NULL)
+        if (pThisFESpace == nullptr)
             KRATOS_ERROR << "The cast to WeightedFESpace is failed.";
         pThisFESpace->SetWeights(Weights);
     }
@@ -831,7 +824,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             it != VectorGridFunctions_.end(); ++it)
     {
         typename WeightedFESpace<TDim>::Pointer pThisFESpace = iga::dynamic_pointer_cast<WeightedFESpace<TDim> >((*it)->pFESpace());
-        if (pThisFESpace == NULL)
+        if (pThisFESpace == nullptr)
             KRATOS_ERROR << "The cast to WeightedFESpace is failed.";
         pThisFESpace->SetWeights(Weights);
     }
@@ -862,7 +855,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
         // extract the hierarchical B-Splines space
         typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
-        if (pNeighborFESpace == NULL)
+        if (pNeighborFESpace == nullptr)
             KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
         // get the correct basis function
@@ -915,7 +908,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
+    if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
         std::cout << "window:";
@@ -971,7 +964,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
 
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
+    if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
     if (pFESpace->LastLevel() < 1) { return; }
@@ -997,19 +990,19 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
                 {
                     for (typename HBSplinesFESpace<TDim>::BasisFunctionType::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
                     {
-                        if (TDim == 1)
+                        if constexpr (TDim == 1)
                         {
                             p_domain->AddXcoord((*it_cell)->XiMinValue());
                             p_domain->AddXcoord((*it_cell)->XiMaxValue());
                         }
-                        else if (TDim == 2)
+                        else if constexpr (TDim == 2)
                         {
                             p_domain->AddXcoord((*it_cell)->XiMinValue());
                             p_domain->AddXcoord((*it_cell)->XiMaxValue());
                             p_domain->AddYcoord((*it_cell)->EtaMinValue());
                             p_domain->AddYcoord((*it_cell)->EtaMaxValue());
                         }
-                        else if (TDim == 3)
+                        else if constexpr (TDim == 3)
                         {
                             p_domain->AddXcoord((*it_cell)->XiMinValue());
                             p_domain->AddXcoord((*it_cell)->XiMaxValue());
@@ -1032,17 +1025,17 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
                 {
                     for (typename HBSplinesFESpace<TDim>::BasisFunctionType::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
                     {
-                        if (TDim == 1)
+                        if constexpr (TDim == 1)
                         {
                             std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue()};
                             p_domain->AddCell(box);
                         }
-                        else if (TDim == 2)
+                        else if constexpr (TDim == 2)
                         {
                             std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue()};
                             p_domain->AddCell(box);
                         }
-                        else if (TDim == 3)
+                        else if constexpr (TDim == 3)
                         {
                             std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue(), (*it_cell)->ZetaMinValue(), (*it_cell)->ZetaMaxValue()};
                             p_domain->AddCell(box);

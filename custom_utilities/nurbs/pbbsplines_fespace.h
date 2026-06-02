@@ -505,7 +505,7 @@ public:
     }
 
     /// Extract the index of the functions on the boundary
-    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide& side) const override
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide side) const override
     {
         std::vector<std::size_t> func_indices;
 
@@ -531,7 +531,7 @@ public:
     }
 
     /// Assign the index for the functions on the boundary
-    void AssignBoundaryFunctionIndices(const BoundarySide& side, const std::vector<std::size_t>& func_indices, const bool override) override
+    void AssignBoundaryFunctionIndices(const BoundarySide side, const std::vector<std::size_t>& func_indices, const bool override) override
     {
         // firstly we organize the basis functions based on its equation_id
         std::map<std::size_t, bf_t> map_bfs;
@@ -722,6 +722,7 @@ private:
 
     ///@name Serialization
     ///@{
+
     friend class Serializer;
 
     void save(Serializer& rSerializer) const override
@@ -737,6 +738,8 @@ private:
         rSerializer.load( "Orders", mOrders );
         // TODO
     }
+
+    ///@}
 };
 
 /// output stream function

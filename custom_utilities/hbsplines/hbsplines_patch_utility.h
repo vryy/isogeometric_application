@@ -92,7 +92,7 @@ public:
                 it != pMultiPatch->end(); ++it)
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
-            if (pFESpace == NULL)
+            if (pFESpace == nullptr)
                 KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
             if (pFESpace->HasBfByEquationId(EquationId))
@@ -103,14 +103,13 @@ public:
 
         KRATOS_ERROR << "The basis function with global id " << EquationId << " does not exist" << std::endl;
 
-        return NULL;
+        return nullptr;
     }
 
     /// This subroutine finds the equation id that are duplicated among patches and print it out. It is useful to check for refinement.
     template<int TDim>
     static void ReportDuplicatedEquationId(typename MultiPatch<TDim>::Pointer pMultiPatch, const bool& throw_error)
     {
-        std::cout << "At " << __FUNCTION__ << std::endl;
         typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
         typedef typename HBSplinesFESpace<TDim>::bf_iterator bf_iterator;
 
@@ -123,7 +122,7 @@ public:
                 it != pMultiPatch->end(); ++it)
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
-            if (pFESpace == NULL)
+            if (pFESpace == nullptr)
                 KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
             for (bf_iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
@@ -206,7 +205,7 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
         KRATOS_ERROR << "The input patch is not B-Splines patch";
 
     typename BSplinesFESpace<2>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<2> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
+    if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
 
     // create the hierarchical B-Splines FESpace
@@ -359,7 +358,7 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
         KRATOS_ERROR << "The input patch is not B-Splines patch";
 
     typename BSplinesFESpace<3>::Pointer pFESpace = iga::dynamic_pointer_cast<BSplinesFESpace<3> >(pPatch->pFESpace());
-    if (pFESpace == NULL)
+    if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to BSplinesFESpace is failed.";
 
     // create the hierarchical B-Splines FESpace

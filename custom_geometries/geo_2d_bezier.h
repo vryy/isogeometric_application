@@ -1111,11 +1111,9 @@ public:
 
 protected:
 
-//    static const GeometryData msGeometryData;
     GeometryData::Pointer mpBezierGeometryData;
 
     MatrixType mExtractionOperator;
-    // CompressedMatrixType mExtractionOperator;
 
     ValuesContainerType mCtrlWeights; //weight of control points
 
@@ -1127,11 +1125,6 @@ protected:
 
 private:
 
-    /**
-     * Static Member Variables
-     */
-
-    ///@}
     ///@name Serialization
     ///@{
 
@@ -1146,6 +1139,8 @@ private:
     {
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, PointsArrayType );
     }
+
+    ///@}
 
     /**
      * Private Operations
@@ -1302,23 +1297,17 @@ private:
      * Un accessible methods
      */
 
-};    // Class Geo2dBezier
+}; // Class Geo2dBezier
 
 /**
  * Input and output
  */
 
 /**
- * input stream function
- */
-template<class TPointType> inline std::istream& operator >>(
-    std::istream& rIStream, Geo2dBezier<TPointType>& rThis);
-
-/**
  * output stream function
  */
-template<class TPointType> inline std::ostream& operator <<(
-    std::ostream& rOStream, const Geo2dBezier<TPointType>& rThis)
+template<class TPointType>
+inline std::ostream& operator <<(std::ostream& rOStream, const Geo2dBezier<TPointType>& rThis)
 {
     rThis.PrintInfo(rOStream);
     rOStream << std::endl;

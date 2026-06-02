@@ -45,7 +45,7 @@ public:
     /// Type definition
     typedef PBBSplinesFESpace<TDim, TLocalCoordinateType, HBSplinesBasisFunction<TDim>, BCellManager<TDim, typename HBSplinesBasisFunction<TDim>::CellType> > BaseType;
     typedef HBSplinesFESpace<TDim, TLocalCoordinateType> ThisType;
-    typedef FESpace<TDim, TLocalCoordinateType> FESpaceType;
+    typedef typename BaseType::FESpaceType FESpaceType;
     typedef typename BaseType::knot_container_t knot_container_t;
     typedef typename BaseType::knot_t knot_t;
 
@@ -232,7 +232,7 @@ public:
     }
 
     /// Construct the boundary FESpace based on side
-    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide& side) const override
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const override
     {
         typedef HBSplinesFESpace<TDim-1, TLocalCoordinateType> BoundaryFESpaceType;
         typename BoundaryFESpaceType::Pointer pBFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
@@ -325,7 +325,7 @@ public:
         typename BoundaryFESpaceType::cell_container_t::Pointer pnew_cells;
         double cell_tol = pBFESpace->pCellManager()->GetTolerance();
 
-        pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new BCellManager < TDim - 1, typename BoundaryFESpaceType::CellType > ());
+        pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new BCellManager<TDim-1, typename BoundaryFESpaceType::CellType> ());
 
         if constexpr (TDim == 2)
         {
@@ -399,7 +399,7 @@ public:
     }
 
     /// Construct the boundary FESpace based on side and rotation
-    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide& side,
+    typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide side,
             const std::map<std::size_t, std::size_t>& local_parameter_map,
             const std::vector<BoundaryDirection>& directions) const override
     {

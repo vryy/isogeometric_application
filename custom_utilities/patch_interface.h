@@ -148,6 +148,13 @@ public:
     /// Validate the compatibility of two patches on the interface
     virtual bool Validate(const bool debug, const double dist_tol) const
     {
+        std::vector<std::size_t> func_indices_1 = this->pPatch1()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side1());
+        std::vector<std::size_t> func_indices_2 = this->pPatch2()->pFESpace()->ExtractBoundaryFunctionIndices(this->Side2());
+        if (func_indices_1 != func_indices_2)
+        {
+            return false;
+        }
+
         return true;
     }
 

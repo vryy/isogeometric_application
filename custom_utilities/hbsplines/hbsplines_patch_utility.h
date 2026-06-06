@@ -70,19 +70,17 @@ public:
 
     /// List the boundary basis functions on side
     template<int TDim>
-    static void ListBoundaryBfs(std::ostream& rOStream, typename HBSplinesFESpace<TDim>::Pointer pFESpace, const BoundarySide& side)
+    static void ListBoundaryBfs(std::ostream& rOStream, typename HBSplinesFESpace<TDim>::Pointer pFESpace, const BoundarySide side)
     {
-        typedef typename HBSplinesFESpace<TDim>::bf_iterator bf_iterator;
-
         rOStream << "Listing of boundary basis function on " << side << " side of hierarchical B-Splines space:" << std::endl;
         rOStream << "<<<<<" << std::endl;
 
-        for (bf_iterator it = pFESpace->bf_begin(); it != pFESpace->bf_end(); ++it)
+        for (auto it = pFESpace->bf_begin(); it != pFESpace->bf_end(); ++it)
         {
-            if ((*it)->IsOnSide(BOUNDARY_FLAG(side)))
+            if (it->IsOnSide(BOUNDARY_FLAG(side)))
             {
                 // rOStream << "  bf " << (*it)->Id() << ", eq_id: " << (*it)->EquationId() << std::endl;
-                rOStream << *(*it) << std::endl;
+                rOStream << *it << std::endl;
             }
         }
 
@@ -97,8 +95,7 @@ public:
         typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
         typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
-        for (patch_iterator it = pMultiPatch->begin();
-                it != pMultiPatch->end(); ++it)
+        for (patch_iterator it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == nullptr)
@@ -126,9 +123,7 @@ public:
         typedef std::map<std::size_t, std::vector<std::pair<std::size_t, std::size_t> > > map_t;
         map_t dofs_map;
 
-        typedef typename MultiPatch<TDim>::patch_iterator patch_iterator;
-        for (patch_iterator it = pMultiPatch->begin();
-                it != pMultiPatch->end(); ++it)
+        for (auto it = pMultiPatch->begin(); it != pMultiPatch->end(); ++it)
         {
             typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(it->pFESpace());
             if (pFESpace == nullptr)
@@ -136,7 +131,7 @@ public:
 
             for (bf_iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
             {
-                dofs_map[(*it_bf)->EquationId()].push_back(std::make_pair(it->Id(), (*it_bf)->Id()));
+                dofs_map[it_bf->EquationId()].push_back(std::make_pair(it->Id(), it_bf->Id()));
             }
         }
 
@@ -265,7 +260,7 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
 
             std::size_t func_id = func_indices[i_func];
-            typename HBSplinesBasisFunction<2>::Pointer p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
+            auto p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
             p_bf->SetEquationId(func_id);
 
             // set the boundary information

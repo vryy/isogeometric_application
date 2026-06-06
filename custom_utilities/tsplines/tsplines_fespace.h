@@ -166,7 +166,7 @@ public:
         rOStream << "Basis functions:" << std::endl;
         for (bf_const_iterator it = BaseType::bf_begin(); it != BaseType::bf_end(); ++it)
         {
-            rOStream << " >> " << *(*it) << std::endl;
+            rOStream << " >> " << *it << std::endl;
         }
 
         // print the cells

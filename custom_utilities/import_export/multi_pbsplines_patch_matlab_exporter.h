@@ -73,11 +73,11 @@ public:
         }
         rOStream << "\n";
 
-        for (typename bf_container_t::iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
+        for (auto it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
         {
-            (*it_bf)->LocalKnots(0, local_knots[0]);
-            if (TFESpaceType::Dim() > 1) { (*it_bf)->LocalKnots(1, local_knots[1]); }
-            if (TFESpaceType::Dim() > 2) { (*it_bf)->LocalKnots(2, local_knots[2]); }
+            it_bf->LocalKnots(0, local_knots[0]);
+            if constexpr (TFESpaceType::Dim() > 1) { it_bf->LocalKnots(1, local_knots[1]); }
+            if constexpr (TFESpaceType::Dim() > 2) { it_bf->LocalKnots(2, local_knots[2]); }
 
             double min_xi_bf = *std::min_element(local_knots[0].begin(), local_knots[0].end());
             double max_xi_bf = *std::max_element(local_knots[0].begin(), local_knots[0].end());
@@ -102,7 +102,7 @@ public:
 
             ++cnt;
 
-            rOStream << "% basis function " << (*it_bf)->Id() << std::endl;
+            rOStream << "% basis function " << it_bf->Id() << std::endl;
             rOStream << "P" << patch_id << "_Xi{" << cnt << "} = [";
             for (std::size_t i = 0; i < local_knots[0].size(); ++i)
             {
@@ -130,12 +130,12 @@ public:
                 rOStream << "];\n";
             }
 
-            ControlPointType C = (*it_bf)->GetValue(CONTROL_POINT);
+            ControlPointType C = it_bf->GetValue(CONTROL_POINT);
 
             rOStream << "P" << patch_id << "_P(" << cnt << ",:) = [" << C.X() << " " << C.Y() << " " << C.Z() << "];\n";
             rOStream << "P" << patch_id << "_W(" << cnt << ") = " << C.W() << ";\n";
-            rOStream << "P" << patch_id << "_Id(" << cnt << ") = " << (*it_bf)->Id() << ";\n";
-            rOStream << "P" << patch_id << "_EqId(" << cnt << ") = " << (*it_bf)->EquationId() << ";\n";
+            rOStream << "P" << patch_id << "_Id(" << cnt << ") = " << it_bf->Id() << ";\n";
+            rOStream << "P" << patch_id << "_EqId(" << cnt << ") = " << it_bf->EquationId() << ";\n";
             rOStream << std::endl;
         }
 
@@ -143,7 +143,7 @@ public:
         pFESpace->UpdateCells();
 
         cnt = 0;
-        for (typename cell_container_t::iterator it_cell = pFESpace->pCellManager()->begin(); it_cell != pFESpace->pCellManager()->end(); ++it_cell)
+        for (auto it_cell = pFESpace->pCellManager()->begin(); it_cell != pFESpace->pCellManager()->end(); ++it_cell)
         {
             ++cnt;
 
@@ -246,7 +246,7 @@ public:
     {
         typedef typename MultiPatch<TFESpaceType::Dim()>::patch_ptr_iterator patch_ptr_iterator;
 
-        for (patch_ptr_iterator it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
+        for (auto it = pMultiPatch->Patches().ptr_begin(); it != pMultiPatch->Patches().ptr_end(); ++it)
         {
             this->Export(*it, rOStream);
         }

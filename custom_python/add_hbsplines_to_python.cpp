@@ -117,6 +117,14 @@ typename Patch<TDim>::Pointer HBSplinesPatchUtility_CreatePatchFromBSplines(HBSp
 }
 
 template<int TDim>
+typename MultiPatch<TDim>::Pointer HBSplinesPatchUtility_CreateMultiPatchFromBSplines(HBSplinesPatchUtility& rDummy,
+        typename MultiPatch<TDim>::Pointer pMultiPatch)
+{
+    return HBSplinesPatchUtility::CreateMultiPatchFromBSplines<TDim>(pMultiPatch);
+}
+
+
+template<int TDim>
 typename HBSplinesFESpace<TDim>::bf_t HBSplinesPatchUtility_GetBfByEquationId(HBSplinesPatchUtility& rDummy,
         typename MultiPatch<TDim>::Pointer pMultiPatch, std::size_t EquationId)
 {
@@ -278,6 +286,8 @@ void IsogeometricApplication_AddHBSplinesToPython()
     ("HBSplinesPatchUtility", init<>())
     .def("CreatePatchFromBSplines", &HBSplinesPatchUtility_CreatePatchFromBSplines<2>)
     .def("CreatePatchFromBSplines", &HBSplinesPatchUtility_CreatePatchFromBSplines<3>)
+    .def("CreateMultiPatchFromBSplines", &HBSplinesPatchUtility_CreateMultiPatchFromBSplines<2>)
+    .def("CreateMultiPatchFromBSplines", &HBSplinesPatchUtility_CreateMultiPatchFromBSplines<3>)
     .def("ListBoundaryBfs", &HBSplinesPatchUtility_ListBoundaryBfs<2>)
     .def("ListBoundaryBfs", &HBSplinesPatchUtility_ListBoundaryBfs<3>)
     .def("GetBfByEquationId", &HBSplinesPatchUtility_GetBfByEquationId<2>)

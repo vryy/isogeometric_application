@@ -32,6 +32,7 @@ template<int TDim>
 struct HBSplinesPatchUtility_Helper
 {
     static typename Patch<TDim>::Pointer CreatePatchFromBSplines(typename Patch<TDim>::Pointer pPatch);
+    static typename MultiPatch<TDim>::Pointer CreateMultiPatchFromBSplines(typename MultiPatch<TDim>::Pointer pMultiPatch);
 };
 
 /**
@@ -57,6 +58,14 @@ public:
     static typename Patch<TDim>::Pointer CreatePatchFromBSplines(typename Patch<TDim>::Pointer pPatch)
     {
         return HBSplinesPatchUtility_Helper<TDim>::CreatePatchFromBSplines(pPatch);
+    }
+
+    /// Create hbsplines multipatch from bsplines multipatch
+    /// One has to ensure that the B-Splines multipatch is enumerated before transforming to hierarchical B-Splines
+    template<int TDim>
+    static typename MultiPatch<TDim>::Pointer CreateMultiPatchFromBSplines(typename MultiPatch<TDim>::Pointer pMultiPatch)
+    {
+        return HBSplinesPatchUtility_Helper<TDim>::CreateMultiPatchFromBSplines(pMultiPatch);
     }
 
     /// List the boundary basis functions on side
@@ -494,6 +503,65 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
     }
 
     return pNewPatch;
+}
+
+template<int TDim>
+typename MultiPatch<TDim>::Pointer HBSplinesPatchUtility_Helper<TDim>::CreateMultiPatchFromBSplines(typename MultiPatch<TDim>::Pointer pMultiPatch)
+{
+    typename MultiPatch<TDim>::Pointer pNewMultiPatch = typename MultiPatch<TDim>::Pointer(new MultiPatch<TDim>());
+
+    const auto& patches = pMultiPatch->Patches();
+
+    for (auto it = patches.ptr_begin(); it != patches.ptr_end(); ++it)
+    {
+        auto pPatch = *it;
+
+        // create the HBsplines patch
+        auto pNewPatch = CreatePatchFromBSplines(pPatch);
+        pNewPatch->SetPrefix("HB_" + pPatch->Prefix());
+
+        // add to the multipatch
+        pNewMultiPatch->AddPatch(pNewPatch);
+    }
+
+    // create the interface
+    for (auto it = patches.ptr_begin(); it != patches.ptr_end(); ++it)
+    {
+        auto pPatch = *it;
+        auto pNewPatch = pNewMultiPatch->Patches()(pPatch->Id());
+
+        for (auto iti = pPatch->InterfaceBegin(); iti != pPatch->InterfaceEnd(); ++iti)
+        {
+            auto pOldNeighborPatch = (*iti)->pPatch2();
+            auto pNewNeighborPatch = pNewMultiPatch->pGetPatch(pOldNeighborPatch->Id());
+
+            auto pNewInterface = typename PatchInterface<TDim>::Pointer(new PatchInterface<TDim>(pNewPatch, (*iti)->Side1(), pNewNeighborPatch, (*iti)->Side2()));
+            pNewPatch->AddInterface(pNewInterface);
+
+            // search and assign the other interface
+            for (auto iti2 = pNewNeighborPatch->InterfaceBegin(); iti2 != pNewNeighborPatch->InterfaceEnd(); ++iti2)
+            {
+                if ((*iti2)->Side1() == pNewInterface->Side2()
+                 && (*iti2)->pPatch1()->Id() == pNewInterface->pPatch2()->Id())
+                {
+                    pNewInterface->SetOtherInterface(*iti2);
+                    (*iti2)->SetOtherInterface(pNewInterface);
+                }
+            }
+        }
+    }
+
+    // generate the internal cells
+    for (auto it = pNewMultiPatch->Patches().ptr_begin(); it != pNewMultiPatch->Patches().ptr_end(); ++it)
+    {
+        typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >((*it)->pFESpace());
+        if (pFESpace == nullptr)
+            KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
+
+        pFESpace->UpdateCells();
+    }
+
+    return pNewMultiPatch;
 }
 
 } // namespace Kratos.

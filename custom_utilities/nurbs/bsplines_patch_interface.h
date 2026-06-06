@@ -156,6 +156,12 @@ public:
         mDirection = direction;
     }
 
+    /// Copy constructor.
+    BSplinesPatchInterface(const BSplinesPatchInterface& rOther)
+        : BaseType(rOther), mDirection(rOther.mDirection)
+    {
+    }
+
     /// Destructor
     ~BSplinesPatchInterface() override
     {
@@ -348,6 +354,12 @@ public:
 
         mDirections[0] = direction1;
         mDirections[1] = direction2;
+    }
+
+    /// Copy constructor.
+    BSplinesPatchInterface(const BSplinesPatchInterface& rOther)
+        : BaseType(rOther), mDirections(rOther.mDirections), mLocalParameterMap(rOther.mLocalParameterMap)
+    {
     }
 
     /// Destructor

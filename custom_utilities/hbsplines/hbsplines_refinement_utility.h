@@ -223,7 +223,10 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
     if (echo_refinement)
     {
-        std::cout << "Basis function " << p_bf->Id() << " (lvl: " << p_bf->Level() << ") of patch " << pPatch->Id() << " will be refined" << std::endl;
+        std::cout << "Basis function " << p_bf->Id()
+                  << " (lvl: " << p_bf->Level() << ")"
+                  << " of patch " << pPatch->Id()
+                  << " will be refined" << std::endl;
     }
 
     // save the equation_id
@@ -360,18 +363,14 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             // create and fill the local knot vector
             std::vector<knot_t> pLocalKnots2;
             for (std::size_t k = 0; k < pFESpace->Order(1) + 2; ++k)
-            {
                 pLocalKnots2.push_back(pnew_local_knots[1][j + k]);
-            }
 
             for (std::size_t i = 0; i < numbers[0]; ++i)
             {
                 // create and fill the local knot vector
                 std::vector<knot_t> pLocalKnots1;
                 for (std::size_t k = 0; k < pFESpace->Order(0) + 2; ++k)
-                {
                     pLocalKnots1.push_back(pnew_local_knots[0][i + k]);
-                }
 
                 // create the basis function object
                 std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};

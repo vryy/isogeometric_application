@@ -102,9 +102,13 @@ public:
 
                 if (!is_valid)
                 {
-                    KRATOS_ERROR << "Interface between patch " << (*it_interface)->pPatch1()->Id()
-                                 << " and patch " << (*it_interface)->pPatch2()->Id()
-                                 << " is not valid.";
+                    std::cout << "FATAL ERROR!!! Interface between patch " << (*it_interface)->pPatch1()->Id()
+                              << " and patch " << (*it_interface)->pPatch2()->Id()
+                              << " is not valid.";
+
+                    (*it_interface)->Validate(true, dist_tol);
+
+                    KRATOS_ERROR << "I have to stop here because some incompatibilities between patch interfaces are detected";
                 }
             }
         }

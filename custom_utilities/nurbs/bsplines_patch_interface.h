@@ -459,37 +459,9 @@ public:
 
         const bool uv_or_vu = (this->LocalParameterMapping(0) == 0);
 
-        // KRATOS_WATCH_STD_CON(func_indices)
-        // BSplinesIndexingUtility::Transform(func_indices, size_info, uv_or_vu, mDirections[0], mDirections[1]);
         BSplinesIndexingUtility::Transform(func_indices, size_info, uv_or_vu, mDirections[this->LocalParameterMapping(0)], mDirections[this->LocalParameterMapping(1)]);
 
-        // std::vector<std::size_t> size_info2;
-        // std::vector<std::size_t> other_func_indices = this->pPatch2()->pFESpace()->ExtractBoundaryFunctionIndices(size_info2, this->Side2());
-
-        // std::cout << "Patch " << this->pPatch1()->Id() << " transfers boundary function indices to Patch " << this->pPatch2()->Id() << ":";
-        // KRATOS_WATCH_STD_CON(func_indices)
-
-        // std::cout << "Current boundary function indices of Patch " << this->pPatch2()->Id() << ":";
-        // KRATOS_WATCH_STD_CON(other_func_indices)
-
         this->pPatch2()->pFESpace()->AssignBoundaryFunctionIndices(this->Side2(), func_indices, false);
-
-        // other_func_indices = this->pPatch2()->pFESpace()->ExtractBoundaryFunctionIndices(size_info2, this->Side2());
-        // std::cout << "New boundary function indices of Patch " << this->pPatch2()->Id() << ":";
-        // KRATOS_WATCH_STD_CON(other_func_indices)
-        // KRATOS_WATCH(uv_or_vu)
-        // KRATOS_WATCH(mDirections[0])
-        // KRATOS_WATCH(mDirections[1])
-        // const auto pBFESpace1 = this->pPatch1()->pFESpace()->ConstructBoundaryFESpace(this->Side1());
-        // KRATOS_WATCH(*pBFESpace1)
-        // std::vector<BoundaryDirection> directions = {mDirections[LocalParameterMapping(0)], mDirections[LocalParameterMapping(1)]};
-        // const auto pBFESpace2 = this->pPatch2()->pFESpace()->ConstructBoundaryFESpace(this->Side2(), mLocalParameterMap, directions);
-        // KRATOS_WATCH(*pBFESpace2);
-        // KRATOS_WATCH("-------------------")
-        // KRATOS_WATCH("-------------------")
-        // KRATOS_WATCH("-------------------")
-        // KRATOS_WATCH("")
-        // KRATOS_WATCH("")
     }
 
     /// Return information as string

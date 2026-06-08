@@ -94,7 +94,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const DomainManager& rT
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_DOMAIN_MANAGER_H_INCLUDED defined
 

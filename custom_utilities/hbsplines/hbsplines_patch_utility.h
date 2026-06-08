@@ -53,7 +53,7 @@ public:
     virtual ~HBSplinesPatchUtility() {}
 
     /// Create hbsplines patch from bsplines patch
-    /// One has to ensure that the B-Splines patch is enumerated properly before transforming to hierarchical B-Splines
+    /// One has to ensure that the B-Splines patch is enumerated before transforming to hierarchical B-Splines
     template<int TDim>
     static typename Patch<TDim>::Pointer CreatePatchFromBSplines(typename Patch<TDim>::Pointer pPatch)
     {

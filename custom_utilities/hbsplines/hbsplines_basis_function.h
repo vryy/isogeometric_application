@@ -283,18 +283,26 @@ public:
     /// Print information of this basis function
     void PrintInfo(std::ostream& rOStream) const
     {
-        rOStream << "HBSplinesBasisFunction" << TDim << "D (id: " << this->Id() << "), eq_id: " << this->EquationId() << ", p = (";
+        rOStream << "HBSplinesBasisFunction" << TDim << "D"
+                 << " (id: " << this->Id() << ")"
+                 << ", eq_id: " << this->EquationId();
+
+        rOStream<< ", p = (";
         for (int dim = 0; dim < TDim; ++dim)
-        {
             rOStream << " " << this->Order(dim);
-        }
         rOStream << ")";
+
+        rOStream<< ", pos = (";
+        for (int dim = 0; dim < TDim; ++dim)
+            rOStream << " " << this->Position()[dim];
+        rOStream << ")";
+
         rOStream << ", boundary info:";
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BLEFT_) ) ) { rOStream << " left"; }
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BRIGHT_) ) ) { rOStream << " right"; }
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BFRONT_) ) ) { rOStream << " front"; }
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BBACK_) ) ) { rOStream << " back"; }
-        if ( this->IsOnSide( BOUNDARY_FLAG(_BTOP_) ) ) { rOStream << " top"; }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BLEFT_)   ) ) { rOStream << " left";   }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BRIGHT_)  ) ) { rOStream << " right";  }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BFRONT_)  ) ) { rOStream << " front";  }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BBACK_)   ) ) { rOStream << " back";   }
+        if ( this->IsOnSide( BOUNDARY_FLAG(_BTOP_)    ) ) { rOStream << " top";    }
         if ( this->IsOnSide( BOUNDARY_FLAG(_BBOTTOM_) ) ) { rOStream << " bottom"; }
     }
 
@@ -400,6 +408,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesBasisFun
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HBSPLINES_BASIS_FUNCTION_H_INCLUDED

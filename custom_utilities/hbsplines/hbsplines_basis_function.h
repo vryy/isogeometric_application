@@ -58,19 +58,19 @@ public:
     typedef typename cell_container_t::iterator cell_iterator;
     typedef typename cell_container_t::const_iterator cell_const_iterator;
 
-    /// Empty constructor for serialization
-    HBSplinesBasisFunction() : BaseType(), mLevel(0)
-    {}
-
     /// Constructor with Id
     HBSplinesBasisFunction(std::size_t Id)
         : BaseType(Id), mLevel(0)
-    {}
+    {
+        std::fill(mPosition.begin(), mPosition.end(), -1);
+    }
 
     /// Constructor with Id and Level
     HBSplinesBasisFunction(std::size_t Id, std::size_t Level)
         : BaseType(Id), mLevel(Level)
-    {}
+    {
+        std::fill(mPosition.begin(), mPosition.end(), -1);
+    }
 
     /// Destructor
     ~HBSplinesBasisFunction() override
@@ -94,8 +94,24 @@ public:
                             MODIFICATION SUBROUTINES
     **************************************************************************/
 
-    /// Get the number of parent that this basis function supports
-    std::size_t NumberOfParent() const {return mpParents.size();}
+    /// Set the level of this basis function
+    void SetLevel(std::size_t Level)
+    {
+        mLevel = Level;
+    }
+
+    /// Set the position of the basis function in specific direction
+    template<int TDir>
+    void SetPosition(std::size_t Pos)
+    {
+        mPosition[TDir] = Pos;
+    }
+
+    /// Set the position of the basis function in specific direction
+    void SetPosition(int dir, std::size_t Pos)
+    {
+        mPosition[dir] = Pos;
+    }
 
     /// Add a parent that this basis function supports
     void AddParent(bf_t p_bf)
@@ -115,9 +131,6 @@ public:
             }
         }
     }
-
-    /// Get the number of children of this basis function
-    std::size_t NumberOfChildren() const {return mpChilds.size();}
 
     /// Add a child which support this basis function
     void AddChild(bf_t p_bf, double RefinedCoefficient)
@@ -156,9 +169,19 @@ public:
     bf_iterator bf_end() {return mpChilds.end();}
     bf_const_iterator bf_end() const {return mpChilds.end();}
 
-    /// Get and set the level of this basis function
-    void SetLevel(std::size_t Level) {mLevel = Level;}
+    /// Get the level of this basis function
     std::size_t Level() const {return mLevel;}
+
+    const boost::array<std::size_t, TDim>& Position() const
+    {
+        return mPosition;
+    }
+
+    /// Get the number of parent that this basis function supports
+    std::size_t NumberOfParent() const {return mpParents.size();}
+
+    /// Get the number of children of this basis function
+    std::size_t NumberOfChildren() const {return mpChilds.size();}
 
     /// Get the refined coefficient of a child
     double GetRefinedCoefficient(int child_id) const
@@ -243,38 +266,32 @@ public:
         return pNewSubBf;
     }
 
-//    /**************************************************************************
-//                            COMPARISON SUBROUTINES
-//    **************************************************************************/
+    /**************************************************************************
+                           COMPARISON SUBROUTINES
+    **************************************************************************/
 
-//    /// Implement relational operator for automatic arrangement in container
-//    inline bool operator==(const HBSplinesBasisFunction& rA) const
-//    {
-//        return (this->Id() == rA.Id()) && (this->EquationId() == rA.EquationId());
-//    }
+    inline bool operator==(const HBSplinesBasisFunction& rA) const
+    {
+       return (this->Level() == rA.Level()) && (this->Position() == rA.Position());
+    }
 
-//    inline bool operator<(const HBSplinesBasisFunction& rA) const
-//    {
-//        if (this->Id() != rA.Id())
-//            return this->Id() < rA.Id();
-//        else
-//            return this->EquationId() < rA.EquationId();
-//    }
+    inline bool operator<(const HBSplinesBasisFunction& rA) const
+    {
+        if (this->Level() != rA.Level())
+        {
+            return this->Level() < rA.Level();
+        }
+        else
+        {
+            for (int dim = 0; dim < TDim; ++dim)
+            {
+                if (this->Position()[dim] != rA.Position()[dim])
+                    return this->Position()[dim] < rA.Position()[dim];
+            }
+        }
 
-//    /// Compare the two basis functions, in terms of the equation_id and parameter space
-//    inline bool IsSame(const HBSplinesBasisFunction& rA) const
-//    {
-//        if (this->EquationId() != rA.EquationId())
-//        {
-//            return false;
-//        }
-//        else
-//        {
-//            // TODO
-//        }
-
-//        return true;
-//    }
+        return false;
+    }
 
     /**************************************************************************
                             INFORMATION SUBROUTINES
@@ -328,9 +345,38 @@ public:
 private:
 
     std::size_t mLevel;
+    boost::array<std::size_t, TDim> mPosition;  // store the relative position of this basis function in the B-Splines function grid;
+            // together with the level information, one can uniquely determine this basis function in the parameter space
     bf_container_t mpParents;   // list of refined basis functions that this basis function is composed from
     bf_container_t mpChilds;    // list of refined basis functions that composes this basis function
     std::map<int, double> mRefinedCoefficients; // store the coefficient of refined basis functions
+
+    /// Empty constructor for serialization
+    HBSplinesBasisFunction() : BaseType(), mLevel(0)
+    {}
+
+    ///@name Serialization
+    ///@{
+
+    friend class Serializer;
+
+    void save(Serializer& rSerializer) const override
+    {
+        KRATOS_SERIALIZE_SAVE_BASE_CLASS( rSerializer, BaseType );
+        rSerializer.save( "Level", mLevel );
+        rSerializer.save( "Position", mPosition );
+        // TODO
+    }
+
+    void load(Serializer& rSerializer) override
+    {
+        KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
+        rSerializer.load( "Level", mLevel );
+        rSerializer.load( "Position", mPosition );
+        // TODO
+    }
+
+    ///@}
 
 };
 

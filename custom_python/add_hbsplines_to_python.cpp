@@ -77,12 +77,12 @@ boost::python::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<T
 {
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
-    std::vector<bf_t> bf_list = rDummy.ExtractBoundaryBfsByFlag(boundary_id);
+    auto bf_set = rDummy.ExtractBoundaryBfsByFlag(boundary_id);
 
     boost::python::list Output;
-    for (std::size_t i = 0; i < bf_list.size(); ++i)
+    for (auto it = bf_set.begin(); it != bf_set.end(); ++it)
     {
-        Output.append(bf_list[i]);
+        Output.append(*it);
     }
 
     return Output;

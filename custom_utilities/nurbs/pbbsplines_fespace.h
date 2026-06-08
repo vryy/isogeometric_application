@@ -458,29 +458,14 @@ public:
     /// Get the basis functions based on boundary flag. This allows to extract the corner bf.
     std::vector<bf_t> ExtractBoundaryBfsByFlag(std::size_t boundary_id) const
     {
-        // firstly we organize the basis functions based on its equation_id
-        // it may happen that one bf is encountered twice, so we use a map here
-        std::map<std::size_t, bf_t> map_bfs;
+        std::vector<bf_t> bf_list;
+
         for (bf_const_iterator it_bf = bf_begin(); it_bf != bf_end(); ++it_bf)
         {
             if (it_bf->IsOnSide(boundary_id))
             {
-                typename std::map<std::size_t, bf_t>::iterator it = map_bfs.find(it_bf->EquationId());
-                if (it == map_bfs.end())
-                {
-                    map_bfs[it_bf->EquationId()] = *it_bf.base();
-                }
-                else if (it->second != *it_bf.base())
-                    KRATOS_ERROR << "There are two bfs with the same equation_id. This is not valid.";
+                bf_list.push_back(*it_bf.base());
             }
-        }
-
-        // then we can extract the equation_id
-        std::vector<bf_t> bf_list(map_bfs.size());
-        std::size_t cnt = 0;
-        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it, ++cnt)
-        {
-            bf_list[cnt] = it->second;
         }
 
         return bf_list;
@@ -491,12 +476,10 @@ public:
     {
         std::vector<bf_t> bfs = this->ExtractBoundaryBfsByFlag(boundary_id);
 
-        // then we can extract the equation_id
-        std::vector<std::size_t> func_indices(bfs.size());
-        std::size_t cnt = 0;
-        for (typename std::vector<bf_t>::iterator it = bfs.begin(); it != bfs.end(); ++it, ++cnt)
+        std::vector<std::size_t> func_indices;
+        for (auto it = bfs.begin(); it != bfs.end(); ++it)
         {
-            func_indices[cnt] = (*it)->EquationId();
+            func_indices.push_back((*it)->EquationId());
         }
 
         return func_indices;
@@ -507,22 +490,12 @@ public:
     {
         std::vector<std::size_t> func_indices;
 
-        // firstly we organize the basis functions based on its equation_id
-        std::map<std::size_t, bf_t> map_bfs;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
             if (it->IsOnSide(BOUNDARY_FLAG(side)))
             {
-                map_bfs[it->EquationId()] = *it.base();
+                func_indices.push_back(it->EquationId());
             }
-        }
-
-        // then we can extract the equation_id
-        func_indices.resize(map_bfs.size());
-        std::size_t cnt = 0;
-        for (typename std::map<std::size_t, bf_t>::iterator it = map_bfs.begin(); it != map_bfs.end(); ++it, ++cnt)
-        {
-            func_indices[cnt] = it->first;
         }
 
         return func_indices;
@@ -531,32 +504,30 @@ public:
     /// Assign the index for the functions on the boundary
     void AssignBoundaryFunctionIndices(const BoundarySide side, const std::vector<std::size_t>& func_indices, const bool override) override
     {
-        // firstly we organize the basis functions based on its equation_id
-        std::map<std::size_t, bf_t> map_bfs;
+        std::vector<bf_t> bf_list;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
             if (it->IsOnSide(BOUNDARY_FLAG(side)))
             {
-                map_bfs[it->EquationId()] = *it.base();
+                bf_list.push_back(*it.base());
             }
         }
 
-        // then we can assign the equation_id incrementally
         std::size_t cnt = 0;
-        for (auto it = map_bfs.begin(); it != map_bfs.end(); ++it, ++cnt)
+        for (auto it = bf_list.begin(); it != bf_list.end(); ++it, ++cnt)
         {
             if (func_indices[cnt] != -1)
             {
                 if (override)
                 {
-                    const auto local_id = this->LocalId(it->second->EquationId()); // record the local id
-                    it->second->SetEquationId(func_indices[cnt]);
-                    BaseType::mGlobalToLocal[it->second->EquationId()] = local_id; // reassign the local id
+                    const auto local_id = this->LocalId((*it)->EquationId()); // record the local id
+                    (*it)->SetEquationId(func_indices[cnt]);
+                    BaseType::mGlobalToLocal[(*it)->EquationId()] = local_id; // reassign the local id
                 }
                 else
                 {
-                    if (it->second->EquationId() == -1)
-                        it->second->SetEquationId(func_indices[cnt]);
+                    if ((*it)->EquationId() == -1)
+                        (*it)->SetEquationId(func_indices[cnt]);
                 }
             }
         }

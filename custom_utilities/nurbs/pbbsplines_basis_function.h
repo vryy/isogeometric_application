@@ -61,11 +61,11 @@ public:
     typedef typename BaseType::cell_const_iterator cell_const_iterator;
 
     /// Empty constructor for serialization
-    PBBSplinesBasisFunction() : BaseType(), mBoundaryId(0)
+    PBBSplinesBasisFunction() : BaseType(), mBoundaryInfo(0)
     {}
 
     /// Constructor with Id
-    PBBSplinesBasisFunction(std::size_t Id) : BaseType(Id), mBoundaryId(0)
+    PBBSplinesBasisFunction(std::size_t Id) : BaseType(Id), mBoundaryInfo(0)
     {}
 
     /// Destructor
@@ -86,16 +86,16 @@ public:
     **************************************************************************/
 
     /// Get the boundary information of this basis function
-    std::size_t BoundaryId() const {return mBoundaryId;}
+    std::size_t BoundaryInfo() const {return mBoundaryInfo;}
 
     /// Add the boundary information to this basis function
-    void AddBoundary(std::size_t BoundaryInfo) {mBoundaryId |= BoundaryInfo;}
+    void AddBoundary(std::size_t BoundaryInfo) {mBoundaryInfo |= BoundaryInfo;}
 
     /// Remove the boundary information from this basis function
-    void RemoveBoundary(std::size_t BoundaryInfo) {mBoundaryId &= (0xff - BoundaryInfo);}
+    void RemoveBoundary(std::size_t BoundaryInfo) {mBoundaryInfo &= (0xff - BoundaryInfo);}
 
     /// Function to identify the location of this basis function
-    bool IsOnSide(std::size_t BoundaryInfo) const {return (this->BoundaryId() & BoundaryInfo) == BoundaryInfo;}
+    bool IsOnSide(std::size_t BoundaryInfo) const {return (this->BoundaryInfo() & BoundaryInfo) == BoundaryInfo;}
 
     /// Set the information in each direction
     void SetInfo(int dim, std::size_t Order) {mOrders[dim] = Order;}
@@ -337,7 +337,7 @@ public:
 
 protected:
 
-    std::size_t mBoundaryId; // this variable stores the boundary information associated with this basis function.
+    std::size_t mBoundaryInfo; // this variable stores the boundary information associated with this basis function.
         // By default, the new basis function is considerred inside of the patch.
         // User can add/remove the boundary information by using AddBoundary/RemoveBoundary
     boost::array<std::size_t, TDim> mOrders;

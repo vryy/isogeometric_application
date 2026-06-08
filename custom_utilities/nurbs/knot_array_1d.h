@@ -68,7 +68,7 @@ public:
     };
 
     /// Default constructor
-    KnotArray1D() {}
+    KnotArray1D() : mTol(1e-10) {}
 
     /// Copy constructor
     KnotArray1D(const KnotArray1D& rOther)
@@ -78,6 +78,7 @@ public:
             knot_t p_knot = (*it)->Clone();
             this->mpKnots.push_back(p_knot);
         }
+        this->mTol = rOther.GetResolution();
     }
 
     /// Destructor
@@ -88,6 +89,12 @@ public:
     {
         mpKnots.clear();
     }
+
+    /// Set the resolution of the knot vector
+    void SetResolution(const TDataType& rValue) {mTol = rValue;}
+
+    /// Get the resolution of the knot vector
+    TDataType GetResolution() const {return mTol;}
 
     /// Insert the knot to the array and return its pointer.
     /// This function creates the new knot regardless it is repetitive or not.
@@ -133,17 +140,34 @@ public:
 
     /// Insert the knot to the array and return its pointer.
     /// In the case that the knot are repetitive within the tolerance, return the internal one.
-    knot_t pCreateUniqueKnot(const TDataType& k, const TDataType& tol)
+    knot_t pCreateUniqueKnot(const TDataType& k)
     {
         // insert to the correct location
         for (iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
         {
-            if (fabs(k - (*it)->Value()) < tol)
+            if (std::abs(k - (*it)->Value()) < mTol)
             {
                 return *it;
             }
         }
         return pCreateKnot(k);
+    }
+
+    /// Get the knot of specific valur
+    knot_t pGetKnot(const TDataType& k) const
+    {
+        // insert to the correct location
+        for (const_iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        {
+            if (std::abs(k - (*it)->Value()) < mTol)
+            {
+                return *it;
+            }
+        }
+
+        KRATOS_ERROR << "Knot value " << k << " does not exist";
+
+        return nullptr;
     }
 
     /// Reverse this knot
@@ -178,6 +202,33 @@ public:
             for (std::size_t i = 0; i < mpKnots.size(); ++i)
             {
                 kvec.pCreateKnot(mpKnots.back()->Value() - mpKnots[mpKnots.size() - 1 - i]->Value());
+            }
+        }
+
+        return kvec;
+    }
+
+    /// Create a clone of this knot vector and insert the knot in the middle of each span.
+    /// It is noted that knot span bounded by repetitive knots are not accounted
+    KnotArray1D<TDataType> CloneAndRefineInTheMiddle() const
+    {
+        KnotArray1D<TDataType> kvec;
+
+        for (std::size_t i = 0; i < mpKnots.size(); ++i)
+        {
+            kvec.pCreateKnot(mpKnots[i]->Value());
+        }
+
+        for (const_iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        {
+            const_iterator it2 = it + 1;
+            if (it2 != mpKnots.end())
+            {
+                if (std::abs((*it2)->Value() - (*it)->Value()) > mTol)
+                {
+                    TDataType ins_knot = 0.5 * ((*it)->Value() + (*it2)->Value());
+                    kvec.pCreateUniqueKnot(ins_knot);
+                }
             }
         }
 
@@ -286,9 +337,9 @@ public:
 
     /// Return the non-repeated values of the knot vector
     template<typename TVectorType>
-    void GetNonRepeatedValues(TVectorType& r_values, const TDataType TOL = 1e-13) const
+    void GetNonRepeatedValues(TVectorType& r_values) const
     {
-        ValueComparator comp(TOL);
+        ValueComparator comp(mTol);
         std::set<TDataType, ValueComparator> nr_values(comp);
 
         for (std::size_t i = 0; i < mpKnots.size(); ++i)
@@ -358,10 +409,10 @@ public:
     const_iterator end() const {return mpKnots.end();}
 
     /// Check if this knot vector is symmetric within a specified tolerance
-    bool IsSymmetric(const TDataType& tol) const
+    bool IsSymmetric() const
     {
         std::vector<TDataType> knot_vec = this->GetValues();
-        return IsSymmetric(knot_vec, tol);
+        return IsSymmetric(knot_vec, mTol);
     }
 
     /// Check if a knot vector is symmetric. A knot vector is symmetric if both x and 1-x are in the knot vector
@@ -385,7 +436,7 @@ public:
             std::size_t half_size = size / 2;
             for (std::size_t i = 0; i < half_size; ++i)
             {
-                if (fabs((*sorted_vec)[size - 1 - i] - (*sorted_vec)[i]) > tol)
+                if (std::abs((*sorted_vec)[size - 1 - i] - (*sorted_vec)[i]) > tol)
                 {
                     return false;
                 }
@@ -394,13 +445,13 @@ public:
         else
         {
             std::size_t half_size = (size - 1) / 2;
-            if (fabs((*sorted_vec)[half_size] - 0.5) > tol)
+            if (std::abs((*sorted_vec)[half_size] - 0.5) > tol)
             {
                 return false;
             }
             for (std::size_t i = 0; i < half_size; ++i)
             {
-                if (fabs((*sorted_vec)[size - 1 - i] - (*sorted_vec)[i]) > tol)
+                if (std::abs((*sorted_vec)[size - 1 - i] - (*sorted_vec)[i]) > tol)
                 {
                     return false;
                 }
@@ -421,6 +472,37 @@ public:
         const TDataType& min = mpKnots.front()->Value();
         const TDataType& max = mpKnots.back()->Value();
         return (knot >= min) && (knot <= max);
+    }
+
+    /// Find the index number of a shape function providing the local knot vector
+    std::size_t FindNumber(const std::vector<knot_t>& pLocalKnots) const
+    {
+        if (pLocalKnots.size() > mpKnots.size())
+        {
+            KRATOS_ERROR << "The local knot is larger than the global knot vector";
+            return -1;
+        }
+
+        for (std::size_t i = 0; i < mpKnots.size() - pLocalKnots.size() + 1; ++i)
+        {
+            bool found = true;
+
+            for (std::size_t j = 0; j < pLocalKnots.size(); ++j)
+            {
+                if (std::abs(pLocalKnots[j]->Value() - mpKnots[i+j]->Value()) > mTol)
+                {
+                    found = false;
+                    break;
+                }
+            }
+
+            if (found)
+                return i;
+        }
+
+        KRATOS_ERROR << "Can't find the local knot vector within the global knot vector";
+
+        return -1;
     }
 
     /// Compute the knots in the respective direction
@@ -597,9 +679,12 @@ public:
 private:
 
     knot_container_t mpKnots;
+    TDataType mTol; // defines the resolution of the knot vector, in which two knots are considered
+                    // non-repetitive if their difference is larger than mTol
 
     ///@name Serialization
     ///@{
+
     friend class Serializer;
 
     void save(Serializer& rSerializer) const
@@ -625,6 +710,7 @@ private:
             mpKnots.insert(mpKnots.end(), p_knot);
         }
     }
+
     ///@}
 };
 

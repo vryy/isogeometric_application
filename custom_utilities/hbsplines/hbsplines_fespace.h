@@ -62,11 +62,19 @@ public:
     typedef DomainManager::Pointer domain_t;
     typedef std::map<std::size_t, domain_t> domain_container_t;
 
-    typedef typename BaseType::function_map_t function_map_t;
+    struct bf_compare
+    {
+        constexpr bool operator()( const bf_t& lhs, const bf_t& rhs ) const
+        {
+            return *lhs < *rhs;
+        }
+    };
 
     /// Default constructor
     HBSplinesFESpace() : BaseType(), mLastLevel(1), mMaxLevel(10)
-    {}
+    {
+        mKnotVectors.resize(mLastLevel + 1);
+    }
 
     /// Destructor
     ~HBSplinesFESpace() override
@@ -123,18 +131,51 @@ public:
         }
     }
 
-    /// Get the knot vector in i-direction, i=0..Dim
+    /// Get the knot vector in i-direction, i=0..Dim, for the first level
     /// User must be careful to use this function because it can modify the internal knot vectors
-    knot_container_t& KnotVector(std::size_t i) {return mKnotVectors[i];}
+    void SetKnotVector(std::size_t idir, const knot_container_t& p_knot_vector)
+    {
+        if (mKnotVectors.size() < mLastLevel+1)
+            mKnotVectors.resize(mLastLevel+1);
+        mKnotVectors[0][idir] = p_knot_vector;
 
-    /// Get the knot vector in i-direction, i=0..Dim
-    const knot_container_t& KnotVector(std::size_t i) const {return mKnotVectors[i];}
+        // construct knot vectors for the remaining levels
+        for (std::size_t j = 0; j < mLastLevel; ++j)
+            mKnotVectors[j+1][idir] = mKnotVectors[j][idir].CloneAndRefineInTheMiddle();
+    }
+
+    /// Get the knot vector in i-direction, i=0..Dim, of the first level
+    const knot_container_t& KnotVector(std::size_t i) const {return mKnotVectors[0][i];}
+
+    /// Get the knot vector in i-direction, i=0..Dim, of a specific level
+    const knot_container_t& KnotVector(std::size_t lvl, std::size_t i) const {return mKnotVectors[lvl-1][i];}
 
     /// Get the last refinement level ain the hierarchical mesh
     std::size_t LastLevel() const {return mLastLevel;}
 
     /// Set the last level in the hierarchical mesh
-    void SetLastLevel(std::size_t LastLevel) {mLastLevel = LastLevel;}
+    void SetLastLevel(std::size_t LastLevel)
+    {
+        mLastLevel = LastLevel;
+
+        if (mLastLevel + 1 > mKnotVectors.size())
+        {
+            std::size_t current_size = mKnotVectors.size();
+            mKnotVectors.resize(mLastLevel + 1);
+
+            std::size_t n_add_level = (mLastLevel + 1) - current_size;
+
+            for (std::size_t i = 0; i < TDim; ++i)
+            {
+                for (std::size_t j = current_size; j < current_size + n_add_level; ++j)
+                    mKnotVectors[j][i] = mKnotVectors[j-1][i].CloneAndRefineInTheMiddle();
+            }
+        }
+        else
+        {
+            mKnotVectors.resize(mLastLevel + 1);
+        }
+    }
 
     /// Get the maximum level allowed in the hierarchical mesh
     std::size_t MaxLevel() const {return mMaxLevel;}
@@ -192,6 +233,93 @@ public:
         }
 
         return true;
+    }
+
+    /// Get the basis functions based on boundary flag. This allows to extract the corner bf.
+    std::set<bf_t, bf_compare> ExtractBoundaryBfsByFlag(std::size_t boundary_id) const
+    {
+        std::set<bf_t, bf_compare> bf_set;
+
+        for (bf_const_iterator it_bf = this->bf_begin(); it_bf != this->bf_end(); ++it_bf)
+        {
+            if (it_bf->IsOnSide(boundary_id))
+            {
+                bf_set.insert(*it_bf.base());
+            }
+        }
+
+        return bf_set;
+    }
+
+    /// Extract the index of the functions on the boundaries
+    std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(int boundary_id) const override
+    {
+        std::set<bf_t, bf_compare> bfs = this->ExtractBoundaryBfsByFlag(boundary_id);
+
+        std::vector<std::size_t> func_indices;
+        for (auto it = bfs.begin(); it != bfs.end(); ++it)
+        {
+            func_indices.push_back((*it)->EquationId());
+        }
+
+        return func_indices;
+    }
+
+    /// Extract the index of the functions on the boundary
+    std::vector<std::size_t> ExtractBoundaryFunctionIndices(const BoundarySide side) const override
+    {
+        // collect the basis and put into an organized set
+        std::set<bf_t, bf_compare> set_bfs;
+        for (bf_const_iterator it = this->bf_begin(); it != this->bf_end(); ++it)
+        {
+            if (it->IsOnSide(BOUNDARY_FLAG(side)))
+            {
+                set_bfs.insert(*it.base());
+            }
+        }
+
+        // then we can extract the equation_id
+        std::vector<std::size_t> func_indices;
+        for (auto it = set_bfs.begin(); it != set_bfs.end(); ++it)
+        {
+            func_indices.push_back((*it)->EquationId());
+        }
+
+        return func_indices;
+    }
+
+    /// Assign the index for the functions on the boundary
+    void AssignBoundaryFunctionIndices(const BoundarySide side, const std::vector<std::size_t>& func_indices, const bool override) override
+    {
+        // collect the basis and put into an organized set
+        std::set<bf_t, bf_compare> set_bfs;
+        for (bf_const_iterator it = this->bf_begin(); it != this->bf_end(); ++it)
+        {
+            if (it->IsOnSide(BOUNDARY_FLAG(side)))
+            {
+                set_bfs.insert(*it.base());
+            }
+        }
+
+        // then we can assign the equation_id incrementally
+        std::size_t cnt = 0;
+        for (auto it = set_bfs.begin(); it != set_bfs.end(); ++it, ++cnt)
+        {
+            if (func_indices[cnt] != -1)
+            {
+                if (override)
+                {
+                    const auto local_id = this->LocalId((*it)->EquationId()); // record the local id
+                    (*it)->SetEquationId(func_indices[cnt]);
+                    BaseType::mGlobalToLocal[(*it)->EquationId()] = local_id; // reassign the local id
+                }
+                else
+                {
+                    if ((*it)->EquationId() == -1)
+                        (*it)->SetEquationId(func_indices[cnt]);
+                }
+            }
+        }
     }
 
     /// Get the refinement history
@@ -285,12 +413,12 @@ public:
             if ((side == _BLEFT_) || (side == _BRIGHT_))
             {
                 pBFESpace->SetInfo(0, this->Order(1));
-                pBFESpace->KnotVector(0) = this->KnotVector(1);
+                pBFESpace->SetKnotVector(0, this->KnotVector(1));
             }
             if ((side == _BTOP_) || (side == _BBOTTOM_))
             {
                 pBFESpace->SetInfo(0, this->Order(0));
-                pBFESpace->KnotVector(0) = this->KnotVector(0);
+                pBFESpace->SetKnotVector(0, this->KnotVector(0));
             }
         }
         else if constexpr (TDim == 3)
@@ -299,22 +427,22 @@ public:
             {
                 pBFESpace->SetInfo(0, this->Order(1));
                 pBFESpace->SetInfo(1, this->Order(2));
-                pBFESpace->KnotVector(0) = this->KnotVector(1);
-                pBFESpace->KnotVector(1) = this->KnotVector(2);
+                pBFESpace->SetKnotVector(0, this->KnotVector(1));
+                pBFESpace->SetKnotVector(1, this->KnotVector(2));
             }
             if ((side == _BLEFT_) || (side == _BRIGHT_))
             {
                 pBFESpace->SetInfo(0, this->Order(2));
                 pBFESpace->SetInfo(1, this->Order(0));
-                pBFESpace->KnotVector(0) = this->KnotVector(2);
-                pBFESpace->KnotVector(1) = this->KnotVector(0);
+                pBFESpace->SetKnotVector(0, this->KnotVector(2));
+                pBFESpace->SetKnotVector(1, this->KnotVector(0));
             }
             if ((side == _BTOP_) || (side == _BBOTTOM_))
             {
                 pBFESpace->SetInfo(0, this->Order(0));
                 pBFESpace->SetInfo(1, this->Order(1));
-                pBFESpace->KnotVector(0) = this->KnotVector(0);
-                pBFESpace->KnotVector(1) = this->KnotVector(1);
+                pBFESpace->SetKnotVector(0, this->KnotVector(0));
+                pBFESpace->SetKnotVector(1, this->KnotVector(1));
             }
         }
 
@@ -322,12 +450,13 @@ public:
 
         // construct the cells from the boundary basis functions
         typename BoundaryFESpaceType::cell_container_t::Pointer pnew_cells;
-        double cell_tol = pBFESpace->pCellManager()->GetTolerance();
 
         pnew_cells = typename BoundaryFESpaceType::cell_container_t::Pointer(new BCellManager<TDim-1, typename BoundaryFESpaceType::CellType> ());
 
         if constexpr (TDim == 2)
         {
+            TLocalCoordinateType tol = pBFESpace->KnotVector(0).GetResolution();
+
             for (auto it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
                 for (std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
@@ -336,8 +465,8 @@ public:
                     knot_t pXiMax = it->LocalKnots(0)[i1 + 1];
 
                     // check if the cell domain length is nonzero
-                    double length = (pXiMax->Value() - pXiMin->Value());
-                    if (fabs(length) > cell_tol)
+                    TLocalCoordinateType length = (pXiMax->Value() - pXiMin->Value());
+                    if (std::abs(length) > tol)
                     {
                         std::vector<knot_t> pKnots = {pXiMin, pXiMax};
                         typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
@@ -351,6 +480,8 @@ public:
         }
         else if constexpr (TDim == 3)
         {
+            TLocalCoordinateType tol = std::sqrt(pBFESpace->KnotVector(0).GetResolution() * pBFESpace->KnotVector(1).GetResolution());
+
             for (auto it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
             {
                 for (std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
@@ -364,8 +495,8 @@ public:
                         knot_t pEtaMax = it->LocalKnots(1)[j1 + 1];
 
                         // check if the cell domain area is nonzero
-                        double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value());
-                        if (sqrt(fabs(area)) > cell_tol)
+                        TLocalCoordinateType area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value());
+                        if (std::sqrt(std::abs(area)) > tol)
                         {
                             std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax};
                             typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
@@ -466,7 +597,7 @@ private:
     std::size_t mLastLevel;
     std::size_t mMaxLevel;
 
-    boost::array<knot_container_t, TDim> mKnotVectors;
+    std::vector<boost::array<knot_container_t, TDim> > mKnotVectors;
 
     domain_container_t mSupportDomains; // this domain manager manages the support of all bfs in each level
 

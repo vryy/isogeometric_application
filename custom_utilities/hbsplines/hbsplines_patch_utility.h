@@ -218,7 +218,7 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
     for (int dim = 0; dim < 2; ++dim)
     {
         pNewFESpace->SetInfo(dim, pPatch->pFESpace()->Order(dim));
-        pNewFESpace->KnotVector(dim) = pFESpace->KnotVector(dim);
+        pNewFESpace->SetKnotVector(dim, pFESpace->KnotVector(dim));
     }
 
     typedef typename BSplinesFESpace<2>::knot_t knot_t;
@@ -242,18 +242,14 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
         // create and fill the local knot vector
         std::vector<knot_t> pLocalKnots2;
         for (std::size_t k = 0; k < pFESpace->Order(1) + 2; ++k)
-        {
             pLocalKnots2.push_back(pFESpace->KnotVector(1).pKnotAt(j + k));
-        }
 
         for (std::size_t i = 0; i < number_1; ++i)
         {
             // create and fill the local knot vector
             std::vector<knot_t> pLocalKnots1;
             for (std::size_t k = 0; k < pFESpace->Order(0) + 2; ++k)
-            {
                 pLocalKnots1.push_back(pFESpace->KnotVector(0).pKnotAt(i + k));
-            }
 
             // create the basis function object
             std::size_t i_func = j * number_1 + i;
@@ -262,6 +258,8 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             std::size_t func_id = func_indices[i_func];
             auto p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
             p_bf->SetEquationId(func_id);
+            p_bf->template SetPosition<0>(i);
+            p_bf->template SetPosition<1>(j);
 
             // set the boundary information
             if (i == 0) { p_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
@@ -424,6 +422,9 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
                 std::size_t func_id = func_indices[i_func];
                 typename HBSplinesBasisFunction<3>::Pointer p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
                 p_bf->SetEquationId(func_id);
+                p_bf->template SetPosition<0>(i);
+                p_bf->template SetPosition<1>(j);
+                p_bf->template SetPosition<2>(l);
 
                 // set the boundary information
                 if (i == 0) { p_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }

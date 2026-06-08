@@ -648,12 +648,13 @@ void DeprecatedHBMesh<TDim>::Refine(std::size_t Id)
 
     /* create a list of basis function in the next level representing this basis function */
     // create a list of new knots
-    double tol = 1.0e-10;
     std::vector<std::vector<knot_t> > pnew_local_knots(3);
     std::vector<std::vector<double> > ins_knots(3);
     for (unsigned int i = 0; i < 3; ++i)
     {
         const std::vector<knot_t>& pLocalKnots = p_bf->LocalKnots(i + 1);
+
+        double tol = mKnots1.GetResolution();
 
         for (std::vector<knot_t>::const_iterator it = pLocalKnots.begin(); it != pLocalKnots.end(); ++it)
         {
@@ -670,15 +671,15 @@ void DeprecatedHBMesh<TDim>::Refine(std::size_t Id)
                     knot_t p_new_knot;
                     if (i == 0)
                     {
-                        p_new_knot = mKnots1.pCreateUniqueKnot(ins_knot, tol);
+                        p_new_knot = mKnots1.pCreateUniqueKnot(ins_knot);
                     }
                     else if (i == 1)
                     {
-                        p_new_knot = mKnots2.pCreateUniqueKnot(ins_knot, tol);
+                        p_new_knot = mKnots2.pCreateUniqueKnot(ins_knot);
                     }
                     else if (i == 2)
                     {
-                        p_new_knot = mKnots3.pCreateUniqueKnot(ins_knot, tol);
+                        p_new_knot = mKnots3.pCreateUniqueKnot(ins_knot);
                     }
 
                     pnew_local_knots[i].push_back(p_new_knot);

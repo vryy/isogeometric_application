@@ -249,6 +249,12 @@ public:
         KRATOS_ERROR << "Calling base class function";
     }
 
+    /// Provide the view to the global to local map
+    const std::map<std::size_t, std::size_t>& GlobalToLocal() const
+    {
+        return mGlobalToLocal;
+    }
+
     /// Return the local id of a given global id
     std::size_t LocalId(std::size_t global_id) const
     {

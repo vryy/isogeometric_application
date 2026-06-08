@@ -242,14 +242,20 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     std::vector<Variable<array_1d<double, 3> >*> array_1d_variables = pPatch->template ExtractVariables<Variable<array_1d<double, 3> > >();
     std::vector<Variable<Vector>*> vector_variables = pPatch->template ExtractVariables<Variable<Vector> >();
 
+    // prepare the FESspace for the next level
+    unsigned int next_level = p_bf->Level() + 1;
+    if (next_level > pFESpace->LastLevel()) { pFESpace->SetLastLevel(next_level); }
+
     /* create a list of basis function in the next level representing this basis function */
     // create a list of new knots
-    double cell_tol = pFESpace->pCellManager()->GetTolerance(); // tolerance to accept the nonzero-area cell. We should parameterize it.
-    std::vector<std::vector<knot_t> > pnew_local_knots(TDim);
+    std::vector<std::vector<knot_t> > pnew_local_knots(TDim);   // the knot vector containing all local knots of the next level that is used
+                                    // for the basis functions constituting the current one (the one to be refined)
     std::vector<std::vector<double> > ins_knots(TDim);
     for (unsigned int dim = 0; dim < TDim; ++dim)
     {
         const std::vector<knot_t>& pLocalKnots = p_bf->LocalKnots(dim);
+
+        double tol = pFESpace->KnotVector(dim).GetResolution();
 
         for (std::vector<knot_t>::const_iterator it = pLocalKnots.begin(); it != pLocalKnots.end(); ++it)
         {
@@ -258,13 +264,12 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             std::vector<knot_t>::const_iterator it2 = it + 1;
             if (it2 != pLocalKnots.end())
             {
-                if (fabs((*it2)->Value() - (*it)->Value()) > cell_tol)
+                if (std::abs((*it2)->Value() - (*it)->Value()) > tol)
                 {
                     // now we just add the middle one, but in general we can add arbitrary values
-                    // TODO find the way to generalize this or parameterize this
+                    // TODO think if we should generalize this? does it give any advantage
                     double ins_knot = 0.5 * ((*it)->Value() + (*it2)->Value());
-                    knot_t pnew_knot;
-                    pnew_knot = pFESpace->KnotVector(dim).pCreateUniqueKnot(ins_knot, cell_tol);
+                    knot_t pnew_knot = pFESpace->KnotVector(next_level, dim).pGetKnot(ins_knot);
                     pnew_local_knots[dim].push_back(pnew_knot);
                     ins_knots[dim].push_back(pnew_knot->Value());
                 }
@@ -310,8 +315,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 #endif
 
     /* create new basis functions */
-    unsigned int next_level = p_bf->Level() + 1;
-    if (next_level > pFESpace->LastLevel()) { pFESpace->SetLastLevel(next_level); }
     std::size_t last_id = pFESpace->LastId();
     typename cell_container_t::Pointer pnew_cells;
 
@@ -344,15 +347,11 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
             {
                 for (std::size_t i = 0; i < numbers[0]; ++i)
                 {
-                    for (std::size_t k = 0; k < pFESpace->Order(1) + 2; ++k)
-                    {
-                        std::cout << " " << pnew_local_knots[1][j + k]->Value();
-                    }
-                    std::cout << ";";
                     for (std::size_t k = 0; k < pFESpace->Order(0) + 2; ++k)
-                    {
                         std::cout << " " << pnew_local_knots[0][i + k]->Value();
-                    }
+                    std::cout << ";";
+                    for (std::size_t k = 0; k < pFESpace->Order(1) + 2; ++k)
+                        std::cout << " " << pnew_local_knots[1][j + k]->Value();
                     std::cout << std::endl;
                 }
             }
@@ -375,6 +374,9 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 // create the basis function object
                 std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
                 bf_t pnew_bf = pFESpace->CreateBf(last_id + 1, next_level, pLocalKnots);
+                // find position of the local knot vector in the knot vector of next level
+                pnew_bf->template SetPosition<0>(pFESpace->KnotVector(next_level, 0).FindNumber(pLocalKnots1));
+                pnew_bf->template SetPosition<1>(pFESpace->KnotVector(next_level, 1).FindNumber(pLocalKnots2));
 
                 // and initialize its value
                 for (std::size_t i = 0; i < double_variables.size(); ++i)
@@ -418,8 +420,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 if (knot_container_t::IsOnLeft(pLocalKnots2, pFESpace->Order(1))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
                 if (knot_container_t::IsOnRight(pLocalKnots2, pFESpace->Order(1))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
 
-                // assign new equation id
-                pnew_bf->SetEquationId(++starting_id);
 
                 // transfer the control point information
                 const ControlPointType& oldC = p_bf->GetValue(CONTROL_POINT);
@@ -482,6 +482,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 }
 
                 // create the cells for the basis function
+                double area_tol = std::sqrt(pFESpace->KnotVector(0).GetResolution() * pFESpace->KnotVector(1).GetResolution());
                 for (std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
                 {
                     knot_t pXiMin = pnew_local_knots[0][i + i1];
@@ -493,7 +494,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                         // check if the cell domain area is nonzero
                         double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value());
-                        if (sqrt(fabs(area)) > cell_tol)
+                        if (std::sqrt(std::abs(area)) > area_tol)
                         {
                             std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax};
                             cell_t pnew_cell = pFESpace->pCellManager()->CreateCell(pKnots);
@@ -543,6 +544,10 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     // create the basis function object
                     std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2, pLocalKnots3};
                     bf_t pnew_bf = pFESpace->CreateBf(last_id + 1, next_level, pLocalKnots);
+                    // find position of the local knot vector in the knot vector of next level
+                    pnew_bf->template SetPosition<0>(pFESpace->KnotVector(next_level, 0).FindNumber(pLocalKnots1));
+                    pnew_bf->template SetPosition<1>(pFESpace->KnotVector(next_level, 1).FindNumber(pLocalKnots2));
+                    pnew_bf->template SetPosition<2>(pFESpace->KnotVector(next_level, 2).FindNumber(pLocalKnots3));
 
                     // and initialize its value
                     for (std::size_t i = 0; i < double_variables.size(); ++i)
@@ -596,12 +601,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     if (knot_container_t::IsOnLeft(pLocalKnots3, pFESpace->Order(2))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
                     if (knot_container_t::IsOnRight(pLocalKnots3, pFESpace->Order(2))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
 
-                    // assign new equation id
-                    pnew_bf->SetEquationId(++starting_id);
-                    if (echo_refinement)
-                    {
-                        std::cout << "new bf " << pnew_bf->Id() << " is assigned eq_id = " << pnew_bf->EquationId() << std::endl;
-                    }
 
                     // transfer the control point information
                     const ControlPointType& oldC = p_bf->GetValue(CONTROL_POINT);
@@ -632,6 +631,9 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     }
 
                     // create the cells for the basis function
+                    double volume_tol = std::cbrt(pFESpace->KnotVector(0).GetResolution()
+                                                * pFESpace->KnotVector(1).GetResolution()
+                                                * pFESpace->KnotVector(2).GetResolution());
                     for (std::size_t i1 = 0; i1 < pFESpace->Order(0) + 1; ++i1)
                     {
                         knot_t pXiMin = pnew_local_knots[0][i + i1];
@@ -649,7 +651,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                                 // check if the cell domain volume is nonzero
                                 double volume = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value()) * (pZetaMax->Value() - pZetaMin->Value());
-                                if (pow(fabs(volume), 1.0 / 3) > cell_tol)
+                                if (std::cbrt(std::abs(volume)) > volume_tol)
                                 {
                                     std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax};
                                     cell_t pnew_cell = pFESpace->pCellManager()->CreateCell(pKnots);
@@ -693,6 +695,13 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     }
     std::cout << "Error of computed refinement based on function evaluation: " << std::sqrt(error) << std::endl;
 #endif
+
+    // assign parent/child relationship
+    for (std::size_t k = 0; k < pnew_bfs.size(); ++k)
+    {
+        p_bf->AddChild(pnew_bfs[k], RefinedCoeffs[k]);
+        pnew_bfs[k]->AddParent(p_bf);
+    }
 
 #ifdef ENABLE_PROFILING
     double time_2 = OpenMPUtils::GetCurrentTime() - start;

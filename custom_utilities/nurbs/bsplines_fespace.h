@@ -1547,6 +1547,11 @@ public:
                 }
             }
         }
+        rOStream << " GlobalToLocal:";
+        for (auto it = BaseType::mGlobalToLocal.begin(); it != BaseType::mGlobalToLocal.end(); ++it)
+        {
+            rOStream << " " << it->first << "->" << it->second;
+        }
     }
 
 private:

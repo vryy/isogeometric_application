@@ -10,11 +10,6 @@
 
 // System includes
 #include <vector>
-#include <set>
-#include <map>
-#include <iterator>
-#include <iostream>
-#include <fstream>
 
 // Project includes
 #include "includes/define.h"

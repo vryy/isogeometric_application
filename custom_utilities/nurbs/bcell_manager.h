@@ -91,7 +91,7 @@ public:
     typedef typename cell_container_t::const_iterator const_iterator;
 
     /// Default constructor
-    BaseBCellManager() : mTol(1.0e-10), mLastId(0)
+    BaseBCellManager() : mLastId(0)
     {}
 
     /// Destructor
@@ -101,12 +101,6 @@ public:
         this->PrintInfo(std::cout); std::cout << ", Addr = " << this << " is destroyed" << std::endl;
 #endif
     }
-
-    /// Set the tolerance for the internal searching algorithm
-    void SetTolerance(double Tol) {mTol = Tol;}
-
-    /// Get the tolerance for the internal searching algorithm
-    double GetTolerance() const {return mTol;}
 
     /// Check if the cell exists in the list; otherwise create new cell and return
     virtual cell_t CreateCell(const std::vector<knot_t>& pKnots)
@@ -241,8 +235,6 @@ protected:
     IndexType mLastId;
 
 private:
-
-    double mTol;
 
     void CreateCellsMap()
     {

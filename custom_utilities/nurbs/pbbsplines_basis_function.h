@@ -314,10 +314,7 @@ public:
         {
             rOStream << "  " << dim + 1 << ":";
             for (std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
-                // rOStream << " " << mpLocalKnots[dim][i]->Value();
-            {
                 rOStream << " " << CellType::GetValue(mpLocalKnots[dim][i]);
-            }
             rOStream << std::endl;
         }
 

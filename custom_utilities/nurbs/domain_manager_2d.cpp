@@ -192,4 +192,4 @@ void DomainManager2D::ExportDomain(const std::string& fn, const std::string& col
     outfile.close();
 }
 
-}
+} // namespace Kratos

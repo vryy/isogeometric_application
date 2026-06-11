@@ -43,7 +43,7 @@ public:
     DomainManager2D(std::size_t Id) : BaseType(Id) {}
 
     /// Destructor
-    virtual ~DomainManager2D() {}
+    ~DomainManager2D() override {}
 
     /// Add the Cuboid to the Cuboid set
     void AddCell(const std::vector<double>& box) override;
@@ -72,7 +72,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const DomainManager2D& 
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_DOMAIN_MANAGER_2D_H_INCLUDED defined
 

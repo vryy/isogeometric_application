@@ -987,76 +987,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
     bool echo_refinement = IsogeometricEcho::Has(echo_level, ECHO_REFINEMENT);
 
     // rebuild support domain
-    pFESpace->ClearSupportDomain();
-    for (std::size_t level = 1; level <= pFESpace->LastLevel(); ++level)
-    {
-        domain_t p_domain = pFESpace->GetSupportDomain(level);
-
-        // add the knots to the domain manager
-        for (std::size_t next_level = level; next_level <= pFESpace->LastLevel(); ++next_level)
-        {
-            for (auto it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
-            {
-                if (it_bf->Level() == next_level)
-                {
-                    for (auto it_cell = it_bf->cell_begin(); it_cell != it_bf->cell_end(); ++it_cell)
-                    {
-                        if constexpr (TDim == 1)
-                        {
-                            p_domain->AddXcoord((*it_cell)->XiMinValue());
-                            p_domain->AddXcoord((*it_cell)->XiMaxValue());
-                        }
-                        else if constexpr (TDim == 2)
-                        {
-                            p_domain->AddXcoord((*it_cell)->XiMinValue());
-                            p_domain->AddXcoord((*it_cell)->XiMaxValue());
-                            p_domain->AddYcoord((*it_cell)->EtaMinValue());
-                            p_domain->AddYcoord((*it_cell)->EtaMaxValue());
-                        }
-                        else if constexpr (TDim == 3)
-                        {
-                            p_domain->AddXcoord((*it_cell)->XiMinValue());
-                            p_domain->AddXcoord((*it_cell)->XiMaxValue());
-                            p_domain->AddYcoord((*it_cell)->EtaMinValue());
-                            p_domain->AddYcoord((*it_cell)->EtaMaxValue());
-                            p_domain->AddZcoord((*it_cell)->ZetaMinValue());
-                            p_domain->AddZcoord((*it_cell)->ZetaMaxValue());
-                        }
-                    }
-                }
-            }
-        }
-
-        // add the cells to the domain manager
-        for (std::size_t next_level = level; next_level <= pFESpace->LastLevel(); ++next_level)
-        {
-            for (auto it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
-            {
-                if (it_bf->Level() == next_level)
-                {
-                    for (auto it_cell = it_bf->cell_begin(); it_cell != it_bf->cell_end(); ++it_cell)
-                    {
-                        if constexpr (TDim == 1)
-                        {
-                            std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue()};
-                            p_domain->AddCell(box);
-                        }
-                        else if constexpr (TDim == 2)
-                        {
-                            std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue()};
-                            p_domain->AddCell(box);
-                        }
-                        else if constexpr (TDim == 3)
-                        {
-                            std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue(), (*it_cell)->ZetaMinValue(), (*it_cell)->ZetaMaxValue()};
-                            p_domain->AddCell(box);
-                        }
-                    }
-                }
-            }
-        }
-//            std::cout << "support domain level " << level << *p_domain << std::endl;
-    }
+    pFESpace->RebuildSupportDomain();
 
     // refine based on the rule that if a bf has support domain contained in next level, it must be refined
     for (std::size_t level = 1; level <= pFESpace->LastLevel() - 1; ++level)

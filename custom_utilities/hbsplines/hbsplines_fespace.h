@@ -354,8 +354,87 @@ public:
                 p_domain = domain_t(new DomainManager3D(Level));
             }
             mSupportDomains[Level] = p_domain;
+            for (int i = 0; i < TDim; ++i)
+                p_domain->SetTolerance(i, this->KnotVector(i).GetResolution());
             return p_domain;
         }
+    }
+
+    /// Build the support domain
+    void BuildSupportDomain()
+    {
+        for (std::size_t level = 1; level <= this->LastLevel(); ++level)
+        {
+            domain_t p_domain = this->GetSupportDomain(level);
+
+            // add the knots to the domain manager
+            for (std::size_t next_level = level; next_level <= this->LastLevel(); ++next_level)
+            {
+                for (auto it_bf = this->bf_begin(); it_bf != this->bf_end(); ++it_bf)
+                {
+                    if (it_bf->Level() == next_level)
+                    {
+                        for (auto it_cell = it_bf->cell_begin(); it_cell != it_bf->cell_end(); ++it_cell)
+                        {
+                            if constexpr (TDim > 0)
+                            {
+                                p_domain->AddXcoord((*it_cell)->XiMinValue());
+                                p_domain->AddXcoord((*it_cell)->XiMaxValue());
+                            }
+
+                            if constexpr (TDim > 1)
+                            {
+                                p_domain->AddYcoord((*it_cell)->EtaMinValue());
+                                p_domain->AddYcoord((*it_cell)->EtaMaxValue());
+                            }
+
+                            if constexpr (TDim > 2)
+                            {
+                                p_domain->AddZcoord((*it_cell)->ZetaMinValue());
+                                p_domain->AddZcoord((*it_cell)->ZetaMaxValue());
+                            }
+                        }
+                    }
+                }
+            }
+
+            // add the cells to the domain manager
+            for (std::size_t next_level = level; next_level <= this->LastLevel(); ++next_level)
+            {
+                for (auto it_bf = this->bf_begin(); it_bf != this->bf_end(); ++it_bf)
+                {
+                    if (it_bf->Level() == next_level)
+                    {
+                        for (auto it_cell = it_bf->cell_begin(); it_cell != it_bf->cell_end(); ++it_cell)
+                        {
+                            if constexpr (TDim == 1)
+                            {
+                                std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue()};
+                                p_domain->AddCell(box);
+                            }
+                            else if constexpr (TDim == 2)
+                            {
+                                std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue()};
+                                p_domain->AddCell(box);
+                            }
+                            else if constexpr (TDim == 3)
+                            {
+                                std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue(), (*it_cell)->ZetaMinValue(), (*it_cell)->ZetaMaxValue()};
+                                p_domain->AddCell(box);
+                            }
+                        }
+                    }
+                }
+            }
+    //            std::cout << "support domain level " << level << *p_domain << std::endl;
+        }
+    }
+
+    /// Rebuild the support domain
+    void RebuildSupportDomain()
+    {
+        this->ClearSupportDomain();
+        this->BuildSupportDomain();
     }
 
     /// Construct the boundary FESpace based on side

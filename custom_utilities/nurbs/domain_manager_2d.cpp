@@ -65,12 +65,13 @@ void DomainManager2D::AddCell(const std::vector<double>& box)
 
 bool DomainManager2D::IsInside(const std::vector<double>& bounding_box) const
 {
-    double tol = 1.0e-10;
+    double tol_1 = BaseType::GetXtol();
+    double tol_2 = BaseType::GetYtol();
 
     // find the lower bound for the Xmin and upper bound for Xmax
     std::size_t i1 = 0, i2 = 0;
     for (coords_container_t::iterator it = BaseType::mXcoords.begin(); it != BaseType::mXcoords.end(); ++it)
-        if (bounding_box[0] > *it - tol)
+        if (bounding_box[0] > *it - tol_1)
         {
             ++i1;
         }
@@ -85,7 +86,7 @@ bool DomainManager2D::IsInside(const std::vector<double>& bounding_box) const
 
     //
     for (coords_container_t::iterator it = BaseType::mXcoords.begin(); it != BaseType::mXcoords.end(); ++it)
-        if (bounding_box[1] > *it + tol)
+        if (bounding_box[1] > *it + tol_1)
         {
             ++i2;
         }
@@ -97,7 +98,7 @@ bool DomainManager2D::IsInside(const std::vector<double>& bounding_box) const
     // find the lower bound for the Ymin and upper bound for Ymax
     std::size_t j1 = 0, j2 = 0;
     for (coords_container_t::iterator it = BaseType::mYcoords.begin(); it != BaseType::mYcoords.end(); ++it)
-        if (bounding_box[2] > *it - tol)
+        if (bounding_box[2] > *it - tol_2)
         {
             ++j1;
         }
@@ -112,7 +113,7 @@ bool DomainManager2D::IsInside(const std::vector<double>& bounding_box) const
 
     //
     for (coords_container_t::iterator it = BaseType::mYcoords.begin(); it != BaseType::mYcoords.end(); ++it)
-        if (bounding_box[3] > *it + tol)
+        if (bounding_box[3] > *it + tol_2)
         {
             ++j2;
         }

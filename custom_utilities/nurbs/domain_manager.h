@@ -36,7 +36,7 @@ public:
     typedef std::set<double> coords_container_t;
 
     /// Default constructor
-    DomainManager(std::size_t Id) : mId(Id) {}
+    DomainManager(std::size_t Id) : mId(Id), mTol({1e-10, 1e-10, 1e-10}) {}
 
     /// Destructor
     virtual ~DomainManager() {}
@@ -46,6 +46,14 @@ public:
 
     /// Set the id for this domain manager
     void SetId(std::size_t Id) {mId = Id;}
+
+    /// Set the cell tolerance
+    void SetTolerance(int i, double tol) {mTol[i] = tol;}
+
+    /// Get the cell tolerance
+    double GetXtol() const {return mTol[0];}
+    double GetYtol() const {return mTol[1];}
+    double GetZtol() const {return mTol[2];}
 
     /// Fill the internal array of X & Y-coordinates. It must be done before cells are added to this container.
     virtual void AddXcoord(double X) {mXcoords.insert(X);}
@@ -83,6 +91,7 @@ protected:
 private:
 
     std::size_t mId;
+    std::vector<double> mTol;
 };
 
 /// output stream function

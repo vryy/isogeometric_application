@@ -207,6 +207,20 @@ public:
         return p_knot->Value();
     }
 
+    std::vector<double> GetBoundingBox() const override
+    {
+        std::vector<double> bb(6);
+
+        bb[0] = this->XiMinValue();
+        bb[1] = this->XiMaxValue();
+        bb[2] = this->EtaMinValue();
+        bb[3] = this->EtaMaxValue();
+        bb[4] = this->ZetaMinValue();
+        bb[5] = this->ZetaMaxValue();
+
+        return bb;
+    }
+
     /// Information
     void PrintInfo(std::ostream& rOStream) const override
     {

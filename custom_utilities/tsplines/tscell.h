@@ -94,6 +94,21 @@ public:
     knot_t ZetaMax() const {return mZetaMax;}
     knot_t ZetaMaxValue() const {return mZetaMax;}
 
+    /// Get the bounding box (=support domain) of this cell
+    std::vector<double> GetBoundingBox() const override
+    {
+        std::vector<double> bb(6);
+
+        bb[0] = this->XiMinValue();
+        bb[1] = this->XiMaxValue();
+        bb[2] = this->EtaMinValue();
+        bb[3] = this->EtaMaxValue();
+        bb[4] = this->ZetaMinValue();
+        bb[5] = this->ZetaMaxValue();
+
+        return bb;
+    }
+
     /// Check if this cell is covered by another cell
     template<int TDim>
     bool IsCovered(TsCell::ConstPointer p_cell) const

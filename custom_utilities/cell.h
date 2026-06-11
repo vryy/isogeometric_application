@@ -165,6 +165,12 @@ public:
         }
     }
 
+    /// Get the bounding box (=support domain) of this cell
+    virtual std::vector<double> GetBoundingBox() const
+    {
+        KRATOS_ERROR << "Error calling base class function";
+    }
+
     /// Implement relational operator for automatic arrangement in container
     inline bool operator==(const Cell& rA) const
     {

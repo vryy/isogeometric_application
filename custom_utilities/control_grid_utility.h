@@ -183,14 +183,44 @@ public:
         }
     }
 
-    /// Helper function to create the unstructured control value grid (without weight)
+    /// Helper function to create the grid for control value (strip out the weight)
     template<typename TControlValueType>
     static typename ControlGrid<typename TControlValueType::DataType>::Pointer CreateControlPointValueGrid(
         typename ControlGrid<TControlValueType>::ConstPointer pControlPointGrid)
     {
         typedef ControlGrid<typename TControlValueType::DataType> ControlPointValueGridType;
-        typename ControlPointValueGridType::Pointer pControlPointValueGrid
-            = typename ControlPointValueGridType::Pointer(new UnstructuredControlGrid<typename TControlValueType::DataType>(pControlPointGrid->size()));
+        typename ControlPointValueGridType::Pointer pControlPointValueGrid;
+
+        if (typeid(*pControlPointGrid) == typeid(StructuredControlGrid<1, TControlValueType>))
+        {
+            typename StructuredControlGrid<1, TControlValueType>::ConstPointer pStructuredControlPointGrid =
+                iga::dynamic_pointer_cast<const StructuredControlGrid<1, TControlValueType> >(pControlPointGrid);
+            if (pStructuredControlPointGrid == nullptr)
+                KRATOS_ERROR << "Error casting the control point grid to structured control point grid";
+            typedef StructuredControlGrid<1, typename TControlValueType::DataType> StructuredControlPointValueGridType;
+            pControlPointValueGrid = typename ControlPointValueGridType::Pointer(new StructuredControlPointValueGridType(pStructuredControlPointGrid->Size(0)));
+        }
+        else if (typeid(*pControlPointGrid) == typeid(StructuredControlGrid<2, TControlValueType>))
+        {
+            typename StructuredControlGrid<2, TControlValueType>::ConstPointer pStructuredControlPointGrid =
+                iga::dynamic_pointer_cast<const StructuredControlGrid<2, TControlValueType> >(pControlPointGrid);
+            if (pStructuredControlPointGrid == nullptr)
+                KRATOS_ERROR << "Error casting the control point grid to structured control point grid";
+            typedef StructuredControlGrid<2, typename TControlValueType::DataType> StructuredControlPointValueGridType;
+            pControlPointValueGrid = typename ControlPointValueGridType::Pointer(new StructuredControlPointValueGridType(pStructuredControlPointGrid->Size(0), pStructuredControlPointGrid->Size(1)));
+        }
+        else if (typeid(*pControlPointGrid) == typeid(StructuredControlGrid<3, TControlValueType>))
+        {
+            typename StructuredControlGrid<3, TControlValueType>::ConstPointer pStructuredControlPointGrid =
+                iga::dynamic_pointer_cast<const StructuredControlGrid<3, TControlValueType> >(pControlPointGrid);
+            if (pStructuredControlPointGrid == nullptr)
+                KRATOS_ERROR << "Error casting the control point grid to structured control point grid";
+            typedef StructuredControlGrid<3, typename TControlValueType::DataType> StructuredControlPointValueGridType;
+            pControlPointValueGrid = typename ControlPointValueGridType::Pointer(new StructuredControlPointValueGridType(pStructuredControlPointGrid->Size(0), pStructuredControlPointGrid->Size(1), pStructuredControlPointGrid->Size(2)));
+        }
+        else
+            pControlPointValueGrid = typename ControlPointValueGridType::Pointer(new UnstructuredControlGrid<typename TControlValueType::DataType>(pControlPointGrid->size()));
+
         for (std::size_t i = 0; i < pControlPointGrid->size(); ++i)
         {
             pControlPointValueGrid->SetData(i, pControlPointGrid->GetData(i).V());

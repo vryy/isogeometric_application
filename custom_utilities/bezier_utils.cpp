@@ -403,4 +403,4 @@ void BezierUtils::bezier_extraction_local_3d(std::vector<Vector>& Crows,
     }
 }
 
-}// namespace Kratos.
+} // namespace Kratos.

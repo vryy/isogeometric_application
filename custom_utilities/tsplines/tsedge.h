@@ -92,6 +92,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TsEdge& rThis)
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TS_EDGE_H_INCLUDED

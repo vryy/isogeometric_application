@@ -371,7 +371,7 @@ inline std::ostream& operator <<(std::ostream& rOStream, const PBBSplinesBasisFu
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #include "pbbsplines_basis_function.hpp"
 

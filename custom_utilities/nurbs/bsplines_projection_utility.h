@@ -183,6 +183,6 @@ private:
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_BSPLINES_PROJECTION_UTILITY_H_INCLUDED

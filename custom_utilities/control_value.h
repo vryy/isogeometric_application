@@ -165,6 +165,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const ControlValue<TDat
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CONTROL_VALUE_H_INCLUDED

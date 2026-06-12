@@ -285,6 +285,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BCell& rThis)
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_H_INCLUDED

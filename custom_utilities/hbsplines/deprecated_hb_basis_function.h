@@ -470,6 +470,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const DeprecatedHBBasis
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_DEPRECATED_HB_BASIS_FUNCTION_H_INCLUDED

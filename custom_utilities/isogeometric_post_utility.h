@@ -1316,7 +1316,7 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #ifdef USE_TRIANGULATION_UTILS_FOR_TRIANGULATION
 #undef USE_TRIANGULATION_UTILS_FOR_TRIANGULATION

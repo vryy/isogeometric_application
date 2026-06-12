@@ -299,6 +299,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const IsogeometricProje
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_PROJECTION_UTILITY_H_INCLUDED

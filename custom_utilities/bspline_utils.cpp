@@ -51,4 +51,4 @@ void BSplineUtils::test_ComputeBsplinesKnotInsertionCoefficients1DLocal()
     KRATOS_WATCH(D)
 }
 
-}// namespace Kratos.
+} // namespace Kratos.

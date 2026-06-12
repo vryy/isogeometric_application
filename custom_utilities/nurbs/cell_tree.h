@@ -181,6 +181,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const CellTree<TCellTyp
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_TREE_H_INCLUDED

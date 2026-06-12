@@ -734,6 +734,6 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_TSPLINES_UTILS_H_INCLUDED  defined

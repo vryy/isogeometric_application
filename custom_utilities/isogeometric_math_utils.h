@@ -538,6 +538,6 @@ inline std::ostream& operator <<(std::ostream& rOStream,
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_MATH_UTILS_H_INCLUDED  defined

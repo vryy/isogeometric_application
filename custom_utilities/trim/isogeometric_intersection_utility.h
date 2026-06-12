@@ -979,7 +979,7 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #undef DEBUG_INTERSECT_CURVE_PLANE
 

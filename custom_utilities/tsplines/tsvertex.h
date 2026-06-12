@@ -117,6 +117,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TsVertex& rThis)
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TS_VERTEX_H_INCLUDED

@@ -236,6 +236,6 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_BEZIER_UTILS_H_INCLUDED  defined

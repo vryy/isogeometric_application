@@ -1999,7 +1999,7 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #undef ENABLE_PROFILING
 #undef USE_EQUAL_ORDER_INTEGRATION_IN_ALL_DIRECTION

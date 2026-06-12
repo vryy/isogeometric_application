@@ -587,7 +587,7 @@ struct PBBSplinesBasisFunction_Helper<3>
     }
 };
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PBBSPLINES_BASIS_FUNCTION_HPP_INCLUDED
 

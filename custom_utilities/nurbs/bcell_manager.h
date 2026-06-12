@@ -791,6 +791,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const BCellManager<TDim
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_BCELL_MANAGER_H_INCLUDED

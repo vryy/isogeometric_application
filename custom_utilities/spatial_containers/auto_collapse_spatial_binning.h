@@ -329,6 +329,6 @@ private:
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_AUTO_COLLAPSE_SPATIAL_BINNING_H_INCLUDED defined

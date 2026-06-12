@@ -216,6 +216,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Cell& rThis)
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_CELL_H_INCLUDED

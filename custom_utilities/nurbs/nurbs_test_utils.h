@@ -368,6 +368,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const NURBSTestUtils<TD
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_NURBS_TEST_UTILS_H_INCLUDED  defined

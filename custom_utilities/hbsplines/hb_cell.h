@@ -184,6 +184,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const HBCell<TBasisFunc
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_HB_CELL_H_INCLUDED

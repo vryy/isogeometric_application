@@ -412,6 +412,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const TsMesh2D& rThis)
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_TS_MESH_2D_H_INCLUDED

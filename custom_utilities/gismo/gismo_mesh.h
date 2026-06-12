@@ -425,6 +425,6 @@ inline std::ostream& operator<<(std::ostream& rOStream, const GismoMesh& rThis)
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_GISMO_MESH_H_INCLUDED

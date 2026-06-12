@@ -29,4 +29,4 @@ const int TsVertex::L_JOINT_RIGHT_UP = 8;
 const int TsVertex::I_JOINT_LEFT_RIGHT = 9;
 const int TsVertex::I_JOINT_UP_DOWN = 10;
 
-}// namespace Kratos.
+} // namespace Kratos.

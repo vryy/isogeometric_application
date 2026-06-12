@@ -1626,7 +1626,7 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #undef FUNCTIONALITY_CHECK
 #undef SIZE_CHECK

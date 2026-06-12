@@ -120,6 +120,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const Knot<TDataType>& 
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_KNOT_H_INCLUDED

@@ -524,7 +524,7 @@ private:
 
 ///@} addtogroup block
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #undef DEBUG_LEVEL1
 #undef DEBUG_LEVEL2

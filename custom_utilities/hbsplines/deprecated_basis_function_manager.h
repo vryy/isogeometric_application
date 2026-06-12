@@ -176,6 +176,6 @@ inline std::ostream& operator <<(std::ostream& rOStream, const DeprecatedBasisFu
     return rOStream;
 }
 
-}// namespace Kratos.
+} // namespace Kratos.
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_DEPRECATED_BASIS_FUNCTION_MANAGER_H_INCLUDED

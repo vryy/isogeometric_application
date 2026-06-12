@@ -115,8 +115,9 @@ public:
         mNodeOffset = 0;
         mName = "MultiPatch";
 
-        // always enumerate the multipatch first
-        mpMultiPatch->Enumerate();
+        // enumerate the multipatch if it isn't
+        if (!mpMultiPatch->IsEnumerated())
+            mpMultiPatch->Enumerate();
 
 #ifdef SD_APP_FORWARD_COMPATIBILITY
         mpModel->DeleteModelPart(mName);
@@ -149,8 +150,9 @@ public:
         mIsModelPartReady = false;
         mNodeOffset = pModelPart->GetLastNodeId() + 1;
 
-        // always enumerate the multipatch first
-        mpMultiPatch->Enumerate();
+        // enumerate the multipatch if it isn't
+        if (!mpMultiPatch->IsEnumerated())
+            mpMultiPatch->Enumerate();
 
         // store the model_part
         mpModelPart = pModelPart;
@@ -351,23 +353,20 @@ public:
         if (!mpMultiPatch->IsEnumerated())
             KRATOS_ERROR << "The multipatch is not yet enumerated";
 
-            // transfer data from from control points to nodes
-            for (std::size_t idof = 0; idof < mpMultiPatch->EquationSystemSize(); ++idof)
-            {
-                std::tuple<std::size_t, std::size_t> loc = mpMultiPatch->EquationIdLocation(idof);
+        // transfer data from from control points to nodes
+        for (std::size_t idof = 0; idof < mpMultiPatch->EquationSystemSize(); ++idof)
+        {
+            std::tuple<std::size_t, std::size_t> loc = mpMultiPatch->EquationIdLocation(idof);
 
-                std::size_t patch_id = std::get<0>(loc);
-                std::size_t local_id = std::get<1>(loc);
-                // KRATOS_WATCH(patch_id)
-                // KRATOS_WATCH(local_id)
+            std::size_t patch_id = std::get<0>(loc);
+            std::size_t local_id = std::get<1>(loc);
 
-                const typename TVariableType::Type& value = mpMultiPatch->pGetPatch(patch_id)->pGetGridFunction(rVariable)->pControlGrid()->GetData(local_id);
-                // KRATOS_WATCH(value)
+            const typename TVariableType::Type& value = mpMultiPatch->pGetPatch(patch_id)->pGetGridFunction(rVariable)->pControlGrid()->GetData(local_id);
 
-                typename NodeType::Pointer pNode = this->GetModelPart().pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(idof) + mNodeOffset);
+            typename NodeType::Pointer pNode = this->GetModelPart().pGetNode(CONVERT_INDEX_IGA_TO_KRATOS(idof) + mNodeOffset);
 
-                pNode->GetSolutionStepValue(rVariable) = value;
-            }
+            pNode->GetSolutionStepValue(rVariable) = value;
+        }
     }
 
     /// Synchronize values from model_part to the multipatch
@@ -512,7 +511,7 @@ public:
             max_integration_method = (*p_temp_properties)[NUM_IGA_INTEGRATION_METHOD];
         }
 
-        for (auto it_cell = pCellManager->cbegin(); it_cell != pCellManager->cend(); ++it_cell)
+        for (auto it_cell = pCellManager->cbegin(); it_cell != pCellManager->cend(); ++it_cell, ++cnt)
         {
             // get new nodes
             temp_element_nodes.clear();
@@ -572,7 +571,7 @@ public:
             }
 
             // create the element and add to the list
-            typename TEntityType::Pointer pNewElement = r_clone_element.Create(cnt++, p_temp_geometry, p_temp_properties);
+            typename TEntityType::Pointer pNewElement = r_clone_element.Create(cnt, p_temp_geometry, p_temp_properties);
             pNewElement->SetValue(ACTIVATION_LEVEL, 0);
 #ifdef IS_INACTIVE
             pNewElement->SetValue(IS_INACTIVE, false);

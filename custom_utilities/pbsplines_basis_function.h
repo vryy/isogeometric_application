@@ -138,7 +138,7 @@ public:
     /// Get the weight associated with the control point
     double Weight() const
     {
-        return this->GetValue(CONTROL_POINT).W();
+        return this->GetData(CONTROL_POINT).W();
     }
 
     /// Get the bounding box (=support domain) of this basis function
@@ -177,23 +177,27 @@ public:
 
     /**************************************************************************
                             CONTROL VALUES
-      IT IS IMPORTANT TO NOTE THAT THE CONTROL VALUE MUST BE THE WEIGHTED ONE
+      IT IS IMPORTANT TO NOTE THAT THE CONTROL VALUE MUST BE THE WEIGHTED ONE.
+      THAT MEANS THE VALUE UNDER mData HAS ALREADY CARRIED THE WEIGHT. FOR EXAMPLE,
+      GetData(CONTROL_POINT) is (wX, wY, wZ, w) and GetData(TEMPERATURE) is (wT).
+      THIS APPROACH WAY ALLOWS THE REFINEMENT TO DIRECTLY SUM UP THE VALUE WITHOUT
+      PRE AND POST MULTIPLYING WITH THE WEIGHT.
     **************************************************************************/
 
     template<class TVariableType>
-    typename TVariableType::Type& GetValue(const TVariableType& rThisVariable)
+    typename TVariableType::Type& GetData(const TVariableType& rThisVariable)
     {
         return mData.GetValue(rThisVariable);
     }
 
     template<class TVariableType>
-    const typename TVariableType::Type& GetValue(const TVariableType& rThisVariable) const
+    const typename TVariableType::Type& GetData(const TVariableType& rThisVariable) const
     {
         return mData.GetValue(rThisVariable);
     }
 
     template<class TVariableType>
-    void SetValue(const TVariableType& rThisVariable, typename TVariableType::Type const& rValue)
+    void SetData(const TVariableType& rThisVariable, typename TVariableType::Type const& rValue)
     {
         mData.SetValue(rThisVariable, rValue);
     }
@@ -305,7 +309,7 @@ struct PBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variabl
     {
         if (!r_bf.Has(rVariable))
         {
-            r_bf.SetValue(rVariable, 0.0);
+            r_bf.SetData(rVariable, 0.0);
         }
     }
 
@@ -324,7 +328,7 @@ struct PBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variabl
         {
             array_1d<double, 3> zero_v;
             zero_v[0] = 0.0; zero_v[1] = 0.0; zero_v[2] = 0.0;
-            r_bf.SetValue(rVariable, zero_v);
+            r_bf.SetData(rVariable, zero_v);
         }
     }
 
@@ -346,9 +350,9 @@ struct PBSplinesBasisFunction_InitializeValue_Helper<TBasisFunctionType, Variabl
     {
         if (!r_bf.Has(rVariable))
         {
-            Vector zero_v = p_ref_bf->GetValue(rVariable);
+            Vector zero_v = p_ref_bf->GetData(rVariable);
             for (std::size_t i = 0; i < zero_v.size(); ++i) { zero_v[i] = 0.0; }
-            r_bf.SetValue(rVariable, zero_v);
+            r_bf.SetData(rVariable, zero_v);
         }
     }
 };

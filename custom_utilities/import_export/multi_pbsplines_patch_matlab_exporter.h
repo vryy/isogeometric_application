@@ -130,7 +130,7 @@ public:
                 rOStream << "];\n";
             }
 
-            ControlPointType C = it_bf->GetValue(CONTROL_POINT);
+            ControlPointType C = it_bf->GetData(CONTROL_POINT);
 
             rOStream << "P" << patch_id << "_P(" << cnt << ",:) = [" << C.X() << " " << C.Y() << " " << C.Z() << "];\n";
             rOStream << "P" << patch_id << "_W(" << cnt << ") = " << C.W() << ";\n";

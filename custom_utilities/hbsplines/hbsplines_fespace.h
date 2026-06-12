@@ -126,7 +126,7 @@ public:
             {
                 BasisFunctionType& bf = *(it_bf->lock());
                 bf.ComputeExtractionOperator(Crow, *it_cell);
-                (*it_cell)->AddAnchor(bf.EquationId(), bf.GetValue(CONTROL_POINT).W(), Crow);
+                (*it_cell)->AddAnchor(bf.EquationId(), bf.GetData(CONTROL_POINT).W(), Crow);
             }
         }
     }

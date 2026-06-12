@@ -154,7 +154,7 @@ public:
         std::size_t cnt = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
         {
-            weights[cnt] = it->GetValue(CONTROL_POINT).W();
+            weights[cnt] = it->GetData(CONTROL_POINT).W();
         }
         return weights;
     }
@@ -560,7 +560,7 @@ public:
             for (typename BasisFunctionType::cell_iterator it_cell = it->cell_begin(); it_cell != it->cell_end(); ++it_cell)
             {
                 it->ComputeExtractionOperator(Crow, *it_cell);
-                (*it_cell)->AddAnchor(it->EquationId(), it->GetValue(CONTROL_POINT).W(), Crow);
+                (*it_cell)->AddAnchor(it->EquationId(), it->GetData(CONTROL_POINT).W(), Crow);
             }
         }
     }

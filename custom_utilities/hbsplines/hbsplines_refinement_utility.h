@@ -422,14 +422,14 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
 
                 // transfer the control point information
-                const ControlPointType& oldC = p_bf->GetValue(CONTROL_POINT);
-                ControlPointType& newC = pnew_bf->GetValue(CONTROL_POINT);
+                const ControlPointType& oldC = p_bf->GetData(CONTROL_POINT);
+                ControlPointType& newC = pnew_bf->GetData(CONTROL_POINT);
                 newC += RefinedCoeffs[i_func] * oldC;
 
                 if (echo_refinement)
                 {
                     std::cout << "new bf " << pnew_bf->Id()
-                              << ", cp: " << pnew_bf->GetValue(CONTROL_POINT)
+                              << ", cp: " << pnew_bf->GetData(CONTROL_POINT)
                               << " is assigned eq_id = " << pnew_bf->EquationId()
                               << std::endl;
                 }
@@ -441,8 +441,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     {
                         std::cout << "Transfer double variable " << double_variables[i]->Name();
                     }
-                    double old_value = p_bf->GetValue(*double_variables[i]);
-                    double& new_value = pnew_bf->GetValue(*double_variables[i]);
+                    double old_value = p_bf->GetData(*double_variables[i]);
+                    double& new_value = pnew_bf->GetData(*double_variables[i]);
                     new_value += RefinedCoeffs[i_func] * old_value;
                     if (echo_refinement_detail)
                     {
@@ -457,8 +457,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     {
                         std::cout << "Transfer array_1d variable " << array_1d_variables[i]->Name();
                     }
-                    const array_1d<double, 3>& old_value = p_bf->GetValue(*array_1d_variables[i]);
-                    array_1d<double, 3>& new_value = pnew_bf->GetValue(*array_1d_variables[i]);
+                    const array_1d<double, 3>& old_value = p_bf->GetData(*array_1d_variables[i]);
+                    array_1d<double, 3>& new_value = pnew_bf->GetData(*array_1d_variables[i]);
                     noalias(new_value) += RefinedCoeffs[i_func] * old_value;
                     if (echo_refinement_detail)
                     {
@@ -472,8 +472,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     {
                         std::cout << "Transfer vector variable " << vector_variables[i]->Name();
                     }
-                    const Vector& old_value = p_bf->GetValue(*vector_variables[i]);
-                    Vector& new_value = pnew_bf->GetValue(*vector_variables[i]);
+                    const Vector& old_value = p_bf->GetData(*vector_variables[i]);
+                    Vector& new_value = pnew_bf->GetData(*vector_variables[i]);
                     noalias(new_value) += RefinedCoeffs[i_func] * old_value;
                     if (echo_refinement_detail)
                     {
@@ -603,30 +603,30 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
 
                     // transfer the control point information
-                    const ControlPointType& oldC = p_bf->GetValue(CONTROL_POINT);
+                    const ControlPointType& oldC = p_bf->GetData(CONTROL_POINT);
                     double weight = oldC.W();
-                    ControlPointType& newC = pnew_bf->GetValue(CONTROL_POINT);
+                    ControlPointType& newC = pnew_bf->GetData(CONTROL_POINT);
                     newC += RefinedCoeffs[i_func] * oldC;
 
                     // transfer other control values from p_bf to pnew_bf
                     for (std::size_t i = 0; i < double_variables.size(); ++i)
                     {
-                        double old_value = p_bf->GetValue(*double_variables[i]);
-                        double& new_value = pnew_bf->GetValue(*double_variables[i]);
+                        double old_value = p_bf->GetData(*double_variables[i]);
+                        double& new_value = pnew_bf->GetData(*double_variables[i]);
                         new_value += RefinedCoeffs[i_func] * old_value;
                     }
 
                     for (std::size_t i = 0; i < array_1d_variables.size(); ++i)
                     {
-                        const array_1d<double, 3>& old_value = p_bf->GetValue(*array_1d_variables[i]);
-                        array_1d<double, 3>& new_value = pnew_bf->GetValue(*array_1d_variables[i]);
+                        const array_1d<double, 3>& old_value = p_bf->GetData(*array_1d_variables[i]);
+                        array_1d<double, 3>& new_value = pnew_bf->GetData(*array_1d_variables[i]);
                         noalias(new_value) += RefinedCoeffs[i_func] * old_value;
                     }
 
                     for (std::size_t i = 0; i < vector_variables.size(); ++i)
                     {
-                        const Vector& old_value = p_bf->GetValue(*vector_variables[i]);
-                        Vector& new_value = pnew_bf->GetValue(*vector_variables[i]);
+                        const Vector& old_value = p_bf->GetData(*vector_variables[i]);
+                        Vector& new_value = pnew_bf->GetData(*vector_variables[i]);
                         noalias(new_value) += RefinedCoeffs[i_func] * old_value;
                     }
 

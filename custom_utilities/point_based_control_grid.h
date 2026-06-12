@@ -82,7 +82,7 @@ public:
     {
         // TODO Get and Set data in the sequential manner can be expensive if the underlying FESPace uses std::set to store the basis functions.
         // It is suggested to implement the iterator for get and set the values.
-        return (*mpFESpace)[i]->GetValue(mrVariable) / (*mpFESpace)[i]->Weight();
+        return (*mpFESpace)[i]->GetData(mrVariable) / (*mpFESpace)[i]->Weight();
     }
 
     /// Set the data at specific point
@@ -90,21 +90,21 @@ public:
     void SetData(std::size_t i, const DataType& value) override
     {
         // TODO see comment in GetData
-        (*mpFESpace)[i]->SetValue(mrVariable, value * (*mpFESpace)[i]->Weight());
+        (*mpFESpace)[i]->SetData(mrVariable, value * (*mpFESpace)[i]->Weight());
     }
 
     // overload operator []
     DataType& operator[] (std::size_t i) override
     {
         // TODO see comment in GetData
-        return (*mpFESpace)[i]->GetValue(mrVariable);
+        return (*mpFESpace)[i]->GetData(mrVariable);
     }
 
     // overload operator []
     const DataType& operator[] (std::size_t i) const override
     {
         // TODO see comment in GetData
-        return (*mpFESpace)[i]->GetValue(mrVariable);
+        return (*mpFESpace)[i]->GetData(mrVariable);
     }
 
     /// Information
@@ -184,21 +184,21 @@ public:
     DataType GetData(std::size_t i) const override
     {
         // TODO Get and Set data in the sequential manner can be expensive if the underlying FESPace uses set to store the basis functions. It is suggested to implement the iterator for get and set the values.
-        return (*mpFESpace)[i]->GetValue(mrVariable);
+        return (*mpFESpace)[i]->GetData(mrVariable);
     }
 
     // overload operator []
     DataType& operator[] (std::size_t i) override
     {
         // TODO see comment in GetData
-        return (*mpFESpace)[i]->GetValue(mrVariable);
+        return (*mpFESpace)[i]->GetData(mrVariable);
     }
 
     // overload operator []
     const DataType& operator[] (std::size_t i) const override
     {
         // TODO see comment in GetData
-        return (*mpFESpace)[i]->GetValue(mrVariable);
+        return (*mpFESpace)[i]->GetData(mrVariable);
     }
 
     /// Information

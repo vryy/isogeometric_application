@@ -154,7 +154,7 @@ Patch<2>::Pointer TSplinesPatchTSMImporter::ImportSingle(const std::string& file
         z = ptpoint->getZ();
         w = ptpoint->getW();
         ControlPointType c(w * x, w * y, w * z, w);
-        pnew_bf->SetValue(CONTROL_POINT, c);
+        pnew_bf->SetData(CONTROL_POINT, c);
     }
 
     /** create faces **/

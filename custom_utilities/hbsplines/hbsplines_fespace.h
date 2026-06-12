@@ -84,6 +84,26 @@ public:
 #endif
     }
 
+    /// Helper function to cast to HBSplinesFESpace pointer
+    static typename ThisType::Pointer Cast(typename FESpaceType::Pointer pFESpace)
+    {
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+        return std::dynamic_pointer_cast<ThisType>(pFESpace);
+#else
+        return boost::dynamic_pointer_cast<ThisType>(pFESpace);
+#endif
+    }
+
+    /// Helper function to cast to HBSplinesFESpace pointer
+    static typename ThisType::ConstPointer Cast(typename FESpaceType::ConstPointer pFESpace)
+    {
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+        return std::dynamic_pointer_cast<const ThisType>(pFESpace);
+#else
+        return boost::dynamic_pointer_cast<const ThisType>(pFESpace);
+#endif
+    }
+
     /// Helper to create new HBSplinesFESpace pointer
     static typename ThisType::Pointer Create()
     {

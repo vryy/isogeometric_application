@@ -111,6 +111,16 @@ public:
 #endif
     }
 
+    /// Helper function to cast to BSplinesFESpace pointer
+    static typename ThisType::ConstPointer Cast(typename BaseType::ConstPointer pFESpace)
+    {
+#ifdef SD_APP_FORWARD_COMPATIBILITY
+        return std::dynamic_pointer_cast<const ThisType>(pFESpace);
+#else
+        return boost::dynamic_pointer_cast<const ThisType>(pFESpace);
+#endif
+    }
+
     /// Helper to create new BSplinesFESpace pointer
     static typename ThisType::Pointer Create()
     {

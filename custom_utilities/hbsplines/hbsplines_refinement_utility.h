@@ -515,7 +515,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
                 for (std::size_t i = 0; i < array_1d_variables.size(); ++i)
                 {
-                    if (*(array_1d_variables[i]) == CONTROL_POINT_COORDINATES) { continue; }
                     if (echo_refinement_detail)
                     {
                         std::cout << "Transfer array_1d variable " << array_1d_variables[i]->Name();

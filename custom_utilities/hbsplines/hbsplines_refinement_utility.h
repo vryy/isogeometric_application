@@ -229,9 +229,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                   << " will be refined" << std::endl;
     }
 
-    // save the equation_id
-    std::size_t equation_id = p_bf->EquationId();
-
     // extract the hierarchical B-Splines space
     typename HBSplinesFESpace<TDim>::Pointer pFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pPatch->pFESpace());
     if (pFESpace == nullptr)
@@ -241,6 +238,72 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     std::vector<Variable<double>*> double_variables = pPatch->template ExtractVariables<Variable<double> >();
     std::vector<Variable<array_1d<double, 3> >*> array_1d_variables = pPatch->template ExtractVariables<Variable<array_1d<double, 3> > >();
     std::vector<Variable<Vector>*> vector_variables = pPatch->template ExtractVariables<Variable<Vector> >();
+
+    // obtain the neighbour basis function
+    if (echo_refinement)
+    {
+        std::cout << "Patch " << pPatch->Id() << " number of interfaces: " << pPatch->NumberOfInterfaces() << std::endl;
+    }
+
+    bf_t p_neighbor_bf = nullptr;
+    typename Patch<TDim>::Pointer pNeighborPatch = nullptr;
+    bool found = false;
+    for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
+    {
+        typename PatchInterface<TDim>::Pointer pInterface = pPatch->pInterface(i);
+        auto side1 = pInterface->Side1();
+
+        pNeighborPatch = pInterface->pPatch2();
+        auto side2 = pInterface->Side2();
+
+        if (std::find(refined_patches.begin(), refined_patches.end(), pNeighborPatch->Id()) != refined_patches.end())
+            // the neighbour patch has been refined, skip
+            continue;
+
+        // extract the hierarchical B-Splines space
+        typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
+        if (pNeighborFESpace == nullptr)
+            KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
+
+        // /// METHOD 1 - look for neighbour basis function by Equation Id, required the patch to be fully enumerated
+        // for (auto it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
+        // {
+        //     if (it->EquationId() == p_bf->EquationId())
+        //     {
+        //         p_neighbor_bf = *it.base();
+        //         found = true;
+        //         break;
+        //     }
+        // }
+
+        /// METHOD 2 - look for neighbour basis function by the ordering on boundary
+        auto boundary_bfs = pFESpace->ExtractBoundaryBfsByFlag(BOUNDARY_FLAG(side1));
+        auto neighbour_boundary_bfs = pNeighborFESpace->ExtractBoundaryBfsByFlag(BOUNDARY_FLAG(side2));
+
+        if (boundary_bfs.size() != neighbour_boundary_bfs.size())
+        {
+            KRATOS_WATCH(side1)
+            KRATOS_WATCH(side2)
+            KRATOS_WATCH(boundary_bfs.size())
+            KRATOS_WATCH(neighbour_boundary_bfs.size())
+            KRATOS_ERROR << "The number of basis function on the boundary are not compatible";
+        }
+
+        auto it1 = boundary_bfs.begin();
+        auto it2 = neighbour_boundary_bfs.begin();
+        for (; it1 != boundary_bfs.end(); ++it1, ++it2)
+        {
+            if (*it1 == p_bf)
+            {
+                p_neighbor_bf = *it2;
+                found = true;
+                break;
+            }
+        }
+
+        if (found)
+            break;
+    }
 
     // prepare the FESspace for the next level
     unsigned int next_level = p_bf->Level() + 1;
@@ -853,49 +916,20 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
     }
 
     // refine also the neighbor patches
-    if (echo_refinement)
+    if (p_neighbor_bf != nullptr)
     {
-        std::cout << "Patch " << pPatch->Id() << " number of interfaces: " << pPatch->NumberOfInterfaces() << std::endl;
-    }
-
-    for (std::size_t i = 0; i < pPatch->NumberOfInterfaces(); ++i)
-    {
-        typename PatchInterface<TDim>::Pointer pInterface = pPatch->pInterface(i);
-
-        typename Patch<TDim>::Pointer pNeighborPatch = pInterface->pPatch2();
-
-        // extract the hierarchical B-Splines space
-        typename HBSplinesFESpace<TDim>::Pointer pNeighborFESpace = iga::dynamic_pointer_cast<HBSplinesFESpace<TDim> >(pNeighborPatch->pFESpace());
-        if (pNeighborFESpace == nullptr)
-            KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
-
-        // get the correct basis function
-        bf_t p_neighbor_bf;
-        bool found = false;
-        for (auto it = pNeighborFESpace->bf_begin(); it != pNeighborFESpace->bf_end(); ++it)
+        if (echo_refinement)
         {
-            if (it->EquationId() == equation_id)
-            {
-                p_neighbor_bf = *it.base();
-                found = true;
-            }
+            std::cout << "######################################" << std::endl;
+            std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
         }
 
-        if (found)
+        Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
+
+        if (echo_refinement)
         {
-            if (echo_refinement)
-            {
-                std::cout << "######################################" << std::endl;
-                std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " will be refined" << std::endl;
-            }
-
-            Refine(pNeighborPatch, p_neighbor_bf, refined_patches, echo_level);
-
-            if (echo_refinement)
-            {
-                std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " is refined" << std::endl;
-                std::cout << "######################################" << std::endl;
-            }
+            std::cout << "Neighbor patch " << pNeighborPatch->Id() << " of patch " << pPatch->Id() << " is refined" << std::endl;
+            std::cout << "######################################" << std::endl;
         }
     }
 

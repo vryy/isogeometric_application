@@ -299,25 +299,27 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             p_bf->SetData(CONTROL_POINT, c);
 
             // transfer other data
+            // here we multiplies with the control weight because the point-based B-Splines
+            // basis function only carries weighted data due to its refinable nature
             for (std::size_t i = 0; i < double_var_list.size(); ++i)
             {
                 GridFunction<2, double, double>::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<double> >(*double_var_list[i]);
                 double v = pGridFunction->pControlGrid()->GetData(i_func);
-                p_bf->SetData(*double_var_list[i], v);
+                p_bf->SetData(*double_var_list[i], v * c.W());
             }
 
             for (std::size_t i = 0; i < array1d_var_list.size(); ++i)
             {
                 GridFunction<2, double, array_1d<double, 3> >::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<array_1d<double, 3> > >(*array1d_var_list[i]);
                 const array_1d<double, 3>& v = pGridFunction->pControlGrid()->GetData(i_func);
-                p_bf->SetData(*array1d_var_list[i], v);
+                p_bf->SetData(*array1d_var_list[i], v * c.W());
             }
 
             for (std::size_t i = 0; i < vector_var_list.size(); ++i)
             {
                 GridFunction<2, double, Vector>::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<Vector> >(*vector_var_list[i]);
                 const Vector& v = pGridFunction->pControlGrid()->GetData(i_func);
-                p_bf->SetData(*vector_var_list[i], v);
+                p_bf->SetData(*vector_var_list[i], v * c.W());
             }
         }
     }
@@ -325,6 +327,8 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
     Patch<2>::Pointer pNewPatch = Patch<2>::Create(pPatch->Id(), pNewFESpace);
 
     // set control points grid function
+    // here and below we use the point-based control grid to strip out the weight
+    // when accessing data
     typename ControlGrid<ControlPointType>::Pointer pControlPointGrid
         = ControlGridUtility::CreatePointBasedControlGrid<ControlPointType, HBSplinesFESpace<2> >(CONTROL_POINT, pNewFESpace);
     pNewPatch->CreateControlPointGridFunction(pControlPointGrid);
@@ -467,18 +471,48 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
                         }
                     }
                 }
+
+                // transfer the control point
+                ControlPointType c = pPatch->pControlPointGridFunction()->pControlGrid()->GetData(i_func);
+                p_bf->SetData(CONTROL_POINT, c);
+
+                // transfer other data
+                // here we multiplies with the control weight because the point-based B-Splines
+                // basis function only carries weighted data due to its refinable nature
+                for (std::size_t i = 0; i < double_var_list.size(); ++i)
+                {
+                    GridFunction<3, double, double>::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<double> >(*double_var_list[i]);
+                    double v = pGridFunction->pControlGrid()->GetData(i_func);
+                    p_bf->SetData(*double_var_list[i], v * c.W());
+                }
+
+                for (std::size_t i = 0; i < array1d_var_list.size(); ++i)
+                {
+                    GridFunction<3, double, array_1d<double, 3> >::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<array_1d<double, 3> > >(*array1d_var_list[i]);
+                    const array_1d<double, 3>& v = pGridFunction->pControlGrid()->GetData(i_func);
+                    p_bf->SetData(*array1d_var_list[i], v * c.W());
+                }
+
+                for (std::size_t i = 0; i < vector_var_list.size(); ++i)
+                {
+                    GridFunction<3, double, Vector>::Pointer pGridFunction = pPatch->pGetGridFunction<Variable<Vector> >(*vector_var_list[i]);
+                    const Vector& v = pGridFunction->pControlGrid()->GetData(i_func);
+                    p_bf->SetData(*vector_var_list[i], v * c.W());
+                }
             }
         }
     }
 
     typename Patch<3>::Pointer pNewPatch = Patch<3>::Create(pPatch->Id(), pNewFESpace);
 
-    // set control points grid
+    // set control points grid function
+    // here and below we use the point-based control grid to strip out the weight
+    // when accessing data
     typename ControlGrid<ControlPointType>::Pointer pControlPointGrid
         = ControlGridUtility::CreatePointBasedControlGrid<ControlPointType, HBSplinesFESpace<3> >(CONTROL_POINT, pNewFESpace);
     pNewPatch->CreateControlPointGridFunction(pControlPointGrid);
 
-    // set other control grid
+    // set other control grid function
     for (std::size_t i = 0; i < double_var_list.size(); ++i)
     {
         typename ControlGrid<double>::Pointer pControlGrid

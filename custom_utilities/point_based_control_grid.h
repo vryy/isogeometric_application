@@ -107,10 +107,24 @@ public:
         return (*mpFESpace)[i]->GetData(mrVariable);
     }
 
+    /// Get the type of the control grid
+    std::string Type() const override
+    {
+        return StaticType() + "_" + mpFESpace->Type();
+    }
+
+    /// Get the static type of the control grid
+    static std::string StaticType()
+    {
+        return "PointBasedControlGrid";
+    }
+
     /// Information
     void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream << "Point-Based Control Grid " << BaseType::Name() << "[" << Size() << "]";
+        rOStream << "Point-Based Control Grid " << BaseType::Name()
+                 << " (Variable: " << mrVariable.Name() << ")"
+                 << "[" << Size() << "]";
     }
 
     void PrintData(std::ostream& rOStream) const override
@@ -201,10 +215,24 @@ public:
         return (*mpFESpace)[i]->GetData(mrVariable);
     }
 
+    /// Get the type of the control grid
+    std::string Type() const override
+    {
+        return StaticType() + "_" + mpFESpace->Type();
+    }
+
+    /// Get the static type of the control grid
+    static std::string StaticType()
+    {
+        return "PointBasedControlGrid";
+    }
+
     /// Information
     void PrintInfo(std::ostream& rOStream) const override
     {
-        rOStream << "Point-Based Control Grid " << BaseType::Name() << "[" << Size() << "]";
+        rOStream << "Point-Based Control Grid " << BaseType::Name()
+                 << " (Variable: " << mrVariable.Name() << ")"
+                 << "[" << Size() << "]";
     }
 
     void PrintData(std::ostream& rOStream) const override

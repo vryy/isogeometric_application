@@ -1003,9 +1003,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
             std::vector<double> bounding_box = it_bf->GetBoundingBox();
 
             // check if the bf support domain contained in the refined domain managed by the domain manager
-            bool is_inside = p_domain->IsInside(bounding_box);
-
-            if (is_inside)
+            if (p_domain->IsInside(bounding_box))
             {
                 refined_bfs.push_back(it_bf->Id());
             }

@@ -409,17 +409,17 @@ public:
                         {
                             if constexpr (TDim == 1)
                             {
-                                std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue()};
+                                std::vector<TLocalCoordinateType> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue()};
                                 p_domain->AddCell(box);
                             }
                             else if constexpr (TDim == 2)
                             {
-                                std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue()};
+                                std::vector<TLocalCoordinateType> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue()};
                                 p_domain->AddCell(box);
                             }
                             else if constexpr (TDim == 3)
                             {
-                                std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue(), (*it_cell)->ZetaMinValue(), (*it_cell)->ZetaMaxValue()};
+                                std::vector<TLocalCoordinateType> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue(), (*it_cell)->ZetaMinValue(), (*it_cell)->ZetaMaxValue()};
                                 p_domain->AddCell(box);
                             }
                         }

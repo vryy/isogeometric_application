@@ -306,10 +306,11 @@ public:
 
         // create additional grid for control point coordinates, in order to compute the derivatives
         typedef typename ControlPointType::CoordinatesType CoordinatesType;
+        typedef GridFunction<TDim, TLocalCoordinateType, CoordinatesType> CoordinatesGridFunctionType;
         typename ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
         pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
         typename FESpaceType::Pointer pNewFESpace = WeightedFESpaceType::Create(mpFESpace, this->GetControlWeights());
-        typename GridFunction<TDim, TLocalCoordinateType, CoordinatesType>::Pointer pNewCoordinatesGridFunc = GridFunction<TDim, TLocalCoordinateType, CoordinatesType>::Create(pNewFESpace, pControlPointCoordinatesGrid);
+        typename CoordinatesGridFunctionType::Pointer pNewCoordinatesGridFunc = CoordinatesGridFunctionType::Create(pNewFESpace, pControlPointCoordinatesGrid);
         mpGridFunctions["CONTROL_POINT_COORDINATES"] = pNewCoordinatesGridFunc;
 
         return pNewGridFunc;

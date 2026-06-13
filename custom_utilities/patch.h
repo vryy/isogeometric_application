@@ -35,10 +35,12 @@
 #include "custom_utilities/weighted_fespace.h"
 #include "custom_utilities/control_grid_utility.h"
 #include "custom_utilities/fespace_utility.h"
+#include "custom_utilities/proxy_control_grid.h"
 #include "isogeometric_application_variables.h"
 
 #define CONVERT_INDEX_IGA_TO_KRATOS(n) (n+1)
 #define CONVERT_INDEX_KRATOS_TO_IGA(n) (n-1)
+#define USE_PROXY_CONTROL_GRID // tells the patch to contruct the control point coordinates grid using proxy, instead of copying
 
 namespace Kratos
 {
@@ -307,7 +309,13 @@ public:
         // create additional grid for control point coordinates, in order to compute the derivatives
         typedef typename ControlPointType::CoordinatesType CoordinatesType;
         typedef GridFunction<TDim, TLocalCoordinateType, CoordinatesType> CoordinatesGridFunctionType;
+        #ifndef USE_PROXY_CONTROL_GRID
+        // create a dedicated control grid for control point coordinates (need copying data)
         typename ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ControlGridUtility::CreateControlPointValueGrid<ControlPointType>(pControlPointGrid);
+        #else
+        // use the proxy control grid to extract control point coordinates instead of creating a copy
+        typename ControlGrid<CoordinatesType>::Pointer pControlPointCoordinatesGrid = ProxyControlGrid<ControlPointType>::Create(pControlPointGrid);
+        #endif
         pControlPointCoordinatesGrid->SetName("CONTROL_POINT_COORDINATES");
         typename FESpaceType::Pointer pNewFESpace = WeightedFESpaceType::Create(mpFESpace, this->GetControlWeights());
         typename CoordinatesGridFunctionType::Pointer pNewCoordinatesGridFunc = CoordinatesGridFunctionType::Create(pNewFESpace, pControlPointCoordinatesGrid);
@@ -1656,5 +1664,7 @@ inline std::ostream& operator <<(std::ostream& rOStream,
 }
 
 } // namespace Kratos.
+
+#undef USE_PROXY_CONTROL_GRID
 
 #endif // KRATOS_ISOGEOMETRIC_APPLICATION_PATCH_H_INCLUDED defined

@@ -70,12 +70,6 @@ public:
         return mpFESpace->TotalNumber();
     }
 
-    /// Get the size of underlying data
-    std::size_t size() const override
-    {
-        return mpFESpace->TotalNumber();
-    }
-
     /// Get the data at specific point
     /// It is noted that the return value is unweighted one
     DataType GetData(std::size_t i) const override
@@ -188,12 +182,6 @@ public:
         return mpFESpace->TotalNumber();
     }
 
-    /// Get the size of underlying data
-    std::size_t size() const override
-    {
-        return mpFESpace->TotalNumber();
-    }
-
     /// Get the data at specific point
     DataType GetData(std::size_t i) const override
     {
@@ -267,16 +255,6 @@ private:
     }
     ///@}
 };
-
-/// output stream function
-template<class TVariableType, class TFESpaceType>
-inline std::ostream& operator <<(std::ostream& rOStream, const PointBasedControlGrid<TVariableType, TFESpaceType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
 
 } // namespace Kratos.
 

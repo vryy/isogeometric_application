@@ -191,6 +191,7 @@ public:
         typedef ControlGrid<typename TControlValueType::DataType> ControlPointValueGridType;
         typename ControlPointValueGridType::Pointer pControlPointValueGrid;
 
+        // create the instance of new control grid
         if (typeid(*pControlPointGrid) == typeid(StructuredControlGrid<1, TControlValueType>))
         {
             typename StructuredControlGrid<1, TControlValueType>::ConstPointer pStructuredControlPointGrid =
@@ -221,6 +222,7 @@ public:
         else
             pControlPointValueGrid = typename ControlPointValueGridType::Pointer(new UnstructuredControlGrid<typename TControlValueType::DataType>(pControlPointGrid->size()));
 
+        // copying data
         for (std::size_t i = 0; i < pControlPointGrid->size(); ++i)
         {
             pControlPointValueGrid->SetData(i, pControlPointGrid->GetData(i).V());

@@ -57,17 +57,14 @@ public:
     /// Clone this grid function
     typename BaseType::Pointer Clone() const override
     {
-        UnstructuredControlGrid::Pointer pNewControlGrid = Create(size());
-        for (std::size_t i = 0; i < size(); ++i)
+        UnstructuredControlGrid::Pointer pNewControlGrid = Create(this->Size());
+        for (std::size_t i = 0; i < this->Size(); ++i)
             pNewControlGrid->SetData(i, GetData(i));
         return pNewControlGrid;
     }
 
     /// Get the size of underlying data
     std::size_t Size() const override {return mData.size();}
-
-    /// Get the size of underlying data
-    std::size_t size() const override {return mData.size();}
 
     /// Resize the underlying container
     void resize(std::size_t new_size) {mData.resize(new_size);}
@@ -139,16 +136,6 @@ private:
     }
     ///@}
 };
-
-/// output stream function
-template<typename TDataType>
-inline std::ostream& operator <<(std::ostream& rOStream, const UnstructuredControlGrid<TDataType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
 
 } // namespace Kratos.
 

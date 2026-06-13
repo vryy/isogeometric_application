@@ -57,9 +57,6 @@ public:
     /// Get the size of underlying data
     std::size_t Size() const override {return mData.size();}
 
-    /// Get the size of underlying data
-    std::size_t size() const override {return mData.size();}
-
     /// Get the data at specific point
     TDataType GetData(std::size_t i) const override {return mData[i];}
 
@@ -1342,16 +1339,6 @@ private:
     }
     ///@}
 };
-
-/// output stream function
-template<int TDim, typename TDataType>
-inline std::ostream& operator <<(std::ostream& rOStream, const StructuredControlGrid<TDim, TDataType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
 
 } // namespace Kratos.
 

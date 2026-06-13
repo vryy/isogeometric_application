@@ -81,7 +81,7 @@ public:
     }
 
     /// Get the size of underlying data
-    virtual std::size_t size() const
+    std::size_t size() const
     {
         return this->Size();
     }

@@ -26,8 +26,6 @@ see isogeometric_application/LICENSE.txt
 #include "custom_geometries/isogeometric_geometry.h"
 #include "integration/quadrature.h"
 #include "custom_utilities/bspline_utils.h"
-//#include "integration/quadrature.h"
-//#include "integration/line_gauss_legendre_integration_points.h"
 
 //#define DEBUG_LEVEL1
 //#define DEBUG_LEVEL2
@@ -46,8 +44,10 @@ class Geo3dBezier : public IsogeometricGeometry<TPointType>
 {
 public:
 
+    ///@name Type Definitions
+    ///@{
+
     /**
-     * Type Definitions
      */
 
     /**
@@ -201,9 +201,9 @@ public:
      */
     typedef typename BaseType::NormalType ValuesContainerType;
 
-    /**
-     * Life Cycle
-     */
+    ///@}
+    ///@name Life Cycle
+    ///@{
 
     Geo3dBezier()
         : BaseType( PointsArrayType() ), mpBezierGeometryData(NULL)
@@ -270,9 +270,9 @@ public:
     ~Geo3dBezier() override
     {}
 
-    /**
-     * Operators
-     */
+    ///@}
+    ///@name Operators
+    ///@{
 
     /**
      * Assignment operator.
@@ -328,9 +328,9 @@ public:
         return *this;
     }
 
-    /**
-     * Operations
-     */
+    ///@}
+    ///@name Operations
+    ///@{
 
     typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
@@ -363,10 +363,6 @@ public:
 
 //        KRATOS_ERROR << "NURBS geometry does not support for Clone";
 //    }
-
-    /**
-     * Informations
-     */
 
     GeometryData::KratosGeometryType GetGeometryType() const override
     {
@@ -1336,9 +1332,11 @@ public:
         return false;
     }
 
-    /**
-     * Input and output
-     */
+
+    ///@}
+    ///@name Information
+    ///@{
+
     /**
      * Turn back information as a string.
      *
@@ -1380,6 +1378,8 @@ public:
         rOStream << "    Extraction Operator: " << mExtractionOperator << std::endl;
         BaseType::PrintData( rOStream );
     }
+
+    ///@}
 
     void AssignGeometryData(
         const ValuesContainerType& Knots1, //not used
@@ -1465,10 +1465,6 @@ public:
 
 protected:
 
-    /**
-     * there are no protected class members
-     */
-
     GeometryData::Pointer mpBezierGeometryData;
 #ifdef ENABLE_PRECOMPUTE
     GeometryData::Pointer mpGeometryData;
@@ -1493,7 +1489,6 @@ private:
      */
 //    static const GeometryData msGeometryData; // see COMMENTS below
 
-    ///@}
     ///@name Serialization
     ///@{
 
@@ -1509,9 +1504,7 @@ private:
         KRATOS_SERIALIZE_LOAD_BASE_CLASS( rSerializer, BaseType );
     }
 
-    /**
-     * Private Operations
-     */
+    ///@}
 
     /**
      * Calculate shape function values and local gradient at a particular point
@@ -1677,40 +1670,9 @@ private:
         }
     }
 
-    /**
-     * Private Friends
-     */
-
     template<class TOtherPointType> friend class Geo3dBezier;
 
-    /**
-     * Un accessible methods
-     */
-
-};    // Class Geo3dBezier
-
-/**
- * Input and output
- */
-
-/**
- * input stream function
- */
-template<class TPointType> inline std::istream& operator >>(
-    std::istream& rIStream, Geo3dBezier<TPointType>& rThis);
-
-/**
- * output stream function
- */
-template<class TPointType> inline std::ostream& operator <<(
-    std::ostream& rOStream, const Geo3dBezier<TPointType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-
-    return rOStream;
-}
+}; // Class Geo3dBezier
 
 }    // namespace Kratos.
 

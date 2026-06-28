@@ -25,6 +25,8 @@ see isogeometric_application/LICENSE.txt
 #include "geometries/geometry_data.h"
 #include "custom_geometries/isogeometric_geometry.h"
 #include "integration/quadrature.h"
+#include "custom_geometries/geo_1d_bezier_3.h"
+#include "custom_geometries/geo_2d_bezier_3.h"
 #include "custom_utilities/bspline_utils.h"
 
 //#define DEBUG_LEVEL1
@@ -48,7 +50,10 @@ public:
     ///@{
 
     /**
+     * Type of edge and face geometries
      */
+    typedef Geo1dBezier3<TPointType> EdgeType;
+    typedef Geo2dBezier3<TPointType> FaceType;
 
     /**
      * Pointer definition of Geo3dBezier
@@ -1332,6 +1337,54 @@ public:
         return false;
     }
 
+    SizeType FacesNumber() const override
+    {
+        return 6;
+    }
+
+    GeometriesArrayType Faces() const override
+    {
+        typedef typename Geometry<TPointType>::Pointer FacePointerType;
+
+        GeometriesArrayType faces = GeometriesArrayType();
+
+        PointsArrayType left_points, right_points;
+        PointsArrayType top_points, bottom_points;
+        PointsArrayType front_points, back_points;
+
+        for (IndexType i = 0; i < mNumber1; ++i)
+        {
+            for (IndexType j = 0; j < mNumber2; ++j)
+            {
+                for (IndexType k = 0; k < mNumber3; ++k)
+                {
+                    IndexType index = k + (j + i * mNumber2) * mNumber3;
+
+                    if (i == 0)
+                        left_points.push_back( this->GetPoint(index) );
+                    else if (i == mNumber1 - 1)
+                        right_points.push_back( this->GetPoint(index) );
+                    else if (j == 0)
+                        bottom_points.push_back( this->GetPoint(index) );
+                    else if (j == mNumber2 - 1)
+                        top_points.push_back( this->GetPoint(index) );
+                    else if (k == 0)
+                        front_points.push_back( this->GetPoint(index) );
+                    else if (k == mNumber3 - 1)
+                        back_points.push_back( this->GetPoint(index) );
+                }
+            }
+        }
+
+        faces.push_back( FacePointerType( new FaceType( left_points ) ) );
+        faces.push_back( FacePointerType( new FaceType( right_points ) ) );
+        faces.push_back( FacePointerType( new FaceType( bottom_points ) ) );
+        faces.push_back( FacePointerType( new FaceType( top_points ) ) );
+        faces.push_back( FacePointerType( new FaceType( front_points ) ) );
+        faces.push_back( FacePointerType( new FaceType( back_points ) ) );
+
+        return faces;
+    }
 
     ///@}
     ///@name Information

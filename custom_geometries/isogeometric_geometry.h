@@ -121,7 +121,7 @@ public:
     /** A Vector of counted pointers to Geometries. Used for
     returning edges of the geometry.
      */
-    typedef PointerVector<IsogeometricGeometryType> GeometriesArrayType;
+    typedef PointerVector<GeometryType> GeometriesArrayType;
 
     /** Redefinition of geometry template parameter TPointType as this geometry point type.
      */

@@ -73,11 +73,11 @@ std::size_t HBSplinesBasisFunction_GetLevel(HBSplinesBasisFunction<TDim>& rDummy
 // }
 
 template<int TDim>
-boost::python::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<TDim>& rDummy, std::size_t boundary_id)
+boost::python::list HBSplinesFESpace_ExtractBoundaryBfsByFlag(HBSplinesFESpace<TDim>& rDummy, std::size_t boundary_flag)
 {
     typedef typename HBSplinesFESpace<TDim>::bf_t bf_t;
 
-    auto bf_set = rDummy.ExtractBoundaryBfsByFlag(boundary_id);
+    auto bf_set = rDummy.ExtractBoundaryBfsByFlag(boundary_flag);
 
     boost::python::list Output;
     for (auto it = bf_set.begin(); it != bf_set.end(); ++it)

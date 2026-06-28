@@ -361,16 +361,6 @@ protected:
     ///@}
 };
 
-/// output stream function
-template<int TDim, typename TCellType>
-inline std::ostream& operator <<(std::ostream& rOStream, const PBBSplinesBasisFunction<TDim, TCellType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
-
 } // namespace Kratos.
 
 #include "pbbsplines_basis_function.hpp"

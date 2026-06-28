@@ -133,7 +133,7 @@ public:
         return p_bf;
     }
 
-    /// EtaMaxdate the basis functions for all cells. This function must be called before any operation on cell is required.
+    /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
     virtual void UpdateCells()
     {
         this->ResetCells();
@@ -256,13 +256,13 @@ public:
     }
 
     /// Get the basis functions based on boundary flag. This allows to extract the corner bf.
-    std::set<bf_t, bf_compare> ExtractBoundaryBfsByFlag(std::size_t boundary_id) const
+    std::set<bf_t, bf_compare> ExtractBoundaryBfsByFlag(std::size_t boundary_flag) const
     {
         std::set<bf_t, bf_compare> bf_set;
 
         for (bf_const_iterator it_bf = this->bf_begin(); it_bf != this->bf_end(); ++it_bf)
         {
-            if (it_bf->IsOnSide(boundary_id))
+            if (it_bf->IsOnSide(boundary_flag))
             {
                 bf_set.insert(*it_bf.base());
             }
@@ -272,9 +272,9 @@ public:
     }
 
     /// Extract the index of the functions on the boundaries
-    std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(int boundary_id) const override
+    std::vector<std::size_t> ExtractBoundaryFunctionIndicesByFlag(int boundary_flag) const override
     {
-        std::set<bf_t, bf_compare> bfs = this->ExtractBoundaryBfsByFlag(boundary_id);
+        std::set<bf_t, bf_compare> bfs = this->ExtractBoundaryBfsByFlag(boundary_flag);
 
         std::vector<std::size_t> func_indices;
         for (auto it = bfs.begin(); it != bfs.end(); ++it)
@@ -683,10 +683,12 @@ public:
             rOStream << "###############Begin cells at level " << level << "################" << std::endl;
             std::size_t n = 0;
             for (typename cell_container_t::iterator it = BaseType::mpCellManager->begin(); it != BaseType::mpCellManager->end(); ++it)
+            {
                 if ((*it)->Level() == level)
                 {
                     rOStream << "(" << ++n << ") " << *(*it) << std::endl;
                 }
+            }
             rOStream << "###############End cells at level " << level << "################" << std::endl;
         }
     }
@@ -734,10 +736,10 @@ public:
     /// Destructor
     ~HBSplinesFESpace() override {}
 
-    /// Get the order of the BSplines patch in specific direction
+    /// Get the order of the HBSplines patch in specific direction
     std::size_t Order(std::size_t i) const override {return 0;}
 
-    /// Get the number of basis functions defined over the BSplines HBSplinesFESpace
+    /// Get the number of basis functions defined over the HBSplinesFESpace
     std::size_t TotalNumber() const override {return 0;}
 
     /// Get the string describing the type of the patch
@@ -758,7 +760,7 @@ public:
         return BaseType::Validate();
     }
 
-    /// Compare between two BSplines patches in terms of parametric information
+    /// Compare between two HBSplines patches in terms of parametric information
     bool IsCompatible(const BaseType& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() != Type())

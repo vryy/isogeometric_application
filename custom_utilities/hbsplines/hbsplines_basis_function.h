@@ -309,6 +309,8 @@ public:
             rOStream << " " << this->Order(dim);
         rOStream << ")";
 
+        rOStream<< ", lvl = " << this->Level();
+
         rOStream<< ", pos = (";
         for (int dim = 0; dim < TDim; ++dim)
             rOStream << " " << this->Position()[dim];
@@ -443,16 +445,6 @@ private:
     bf_container_t mpChilds; // list of refined basis functions that constitute this basis function
     cell_container_t mpCells; // list of cells support this basis function at the level of this basis function
 };
-
-/// output stream function
-template<int TDim>
-inline std::ostream& operator <<(std::ostream& rOStream, const HBSplinesBasisFunction<TDim>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rOStream << std::endl;
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
 
 } // namespace Kratos.
 

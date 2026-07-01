@@ -175,9 +175,9 @@ public:
             return std::vector<double> {Xmin, Xmax, Ymin, Ymax, Zmin, Zmax};
     }
 
-    /// check if this bf contain this local knot vectors. Two bfs are the same if they have exactly the same local knot vector. The order of the basis function is implied.
-    // TODO change function name
-    bool Contain(const std::vector<std::vector<knot_t> >& rpKnots) const
+    /// check if this bf contain this local knot vectors. Two bfs are the same if they have exactly the same local knot vector.
+    /// The order of the basis function is implied.
+    bool CompareLocalKnots(const std::vector<std::vector<knot_t> >& rpKnots) const
     {
         for (int dim = 0; dim < TDim; ++dim)
         {
@@ -187,10 +187,35 @@ public:
             }
 
             for (std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
+            {
                 if (mpLocalKnots[dim][i] != rpKnots[dim][i])
                 {
                     return false;
                 }
+            }
+        }
+
+        return true;
+    }
+
+    /// check if this bf contain this local knot vectors. Two bfs are the same if they have exactly the same local knot vector.
+    /// The order of the basis function is implied.
+    bool CompareLocalKnots(const std::vector<std::vector<knot_t> >& rpKnots, double Tol) const
+    {
+        for (int dim = 0; dim < TDim; ++dim)
+        {
+            if (mpLocalKnots[dim].size() != rpKnots[dim].size())
+            {
+                return false;
+            }
+
+            for (std::size_t i = 0; i < mpLocalKnots[dim].size(); ++i)
+            {
+                if (std::abs(mpLocalKnots[dim][i]->Value() - rpKnots[dim][i]->Value()) > Tol)
+                {
+                    return false;
+                }
+            }
         }
 
         return true;

@@ -87,10 +87,12 @@ public:
     {
         // search in the current list of basis functions, the one that has the same local knot vector with provided ones
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
-            if (it->Contain(rpKnots))
+        {
+            if (it->CompareLocalKnots(rpKnots))
             {
                 return *it.base();
             }
+        }
 
         // create the new bf and add the knot
         bf_t p_bf = bf_t(new BasisFunctionType(Id));

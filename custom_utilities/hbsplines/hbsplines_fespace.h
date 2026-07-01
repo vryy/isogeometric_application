@@ -114,12 +114,16 @@ public:
     /// The Id is only used when the new bf is created. User must always check the Id of the returned function.
     bf_t CreateBf(std::size_t Id, std::size_t Level, const std::vector<std::vector<knot_t> >& rpKnots)
     {
+        double Tol = this->KnotVector(0).GetResolution();
+
         // search in the current list of basis functions, the one that has the same local knot vector with provided ones
         for (bf_iterator it = BaseType::bf_begin(); it != BaseType::bf_end(); ++it)
-            if (it->Contain(rpKnots))
+        {
+            if (it->CompareLocalKnots(rpKnots, Tol))
             {
                 return *it.base();
             }
+        }
 
         // create the new bf and add the knot
         bf_t p_bf = bf_t(new BasisFunctionType(Id, Level));

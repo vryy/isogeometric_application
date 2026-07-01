@@ -259,6 +259,7 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
 
             std::size_t func_id = func_indices[i_func];
             auto p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
+            p_bf->SetPatchId(pPatch->Id());
             p_bf->SetEquationId(func_id);
             p_bf->template SetPosition<0>(i);
             p_bf->template SetPosition<1>(j);
@@ -427,6 +428,7 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
 
                 std::size_t func_id = func_indices[i_func];
                 typename HBSplinesBasisFunction<3>::Pointer p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
+                p_bf->SetPatchId(pPatch->Id());
                 p_bf->SetEquationId(func_id);
                 p_bf->template SetPosition<0>(i);
                 p_bf->template SetPosition<1>(j);

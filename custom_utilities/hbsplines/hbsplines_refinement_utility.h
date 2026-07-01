@@ -437,6 +437,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 // create the basis function object
                 std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
                 bf_t pnew_bf = pFESpace->CreateBf(last_id + 1, next_level, pLocalKnots);
+                pnew_bf->SetPatchId(pPatch->Id());
                 // find position of the local knot vector in the knot vector of next level
                 pnew_bf->template SetPosition<0>(pFESpace->KnotVector(next_level, 0).FindNumber(pLocalKnots1));
                 pnew_bf->template SetPosition<1>(pFESpace->KnotVector(next_level, 1).FindNumber(pLocalKnots2));
@@ -606,6 +607,7 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     // create the basis function object
                     std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2, pLocalKnots3};
                     bf_t pnew_bf = pFESpace->CreateBf(last_id + 1, next_level, pLocalKnots);
+                    pnew_bf->SetPatchId(pPatch->Id());
                     // find position of the local knot vector in the knot vector of next level
                     pnew_bf->template SetPosition<0>(pFESpace->KnotVector(next_level, 0).FindNumber(pLocalKnots1));
                     pnew_bf->template SetPosition<1>(pFESpace->KnotVector(next_level, 1).FindNumber(pLocalKnots2));

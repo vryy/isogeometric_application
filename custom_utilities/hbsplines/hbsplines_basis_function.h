@@ -271,11 +271,18 @@ public:
 
     inline bool operator==(const HBSplinesBasisFunction& rA) const
     {
-       return (this->Level() == rA.Level()) && (this->Position() == rA.Position());
+        return (this->PatchId() == rA.PatchId())
+            && (this->Level() == rA.Level())
+            && (this->Position() == rA.Position());
     }
 
     inline bool operator<(const HBSplinesBasisFunction& rA) const
     {
+        if (this->PatchId() != rA.PatchId())
+        {
+            return this->PatchId() < rA.PatchId();
+        }
+
         if (this->Level() != rA.Level())
         {
             return this->Level() < rA.Level();

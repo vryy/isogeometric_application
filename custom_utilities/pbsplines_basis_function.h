@@ -62,12 +62,12 @@ public:
 
     /// Empty constructor for serialization
     PBSplinesBasisFunction()
-        : IndexedObject(0), mEquationId(-1)
+        : IndexedObject(0), mEquationId(-1), mPatchId(-1)
     {}
 
     /// Constructor with Id
     PBSplinesBasisFunction(std::size_t Id)
-        : IndexedObject(Id), mEquationId(-1)
+        : IndexedObject(Id), mEquationId(-1), mPatchId(-1)
     {}
 
     /// Destructor
@@ -82,14 +82,22 @@ public:
                             MODIFICATION SUBROUTINES
     **************************************************************************/
 
+    /// Set the patch id containing this basis function
+    void SetPatchId(std::size_t patch_id)
+    {
+        mPatchId = patch_id;
+    }
+
     /// Add a cell support this basis function to the list
     cell_iterator AddCell(cell_t p_cell)
     {
         for (cell_iterator it = cell_begin(); it != cell_end(); ++it)
+        {
             if (*it == p_cell)
             {
                 return it;
             }
+        }
         return mpCells.insert(p_cell).first;
     }
 
@@ -122,6 +130,9 @@ public:
     /**************************************************************************
                             ACCESS SUBROUTINES
     **************************************************************************/
+
+    /// Get the patch Id containing this basis function.
+    std::size_t PatchId() const {return mPatchId;}
 
     /// Iterators to the supporting cell of this basis function
     cell_iterator cell_begin() {return mpCells.begin();}
@@ -282,6 +293,7 @@ public:
 
 protected:
 
+    std::size_t mPatchId;     // stores the patch id containing this basis function
     std::size_t mEquationId;  // stores the equation id of this basis function accross patches for the case of scalar PDE.
     cell_container_t mpCells; // list of cells support this basis function
 

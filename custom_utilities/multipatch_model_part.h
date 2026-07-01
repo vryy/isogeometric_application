@@ -183,6 +183,7 @@ public:
 
             typename NodeType::Pointer pNewNode = this->GetModelPart().CreateNewNode(CONVERT_INDEX_IGA_TO_KRATOS(idof) + mNodeOffset, point.X(), point.Y(), point.Z());
             pNewNode->SetValue(NURBS_WEIGHT, point.W());
+            pNewNode->SetValue(PATCH_INDEX, patch_id);
         }
 
         if (this->GetEchoLevel() > 0)
@@ -218,6 +219,7 @@ public:
 
         for (auto it = pNewElements.ptr_begin(); it != pNewElements.ptr_end(); ++it)
         {
+            (*it)->SetValue(PATCH_INDEX, pPatch->Id());
             this->GetModelPart().Elements().push_back(*it);
         }
 
@@ -260,6 +262,7 @@ public:
 
         for (auto it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
+            (*it)->SetValue(PATCH_INDEX, pPatch->Id());
             this->GetModelPart().Conditions().push_back(*it);
         }
 
@@ -318,6 +321,7 @@ public:
 
         for (auto it = pNewConditions.ptr_begin(); it != pNewConditions.ptr_end(); ++it)
         {
+            (*it)->SetValue(PATCH_INDEX, pBoundaryPatch->Id());
             this->GetModelPart().Conditions().push_back(*it);
         }
 

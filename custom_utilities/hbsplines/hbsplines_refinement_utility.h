@@ -955,7 +955,7 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch
     if (pFESpace == nullptr)
         KRATOS_ERROR << "The cast to HBSplinesFESpace is failed.";
 
-        std::cout << "window:";
+    std::cout << "window:";
     for (std::size_t i = 0; i < window.size(); ++i)
     {
         std::cout << " [";

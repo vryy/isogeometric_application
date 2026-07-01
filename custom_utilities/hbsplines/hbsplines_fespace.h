@@ -134,7 +134,7 @@ public:
     }
 
     /// Update the basis functions for all cells. This function must be called before any operation on cell is required.
-    virtual void UpdateCells()
+    void UpdateCells() override
     {
         this->ResetCells();
 

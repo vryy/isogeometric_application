@@ -670,7 +670,6 @@ private:
     typename ModelPartType::Pointer mpModelPart;
 #endif
     typename MultiPatchType::Pointer mpMultiPatch;
-
 };
 
 /// output stream function

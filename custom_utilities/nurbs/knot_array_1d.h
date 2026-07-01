@@ -153,7 +153,7 @@ public:
         return pCreateKnot(k);
     }
 
-    /// Get the knot of specific valur
+    /// Get the knot of specific value
     knot_t pGetKnot(const TDataType& k) const
     {
         // insert to the correct location
@@ -628,7 +628,7 @@ public:
     {
         for (auto it = rOther.mpKnots.begin(); it != rOther.mpKnots.end(); ++it)
         {
-            knot_t p_knot = (*it)->Clone();
+            knot_t p_knot = (*it)->Clone(); // be careful, this will create new knot in memory
             this->mpKnots.push_back(p_knot);
         }
         return *this;

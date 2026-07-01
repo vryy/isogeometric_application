@@ -131,7 +131,7 @@ public:
     }
 
     /// Get the bounding box (=support domain) of this basis function
-    virtual std::vector<double> GetBoundingBox() const
+    std::vector<double> GetBoundingBox() const override
     {
         double Xmin = static_cast<double>(INT_MAX);
         double Xmax = -Xmin;
@@ -167,11 +167,11 @@ public:
             }
         }
 
-        if (TDim == 1)
+        if constexpr (TDim == 1)
             return std::vector<double> {Xmin, Xmax};
-        else if (TDim == 2)
+        else if constexpr (TDim == 2)
             return std::vector<double> {Xmin, Xmax, Ymin, Ymax};
-        else if (TDim == 3)
+        else if constexpr (TDim == 3)
             return std::vector<double> {Xmin, Xmax, Ymin, Ymax, Zmin, Zmax};
     }
 
@@ -197,7 +197,7 @@ public:
     }
 
     /// Get the value of point-based B-splines basis function
-    virtual double GetValueAt(const std::vector<double>& xi) const
+    double GetValueAt(const std::vector<double>& xi) const override
     {
         double res;
         this->GetValueAt(res, xi);
@@ -205,7 +205,7 @@ public:
     }
 
     /// Get the value of point-based B-splines basis function
-    virtual void GetValueAt(double& res, const std::vector<double>& xi) const
+    void GetValueAt(double& res, const std::vector<double>& xi) const override
     {
         res = 1.0;
         // std::cout << "----------" << std::endl;
@@ -230,7 +230,7 @@ public:
     }
 
     /// Get the derivative of point-based B-splines basis function
-    virtual std::vector<double> GetDerivativeAt(const std::vector<double>& xi) const
+    std::vector<double> GetDerivativeAt(const std::vector<double>& xi) const override
     {
         std::vector<double> res;
         this->GetDerivativeAt(res, xi);
@@ -238,7 +238,7 @@ public:
     }
 
     /// Get the derivative of point-based B-splines basis function
-    virtual void GetDerivativeAt(std::vector<double>& res, const std::vector<double>& xi) const
+    void GetDerivativeAt(std::vector<double>& res, const std::vector<double>& xi) const override
     {
         // TODO
         KRATOS_ERROR << "Not yet implemented";
@@ -288,7 +288,7 @@ public:
     **************************************************************************/
 
     /// Print information of this basis function
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "PBBSplinesBasisFunction" << TDim << "D (id: " << this->Id() << "), eq_id: " << this->EquationId() << ", p = (";
         for (int dim = 0; dim < TDim; ++dim)
@@ -306,7 +306,7 @@ public:
     }
 
     /// Print data of this basis function
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         // Print the local knot vectors
         rOStream << " Local knot vectors:\n";
@@ -341,12 +341,12 @@ protected:
     cell_container_t mpCells; // list of cells support this basis function
     boost::array<std::vector<knot_t>, TDim> mpLocalKnots;
 
-    /** A pointer to data related to this basis function. */
-
-    friend class Serializer;
+    /** TODO A pointer to data related to this basis function. */
 
     ///@name Serialization
     ///@{
+
+    friend class Serializer;
 
     void save(Serializer& rSerializer) const override
     {

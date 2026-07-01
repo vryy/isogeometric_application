@@ -31,9 +31,8 @@ namespace Kratos
 {
 
 /**
-Class represents a basis function in hierarchical B-Splines mesh.
-Each basis function associates with a control point via CONTROL_POINT variable.
-*/
+ * Class represents a basis function in hierarchical B-Splines mesh.
+ */
 template<int TDim>
 class HBSplinesBasisFunction : public PBBSplinesBasisFunction<TDim, HBCell<HBSplinesBasisFunction<TDim> > >
 {
@@ -281,13 +280,11 @@ public:
         {
             return this->Level() < rA.Level();
         }
-        else
+
+        for (int dim = 0; dim < TDim; ++dim)
         {
-            for (int dim = 0; dim < TDim; ++dim)
-            {
-                if (this->Position()[dim] != rA.Position()[dim])
-                    return this->Position()[dim] < rA.Position()[dim];
-            }
+            if (this->Position()[dim] != rA.Position()[dim])
+                return this->Position()[dim] < rA.Position()[dim];
         }
 
         return false;
@@ -298,11 +295,12 @@ public:
     **************************************************************************/
 
     /// Print information of this basis function
-    void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "HBSplinesBasisFunction" << TDim << "D"
                  << " (id: " << this->Id() << ")"
-                 << ", eq_id: " << this->EquationId();
+                 << ", lvl: " << this->Level()
+                 << ", anchor: " << this->EquationId();
 
         rOStream<< ", p = (";
         for (int dim = 0; dim < TDim; ++dim)
@@ -326,7 +324,7 @@ public:
     }
 
     /// Print data of this basis function
-    void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         BaseType::PrintData(rOStream);
 

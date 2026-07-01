@@ -282,7 +282,7 @@ public:
 
 protected:
 
-    std::size_t mEquationId; // this variable stores the equation id of this basis function accross patches for the case of scalar PDE.
+    std::size_t mEquationId;  // stores the equation id of this basis function accross patches for the case of scalar PDE.
     cell_container_t mpCells; // list of cells support this basis function
 
     /** A pointer to data related to this basis function. */

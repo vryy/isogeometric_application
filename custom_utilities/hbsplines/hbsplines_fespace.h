@@ -663,14 +663,18 @@ public:
         rOStream << "Number of levels = " << mLastLevel << std::endl;
 
         rOStream << "###############Begin knot vectors################" << std::endl;
-        for (int dim = 0; dim < TDim; ++dim)
+        for (std::size_t lvl = 1; lvl <= this->LastLevel(); ++lvl)
         {
-            rOStream << "knot vector " << dim + 1 << ":";
-            for (std::size_t i = 0; i < this->KnotVector(dim).size(); ++i)
+            rOStream << "Level " << lvl << std::endl;
+            for (int dim = 0; dim < TDim; ++dim)
             {
-                rOStream << " " << this->KnotVector(dim)[i];
+                rOStream << " knot vector " << dim + 1 << ":";
+                for (std::size_t i = 0; i < this->KnotVector(lvl, dim).size(); ++i)
+                {
+                    rOStream << " " << this->KnotVector(lvl, dim)[i];
+                }
+                rOStream << std::endl;
             }
-            rOStream << std::endl;
         }
         rOStream << "###############End knot vectors##################" << std::endl;
     }

@@ -463,27 +463,10 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                 std::size_t i_func = j * numbers[0] + i;
 
                 // set the boundary information
-//                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))
-//                    if (i == 0)
-//                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
-
-//                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BRIGHT_)))
-//                    if (i == numbers[0]-1)
-//                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
-
-//                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))
-//                    if (j == 0)
-//                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
-
-//                if (p_bf->IsOnSide(BOUNDARY_FLAG(_BTOP_)))
-//                    if (j == numbers[1]-1)
-//                        pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BTOP_));
-
                 if (knot_container_t::IsOnLeft(pLocalKnots1, pFESpace->Order(0))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
                 if (knot_container_t::IsOnRight(pLocalKnots1, pFESpace->Order(0))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
                 if (knot_container_t::IsOnLeft(pLocalKnots2, pFESpace->Order(1))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
                 if (knot_container_t::IsOnRight(pLocalKnots2, pFESpace->Order(1))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
-
 
                 // transfer the control point information
                 const ControlPointType& oldC = p_bf->GetData(CONTROL_POINT);
@@ -556,7 +539,8 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                         knot_t pEtaMax = pnew_local_knots[1][j + j1 + 1];
 
                         // check if the cell domain area is nonzero
-                        double area = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value());
+                        double area = (pXiMax->Value() - pXiMin->Value())
+                                    * (pEtaMax->Value() - pEtaMin->Value());
                         if (std::sqrt(std::abs(area)) > area_tol)
                         {
                             std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax};
@@ -634,37 +618,12 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                     std::size_t i_func = (l * numbers[1] + j) * numbers[0] + i;
 
                     // set the boundary information
-//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))
-//                        if (i == 0)
-//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BLEFT_));
-
-//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BRIGHT_)))
-//                        if (i == numbers[0]-1)
-//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));
-
-//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BFRONT_)))
-//                        if (j == 0)
-//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BFRONT_));
-
-//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBACK_)))
-//                        if (j == numbers[1]-1)
-//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBACK_));
-
-//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))
-//                        if (l == 0)
-//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_));
-
-//                    if (p_bf->IsOnSide(BOUNDARY_FLAG(_BTOP_)))
-//                        if (l == numbers[2]-1)
-//                            pnew_bfs[i_func]->AddBoundary(BOUNDARY_FLAG(_BTOP_));
-
                     if (knot_container_t::IsOnLeft(pLocalKnots1, pFESpace->Order(0))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
                     if (knot_container_t::IsOnRight(pLocalKnots1, pFESpace->Order(0))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
                     if (knot_container_t::IsOnLeft(pLocalKnots2, pFESpace->Order(1))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BFRONT_)); }
                     if (knot_container_t::IsOnRight(pLocalKnots2, pFESpace->Order(1))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BBACK_)); }
                     if (knot_container_t::IsOnLeft(pLocalKnots3, pFESpace->Order(2))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
                     if (knot_container_t::IsOnRight(pLocalKnots3, pFESpace->Order(2))) { pnew_bf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
-
 
                     // transfer the control point information
                     const ControlPointType& oldC = p_bf->GetData(CONTROL_POINT);
@@ -714,7 +673,9 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
                                 knot_t pZetaMax = pnew_local_knots[2][l + l1 + 1];
 
                                 // check if the cell domain volume is nonzero
-                                double volume = (pXiMax->Value() - pXiMin->Value()) * (pEtaMax->Value() - pEtaMin->Value()) * (pZetaMax->Value() - pZetaMin->Value());
+                                double volume = (pXiMax->Value() - pXiMin->Value())
+                                              * (pEtaMax->Value() - pEtaMin->Value())
+                                              * (pZetaMax->Value() - pZetaMin->Value());
                                 if (std::cbrt(std::abs(volume)) > volume_tol)
                                 {
                                     std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax, pZetaMin, pZetaMax};

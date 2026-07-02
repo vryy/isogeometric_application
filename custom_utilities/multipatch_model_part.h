@@ -186,6 +186,9 @@ public:
             pNewNode->SetValue(PATCH_INDEX, patch_id);
         }
 
+        // sort the node container and make it consistent
+        this->GetModelPart().Nodes().Unique();
+
         if (this->GetEchoLevel() > 0)
         {
 #ifdef ENABLE_PROFILING

@@ -131,6 +131,7 @@ public:
 
             for (bf_iterator it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
             {
+                if (!it_bf->Is(ACTIVE)) continue;
                 dofs_map[it_bf->EquationId()].push_back(std::make_pair(it->Id(), it_bf->Id()));
             }
         }
@@ -261,6 +262,7 @@ Patch<2>::Pointer HBSplinesPatchUtility_Helper<2>::CreatePatchFromBSplines(typen
             auto p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
             p_bf->SetPatchId(pPatch->Id());
             p_bf->SetEquationId(func_id);
+            p_bf->Set(ACTIVE, true);
             p_bf->template SetPosition<0>(i);
             p_bf->template SetPosition<1>(j);
 
@@ -424,6 +426,7 @@ Patch<3>::Pointer HBSplinesPatchUtility_Helper<3>::CreatePatchFromBSplines(typen
                 typename HBSplinesBasisFunction<3>::Pointer p_bf = pNewFESpace->CreateBf(++id, level, pLocalKnots);
                 p_bf->SetPatchId(pPatch->Id());
                 p_bf->SetEquationId(func_id);
+                p_bf->Set(ACTIVE, true);
                 p_bf->template SetPosition<0>(i);
                 p_bf->template SetPosition<1>(j);
                 p_bf->template SetPosition<2>(l);

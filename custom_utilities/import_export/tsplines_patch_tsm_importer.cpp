@@ -125,6 +125,7 @@ Patch<2>::Pointer TSplinesPatchTSMImporter::ImportSingle(const std::string& file
 
         // create new basis function
         typename PBBSplinesBasisFunctionType::Pointer pnew_bf = pNewFESpace->CreateBf(id, knot_vecs);
+        pnew_bf->Set(ACTIVE, true);
 
         // create the cells for the basis function
         for (std::size_t i1 = 0; i1 < knot_vecs[0].size() - 1; ++i1)

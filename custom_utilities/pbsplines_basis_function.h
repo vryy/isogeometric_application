@@ -44,7 +44,7 @@ struct PBSplinesBasisFunction_InitializeValue_Helper
  * Each basis function associates with a control point via CONTROL_POINT variable.
  */
 template<typename TCellType>
-class PBSplinesBasisFunction : public IndexedObject
+class PBSplinesBasisFunction : public IndexedObject, public Flags
 {
 public:
     /// Pointer definition

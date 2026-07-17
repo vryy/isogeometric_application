@@ -126,7 +126,8 @@ public:
                 KRATOS_ERROR << "The cast to HBCell is failed.";
             for (auto it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
             {
-                this->AddBf((*it_bf).lock());
+                if (it_bf->lock()->Is(ACTIVE))
+                    this->AddBf((*it_bf).lock());
             }
         }
         catch (std::exception const& e)

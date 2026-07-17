@@ -71,7 +71,7 @@ public:
     };
 
     /// Default constructor
-    HBSplinesFESpace() : BaseType(), mLastLevel(1), mMaxLevel(10)
+    HBSplinesFESpace() : BaseType(), mLastLevel(1), mMaxLevel(99)
     {
         mKnotVectors.resize(mLastLevel + 1);
     }
@@ -148,6 +148,7 @@ public:
             for (auto it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
                 const BasisFunctionType& bf = *(it_bf->lock());
+                if (!bf.Is(ACTIVE)) continue;
                 Vector Crow;
                 bf.ComputeExtractionOperator(Crow, *it_cell);
                 (*it_cell)->AddAnchor(bf.EquationId(), bf.GetData(CONTROL_POINT).W(), Crow);
@@ -266,7 +267,7 @@ public:
 
         for (bf_const_iterator it_bf = this->bf_begin(); it_bf != this->bf_end(); ++it_bf)
         {
-            if (it_bf->IsOnSide(boundary_flag))
+            if (it_bf->IsOnSide(boundary_flag) && it_bf->Is(ACTIVE))
             {
                 bf_set.insert(*it_bf.base());
             }
@@ -296,7 +297,7 @@ public:
         std::set<bf_t, bf_compare> set_bfs;
         for (bf_const_iterator it = this->bf_begin(); it != this->bf_end(); ++it)
         {
-            if (it->IsOnSide(BOUNDARY_FLAG(side)))
+            if (it->IsOnSide(BOUNDARY_FLAG(side)) && it->Is(ACTIVE))
             {
                 set_bfs.insert(*it.base());
             }
@@ -319,7 +320,7 @@ public:
         std::set<bf_t, bf_compare> set_bfs;
         for (bf_const_iterator it = this->bf_begin(); it != this->bf_end(); ++it)
         {
-            if (it->IsOnSide(BOUNDARY_FLAG(side)))
+            if (it->IsOnSide(BOUNDARY_FLAG(side)) && it->Is(ACTIVE))
             {
                 set_bfs.insert(*it.base());
             }
@@ -396,7 +397,7 @@ public:
             {
                 for (auto it_bf = this->bf_begin(); it_bf != this->bf_end(); ++it_bf)
                 {
-                    if (it_bf->Level() == next_level)
+                    if (it_bf->Level() == next_level && it_bf->Is(ACTIVE))
                     {
                         for (auto it_cell = it_bf->cell_begin(); it_cell != it_bf->cell_end(); ++it_cell)
                         {
@@ -427,7 +428,7 @@ public:
             {
                 for (auto it_bf = this->bf_begin(); it_bf != this->bf_end(); ++it_bf)
                 {
-                    if (it_bf->Level() == next_level)
+                    if (it_bf->Level() == next_level && it_bf->Is(ACTIVE))
                     {
                         for (auto it_cell = it_bf->cell_begin(); it_cell != it_bf->cell_end(); ++it_cell)
                         {
@@ -471,7 +472,7 @@ public:
 
         for (auto it = BaseType::bf_begin(); it != BaseType::bf_end(); ++it)
         {
-            if (it->IsOnSide(BOUNDARY_FLAG(side)))
+            if (it->IsOnSide(BOUNDARY_FLAG(side)) && it->Is(ACTIVE))
             {
                 typename BoundaryFESpaceType::bf_t pNewSubBf;
 
@@ -502,6 +503,7 @@ public:
                     }
                 }
 
+                pNewSubBf->Set(ACTIVE, true);
                 pBoundaryFESpace->AddBf(pNewSubBf);
                 ident_indices_map[pNewSubBf->EquationId()] = pNewSubBf->EquationId();
             }

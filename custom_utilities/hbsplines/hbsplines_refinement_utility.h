@@ -27,7 +27,6 @@
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
 
 #define ENABLE_PROFILING
-#define CHECK_REFINEMENT_COEFFICIENTS
 
 namespace Kratos
 {
@@ -189,7 +188,8 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::Refine(typename Patch<TDim>
 }
 
 template<int TDim>
-std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>::bf_t> > HBSplinesRefinementUtility_Helper<TDim>::Refine(
+std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>::bf_t> >
+HBSplinesRefinementUtility_Helper<TDim>::Refine(
     typename Patch<TDim>::Pointer pPatch, typename HBSplinesFESpace<TDim>::bf_t p_bf,
     std::set<std::size_t>& refined_patches, int echo_level)
 {
@@ -833,7 +833,6 @@ std::pair<std::vector<std::size_t>, std::vector<typename HBSplinesFESpace<TDim>:
 
     // update the weight information for all the grid functions (except the control point grid function)
     std::vector<double> Weights = pFESpace->GetWeights();
-    std::cout << "weights size at refinement: " << Weights.size() << std::endl;
 
     typename Patch<TDim>::DoubleGridFunctionContainerType DoubleGridFunctions_ = pPatch->DoubleGridFunctions();
     for (typename Patch<TDim>::DoubleGridFunctionContainerType::iterator it = DoubleGridFunctions_.begin();
@@ -1028,11 +1027,14 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
         }
     }
 
+    if (echo_refinement)
+    {
 #ifdef ENABLE_PROFILING
-    std::cout << "LinearDependencyRefine cycle " << refine_cycle << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s" << std::endl;
+        std::cout << "LinearDependencyRefine cycle " << refine_cycle << " completed: " << OpenMPUtils::GetCurrentTime() - start << " s" << std::endl;
 #else
-    std::cout << "LinearDependencyRefine cycle " << refine_cycle << " completed" << std::endl;
+        std::cout << "LinearDependencyRefine cycle " << refine_cycle << " completed" << std::endl;
 #endif
+    }
 }
 
 } // namespace Kratos.

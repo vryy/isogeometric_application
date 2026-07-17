@@ -312,7 +312,7 @@ public:
     static typename BaseType::Pointer Create() {return typename BaseType::Pointer(new BCellManager<1, CellType>());}
 
     /// Check if the cell exists in the list; otherwise create new cell and return
-    virtual cell_t CreateCell(const std::vector<knot_t>& pKnots)
+    cell_t CreateCell(const std::vector<knot_t>& pKnots) override
     {
         assert(pKnots.size() == 2);
 
@@ -344,7 +344,7 @@ public:
     }
 
     /// Insert a cell to the container. If the cell is existed in the container, the iterator of the existed one will be returned.
-    virtual iterator insert(cell_t p_cell)
+    iterator insert(cell_t p_cell) override
     {
         // search in the list of cell if any cell has the same knot span
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future. TODO
@@ -370,7 +370,7 @@ public:
     }
 
     /// Remove a cell by its Id from the set
-    virtual void erase(cell_t p_cell)
+    void erase(cell_t p_cell) override
     {
         for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
@@ -393,7 +393,7 @@ public:
     }
 
     /// Search the cells covered in another cell. In return p_cell covers all the cells of std::vector<cell_t>
-    virtual std::vector<cell_t> GetCells(cell_t p_cell)
+    std::vector<cell_t> GetCells(cell_t p_cell) override
     {
         std::vector<cell_t> p_cells;
 
@@ -477,7 +477,7 @@ public:
     static typename BaseType::Pointer Create() {return typename BaseType::Pointer(new BCellManager<2, CellType>());}
 
     /// Check if the cell exists in the list; otherwise create new cell and return
-    virtual cell_t CreateCell(const std::vector<knot_t>& pKnots)
+    cell_t CreateCell(const std::vector<knot_t>& pKnots) override
     {
         assert(pKnots.size() == 4);
 
@@ -486,9 +486,9 @@ public:
         for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
             if ( (*it)->XiMin()  == pKnots[0] // left
-                    && (*it)->XiMax()  == pKnots[1] // right
-                    && (*it)->EtaMin() == pKnots[2] // down
-                    && (*it)->EtaMax() == pKnots[3] ) // up
+              && (*it)->XiMax()  == pKnots[1] // right
+              && (*it)->EtaMin() == pKnots[2] // down
+              && (*it)->EtaMax() == pKnots[3] ) // up
             {
                 return *it;
             }
@@ -511,7 +511,7 @@ public:
     }
 
     /// Insert a cell to the container. If the cell is existed in the container, the iterator of the existed one will be returned.
-    virtual iterator insert(cell_t p_cell)
+    iterator insert(cell_t p_cell) override
     {
         // search in the list of cell if any cell has the same knot span
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future. TODO
@@ -537,7 +537,7 @@ public:
     }
 
     /// Remove a cell by its Id from the set
-    virtual void erase(cell_t p_cell)
+    void erase(cell_t p_cell) override
     {
         for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
@@ -560,7 +560,7 @@ public:
     }
 
     /// Search the cells covered in another cell. In return p_cell covers all the cells of std::vector<cell_t>
-    virtual std::vector<cell_t> GetCells(cell_t p_cell)
+    std::vector<cell_t> GetCells(cell_t p_cell) override
     {
         std::vector<cell_t> p_cells;
 
@@ -644,7 +644,7 @@ public:
     static typename BaseType::Pointer Create() {return typename BaseType::Pointer(new BCellManager<3, CellType>());}
 
     /// Check if the cell exists in the list; otherwise create new cell and return
-    virtual cell_t CreateCell(const std::vector<knot_t>& pKnots)
+    cell_t CreateCell(const std::vector<knot_t>& pKnots) override
     {
         assert(pKnots.size() == 6);
 
@@ -653,11 +653,11 @@ public:
         for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
             if ( (*it)->XiMin()  == pKnots[0] // left
-                    && (*it)->XiMax()  == pKnots[1] // right
-                    && (*it)->EtaMin() == pKnots[2] // down
-                    && (*it)->EtaMax() == pKnots[3] // up
-                    && (*it)->ZetaMin() == pKnots[4] // below
-                    && (*it)->ZetaMax() == pKnots[5] ) // above
+              && (*it)->XiMax()  == pKnots[1] // right
+              && (*it)->EtaMin() == pKnots[2] // down
+              && (*it)->EtaMax() == pKnots[3] // up
+              && (*it)->ZetaMin() == pKnots[4] // below
+              && (*it)->ZetaMax() == pKnots[5] ) // above
             {
                 return *it;
             }
@@ -680,7 +680,7 @@ public:
     }
 
     /// Insert a cell to the container. If the cell is existed in the container, the iterator of the existed one will be returned.
-    virtual iterator insert(cell_t p_cell)
+    iterator insert(cell_t p_cell) override
     {
         // search in the list of cell if any cell has the same knot span
         // Currently I use the brute-force approach. I know it is not efficient. I will improve it in the future. TODO
@@ -706,7 +706,7 @@ public:
     }
 
     /// Remove a cell by its Id from the set
-    virtual void erase(cell_t p_cell)
+    void erase(cell_t p_cell) override
     {
         for (iterator it = BaseType::mpCells.begin(); it != BaseType::mpCells.end(); ++it)
         {
@@ -729,7 +729,7 @@ public:
     }
 
     /// Search the cells coverred in another cell. In return p_cell covers all the cells of std::vector<cell_t>
-    virtual std::vector<cell_t> GetCells(cell_t p_cell)
+    std::vector<cell_t> GetCells(cell_t p_cell) override
     {
         std::vector<cell_t> p_cells;
 
@@ -781,15 +781,6 @@ private:
     RTree<std::size_t, double, 3, double> rtree_cells;
 #endif
 };
-
-/// output stream function
-template<int TDim, class TCellType>
-inline std::ostream& operator <<(std::ostream& rOStream, const BCellManager<TDim, TCellType>& rThis)
-{
-    rThis.PrintInfo(rOStream);
-    rThis.PrintData(rOStream);
-    return rOStream;
-}
 
 } // namespace Kratos.
 

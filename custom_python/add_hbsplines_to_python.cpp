@@ -95,6 +95,12 @@ std::size_t HBSplinesFESpace_MaxLevel(HBSplinesFESpace<TDim>& rDummy)
 }
 
 template<int TDim>
+std::size_t HBSplinesFESpace_LastLevel(HBSplinesFESpace<TDim>& rDummy)
+{
+    return rDummy.LastLevel();
+}
+
+template<int TDim>
 typename HBSplinesBasisFunction<TDim>::Pointer HBSplinesFESpace_GetItem(HBSplinesFESpace<TDim>& rDummy, std::size_t i)
 {
     return rDummy[i];
@@ -214,6 +220,7 @@ void IsogeometricApplication_AddHBSplinesSpaceToPython()
     // .def("ConstructBoundaryFESpace", pointer_to_ConstructBoundaryFESpace2)
     .def("UpdateCells", &HBSplinesFESpace<TDim>::UpdateCells)
     .def("MaxLevel", &HBSplinesFESpace_MaxLevel<TDim>)
+    .def("LastLevel", &HBSplinesFESpace_LastLevel<TDim>)
     .def("SetMaxLevel", &HBSplinesFESpace<TDim>::SetMaxLevel)
     .def("GetBfByEquationId", &HBSplinesFESpace<TDim>::pGetBfByEquationId)
     .def("HasBfByEquationId", &HBSplinesFESpace<TDim>::HasBfByEquationId)

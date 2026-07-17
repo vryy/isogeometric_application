@@ -307,7 +307,7 @@ public:
         if (pOtherPBBSplinesFESpace == nullptr)
             return false;
 
-        // compare the knot vectors and order information
+        // compare the order information
         for (std::size_t i = 0; i < TDim; ++i)
         {
             if (!(this->Order(i)) == pOtherPBBSplinesFESpace->Order(i))
@@ -556,11 +556,11 @@ public:
         this->ResetCells();
 
         // for each cell compute the extraction operator and add to the anchor
-        Vector Crow;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
             for (typename BasisFunctionType::cell_iterator it_cell = it->cell_begin(); it_cell != it->cell_end(); ++it_cell)
             {
+                Vector Crow;
                 it->ComputeExtractionOperator(Crow, *it_cell);
                 (*it_cell)->AddAnchor(it->EquationId(), it->GetData(CONTROL_POINT).W(), Crow);
             }

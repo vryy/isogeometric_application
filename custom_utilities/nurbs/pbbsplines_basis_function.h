@@ -274,7 +274,7 @@ public:
     **************************************************************************/
 
     /// Compute the Bezier extraction operator of this basis function on the cell
-    virtual void ComputeExtractionOperator(Vector& Crow, const_cell_t p_cell)
+    virtual void ComputeExtractionOperator(Vector& Crow, const_cell_t p_cell) const
     {
         std::vector<std::vector<double> > LocalKnots(TDim);
         std::vector<std::size_t> orders(TDim);

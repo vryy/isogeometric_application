@@ -89,10 +89,12 @@ public:
     bf_t AddBf(bf_t p_bf)
     {
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
+        {
             if ((*it).lock() == p_bf)
             {
                 return p_bf;
             }
+        }
         mpBasisFuncs.insert(p_bf);
         return p_bf;
     }
@@ -111,7 +113,7 @@ public:
     }
 
     /// Absorb the information from the other cell
-    virtual void Absorb(BaseType::Pointer pOther)
+    void Absorb(Cell::Pointer pOther) override
     {
         BaseType::Absorb(pOther);
 
@@ -122,7 +124,7 @@ public:
             typename HBCellType::Pointer pOtherCell = iga::dynamic_pointer_cast<HBCellType>(pOther);
             if (pOtherCell == NULL)
                 KRATOS_ERROR << "The cast to HBCell is failed.";
-            for (typename HBCellType::bf_iterator it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
+            for (auto it_bf = pOtherCell->bf_begin(); it_bf != pOtherCell->bf_end(); ++it_bf)
             {
                 this->AddBf((*it_bf).lock());
             }
@@ -134,7 +136,7 @@ public:
     }
 
     /// Tell all the basis function to disconnect with this cell. This happens when we want to eliminate this cell.
-    virtual void ClearTrace()
+    void ClearTrace() override
     {
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {

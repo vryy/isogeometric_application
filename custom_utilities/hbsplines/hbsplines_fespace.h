@@ -143,12 +143,12 @@ public:
         this->ResetCells();
 
         // for each cell compute the extraction operator and add to the anchor
-        Vector Crow;
-        for (typename cell_container_t::iterator it_cell = BaseType::mpCellManager->begin(); it_cell != BaseType::mpCellManager->end(); ++it_cell)
+        for (auto it_cell = BaseType::mpCellManager->begin(); it_cell != BaseType::mpCellManager->end(); ++it_cell)
         {
-            for (typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
+            for (auto it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
-                BasisFunctionType& bf = *(it_bf->lock());
+                const BasisFunctionType& bf = *(it_bf->lock());
+                Vector Crow;
                 bf.ComputeExtractionOperator(Crow, *it_cell);
                 (*it_cell)->AddAnchor(bf.EquationId(), bf.GetData(CONTROL_POINT).W(), Crow);
             }
@@ -465,7 +465,7 @@ public:
     typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const override
     {
         typedef HBSplinesFESpace<TDim-1, TLocalCoordinateType> BoundaryFESpaceType;
-        typename BoundaryFESpaceType::Pointer pBFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
+        typename BoundaryFESpaceType::Pointer pBoundaryFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
 
         std::map<std::size_t, std::size_t> ident_indices_map;
 
@@ -502,54 +502,54 @@ public:
                     }
                 }
 
-                pBFESpace->AddBf(pNewSubBf);
+                pBoundaryFESpace->AddBf(pNewSubBf);
                 ident_indices_map[pNewSubBf->EquationId()] = pNewSubBf->EquationId();
             }
         }
 
         // update the global to local map
-        pBFESpace->UpdateFunctionIndices(ident_indices_map);
+        pBoundaryFESpace->UpdateFunctionIndices(ident_indices_map);
 
         // set the B-Splines information
         if constexpr (TDim == 2)
         {
             if ((side == _BLEFT_) || (side == _BRIGHT_))
             {
-                pBFESpace->SetInfo(0, this->Order(1));
-                pBFESpace->SetKnotVector(0, this->KnotVector(1));
+                pBoundaryFESpace->SetInfo(0, this->Order(1));
+                pBoundaryFESpace->SetKnotVector(0, this->KnotVector(1));
             }
             if ((side == _BTOP_) || (side == _BBOTTOM_))
             {
-                pBFESpace->SetInfo(0, this->Order(0));
-                pBFESpace->SetKnotVector(0, this->KnotVector(0));
+                pBoundaryFESpace->SetInfo(0, this->Order(0));
+                pBoundaryFESpace->SetKnotVector(0, this->KnotVector(0));
             }
         }
         else if constexpr (TDim == 3)
         {
             if ((side == _BFRONT_) || (side == _BBACK_))
             {
-                pBFESpace->SetInfo(0, this->Order(1));
-                pBFESpace->SetInfo(1, this->Order(2));
-                pBFESpace->SetKnotVector(0, this->KnotVector(1));
-                pBFESpace->SetKnotVector(1, this->KnotVector(2));
+                pBoundaryFESpace->SetInfo(0, this->Order(1));
+                pBoundaryFESpace->SetInfo(1, this->Order(2));
+                pBoundaryFESpace->SetKnotVector(0, this->KnotVector(1));
+                pBoundaryFESpace->SetKnotVector(1, this->KnotVector(2));
             }
             if ((side == _BLEFT_) || (side == _BRIGHT_))
             {
-                pBFESpace->SetInfo(0, this->Order(2));
-                pBFESpace->SetInfo(1, this->Order(0));
-                pBFESpace->SetKnotVector(0, this->KnotVector(2));
-                pBFESpace->SetKnotVector(1, this->KnotVector(0));
+                pBoundaryFESpace->SetInfo(0, this->Order(2));
+                pBoundaryFESpace->SetInfo(1, this->Order(0));
+                pBoundaryFESpace->SetKnotVector(0, this->KnotVector(2));
+                pBoundaryFESpace->SetKnotVector(1, this->KnotVector(0));
             }
             if ((side == _BTOP_) || (side == _BBOTTOM_))
             {
-                pBFESpace->SetInfo(0, this->Order(0));
-                pBFESpace->SetInfo(1, this->Order(1));
-                pBFESpace->SetKnotVector(0, this->KnotVector(0));
-                pBFESpace->SetKnotVector(1, this->KnotVector(1));
+                pBoundaryFESpace->SetInfo(0, this->Order(0));
+                pBoundaryFESpace->SetInfo(1, this->Order(1));
+                pBoundaryFESpace->SetKnotVector(0, this->KnotVector(0));
+                pBoundaryFESpace->SetKnotVector(1, this->KnotVector(1));
             }
         }
 
-        pBFESpace->SetLastLevel(this->LastLevel());
+        pBoundaryFESpace->SetLastLevel(this->LastLevel());
 
         // construct the cells from the boundary basis functions
         typename BoundaryFESpaceType::cell_container_t::Pointer pnew_cells;
@@ -558,11 +558,11 @@ public:
 
         if constexpr (TDim == 2)
         {
-            TLocalCoordinateType tol = pBFESpace->KnotVector(0).GetResolution();
+            TLocalCoordinateType tol = pBoundaryFESpace->KnotVector(0).GetResolution();
 
-            for (auto it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
+            for (auto it = pBoundaryFESpace->bf_begin(); it != pBoundaryFESpace->bf_end(); ++it)
             {
-                for (std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
+                for (std::size_t i1 = 0; i1 < pBoundaryFESpace->Order(0) + 1; ++i1)
                 {
                     knot_t pXiMin = it->LocalKnots(0)[i1];
                     knot_t pXiMax = it->LocalKnots(0)[i1 + 1];
@@ -572,7 +572,7 @@ public:
                     if (std::abs(length) > tol)
                     {
                         std::vector<knot_t> pKnots = {pXiMin, pXiMax};
-                        typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
+                        typename BoundaryFESpaceType::cell_t pnew_cell = pBoundaryFESpace->pCellManager()->CreateCell(pKnots);
                         pnew_cell->SetLevel(this->LastLevel());
                         it->AddCell(pnew_cell);
                         pnew_cell->AddBf(*it.base());
@@ -583,16 +583,16 @@ public:
         }
         else if constexpr (TDim == 3)
         {
-            TLocalCoordinateType tol = std::sqrt(pBFESpace->KnotVector(0).GetResolution() * pBFESpace->KnotVector(1).GetResolution());
+            TLocalCoordinateType tol = std::sqrt(pBoundaryFESpace->KnotVector(0).GetResolution() * pBoundaryFESpace->KnotVector(1).GetResolution());
 
-            for (auto it = pBFESpace->bf_begin(); it != pBFESpace->bf_end(); ++it)
+            for (auto it = pBoundaryFESpace->bf_begin(); it != pBoundaryFESpace->bf_end(); ++it)
             {
-                for (std::size_t i1 = 0; i1 < pBFESpace->Order(0) + 1; ++i1)
+                for (std::size_t i1 = 0; i1 < pBoundaryFESpace->Order(0) + 1; ++i1)
                 {
                     knot_t pXiMin = it->LocalKnots(0)[i1];
                     knot_t pXiMax = it->LocalKnots(0)[i1 + 1];
 
-                    for (std::size_t j1 = 0; j1 < pBFESpace->Order(1) + 1; ++j1)
+                    for (std::size_t j1 = 0; j1 < pBoundaryFESpace->Order(1) + 1; ++j1)
                     {
                         knot_t pEtaMin = it->LocalKnots(1)[j1];
                         knot_t pEtaMax = it->LocalKnots(1)[j1 + 1];
@@ -602,7 +602,7 @@ public:
                         if (std::sqrt(std::abs(area)) > tol)
                         {
                             std::vector<knot_t> pKnots = {pXiMin, pXiMax, pEtaMin, pEtaMax};
-                            typename BoundaryFESpaceType::cell_t pnew_cell = pBFESpace->pCellManager()->CreateCell(pKnots);
+                            typename BoundaryFESpaceType::cell_t pnew_cell = pBoundaryFESpace->pCellManager()->CreateCell(pKnots);
                             pnew_cell->SetLevel(this->LastLevel());
                             it->AddCell(pnew_cell);
                             pnew_cell->AddBf(*it.base());
@@ -614,13 +614,13 @@ public:
         }
 
         // collapse the overlapping cells
-        pBFESpace->pCellManager()->CollapseCells();
+        pBoundaryFESpace->pCellManager()->CollapseCells();
 
         // update the cell support and extraction operator
-        pBFESpace->UpdateCells();
+        pBoundaryFESpace->UpdateCells();
 
         // re-add the supporting cells
-        for (typename BoundaryFESpaceType::cell_container_t::iterator it_cell = pBFESpace->pCellManager()->begin(); it_cell != pBFESpace->pCellManager()->end(); ++it_cell)
+        for (auto it_cell = pBoundaryFESpace->pCellManager()->begin(); it_cell != pBoundaryFESpace->pCellManager()->end(); ++it_cell)
         {
             for (typename BoundaryFESpaceType::CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
@@ -628,7 +628,7 @@ public:
             }
         }
 
-        return pBFESpace;
+        return pBoundaryFESpace;
     }
 
     /// Construct the boundary FESpace based on side and rotation

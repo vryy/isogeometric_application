@@ -76,6 +76,21 @@ public:
         mKnotVectors.resize(mLastLevel + 1);
     }
 
+    /// Constructor with knot vectors
+    HBSplinesFESpace(const std::vector<boost::array<knot_container_t, TDim> >& KnotVectors)
+    : BaseType(), mLastLevel(1), mMaxLevel(32)
+    {
+        for (std::size_t i = 0; i < KnotVectors.size(); ++i)
+        {
+            boost::array<knot_container_t, TDim> kvecs;
+
+            for (int j = 0; j < TDim; ++j)
+                kvecs[j] = KnotVectors[i][j].Clone();
+
+            mKnotVectors.push_back(kvecs);
+        }
+    }
+
     /// Destructor
     ~HBSplinesFESpace() override
     {
@@ -464,11 +479,46 @@ public:
     /// Construct the boundary FESpace based on side
     typename FESpace<TDim-1, TLocalCoordinateType>::Pointer ConstructBoundaryFESpace(const BoundarySide side) const override
     {
+        std::vector<boost::array<knot_container_t, TDim-1> > BoundaryKnotVectors(mKnotVectors.size());
+        for (std::size_t i = 0; i < mKnotVectors.size(); ++i)
+        {
+            if constexpr (TDim == 2)
+            {
+                if ((side == _BLEFT_) || (side == _BRIGHT_))
+                {
+                    BoundaryKnotVectors[i][0] = mKnotVectors[i][1];
+                }
+                if ((side == _BTOP_) || (side == _BBOTTOM_))
+                {
+                    BoundaryKnotVectors[i][0] = mKnotVectors[i][0];
+                }
+            }
+            else if constexpr (TDim == 3)
+            {
+                if ((side == _BLEFT_) || (side == _BRIGHT_))
+                {
+                    BoundaryKnotVectors[i][0] = mKnotVectors[i][2];
+                    BoundaryKnotVectors[i][1] = mKnotVectors[i][0];
+                }
+                else if ((side == _BTOP_) || (side == _BBOTTOM_))
+                {
+                    BoundaryKnotVectors[i][0] = mKnotVectors[i][1];
+                    BoundaryKnotVectors[i][1] = mKnotVectors[i][2];
+                }
+                else if ((side == _BFRONT_) || (side == _BBACK_))
+                {
+                    BoundaryKnotVectors[i][0] = mKnotVectors[i][0];
+                    BoundaryKnotVectors[i][1] = mKnotVectors[i][1];
+                }
+            }
+        }
+
         typedef HBSplinesFESpace<TDim-1, TLocalCoordinateType> BoundaryFESpaceType;
-        typename BoundaryFESpaceType::Pointer pBoundaryFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType());
+        typename BoundaryFESpaceType::Pointer pBoundaryFESpace = typename BoundaryFESpaceType::Pointer(new BoundaryFESpaceType(BoundaryKnotVectors));
 
         std::map<std::size_t, std::size_t> ident_indices_map;
 
+        std::size_t LastLevel = 0;
         for (auto it = BaseType::bf_begin(); it != BaseType::bf_end(); ++it)
         {
             if (it->IsOnSide(BOUNDARY_FLAG(side)))
@@ -504,6 +554,7 @@ public:
 
                 pBoundaryFESpace->AddBf(pNewSubBf);
                 ident_indices_map[pNewSubBf->EquationId()] = pNewSubBf->EquationId();
+                if (pNewSubBf->Level() > LastLevel) LastLevel = pNewSubBf->Level();
             }
         }
 
@@ -740,6 +791,10 @@ public:
 
     /// Default constructor
     HBSplinesFESpace() : BaseType() {}
+
+    /// Constructor with knot vectors
+    HBSplinesFESpace(const std::vector<boost::array<knot_container_t, 0> >& KnotVectors) : BaseType()
+    {}
 
     /// Destructor
     ~HBSplinesFESpace() override {}

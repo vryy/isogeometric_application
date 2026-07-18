@@ -418,6 +418,9 @@ public:
     /// Get the Id of the basis function
     std::size_t Id() const {return 0;}
 
+    /// Get the level of this basis function
+    std::size_t Level() const {return 0;}
+
     /// Set the equation Id for this basis function. One shall use this function only in the enumeration process
     void SetEquationId(std::size_t EquationId) {}
 

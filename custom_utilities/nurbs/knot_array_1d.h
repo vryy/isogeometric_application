@@ -82,6 +82,18 @@ public:
     /// Default constructor
     KnotArray1D() : mTol(1e-10) {}
 
+    /// Constructor from values container
+    template<typename TContainerType>
+    KnotArray1D(const TContainerType& rValues) : mTol(1e-10)
+    {
+        for (auto it = rValues.begin(); it != rValues.end(); ++it)
+        {
+            knot_t p_knot = knot_t(new KnotType(*it));
+            this->mpKnots.push_back(p_knot);
+        }
+        this->UpdateIndex();
+    }
+
     /// Copy constructor
     KnotArray1D(const KnotArray1D& rOther)
     {
@@ -218,20 +230,22 @@ public:
     /// It is noted that knot span bounded by repetitive knots are not accounted
     KnotArray1D<TDataType> CloneAndRefineInTheMiddle() const
     {
-        KnotArray1D<TDataType> kvec(*this);
+        std::vector<TDataType> kvalues;
         for (const_iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
         {
+            kvalues.push_back((*it)->Value());
+
             const_iterator it2 = it + 1;
             if (it2 != mpKnots.end())
             {
                 if (std::abs((*it2)->Value() - (*it)->Value()) > mTol)
                 {
                     TDataType ins_knot = 0.5 * ((*it)->Value() + (*it2)->Value());
-                    kvec.pCreateUniqueKnot(ins_knot);
+                    kvalues.push_back(ins_knot);
                 }
             }
         }
-        kvec.UpdateIndex();
+        KnotArray1D<TDataType> kvec(kvalues);
         return kvec;
     }
 

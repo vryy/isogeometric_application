@@ -221,6 +221,11 @@ public:
                 if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))       { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));  }
                 else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
             }
+            else if (dim == 1)
+            {
+                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))   { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));  }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
+            }
         }
         else if constexpr (TDim == 3)
         {

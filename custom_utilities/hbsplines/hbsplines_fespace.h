@@ -71,7 +71,7 @@ public:
     };
 
     /// Default constructor
-    HBSplinesFESpace() : BaseType(), mLastLevel(1), mMaxLevel(10)
+    HBSplinesFESpace() : BaseType(), mLastLevel(1), mMaxLevel(32)
     {
         mKnotVectors.resize(mLastLevel + 1);
     }
@@ -197,13 +197,12 @@ public:
     {
         mLastLevel = LastLevel;
 
-        if (mLastLevel + 1 > mKnotVectors.size())
+        if (LastLevel + 1 > mKnotVectors.size())
         {
             std::size_t current_size = mKnotVectors.size();
-            mKnotVectors.resize(mLastLevel + 1);
+            mKnotVectors.resize(LastLevel + 1);
 
-            std::size_t n_add_level = (mLastLevel + 1) - current_size;
-
+            std::size_t n_add_level = (LastLevel + 1) - current_size;
             for (std::size_t i = 0; i < TDim; ++i)
             {
                 for (std::size_t j = current_size; j < current_size + n_add_level; ++j)
@@ -212,7 +211,7 @@ public:
         }
         else
         {
-            mKnotVectors.resize(mLastLevel + 1);
+            mKnotVectors.resize(LastLevel + 1);
         }
     }
 

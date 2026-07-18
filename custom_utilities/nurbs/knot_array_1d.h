@@ -103,7 +103,7 @@ public:
     }
 
     /// Set the resolution of the knot vector
-    void SetResolution(const TDataType& rValue) {mTol = rValue;}
+    void SetResolution(const TDataType rValue) {mTol = rValue;}
 
     /// Get the resolution of the knot vector
     TDataType GetResolution() const {return mTol;}
@@ -111,7 +111,7 @@ public:
     /// Insert the knot to the array and return its pointer.
     /// This function creates the new knot regardless it is repetitive or not.
     /// After all the knot is inserted, it's important to call UpdateIndex() to index the internal array
-    knot_t pCreateKnot(const TDataType& k)
+    knot_t pCreateKnot(const TDataType k)
     {
         ValueComparator2 comp;
         iterator it = std::upper_bound(mpKnots.begin(), mpKnots.end(), k, comp);
@@ -147,7 +147,7 @@ public:
 
     /// Insert the knot to the array and return its pointer.
     /// In the case that the knot are repetitive within the tolerance, return the internal one.
-    knot_t pCreateUniqueKnot(const TDataType& k)
+    knot_t pCreateUniqueKnot(const TDataType k)
     {
         ValueComparator2 comp;
         iterator it = std::lower_bound(mpKnots.begin(), mpKnots.end(), k, comp);
@@ -165,7 +165,7 @@ public:
     }
 
     /// Get the knot of specific value
-    knot_t pGetKnot(const TDataType& k) const
+    knot_t pGetKnot(const TDataType k) const
     {
         ValueComparator2 comp;
         const_iterator it = std::lower_bound(mpKnots.begin(), mpKnots.end(), k, comp);
@@ -416,7 +416,7 @@ public:
     }
 
     /// Check if a knot vector is symmetric. A knot vector is symmetric if both x and 1-x are in the knot vector
-    static bool IsSymmetric(const std::vector<TDataType>& knot_vec, const TDataType& tol, bool sorted = true)
+    static bool IsSymmetric(const std::vector<TDataType>& knot_vec, const TDataType tol, bool sorted = true)
     {
         std::vector<TDataType>* sorted_vec;
         if (sorted == false)
@@ -467,10 +467,10 @@ public:
     }
 
     /// Check if a knot is inside the knot vector
-    bool IsInside(const TDataType& knot) const
+    bool IsInside(const TDataType knot) const
     {
-        const TDataType& min = mpKnots.front()->Value();
-        const TDataType& max = mpKnots.back()->Value();
+        const TDataType min = mpKnots.front()->Value();
+        const TDataType max = mpKnots.back()->Value();
         return (knot >= min) && (knot <= max);
     }
 
@@ -520,7 +520,7 @@ public:
     }
 
     /// Compute the knots in the respective direction
-    static std::vector<TDataType> CloneKnotsWithPivot(const TDataType& pivot, const std::vector<TDataType>& knots, const BoundaryDirection direction)
+    static std::vector<TDataType> CloneKnotsWithPivot(const TDataType pivot, const std::vector<TDataType>& knots, const BoundaryDirection direction)
     {
         if (direction == BoundaryDirection::_FORWARD_)
         {
@@ -534,7 +534,7 @@ public:
     }
 
     /// Compute the reversed knots, i.e. 1-k
-    static std::vector<TDataType> ReverseKnotsWithPivot(const TDataType& pivot, const std::vector<TDataType>& knots)
+    static std::vector<TDataType> ReverseKnotsWithPivot(const TDataType pivot, const std::vector<TDataType>& knots)
     {
         std::vector<TDataType> reversed_knots(knots.size());
         for (std::size_t i = 0; i < reversed_knots.size(); ++i)

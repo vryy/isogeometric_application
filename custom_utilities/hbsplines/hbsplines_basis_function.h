@@ -394,7 +394,7 @@ private:
 
 /// Template Specialization to terminate the compilation
 template<>
-class HBSplinesBasisFunction<0>
+class HBSplinesBasisFunction<0> : public Flags
 {
 public:
     /// Pointer definition

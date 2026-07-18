@@ -131,8 +131,15 @@ public:
         else { return mOrders[i]; }
     }
 
-    /// Get the number of basis functions defined over the BSplines
-    std::size_t TotalNumber() const override {return mpBasisFuncs.size();}
+    /// Get the number of (active) basis functions defined over the BSplines
+    std::size_t TotalNumber() const override
+    {
+        std::size_t n = 0;
+        for (auto it = mpBasisFuncs.begin(); it != mpBasisFuncs.end(); ++it)
+            if (it->Is(ACTIVE))
+                ++n;
+        return n;
+    }
 
     /// Get the lower and upper bound of the parametric space in a specific direction
     std::vector<double> ParametricBounds(std::size_t di) const override
@@ -141,6 +148,7 @@ public:
 
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
+            if (!it->Is(ACTIVE)) continue;
             std::vector<double> bb = it->GetBoundingBox();
             if (bound[0] > bb[2 * di]) { bound[0] = bb[2 * di]; }
             if (bound[1] < bb[2 * di + 1]) { bound[1] = bb[2 * di + 1]; }
@@ -152,12 +160,10 @@ public:
     /// Get the weights of all the basis functions
     std::vector<double> GetWeights() const
     {
-        std::vector<double> weights(this->TotalNumber());
-        std::size_t cnt = 0;
-        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
-        {
-            weights[cnt] = it->GetData(CONTROL_POINT).W();
-        }
+        std::vector<double> weights;
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+            if (it->Is(ACTIVE))
+                weights.push_back(it->GetData(CONTROL_POINT).W());
         return weights;
     }
 
@@ -182,19 +188,22 @@ public:
         return BaseType::Validate();
     }
 
-    /// Get the values of the basis function i at point xi
+    /// Get the values of the (active) basis function i at point xi
     /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
     void GetValue(double& v, std::size_t i, const std::vector<double>& xi) const override
     {
         std::size_t j = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if (j == i)
+            if (it->Is(ACTIVE))
             {
-                v = it->GetValueAt(xi);
-                return;
+                if (j == i)
+                {
+                    v = it->GetValueAt(xi);
+                    return;
+                }
+                ++j;
             }
-            ++j;
         }
         v = 0.0;
     }
@@ -203,14 +212,11 @@ public:
     /// REMARK: This function only returns the unweighted basis function value. To obtain the correct one, use WeightedFESpace
     void GetValues(std::vector<double>& values, const std::vector<double>& xi) const override
     {
-        if (values.size() != this->TotalNumber())
-        {
-            values.resize(this->TotalNumber());
-        }
-        std::size_t i = 0;
+        values.clear();
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            values[i++] = it->GetValueAt(xi);
+            if (it->Is(ACTIVE))
+                values.push_back(it->GetValueAt(xi));
         }
     }
 
@@ -222,17 +228,19 @@ public:
         std::size_t j = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if (j == i)
+            if (it->Is(ACTIVE))
             {
-                it->GetDerivativeAt(values, xi);
-                return;
+                if (j == i)
+                {
+                    it->GetDerivativeAt(values, xi);
+                    return;
+                }
+                ++j;
             }
-            ++j;
         }
-        if (values.size() != TDim)
-        {
-            values.resize(TDim);
-        }
+
+        // can't find the basis function, return a zero vector
+        if (values.size() != TDim) values.resize(TDim);
         for (int dim = 0; dim < TDim; ++dim) { values[dim] = 0.0; }
     }
 
@@ -241,19 +249,16 @@ public:
     /// REMARK: This function only returns the unweighted basis function derivatives. To obtain the correct one, use WeightedFESpace
     void GetDerivatives(std::vector<std::vector<double> >& values, const std::vector<double>& xi) const override
     {
-        if (values.size() != this->TotalNumber())
-        {
-            values.resize(this->TotalNumber());
-        }
-        std::size_t i = 0;
+        values.clear();
+
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if (values[i].size() != TDim)
+            if (it->Is(ACTIVE))
             {
-                values[i].resize(TDim);
+                std::vector<double> v(TDim);
+                it->GetDerivativeAt(v, xi);
+                values.push_back(v);
             }
-            it->GetDerivativeAt(values[i], xi);
-            ++i;
         }
     }
 
@@ -263,25 +268,19 @@ public:
     void GetValuesAndDerivatives(std::vector<double>& values, std::vector<std::vector<double> >& derivatives,
                                  const std::vector<double>& xi) const override
     {
-        if (values.size() != this->TotalNumber())
-        {
-            values.resize(this->TotalNumber());
-        }
-        if (derivatives.size() != this->TotalNumber())
-        {
-            derivatives.resize(this->TotalNumber());
-        }
+        values.clear();
+        derivatives.clear();
 
-        std::size_t i = 0;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            values[i] = it->GetValueAt(xi);
-            if (derivatives[i].size() != TDim)
+            if (it->Is(ACTIVE))
             {
-                derivatives[i].resize(TDim);
+                values.push_back(it->GetValueAt(xi));
+
+                std::vector<double> d(TDim);
+                it->GetDerivativeAt(d, xi);
+                derivatives.push_back(d);
             }
-            it->GetDerivativeAt(derivatives[i], xi);
-            ++i;
         }
     }
 
@@ -326,7 +325,8 @@ public:
         BaseType::mGlobalToLocal.clear();
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            it->SetEquationId(-1);
+            if (it->Is(ACTIVE))
+                it->SetEquationId(-1);
         }
     }
 
@@ -347,10 +347,14 @@ public:
         }
         std::size_t cnt = 0;
         BaseType::mGlobalToLocal.clear();
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            it->SetEquationId(func_indices[cnt]);
-            BaseType::mGlobalToLocal[it->EquationId()] = cnt;
+            if (it->Is(ACTIVE))
+            {
+                it->SetEquationId(func_indices[cnt]);
+                BaseType::mGlobalToLocal[it->EquationId()] = cnt;
+                ++cnt;
+            }
         }
     }
 
@@ -361,10 +365,16 @@ public:
     {
         BaseType::mGlobalToLocal.clear();
         std::size_t cnt = 0;
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt, ++start)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if (it->EquationId() == -1) { it->SetEquationId(start); }
-            BaseType::mGlobalToLocal[it->EquationId()] = cnt;
+            if (it->Is(ACTIVE))
+            {
+                if (it->EquationId() == -1) { it->SetEquationId(start); }
+                BaseType::mGlobalToLocal[it->EquationId()] = cnt;
+
+                ++cnt;
+                ++start;
+            }
         }
 
         return start;
@@ -375,10 +385,9 @@ public:
     {
         std::vector<std::size_t> func_indices(this->TotalNumber());
         std::size_t cnt = 0;
-        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
-        {
-            func_indices[cnt] = it->EquationId();
-        }
+        for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
+            if (it->Is(ACTIVE))
+                func_indices[cnt++] = it->EquationId();
         return func_indices;
     }
 
@@ -387,8 +396,10 @@ public:
     {
         std::size_t cnt = 0;
         BaseType::mGlobalToLocal.clear();
-        for (bf_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
+        for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
+            if (!it->Is(ACTIVE)) continue;
+
             auto it2 = indices_map.find(it->EquationId());
             if (it2 == indices_map.end())
             {
@@ -397,7 +408,7 @@ public:
             }
 
             it->SetEquationId(it2->second);
-            BaseType::mGlobalToLocal[it->EquationId()] = cnt;
+            BaseType::mGlobalToLocal[it->EquationId()] = cnt++;
         }
     }
 
@@ -408,6 +419,8 @@ public:
 
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
+            if (!it->Is(ACTIVE)) continue;
+
             if (it->EquationId() == -1)
             {
                 return -1;
@@ -436,6 +449,8 @@ public:
 
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
+            if (!it->Is(ACTIVE)) continue;
+
             if (it->EquationId() != -1)
             {
                 if (!hit)
@@ -463,7 +478,7 @@ public:
 
         for (bf_const_iterator it_bf = bf_begin(); it_bf != bf_end(); ++it_bf)
         {
-            if (it_bf->IsOnSide(boundary_id))
+            if (it_bf->IsOnSide(boundary_id) && it_bf->Is(ACTIVE))
             {
                 bf_list.push_back(*it_bf.base());
             }
@@ -493,7 +508,7 @@ public:
 
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if (it->IsOnSide(BOUNDARY_FLAG(side)))
+            if (it->IsOnSide(BOUNDARY_FLAG(side)) && it->Is(ACTIVE))
             {
                 func_indices.push_back(it->EquationId());
             }
@@ -508,7 +523,7 @@ public:
         std::vector<bf_t> bf_list;
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            if (it->IsOnSide(BOUNDARY_FLAG(side)))
+            if (it->IsOnSide(BOUNDARY_FLAG(side)) && it->Is(ACTIVE))
             {
                 bf_list.push_back(*it.base());
             }
@@ -543,7 +558,7 @@ public:
     /// Clean the internal data of all the cells
     void ResetCells()
     {
-        for (typename cell_container_t::iterator it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
+        for (auto it_cell = mpCellManager->begin(); it_cell != mpCellManager->end(); ++it_cell)
         {
             (*it_cell)->Reset();
         }
@@ -557,7 +572,8 @@ public:
         // for each cell compute the extraction operator and add to the anchor
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            for (typename BasisFunctionType::cell_iterator it_cell = it->cell_begin(); it_cell != it->cell_end(); ++it_cell)
+            if (!it->Is(ACTIVE)) continue;
+            for (auto it_cell = it->cell_begin(); it_cell != it->cell_end(); ++it_cell)
             {
                 Vector Crow;
                 it->ComputeExtractionOperator(Crow, *it_cell);
@@ -575,9 +591,16 @@ public:
     /// Overload operator[], this allows to access the basis function randomly based on index
     bf_t operator[](std::size_t i)
     {
-        typename bf_container_t::iterator it = mpBasisFuncs.begin();
-        std::advance(it, i);
-        return *it.base();
+        std::size_t j = 0;
+        for (auto it = mpBasisFuncs.begin(); it != mpBasisFuncs.end(); ++it)
+        {
+            if (it->Is(ACTIVE))
+            {
+                if (j == i)
+                    return *it.base();
+                ++j;
+            }
+        }
     }
 
     /// Overload operator(), this allows to access the basis function based on its id
@@ -639,16 +662,17 @@ public:
         rOStream << std::endl;
         rOStream << "###################" << std::endl;
 
-        // print the basis functions
+        // print the (active) basis functions
         rOStream << "Basis functions:" << std::endl;
         for (bf_const_iterator it = bf_begin(); it != bf_end(); ++it)
         {
-            rOStream << " ++ " << (*it) << std::endl;
+            if (it->Is(ACTIVE))
+                rOStream << " ++ " << (*it) << std::endl;
         }
 
         // print the cells
         rOStream << "Cells:" << std::endl;
-        for (typename cell_container_t::iterator it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
+        for (auto it = mpCellManager->begin(); it != mpCellManager->end(); ++it)
         {
             rOStream << " ++ " << *(*it) << std::endl;
         }

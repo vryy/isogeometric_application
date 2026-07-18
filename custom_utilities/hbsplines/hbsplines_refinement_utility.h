@@ -438,6 +438,7 @@ HBSplinesRefinementUtility_Helper<TDim>::Refine(
                 std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2};
                 bf_t pnew_bf = pFESpace->CreateBf(last_id + 1, next_level, pLocalKnots);
                 pnew_bf->SetPatchId(pPatch->Id());
+                pnew_bf->Set(ACTIVE, true);
                 // find position of the local knot vector in the knot vector of next level
                 pnew_bf->template SetPosition<0>(pFESpace->KnotVector(next_level, 0).FindNumber(pLocalKnots1));
                 pnew_bf->template SetPosition<1>(pFESpace->KnotVector(next_level, 1).FindNumber(pLocalKnots2));
@@ -592,6 +593,7 @@ HBSplinesRefinementUtility_Helper<TDim>::Refine(
                     std::vector<std::vector<knot_t> > pLocalKnots = {pLocalKnots1, pLocalKnots2, pLocalKnots3};
                     bf_t pnew_bf = pFESpace->CreateBf(last_id + 1, next_level, pLocalKnots);
                     pnew_bf->SetPatchId(pPatch->Id());
+                    pnew_bf->Set(ACTIVE, true);
                     // find position of the local knot vector in the knot vector of next level
                     pnew_bf->template SetPosition<0>(pFESpace->KnotVector(next_level, 0).FindNumber(pLocalKnots1));
                     pnew_bf->template SetPosition<1>(pFESpace->KnotVector(next_level, 1).FindNumber(pLocalKnots2));
@@ -748,6 +750,7 @@ HBSplinesRefinementUtility_Helper<TDim>::Refine(
                 {
                     for (typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
                     {
+                        if (!it_bf->lock()->Is(ACTIVE)) continue;
                         (*it_subcell)->AddBf(it_bf->lock());
                         it_bf->lock()->AddCell(*it_subcell);
                     }
@@ -780,6 +783,7 @@ HBSplinesRefinementUtility_Helper<TDim>::Refine(
             {
                 for (auto it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
                 {
+                    if (!it_bf->lock()->Is(ACTIVE)) continue;
                     p_cells[i]->AddBf(it_bf->lock());
                     it_bf->lock()->AddCell(p_cells[i]);
                 }
@@ -793,18 +797,13 @@ HBSplinesRefinementUtility_Helper<TDim>::Refine(
         pFESpace->pCellManager()->erase(*it_cell);
         for (auto it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
         {
+            if (!it_bf->Is(ACTIVE)) continue;
             it_bf->RemoveCell(*it_cell);
         }
     }
 
-    /* remove the basis function from all the cells */
-    for (auto it_cell = pFESpace->pCellManager()->begin(); it_cell != pFESpace->pCellManager()->end(); ++it_cell)
-    {
-        (*it_cell)->RemoveBf(p_bf);
-    }
-
-    /* remove the old basis function */
-    pFESpace->RemoveBf(p_bf);
+    /* deactivate the old basis function */
+    p_bf->Set(ACTIVE, false);
 
     // TODO check if pFESpace->pCellManager()->CollapseCells() can help to further remove the overlapping cells
 
@@ -933,6 +932,8 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::RefineWindow(typename Patch
     std::vector<std::size_t> bf_list;
     for (auto it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
     {
+        if (!it_bf->Is(ACTIVE)) continue;
+
         // get the bounding box (support domain of the basis function)
         std::vector<double> bounding_box = it_bf->GetBoundingBox();
 
@@ -990,6 +991,8 @@ inline void HBSplinesRefinementUtility_Helper<TDim>::LinearDependencyRefine(type
         std::vector<std::size_t> refined_bfs;
         for (auto it_bf = pFESpace->bf_begin(); it_bf != pFESpace->bf_end(); ++it_bf)
         {
+            if (!it_bf->Is(ACTIVE)) continue;
+
             // extract the support domain of the next level
             if (it_bf->Level() != level) { continue; }
             domain_t p_domain = pFESpace->GetSupportDomain(level + 1);

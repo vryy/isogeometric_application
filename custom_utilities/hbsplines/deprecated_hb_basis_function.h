@@ -37,7 +37,7 @@ namespace Kratos
 /**
     Class represents a basis function in hierarchical B-Splines mesh
 */
-class DeprecatedHBBasisFunction
+class DeprecatedHBBasisFunction : public Flags
 {
 public:
     /// Pointer definition

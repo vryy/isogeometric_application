@@ -18,11 +18,13 @@ LICENSE: see isogeometric_application/LICENSE.txt
 // Project includes
 #include "includes/define.h"
 #include "python/python_utils.h"
+#include "python/integer_indexing_python.h"
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/control_grid.h"
 #include "custom_utilities/fespace.h"
 #include "custom_utilities/patch_interface.h"
 #include "custom_utilities/isogeometric_utility.h"
+#include "custom_utilities/nurbs/knot_array_1d.h"
 #include "custom_utilities/nurbs/domain_manager.h"
 #include "custom_utilities/nurbs/domain_manager_2d.h"
 #include "custom_utilities/nurbs/structured_control_grid.h"
@@ -136,6 +138,16 @@ BSplinesFESpace<3>::Pointer BSplinesFESpaceLibrary_CreateUniformFESpace3(BSpline
     orders[1] = order_v;
     orders[2] = order_w;
     return rDummy.CreateUniformFESpace<3>(numbers, orders);
+}
+
+//////////////////////////////////////////////////
+
+KnotArray1D<double>::Pointer KnotArray1D_CreateFromList(const boost::python::list& pyList)
+{
+    std::vector<double> values;
+    PythonUtils::Unpack<double>(pyList, values);
+    KnotArray1D<double>::Pointer kvec = KnotArray1D<double>::Pointer(new KnotArray1D<double>(values));
+    return kvec;
 }
 
 //////////////////////////////////////////////////
@@ -492,6 +504,19 @@ void IsogeometricApplication_AddNURBSTestUtilsToPython()
 
 void IsogeometricApplication_AddNURBSToPython()
 {
+    /////////////////////////////////////////////////////////////////
+    //////////////////////////KNOT ARRAY/////////////////////////////
+    /////////////////////////////////////////////////////////////////
+
+    typedef KnotArray1D<double> KnotArrayType;
+    class_<KnotArrayType, KnotArrayType::Pointer>
+    ("KnotArray1D", init<>())
+    .def("__init__", make_constructor(&KnotArray1D_CreateFromList))
+    .def("CloneAndRefineInTheMiddle", &KnotArrayType::CloneAndRefineInTheMiddle)
+    .def(IntegerIndexingPython<KnotArrayType>())
+    .def(self_ns::str(self))
+    ;
+
     /////////////////////////////////////////////////////////////////
     ///////////////////////SUPPORT DOMAIN////////////////////////////
     /////////////////////////////////////////////////////////////////

@@ -9,7 +9,7 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_KNOT_ARRAY_1D_H_INCLUDED
 
 // System includes
-#include <deque>
+#include <vector>
 #include <string>
 #include <iostream>
 
@@ -44,7 +44,7 @@ public:
     typedef TDataType value_type; // this is to be in consistent with std::vector
     typedef typename KnotType::Pointer knot_t;
     typedef typename KnotType::ConstPointer const_knot_t;
-    typedef std::deque<knot_t> knot_container_t;
+    typedef std::vector<knot_t> knot_container_t;
     typedef typename knot_container_t::iterator iterator;
     typedef typename knot_container_t::const_iterator const_iterator;
 
@@ -98,27 +98,26 @@ public:
 
     /// Insert the knot to the array and return its pointer.
     /// This function creates the new knot regardless it is repetitive or not.
+    /// After all the knot is inserted, it's important to call UpdateIndex() to index the internal array
     knot_t pCreateKnot(const TDataType& k)
     {
         // insert to the correct location
         iterator it;
         for (it = mpKnots.begin(); it != mpKnots.end(); ++it)
             if (k < (*it)->Value())
-            {
                 break;
-            }
         knot_t p_knot = knot_t(new KnotType(k));
         mpKnots.insert(it, p_knot);
 
-        // update the index of the knot
-        std::size_t index = 0;
-        for (iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
-        {
-            (*it)->UpdateIndex(index);
-            ++index;
-        }
-
         return p_knot;
+    }
+
+    /// Update the index of the knot
+    void UpdateIndex()
+    {
+        std::size_t index = 0;
+        for (iterator it = mpKnots.begin(); it != mpKnots.end(); ++it, ++index)
+            (*it)->UpdateIndex(index);
     }
 
     /// Normalize the knot vector so that the largest knot is 1.0
@@ -188,37 +187,24 @@ public:
     /// Create a clone of this knot vector
     KnotArray1D<TDataType> Clone(const BoundaryDirection dir = BoundaryDirection::_FORWARD_) const
     {
-        KnotArray1D<TDataType> kvec;
-
         if (dir == BoundaryDirection::_FORWARD_)
         {
-            for (std::size_t i = 0; i < mpKnots.size(); ++i)
-            {
-                kvec.pCreateKnot(mpKnots[i]->Value());
-            }
+            KnotArray1D<TDataType> kvec(*this);
+            return kvec;
         }
         else if (dir == BoundaryDirection::_REVERSED_)
         {
-            for (std::size_t i = 0; i < mpKnots.size(); ++i)
-            {
-                kvec.pCreateKnot(mpKnots.back()->Value() - mpKnots[mpKnots.size() - 1 - i]->Value());
-            }
+            KnotArray1D<TDataType> kvec(*this);
+            kvec.Reverse();
+            return kvec;
         }
-
-        return kvec;
     }
 
     /// Create a clone of this knot vector and insert the knot in the middle of each span.
     /// It is noted that knot span bounded by repetitive knots are not accounted
     KnotArray1D<TDataType> CloneAndRefineInTheMiddle() const
     {
-        KnotArray1D<TDataType> kvec;
-
-        for (std::size_t i = 0; i < mpKnots.size(); ++i)
-        {
-            kvec.pCreateKnot(mpKnots[i]->Value());
-        }
-
+        KnotArray1D<TDataType> kvec(*this);
         for (const_iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
         {
             const_iterator it2 = it + 1;
@@ -231,7 +217,7 @@ public:
                 }
             }
         }
-
+        kvec.UpdateIndex();
         return kvec;
     }
 

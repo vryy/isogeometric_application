@@ -49,6 +49,7 @@ public:
             knot_vector.pCreateKnot(0.0);
         for (std::size_t i = 0; i < order + 1; ++i)
             knot_vector.pCreateKnot(1.0);
+        knot_vector.UpdateIndex();
         return knot_vector;
     }
 
@@ -72,6 +73,7 @@ public:
         }
         for (std::size_t i = 0; i < order + 1; ++i)
             knot_vector.pCreateKnot(1.0);
+        knot_vector.UpdateIndex();
         return knot_vector;
     }
 

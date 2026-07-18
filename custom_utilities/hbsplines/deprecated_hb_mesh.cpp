@@ -378,6 +378,13 @@ void DeprecatedHBMesh<TDim>::ReadMesh(const std::string& fn)
                         KRATOS_ERROR << "Wrong knot dimension index. Something must be wrong.";
                 }
 
+                if (dim_index == 0)
+                    mKnots1.UpdateIndex();
+                else if (dim_index == 1)
+                    mKnots2.UpdateIndex();
+                else if (dim_index == 2)
+                    mKnots3.UpdateIndex();
+
                 ++dim_index;
                 if (dim_index == TDim)
                 {
@@ -672,14 +679,17 @@ void DeprecatedHBMesh<TDim>::Refine(std::size_t Id)
                     if (i == 0)
                     {
                         p_new_knot = mKnots1.pCreateUniqueKnot(ins_knot);
+                        mKnots1.UpdateIndex();
                     }
                     else if (i == 1)
                     {
                         p_new_knot = mKnots2.pCreateUniqueKnot(ins_knot);
+                        mKnots2.UpdateIndex();
                     }
                     else if (i == 2)
                     {
                         p_new_knot = mKnots3.pCreateUniqueKnot(ins_knot);
+                        mKnots3.UpdateIndex();
                     }
 
                     pnew_local_knots[i].push_back(p_new_knot);

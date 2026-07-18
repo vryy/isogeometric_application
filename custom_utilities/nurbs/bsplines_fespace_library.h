@@ -46,13 +46,9 @@ public:
     {
         knot_container_t knot_vector;
         for (std::size_t i = 0; i < order + 1; ++i)
-        {
             knot_vector.pCreateKnot(0.0);
-        }
         for (std::size_t i = 0; i < order + 1; ++i)
-        {
             knot_vector.pCreateKnot(1.0);
-        }
         return knot_vector;
     }
 
@@ -62,16 +58,12 @@ public:
     {
         knot_container_t knot_vector;
         for (std::size_t i = 0; i < order + 1; ++i)
-        {
             knot_vector.pCreateKnot(0.0);
-        }
         if (number >= order + 1)
         {
             std::size_t m = number - order;
             for (std::size_t i = 0; i < m - 1; ++i)
-            {
                 knot_vector.pCreateKnot(((double)(i + 1)) / m);
-            }
         }
         else
         {
@@ -79,9 +71,7 @@ public:
                 KRATOS_ERROR << "number (" << number << ") < order+1 (" << order+1 << ")";
         }
         for (std::size_t i = 0; i < order + 1; ++i)
-        {
             knot_vector.pCreateKnot(1.0);
-        }
         return knot_vector;
     }
 

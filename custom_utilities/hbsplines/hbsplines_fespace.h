@@ -622,7 +622,7 @@ public:
         // re-add the supporting cells
         for (auto it_cell = pBoundaryFESpace->pCellManager()->begin(); it_cell != pBoundaryFESpace->pCellManager()->end(); ++it_cell)
         {
-            for (typename BoundaryFESpaceType::CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
+            for (auto it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
             {
                 (*it_bf).lock()->AddCell(*it_cell);
             }

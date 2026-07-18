@@ -215,9 +215,7 @@ public:
         {
             mKnotVectors[idir].clear();
             for (std::size_t j = 0; j < values.size(); ++j)
-            {
                 mKnotVectors[idir].pCreateKnot(values[j]);
-            }
         }
     }
 

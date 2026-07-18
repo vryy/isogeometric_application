@@ -389,8 +389,7 @@ public:
         BaseType::mGlobalToLocal.clear();
         for (bf_iterator it = bf_begin(); it != bf_end(); ++it, ++cnt)
         {
-            std::map<std::size_t, std::size_t>::const_iterator it2 = indices_map.find(it->EquationId());
-
+            auto it2 = indices_map.find(it->EquationId());
             if (it2 == indices_map.end())
             {
                 std::cout << "WARNING!!! the indices_map does not contain " << it->EquationId() << std::endl;

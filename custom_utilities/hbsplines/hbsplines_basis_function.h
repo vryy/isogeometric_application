@@ -208,7 +208,7 @@ public:
         if (dim >= TDim)
             KRATOS_ERROR << "The dimension " << dim << " is invalid";
 
-        pNewSubBf = typename HBSplinesBasisFunction<TDim-1>::Pointer(new HBSplinesBasisFunction < TDim - 1 > (this->Id(), this->Level()));
+        pNewSubBf = typename HBSplinesBasisFunction<TDim-1>::Pointer(new HBSplinesBasisFunction<TDim-1>(this->Id(), this->Level()));
         pNewSubBf->SetEquationId(this->EquationId());
 
         if constexpr (TDim == 2)
@@ -218,7 +218,7 @@ public:
 
             if (dim == 0)
             {
-                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))       { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));  }
                 else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
             }
         }
@@ -230,10 +230,10 @@ public:
                 pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[2]);
                 pNewSubBf->SetInfo(0, this->mOrders[1]);
                 pNewSubBf->SetInfo(1, this->mOrders[2]);
-                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
-                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))    { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_)))  { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_));    }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_)))     { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));   }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));  }
             }
             else if (dim == 1)
             {
@@ -241,10 +241,10 @@ public:
                 pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[0]);
                 pNewSubBf->SetInfo(0, this->mOrders[2]);
                 pNewSubBf->SetInfo(1, this->mOrders[0]);
-                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
-                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))       { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_));    }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BBOTTOM_)))     { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));   }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BTOP_)))   { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));  }
             }
             else if (dim == 2)
             {
@@ -252,10 +252,10 @@ public:
                 pNewSubBf->SetLocalKnotVectors(1, this->mpLocalKnots[1]);
                 pNewSubBf->SetInfo(0, this->mOrders[0]);
                 pNewSubBf->SetInfo(1, this->mOrders[1]);
-                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_)); }
-                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_)); }
-                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_)); }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BFRONT_)))      { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BBOTTOM_)); }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BBACK_)))  { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BTOP_));    }
+                if (this->IsOnSide(BOUNDARY_FLAG(_BLEFT_)))       { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BLEFT_));   }
+                else if (this->IsOnSide(BOUNDARY_FLAG(_BRIGHT_))) { pNewSubBf->AddBoundary(BOUNDARY_FLAG(_BRIGHT_));  }
             }
         }
 

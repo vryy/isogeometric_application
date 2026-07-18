@@ -260,7 +260,7 @@ public:
     /// If the sub-fespace is structured (e.g. b-splines fespace), the structured control grid will be generated
     template<int TDim, typename TDataType>
     static typename ControlGrid<TDataType>::Pointer ExtractSubGrid(typename ControlGrid<TDataType>::ConstPointer pControlGrid,
-            const FESpace<TDim>& rFESpace, const FESpace < TDim - 1 > & rSubFESpace)
+            const FESpace<TDim>& rFESpace, const FESpace<TDim-1>& rSubFESpace)
     {
 #ifdef DEBUG_SUB_GRID
         std::cout << "rFESpace.FunctionIndices:";
@@ -288,10 +288,10 @@ public:
         std::vector<std::size_t> local_ids = rFESpace.LocalId(rSubFESpace.FunctionIndices());
         typename ControlGrid<TDataType>::Pointer pTmpControlGrid = ExtractSubGrid<TDataType>(pControlGrid, local_ids);
 
-        if (typeid(rSubFESpace) == typeid(BSplinesFESpace < TDim - 1 > ))
+        if (typeid(rSubFESpace) == typeid(BSplinesFESpace<TDim-1>))
         {
-            const BSplinesFESpace < TDim - 1 > & rSubFESpace_ = dynamic_cast < const BSplinesFESpace < TDim - 1 > & > (rSubFESpace);
-            typename StructuredControlGrid < TDim - 1, TDataType >::Pointer pNewControlGrid = StructuredControlGrid < TDim - 1, TDataType >::Create(rSubFESpace_.Numbers());
+            const BSplinesFESpace<TDim-1>& rSubFESpace_ = dynamic_cast<const BSplinesFESpace<TDim-1>&> (rSubFESpace);
+            typename StructuredControlGrid<TDim-1, TDataType>::Pointer pNewControlGrid = StructuredControlGrid<TDim-1, TDataType>::Create(rSubFESpace_.Numbers());
             pNewControlGrid->SetName(pControlGrid->Name());
             pNewControlGrid->CopyFrom(*pTmpControlGrid);
             return pNewControlGrid;
@@ -319,7 +319,7 @@ public:
 
             std::size_t DirNumber = rBSplinesFESpace.Number(idir);
             std::vector<std::size_t> SubNumbers = rBSplinesFESpace.Numbers(idir);
-            typename StructuredControlGrid < TDim - 1, TDataType >::Pointer pNewControlGrid = StructuredControlGrid < TDim - 1, TDataType >::Create(SubNumbers);
+            typename StructuredControlGrid<TDim-1, TDataType>::Pointer pNewControlGrid = StructuredControlGrid<TDim-1, TDataType>::Create(SubNumbers);
             pNewControlGrid->SetName(pControlGrid->Name());
 
             FESpace<1>::Pointer pUniaxialFESpace = rBSplinesFESpace.ConstructUniaxialFESpace(idir);

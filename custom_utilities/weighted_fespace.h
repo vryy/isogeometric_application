@@ -481,7 +481,7 @@ public:
     /// Construct the boundary WeightedFESpace based on side
     typename BoundaryFESpaceType::Pointer ConstructBoundaryFESpace(const BoundarySide side) const override
     {
-        typename FESpace < TDim - 1 >::Pointer pBFESpace = mpFESpace->ConstructBoundaryFESpace(side);
+        typename FESpace<TDim-1>::Pointer pBFESpace = mpFESpace->ConstructBoundaryFESpace(side);
         // TODO extract/compute the weights on the boundary
         KRATOS_ERROR << "Not completed";
         std::vector<TWeightType> boundary_weights;

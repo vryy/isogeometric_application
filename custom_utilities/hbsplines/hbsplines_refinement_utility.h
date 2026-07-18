@@ -738,11 +738,11 @@ HBSplinesRefinementUtility_Helper<TDim>::Refine(
     pcells_to_remove = typename cell_container_t::Pointer(new BCellManager<TDim, CellType>());
 
     // firstly we check if the cell c of the current bf in the current level cover any sub-cells. Then the sub-cell includes all bfs of the cell c.
-    for (typename HBSplinesFESpace<TDim>::BasisFunctionType::cell_iterator it_cell = p_bf->cell_begin(); it_cell != p_bf->cell_end(); ++it_cell)
+    for (auto it_cell = p_bf->cell_begin(); it_cell != p_bf->cell_end(); ++it_cell)
     {
         if ((*it_cell)->Level() == p_bf->Level())
         {
-            for (typename cell_container_t::iterator it_subcell = pnew_cells->begin(); it_subcell != pnew_cells->end(); ++it_subcell)
+            for (auto it_subcell = pnew_cells->begin(); it_subcell != pnew_cells->end(); ++it_subcell)
             {
                 if ((*it_subcell)->template IsCovered<TDim>(*it_cell))
                 {
@@ -778,7 +778,7 @@ HBSplinesRefinementUtility_Helper<TDim>::Refine(
             pcells_to_remove->insert(*it_cell);
             for (std::size_t i = 0; i < p_cells.size(); ++i)
             {
-                for (typename CellType::bf_iterator it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
+                for (auto it_bf = (*it_cell)->bf_begin(); it_bf != (*it_cell)->bf_end(); ++it_bf)
                 {
                     p_cells[i]->AddBf(it_bf->lock());
                     it_bf->lock()->AddCell(p_cells[i]);

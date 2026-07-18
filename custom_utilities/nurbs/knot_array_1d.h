@@ -9,6 +9,7 @@
 #define  KRATOS_ISOGEOMETRIC_APPLICATION_KNOT_ARRAY_1D_H_INCLUDED
 
 // System includes
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -67,6 +68,17 @@ public:
         }
     };
 
+    struct ValueComparator2
+    {
+        bool operator() (const TDataType target, knot_t p_knot) const {
+            return target < p_knot->Value();
+        }
+
+        bool operator() (knot_t p_knot, const TDataType target) const {
+            return p_knot->Value() < target;
+        }
+    };
+
     /// Default constructor
     KnotArray1D() : mTol(1e-10) {}
 
@@ -101,14 +113,10 @@ public:
     /// After all the knot is inserted, it's important to call UpdateIndex() to index the internal array
     knot_t pCreateKnot(const TDataType& k)
     {
-        // insert to the correct location
-        iterator it;
-        for (it = mpKnots.begin(); it != mpKnots.end(); ++it)
-            if (k < (*it)->Value())
-                break;
+        ValueComparator2 comp;
+        iterator it = std::upper_bound(mpKnots.begin(), mpKnots.end(), k, comp);
         knot_t p_knot = knot_t(new KnotType(k));
         mpKnots.insert(it, p_knot);
-
         return p_knot;
     }
 
@@ -141,27 +149,33 @@ public:
     /// In the case that the knot are repetitive within the tolerance, return the internal one.
     knot_t pCreateUniqueKnot(const TDataType& k)
     {
-        // insert to the correct location
-        for (iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        ValueComparator2 comp;
+        iterator it = std::lower_bound(mpKnots.begin(), mpKnots.end(), k, comp);
+        if (it != mpKnots.end() && std::abs(k - (*it)->Value()) < mTol)
+            return *it;
+        if (it != mpKnots.begin())
         {
-            if (std::abs(k - (*it)->Value()) < mTol)
-            {
-                return *it;
-            }
+            iterator prev_it = std::prev(it);
+            if (std::abs(k - (*prev_it)->Value()) < mTol)
+                return *prev_it;
         }
-        return pCreateKnot(k);
+        knot_t p_knot = knot_t(new KnotType(k));
+        mpKnots.insert(it, p_knot);
+        return p_knot;
     }
 
     /// Get the knot of specific value
     knot_t pGetKnot(const TDataType& k) const
     {
-        // insert to the correct location
-        for (const_iterator it = mpKnots.begin(); it != mpKnots.end(); ++it)
+        ValueComparator2 comp;
+        const_iterator it = std::lower_bound(mpKnots.begin(), mpKnots.end(), k, comp);
+        if (it != mpKnots.end() && std::abs(k - (*it)->Value()) < mTol)
+            return *it;
+        if (it != mpKnots.begin())
         {
-            if (std::abs(k - (*it)->Value()) < mTol)
-            {
-                return *it;
-            }
+            const_iterator prev_it = std::prev(it);
+            if (std::abs(k - (*prev_it)->Value()) < mTol)
+                return *prev_it;
         }
 
         KRATOS_ERROR << "Knot value " << k << " does not exist";

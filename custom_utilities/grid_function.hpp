@@ -366,7 +366,7 @@ int GridFunction_Vector_LocalCoordinates_Helper<TGridFunctionType, TVectorType, 
             }
             else if constexpr (Internals::is_extended_arithmetic<DataType>::value)
             {
-                if (std::abs(dxi[i].imag() > 1e-13))
+                if (std::abs(dxi[i].imag()) > 1e-13)
                     KRATOS_ERROR << "The imaginary part is not zero in complex number Newton-Raphson";
                 xi[i] += dxi[i].real(); // for complex number we use the real part, assuming the imaginary part is zero
             }

@@ -383,7 +383,7 @@ public:
      *
      * :TODO: might need to be changed to be useful!
      */
-    virtual double DomainSize() const
+    double DomainSize() const override
     {
         return Area();
     }
@@ -608,7 +608,7 @@ public:
         Vector& shape_functions_values,
         Matrix& shape_functions_local_gradients,
         const CoordinatesArrayType& rPoint
-    ) const
+    ) const override
     {
 #ifdef DEBUG_LEVEL3
         std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;
@@ -1039,11 +1039,11 @@ private:
     /**
      * TODO
      */
-    virtual void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
+    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
         Matrix& shape_function_values,
         ShapeFunctionsGradientsType& shape_function_local_gradients,
         const IntegrationPointsArrayType& integration_points
-    ) const
+    ) const override
     {
 #ifdef DEBUG_LEVEL3
         std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;

@@ -252,7 +252,7 @@ public:
     **************************************************************************/
 
     /// Validate the patch
-    virtual bool Validate() const;
+    bool Validate() const override;
 
     /// Build the hierarchical boundary mesh
     void BuildBoundaryMesh(DeprecatedHBMesh& rMesh, std::string boundary_mesh_type) const;

@@ -189,7 +189,7 @@ public:
     }
 
     /// Get the indices of the control points on this strip from the parent patch
-    virtual std::vector<std::size_t> GetIndicesFromParent() const
+    std::vector<std::size_t> GetIndicesFromParent() const override
     {
         std::vector<std::size_t> func_indices;
 

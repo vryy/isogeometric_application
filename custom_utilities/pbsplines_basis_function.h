@@ -269,13 +269,13 @@ public:
     **************************************************************************/
 
     /// Print information of this basis function
-    virtual void PrintInfo(std::ostream& rOStream) const
+    void PrintInfo(std::ostream& rOStream) const override
     {
         rOStream << "PBSplinesBasisFunction (id: " << this->Id() << "), eq_id: " << this->EquationId();
     }
 
     /// Print data of this basis function
-    virtual void PrintData(std::ostream& rOStream) const
+    void PrintData(std::ostream& rOStream) const override
     {
         // Print the cells
         rOStream << " Supporting cells:";
@@ -302,12 +302,12 @@ protected:
 
     friend class Serializer;
 
-    virtual void save(Serializer& rSerializer) const
+    void save(Serializer& rSerializer) const override
     {
         rSerializer.save("Data", mData);
     }
 
-    virtual void load(Serializer& rSerializer)
+    void load(Serializer& rSerializer) override
     {
         rSerializer.load("Data", mData);
     }

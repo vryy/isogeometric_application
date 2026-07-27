@@ -588,7 +588,8 @@ public:
         std::vector<std::size_t> dummy_ids;
         for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
-            // This is wrong, we will not skill the IS_INACTIVE elements
+            auto& rElement = (*it);
+            // This is wrong, we will not kill the IS_INACTIVE elements
             // TODO: to be deleted
 //            if(it->GetValue( IS_INACTIVE ))
 //            {
@@ -596,11 +597,11 @@ public:
 //                ++show_progress;
 //                continue;
 //            }
-            if (it->pGetGeometry() == 0)
-                KRATOS_ERROR << "Error: geometry is NULL at element " << it->Id();
+            if (rElement.pGetGeometry() == nullptr)
+                KRATOS_ERROR << "Error: geometry is NULL at element " << rElement.Id();
 
-            int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-            int ReducedDim = it->GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
+            int Dim = rElement.GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
+            int ReducedDim = rElement.GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
 #ifdef DEBUG_LEVEL1
@@ -625,7 +626,7 @@ public:
             else
             {
                 KRATOS_ERROR << "Invalid dimension of "
-                             << typeid(*it).name()
+                             << typeid(rElement).name()
                              << ", Dim = " << Dim
                              << ", ReducedDim = " << ReducedDim;
             }
@@ -639,7 +640,7 @@ public:
             Element const& rCloneElement = KratosComponents<Element>::Get(element_name);
 
             GenerateForOneEntity<Element, ElementsArrayType, 1>(rModelPartPost,
-                    *it, rCloneElement, NodeCounter_old, NodeCounter, ElementCounter, NodeKey, false,
+                    rElement, rCloneElement, NodeCounter_old, NodeCounter, ElementCounter, NodeKey, false,
                     dummy_ids, dummy_ids, false);
 
             ++show_progress;
@@ -756,36 +757,38 @@ public:
         VectorMap<IndexType, IndexType> MapToCollapseNode;
         for (typename ElementsArrayType::iterator it = pElements.begin(); it != pElements.end(); ++it)
         {
+            auto& rElement = (*it);
+
             bool is_active = true;
-            if (it->IsDefined ( ACTIVE ))
+            if (rElement.IsDefined ( ACTIVE ))
             {
-                is_active = it->Is( ACTIVE );
+                is_active = rElement.Is( ACTIVE );
 #ifdef SD_APP_FORWARD_COMPATIBILITY
             }
 #else
-                if (it->Has ( IS_INACTIVE ))
+                if (rElement.Has ( IS_INACTIVE ))
                 {
-                    is_active = is_active && (!it->GetValue( IS_INACTIVE ));
+                    is_active = is_active && (!rElement.GetValue( IS_INACTIVE ));
                 }
             }
             else
             {
-                if (it->Has ( IS_INACTIVE ))
+                if (rElement.Has ( IS_INACTIVE ))
                 {
-                    is_active = !it->GetValue( IS_INACTIVE );
+                    is_active = !rElement.GetValue( IS_INACTIVE );
                 }
             }
 #endif
 
             if (!is_active)
             {
-//                std::cout << "Element " << it->Id() << " is inactive" << std::endl;
+//                std::cout << "Element " << rElement.Id() << " is inactive" << std::endl;
                 ++show_progress;
                 continue;
             }
 
-            int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-            int ReducedDim = it->GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
+            int Dim = rElement.GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
+            int ReducedDim = rElement.GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
 #ifdef DEBUG_LEVEL1
@@ -806,7 +809,7 @@ public:
             else
             {
                 KRATOS_ERROR << "Invalid dimension of "
-                             << typeid(*it).name()
+                             << typeid(rElement).name()
                              << ", Dim = " << Dim
                              << ", ReducedDim = " << ReducedDim;
             }
@@ -834,33 +837,35 @@ public:
         Kratos::progress_display show_progress2( pConditions.size() );
         for (typename ConditionsArrayType::iterator it = pConditions.begin(); it != pConditions.end(); ++it)
         {
+            auto& rCondition = (*it);
+
             bool is_active = true;
-            if (it->IsDefined ( ACTIVE ))
+            if (rCondition.IsDefined ( ACTIVE ))
             {
-                is_active = it->Is( ACTIVE );
+                is_active = rCondition.Is( ACTIVE );
 #ifdef SD_APP_FORWARD_COMPATIBILITY
             }
 #else
-                if (it->Has ( IS_INACTIVE ))
+                if (rCondition.Has ( IS_INACTIVE ))
                 {
-                    is_active = is_active && (!it->GetValue( IS_INACTIVE ));
+                    is_active = is_active && (!rCondition.GetValue( IS_INACTIVE ));
                 }
             }
             else
             {
-                if (it->Has ( IS_INACTIVE ))
+                if (rCondition.Has ( IS_INACTIVE ))
                 {
-                    is_active = !it->GetValue( IS_INACTIVE );
+                    is_active = !rCondition.GetValue( IS_INACTIVE );
                 }
             }
 #endif
 
-            int Dim = it->GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
-            int ReducedDim = it->GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
+            int Dim = rCondition.GetGeometry().WorkingSpaceDimension(); // global dimension of the geometry that it works on
+            int ReducedDim = rCondition.GetGeometry().LocalSpaceDimension(); // reduced dimension of the geometry
             IndexType NodeCounter_old = NodeCounter;
 
 #ifdef DEBUG_LEVEL1
-            KRATOS_WATCH(typeid(it->GetGeometry()).name())
+            KRATOS_WATCH(typeid(rCondition.GetGeometry()).name())
             KRATOS_WATCH(Dim)
             KRATOS_WATCH(ReducedDim)
 #endif
@@ -878,7 +883,7 @@ public:
             else
             {
                 KRATOS_ERROR << "Invalid dimension of "
-                             << typeid(*it).name()
+                             << typeid(rCondition).name()
                              << ", Dim = " << Dim
                              << ", ReducedDim = " << ReducedDim;
             }
@@ -991,9 +996,10 @@ public:
 
                         for (auto it = var_list.begin(); it != var_list.end(); ++it)
                         {
-                            if (typeid(*it) == typeid(Variable<double>))
+                            const auto& var = (*it);
+                            if (typeid(var) == typeid(Variable<double>))
                             {
-                                const Variable<double>& my_variable = dynamic_cast<const Variable<double>&>(*it);
+                                const Variable<double>& my_variable = dynamic_cast<const Variable<double>&>(var);
                                 double value = 0.0;
                                 for (std::size_t n = 0; n < rE.GetGeometry().size(); ++n)
                                 {
@@ -1001,9 +1007,9 @@ public:
                                 }
                                 pNewNode->GetSolutionStepValue(my_variable) = value;
                             }
-                            else if (typeid(*it) == typeid(Variable<array_1d<double, 3> >))
+                            else if (typeid(var) == typeid(Variable<array_1d<double, 3> >))
                             {
-                                const Variable<array_1d<double, 3> >& my_variable = dynamic_cast<const Variable<array_1d<double, 3> >&>(*it);
+                                const Variable<array_1d<double, 3> >& my_variable = dynamic_cast<const Variable<array_1d<double, 3> >&>(var);
                                 array_1d<double, 3> value;
                                 noalias(value) = ZeroVector(3);
                                 for (std::size_t n = 0; n < rE.GetGeometry().size(); ++n)
@@ -1184,9 +1190,10 @@ public:
 
                             for (auto it = var_list.begin(); it != var_list.end(); ++it)
                             {
-                                if (typeid(*it) == typeid(Variable<double>))
+                                const auto& var = (*it);
+                                if (typeid(var) == typeid(Variable<double>))
                                 {
-                                    const Variable<double>& my_variable = dynamic_cast<const Variable<double>&>(*it);
+                                    const Variable<double>& my_variable = dynamic_cast<const Variable<double>&>(var);
                                     double value = 0.0;
                                     for (std::size_t n = 0; n < rE.GetGeometry().size(); ++n)
                                     {
@@ -1194,9 +1201,9 @@ public:
                                     }
                                     pNewNode->GetSolutionStepValue(my_variable) = value;
                                 }
-                                else if (typeid(*it) == typeid(Variable<array_1d<double, 3> >))
+                                else if (typeid(var) == typeid(Variable<array_1d<double, 3> >))
                                 {
-                                    const Variable<array_1d<double, 3> >& my_variable = dynamic_cast<const Variable<array_1d<double, 3> >&>(*it);
+                                    const Variable<array_1d<double, 3> >& my_variable = dynamic_cast<const Variable<array_1d<double, 3> >&>(var);
                                     array_1d<double, 3> value;
                                     noalias(value) = ZeroVector(3);
                                     for (std::size_t n = 0; n < rE.GetGeometry().size(); ++n)

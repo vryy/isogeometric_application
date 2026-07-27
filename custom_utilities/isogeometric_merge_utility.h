@@ -278,20 +278,26 @@ public:
             const ElementsContainerType& pElements = mpModelPartContainer[i]->Elements();
             for (auto it = pElements.cbegin(); it != pElements.cend(); ++it)
             {
+                auto& rElement = (*it);
+                auto& geom = rElement.GetGeometry();
                 std::string element_name;
                 for (ElementComponentsContainerType::iterator cit = ElementComponents.begin(); cit != ElementComponents.end(); ++cit)
-                    if (typeid(*(cit->second)).name() == typeid(*it).name())
-                        if (typeid(cit->second->GetGeometry()).name() == typeid(it->GetGeometry()).name())
+                {
+                    auto& temp = *(cit->second);
+                    auto& temp_geom = temp.GetGeometry();
+                    if (typeid(temp).name() == typeid(rElement).name())
+                        if (typeid(temp_geom).name() == typeid(geom).name())
                         {
                             element_name = cit->first;
                         }
+                }
 //                KRATOS_WATCH(element_name)
                 Element const& r_clone_element = KratosComponents<Element>::Get(element_name);
                 Properties::Pointer p_temp_properties = it->pGetProperties();
                 Element::NodesArrayType temp_element_nodes;
-                for (int j = 0; j < it->GetGeometry().size(); ++j)
+                for (int j = 0; j < geom.size(); ++j)
                 {
-                    KeyType K(i, it->GetGeometry()[j].Id());
+                    KeyType K(i, geom[j].Id());
                     SetType::iterator iP = PointMap[K];
                     temp_element_nodes.push_back(*(FindKey(pModelPart->Nodes(), NodeIds[*iP], NodeKey).base()));
                 }
@@ -318,20 +324,26 @@ public:
             const ConditionsContainerType& pConditions = mpModelPartContainer[i]->Conditions();
             for (auto it = pConditions.cbegin(); it != pConditions.cend(); ++it)
             {
+                auto& rCondition = (*it);
+                auto& geom = rCondition.GetGeometry();
                 std::string condition_name;
                 for (ConditionComponentsContainerType::iterator cit = ConditionComponents.begin(); cit != ConditionComponents.end(); ++cit)
-                    if (typeid(*(cit->second)).name() == typeid(*it).name())
-                        if (typeid(cit->second->GetGeometry()).name() == typeid(it->GetGeometry()).name())
+                {
+                    auto& temp = *(cit->second);
+                    auto& temp_geom = temp.GetGeometry();
+                    if (typeid(temp).name() == typeid(rCondition).name())
+                        if (typeid(temp_geom).name() == typeid(geom).name())
                         {
                             condition_name = cit->first;
                         }
+                }
 //                KRATOS_WATCH(condition_name)
                 Condition const& r_clone_condition = KratosComponents<Condition>::Get(condition_name);
                 Properties::Pointer p_temp_properties = it->pGetProperties();
                 Condition::NodesArrayType temp_condition_nodes;
-                for (int j = 0; j < it->GetGeometry().size(); ++j)
+                for (int j = 0; j < geom.size(); ++j)
                 {
-                    KeyType K(i, it->GetGeometry()[j].Id());
+                    KeyType K(i, geom[j].Id());
                     SetType::iterator iP = PointMap[K];
                     temp_condition_nodes.push_back(*(FindKey(pModelPart->Nodes(), NodeIds[*iP], NodeKey).base()));
                 }

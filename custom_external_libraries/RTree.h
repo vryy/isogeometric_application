@@ -1573,7 +1573,7 @@ bool RTREE_QUAL::Search(Node* a_node, Rect* a_rect, int& a_foundCount, bool a_re
         DATATYPE& id = a_node->m_branch[index].m_data;
         
         // NOTE: There are different ways to return results.  Here's where to modify
-        if(&a_resultCallback)
+        if(a_resultCallback)
         {
           ++a_foundCount;
           if(!a_resultCallback(id, a_context))

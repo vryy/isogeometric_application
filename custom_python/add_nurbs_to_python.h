@@ -38,10 +38,6 @@ struct ControlValue_Helper
         boost::python::list dummy;
         return dummy;
     }
-
-    static TDataType GetValue(boost::python::list rValue)
-    {
-    }
 };
 
 template<>
@@ -52,10 +48,6 @@ struct ControlValue_Helper<double>
         boost::python::list v;
         v.append(rValue);
         return v;
-    }
-
-    static double GetValue(boost::python::list rValue)
-    {
     }
 };
 
@@ -71,10 +63,6 @@ struct ControlValue_Helper<ControlPoint<double> >
         v.append(rValue.W());
         return v;
     }
-
-    static double GetValue(boost::python::list rValue)
-    {
-    }
 };
 
 template<>
@@ -87,10 +75,6 @@ struct ControlValue_Helper<array_1d<double, 3> >
         v.append(rValue[1]);
         v.append(rValue[2]);
         return v;
-    }
-
-    static double GetValue(boost::python::list rValue)
-    {
     }
 };
 

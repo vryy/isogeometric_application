@@ -279,9 +279,8 @@ public:
      * Operations
      */
 
-    virtual typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const
+    typename GeometryType::Pointer Create( PointsArrayType const& ThisPoints ) const override
     {
-//        KRATOS_WATCH("At geometry Create")
         return typename GeometryType::Pointer( new Geo3dNURBS( ThisPoints ) );
     }
 
@@ -306,7 +305,7 @@ public:
      * TODO: TO BE CHECKED!!!!!!!!!!!
      */
     //lumping factors for the calculation of the lumped mass matrix
-    virtual Vector& LumpingFactors( Vector& rResult ) const
+    Vector& LumpingFactors( Vector& rResult ) const override
     {
         //TODO
         return rResult;
@@ -669,7 +668,7 @@ public:
         Vector& shape_functions_values,
         Matrix& shape_functions_local_gradients,
         const CoordinatesArrayType& rPoint
-    ) const
+    ) const override
     {
 #ifdef DEBUG_LEVEL3
         std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;
@@ -1138,11 +1137,11 @@ private:
     /**
      * TODO
      */
-    virtual void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
+    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients(
         Matrix& shape_function_values,
         ShapeFunctionsGradientsType& shape_function_local_gradients,
         const IntegrationPointsArrayType& integration_points
-    ) const
+    ) const override
     {
 #ifdef DEBUG_LEVEL3
         std::cout << typeid(*this).name() << "::" << __FUNCTION__ << std::endl;

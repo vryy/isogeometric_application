@@ -518,7 +518,7 @@ public:
         Vector& shape_functions_values,
         Matrix& shape_functions_local_gradients,
         const CoordinatesArrayType& rPoint
-    ) const
+    ) const override
     {
         //setting up result matrix
         shape_functions_local_gradients.resize(mNumber, 1);
@@ -809,12 +809,12 @@ private:
     /**
      * TODO
      */
-    virtual void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients
+    void CalculateShapeFunctionsIntegrationPointsValuesAndLocalGradients
     (
         Matrix& shape_function_values,
         ShapeFunctionsGradientsType& shape_function_local_gradients,
         const IntegrationPointsArrayType& integration_points
-    ) const
+    ) const override
     {
         shape_function_local_gradients.resize(integration_points.size());
         std::fill(shape_function_local_gradients.begin(), shape_function_local_gradients.end(), Matrix());

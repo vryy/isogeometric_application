@@ -309,7 +309,7 @@ public:
         // compare the order information
         for (std::size_t i = 0; i < TDim; ++i)
         {
-            if (!(this->Order(i)) == pOtherPBBSplinesFESpace->Order(i))
+            if (!(this->Order(i) == pOtherPBBSplinesFESpace->Order(i)))
             {
                 return false;
             }
@@ -601,6 +601,8 @@ public:
                 ++j;
             }
         }
+        KRATOS_ERROR << "Basis functions at index " << i << " does not exist";
+        return nullptr;
     }
 
     /// Overload operator(), this allows to access the basis function based on its id

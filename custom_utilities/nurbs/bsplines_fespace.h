@@ -1686,7 +1686,7 @@ public:
     }
 
     /// Compare between two BSplines patches in terms of parametric information
-    bool IsCompatible(const BaseType& rOtherFESpace) const
+    bool IsCompatible(const BaseType& rOtherFESpace) const override
     {
         if (rOtherFESpace.Type() != Type())
         {

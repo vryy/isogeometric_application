@@ -853,7 +853,7 @@ public:
     }
 
     void ShapeFunctionsValuesAndLocalGradients( VectorType& shape_functions_values,
-            MatrixType& shape_functions_local_gradients, const CoordinatesArrayType& rPoint ) const
+            MatrixType& shape_functions_local_gradients, const CoordinatesArrayType& rPoint ) const override
     {
         //compute all Bezier shape functions & derivatives at rPoint
         VectorType bezier_functions_values(mNumber);

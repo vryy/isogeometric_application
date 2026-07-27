@@ -224,6 +224,8 @@ public:
             kvec.Reverse();
             return kvec;
         }
+
+        return KnotArray1D<TDataType>(); // to silence the compiler
     }
 
     /// Create a clone of this knot vector and insert the knot in the middle of each span.

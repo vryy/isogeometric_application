@@ -1076,6 +1076,7 @@ void DeprecatedHBMesh<TDim>::LinearDependencyRefine(std::size_t refine_cycle)
         for (std::size_t next_level = level; next_level <= mLastLevel; ++next_level)
             for (bf_container_t::iterator it_bf = mBasisFuncs.begin(); it_bf != mBasisFuncs.end(); ++it_bf)
                 if ((*it_bf)->Level() == next_level)
+                {
                     for (DeprecatedHBBasisFunction::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
                         if constexpr (TDim == 2)
                         {
@@ -1093,11 +1094,13 @@ void DeprecatedHBMesh<TDim>::LinearDependencyRefine(std::size_t refine_cycle)
                             p_domain->AddZcoord((*it_cell)->ZetaMinValue());
                             p_domain->AddZcoord((*it_cell)->ZetaMaxValue());
                         }
+                }
 
         // add the cells to the domain manager
         for (std::size_t next_level = level; next_level <= mLastLevel; ++next_level)
             for (bf_container_t::iterator it_bf = mBasisFuncs.begin(); it_bf != mBasisFuncs.end(); ++it_bf)
                 if ((*it_bf)->Level() == next_level)
+                {
                     for (DeprecatedHBBasisFunction::cell_iterator it_cell = (*it_bf)->cell_begin(); it_cell != (*it_bf)->cell_end(); ++it_cell)
                         if constexpr (TDim == 2)
                         {
@@ -1109,6 +1112,7 @@ void DeprecatedHBMesh<TDim>::LinearDependencyRefine(std::size_t refine_cycle)
                             std::vector<double> box = {(*it_cell)->XiMinValue(), (*it_cell)->XiMaxValue(), (*it_cell)->EtaMinValue(), (*it_cell)->EtaMaxValue(), (*it_cell)->ZetaMinValue(), (*it_cell)->ZetaMaxValue()};
                             p_domain->AddCell(box);
                         }
+                }
 
 //            std::cout << "support domain level " << level << *p_domain << std::endl;
     }
@@ -2740,7 +2744,6 @@ void DeprecatedHBMesh<TDim>::GenerateCellGeology(std::vector<unsigned int>& poin
 /**
  * template instantiation
  */
-template class DeprecatedHBMesh<0>;
 template class DeprecatedHBMesh<1>;
 template class DeprecatedHBMesh<2>;
 template class DeprecatedHBMesh<3>;

@@ -226,7 +226,7 @@ public:
     }
 
     /// Get the size of underlying data
-    std::size_t Size() const {return BaseType::Data().size();}
+    std::size_t Size() const override {return BaseType::Data().size();}
 
     /// Get the size of the grid is specific dimension
     std::size_t Size(std::size_t dim) const {return 1;}
@@ -441,7 +441,7 @@ public:
     }
 
     /// Get the size of underlying data
-    std::size_t Size() const {return BaseType::Data().size();}
+    std::size_t Size() const override {return BaseType::Data().size();}
 
     /// Get the size of the grid is specific dimension
     std::size_t Size(std::size_t dim) const {return mSize;}
@@ -686,7 +686,7 @@ public:
     }
 
     /// Get the size of underlying data
-    std::size_t Size() const {return BaseType::Data().size();}
+    std::size_t Size() const override {return BaseType::Data().size();}
 
     /// Get the size of the grid is specific dimension
     std::size_t Size(std::size_t dim) const {return mSize[dim];}
@@ -1038,7 +1038,7 @@ public:
     }
 
     /// Get the size of underlying data
-    std::size_t Size() const {return BaseType::Data().size();}
+    std::size_t Size() const override {return BaseType::Data().size();}
 
     /// Get the size of the grid is specific dimension
     std::size_t Size(std::size_t dim) const {return mSize[dim];}

@@ -261,7 +261,7 @@ public:
         // compare the knot vectors and order information
         for (std::size_t i = 0; i < TDim; ++i)
         {
-            if (!(this->Order(i)) == pOtherHBSplinesFESpace->Order(i))
+            if (!(this->Order(i) == pOtherHBSplinesFESpace->Order(i)))
             {
                 return false;
             }

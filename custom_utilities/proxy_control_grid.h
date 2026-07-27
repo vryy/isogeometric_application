@@ -51,7 +51,7 @@ public:
     }
 
     /// Create the clone
-    typename BaseType::Pointer Clone() const
+    typename BaseType::Pointer Clone() const override
     {
         typename ProxyType::Pointer pNewControlGrid = mpControlGrid->Clone();
         if (pNewControlGrid == nullptr)

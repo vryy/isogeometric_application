@@ -26,11 +26,9 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_utilities/hbsplines/hbsplines_fespace.h"
 #include "custom_utilities/hbsplines/hbsplines_patch_utility.h"
 #include "custom_utilities/hbsplines/hbsplines_refinement_utility.h"
-#include "custom_utilities/import_export/multi_hbsplines_patch_matlab_exporter.h"
 #include "custom_python/iga_define_python.h"
 #include "custom_python/add_hbsplines_to_python.h"
 #include "custom_python/add_point_based_control_grid_to_python.h"
-#include "custom_python/add_import_export_to_python.h"
 
 namespace Kratos
 {
@@ -314,17 +312,6 @@ void IsogeometricApplication_AddHBSplinesToPython()
     .def("RefineWindow", &HBSplinesRefinementUtility_RefineWindow<3>)
     .def("LinearDependencyRefine", &HBSplinesRefinementUtility_LinearDependencyRefine<2>)
     .def("LinearDependencyRefine", &HBSplinesRefinementUtility_LinearDependencyRefine<3>)
-    .def(self_ns::str(self))
-    ;
-
-    class_<MultiHBSplinesPatchMatlabExporter, MultiHBSplinesPatchMatlabExporter::Pointer, boost::noncopyable>
-    ("MultiHBSplinesPatchMatlabExporter", init<>())
-    .def("Export", &MultiPatchExporter_Export<1, MultiHBSplinesPatchMatlabExporter, Patch<1> >)
-    .def("Export", &MultiPatchExporter_Export<2, MultiHBSplinesPatchMatlabExporter, Patch<2> >)
-    .def("Export", &MultiPatchExporter_Export<3, MultiHBSplinesPatchMatlabExporter, Patch<3> >)
-    .def("Export", &MultiPatchExporter_Export<1, MultiHBSplinesPatchMatlabExporter, MultiPatch<1> >)
-    .def("Export", &MultiPatchExporter_Export<2, MultiHBSplinesPatchMatlabExporter, MultiPatch<2> >)
-    .def("Export", &MultiPatchExporter_Export<3, MultiHBSplinesPatchMatlabExporter, MultiPatch<3> >)
     .def(self_ns::str(self))
     ;
 

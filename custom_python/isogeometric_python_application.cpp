@@ -29,6 +29,7 @@ LICENSE: see isogeometric_application/LICENSE.txt
 #include "custom_python/add_processes_to_python.h"
 #include "custom_python/add_io_to_python.h"
 #include "custom_python/add_strategies_to_python.h"
+#include "custom_python/add_import_export_to_python.h"
 #ifdef ISOGEOMETRIC_USE_BREP
 #include "custom_python/add_brep_and_level_set_to_python.h"
 #endif
@@ -85,6 +86,10 @@ BOOST_PYTHON_MODULE(KratosIsogeometricApplication)
     IsogeometricApplication_AddProcessesToPython();
     IsogeometricApplication_AddIOToPython();
     IsogeometricApplication_AddStrategiesToPython();
+    IsogeometricApplication_AddImportToPython<1>();
+    IsogeometricApplication_AddImportToPython<2>();
+    IsogeometricApplication_AddImportToPython<3>();
+    IsogeometricApplication_AddExportToPython();
 
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( NURBS_WEIGHT )
     KRATOS_REGISTER_IN_PYTHON_VARIABLE( NURBS_WEIGHTS )

@@ -47,6 +47,11 @@ void MultiPatchExporter_Export_Variable_WithComponents(TExporter& rDummy,
     rDummy.template Export<TDim, TVariableType>(pPatch, rVariable, filename, ncomponents);
 }
 
+template<int TDim>
+void IsogeometricApplication_AddImportToPython();
+
+void IsogeometricApplication_AddExportToPython();
+
 }  // namespace Python.
 
 }  // namespace Kratos.

@@ -20,6 +20,7 @@
 #include "custom_utilities/control_point.h"
 #include "custom_utilities/nurbs/pbbsplines_basis_function.h"
 #include "custom_utilities/nurbs/pbbsplines_fespace.h"
+#include "custom_utilities/tsplines/tscell.h"
 #include "custom_utilities/import_export/multi_pbsplines_patch_matlab_exporter.h"
 
 namespace Kratos
